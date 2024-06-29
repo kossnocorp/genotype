@@ -1,0 +1,198 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Genotype",
+  "patterns": [
+    {
+      "include": "#statements"
+    }
+  ],
+  "repository": {
+    "statements": {
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#declaration"
+        }
+      ]
+    },
+    "comment": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.genotype",
+          "match": "(//).*$",
+          "captures": {
+            "1": {
+              "name": "punctuation.definition.comment.genotype"
+            }
+          }
+        }
+      ]
+    },
+    "declaration": {
+      "patterns": [
+        {
+          "include": "#type-declaration"
+        }
+      ]
+    },
+    "type-declaration": {
+      "name": "meta.type.declaration.genotype",
+      "begin": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(\\btype)\\s+([_$[:alpha:]][_$[:alnum:]]*)\\s*",
+      "beginCaptures": {
+        "1": {
+          "name": "storage.type.type.genotype"
+        },
+        "2": {
+          "name": "entity.name.type.genotype"
+        }
+      },
+      "end": "(?<=\\})",
+      "patterns": [
+        {
+          "include": "#type-members"
+        }
+      ]
+    },
+    "type-members": {
+      "name": "meta.type.members.genotype",
+      "begin": "\\{",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.block.genotype"
+        }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.block.genotype"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#type-member"
+        }
+      ]
+    },
+    "type-member": {
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#field-declaration"
+        }
+      ]
+    },
+    "field-declaration": {
+      "name": "meta.field.declaration.genotype",
+      "begin": "(?x)(?:([_$[:alpha:]][_$[:alnum:]]*)\\s*(\\??))\\s*(:)\\s*",
+      "beginCaptures": {
+        "1": {
+          "name": "variable.object.property.genotype"
+        },
+        "2": {
+          "name": "keyword.operator.optional.genotype"
+        },
+        "3": {
+          "name": "punctuation.separator.key-value.genotype"
+        }
+      },
+      "end": "(?=\\}|;|,|$|^)",
+      "patterns": [
+        {
+          "include": "#type-annotation"
+        }
+      ]
+    },
+    "type-annotation": {
+      "patterns": [
+        {
+          "include": "#type"
+        },
+        {
+          "include": "#optional-type"
+        }
+      ]
+    },
+    "optional-type": {
+      "match": "([_$[:alpha:]][_$[:alnum:]]*)\\s*(\\?)",
+      "captures": {
+        "1": {
+          "name": "support.type.primitive.genotype"
+        },
+        "2": {
+          "name": "keyword.operator.optional.genotype"
+        }
+      }
+    },
+    "optional-modifier": {
+      "match": "\\?",
+      "name": "keyword.operator.optional.genotype"
+    },
+    "type": {
+      "name": "meta.type.genotype",
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#string"
+        },
+        {
+          "include": "#type-primitive"
+        },
+        {
+          "include": "#type-reference"
+        },
+        {
+          "include": "#type-nested"
+        }
+      ]
+    },
+    "type-primitive": {
+      "name": "support.type.primitive.genotype",
+      "match": "(?<![_$[:alnum:]])(?:(?<=\\.\\.\\.)|(?<!\\.))(string|boolean|number|bigint|float)(?![_$[:alnum:]])(?:(?=\\.\\.\\.)|(?!\\.))"
+    },
+    "type-reference": {
+      "name": "entity.name.type.genotype",
+      "match": "[_$[:alpha:]][_$[:alnum:]]*"
+    },
+    "type-nested": {
+      "name": "meta.type.nested.genotype",
+      "begin": "\\{",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.block.genotype"
+        }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.block.genotype"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#type-member"
+        }
+      ]
+    },
+    "string": {
+      "name": "string.quoted.double.genotype",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.genotype",
+          "match": "\\\\."
+        }
+      ]
+    }
+  },
+  "scopeName": "source.genotype"
+}

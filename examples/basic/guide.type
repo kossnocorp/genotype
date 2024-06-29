@@ -1,0 +1,43 @@
+// type keywords defines a data structure. In TypeScript that would be 
+// an interface, in Rust a struct, etc.:
+type Structure {
+  // Properties are defined by the property name and its type:
+  text: string
+
+  // Most basic types include string, boolean, float, number and bigint:
+  flag: boolean
+  num: number // Represents 64-bit integer
+  big: bigint // Represents 128-bit integer
+  pi: float   // Represents 64-bit floating point number
+
+  // Types can be defined as optional by adding a question mark:
+  prop: string?
+
+  // Properties also can be defined as optional:
+  optional?: string
+}
+
+type Another {
+  // Types can include other types
+  structure: Structure
+
+  // Or nested structures:
+  nested: {
+    hello: string
+  }
+}
+
+// [TODO] Granular integer and float types:
+//
+// f32: f32   // 32-bit floating point number
+// f64: f64   // 64-bit floating point number
+// i8: i8     // 8-bit signed integer
+// u8: u8     // 8-bit unsigned integer
+// i16: i16   // 16-bit signed integer
+// u16: u16   // 16-bit unsigned integer
+// i32: i32   // 32-bit signed integer
+// u32: u32   // 32-bit unsigned integer
+// i64: i64   // 64-bit signed integer
+// u64: u64   // 64-bit unsigned integer
+// i128: i128 // 128-bit signed integer
+// u128: u128 // 128-bit unsigned integer

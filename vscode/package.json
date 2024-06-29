@@ -1,0 +1,25 @@
+{
+  "name": "genotype",
+  "displayName": "Genotype2",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "genotype",
+      "aliases": ["Genotype", "genotype"],
+      "extensions": ["type"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "genotype",
+      "scopeName": "source.genotype",
+      "path": "./syntaxes/genotype.tmLanguage.json"
+    }]
+  }
+}
