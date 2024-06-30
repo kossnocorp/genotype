@@ -1,30 +1,107 @@
-// type keywords defines a data structure. In TypeScript that would be 
-// an interface, in Rust a struct, etc.:
-type Structure {
+//! Welcome to Genotype language guide. It's designed to help you get started
+//! with the language by providing a quick yet comprehensive overview of its
+//! features.
+//!
+//! Genotype is a meta type language that allows you to describe your
+//! application data structures regardless of the programming language you
+//! are using.
+//!
+//! It's based on JSON data types which limits the complexity and enables you
+//! to translate it to other languages efficiently without losing any
+//! information.
+//!
+//! It's inspired by JSON Typedef (JTD) and inherits most of its features and
+//! expands on it. If you used it before, you will find Genotype very familiar.
+//!
+//! Without further ado, let's dive into the language.
+
+// You define a structure by specifying its name followed by a block of
+// properties. It corresponds to an interface in TypeScript, struct in Rust,
+// C#, or properties form in JTD.
+Structure = {
   // Properties are defined by the property name and its type:
   text: string
 
-  // Most basic types include string, boolean, float, number and bigint:
+  // Basic primitive types include string, boolean, number and float:
   flag: boolean
   num: number // Represents 64-bit integer
-  big: bigint // Represents 128-bit integer
   pi: float   // Represents 64-bit floating point number
+}
 
-  // Types can be defined as optional by adding a question mark:
+// You might already noticed that comments in Genotype are defined by //.
+// Module-level doc comments starts with //!.
+
+/// Structures can also be annoted with doc comments.
+User = {
+  /// As well as properties.
+  name: string
+
+  /// User's age.
+  age: /* Btw you can also use block comments too. */ number
+}
+
+// Doc comments will translate to TSDoc in TypeScript, doc comments in Rust,
+// etc. and show up in your editor.
+
+// Let's get back to the types.
+More = {
+  // Types can be defined nullable by adding a question mark:
   prop: string?
+  // This is equivalent to `string | null` in TypeScript and `Option<String>`
+  // in Rust.
 
   // Properties also can be defined as optional:
   optional?: string
-}
+  // The difference from nullable type is that the property might not appear
+  // in the data at all.
 
-type Another {
-  // Types can include other types
+  // Properties can refer other types:
   structure: Structure
 
-  // Or nested structures:
+  // ... nested structures:
   nested: {
     hello: string
+
+    // ... or even be recursive:
+    more: More
   }
+
+  // Arrays are defined by wrapping into square brackets:
+  list: [string]
+
+  // Tuples are defined by listing types in parentheses:
+  tuple: (string, number)
+}
+
+// Enums are defined by listing all possible values:
+Color = "red" | "green" | "blue"
+Day = 0 | 1 | 2 | 3 | 4 | 5 | 6
+
+// You can define type aliases:
+List = [string]
+Age = number
+
+// ...it will translate to simple type alias in TypeScript and newtype in Rust. 
+// [TODO] Replace in Rust?
+
+// [TODO] Add opaque type that translate to newtype in Rust and branded string
+// in TypeScript?
+
+// Record/HashMap can be defined by [TODO]
+UserMap = { []: User }
+
+// By default the value is a string, but you can specify the type:
+UserMap = { [number]: User }
+// You can use string, number and float as keys.
+
+User = {
+  name: string
+}
+
+// You can tag a structure:
+
+Comment = {
+  #type: "comment"
 }
 
 // [TODO] Granular integer and float types:
