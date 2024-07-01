@@ -3,8 +3,10 @@
 //! features.
 //!
 //! Genotype is a meta type language that allows you to describe your
-//! application data structures regardless of the programming language you
-//! are using.
+//! application data structures and generate code for the languages you use.
+//!
+//! It's the most valuable if you work with multiple languages that work with
+//! the same data structures.
 //!
 //! It's based on JSON data types which limits the complexity and enables you
 //! to translate it to other languages efficiently without losing any
@@ -43,7 +45,8 @@ User = {
 // Doc comments will translate to TSDoc in TypeScript, doc comments in Rust,
 // etc. and show up in your editor.
 
-// Let's get back to the types.
+// Now, let's get back to the types.
+
 More = {
   // Types can be defined nullable by adding a question mark:
   prop: string?
@@ -72,6 +75,9 @@ More = {
   // Tuples are defined by listing types in parentheses:
   tuple: (string, number)
 }
+
+// You can write properties on the same line delimited by a comma:
+User = { name: string, age: number }
 
 // Enums are defined by listing all possible values:
 Color = "red" | "green" | "blue"
@@ -102,6 +108,35 @@ User = {
 
 Comment = {
   #type: "comment"
+}
+
+// You can reuse properties from other structures:
+Content = {
+  text: string
+}
+
+Post = {
+  ...Content
+  title: string
+}
+
+Comment = {
+  ...Content
+  user: User
+}
+
+// [TODO] enum
+
+// [TODO] This can't translate to TypeScript
+State = {
+  Pending
+  Active(ActivePayload)
+  Failed(string)
+  Finished(string)
+}
+
+ActivePayload = {
+  startedAt: string
 }
 
 // [TODO] Granular integer and float types:
