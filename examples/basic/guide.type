@@ -69,6 +69,11 @@ More = {
     more: More
   }
 
+  // Nested properties can be named:
+  anotherNested: AnotherNested {
+    hello: string
+  }
+
   // Arrays are defined by wrapping into square brackets:
   list: [string]
 
