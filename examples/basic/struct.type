@@ -1,0 +1,14 @@
+Hello = {
+  name: string
+}
+
+Hello = {
+  name: string
+  age: number
+  flag: boolean
+}
+
+
+Hello = { name: string }
+
+Hello = { name: string, age: number }

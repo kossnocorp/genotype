@@ -1,5 +1,27 @@
-file = { SOI ~ (record ~ ("\r\n" | "\n"))* ~ EOI }
+file = { SOI ~ (alias)* ~ EOI }
 
-field = { (ASCII_DIGIT | "." | "-")+ }
+alias = { name ~ "=" ~ type }
 
-record = { field ~ ("," ~ field)* }
+name = { (ASCII_ALPHA)+ }
+
+type = { primitive | struct }
+
+primitive = { "string" | "number" | "boolean" }
+
+// Structs
+
+struct = { "{" ~ (NEWLINE)* ~ (property ~ (",")* ~ (NEWLINE)*)* ~ "}" }
+
+property = { name ~ ":" ~ type }
+
+// Base
+
+WHITESPACE = _{ " " | "\t" | newline }
+
+newline = _{ "\n" | "\r\n" }
+
+COMMENT = _{ line_comment | block_comment }
+
+line_comment = _{ ("//" ~ (!newline ~ ANY)*) }
+
+block_comment = _{ "/*" ~ (block_comment | !"*/" ~ ANY)* ~ "*/" }

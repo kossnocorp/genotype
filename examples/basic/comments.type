@@ -1,0 +1,5 @@
+// Basic comment
+
+//! Doc comment
+
+type Hello = /* Inline comment */ string
