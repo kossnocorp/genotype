@@ -70,7 +70,7 @@ More = {
   }
 
   // Nested properties can be named:
-  anotherNested: AnotherNested {
+  anotherNested: AnotherNested = {
     hello: string
   }
 
@@ -107,6 +107,8 @@ UserMap = { [number]: User }
 
 User = {
   name: string
+  #[validate: "email"]
+  email: string
 }
 
 // You can tag a structure:
