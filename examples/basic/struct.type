@@ -8,6 +8,11 @@ Hello = {
   flag: boolean
 }
 
+Empty = {}
+
+Empty = {
+  
+}
 
 Hello = { name: string }
 

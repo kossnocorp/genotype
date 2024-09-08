@@ -1,5 +1,13 @@
+//! File comment
+
 // Basic comment
 
-//! Doc comment
+/// Type comment
+Hello = /* Inline comment */ string
 
-type Hello = /* Inline comment */ string
+Hello = {
+  /// Property comment
+  name: string
+}
+
+Hello = string // Trailing comment

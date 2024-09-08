@@ -1,27 +1,47 @@
-file = { SOI ~ (alias)* ~ EOI }
+file = { SOI ~ (file_comment)* ~ (alias)* ~ EOI }
 
-alias = { name ~ "=" ~ type }
+alias = { line_doc* ~ const ~ "=" ~ (any_type | const) }
 
-name = { (ASCII_ALPHA)+ }
+const = @{ (ASCII_ALPHA)+ }
 
-type = { primitive | struct }
+// Types
 
-primitive = { "string" | "number" | "boolean" }
+any_type = _{ optional_type | type  }
+
+type = !{ primitive | struct }
+
+optional_type = ${ type ~ "?" }
+
+primitive = { "string" | "number" | "float" | "boolean" }
 
 // Structs
 
-struct = { "{" ~ (NEWLINE)* ~ (property ~ (",")* ~ (NEWLINE)*)* ~ "}" }
+struct = { "{" ~ properties? ~ "}" }
 
-property = { name ~ ":" ~ type }
+properties = { any_property ~ (","? ~ any_property)* ~ ","? }
+
+any_property = _{ line_doc* ~ (optional_property | property) }
+
+property = { const ~ ":" ~ any_type }
+
+optional_property = { const ~ "?:" ~ any_type }
+
+// Comments
+
+line_comment = _{ ("//" ~ !("/" | "!") ~ (!NEWLINE ~ ANY)*) }
+
+block_comment = _{ "/*" ~ (block_comment | !"*/" ~ ANY)* ~ "*/" }
+
+file_comment = ${ "//!" ~ SPACE? ~ comment_content }
+
+line_doc = ${ "///" ~ SPACE? ~ comment_content }
+
+comment_content = @{ (!NEWLINE ~ ANY)* }
 
 // Base
 
-WHITESPACE = _{ " " | "\t" | newline }
+SPACE = _{ " " | "\t" }
 
-newline = _{ "\n" | "\r\n" }
+WHITESPACE = _{ SPACE | NEWLINE }
 
 COMMENT = _{ line_comment | block_comment }
-
-line_comment = _{ ("//" ~ (!newline ~ ANY)*) }
-
-block_comment = _{ "/*" ~ (block_comment | !"*/" ~ ANY)* ~ "*/" }

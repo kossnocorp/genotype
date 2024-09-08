@@ -16,6 +16,11 @@ mod tests {
     }
 
     #[test]
+    fn test_primitives() {
+        parse_file("../examples/basic/primitives.type");
+    }
+
+    #[test]
     fn test_struct() {
         parse_file("../examples/basic/struct.type");
     }
@@ -25,13 +30,18 @@ mod tests {
         parse_file("../examples/basic/comments.type");
     }
 
+    #[test]
+    fn test_optional() {
+        parse_file("../examples/basic/optional.type");
+    }
+
     fn parse_file(file: &str) {
         let file = fs::read_to_string(file).expect("cannot read file");
         let parse = GenotypeParser::parse(Rule::file, &file);
 
         if let Err(err) = parse {
-            println!("{:?}", err);
-            assert!(false);
+            println!("{}", err);
+            assert!(false, "Failed to parse file");
         }
     }
 }
