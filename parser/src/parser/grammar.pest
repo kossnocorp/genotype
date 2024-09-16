@@ -8,7 +8,7 @@ const = @{ (ASCII_ALPHA)+ }
 
 any_type = _{ optional_type | type  }
 
-type = !{ primitive | struct }
+type = !{ primitive | struct | alias }
 
 optional_type = ${ type ~ "?" }
 

@@ -12,27 +12,32 @@ mod tests {
 
     #[test]
     fn test_alias() {
-        parse_file("../examples/basic/alias.type");
+        parse_file("../examples/basic/01-alias.type");
     }
 
     #[test]
     fn test_primitives() {
-        parse_file("../examples/basic/primitives.type");
+        parse_file("../examples/basic/02-primitives.type");
     }
 
     #[test]
     fn test_struct() {
-        parse_file("../examples/basic/struct.type");
+        parse_file("../examples/basic/03-struct.type");
     }
 
     #[test]
     fn test_comments() {
-        parse_file("../examples/basic/comments.type");
+        parse_file("../examples/basic/04-comments.type");
     }
 
     #[test]
     fn test_optional() {
-        parse_file("../examples/basic/optional.type");
+        parse_file("../examples/basic/05-optional.type");
+    }
+
+    #[test]
+    fn test_nested() {
+        parse_file("../examples/basic/06-nested.type");
     }
 
     fn parse_file(file: &str) {

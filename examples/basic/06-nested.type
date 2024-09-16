@@ -1,0 +1,13 @@
+Hello = {
+  name: {
+    first: string
+    last: string
+  }
+}
+
+Hello = {
+  name: Named = {
+    first: string
+    last: string
+  }
+}
