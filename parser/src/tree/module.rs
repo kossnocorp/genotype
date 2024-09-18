@@ -290,6 +290,77 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_nested() {
+        assert_module(
+            "../examples/syntax/06-nested.type",
+            Module {
+                doc: None,
+                aliases: vec![
+                    Alias {
+                        doc: None,
+                        name: "Hello".to_string(),
+                        descriptor: Descriptor::Object(Object {
+                            properties: vec![Property {
+                                doc: None,
+                                name: "name".to_string(),
+                                descriptor: Descriptor::Object(Object {
+                                    properties: vec![
+                                        Property {
+                                            doc: None,
+                                            name: "first".to_string(),
+                                            descriptor: Descriptor::Primitive(Primitive::String),
+                                            required: true,
+                                        },
+                                        Property {
+                                            doc: None,
+                                            name: "last".to_string(),
+                                            descriptor: Descriptor::Primitive(Primitive::String),
+                                            required: true,
+                                        },
+                                    ],
+                                }),
+                                required: true,
+                            }],
+                        }),
+                    },
+                    Alias {
+                        doc: None,
+                        name: "Hello".to_string(),
+                        descriptor: Descriptor::Object(Object {
+                            properties: vec![Property {
+                                doc: None,
+                                name: "name".to_string(),
+                                descriptor: Descriptor::Name("Named".to_string()),
+                                required: true,
+                            }],
+                        }),
+                    },
+                    Alias {
+                        doc: None,
+                        name: "Named".to_string(),
+                        descriptor: Descriptor::Object(Object {
+                            properties: vec![
+                                Property {
+                                    doc: None,
+                                    name: "first".to_string(),
+                                    descriptor: Descriptor::Primitive(Primitive::String),
+                                    required: true,
+                                },
+                                Property {
+                                    doc: None,
+                                    name: "last".to_string(),
+                                    descriptor: Descriptor::Primitive(Primitive::String),
+                                    required: true,
+                                },
+                            ],
+                        }),
+                    },
+                ],
+            },
+        );
+    }
+
     fn assert_module(file: &str, expected: Module) {
         let code = fs::read_to_string(file).expect("cannot read file");
         let pairs = parse_code(&code);
