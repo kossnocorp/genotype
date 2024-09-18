@@ -6,3 +6,6 @@ edition = "2021"
 [dependencies]
 pest = "2.7.12"
 pest_derive = "2.7.12"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"

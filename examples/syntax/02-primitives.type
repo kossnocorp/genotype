@@ -1,6 +1,6 @@
 String = string
 
-Number = number
+Int = int
 
 Float = float
 

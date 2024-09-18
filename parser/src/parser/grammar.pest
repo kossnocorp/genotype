@@ -1,30 +1,30 @@
-file = { SOI ~ (file_comment)* ~ (alias)* ~ EOI }
+module = { SOI ~ (module_doc)* ~ (alias)* ~ EOI }
 
-alias = { line_doc* ~ const ~ "=" ~ (any_type | const) }
+alias = { line_doc* ~ name ~ "=" ~ (any_descriptor) }
 
-const = @{ (ASCII_ALPHA)+ }
+name = @{ (ASCII_ALPHA)+ }
 
-// Types
+// Descriptor
 
-any_type = _{ optional_type | type  }
+any_descriptor = _{ optional_descriptor | descriptor  }
 
-type = !{ primitive | struct | alias }
+descriptor = !{ primitive | object | alias | name }
 
-optional_type = ${ type ~ "?" }
+optional_descriptor = ${ descriptor ~ "?" }
 
-primitive = { "string" | "number" | "float" | "boolean" }
+primitive = { "string" | "int" | "float" | "boolean" }
 
-// Structs
+// Object
 
-struct = { "{" ~ properties? ~ "}" }
+object = { "{" ~ properties? ~ "}" }
 
-properties = { any_property ~ (","? ~ any_property)* ~ ","? }
+properties = _{ any_property ~ (","? ~ any_property)* ~ ","? }
 
-any_property = _{ line_doc* ~ (optional_property | property) }
+any_property = _{ optional_property | property }
 
-property = { const ~ ":" ~ any_type }
+property = { line_doc* ~ name ~ ":" ~ any_descriptor }
 
-optional_property = { const ~ "?:" ~ any_type }
+optional_property = { line_doc* ~ name ~ "?:" ~ any_descriptor }
 
 // Comments
 
@@ -32,11 +32,11 @@ line_comment = _{ ("//" ~ !("/" | "!") ~ (!NEWLINE ~ ANY)*) }
 
 block_comment = _{ "/*" ~ (block_comment | !"*/" ~ ANY)* ~ "*/" }
 
-file_comment = ${ "//!" ~ SPACE? ~ comment_content }
+module_doc = ${ "//!" ~ SPACE? ~ doc }
 
-line_doc = ${ "///" ~ SPACE? ~ comment_content }
+line_doc = ${ "///" ~ SPACE? ~ doc }
 
-comment_content = @{ (!NEWLINE ~ ANY)* }
+doc= @{ (!NEWLINE ~ ANY)* }
 
 // Base
 

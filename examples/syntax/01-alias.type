@@ -1,3 +1,3 @@
-Age = number
+Age = int
 
 AnotherAge = Age

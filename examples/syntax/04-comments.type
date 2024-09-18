@@ -1,0 +1,19 @@
+//! Module comment...
+//! ...multiline
+
+// Basic comment
+
+/// Alias comment
+Hello = /* Inline comment */ string
+
+/// Multiline...
+/// ...alias comment
+Hello = {
+  /// Property comment
+  name: string
+  /// Multiline...
+  /// ...property comment
+  age: int
+}
+
+Hello = string // Trailing comment

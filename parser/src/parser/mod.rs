@@ -1,50 +1,54 @@
+use pest::{iterators::Pairs, Parser};
 use pest_derive::Parser;
 
 #[derive(Parser)]
 #[grammar = "parser/grammar.pest"]
 pub struct GenotypeParser;
 
+pub fn parse_code(code: &str) -> Result<Pairs<'_, Rule>, pest::error::Error<Rule>> {
+    GenotypeParser::parse(Rule::module, code)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pest::Parser;
     use std::fs;
 
     #[test]
     fn test_alias() {
-        parse_file("../examples/basic/01-alias.type");
+        parse_file("../examples/syntax/01-alias.type");
     }
 
     #[test]
     fn test_primitives() {
-        parse_file("../examples/basic/02-primitives.type");
+        parse_file("../examples/syntax/02-primitives.type");
     }
 
     #[test]
-    fn test_struct() {
-        parse_file("../examples/basic/03-struct.type");
+    fn test_objects() {
+        parse_file("../examples/syntax/03-objects.type");
     }
 
     #[test]
     fn test_comments() {
-        parse_file("../examples/basic/04-comments.type");
+        parse_file("../examples/syntax/04-comments.type");
     }
 
     #[test]
     fn test_optional() {
-        parse_file("../examples/basic/05-optional.type");
+        parse_file("../examples/syntax/05-optional.type");
     }
 
     #[test]
     fn test_nested() {
-        parse_file("../examples/basic/06-nested.type");
+        parse_file("../examples/syntax/06-nested.type");
     }
 
     fn parse_file(file: &str) {
-        let file = fs::read_to_string(file).expect("cannot read file");
-        let parse = GenotypeParser::parse(Rule::file, &file);
+        let code = fs::read_to_string(file).expect("cannot read file");
+        let pairs = parse_code(&code);
 
-        if let Err(err) = parse {
+        if let Err(err) = pairs {
             println!("{}", err);
             assert!(false, "Failed to parse file");
         }

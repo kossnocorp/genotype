@@ -4,7 +4,7 @@ Hello = {
 
 Hello = {
   name: string
-  age: number
+  age: int
   flag: boolean
 }
 
@@ -16,4 +16,4 @@ Empty = {
 
 Hello = { name: string }
 
-Hello = { name: string, age: number }
+Hello = { name: string, age: int }
