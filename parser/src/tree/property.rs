@@ -7,12 +7,14 @@ pub struct Property {
     pub doc: Option<String>,
     pub name: String,
     pub descriptor: Descriptor,
+    pub required: bool,
 }
 
 pub fn parse_property(pair: Pair<'_, Rule>) -> Result<Property, Box<dyn std::error::Error>> {
+    let required = pair.as_rule() == Rule::required_property;
     let mut inner = pair.into_inner();
     let pair = inner.next().unwrap(); // [TODO]
-    parse(inner, pair, ParseState::Doc(None))
+    parse(inner, pair, ParseState::Doc(required, None))
 }
 
 fn parse(
@@ -21,7 +23,7 @@ fn parse(
     state: ParseState,
 ) -> Result<Property, Box<dyn std::error::Error>> {
     match state {
-        ParseState::Doc(doc_acc) => {
+        ParseState::Doc(required, doc_acc) => {
             match pair.as_rule() {
                 Rule::line_doc => {
                     let doc = pair.into_inner().find(|p| p.as_rule() == Rule::doc);
@@ -36,32 +38,33 @@ fn parse(
                     };
 
                     let pair = inner.next().unwrap(); // [TODO]
-                    parse(inner, pair, ParseState::Doc(doc_acc))
+                    parse(inner, pair, ParseState::Doc(required, doc_acc))
                 }
 
-                _ => parse(inner, pair, ParseState::Name(doc_acc)),
+                _ => parse(inner, pair, ParseState::Name(required, doc_acc)),
             }
         }
 
-        ParseState::Name(doc) => {
+        ParseState::Name(required, doc) => {
             let name = Some(pair.as_str().to_string()).unwrap(); // [TODO]
             let pair = inner.next().unwrap(); // [TODO]
-            parse(inner, pair, ParseState::Descriptor(doc, name))
+            parse(inner, pair, ParseState::Descriptor(required, doc, name))
         }
 
-        ParseState::Descriptor(doc, name) => {
+        ParseState::Descriptor(required, doc, name) => {
             let descriptor = parse_descriptor(pair)?;
             Ok(Property {
                 doc,
                 name,
                 descriptor,
+                required,
             })
         }
     }
 }
 
 enum ParseState {
-    Doc(Option<String>),
-    Name(Option<String>),
-    Descriptor(Option<String>, String),
+    Doc(bool, Option<String>),
+    Name(bool, Option<String>),
+    Descriptor(bool, Option<String>, String),
 }

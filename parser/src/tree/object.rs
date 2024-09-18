@@ -12,7 +12,7 @@ pub fn parse_object(pair: Pair<'_, Rule>) -> Result<Object, Box<dyn std::error::
 
     for pair in pair.into_inner() {
         match pair.as_rule() {
-            Rule::property => {
+            Rule::required_property | Rule::optional_property => {
                 let property = parse_property(pair)?;
                 object.properties.push(property);
             }

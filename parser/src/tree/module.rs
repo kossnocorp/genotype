@@ -54,12 +54,10 @@ enum ParseState {
 
 #[cfg(test)]
 mod tests {
-
+    use super::*;
     use crate::tree::{
         descriptor::Descriptor, object::Object, primitive::Primitive, property::Property,
     };
-
-    use super::*;
     use parser::parse_code;
     use pretty_assertions::assert_eq;
     use std::fs;
@@ -133,6 +131,7 @@ mod tests {
                                 doc: None,
                                 name: "name".to_string(),
                                 descriptor: Descriptor::Primitive(Primitive::String),
+                                required: true,
                             }],
                         }),
                     },
@@ -145,16 +144,19 @@ mod tests {
                                     doc: None,
                                     name: "name".to_string(),
                                     descriptor: Descriptor::Primitive(Primitive::String),
+                                    required: true,
                                 },
                                 Property {
                                     doc: None,
                                     name: "age".to_string(),
                                     descriptor: Descriptor::Primitive(Primitive::Int),
+                                    required: true,
                                 },
                                 Property {
                                     doc: None,
                                     name: "flag".to_string(),
                                     descriptor: Descriptor::Primitive(Primitive::Boolean),
+                                    required: true,
                                 },
                             ],
                         }),
@@ -177,6 +179,7 @@ mod tests {
                                 doc: None,
                                 name: "name".to_string(),
                                 descriptor: Descriptor::Primitive(Primitive::String),
+                                required: true,
                             }],
                         }),
                     },
@@ -189,11 +192,13 @@ mod tests {
                                     doc: None,
                                     name: "name".to_string(),
                                     descriptor: Descriptor::Primitive(Primitive::String),
+                                    required: true,
                                 },
                                 Property {
                                     doc: None,
                                     name: "age".to_string(),
                                     descriptor: Descriptor::Primitive(Primitive::Int),
+                                    required: true,
                                 },
                             ],
                         }),
@@ -224,11 +229,13 @@ mod tests {
                                     doc: Some("Property comment".to_string()),
                                     name: "name".to_string(),
                                     descriptor: Descriptor::Primitive(Primitive::String),
+                                    required: true,
                                 },
                                 Property {
                                     doc: Some("Multiline...\n...property comment".to_string()),
                                     name: "age".to_string(),
                                     descriptor: Descriptor::Primitive(Primitive::Int),
+                                    required: true,
                                 },
                             ],
                         }),
@@ -239,6 +246,46 @@ mod tests {
                         descriptor: Descriptor::Primitive(Primitive::String),
                     },
                 ],
+            },
+        );
+    }
+
+    #[test]
+    fn test_optional() {
+        assert_module(
+            "../examples/syntax/05-optional.type",
+            Module {
+                doc: None,
+                aliases: vec![Alias {
+                    doc: None,
+                    name: "Hello".to_string(),
+                    descriptor: Descriptor::Object(Object {
+                        properties: vec![
+                            Property {
+                                doc: None,
+                                name: "name".to_string(),
+                                descriptor: Descriptor::Nullable(Box::new(Descriptor::Primitive(
+                                    Primitive::String,
+                                ))),
+                                required: true,
+                            },
+                            Property {
+                                doc: None,
+                                name: "age".to_string(),
+                                descriptor: Descriptor::Primitive(Primitive::Int),
+                                required: false,
+                            },
+                            Property {
+                                doc: None,
+                                name: "flag".to_string(),
+                                descriptor: Descriptor::Nullable(Box::new(Descriptor::Primitive(
+                                    Primitive::Boolean,
+                                ))),
+                                required: false,
+                            },
+                        ],
+                    }),
+                }],
             },
         );
     }

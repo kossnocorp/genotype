@@ -6,11 +6,11 @@ name = @{ (ASCII_ALPHA)+ }
 
 // Descriptor
 
-any_descriptor = _{ optional_descriptor | descriptor  }
+any_descriptor = _{ nullable_descriptor | descriptor  }
 
 descriptor = !{ primitive | object | alias | name }
 
-optional_descriptor = ${ descriptor ~ "?" }
+nullable_descriptor = ${ descriptor ~ "?" }
 
 primitive = { "string" | "int" | "float" | "boolean" }
 
@@ -20,9 +20,9 @@ object = { "{" ~ properties? ~ "}" }
 
 properties = _{ any_property ~ (","? ~ any_property)* ~ ","? }
 
-any_property = _{ optional_property | property }
+any_property = _{ optional_property | required_property }
 
-property = { line_doc* ~ name ~ ":" ~ any_descriptor }
+required_property = { line_doc* ~ name ~ ":" ~ any_descriptor }
 
 optional_property = { line_doc* ~ name ~ "?:" ~ any_descriptor }
 
