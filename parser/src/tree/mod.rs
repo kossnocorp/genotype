@@ -6,4 +6,5 @@ pub mod module;
 pub mod object;
 pub mod primitive;
 pub mod property;
+pub mod tuple;
 pub mod union;

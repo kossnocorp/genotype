@@ -1,0 +1,6 @@
+User = {
+  name: (string, string)
+  address: (int, string, string)
+}
+
+Address = (int, string, string)

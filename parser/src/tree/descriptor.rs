@@ -5,6 +5,7 @@ use super::{
     array::{parse_array, Array},
     object::{self, parse_object, Object},
     primitive::{parse_primitive, Primitive},
+    tuple::{parse_tuple, Tuple},
     union::Union,
 };
 use crate::parser::Rule;
@@ -16,6 +17,7 @@ pub enum Descriptor {
     Name(String),
     Object(Object),
     Array(Box<Array>),
+    Tuple(Tuple),
     Nullable(Box<Descriptor>),
     // [TODO]
     // Union(Union),
@@ -46,6 +48,11 @@ pub fn parse_descriptor(
         Rule::array => {
             let (array, hoisted) = parse_array(pair)?;
             (Descriptor::Array(Box::new(array)), hoisted)
+        }
+
+        Rule::tuple => {
+            let (tuple, hoisted) = parse_tuple(pair)?;
+            (Descriptor::Tuple(tuple), hoisted)
         }
 
         Rule::descriptor => parse_descriptor(pair)?,

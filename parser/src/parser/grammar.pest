@@ -4,17 +4,17 @@ alias = { line_doc* ~ name ~ "=" ~ (any_descriptor) }
 
 name = @{ (ASCII_ALPHA)+ }
 
-// Descriptor
+// Descriptors
 
 any_descriptor = _{ nullable_descriptor | descriptor  }
 
-descriptor = !{ primitive | object | array | alias | name | inline_reference }
+descriptor = !{ primitive | object | array | tuple | alias | name | inline_reference }
 
 nullable_descriptor = ${ descriptor ~ "?" }
 
 primitive = { "string" | "int" | "float" | "boolean" }
 
-// Object
+// Objects
 
 object = { "{" ~ properties? ~ "}" }
 
@@ -26,9 +26,13 @@ required_property = { line_doc* ~ name ~ ":" ~ any_descriptor }
 
 optional_property = { line_doc* ~ name ~ "?:" ~ any_descriptor }
 
-// Array
+// Arrays
 
 array = { "[" ~ any_descriptor ~ "]" }
+
+// Tuples
+
+tuple = { "(" ~ any_descriptor ~ ("," ~ any_descriptor)* ~ ")" }
 
 // Modules
 

@@ -70,7 +70,7 @@ mod tests {
         parser::parse_code,
         tree::{
             array::Array, descriptor::Descriptor, object::Object, primitive::Primitive,
-            property::Property,
+            property::Property, tuple::Tuple,
         },
     };
     use pretty_assertions::assert_eq;
@@ -410,6 +410,61 @@ mod tests {
                         ],
                     }),
                 }],
+            },
+        );
+    }
+
+    #[test]
+    fn test_tuples() {
+        assert_module(
+            "../examples/syntax/08-tuples.type",
+            Module {
+                doc: None,
+                imports: vec![],
+                aliases: vec![
+                    Alias {
+                        doc: None,
+                        name: "User".to_string(),
+                        descriptor: Descriptor::Object(Object {
+                            properties: vec![
+                                Property {
+                                    doc: None,
+                                    name: "name".to_string(),
+                                    descriptor: Descriptor::Tuple(Tuple {
+                                        descriptors: vec![
+                                            Descriptor::Primitive(Primitive::String),
+                                            Descriptor::Primitive(Primitive::String),
+                                        ],
+                                    }),
+                                    required: true,
+                                },
+                                Property {
+                                    doc: None,
+                                    name: "address".to_string(),
+                                    descriptor: Descriptor::Tuple(Tuple {
+                                        descriptors: vec![
+                                            Descriptor::Primitive(Primitive::Int),
+                                            Descriptor::Primitive(Primitive::String),
+                                            Descriptor::Primitive(Primitive::String),
+                                        ],
+                                    }),
+                                    required: true,
+                                },
+                            ],
+                        }),
+                    },
+                    Alias {
+                        doc: None,
+                        name: "Address".to_string(),
+                        descriptor: Descriptor::Tuple(Tuple {
+                            descriptors: vec![
+                                Descriptor::Primitive(Primitive::Int),
+                                Descriptor::Primitive(Primitive::String),
+                                Descriptor::Primitive(Primitive::String),
+                            ],
+                        }),
+                    },
+                ],
             },
         );
     }

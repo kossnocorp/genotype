@@ -50,6 +50,11 @@ mod tests {
     }
 
     #[test]
+    fn test_tuples() {
+        parse_file("../examples/syntax/08-tuples.type");
+    }
+
+    #[test]
     fn test_modules() {
         parse_file("../examples/syntax/09-modules.type");
     }
