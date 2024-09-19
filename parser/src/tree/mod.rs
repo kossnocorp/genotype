@@ -1,5 +1,7 @@
 pub mod alias;
+pub mod array;
 pub mod descriptor;
+pub mod import;
 pub mod module;
 pub mod object;
 pub mod primitive;

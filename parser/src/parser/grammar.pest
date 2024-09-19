@@ -1,4 +1,4 @@
-module = { SOI ~ (module_doc)* ~ (alias)* ~ EOI }
+module = { SOI ~ (module_doc)* ~ (import | alias)* ~ EOI }
 
 alias = { line_doc* ~ name ~ "=" ~ (any_descriptor) }
 
@@ -8,7 +8,7 @@ name = @{ (ASCII_ALPHA)+ }
 
 any_descriptor = _{ nullable_descriptor | descriptor  }
 
-descriptor = !{ primitive | object | alias | name }
+descriptor = !{ primitive | object | array | alias | name | inline_reference }
 
 nullable_descriptor = ${ descriptor ~ "?" }
 
@@ -25,6 +25,28 @@ any_property = _{ optional_property | required_property }
 required_property = { line_doc* ~ name ~ ":" ~ any_descriptor }
 
 optional_property = { line_doc* ~ name ~ "?:" ~ any_descriptor }
+
+// Array
+
+array = { "[" ~ any_descriptor ~ "]" }
+
+// Modules
+
+import = { "use" ~ import_reference }
+
+import_reference = @{ path ~ (import_glob | import_names | name)}
+
+import_names = !{ "{" ~ (import_name ~ ("," ~ import_name)*)? ~ "}" }
+
+import_name = { name ~ ("as" ~ name)? }
+
+import_glob = @{ "*" }
+
+inline_reference = @{ path ~ name }
+
+path = @{ path_segment+ }
+
+path_segment = ${ "../" | "./" | ((!"/" ~ !NEWLINE ~ ANY)+ ~ "/") }
 
 // Comments
 

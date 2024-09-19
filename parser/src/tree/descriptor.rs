@@ -2,6 +2,7 @@ use std::primitive;
 
 use super::{
     alias::{parse_alias, Alias},
+    array::{parse_array, Array},
     object::{self, parse_object, Object},
     primitive::{parse_primitive, Primitive},
     union::Union,
@@ -14,6 +15,7 @@ pub enum Descriptor {
     Primitive(Primitive),
     Name(String),
     Object(Object),
+    Array(Box<Array>),
     Nullable(Box<Descriptor>),
     // [TODO]
     // Union(Union),
@@ -41,6 +43,11 @@ pub fn parse_descriptor(
             (Descriptor::Object(object), hoisted)
         }
 
+        Rule::array => {
+            let (array, hoisted) = parse_array(pair)?;
+            (Descriptor::Array(Box::new(array)), hoisted)
+        }
+
         Rule::descriptor => parse_descriptor(pair)?,
 
         // When we have an alias in place of a descriptor, we need to parse it and hoist it up
@@ -52,6 +59,12 @@ pub fn parse_descriptor(
             let mut hoisted = vec![alias];
             hoisted.extend(alias_hoisted);
             (Descriptor::Name(name), hoisted)
+        }
+
+        // [TODO]
+        Rule::inline_reference => {
+            let name = pair.as_str().to_string();
+            (Descriptor::Name(name), vec![])
         }
 
         _ => {

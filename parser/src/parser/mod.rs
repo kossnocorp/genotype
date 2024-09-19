@@ -44,6 +44,16 @@ mod tests {
         parse_file("../examples/syntax/06-nested.type");
     }
 
+    #[test]
+    fn test_arrays() {
+        parse_file("../examples/syntax/07-arrays.type");
+    }
+
+    #[test]
+    fn test_modules() {
+        parse_file("../examples/syntax/09-modules.type");
+    }
+
     fn parse_file(file: &str) {
         let code = fs::read_to_string(file).expect("cannot read file");
         let pairs = parse_code(&code);

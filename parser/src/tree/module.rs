@@ -1,21 +1,27 @@
-use crate::parser::{self, Rule};
+use super::{
+    alias::{parse_alias, Alias},
+    import::Import,
+};
+use crate::parser::Rule;
 use pest::iterators::Pairs;
-
-use super::alias::{parse_alias, Alias};
 
 #[derive(Debug, PartialEq)]
 pub struct Module {
     doc: Option<String>,
+    imports: Vec<Import>,
     aliases: Vec<Alias>,
 }
 
 pub fn parse_module(mut pairs: Pairs<'_, Rule>) -> Result<Module, Box<dyn std::error::Error>> {
     let mut module = Module {
         doc: None,
+        imports: vec![],
         aliases: vec![],
     };
 
     let module_pair = pairs.next().unwrap();
+
+    println!("module_pair: {:?}", module_pair);
 
     for pair in module_pair.into_inner() {
         match pair.as_rule() {
@@ -28,6 +34,10 @@ pub fn parse_module(mut pairs: Pairs<'_, Rule>) -> Result<Module, Box<dyn std::e
                         pair.as_str().to_string()
                     });
                 }
+            }
+
+            Rule::import => {
+                // [TODO]
             }
 
             Rule::alias => {
@@ -56,10 +66,13 @@ enum ParseState {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tree::{
-        descriptor::Descriptor, object::Object, primitive::Primitive, property::Property,
+    use crate::{
+        parser::parse_code,
+        tree::{
+            array::Array, descriptor::Descriptor, object::Object, primitive::Primitive,
+            property::Property,
+        },
     };
-    use parser::parse_code;
     use pretty_assertions::assert_eq;
     use std::fs;
 
@@ -69,6 +82,7 @@ mod tests {
             "../examples/syntax/01-alias.type",
             Module {
                 doc: None,
+                imports: vec![],
                 aliases: vec![
                     Alias {
                         doc: None,
@@ -91,6 +105,7 @@ mod tests {
             "../examples/syntax/02-primitives.type",
             Module {
                 doc: None,
+                imports: vec![],
                 aliases: vec![
                     Alias {
                         doc: None,
@@ -123,6 +138,7 @@ mod tests {
             "../examples/syntax/03-objects.type",
             Module {
                 doc: None,
+                imports: vec![],
                 aliases: vec![
                     Alias {
                         doc: None,
@@ -215,6 +231,7 @@ mod tests {
             "../examples/syntax/04-comments.type",
             Module {
                 doc: Some("Module comment...\n...multiline".to_string()),
+                imports: vec![],
                 aliases: vec![
                     Alias {
                         doc: Some("Alias comment".to_string()),
@@ -257,6 +274,7 @@ mod tests {
             "../examples/syntax/05-optional.type",
             Module {
                 doc: None,
+                imports: vec![],
                 aliases: vec![Alias {
                     doc: None,
                     name: "Hello".to_string(),
@@ -297,6 +315,7 @@ mod tests {
             "../examples/syntax/06-nested.type",
             Module {
                 doc: None,
+                imports: vec![],
                 aliases: vec![
                     Alias {
                         doc: None,
@@ -356,6 +375,87 @@ mod tests {
                                 },
                             ],
                         }),
+                    },
+                ],
+            },
+        );
+    }
+
+    #[test]
+    fn test_arrays() {
+        assert_module(
+            "../examples/syntax/07-arrays.type",
+            Module {
+                doc: None,
+                imports: vec![],
+                aliases: vec![Alias {
+                    doc: None,
+                    name: "Book".to_string(),
+                    descriptor: Descriptor::Object(Object {
+                        properties: vec![
+                            Property {
+                                doc: None,
+                                name: "title".to_string(),
+                                descriptor: Descriptor::Primitive(Primitive::String),
+                                required: true,
+                            },
+                            Property {
+                                doc: None,
+                                name: "tags".to_string(),
+                                descriptor: Descriptor::Array(Box::new(Array {
+                                    descriptor: Descriptor::Primitive(Primitive::String),
+                                })),
+                                required: true,
+                            },
+                        ],
+                    }),
+                }],
+            },
+        );
+    }
+
+    #[test]
+    fn test_modules() {
+        assert_module(
+            "../examples/syntax/09-modules.type",
+            Module {
+                doc: None,
+                imports: vec![
+                    // [TODO]
+                ],
+                aliases: vec![
+                    Alias {
+                        doc: None,
+                        name: "Book".to_string(),
+                        descriptor: Descriptor::Object(Object {
+                            properties: vec![
+                                Property {
+                                    doc: None,
+                                    name: "title".to_string(),
+                                    descriptor: Descriptor::Primitive(Primitive::String),
+                                    required: true,
+                                },
+                                Property {
+                                    doc: None,
+                                    name: "author".to_string(),
+                                    // [TODO]
+                                    descriptor: Descriptor::Name("../../author/Author".to_string()),
+                                    required: true,
+                                },
+                                Property {
+                                    doc: None,
+                                    name: "genre".to_string(),
+                                    descriptor: Descriptor::Name("Genre".to_string()),
+                                    required: true,
+                                },
+                            ],
+                        }),
+                    },
+                    Alias {
+                        doc: None,
+                        name: "Author".to_string(),
+                        // [TODO]
+                        descriptor: Descriptor::Name("../../author/Author".to_string()),
                     },
                 ],
             },
