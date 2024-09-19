@@ -31,8 +31,9 @@ pub fn parse_module(mut pairs: Pairs<'_, Rule>) -> Result<Module, Box<dyn std::e
             }
 
             Rule::alias => {
-                let alias = parse_alias(pair)?;
+                let (alias, hoisted) = parse_alias(pair)?;
                 module.aliases.push(alias);
+                module.aliases.extend(hoisted);
             }
 
             Rule::EOI => {}

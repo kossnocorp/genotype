@@ -1,4 +1,7 @@
-use super::descriptor::{parse_descriptor, Descriptor};
+use super::{
+    alias::Alias,
+    descriptor::{parse_descriptor, Descriptor},
+};
 use crate::parser::Rule;
 use pest::iterators::{Pair, Pairs};
 
@@ -10,7 +13,9 @@ pub struct Property {
     pub required: bool,
 }
 
-pub fn parse_property(pair: Pair<'_, Rule>) -> Result<Property, Box<dyn std::error::Error>> {
+pub fn parse_property(
+    pair: Pair<'_, Rule>,
+) -> Result<(Property, Vec<Alias>), Box<dyn std::error::Error>> {
     let required = pair.as_rule() == Rule::required_property;
     let mut inner = pair.into_inner();
     let pair = inner.next().unwrap(); // [TODO]
@@ -21,7 +26,7 @@ fn parse(
     mut inner: Pairs<'_, Rule>,
     pair: Pair<'_, Rule>,
     state: ParseState,
-) -> Result<Property, Box<dyn std::error::Error>> {
+) -> Result<(Property, Vec<Alias>), Box<dyn std::error::Error>> {
     match state {
         ParseState::Doc(required, doc_acc) => {
             match pair.as_rule() {
@@ -52,13 +57,16 @@ fn parse(
         }
 
         ParseState::Descriptor(required, doc, name) => {
-            let descriptor = parse_descriptor(pair)?;
-            Ok(Property {
-                doc,
-                name,
-                descriptor,
-                required,
-            })
+            let (descriptor, hoisted) = parse_descriptor(pair)?;
+            Ok((
+                Property {
+                    doc,
+                    name,
+                    descriptor,
+                    required,
+                },
+                hoisted,
+            ))
         }
     }
 }
