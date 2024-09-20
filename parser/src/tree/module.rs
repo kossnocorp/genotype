@@ -2,7 +2,7 @@ use super::{
     alias::{parse_alias, Alias},
     import::Import,
 };
-use crate::parser::Rule;
+use crate::{parser::Rule, tree::import::parse_import};
 use pest::iterators::Pairs;
 
 #[derive(Debug, PartialEq)]
@@ -21,8 +21,6 @@ pub fn parse_module(mut pairs: Pairs<'_, Rule>) -> Result<Module, Box<dyn std::e
 
     let module_pair = pairs.next().unwrap();
 
-    println!("module_pair: {:?}", module_pair);
-
     for pair in module_pair.into_inner() {
         match pair.as_rule() {
             Rule::module_doc => {
@@ -38,6 +36,8 @@ pub fn parse_module(mut pairs: Pairs<'_, Rule>) -> Result<Module, Box<dyn std::e
 
             Rule::import => {
                 // [TODO]
+                let import = parse_import(pair)?;
+                module.imports.push(import);
             }
 
             Rule::alias => {
@@ -69,8 +69,14 @@ mod tests {
     use crate::{
         parser::parse_code,
         tree::{
-            array::Array, descriptor::Descriptor, object::Object, primitive::Primitive,
-            property::Property, tuple::Tuple,
+            array::Array,
+            descriptor::Descriptor,
+            import::{ImportName, ImportReference},
+            object::Object,
+            primitive::Primitive,
+            property::Property,
+            reference::Reference,
+            tuple::Tuple,
         },
     };
     use pretty_assertions::assert_eq;
@@ -476,7 +482,22 @@ mod tests {
             Module {
                 doc: None,
                 imports: vec![
-                    // [TODO]
+                    Import {
+                        path: "author/".to_string(),
+                        reference: ImportReference::Glob,
+                    },
+                    Import {
+                        path: "../../author/".to_string(),
+                        reference: ImportReference::Names(vec![
+                            ImportName::Name("Author".to_string()),
+                            ImportName::Name("Genre".to_string()),
+                            ImportName::Alias("Something".to_string(), "Else".to_string()),
+                        ]),
+                    },
+                    Import {
+                        path: "author/".to_string(),
+                        reference: ImportReference::Name("Author".to_string()),
+                    },
                 ],
                 aliases: vec![
                     Alias {
@@ -493,8 +514,10 @@ mod tests {
                                 Property {
                                     doc: None,
                                     name: "author".to_string(),
-                                    // [TODO]
-                                    descriptor: Descriptor::Name("../../author/Author".to_string()),
+                                    descriptor: Descriptor::Reference(Reference {
+                                        path: "../../author".to_string(),
+                                        name: "Author".to_string(),
+                                    }),
                                     required: true,
                                 },
                                 Property {
@@ -509,8 +532,10 @@ mod tests {
                     Alias {
                         doc: None,
                         name: "Author".to_string(),
-                        // [TODO]
-                        descriptor: Descriptor::Name("../../author/Author".to_string()),
+                        descriptor: Descriptor::Reference(Reference {
+                            path: "../../author".to_string(),
+                            name: "Author".to_string(),
+                        }),
                     },
                 ],
             },

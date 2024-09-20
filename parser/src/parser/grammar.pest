@@ -6,7 +6,7 @@ name = @{ (ASCII_ALPHA)+ }
 
 // Descriptors
 
-any_descriptor = _{ nullable_descriptor | descriptor  }
+any_descriptor = _{ nullable_descriptor | descriptor }
 
 descriptor = !{ primitive | object | array | tuple | alias | name | inline_reference }
 
@@ -38,13 +38,13 @@ tuple = { "(" ~ any_descriptor ~ ("," ~ any_descriptor)* ~ ")" }
 
 import = { "use" ~ import_reference }
 
-import_reference = @{ path ~ (import_glob | import_names | name)}
+import_reference = ${ path ~ (import_glob | import_names | name) }
 
 import_names = !{ "{" ~ (import_name ~ ("," ~ import_name)*)? ~ "}" }
 
 import_name = { name ~ ("as" ~ name)? }
 
-import_glob = @{ "*" }
+import_glob = ${ "*" }
 
 inline_reference = @{ path ~ name }
 
@@ -62,7 +62,7 @@ module_doc = ${ "//!" ~ SPACE? ~ doc }
 
 line_doc = ${ "///" ~ SPACE? ~ doc }
 
-doc= @{ (!NEWLINE ~ ANY)* }
+doc = @{ (!NEWLINE ~ ANY)* }
 
 // Base
 

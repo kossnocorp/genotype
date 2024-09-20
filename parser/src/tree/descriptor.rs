@@ -5,6 +5,7 @@ use super::{
     array::{parse_array, Array},
     object::{self, parse_object, Object},
     primitive::{parse_primitive, Primitive},
+    reference::{parse_reference, Reference},
     tuple::{parse_tuple, Tuple},
     union::Union,
 };
@@ -18,6 +19,7 @@ pub enum Descriptor {
     Object(Object),
     Array(Box<Array>),
     Tuple(Tuple),
+    Reference(Reference),
     Nullable(Box<Descriptor>),
     // [TODO]
     // Union(Union),
@@ -68,10 +70,9 @@ pub fn parse_descriptor(
             (Descriptor::Name(name), hoisted)
         }
 
-        // [TODO]
         Rule::inline_reference => {
-            let name = pair.as_str().to_string();
-            (Descriptor::Name(name), vec![])
+            let reference = parse_reference(pair)?;
+            (Descriptor::Reference(reference), vec![])
         }
 
         _ => {
