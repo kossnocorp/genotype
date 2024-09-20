@@ -9,9 +9,7 @@ pub struct Alias {
     pub descriptor: Descriptor,
 }
 
-pub fn parse_alias(
-    pair: Pair<'_, Rule>,
-) -> Result<(Alias, Vec<Alias>), Box<dyn std::error::Error>> {
+pub fn parse_alias(pair: Pair<'_, Rule>) -> Result<Alias, Box<dyn std::error::Error>> {
     let mut inner = pair.into_inner();
     let pair = inner.next().unwrap(); // [TODO]
     parse(inner, pair, ParseState::Doc(None))
@@ -21,7 +19,7 @@ fn parse(
     mut inner: Pairs<'_, Rule>,
     pair: Pair<'_, Rule>,
     state: ParseState,
-) -> Result<(Alias, Vec<Alias>), Box<dyn std::error::Error>> {
+) -> Result<Alias, Box<dyn std::error::Error>> {
     match state {
         ParseState::Doc(doc_acc) => {
             match pair.as_rule() {
@@ -52,15 +50,12 @@ fn parse(
         }
 
         ParseState::Descriptor(doc, name) => {
-            let (descriptor, hoisted) = parse_descriptor(pair)?;
-            Ok((
-                Alias {
-                    doc,
-                    name,
-                    descriptor,
-                },
-                hoisted,
-            ))
+            let descriptor = parse_descriptor(pair)?;
+            Ok(Alias {
+                doc,
+                name,
+                descriptor,
+            })
         }
     }
 }

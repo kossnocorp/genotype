@@ -41,9 +41,8 @@ pub fn parse_module(mut pairs: Pairs<'_, Rule>) -> Result<Module, Box<dyn std::e
             }
 
             Rule::alias => {
-                let (alias, hoisted) = parse_alias(pair)?;
+                let alias = parse_alias(pair)?;
                 module.aliases.push(alias);
-                module.aliases.extend(hoisted);
             }
 
             Rule::EOI => {}
@@ -357,29 +356,32 @@ mod tests {
                             properties: vec![Property {
                                 doc: None,
                                 name: "name".to_string(),
-                                descriptor: Descriptor::Name("Named".to_string()),
+                                descriptor: Descriptor::Alias(Box::new(Alias {
+                                    doc: None,
+                                    name: "Named".to_string(),
+                                    descriptor: Descriptor::Object(Object {
+                                        properties: vec![
+                                            Property {
+                                                doc: None,
+                                                name: "first".to_string(),
+                                                descriptor: Descriptor::Primitive(
+                                                    Primitive::String,
+                                                ),
+                                                required: true,
+                                            },
+                                            Property {
+                                                doc: None,
+                                                name: "last".to_string(),
+                                                descriptor: Descriptor::Primitive(
+                                                    Primitive::String,
+                                                ),
+                                                required: true,
+                                            },
+                                        ],
+                                    }),
+                                })),
                                 required: true,
                             }],
-                        }),
-                    },
-                    Alias {
-                        doc: None,
-                        name: "Named".to_string(),
-                        descriptor: Descriptor::Object(Object {
-                            properties: vec![
-                                Property {
-                                    doc: None,
-                                    name: "first".to_string(),
-                                    descriptor: Descriptor::Primitive(Primitive::String),
-                                    required: true,
-                                },
-                                Property {
-                                    doc: None,
-                                    name: "last".to_string(),
-                                    descriptor: Descriptor::Primitive(Primitive::String),
-                                    required: true,
-                                },
-                            ],
                         }),
                     },
                 ],

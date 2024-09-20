@@ -1,9 +1,4 @@
-use super::{
-    alias::Alias,
-    descriptor::{self, parse_descriptor, Descriptor},
-    primitive::Primitive,
-    property::{parse_property, Property},
-};
+use super::descriptor::{parse_descriptor, Descriptor};
 use crate::parser::Rule;
 use pest::iterators::Pair;
 
@@ -12,11 +7,9 @@ pub struct Array {
     pub descriptor: Descriptor,
 }
 
-pub fn parse_array(
-    pair: Pair<'_, Rule>,
-) -> Result<(Array, Vec<Alias>), Box<dyn std::error::Error>> {
+pub fn parse_array(pair: Pair<'_, Rule>) -> Result<Array, Box<dyn std::error::Error>> {
     let pair = pair.into_inner().next().unwrap(); // [TODO]
-    let (descriptor, hoisted) = parse_descriptor(pair)?;
+    let descriptor = parse_descriptor(pair)?;
 
-    Ok((Array { descriptor }, hoisted))
+    Ok(Array { descriptor })
 }

@@ -1,19 +1,17 @@
-use std::primitive;
-
 use super::{
     alias::{parse_alias, Alias},
     array::{parse_array, Array},
-    object::{self, parse_object, Object},
+    object::{parse_object, Object},
     primitive::{parse_primitive, Primitive},
     reference::{parse_reference, Reference},
     tuple::{parse_tuple, Tuple},
-    union::Union,
 };
 use crate::parser::Rule;
 use pest::iterators::Pair;
 
 #[derive(Debug, PartialEq)]
 pub enum Descriptor {
+    Alias(Box<Alias>),
     Primitive(Primitive),
     Name(String),
     Object(Object),
@@ -25,54 +23,46 @@ pub enum Descriptor {
     // Union(Union),
 }
 
-pub fn parse_descriptor(
-    pair: Pair<'_, Rule>,
-) -> Result<(Descriptor, Vec<Alias>), Box<dyn std::error::Error>> {
+pub fn parse_descriptor(pair: Pair<'_, Rule>) -> Result<Descriptor, Box<dyn std::error::Error>> {
     let nullable = pair.as_rule() == Rule::nullable_descriptor;
     let pair = pair.into_inner().next().unwrap(); // [TODO]
 
-    let (descriptor, hoisted) = match pair.as_rule() {
+    let descriptor = match pair.as_rule() {
         Rule::primitive => {
             let primitive = parse_primitive(pair)?;
-            (Descriptor::Primitive(primitive), vec![])
+            Descriptor::Primitive(primitive)
         }
 
         Rule::name => {
             let name = pair.as_str().to_string();
-            (Descriptor::Name(name), vec![])
+            Descriptor::Name(name)
         }
 
         Rule::object => {
-            let (object, hoisted) = parse_object(pair)?;
-            (Descriptor::Object(object), hoisted)
+            let object = parse_object(pair)?;
+            Descriptor::Object(object)
         }
 
         Rule::array => {
-            let (array, hoisted) = parse_array(pair)?;
-            (Descriptor::Array(Box::new(array)), hoisted)
+            let array = parse_array(pair)?;
+            Descriptor::Array(Box::new(array))
         }
 
         Rule::tuple => {
-            let (tuple, hoisted) = parse_tuple(pair)?;
-            (Descriptor::Tuple(tuple), hoisted)
+            let tuple = parse_tuple(pair)?;
+            Descriptor::Tuple(tuple)
         }
 
         Rule::descriptor => parse_descriptor(pair)?,
 
-        // When we have an alias in place of a descriptor, we need to parse it and hoist it up
-        // to the module level.
         Rule::alias => {
-            let (alias, alias_hoisted) = parse_alias(pair)?;
-            // [TODO] Figure out how I can use &str instead of String
-            let name = alias.name.clone();
-            let mut hoisted = vec![alias];
-            hoisted.extend(alias_hoisted);
-            (Descriptor::Name(name), hoisted)
+            let alias = parse_alias(pair)?;
+            Descriptor::Alias(Box::new(alias))
         }
 
         Rule::inline_reference => {
             let reference = parse_reference(pair)?;
-            (Descriptor::Reference(reference), vec![])
+            Descriptor::Reference(reference)
         }
 
         _ => {
@@ -82,8 +72,8 @@ pub fn parse_descriptor(
     };
 
     if nullable {
-        Ok((Descriptor::Nullable(Box::new(descriptor)), hoisted))
+        Ok(Descriptor::Nullable(Box::new(descriptor)))
     } else {
-        Ok((descriptor, hoisted))
+        Ok(descriptor)
     }
 }
