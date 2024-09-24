@@ -84,7 +84,7 @@ mod tests {
     #[test]
     fn test_alias() {
         assert_module(
-            "../examples/syntax/01-alias.type",
+            "./examples/syntax/01-alias.type",
             Module {
                 doc: None,
                 imports: vec![],
@@ -107,7 +107,7 @@ mod tests {
     #[test]
     fn test_primitives() {
         assert_module(
-            "../examples/syntax/02-primitives.type",
+            "./examples/syntax/02-primitives.type",
             Module {
                 doc: None,
                 imports: vec![],
@@ -140,7 +140,7 @@ mod tests {
     #[test]
     fn test_objects() {
         assert_module(
-            "../examples/syntax/03-objects.type",
+            "./examples/syntax/03-objects.type",
             Module {
                 doc: None,
                 imports: vec![],
@@ -233,7 +233,7 @@ mod tests {
     #[test]
     fn test_comments() {
         assert_module(
-            "../examples/syntax/04-comments.type",
+            "./examples/syntax/04-comments.type",
             Module {
                 doc: Some("Module comment...\n...multiline".to_string()),
                 imports: vec![],
@@ -276,7 +276,7 @@ mod tests {
     #[test]
     fn test_optional() {
         assert_module(
-            "../examples/syntax/05-optional.type",
+            "./examples/syntax/05-optional.type",
             Module {
                 doc: None,
                 imports: vec![],
@@ -317,7 +317,7 @@ mod tests {
     #[test]
     fn test_nested() {
         assert_module(
-            "../examples/syntax/06-nested.type",
+            "./examples/syntax/06-nested.type",
             Module {
                 doc: None,
                 imports: vec![],
@@ -392,7 +392,7 @@ mod tests {
     #[test]
     fn test_arrays() {
         assert_module(
-            "../examples/syntax/07-arrays.type",
+            "./examples/syntax/07-arrays.type",
             Module {
                 doc: None,
                 imports: vec![],
@@ -425,7 +425,7 @@ mod tests {
     #[test]
     fn test_tuples() {
         assert_module(
-            "../examples/syntax/08-tuples.type",
+            "./examples/syntax/08-tuples.type",
             Module {
                 doc: None,
                 imports: vec![],
@@ -480,7 +480,7 @@ mod tests {
     #[test]
     fn test_modules() {
         assert_module(
-            "../examples/syntax/09-modules.type",
+            "./examples/syntax/09-modules.type",
             Module {
                 doc: None,
                 imports: vec![
