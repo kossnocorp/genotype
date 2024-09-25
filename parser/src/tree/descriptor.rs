@@ -9,7 +9,7 @@ use super::{
 use crate::parser::Rule;
 use pest::iterators::Pair;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Descriptor {
     Alias(Box<Alias>),
     Primitive(Primitive),

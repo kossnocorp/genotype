@@ -5,11 +5,11 @@ use super::{
 use crate::{parser::Rule, tree::import::parse_import};
 use pest::iterators::Pairs;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Module {
-    doc: Option<String>,
-    imports: Vec<Import>,
-    aliases: Vec<Alias>,
+    pub doc: Option<String>,
+    pub imports: Vec<Import>,
+    pub aliases: Vec<Alias>,
 }
 
 pub fn parse_module(mut pairs: Pairs<'_, Rule>) -> Result<Module, Box<dyn std::error::Error>> {
@@ -55,11 +55,6 @@ pub fn parse_module(mut pairs: Pairs<'_, Rule>) -> Result<Module, Box<dyn std::e
     }
 
     Ok(module)
-}
-
-enum ParseState {
-    Doc,
-    Module(Option<String>),
 }
 
 #[cfg(test)]

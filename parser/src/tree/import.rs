@@ -2,7 +2,7 @@ use pest::iterators::{Pair, Pairs};
 
 use crate::parser::Rule;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Import {
     pub path: String,
     pub reference: ImportReference,
@@ -22,14 +22,14 @@ pub fn parse_import(
     Ok(import)
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum ImportReference {
     Glob,
     Names(Vec<ImportName>),
     Name(String),
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum ImportName {
     Name(String),
     Alias(String, String),

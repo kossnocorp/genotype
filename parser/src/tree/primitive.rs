@@ -1,6 +1,6 @@
 use crate::parser::Rule;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Primitive {
     Boolean,
     String,

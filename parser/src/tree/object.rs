@@ -2,7 +2,7 @@ use super::property::{parse_property, Property};
 use crate::parser::Rule;
 use pest::iterators::Pair;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Object {
     pub properties: Vec<Property>,
 }

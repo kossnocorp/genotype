@@ -2,7 +2,7 @@ use super::descriptor::{parse_descriptor, Descriptor};
 use crate::parser::Rule;
 use pest::iterators::Pair;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Tuple {
     pub descriptors: Vec<Descriptor>,
 }

@@ -2,7 +2,7 @@ use super::descriptor::{parse_descriptor, Descriptor};
 use crate::parser::Rule;
 use pest::iterators::{Pair, Pairs};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Alias {
     pub doc: Option<String>,
     pub name: String,
