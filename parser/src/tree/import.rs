@@ -42,7 +42,9 @@ fn parse(
 ) -> Result<Import, Box<dyn std::error::Error>> {
     match state {
         ParseState::Path => {
-            let path = pair.as_str().to_string();
+            let path = pair.as_str();
+            // Remove trailing slash
+            let path = path[..path.len() - 1].to_string();
             let pair = inner.next().unwrap(); // [TODO]
             parse(inner, pair, ParseState::Names(path))
         }

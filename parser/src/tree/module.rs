@@ -1,5 +1,3 @@
-use std::path::PathBuf;
-
 use super::{
     alias::{parse_alias, Alias},
     import::Import,
@@ -9,18 +7,16 @@ use pest::iterators::Pairs;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Module {
-    pub path: PathBuf,
+    pub path: String,
     pub doc: Option<String>,
     pub imports: Vec<Import>,
     pub aliases: Vec<Alias>,
 }
 
 pub fn parse_module(
-    path: PathBuf,
+    path: String,
     mut pairs: Pairs<'_, Rule>,
 ) -> Result<Module, Box<dyn std::error::Error>> {
-    let path = path.canonicalize()?;
-
     let mut module = Module {
         path,
         doc: None,
@@ -90,9 +86,7 @@ mod tests {
         assert_module(
             "./examples/syntax/01-alias.type",
             Module {
-                path: PathBuf::from("./examples/syntax/01-alias.type")
-                    .canonicalize()
-                    .unwrap(),
+                path: "./examples/syntax/01-alias.type".to_string(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
@@ -116,9 +110,7 @@ mod tests {
         assert_module(
             "./examples/syntax/02-primitives.type",
             Module {
-                path: PathBuf::from("./examples/syntax/02-primitives.type")
-                    .canonicalize()
-                    .unwrap(),
+                path: "./examples/syntax/02-primitives.type".to_string(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
@@ -152,9 +144,7 @@ mod tests {
         assert_module(
             "./examples/syntax/03-objects.type",
             Module {
-                path: PathBuf::from("./examples/syntax/03-objects.type")
-                    .canonicalize()
-                    .unwrap(),
+                path: "./examples/syntax/03-objects.type".to_string(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
@@ -248,9 +238,7 @@ mod tests {
         assert_module(
             "./examples/syntax/04-comments.type",
             Module {
-                path: PathBuf::from("./examples/syntax/04-comments.type")
-                    .canonicalize()
-                    .unwrap(),
+                path: "./examples/syntax/04-comments.type".to_string(),
                 doc: Some("Module comment...\n...multiline".to_string()),
                 imports: vec![],
                 aliases: vec![
@@ -294,9 +282,7 @@ mod tests {
         assert_module(
             "./examples/syntax/05-optional.type",
             Module {
-                path: PathBuf::from("./examples/syntax/05-optional.type")
-                    .canonicalize()
-                    .unwrap(),
+                path: "./examples/syntax/05-optional.type".to_string(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![Alias {
@@ -338,9 +324,7 @@ mod tests {
         assert_module(
             "./examples/syntax/06-nested.type",
             Module {
-                path: PathBuf::from("./examples/syntax/06-nested.type")
-                    .canonicalize()
-                    .unwrap(),
+                path: "./examples/syntax/06-nested.type".to_string(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
@@ -416,9 +400,7 @@ mod tests {
         assert_module(
             "./examples/syntax/07-arrays.type",
             Module {
-                path: PathBuf::from("./examples/syntax/07-arrays.type")
-                    .canonicalize()
-                    .unwrap(),
+                path: "./examples/syntax/07-arrays.type".to_string(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![Alias {
@@ -452,9 +434,7 @@ mod tests {
         assert_module(
             "./examples/syntax/08-tuples.type",
             Module {
-                path: PathBuf::from("./examples/syntax/08-tuples.type")
-                    .canonicalize()
-                    .unwrap(),
+                path: "./examples/syntax/08-tuples.type".to_string(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
@@ -510,17 +490,15 @@ mod tests {
         assert_module(
             "./examples/syntax/09-modules.type",
             Module {
-                path: PathBuf::from("./examples/syntax/09-modules.type")
-                    .canonicalize()
-                    .unwrap(),
+                path: "./examples/syntax/09-modules.type".to_string(),
                 doc: None,
                 imports: vec![
                     Import {
-                        path: "author/".to_string(),
+                        path: "author".to_string(),
                         reference: ImportReference::Glob,
                     },
                     Import {
-                        path: "../../author/".to_string(),
+                        path: "../../author".to_string(),
                         reference: ImportReference::Names(vec![
                             ImportName::Name("Author".to_string()),
                             ImportName::Name("Genre".to_string()),
@@ -528,7 +506,7 @@ mod tests {
                         ]),
                     },
                     Import {
-                        path: "author/".to_string(),
+                        path: "author".to_string(),
                         reference: ImportReference::Name("Author".to_string()),
                     },
                 ],
@@ -575,13 +553,13 @@ mod tests {
         );
     }
 
-    fn assert_module(file: &str, expected: Module) {
-        let code = fs::read_to_string(file).expect("cannot read file");
+    fn assert_module(path: &str, expected: Module) {
+        let code = fs::read_to_string(path).expect("cannot read file");
         let pairs = parse_code(&code);
 
         match pairs {
             Ok(pairs) => {
-                let module = parse_module(PathBuf::from(file), pairs);
+                let module = parse_module(path.to_string(), pairs);
                 match module {
                     Ok(module) => {
                         assert_eq!(module, expected);

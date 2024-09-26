@@ -1,6 +1,6 @@
 use ./book/Book
 
 Order = {
-  user: ./users/User
+  user: ./user/User
   books: [Book]
 }
