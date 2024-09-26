@@ -12,7 +12,7 @@ use std::{
     thread,
 };
 
-pub fn load_program(pattern: &str) -> Result<HashMap<PathBuf, Module>, Box<dyn std::error::Error>> {
+pub fn load_project(pattern: &str) -> Result<HashMap<PathBuf, Module>, Box<dyn std::error::Error>> {
     let processed_paths = Arc::new(Mutex::new(HashSet::new()));
     let modules = Arc::new(Mutex::new(HashMap::new()));
     let (sender, receiver) = unbounded();
@@ -124,7 +124,7 @@ mod tests {
     #[test]
     fn test_glob() {
         let pattern = "./examples/basic/*.type";
-        let result = load_program(pattern);
+        let result = load_project(pattern);
         match result {
             Ok(modules) => {
                 assert_eq!(
@@ -247,7 +247,7 @@ mod tests {
 
             Err(err) => {
                 println!("{}", err);
-                assert!(false, "Failed to load program");
+                assert!(false, "Failed to load project");
             }
         }
     }
