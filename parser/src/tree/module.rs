@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use super::{
     alias::{parse_alias, Alias},
     import::Import,
@@ -7,13 +9,20 @@ use pest::iterators::Pairs;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Module {
+    pub path: PathBuf,
     pub doc: Option<String>,
     pub imports: Vec<Import>,
     pub aliases: Vec<Alias>,
 }
 
-pub fn parse_module(mut pairs: Pairs<'_, Rule>) -> Result<Module, Box<dyn std::error::Error>> {
+pub fn parse_module(
+    path: PathBuf,
+    mut pairs: Pairs<'_, Rule>,
+) -> Result<Module, Box<dyn std::error::Error>> {
+    let path = path.canonicalize()?;
+
     let mut module = Module {
+        path,
         doc: None,
         imports: vec![],
         aliases: vec![],
@@ -81,6 +90,9 @@ mod tests {
         assert_module(
             "./examples/syntax/01-alias.type",
             Module {
+                path: PathBuf::from("./examples/syntax/01-alias.type")
+                    .canonicalize()
+                    .unwrap(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
@@ -104,6 +116,9 @@ mod tests {
         assert_module(
             "./examples/syntax/02-primitives.type",
             Module {
+                path: PathBuf::from("./examples/syntax/02-primitives.type")
+                    .canonicalize()
+                    .unwrap(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
@@ -137,6 +152,9 @@ mod tests {
         assert_module(
             "./examples/syntax/03-objects.type",
             Module {
+                path: PathBuf::from("./examples/syntax/03-objects.type")
+                    .canonicalize()
+                    .unwrap(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
@@ -230,6 +248,9 @@ mod tests {
         assert_module(
             "./examples/syntax/04-comments.type",
             Module {
+                path: PathBuf::from("./examples/syntax/04-comments.type")
+                    .canonicalize()
+                    .unwrap(),
                 doc: Some("Module comment...\n...multiline".to_string()),
                 imports: vec![],
                 aliases: vec![
@@ -273,6 +294,9 @@ mod tests {
         assert_module(
             "./examples/syntax/05-optional.type",
             Module {
+                path: PathBuf::from("./examples/syntax/05-optional.type")
+                    .canonicalize()
+                    .unwrap(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![Alias {
@@ -314,6 +338,9 @@ mod tests {
         assert_module(
             "./examples/syntax/06-nested.type",
             Module {
+                path: PathBuf::from("./examples/syntax/06-nested.type")
+                    .canonicalize()
+                    .unwrap(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
@@ -389,6 +416,9 @@ mod tests {
         assert_module(
             "./examples/syntax/07-arrays.type",
             Module {
+                path: PathBuf::from("./examples/syntax/07-arrays.type")
+                    .canonicalize()
+                    .unwrap(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![Alias {
@@ -422,6 +452,9 @@ mod tests {
         assert_module(
             "./examples/syntax/08-tuples.type",
             Module {
+                path: PathBuf::from("./examples/syntax/08-tuples.type")
+                    .canonicalize()
+                    .unwrap(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
@@ -477,6 +510,9 @@ mod tests {
         assert_module(
             "./examples/syntax/09-modules.type",
             Module {
+                path: PathBuf::from("./examples/syntax/09-modules.type")
+                    .canonicalize()
+                    .unwrap(),
                 doc: None,
                 imports: vec![
                     Import {
@@ -545,7 +581,7 @@ mod tests {
 
         match pairs {
             Ok(pairs) => {
-                let module = parse_module(pairs);
+                let module = parse_module(PathBuf::from(file), pairs);
                 match module {
                     Ok(module) => {
                         assert_eq!(module, expected);

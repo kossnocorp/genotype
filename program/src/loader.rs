@@ -5,16 +5,16 @@ use genotype_parser::{
 };
 use glob::glob;
 use std::{
-    collections::HashSet,
+    collections::{HashMap, HashSet},
     fs::read_to_string,
     path::PathBuf,
     sync::{Arc, Mutex, Weak},
     thread,
 };
 
-pub fn load_program(pattern: &str) -> Result<Vec<Module>, Box<dyn std::error::Error>> {
+pub fn load_program(pattern: &str) -> Result<HashMap<PathBuf, Module>, Box<dyn std::error::Error>> {
     let processed_paths = Arc::new(Mutex::new(HashSet::new()));
-    let modules = Arc::new(Mutex::new(vec![]));
+    let modules = Arc::new(Mutex::new(HashMap::new()));
     let (sender, receiver) = unbounded();
 
     let result = glob(pattern)?;
@@ -55,7 +55,7 @@ fn worker_thread(
     receiver: Receiver<PathBuf>,
     weak_sender: Weak<crossbeam::channel::Sender<PathBuf>>,
     processed_paths: Arc<Mutex<HashSet<PathBuf>>>,
-    modules: Arc<Mutex<Vec<Module>>>,
+    modules: Arc<Mutex<HashMap<PathBuf, Module>>>,
 ) {
     while let Ok(path) = receiver.recv() {
         {
@@ -67,7 +67,7 @@ fn worker_thread(
             }
         }
 
-        match load_module(&path) {
+        match load_module(path) {
             Ok((module, deps)) => {
                 for dep_path in deps {
                     match dep_path.canonicalize() {
@@ -85,7 +85,7 @@ fn worker_thread(
                 }
 
                 let mut modules = modules.lock().unwrap();
-                modules.push(module);
+                modules.insert(module.path.clone(), module);
             }
             Err(e) => {
                 panic!("Error loading module: {:?}", e);
@@ -94,11 +94,11 @@ fn worker_thread(
     }
 }
 
-fn load_module(path: &PathBuf) -> Result<(Module, Vec<PathBuf>), Box<dyn std::error::Error>> {
+fn load_module(path: PathBuf) -> Result<(Module, Vec<PathBuf>), Box<dyn std::error::Error>> {
     let code = read_to_string(&path)?;
 
     let pairs = parse_code(&code)?;
-    let tree = parse_module(pairs)?;
+    let tree = parse_module(path, pairs)?;
 
     // [TODO]
     let deps = vec![];
@@ -109,6 +109,17 @@ fn load_module(path: &PathBuf) -> Result<(Module, Vec<PathBuf>), Box<dyn std::er
 #[cfg(test)]
 mod tests {
     use super::*;
+    use genotype_parser::tree::{
+        alias::Alias,
+        array::Array,
+        descriptor::Descriptor,
+        import::{Import, ImportReference},
+        object::Object,
+        primitive::Primitive,
+        property::Property,
+        reference::Reference,
+    };
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_glob() {
@@ -118,11 +129,119 @@ mod tests {
             Ok(modules) => {
                 assert_eq!(
                     modules,
-                    vec![Module {
-                        doc: None,
-                        imports: vec![],
-                        aliases: vec![],
-                    }]
+                    HashMap::from([
+                        module_kv(Module {
+                            path: PathBuf::from("./examples/basic/author.type")
+                                .canonicalize()
+                                .unwrap(),
+                            doc: None,
+                            imports: vec![],
+                            aliases: vec![Alias {
+                                doc: None,
+                                name: "Author".to_string(),
+                                descriptor: Descriptor::Object(Object {
+                                    properties: vec![Property {
+                                        doc: None,
+                                        name: "name".to_string(),
+                                        descriptor: Descriptor::Primitive(Primitive::String),
+                                        required: true
+                                    }]
+                                })
+                            }]
+                        }),
+                        module_kv(Module {
+                            path: PathBuf::from("./examples/basic/book.type")
+                                .canonicalize()
+                                .unwrap(),
+                            doc: None,
+                            imports: vec![Import {
+                                path: "./author/".to_string(),
+                                reference: ImportReference::Name("Author".to_string())
+                            }],
+                            aliases: vec![Alias {
+                                doc: None,
+                                name: "Book".to_string(),
+                                descriptor: Descriptor::Object(Object {
+                                    properties: vec![
+                                        Property {
+                                            doc: None,
+                                            name: "title".to_string(),
+                                            descriptor: Descriptor::Primitive(Primitive::String),
+                                            required: true
+                                        },
+                                        Property {
+                                            doc: None,
+                                            name: "author".to_string(),
+                                            descriptor: Descriptor::Name("Author".to_string()),
+                                            required: true
+                                        }
+                                    ]
+                                })
+                            }]
+                        }),
+                        module_kv(Module {
+                            path: PathBuf::from("./examples/basic/order.type")
+                                .canonicalize()
+                                .unwrap(),
+                            doc: None,
+                            imports: vec![Import {
+                                path: "./book/".to_string(),
+                                reference: ImportReference::Name("Book".to_string())
+                            }],
+                            aliases: vec![Alias {
+                                doc: None,
+                                name: "Order".to_string(),
+                                descriptor: Descriptor::Object(Object {
+                                    properties: vec![
+                                        Property {
+                                            doc: None,
+                                            name: "user".to_string(),
+                                            descriptor: Descriptor::Reference(Reference {
+                                                path: "./users".to_string(),
+                                                name: "User".to_string()
+                                            }),
+                                            required: true
+                                        },
+                                        Property {
+                                            doc: None,
+                                            name: "books".to_string(),
+                                            descriptor: Descriptor::Array(Box::new(Array {
+                                                descriptor: Descriptor::Name("Book".to_string())
+                                            })),
+                                            required: true
+                                        }
+                                    ]
+                                })
+                            }]
+                        }),
+                        module_kv(Module {
+                            path: PathBuf::from("./examples/basic/user.type")
+                                .canonicalize()
+                                .unwrap(),
+                            doc: None,
+                            imports: vec![],
+                            aliases: vec![Alias {
+                                doc: None,
+                                name: "User".to_string(),
+                                descriptor: Descriptor::Object(Object {
+                                    properties: vec![
+                                        Property {
+                                            doc: None,
+                                            name: "email".to_string(),
+                                            descriptor: Descriptor::Primitive(Primitive::String),
+                                            required: true
+                                        },
+                                        Property {
+                                            doc: None,
+                                            name: "name".to_string(),
+                                            descriptor: Descriptor::Primitive(Primitive::String),
+                                            required: true
+                                        }
+                                    ]
+                                })
+                            }]
+                        })
+                    ])
                 );
             }
 
@@ -131,5 +250,9 @@ mod tests {
                 assert!(false, "Failed to load program");
             }
         }
+    }
+
+    fn module_kv(module: Module) -> (PathBuf, Module) {
+        (module.path.clone(), module)
     }
 }
