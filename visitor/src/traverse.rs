@@ -1,15 +1,7 @@
-use crate::visitor::{self, Visitor};
+use crate::visitor::Visitor;
 use genotype_parser::tree::{
-    alias::Alias,
-    array::Array,
-    descriptor::{self, Descriptor},
-    import::Import,
-    module::Module,
-    object::Object,
-    primitive::Primitive,
-    property::Property,
-    reference::Reference,
-    tuple::Tuple,
+    alias::Alias, array::Array, descriptor::Descriptor, import::Import, module::Module,
+    object::Object, primitive::Primitive, property::Property, reference::Reference, tuple::Tuple,
 };
 
 pub fn traverse_module(module: &Module, visitor: &mut dyn Visitor) {

@@ -1,0 +1,10 @@
+[package]
+name = "genotype_lang_core"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+genotype_parser = { path = "../../parser" }
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
