@@ -1,9 +1,10 @@
-use crate::{name::TSName, primitive::TSPrimitive};
+use crate::{name::TSName, primitive::TSPrimitive, union::TSUnion};
 use genotype_lang_core::{indent::Indent, node::Node};
 
 pub enum TSTypeDescriptor {
     Primitive(TSPrimitive),
     Name(TSName),
+    Union(TSUnion),
 }
 
 impl Node for TSTypeDescriptor {
@@ -11,6 +12,7 @@ impl Node for TSTypeDescriptor {
         match self {
             TSTypeDescriptor::Primitive(primitive) => primitive.render(indent),
             TSTypeDescriptor::Name(name) => name.render(indent),
+            TSTypeDescriptor::Union(union) => union.render(indent),
         }
     }
 }
@@ -39,6 +41,21 @@ mod tests {
         assert_eq!(
             TSTypeDescriptor::Name(TSName("Name".to_string())).render(&indent),
             "Name"
+        );
+    }
+
+    #[test]
+    fn test_render_union() {
+        let indent = ts_indent();
+        assert_eq!(
+            TSTypeDescriptor::Union(TSUnion {
+                descriptors: vec![
+                    TSTypeDescriptor::Primitive(TSPrimitive::String),
+                    TSTypeDescriptor::Primitive(TSPrimitive::Number),
+                ]
+            })
+            .render(&indent),
+            "string | number"
         );
     }
 }

@@ -1,15 +1,15 @@
 pub struct Indent<'a> {
     symbol: &'a str,
-    indent: String,
     size: usize,
+    pub string: String,
 }
 
 impl Indent<'_> {
     pub fn new<'a>(symbol: &'a str, size: usize) -> Indent<'a> {
-        let indent = symbol.repeat(size);
+        let string = symbol.repeat(size);
         Indent {
             symbol,
-            indent,
+            string,
             size,
         }
     }
@@ -19,7 +19,7 @@ impl Indent<'_> {
     }
 
     pub fn format<T: Into<String>>(&self, code: T) -> String {
-        format!("{}{}", self.indent, code.into())
+        format!("{}{}", self.string, code.into())
     }
 
     pub fn increment(&self) -> Self {
