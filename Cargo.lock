@@ -133,20 +133,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "genotype_lang_ts_parser"
+name = "genotype_lang_ts"
 version = "0.1.0"
 dependencies = [
  "genotype_lang_core",
  "genotype_parser",
- "pretty_assertions",
-]
-
-[[package]]
-name = "genotype_lang_ts_renderer"
-version = "0.1.0"
-dependencies = [
- "genotype_lang_core",
- "genotype_lang_ts_parser",
  "pretty_assertions",
 ]
 
