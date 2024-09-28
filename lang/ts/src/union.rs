@@ -19,7 +19,7 @@ impl Node for TSUnion {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{indent::ts_indent, name::TSName, primitive::TSPrimitive};
+    use crate::{indent::ts_indent, primitive::TSPrimitive};
 
     #[test]
     fn test_render_union() {

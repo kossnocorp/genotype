@@ -1,5 +1,9 @@
 pub mod alias;
+pub mod definition;
+pub mod import;
 pub mod indent;
+pub mod interface;
+pub mod module;
 pub mod name;
 pub mod object;
 pub mod primitive;
