@@ -1,4 +1,5 @@
 pub mod alias;
+pub mod array;
 pub mod definition;
 pub mod import;
 pub mod indent;
