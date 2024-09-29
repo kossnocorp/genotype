@@ -1,6 +1,7 @@
 pub mod alias;
 pub mod array;
 pub mod definition;
+pub mod definition_descriptor;
 pub mod import;
 pub mod indent;
 pub mod interface;
