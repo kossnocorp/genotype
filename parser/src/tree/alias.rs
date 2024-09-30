@@ -1,15 +1,15 @@
-use super::descriptor::{parse_descriptor, Descriptor};
+use super::descriptor::{parse_descriptor, GTDescriptor};
 use crate::parser::Rule;
 use pest::iterators::{Pair, Pairs};
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct Alias {
+pub struct GTAlias {
     pub doc: Option<String>,
     pub name: String,
-    pub descriptor: Descriptor,
+    pub descriptor: GTDescriptor,
 }
 
-pub fn parse_alias(pair: Pair<'_, Rule>) -> Result<Alias, Box<dyn std::error::Error>> {
+pub fn parse_alias(pair: Pair<'_, Rule>) -> Result<GTAlias, Box<dyn std::error::Error>> {
     let mut inner = pair.into_inner();
     let pair = inner.next().unwrap(); // [TODO]
     parse(inner, pair, ParseState::Doc(None))
@@ -19,7 +19,7 @@ fn parse(
     mut inner: Pairs<'_, Rule>,
     pair: Pair<'_, Rule>,
     state: ParseState,
-) -> Result<Alias, Box<dyn std::error::Error>> {
+) -> Result<GTAlias, Box<dyn std::error::Error>> {
     match state {
         ParseState::Doc(doc_acc) => {
             match pair.as_rule() {
@@ -51,7 +51,7 @@ fn parse(
 
         ParseState::Descriptor(doc, name) => {
             let descriptor = parse_descriptor(pair)?;
-            Ok(Alias {
+            Ok(GTAlias {
                 doc,
                 name,
                 descriptor,

@@ -5,7 +5,7 @@ use pest_derive::Parser;
 #[grammar = "parser/grammar.pest"]
 pub struct GenotypeParser;
 
-pub fn parse_code(code: &str) -> Result<Pairs<'_, Rule>, pest::error::Error<Rule>> {
+pub fn parse_gt_code(code: &str) -> Result<Pairs<'_, Rule>, pest::error::Error<Rule>> {
     GenotypeParser::parse(Rule::module, code)
 }
 
@@ -61,7 +61,7 @@ mod tests {
 
     fn parse_file(file: &str) {
         let code = fs::read_to_string(file).expect("cannot read file");
-        let pairs = parse_code(&code);
+        let pairs = parse_gt_code(&code);
 
         if let Err(err) = pairs {
             println!("{}", err);

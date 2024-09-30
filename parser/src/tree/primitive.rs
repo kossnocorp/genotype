@@ -1,7 +1,7 @@
 use crate::parser::Rule;
 
 #[derive(Debug, PartialEq, Clone)]
-pub enum Primitive {
+pub enum GTPrimitive {
     Boolean,
     String,
     Int,
@@ -10,15 +10,15 @@ pub enum Primitive {
 
 pub fn parse_primitive(
     pair: pest::iterators::Pair<'_, Rule>,
-) -> Result<Primitive, Box<dyn std::error::Error>> {
+) -> Result<GTPrimitive, Box<dyn std::error::Error>> {
     match pair.as_str() {
-        "boolean" => Ok(Primitive::Boolean),
+        "boolean" => Ok(GTPrimitive::Boolean),
 
-        "string" => Ok(Primitive::String),
+        "string" => Ok(GTPrimitive::String),
 
-        "int" => Ok(Primitive::Int),
+        "int" => Ok(GTPrimitive::Int),
 
-        "float" => Ok(Primitive::Float),
+        "float" => Ok(GTPrimitive::Float),
 
         _ => Err("Unknown primitive".into()),
     }

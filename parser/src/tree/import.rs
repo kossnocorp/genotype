@@ -3,14 +3,14 @@ use pest::iterators::{Pair, Pairs};
 use crate::parser::Rule;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct Import {
+pub struct GTImport {
     pub path: String,
     pub reference: ImportReference,
 }
 
 pub fn parse_import(
     pair: Pair<'_, crate::parser::Rule>,
-) -> Result<Import, Box<dyn std::error::Error>> {
+) -> Result<GTImport, Box<dyn std::error::Error>> {
     let mut inner = pair.into_inner();
     let pair = inner.next().unwrap(); // [TODO]
 
@@ -39,7 +39,7 @@ fn parse(
     mut inner: Pairs<'_, Rule>,
     pair: Pair<'_, Rule>,
     state: ParseState,
-) -> Result<Import, Box<dyn std::error::Error>> {
+) -> Result<GTImport, Box<dyn std::error::Error>> {
     match state {
         ParseState::Path => {
             let path = pair.as_str();
@@ -50,7 +50,7 @@ fn parse(
         }
 
         ParseState::Names(path) => match pair.as_rule() {
-            Rule::import_glob => Ok(Import {
+            Rule::import_glob => Ok(GTImport {
                 path,
                 reference: ImportReference::Glob,
             }),
@@ -72,7 +72,7 @@ fn parse(
                     }
                 }
 
-                Ok(Import {
+                Ok(GTImport {
                     path,
                     reference: ImportReference::Names(names),
                 })
@@ -80,7 +80,7 @@ fn parse(
 
             Rule::name => {
                 let name = pair.as_str().to_string();
-                Ok(Import {
+                Ok(GTImport {
                     path,
                     reference: ImportReference::Name(name),
                 })

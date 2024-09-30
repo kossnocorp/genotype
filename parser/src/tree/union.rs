@@ -1,6 +1,6 @@
-use super::descriptor::Descriptor;
+use super::descriptor::GTDescriptor;
 
 #[derive(Debug, PartialEq)]
-pub struct Union {
-    pub descriptors: Vec<Descriptor>,
+pub struct GTUnion {
+    pub descriptors: Vec<GTDescriptor>,
 }

@@ -1,14 +1,14 @@
-use super::property::{parse_property, Property};
+use super::property::{parse_property, GTProperty};
 use crate::parser::Rule;
 use pest::iterators::Pair;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct Object {
-    pub properties: Vec<Property>,
+pub struct GTObject {
+    pub properties: Vec<GTProperty>,
 }
 
-pub fn parse_object(pair: Pair<'_, Rule>) -> Result<Object, Box<dyn std::error::Error>> {
-    let mut object = Object { properties: vec![] };
+pub fn parse_object(pair: Pair<'_, Rule>) -> Result<GTObject, Box<dyn std::error::Error>> {
+    let mut object = GTObject { properties: vec![] };
 
     for pair in pair.into_inner() {
         match pair.as_rule() {

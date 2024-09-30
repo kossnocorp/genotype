@@ -1,23 +1,23 @@
 use super::{
-    alias::{parse_alias, Alias},
-    import::Import,
+    alias::{parse_alias, GTAlias},
+    import::GTImport,
 };
 use crate::{parser::Rule, tree::import::parse_import};
 use pest::iterators::Pairs;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct Module {
+pub struct GTModule {
     pub path: String,
     pub doc: Option<String>,
-    pub imports: Vec<Import>,
-    pub aliases: Vec<Alias>,
+    pub imports: Vec<GTImport>,
+    pub aliases: Vec<GTAlias>,
 }
 
-pub fn parse_module(
+pub fn parse_gt_module(
     path: String,
     mut pairs: Pairs<'_, Rule>,
-) -> Result<Module, Box<dyn std::error::Error>> {
-    let mut module = Module {
+) -> Result<GTModule, Box<dyn std::error::Error>> {
+    let mut module = GTModule {
         path,
         doc: None,
         imports: vec![],
@@ -66,16 +66,16 @@ pub fn parse_module(
 mod tests {
     use super::*;
     use crate::{
-        parser::parse_code,
+        parser::parse_gt_code,
         tree::{
-            array::Array,
-            descriptor::Descriptor,
+            array::GTArray,
+            descriptor::GTDescriptor,
             import::{ImportName, ImportReference},
-            object::Object,
-            primitive::Primitive,
-            property::Property,
-            reference::Reference,
-            tuple::Tuple,
+            object::GTObject,
+            primitive::GTPrimitive,
+            property::GTProperty,
+            reference::GTReference,
+            tuple::GTTuple,
         },
     };
     use pretty_assertions::assert_eq;
@@ -85,20 +85,20 @@ mod tests {
     fn test_alias() {
         assert_module(
             "./examples/syntax/01-alias.type",
-            Module {
+            GTModule {
                 path: "./examples/syntax/01-alias.type".to_string(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
-                    Alias {
+                    GTAlias {
                         doc: None,
                         name: "Age".to_string(),
-                        descriptor: Descriptor::Primitive(Primitive::Int),
+                        descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
                     },
-                    Alias {
+                    GTAlias {
                         doc: None,
                         name: "AnotherAge".to_string(),
-                        descriptor: Descriptor::Name("Age".to_string()),
+                        descriptor: GTDescriptor::Name("Age".to_string()),
                     },
                 ],
             },
@@ -109,30 +109,30 @@ mod tests {
     fn test_primitives() {
         assert_module(
             "./examples/syntax/02-primitives.type",
-            Module {
+            GTModule {
                 path: "./examples/syntax/02-primitives.type".to_string(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
-                    Alias {
+                    GTAlias {
                         doc: None,
                         name: "String".to_string(),
-                        descriptor: Descriptor::Primitive(Primitive::String),
+                        descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                     },
-                    Alias {
+                    GTAlias {
                         doc: None,
                         name: "Int".to_string(),
-                        descriptor: Descriptor::Primitive(Primitive::Int),
+                        descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
                     },
-                    Alias {
+                    GTAlias {
                         doc: None,
                         name: "Float".to_string(),
-                        descriptor: Descriptor::Primitive(Primitive::Float),
+                        descriptor: GTDescriptor::Primitive(GTPrimitive::Float),
                     },
-                    Alias {
+                    GTAlias {
                         doc: None,
                         name: "Boolean".to_string(),
-                        descriptor: Descriptor::Primitive(Primitive::Boolean),
+                        descriptor: GTDescriptor::Primitive(GTPrimitive::Boolean),
                     },
                 ],
             },
@@ -143,86 +143,86 @@ mod tests {
     fn test_objects() {
         assert_module(
             "./examples/syntax/03-objects.type",
-            Module {
+            GTModule {
                 path: "./examples/syntax/03-objects.type".to_string(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
-                    Alias {
+                    GTAlias {
                         doc: None,
                         name: "Hello".to_string(),
-                        descriptor: Descriptor::Object(Object {
-                            properties: vec![Property {
+                        descriptor: GTDescriptor::Object(GTObject {
+                            properties: vec![GTProperty {
                                 doc: None,
                                 name: "name".to_string(),
-                                descriptor: Descriptor::Primitive(Primitive::String),
+                                descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                                 required: true,
                             }],
                         }),
                     },
-                    Alias {
+                    GTAlias {
                         doc: None,
                         name: "Hello".to_string(),
-                        descriptor: Descriptor::Object(Object {
+                        descriptor: GTDescriptor::Object(GTObject {
                             properties: vec![
-                                Property {
+                                GTProperty {
                                     doc: None,
                                     name: "name".to_string(),
-                                    descriptor: Descriptor::Primitive(Primitive::String),
+                                    descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                                     required: true,
                                 },
-                                Property {
+                                GTProperty {
                                     doc: None,
                                     name: "age".to_string(),
-                                    descriptor: Descriptor::Primitive(Primitive::Int),
+                                    descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
                                     required: true,
                                 },
-                                Property {
+                                GTProperty {
                                     doc: None,
                                     name: "flag".to_string(),
-                                    descriptor: Descriptor::Primitive(Primitive::Boolean),
+                                    descriptor: GTDescriptor::Primitive(GTPrimitive::Boolean),
                                     required: true,
                                 },
                             ],
                         }),
                     },
-                    Alias {
+                    GTAlias {
                         doc: None,
                         name: "Empty".to_string(),
-                        descriptor: Descriptor::Object(Object { properties: vec![] }),
+                        descriptor: GTDescriptor::Object(GTObject { properties: vec![] }),
                     },
-                    Alias {
+                    GTAlias {
                         doc: None,
                         name: "Empty".to_string(),
-                        descriptor: Descriptor::Object(Object { properties: vec![] }),
+                        descriptor: GTDescriptor::Object(GTObject { properties: vec![] }),
                     },
-                    Alias {
+                    GTAlias {
                         doc: None,
                         name: "Hello".to_string(),
-                        descriptor: Descriptor::Object(Object {
-                            properties: vec![Property {
+                        descriptor: GTDescriptor::Object(GTObject {
+                            properties: vec![GTProperty {
                                 doc: None,
                                 name: "name".to_string(),
-                                descriptor: Descriptor::Primitive(Primitive::String),
+                                descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                                 required: true,
                             }],
                         }),
                     },
-                    Alias {
+                    GTAlias {
                         doc: None,
                         name: "Hello".to_string(),
-                        descriptor: Descriptor::Object(Object {
+                        descriptor: GTDescriptor::Object(GTObject {
                             properties: vec![
-                                Property {
+                                GTProperty {
                                     doc: None,
                                     name: "name".to_string(),
-                                    descriptor: Descriptor::Primitive(Primitive::String),
+                                    descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                                     required: true,
                                 },
-                                Property {
+                                GTProperty {
                                     doc: None,
                                     name: "age".to_string(),
-                                    descriptor: Descriptor::Primitive(Primitive::Int),
+                                    descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
                                     required: true,
                                 },
                             ],
@@ -237,40 +237,40 @@ mod tests {
     fn test_comments() {
         assert_module(
             "./examples/syntax/04-comments.type",
-            Module {
+            GTModule {
                 path: "./examples/syntax/04-comments.type".to_string(),
                 doc: Some("Module comment...\n...multiline".to_string()),
                 imports: vec![],
                 aliases: vec![
-                    Alias {
+                    GTAlias {
                         doc: Some("Alias comment".to_string()),
                         name: "Hello".to_string(),
-                        descriptor: Descriptor::Primitive(Primitive::String),
+                        descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                     },
-                    Alias {
+                    GTAlias {
                         doc: Some("Multiline...\n...alias comment".to_string()),
                         name: "Hello".to_string(),
-                        descriptor: Descriptor::Object(Object {
+                        descriptor: GTDescriptor::Object(GTObject {
                             properties: vec![
-                                Property {
+                                GTProperty {
                                     doc: Some("Property comment".to_string()),
                                     name: "name".to_string(),
-                                    descriptor: Descriptor::Primitive(Primitive::String),
+                                    descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                                     required: true,
                                 },
-                                Property {
+                                GTProperty {
                                     doc: Some("Multiline...\n...property comment".to_string()),
                                     name: "age".to_string(),
-                                    descriptor: Descriptor::Primitive(Primitive::Int),
+                                    descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
                                     required: true,
                                 },
                             ],
                         }),
                     },
-                    Alias {
+                    GTAlias {
                         doc: None,
                         name: "Hello".to_string(),
-                        descriptor: Descriptor::Primitive(Primitive::String),
+                        descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                     },
                 ],
             },
@@ -281,35 +281,35 @@ mod tests {
     fn test_optional() {
         assert_module(
             "./examples/syntax/05-optional.type",
-            Module {
+            GTModule {
                 path: "./examples/syntax/05-optional.type".to_string(),
                 doc: None,
                 imports: vec![],
-                aliases: vec![Alias {
+                aliases: vec![GTAlias {
                     doc: None,
                     name: "Hello".to_string(),
-                    descriptor: Descriptor::Object(Object {
+                    descriptor: GTDescriptor::Object(GTObject {
                         properties: vec![
-                            Property {
+                            GTProperty {
                                 doc: None,
                                 name: "name".to_string(),
-                                descriptor: Descriptor::Nullable(Box::new(Descriptor::Primitive(
-                                    Primitive::String,
-                                ))),
+                                descriptor: GTDescriptor::Nullable(Box::new(
+                                    GTDescriptor::Primitive(GTPrimitive::String),
+                                )),
                                 required: true,
                             },
-                            Property {
+                            GTProperty {
                                 doc: None,
                                 name: "age".to_string(),
-                                descriptor: Descriptor::Primitive(Primitive::Int),
+                                descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
                                 required: false,
                             },
-                            Property {
+                            GTProperty {
                                 doc: None,
                                 name: "flag".to_string(),
-                                descriptor: Descriptor::Nullable(Box::new(Descriptor::Primitive(
-                                    Primitive::Boolean,
-                                ))),
+                                descriptor: GTDescriptor::Nullable(Box::new(
+                                    GTDescriptor::Primitive(GTPrimitive::Boolean),
+                                )),
                                 required: false,
                             },
                         ],
@@ -323,30 +323,34 @@ mod tests {
     fn test_nested() {
         assert_module(
             "./examples/syntax/06-nested.type",
-            Module {
+            GTModule {
                 path: "./examples/syntax/06-nested.type".to_string(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
-                    Alias {
+                    GTAlias {
                         doc: None,
                         name: "Hello".to_string(),
-                        descriptor: Descriptor::Object(Object {
-                            properties: vec![Property {
+                        descriptor: GTDescriptor::Object(GTObject {
+                            properties: vec![GTProperty {
                                 doc: None,
                                 name: "name".to_string(),
-                                descriptor: Descriptor::Object(Object {
+                                descriptor: GTDescriptor::Object(GTObject {
                                     properties: vec![
-                                        Property {
+                                        GTProperty {
                                             doc: None,
                                             name: "first".to_string(),
-                                            descriptor: Descriptor::Primitive(Primitive::String),
+                                            descriptor: GTDescriptor::Primitive(
+                                                GTPrimitive::String,
+                                            ),
                                             required: true,
                                         },
-                                        Property {
+                                        GTProperty {
                                             doc: None,
                                             name: "last".to_string(),
-                                            descriptor: Descriptor::Primitive(Primitive::String),
+                                            descriptor: GTDescriptor::Primitive(
+                                                GTPrimitive::String,
+                                            ),
                                             required: true,
                                         },
                                     ],
@@ -355,31 +359,31 @@ mod tests {
                             }],
                         }),
                     },
-                    Alias {
+                    GTAlias {
                         doc: None,
                         name: "Hello".to_string(),
-                        descriptor: Descriptor::Object(Object {
-                            properties: vec![Property {
+                        descriptor: GTDescriptor::Object(GTObject {
+                            properties: vec![GTProperty {
                                 doc: None,
                                 name: "name".to_string(),
-                                descriptor: Descriptor::Alias(Box::new(Alias {
+                                descriptor: GTDescriptor::Alias(Box::new(GTAlias {
                                     doc: None,
                                     name: "Named".to_string(),
-                                    descriptor: Descriptor::Object(Object {
+                                    descriptor: GTDescriptor::Object(GTObject {
                                         properties: vec![
-                                            Property {
+                                            GTProperty {
                                                 doc: None,
                                                 name: "first".to_string(),
-                                                descriptor: Descriptor::Primitive(
-                                                    Primitive::String,
+                                                descriptor: GTDescriptor::Primitive(
+                                                    GTPrimitive::String,
                                                 ),
                                                 required: true,
                                             },
-                                            Property {
+                                            GTProperty {
                                                 doc: None,
                                                 name: "last".to_string(),
-                                                descriptor: Descriptor::Primitive(
-                                                    Primitive::String,
+                                                descriptor: GTDescriptor::Primitive(
+                                                    GTPrimitive::String,
                                                 ),
                                                 required: true,
                                             },
@@ -399,26 +403,26 @@ mod tests {
     fn test_arrays() {
         assert_module(
             "./examples/syntax/07-arrays.type",
-            Module {
+            GTModule {
                 path: "./examples/syntax/07-arrays.type".to_string(),
                 doc: None,
                 imports: vec![],
-                aliases: vec![Alias {
+                aliases: vec![GTAlias {
                     doc: None,
                     name: "Book".to_string(),
-                    descriptor: Descriptor::Object(Object {
+                    descriptor: GTDescriptor::Object(GTObject {
                         properties: vec![
-                            Property {
+                            GTProperty {
                                 doc: None,
                                 name: "title".to_string(),
-                                descriptor: Descriptor::Primitive(Primitive::String),
+                                descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                                 required: true,
                             },
-                            Property {
+                            GTProperty {
                                 doc: None,
                                 name: "tags".to_string(),
-                                descriptor: Descriptor::Array(Box::new(Array {
-                                    descriptor: Descriptor::Primitive(Primitive::String),
+                                descriptor: GTDescriptor::Array(Box::new(GTArray {
+                                    descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                                 })),
                                 required: true,
                             },
@@ -433,35 +437,35 @@ mod tests {
     fn test_tuples() {
         assert_module(
             "./examples/syntax/08-tuples.type",
-            Module {
+            GTModule {
                 path: "./examples/syntax/08-tuples.type".to_string(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
-                    Alias {
+                    GTAlias {
                         doc: None,
                         name: "User".to_string(),
-                        descriptor: Descriptor::Object(Object {
+                        descriptor: GTDescriptor::Object(GTObject {
                             properties: vec![
-                                Property {
+                                GTProperty {
                                     doc: None,
                                     name: "name".to_string(),
-                                    descriptor: Descriptor::Tuple(Tuple {
+                                    descriptor: GTDescriptor::Tuple(GTTuple {
                                         descriptors: vec![
-                                            Descriptor::Primitive(Primitive::String),
-                                            Descriptor::Primitive(Primitive::String),
+                                            GTDescriptor::Primitive(GTPrimitive::String),
+                                            GTDescriptor::Primitive(GTPrimitive::String),
                                         ],
                                     }),
                                     required: true,
                                 },
-                                Property {
+                                GTProperty {
                                     doc: None,
                                     name: "address".to_string(),
-                                    descriptor: Descriptor::Tuple(Tuple {
+                                    descriptor: GTDescriptor::Tuple(GTTuple {
                                         descriptors: vec![
-                                            Descriptor::Primitive(Primitive::Int),
-                                            Descriptor::Primitive(Primitive::String),
-                                            Descriptor::Primitive(Primitive::String),
+                                            GTDescriptor::Primitive(GTPrimitive::Int),
+                                            GTDescriptor::Primitive(GTPrimitive::String),
+                                            GTDescriptor::Primitive(GTPrimitive::String),
                                         ],
                                     }),
                                     required: true,
@@ -469,14 +473,14 @@ mod tests {
                             ],
                         }),
                     },
-                    Alias {
+                    GTAlias {
                         doc: None,
                         name: "Address".to_string(),
-                        descriptor: Descriptor::Tuple(Tuple {
+                        descriptor: GTDescriptor::Tuple(GTTuple {
                             descriptors: vec![
-                                Descriptor::Primitive(Primitive::Int),
-                                Descriptor::Primitive(Primitive::String),
-                                Descriptor::Primitive(Primitive::String),
+                                GTDescriptor::Primitive(GTPrimitive::Int),
+                                GTDescriptor::Primitive(GTPrimitive::String),
+                                GTDescriptor::Primitive(GTPrimitive::String),
                             ],
                         }),
                     },
@@ -489,15 +493,15 @@ mod tests {
     fn test_modules() {
         assert_module(
             "./examples/syntax/09-modules.type",
-            Module {
+            GTModule {
                 path: "./examples/syntax/09-modules.type".to_string(),
                 doc: None,
                 imports: vec![
-                    Import {
+                    GTImport {
                         path: "author".to_string(),
                         reference: ImportReference::Glob,
                     },
-                    Import {
+                    GTImport {
                         path: "../../author".to_string(),
                         reference: ImportReference::Names(vec![
                             ImportName::Name("Author".to_string()),
@@ -505,45 +509,45 @@ mod tests {
                             ImportName::Alias("Something".to_string(), "Else".to_string()),
                         ]),
                     },
-                    Import {
+                    GTImport {
                         path: "author".to_string(),
                         reference: ImportReference::Name("Author".to_string()),
                     },
                 ],
                 aliases: vec![
-                    Alias {
+                    GTAlias {
                         doc: None,
                         name: "Book".to_string(),
-                        descriptor: Descriptor::Object(Object {
+                        descriptor: GTDescriptor::Object(GTObject {
                             properties: vec![
-                                Property {
+                                GTProperty {
                                     doc: None,
                                     name: "title".to_string(),
-                                    descriptor: Descriptor::Primitive(Primitive::String),
+                                    descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                                     required: true,
                                 },
-                                Property {
+                                GTProperty {
                                     doc: None,
                                     name: "author".to_string(),
-                                    descriptor: Descriptor::Reference(Reference {
+                                    descriptor: GTDescriptor::Reference(GTReference {
                                         path: "../../author".to_string(),
                                         name: "Author".to_string(),
                                     }),
                                     required: true,
                                 },
-                                Property {
+                                GTProperty {
                                     doc: None,
                                     name: "genre".to_string(),
-                                    descriptor: Descriptor::Name("Genre".to_string()),
+                                    descriptor: GTDescriptor::Name("Genre".to_string()),
                                     required: true,
                                 },
                             ],
                         }),
                     },
-                    Alias {
+                    GTAlias {
                         doc: None,
                         name: "Author".to_string(),
-                        descriptor: Descriptor::Reference(Reference {
+                        descriptor: GTDescriptor::Reference(GTReference {
                             path: "../../author".to_string(),
                             name: "Author".to_string(),
                         }),
@@ -553,13 +557,13 @@ mod tests {
         );
     }
 
-    fn assert_module(path: &str, expected: Module) {
+    fn assert_module(path: &str, expected: GTModule) {
         let code = fs::read_to_string(path).expect("cannot read file");
-        let pairs = parse_code(&code);
+        let pairs = parse_gt_code(&code);
 
         match pairs {
             Ok(pairs) => {
-                let module = parse_module(path.to_string(), pairs);
+                let module = parse_gt_module(path.to_string(), pairs);
                 match module {
                     Ok(module) => {
                         assert_eq!(module, expected);

@@ -1,16 +1,16 @@
-use super::descriptor::{parse_descriptor, Descriptor};
+use super::descriptor::{parse_descriptor, GTDescriptor};
 use crate::parser::Rule;
 use pest::iterators::{Pair, Pairs};
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct Property {
+pub struct GTProperty {
     pub doc: Option<String>,
     pub name: String,
-    pub descriptor: Descriptor,
+    pub descriptor: GTDescriptor,
     pub required: bool,
 }
 
-pub fn parse_property(pair: Pair<'_, Rule>) -> Result<Property, Box<dyn std::error::Error>> {
+pub fn parse_property(pair: Pair<'_, Rule>) -> Result<GTProperty, Box<dyn std::error::Error>> {
     let required = pair.as_rule() == Rule::required_property;
     let mut inner = pair.into_inner();
     let pair = inner.next().unwrap(); // [TODO]
@@ -21,7 +21,7 @@ fn parse(
     mut inner: Pairs<'_, Rule>,
     pair: Pair<'_, Rule>,
     state: ParseState,
-) -> Result<Property, Box<dyn std::error::Error>> {
+) -> Result<GTProperty, Box<dyn std::error::Error>> {
     match state {
         ParseState::Doc(required, doc_acc) => {
             match pair.as_rule() {
@@ -53,7 +53,7 @@ fn parse(
 
         ParseState::Descriptor(required, doc, name) => {
             let descriptor = parse_descriptor(pair)?;
-            Ok(Property {
+            Ok(GTProperty {
                 doc,
                 name,
                 descriptor,

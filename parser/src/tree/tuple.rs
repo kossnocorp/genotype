@@ -1,14 +1,14 @@
-use super::descriptor::{parse_descriptor, Descriptor};
+use super::descriptor::{parse_descriptor, GTDescriptor};
 use crate::parser::Rule;
 use pest::iterators::Pair;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct Tuple {
-    pub descriptors: Vec<Descriptor>,
+pub struct GTTuple {
+    pub descriptors: Vec<GTDescriptor>,
 }
 
-pub fn parse_tuple(pair: Pair<'_, Rule>) -> Result<Tuple, Box<dyn std::error::Error>> {
-    let mut tuple = Tuple {
+pub fn parse_tuple(pair: Pair<'_, Rule>) -> Result<GTTuple, Box<dyn std::error::Error>> {
+    let mut tuple = GTTuple {
         descriptors: vec![],
     };
 

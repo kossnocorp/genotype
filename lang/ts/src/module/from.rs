@@ -1,9 +1,9 @@
-use genotype_parser::tree::module::Module;
+use genotype_parser::tree::module::GTModule;
 
 use super::TSModule;
 
-impl From<Module> for TSModule {
-    fn from(module: Module) -> Self {
+impl From<GTModule> for TSModule {
+    fn from(module: GTModule) -> Self {
         TSModule {
             path: "./module.ts".to_string(),
             doc: None,
@@ -18,12 +18,12 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use genotype_parser::tree::module::Module;
+    use genotype_parser::tree::module::GTModule;
 
     #[test]
     fn test_from() {
         assert_eq!(
-            TSModule::from(Module {
+            TSModule::from(GTModule {
                 path: "./module".to_string(),
                 doc: None,
                 imports: vec![],

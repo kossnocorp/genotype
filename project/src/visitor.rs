@@ -1,16 +1,16 @@
-use genotype_parser::tree::{import::Import, reference::Reference};
-use genotype_visitor::visitor::Visitor;
+use genotype_parser::tree::{import::GTImport, reference::GTReference};
+use genotype_visitor::visitor::GTVisitor;
 
-pub struct ProjectVisitor {
+pub struct GTProjectVisitor {
     pub deps: Vec<String>,
 }
 
-impl Visitor for ProjectVisitor {
-    fn visit_import(&mut self, import: &Import) {
+impl GTVisitor for GTProjectVisitor {
+    fn visit_import(&mut self, import: &GTImport) {
         self.deps.push(import.path.clone());
     }
 
-    fn visit_reference(&mut self, project: &Reference) {
+    fn visit_reference(&mut self, project: &GTReference) {
         self.deps.push(project.path.clone());
     }
 }

@@ -1,28 +1,29 @@
 use genotype_parser::tree::{
-    alias::Alias, array::Array, descriptor::Descriptor, import::Import, module::Module,
-    object::Object, primitive::Primitive, property::Property, reference::Reference, tuple::Tuple,
+    alias::GTAlias, array::GTArray, descriptor::GTDescriptor, import::GTImport, module::GTModule,
+    object::GTObject, primitive::GTPrimitive, property::GTProperty, reference::GTReference,
+    tuple::GTTuple,
 };
 
-pub trait Visitor {
-    fn visit_module(&mut self, _module: &Module) {}
+pub trait GTVisitor {
+    fn visit_module(&mut self, _module: &GTModule) {}
 
-    fn visit_import(&mut self, _import: &Import) {}
+    fn visit_import(&mut self, _import: &GTImport) {}
 
-    fn visit_alias(&mut self, _alias: &Alias) {}
+    fn visit_alias(&mut self, _alias: &GTAlias) {}
 
-    fn visit_tuple(&mut self, _tuple: &Tuple) {}
+    fn visit_tuple(&mut self, _tuple: &GTTuple) {}
 
-    fn visit_array(&mut self, _array: &Array) {}
+    fn visit_array(&mut self, _array: &GTArray) {}
 
-    fn visit_descriptor(&mut self, _descriptor: &Descriptor) {}
+    fn visit_descriptor(&mut self, _descriptor: &GTDescriptor) {}
 
-    fn visit_object(&mut self, _object: &Object) {}
+    fn visit_object(&mut self, _object: &GTObject) {}
 
-    fn visit_primitive(&mut self, _primitive: &Primitive) {}
+    fn visit_primitive(&mut self, _primitive: &GTPrimitive) {}
 
-    fn visit_property(&mut self, _property: &Property) {}
+    fn visit_property(&mut self, _property: &GTProperty) {}
 
-    fn visit_reference(&mut self, _reference: &Reference) {}
+    fn visit_reference(&mut self, _reference: &GTReference) {}
 
     fn visit_name(&mut self, _name: &String) {}
 }

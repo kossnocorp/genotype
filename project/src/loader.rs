@@ -1,8 +1,8 @@
 use genotype_parser::{
-    parser::parse_code,
-    tree::module::{parse_module, Module},
+    parser::parse_gt_code,
+    tree::module::{parse_gt_module, GTModule},
 };
-use genotype_visitor::traverse::traverse_module;
+use genotype_visitor::traverse::traverse_gt_module;
 use glob::glob;
 use rayon::Scope;
 use std::{
@@ -12,9 +12,11 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use crate::visitor::ProjectVisitor;
+use crate::visitor::GTProjectVisitor;
 
-pub fn load_project(pattern: &str) -> Result<HashMap<PathBuf, Module>, Box<dyn std::error::Error>> {
+pub fn load_gt_project(
+    pattern: &str,
+) -> Result<HashMap<PathBuf, GTModule>, Box<dyn std::error::Error>> {
     let processed_paths = Arc::new(Mutex::new(HashSet::new()));
     let modules = Arc::new(Mutex::new(HashMap::new()));
 
@@ -45,7 +47,7 @@ fn process_module(
     path: PathBuf,
     scope: &Scope<'_>,
     processed_paths: Arc<Mutex<HashSet<PathBuf>>>,
-    modules: Arc<Mutex<HashMap<PathBuf, Module>>>,
+    modules: Arc<Mutex<HashMap<PathBuf, GTModule>>>,
 ) {
     {
         let mut processed = processed_paths.lock().unwrap();
@@ -78,14 +80,16 @@ fn process_module(
     }
 }
 
-fn load_module(module_path: PathBuf) -> Result<(Module, Vec<PathBuf>), Box<dyn std::error::Error>> {
+fn load_module(
+    module_path: PathBuf,
+) -> Result<(GTModule, Vec<PathBuf>), Box<dyn std::error::Error>> {
     let code = read_to_string(&module_path)?;
 
-    let pairs = parse_code(&code)?;
-    let module = parse_module(module_path.to_str().unwrap().to_string(), pairs)?;
+    let pairs = parse_gt_code(&code)?;
+    let module = parse_gt_module(module_path.to_str().unwrap().to_string(), pairs)?;
 
-    let mut visitor = ProjectVisitor { deps: vec![] };
-    traverse_module(&module, &mut visitor);
+    let mut visitor = GTProjectVisitor { deps: vec![] };
+    traverse_gt_module(&module, &mut visitor);
 
     let dir = module_path.parent().unwrap();
 
@@ -108,20 +112,20 @@ fn load_module(module_path: PathBuf) -> Result<(Module, Vec<PathBuf>), Box<dyn s
 mod tests {
     use super::*;
     use genotype_parser::tree::{
-        alias::Alias,
-        array::Array,
-        descriptor::Descriptor,
-        import::{Import, ImportReference},
-        object::Object,
-        primitive::Primitive,
-        property::Property,
-        reference::Reference,
+        alias::GTAlias,
+        array::GTArray,
+        descriptor::GTDescriptor,
+        import::{GTImport, ImportReference},
+        object::GTObject,
+        primitive::GTPrimitive,
+        property::GTProperty,
+        reference::GTReference,
     };
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_glob() {
-        let result = load_project("./examples/basic/*.type");
+        let result = load_gt_project("./examples/basic/*.type");
         match result {
             Ok(modules) => {
                 assert_eq!(order_modules(modules), basic_project());
@@ -136,7 +140,7 @@ mod tests {
 
     #[test]
     fn test_entry() {
-        let result = load_project("./examples/basic/order.type");
+        let result = load_gt_project("./examples/basic/order.type");
         match result {
             Ok(modules) => {
                 assert_eq!(order_modules(modules), basic_project());
@@ -149,79 +153,79 @@ mod tests {
         }
     }
 
-    fn basic_project() -> Vec<Module> {
+    fn basic_project() -> Vec<GTModule> {
         vec![
-            Module {
+            GTModule {
                 path: module_path("./examples/basic/author.type"),
                 doc: None,
                 imports: vec![],
-                aliases: vec![Alias {
+                aliases: vec![GTAlias {
                     doc: None,
                     name: "Author".to_string(),
-                    descriptor: Descriptor::Object(Object {
-                        properties: vec![Property {
+                    descriptor: GTDescriptor::Object(GTObject {
+                        properties: vec![GTProperty {
                             doc: None,
                             name: "name".to_string(),
-                            descriptor: Descriptor::Primitive(Primitive::String),
+                            descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                             required: true,
                         }],
                     }),
                 }],
             },
-            Module {
+            GTModule {
                 path: module_path("./examples/basic/book.type"),
                 doc: None,
-                imports: vec![Import {
+                imports: vec![GTImport {
                     path: "./author".to_string(),
                     reference: ImportReference::Name("Author".to_string()),
                 }],
-                aliases: vec![Alias {
+                aliases: vec![GTAlias {
                     doc: None,
                     name: "Book".to_string(),
-                    descriptor: Descriptor::Object(Object {
+                    descriptor: GTDescriptor::Object(GTObject {
                         properties: vec![
-                            Property {
+                            GTProperty {
                                 doc: None,
                                 name: "title".to_string(),
-                                descriptor: Descriptor::Primitive(Primitive::String),
+                                descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                                 required: true,
                             },
-                            Property {
+                            GTProperty {
                                 doc: None,
                                 name: "author".to_string(),
-                                descriptor: Descriptor::Name("Author".to_string()),
+                                descriptor: GTDescriptor::Name("Author".to_string()),
                                 required: true,
                             },
                         ],
                     }),
                 }],
             },
-            Module {
+            GTModule {
                 path: module_path("./examples/basic/order.type"),
                 doc: None,
-                imports: vec![Import {
+                imports: vec![GTImport {
                     path: "./book".to_string(),
                     reference: ImportReference::Name("Book".to_string()),
                 }],
-                aliases: vec![Alias {
+                aliases: vec![GTAlias {
                     doc: None,
                     name: "Order".to_string(),
-                    descriptor: Descriptor::Object(Object {
+                    descriptor: GTDescriptor::Object(GTObject {
                         properties: vec![
-                            Property {
+                            GTProperty {
                                 doc: None,
                                 name: "user".to_string(),
-                                descriptor: Descriptor::Reference(Reference {
+                                descriptor: GTDescriptor::Reference(GTReference {
                                     path: "./user".to_string(),
                                     name: "User".to_string(),
                                 }),
                                 required: true,
                             },
-                            Property {
+                            GTProperty {
                                 doc: None,
                                 name: "books".to_string(),
-                                descriptor: Descriptor::Array(Box::new(Array {
-                                    descriptor: Descriptor::Name("Book".to_string()),
+                                descriptor: GTDescriptor::Array(Box::new(GTArray {
+                                    descriptor: GTDescriptor::Name("Book".to_string()),
                                 })),
                                 required: true,
                             },
@@ -229,25 +233,25 @@ mod tests {
                     }),
                 }],
             },
-            Module {
+            GTModule {
                 path: module_path("./examples/basic/user.type"),
                 doc: None,
                 imports: vec![],
-                aliases: vec![Alias {
+                aliases: vec![GTAlias {
                     doc: None,
                     name: "User".to_string(),
-                    descriptor: Descriptor::Object(Object {
+                    descriptor: GTDescriptor::Object(GTObject {
                         properties: vec![
-                            Property {
+                            GTProperty {
                                 doc: None,
                                 name: "email".to_string(),
-                                descriptor: Descriptor::Primitive(Primitive::String),
+                                descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                                 required: true,
                             },
-                            Property {
+                            GTProperty {
                                 doc: None,
                                 name: "name".to_string(),
-                                descriptor: Descriptor::Primitive(Primitive::String),
+                                descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                                 required: true,
                             },
                         ],
@@ -257,11 +261,11 @@ mod tests {
         ]
     }
 
-    fn order_modules(modules: HashMap<PathBuf, Module>) -> Vec<Module> {
+    fn order_modules(modules: HashMap<PathBuf, GTModule>) -> Vec<GTModule> {
         let mut modules = modules
             .iter()
             .map(|(_, module)| module.clone())
-            .collect::<Vec<Module>>();
+            .collect::<Vec<GTModule>>();
         modules.sort_by(|a, b| a.path.cmp(&b.path));
         modules
     }
