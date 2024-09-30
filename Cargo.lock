@@ -155,6 +155,7 @@ version = "0.1.0"
 dependencies = [
  "genotype_lang_ts_converter",
  "genotype_lang_ts_tree",
+ "genotype_parser",
  "genotype_project",
  "pretty_assertions",
 ]

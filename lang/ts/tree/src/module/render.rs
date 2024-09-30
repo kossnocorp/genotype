@@ -28,10 +28,10 @@ mod tests {
 
     use super::*;
     use crate::{
-        alias::TSAlias, definition::TSDefinition, definition_descriptor::TSDefinitionDescriptor,
-        import::TSImport, import_name::TSImportName, import_reference::TSImportReference,
-        indent::ts_indent, interface::TSInterface, name::TSName, primitive::TSPrimitive,
-        property::TSProperty, type_descriptor::TSTypeDescriptor,
+        alias::TSAlias, definition::TSDefinition, import::TSImport, import_name::TSImportName,
+        import_reference::TSImportReference, indent::ts_indent, interface::TSInterface,
+        name::TSName, primitive::TSPrimitive, property::TSProperty,
+        type_descriptor::TSTypeDescriptor,
     };
 
     #[test]
@@ -57,31 +57,25 @@ mod tests {
                     }
                 ],
                 definitions: vec![
-                    TSDefinition {
-                        doc: None,
-                        descriptor: TSDefinitionDescriptor::Alias(TSAlias {
-                            name: TSName("Name".to_string()),
-                            descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
-                        }),
-                    },
-                    TSDefinition {
-                        doc: None,
-                        descriptor: TSDefinitionDescriptor::Interface(TSInterface {
-                            name: TSName("Name".to_string()),
-                            properties: vec![
-                                TSProperty {
-                                    name: TSName("name".to_string()),
-                                    descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
-                                    required: true
-                                },
-                                TSProperty {
-                                    name: TSName("age".to_string()),
-                                    descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Number),
-                                    required: false
-                                }
-                            ]
-                        }),
-                    }
+                    TSDefinition::Alias(TSAlias {
+                        name: TSName("Name".to_string()),
+                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                    }),
+                    TSDefinition::Interface(TSInterface {
+                        name: TSName("Name".to_string()),
+                        properties: vec![
+                            TSProperty {
+                                name: TSName("name".to_string()),
+                                descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                                required: true
+                            },
+                            TSProperty {
+                                name: TSName("age".to_string()),
+                                descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Number),
+                                required: false
+                            }
+                        ]
+                    }),
                 ]
             }
             .render(&indent),

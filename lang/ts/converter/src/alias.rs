@@ -1,7 +1,4 @@
-use genotype_lang_ts_tree::{
-    alias::TSAlias, definition::TSDefinition, definition_descriptor::TSDefinitionDescriptor,
-    interface::TSInterface,
-};
+use genotype_lang_ts_tree::{alias::TSAlias, definition::TSDefinition, interface::TSInterface};
 use genotype_parser::tree::{alias::GTAlias, descriptor::GTDescriptor};
 
 use crate::convert::TSConvert;
@@ -11,21 +8,16 @@ impl TSConvert<TSDefinition> for GTAlias {
     where
         HoistFn: Fn(TSDefinition),
     {
-        let descriptor = match &self.descriptor {
-            GTDescriptor::Object(object) => TSDefinitionDescriptor::Interface(TSInterface {
+        match &self.descriptor {
+            GTDescriptor::Object(object) => TSDefinition::Interface(TSInterface {
                 name: self.name.convert(hoist),
                 properties: object.properties.iter().map(|p| p.convert(hoist)).collect(),
             }),
 
-            _ => TSDefinitionDescriptor::Alias(TSAlias {
+            _ => TSDefinition::Alias(TSAlias {
                 name: self.name.convert(hoist),
                 descriptor: self.descriptor.convert(hoist),
             }),
-        };
-
-        TSDefinition {
-            doc: None,
-            descriptor,
         }
     }
 }
@@ -53,13 +45,10 @@ mod tests {
                 descriptor: GTDescriptor::Primitive(GTPrimitive::Boolean),
             }
             .convert(&|_| {}),
-            TSDefinition {
-                doc: None,
-                descriptor: TSDefinitionDescriptor::Alias(TSAlias {
-                    name: TSName("Name".to_string()),
-                    descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Boolean),
-                }),
-            }
+            TSDefinition::Alias(TSAlias {
+                name: TSName("Name".to_string()),
+                descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Boolean),
+            }),
         );
     }
 
@@ -87,24 +76,21 @@ mod tests {
                 })
             }
             .convert(&|_| {}),
-            TSDefinition {
-                doc: None,
-                descriptor: TSDefinitionDescriptor::Interface(TSInterface {
-                    name: TSName("Book".to_string()),
-                    properties: vec![
-                        TSProperty {
-                            name: TSName("title".to_string()),
-                            descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
-                            required: true,
-                        },
-                        TSProperty {
-                            name: TSName("author".to_string()),
-                            descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
-                            required: true,
-                        }
-                    ]
-                }),
-            },
+            TSDefinition::Interface(TSInterface {
+                name: TSName("Book".to_string()),
+                properties: vec![
+                    TSProperty {
+                        name: TSName("title".to_string()),
+                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                        required: true,
+                    },
+                    TSProperty {
+                        name: TSName("author".to_string()),
+                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                        required: true,
+                    }
+                ]
+            }),
         );
     }
 }

@@ -13,8 +13,6 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::import_name::TSImportName;
-    use crate::import_reference::TSImportReference;
     use crate::indent::ts_indent;
     use crate::name::TSName;
 

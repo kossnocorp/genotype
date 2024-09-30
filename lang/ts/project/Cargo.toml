@@ -10,3 +10,4 @@ genotype_lang_ts_converter = { path = "../converter" }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
+genotype_parser = { path = "../../../parser" }

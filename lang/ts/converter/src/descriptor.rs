@@ -51,9 +51,8 @@ mod tests {
     use std::sync::Mutex;
 
     use genotype_lang_ts_tree::{
-        alias::TSAlias, array::TSArray, definition, definition_descriptor::TSDefinitionDescriptor,
-        inline_import::TSInlineImport, name::TSName, object::TSObject, property::TSProperty,
-        tuple::TSTuple,
+        alias::TSAlias, array::TSArray, inline_import::TSInlineImport, name::TSName,
+        object::TSObject, property::TSProperty, tuple::TSTuple,
     };
     use genotype_parser::tree::{
         alias::GTAlias, array::GTArray, inline_import::GTInlineImport, name::GTName,
@@ -179,13 +178,10 @@ mod tests {
         );
         assert_eq!(
             hoisted.lock().unwrap().clone(),
-            vec![definition::TSDefinition {
-                doc: None,
-                descriptor: TSDefinitionDescriptor::Alias(TSAlias {
-                    name: TSName("Name".to_string()),
-                    descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Boolean),
-                }),
-            }]
+            vec![TSDefinition::Alias(TSAlias {
+                name: TSName("Name".to_string()),
+                descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Boolean),
+            }),]
         );
     }
 

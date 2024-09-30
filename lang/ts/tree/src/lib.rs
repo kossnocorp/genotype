@@ -1,7 +1,6 @@
 pub mod alias;
 pub mod array;
 pub mod definition;
-pub mod definition_descriptor;
 pub mod import;
 pub mod import_glob_alias;
 pub mod import_name;

@@ -1,9 +1,9 @@
-use crate::definition_descriptor::TSDefinitionDescriptor;
+use crate::{alias::TSAlias, interface::TSInterface};
 
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct TSDefinition {
-    pub doc: Option<String>,
-    pub descriptor: TSDefinitionDescriptor,
+pub enum TSDefinition {
+    Alias(TSAlias),
+    Interface(TSInterface),
 }
