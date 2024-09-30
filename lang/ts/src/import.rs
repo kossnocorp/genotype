@@ -10,7 +10,7 @@ pub struct TSImport {
 impl Node for TSImport {
     fn render(&self, indent: &Indent) -> String {
         format!(
-            "import {} from \"{}\";",
+            r#"import {} from "{}";"#,
             self.reference.render(indent),
             self.path
         )
@@ -19,6 +19,8 @@ impl Node for TSImport {
 
 #[cfg(test)]
 mod tests {
+    use pretty_assertions::assert_eq;
+
     use super::*;
     use crate::import_name::TSImportName;
     use crate::indent::ts_indent;
@@ -33,7 +35,7 @@ mod tests {
                 reference: TSImportReference::Default(TSName("Name".to_string())),
             }
             .render(&indent),
-            "import Name from \"../path/to/module.ts\";"
+            r#"import Name from "../path/to/module.ts";"#
         );
     }
 
@@ -46,7 +48,7 @@ mod tests {
                 reference: TSImportReference::Glob(TSName("Name".to_string())),
             }
             .render(&indent),
-            "import * as Name from \"../path/to/module.ts\";"
+            r#"import * as Name from "../path/to/module.ts";"#
         );
     }
 
@@ -62,7 +64,7 @@ mod tests {
                 ])
             }
             .render(&indent),
-            "import { Name, Name as Alias } from \"../path/to/module.ts\";"
+            r#"import { Name, Name as Alias } from "../path/to/module.ts";"#
         );
     }
 }
