@@ -1,7 +1,8 @@
 use genotype_lang_ts_tree::{
     alias::TSAlias, definition::TSDefinition, definition_descriptor::TSDefinitionDescriptor,
+    interface::TSInterface,
 };
-use genotype_parser::tree::alias::GTAlias;
+use genotype_parser::tree::{alias::GTAlias, descriptor::GTDescriptor};
 
 use crate::convert::TSConvert;
 
@@ -10,12 +11,21 @@ impl TSConvert<TSDefinition> for GTAlias {
     where
         HoistFn: Fn(TSDefinition),
     {
-        TSDefinition {
-            doc: None,
-            descriptor: TSDefinitionDescriptor::Alias(TSAlias {
+        let descriptor = match &self.descriptor {
+            GTDescriptor::Object(object) => TSDefinitionDescriptor::Interface(TSInterface {
+                name: self.name.convert(hoist),
+                properties: object.properties.iter().map(|p| p.convert(hoist)).collect(),
+            }),
+
+            _ => TSDefinitionDescriptor::Alias(TSAlias {
                 name: self.name.convert(hoist),
                 descriptor: self.descriptor.convert(hoist),
             }),
+        };
+
+        TSDefinition {
+            doc: None,
+            descriptor,
         }
     }
 }
@@ -23,13 +33,15 @@ impl TSConvert<TSDefinition> for GTAlias {
 #[cfg(test)]
 mod tests {
     use genotype_lang_ts_tree::{
-        name::TSName, primitive::TSPrimitive, type_descriptor::TSTypeDescriptor,
+        interface::TSInterface, name::TSName, primitive::TSPrimitive, property::TSProperty,
+        type_descriptor::TSTypeDescriptor,
     };
     use pretty_assertions::assert_eq;
 
     use super::*;
     use genotype_parser::tree::{
-        alias::GTAlias, descriptor::GTDescriptor, name::GTName, primitive::GTPrimitive,
+        alias::GTAlias, descriptor::GTDescriptor, name::GTName, object::GTObject,
+        primitive::GTPrimitive, property::GTProperty,
     };
 
     #[test]
@@ -48,6 +60,51 @@ mod tests {
                     descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Boolean),
                 }),
             }
+        );
+    }
+
+    #[test]
+    fn test_convert_interface() {
+        assert_eq!(
+            GTAlias {
+                doc: None,
+                name: GTName("Book".to_string()),
+                descriptor: GTDescriptor::Object(GTObject {
+                    properties: vec![
+                        GTProperty {
+                            doc: None,
+                            name: GTName("title".to_string()),
+                            descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                            required: true,
+                        },
+                        GTProperty {
+                            doc: None,
+                            name: GTName("author".to_string()),
+                            descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                            required: true,
+                        }
+                    ]
+                })
+            }
+            .convert(&|_| {}),
+            TSDefinition {
+                doc: None,
+                descriptor: TSDefinitionDescriptor::Interface(TSInterface {
+                    name: TSName("Book".to_string()),
+                    properties: vec![
+                        TSProperty {
+                            name: TSName("title".to_string()),
+                            descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                            required: true,
+                        },
+                        TSProperty {
+                            name: TSName("author".to_string()),
+                            descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                            required: true,
+                        }
+                    ]
+                }),
+            },
         );
     }
 }
