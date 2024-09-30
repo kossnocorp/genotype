@@ -26,7 +26,7 @@ impl TryFrom<Pair<'_, Rule>> for GTDescriptor {
 
             Rule::alias => GTDescriptor::Alias(Box::new(pair.try_into()?)),
 
-            Rule::inline_reference => GTDescriptor::Reference(pair.try_into()?),
+            Rule::inline_reference => GTDescriptor::InlineImport(pair.try_into()?),
 
             _ => {
                 println!("3 ====== unknown rule: {:?}", pair);

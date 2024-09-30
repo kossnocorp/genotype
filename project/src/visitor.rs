@@ -1,4 +1,4 @@
-use genotype_parser::tree::{import::GTImport, reference::GTReference};
+use genotype_parser::tree::{import::GTImport, inline_import::GTInlineImport};
 use genotype_visitor::visitor::GTVisitor;
 
 pub struct GTProjectVisitor {
@@ -10,7 +10,7 @@ impl GTVisitor for GTProjectVisitor {
         self.deps.push(import.path.clone());
     }
 
-    fn visit_reference(&mut self, project: &GTReference) {
+    fn visit_inline_import(&mut self, project: &GTInlineImport) {
         self.deps.push(project.path.clone());
     }
 }

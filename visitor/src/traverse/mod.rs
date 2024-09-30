@@ -4,12 +4,12 @@ mod alias;
 mod array;
 mod descriptor;
 mod import;
+mod inline_import;
 mod module;
 mod name;
 mod object;
 mod primitive;
 mod property;
-mod reference;
 mod tuple;
 
 pub trait GTTraverse {

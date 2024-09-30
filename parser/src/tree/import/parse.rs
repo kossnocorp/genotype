@@ -2,7 +2,7 @@ use pest::iterators::{Pair, Pairs};
 
 use crate::{
     parser::Rule,
-    tree::{import_name::GTImportName, import_reference::GTImportReference},
+    tree::{import_name::GTImportName, import_reference::GTImportReference, name::GTName},
 };
 
 use super::GTImport;
@@ -49,11 +49,11 @@ fn parse(
                 for pair in pair.into_inner() {
                     let mut inner = pair.into_inner();
 
-                    let name = inner.next().unwrap().as_str().to_string();
+                    let name = GTName(inner.next().unwrap().as_str().to_string());
                     let alias = inner.next();
 
                     if let Some(alias) = alias {
-                        let alias = alias.as_str().to_string();
+                        let alias = GTName(alias.as_str().to_string());
                         names.push(GTImportName::Alias(name, alias));
                     } else {
                         names.push(GTImportName::Name(name));
@@ -67,7 +67,7 @@ fn parse(
             }
 
             Rule::name => {
-                let name = pair.as_str().to_string();
+                let name = GTName(pair.as_str().into());
                 Ok(GTImport {
                     path,
                     reference: GTImportReference::Name(name),

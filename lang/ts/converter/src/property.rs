@@ -1,17 +1,16 @@
-use genotype_lang_ts_tree::{
-    primitive::TSPrimitive, property::TSProperty, type_descriptor::TSTypeDescriptor,
-};
+use genotype_lang_ts_tree::{definition::TSDefinition, property::TSProperty};
 use genotype_parser::tree::property::GTProperty;
 
 use crate::convert::TSConvert;
 
 impl TSConvert<TSProperty> for GTProperty {
-    fn convert(&self) -> TSProperty {
+    fn convert<HoistFn>(&self, hoist: &HoistFn) -> TSProperty
+    where
+        HoistFn: Fn(TSDefinition),
+    {
         TSProperty {
-            name: self.name.convert(),
-            // [TODO]
-            // descriptor: self.descriptor.convert(),
-            descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+            name: self.name.convert(hoist),
+            descriptor: self.descriptor.convert(hoist),
             required: self.required,
         }
     }
@@ -19,7 +18,9 @@ impl TSConvert<TSProperty> for GTProperty {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::name::TSName;
+    use genotype_lang_ts_tree::{
+        name::TSName, primitive::TSPrimitive, type_descriptor::TSTypeDescriptor,
+    };
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -34,7 +35,7 @@ mod tests {
                 descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                 required: false,
             }
-            .convert(),
+            .convert(&|_| {}),
             TSProperty {
                 name: TSName("name".to_string()),
                 descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),

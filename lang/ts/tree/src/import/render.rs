@@ -17,6 +17,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
+    use crate::import_glob_alias::TSImportGlobAlias;
     use crate::import_name::TSImportName;
     use crate::import_reference::TSImportReference;
     use crate::indent::ts_indent;
@@ -41,7 +42,9 @@ mod tests {
         assert_eq!(
             TSImport {
                 path: "../path/to/module.ts".to_string(),
-                reference: TSImportReference::Glob(TSName("Name".to_string())),
+                reference: TSImportReference::Glob(TSImportGlobAlias::Resolved(TSName(
+                    "Name".to_string()
+                ))),
             }
             .render(&indent),
             r#"import * as Name from "../path/to/module.ts";"#

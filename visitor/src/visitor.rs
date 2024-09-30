@@ -1,7 +1,7 @@
 use genotype_parser::tree::{
-    alias::GTAlias, array::GTArray, descriptor::GTDescriptor, import::GTImport, module::GTModule,
-    name::GTName, object::GTObject, primitive::GTPrimitive, property::GTProperty,
-    reference::GTReference, tuple::GTTuple,
+    alias::GTAlias, array::GTArray, descriptor::GTDescriptor, import::GTImport,
+    inline_import::GTInlineImport, module::GTModule, name::GTName, object::GTObject,
+    primitive::GTPrimitive, property::GTProperty, tuple::GTTuple,
 };
 
 pub trait GTVisitor {
@@ -23,7 +23,7 @@ pub trait GTVisitor {
 
     fn visit_property(&mut self, _property: &GTProperty) {}
 
-    fn visit_reference(&mut self, _reference: &GTReference) {}
+    fn visit_inline_import(&mut self, _import: &GTInlineImport) {}
 
     fn visit_name(&mut self, _name: &GTName) {}
 }

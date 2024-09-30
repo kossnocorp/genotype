@@ -1,6 +1,15 @@
 mod alias;
+mod array;
 mod convert;
+mod descriptor;
+mod import;
+mod import_name;
+mod import_reference;
+mod inline_import;
 mod module;
 mod name;
+mod object;
 mod primitive;
 mod property;
+mod tuple;
+mod union;

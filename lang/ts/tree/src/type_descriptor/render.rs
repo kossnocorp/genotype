@@ -8,8 +8,10 @@ impl GTRender for TSTypeDescriptor {
             TSTypeDescriptor::Primitive(primitive) => primitive.render(indent),
             TSTypeDescriptor::Name(name) => name.render(indent),
             TSTypeDescriptor::Union(union) => union.render(indent),
+            TSTypeDescriptor::Object(object) => object.render(indent),
             TSTypeDescriptor::Array(array) => array.render(indent),
             TSTypeDescriptor::Tuple(tuple) => tuple.render(indent),
+            TSTypeDescriptor::InlineImport(import) => import.render(indent),
         }
     }
 }
@@ -18,7 +20,8 @@ impl GTRender for TSTypeDescriptor {
 mod tests {
     use super::*;
     use crate::{
-        array::TSArray, indent::ts_indent, name::TSName, primitive::TSPrimitive, tuple::TSTuple,
+        array::TSArray, indent::ts_indent, inline_import::TSInlineImport, name::TSName,
+        object::TSObject, primitive::TSPrimitive, property::TSProperty, tuple::TSTuple,
         union::TSUnion,
     };
 
@@ -60,6 +63,32 @@ mod tests {
     }
 
     #[test]
+    fn test_render_object() {
+        let indent = ts_indent();
+        assert_eq!(
+            TSTypeDescriptor::Object(Box::new(TSObject {
+                properties: vec![
+                    TSProperty {
+                        name: TSName("name".to_string()),
+                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                        required: true
+                    },
+                    TSProperty {
+                        name: TSName("age".to_string()),
+                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Number),
+                        required: false
+                    }
+                ]
+            }))
+            .render(&indent),
+            r#"{
+  name: string,
+  age?: number
+}"#
+        );
+    }
+
+    #[test]
     fn test_render_array() {
         let indent = ts_indent();
         assert_eq!(
@@ -83,6 +112,19 @@ mod tests {
             }))
             .render(&indent),
             "[number, string]"
+        );
+    }
+
+    #[test]
+    fn test_render_import_type() {
+        let indent = ts_indent();
+        assert_eq!(
+            TSTypeDescriptor::InlineImport(TSInlineImport {
+                path: "../path/to/module.ts".to_string(),
+                name: TSName("Name".to_string()),
+            })
+            .render(&indent),
+            r#"import("../path/to/module.ts").Name"#
         );
     }
 }

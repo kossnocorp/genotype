@@ -1,19 +1,20 @@
 use genotype_lang_ts_tree::{
     alias::TSAlias, definition::TSDefinition, definition_descriptor::TSDefinitionDescriptor,
-    primitive::TSPrimitive, type_descriptor::TSTypeDescriptor,
 };
 use genotype_parser::tree::alias::GTAlias;
 
 use crate::convert::TSConvert;
 
 impl TSConvert<TSDefinition> for GTAlias {
-    fn convert(&self) -> TSDefinition {
+    fn convert<HoistFn>(&self, hoist: &HoistFn) -> TSDefinition
+    where
+        HoistFn: Fn(TSDefinition),
+    {
         TSDefinition {
             doc: None,
             descriptor: TSDefinitionDescriptor::Alias(TSAlias {
-                name: self.name.convert(),
-                // [TODO]
-                descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Boolean),
+                name: self.name.convert(hoist),
+                descriptor: self.descriptor.convert(hoist),
             }),
         }
     }
@@ -21,7 +22,9 @@ impl TSConvert<TSDefinition> for GTAlias {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::name::TSName;
+    use genotype_lang_ts_tree::{
+        name::TSName, primitive::TSPrimitive, type_descriptor::TSTypeDescriptor,
+    };
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -37,7 +40,7 @@ mod tests {
                 name: GTName("Name".to_string()),
                 descriptor: GTDescriptor::Primitive(GTPrimitive::Boolean),
             }
-            .convert(),
+            .convert(&|_| {}),
             TSDefinition {
                 doc: None,
                 descriptor: TSDefinitionDescriptor::Alias(TSAlias {

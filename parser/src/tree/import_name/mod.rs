@@ -1,5 +1,7 @@
+use super::name::GTName;
+
 #[derive(Debug, PartialEq, Clone)]
 pub enum GTImportName {
-    Name(String),
-    Alias(String, String),
+    Name(GTName),
+    Alias(GTName, GTName),
 }

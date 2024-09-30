@@ -66,9 +66,9 @@ mod tests {
         parser::parse_gt_code,
         tree::{
             alias::GTAlias, array::GTArray, descriptor::GTDescriptor, import::GTImport,
-            import_name::GTImportName, import_reference::GTImportReference, name::GTName,
-            object::GTObject, primitive::GTPrimitive, property::GTProperty, reference::GTReference,
-            tuple::GTTuple,
+            import_name::GTImportName, import_reference::GTImportReference,
+            inline_import::GTInlineImport, name::GTName, object::GTObject, primitive::GTPrimitive,
+            property::GTProperty, tuple::GTTuple,
         },
     };
     use pretty_assertions::assert_eq;
@@ -488,14 +488,14 @@ mod tests {
                     GTImport {
                         path: "../../author".to_string(),
                         reference: GTImportReference::Names(vec![
-                            GTImportName::Name("Author".to_string()),
-                            GTImportName::Name("Genre".to_string()),
-                            GTImportName::Alias("Something".to_string(), "Else".to_string()),
+                            GTImportName::Name(GTName("Author".into())),
+                            GTImportName::Name(GTName("Genre".into())),
+                            GTImportName::Alias(GTName("Something".into()), GTName("Else".into())),
                         ]),
                     },
                     GTImport {
                         path: "author".to_string(),
-                        reference: GTImportReference::Name("Author".to_string()),
+                        reference: GTImportReference::Name(GTName("Author".to_string())),
                     },
                 ],
                 aliases: vec![
@@ -513,7 +513,7 @@ mod tests {
                                 GTProperty {
                                     doc: None,
                                     name: GTName("author".to_string()),
-                                    descriptor: GTDescriptor::Reference(GTReference {
+                                    descriptor: GTDescriptor::InlineImport(GTInlineImport {
                                         path: "../../author".to_string(),
                                         name: GTName("Author".to_string()),
                                     }),
@@ -531,7 +531,7 @@ mod tests {
                     GTAlias {
                         doc: None,
                         name: GTName("Author".to_string()),
-                        descriptor: GTDescriptor::Reference(GTReference {
+                        descriptor: GTDescriptor::InlineImport(GTInlineImport {
                             path: "../../author".to_string(),
                             name: GTName("Author".to_string()),
                         }),

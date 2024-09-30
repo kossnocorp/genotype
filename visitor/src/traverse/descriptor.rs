@@ -21,7 +21,7 @@ impl GTTraverse for GTDescriptor {
 
             GTDescriptor::Tuple(tuple) => tuple.traverse(visitor),
 
-            GTDescriptor::Reference(reference) => reference.traverse(visitor),
+            GTDescriptor::InlineImport(import) => import.traverse(visitor),
 
             GTDescriptor::Nullable(descriptor) => descriptor.traverse(visitor),
         }

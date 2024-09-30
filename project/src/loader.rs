@@ -105,8 +105,8 @@ mod tests {
     use super::*;
     use genotype_parser::tree::{
         alias::GTAlias, array::GTArray, descriptor::GTDescriptor, import::GTImport,
-        import_reference::GTImportReference, module::GTModule, name::GTName, object::GTObject,
-        primitive::GTPrimitive, property::GTProperty, reference::GTReference,
+        import_reference::GTImportReference, inline_import::GTInlineImport, module::GTModule,
+        name::GTName, object::GTObject, primitive::GTPrimitive, property::GTProperty,
     };
     use pretty_assertions::assert_eq;
 
@@ -167,7 +167,7 @@ mod tests {
                     doc: None,
                     imports: vec![GTImport {
                         path: "./author".to_string(),
-                        reference: GTImportReference::Name("Author".to_string()),
+                        reference: GTImportReference::Name(GTName("Author".into())),
                     }],
                     aliases: vec![GTAlias {
                         doc: None,
@@ -197,7 +197,7 @@ mod tests {
                     doc: None,
                     imports: vec![GTImport {
                         path: "./book".to_string(),
-                        reference: GTImportReference::Name("Book".to_string()),
+                        reference: GTImportReference::Name(GTName("Book".into())),
                     }],
                     aliases: vec![GTAlias {
                         doc: None,
@@ -207,7 +207,7 @@ mod tests {
                                 GTProperty {
                                     doc: None,
                                     name: GTName("user".to_string()),
-                                    descriptor: GTDescriptor::Reference(GTReference {
+                                    descriptor: GTDescriptor::InlineImport(GTInlineImport {
                                         path: "./user".to_string(),
                                         name: GTName("User".to_string()),
                                     }),
