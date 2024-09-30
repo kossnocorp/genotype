@@ -3,6 +3,8 @@ pub mod array;
 pub mod definition;
 pub mod definition_descriptor;
 pub mod import;
+pub mod import_name;
+pub mod import_reference;
 pub mod indent;
 pub mod interface;
 pub mod module;
