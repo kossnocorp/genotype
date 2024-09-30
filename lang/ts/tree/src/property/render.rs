@@ -8,7 +8,7 @@ impl GTRender for TSProperty {
             "{}{}{}: {}",
             indent.string,
             self.name.render(indent),
-            if self.optional { "?" } else { "" },
+            if self.required { "" } else { "?" },
             self.descriptor.render(indent)
         )
     }
@@ -28,7 +28,7 @@ mod tests {
             TSProperty {
                 name: TSName("name".to_string()),
                 descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
-                optional: false
+                required: true
             }
             .render(&indent),
             "name: string"
@@ -37,7 +37,7 @@ mod tests {
             TSProperty {
                 name: TSName("name".to_string()),
                 descriptor: TSTypeDescriptor::Name(TSName("Name".to_string())),
-                optional: false
+                required: true
             }
             .render(&indent),
             "name: Name"
@@ -51,7 +51,7 @@ mod tests {
             TSProperty {
                 name: TSName("name".to_string()),
                 descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
-                optional: false
+                required: true
             }
             .render(&indent),
             "  name: string"
@@ -59,13 +59,13 @@ mod tests {
     }
 
     #[test]
-    fn test_render_optional() {
+    fn test_render_required() {
         let indent = ts_indent();
         assert_eq!(
             TSProperty {
                 name: TSName("name".to_string()),
                 descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
-                optional: true
+                required: false
             }
             .render(&indent),
             "name?: string"

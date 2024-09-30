@@ -125,7 +125,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "genotype_lang_core_parser"
+name = "genotype_lang_core_converter"
 version = "0.1.0"
 dependencies = [
  "genotype_parser",
@@ -140,10 +140,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "genotype_lang_ts_parser"
+name = "genotype_lang_ts_converter"
 version = "0.1.0"
 dependencies = [
- "genotype_lang_core_parser",
+ "genotype_lang_core_converter",
  "genotype_lang_ts_tree",
  "genotype_parser",
  "pretty_assertions",

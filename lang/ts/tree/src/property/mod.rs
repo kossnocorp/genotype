@@ -6,5 +6,5 @@ mod render;
 pub struct TSProperty {
     pub name: TSName,
     pub descriptor: TSTypeDescriptor,
-    pub optional: bool,
+    pub required: bool,
 }

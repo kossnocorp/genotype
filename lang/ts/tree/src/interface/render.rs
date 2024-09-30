@@ -55,12 +55,12 @@ mod tests {
                     TSProperty {
                         name: TSName("name".to_string()),
                         descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
-                        optional: false
+                        required: true
                     },
                     TSProperty {
                         name: TSName("age".to_string()),
                         descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Number),
-                        optional: true
+                        required: false
                     }
                 ]
             }
@@ -79,12 +79,12 @@ mod tests {
                     TSProperty {
                         name: TSName("name".to_string()),
                         descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
-                        optional: false
+                        required: true
                     },
                     TSProperty {
                         name: TSName("age".to_string()),
                         descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Number),
-                        optional: true
+                        required: false
                     }
                 ]
             }
