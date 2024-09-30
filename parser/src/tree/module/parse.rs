@@ -1,65 +1,62 @@
-use super::{
-    alias::{parse_alias, GTAlias},
-    import::GTImport,
-};
-use crate::{parser::Rule, tree::import::parse_import};
 use pest::iterators::Pairs;
 
-#[derive(Debug, PartialEq, Clone)]
-pub struct GTModule {
-    pub path: String,
-    pub doc: Option<String>,
-    pub imports: Vec<GTImport>,
-    pub aliases: Vec<GTAlias>,
+use crate::parser::{parse_gt_code, Rule};
+
+use super::GTModule;
+
+impl TryFrom<String> for GTModule {
+    type Error = Box<dyn std::error::Error>;
+
+    fn try_from(code: String) -> Result<Self, Self::Error> {
+        let pairs = parse_gt_code(&code)?;
+        pairs.try_into()
+    }
 }
 
-pub fn parse_gt_module(
-    path: String,
-    mut pairs: Pairs<'_, Rule>,
-) -> Result<GTModule, Box<dyn std::error::Error>> {
-    let mut module = GTModule {
-        path,
-        doc: None,
-        imports: vec![],
-        aliases: vec![],
-    };
+impl TryFrom<Pairs<'_, Rule>> for GTModule {
+    type Error = Box<dyn std::error::Error>;
 
-    let module_pair = pairs.next().unwrap();
+    fn try_from(mut pairs: Pairs<'_, Rule>) -> Result<Self, Self::Error> {
+        let mut module = GTModule {
+            doc: None,
+            imports: vec![],
+            aliases: vec![],
+        };
 
-    for pair in module_pair.into_inner() {
-        match pair.as_rule() {
-            Rule::module_doc => {
-                let doc = pair.into_inner().find(|p| p.as_rule() == Rule::doc);
-                if let Some(pair) = doc {
-                    module.doc = Some(if let Some(str) = module.doc {
-                        str + "\n" + pair.as_str()
-                    } else {
-                        pair.as_str().to_string()
-                    });
+        let module_pair = pairs.next().unwrap();
+
+        for pair in module_pair.into_inner() {
+            match pair.as_rule() {
+                Rule::module_doc => {
+                    let doc = pair.into_inner().find(|p| p.as_rule() == Rule::doc);
+                    if let Some(pair) = doc {
+                        module.doc = Some(if let Some(str) = module.doc {
+                            str + "\n" + pair.as_str()
+                        } else {
+                            pair.as_str().to_string()
+                        });
+                    }
+                }
+
+                Rule::import => {
+                    module.imports.push(pair.try_into()?);
+                }
+
+                Rule::alias => {
+                    module.aliases.push(pair.try_into()?);
+                }
+
+                Rule::EOI => {}
+
+                _ => {
+                    println!("1 ====== unknown rule: {:?}", pair);
+                    unreachable!("unknown rule");
                 }
             }
-
-            Rule::import => {
-                // [TODO]
-                let import = parse_import(pair)?;
-                module.imports.push(import);
-            }
-
-            Rule::alias => {
-                let alias = parse_alias(pair)?;
-                module.aliases.push(alias);
-            }
-
-            Rule::EOI => {}
-
-            _ => {
-                println!("1 ====== unknown rule: {:?}", pair);
-                unreachable!("unknown rule");
-            }
         }
-    }
 
-    Ok(module)
+        Ok(module)
+    }
 }
 
 #[cfg(test)]
@@ -68,14 +65,9 @@ mod tests {
     use crate::{
         parser::parse_gt_code,
         tree::{
-            array::GTArray,
-            descriptor::GTDescriptor,
-            import::{ImportName, ImportReference},
-            name::GTName,
-            object::GTObject,
-            primitive::GTPrimitive,
-            property::GTProperty,
-            reference::GTReference,
+            alias::GTAlias, array::GTArray, descriptor::GTDescriptor, import::GTImport,
+            import_name::GTImportName, import_reference::GTImportReference, name::GTName,
+            object::GTObject, primitive::GTPrimitive, property::GTProperty, reference::GTReference,
             tuple::GTTuple,
         },
     };
@@ -87,7 +79,6 @@ mod tests {
         assert_module(
             "./examples/syntax/01-alias.type",
             GTModule {
-                path: "./examples/syntax/01-alias.type".to_string(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
@@ -111,7 +102,6 @@ mod tests {
         assert_module(
             "./examples/syntax/02-primitives.type",
             GTModule {
-                path: "./examples/syntax/02-primitives.type".to_string(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
@@ -145,7 +135,6 @@ mod tests {
         assert_module(
             "./examples/syntax/03-objects.type",
             GTModule {
-                path: "./examples/syntax/03-objects.type".to_string(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
@@ -239,7 +228,6 @@ mod tests {
         assert_module(
             "./examples/syntax/04-comments.type",
             GTModule {
-                path: "./examples/syntax/04-comments.type".to_string(),
                 doc: Some("Module comment...\n...multiline".to_string()),
                 imports: vec![],
                 aliases: vec![
@@ -283,7 +271,6 @@ mod tests {
         assert_module(
             "./examples/syntax/05-optional.type",
             GTModule {
-                path: "./examples/syntax/05-optional.type".to_string(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![GTAlias {
@@ -325,7 +312,6 @@ mod tests {
         assert_module(
             "./examples/syntax/06-nested.type",
             GTModule {
-                path: "./examples/syntax/06-nested.type".to_string(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
@@ -405,7 +391,6 @@ mod tests {
         assert_module(
             "./examples/syntax/07-arrays.type",
             GTModule {
-                path: "./examples/syntax/07-arrays.type".to_string(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![GTAlias {
@@ -439,7 +424,6 @@ mod tests {
         assert_module(
             "./examples/syntax/08-tuples.type",
             GTModule {
-                path: "./examples/syntax/08-tuples.type".to_string(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
@@ -495,24 +479,23 @@ mod tests {
         assert_module(
             "./examples/syntax/09-modules.type",
             GTModule {
-                path: "./examples/syntax/09-modules.type".to_string(),
                 doc: None,
                 imports: vec![
                     GTImport {
                         path: "author".to_string(),
-                        reference: ImportReference::Glob,
+                        reference: GTImportReference::Glob,
                     },
                     GTImport {
                         path: "../../author".to_string(),
-                        reference: ImportReference::Names(vec![
-                            ImportName::Name("Author".to_string()),
-                            ImportName::Name("Genre".to_string()),
-                            ImportName::Alias("Something".to_string(), "Else".to_string()),
+                        reference: GTImportReference::Names(vec![
+                            GTImportName::Name("Author".to_string()),
+                            GTImportName::Name("Genre".to_string()),
+                            GTImportName::Alias("Something".to_string(), "Else".to_string()),
                         ]),
                     },
                     GTImport {
                         path: "author".to_string(),
-                        reference: ImportReference::Name("Author".to_string()),
+                        reference: GTImportReference::Name("Author".to_string()),
                     },
                 ],
                 aliases: vec![
@@ -564,7 +547,7 @@ mod tests {
 
         match pairs {
             Ok(pairs) => {
-                let module = parse_gt_module(path.to_string(), pairs);
+                let module = TryInto::<GTModule>::try_into(pairs);
                 match module {
                     Ok(module) => {
                         assert_eq!(module, expected);

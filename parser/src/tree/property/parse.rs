@@ -1,23 +1,18 @@
-use super::{
-    descriptor::{parse_descriptor, GTDescriptor},
-    name::GTName,
-};
-use crate::parser::Rule;
 use pest::iterators::{Pair, Pairs};
 
-#[derive(Debug, PartialEq, Clone)]
-pub struct GTProperty {
-    pub doc: Option<String>,
-    pub name: GTName,
-    pub descriptor: GTDescriptor,
-    pub required: bool,
-}
+use crate::{parser::Rule, tree::name::GTName};
 
-pub fn parse_property(pair: Pair<'_, Rule>) -> Result<GTProperty, Box<dyn std::error::Error>> {
-    let required = pair.as_rule() == Rule::required_property;
-    let mut inner = pair.into_inner();
-    let pair = inner.next().unwrap(); // [TODO]
-    parse(inner, pair, ParseState::Doc(required, None))
+use super::GTProperty;
+
+impl TryFrom<Pair<'_, Rule>> for GTProperty {
+    type Error = Box<dyn std::error::Error>;
+
+    fn try_from(pair: Pair<'_, Rule>) -> Result<Self, Self::Error> {
+        let required = pair.as_rule() == Rule::required_property;
+        let mut inner = pair.into_inner();
+        let pair = inner.next().unwrap(); // [TODO]
+        parse(inner, pair, ParseState::Doc(required, None))
+    }
 }
 
 fn parse(
@@ -55,7 +50,7 @@ fn parse(
         }
 
         ParseState::Descriptor(required, doc, name) => {
-            let descriptor = parse_descriptor(pair)?;
+            let descriptor = pair.try_into()?;
             Ok(GTProperty {
                 doc,
                 name,

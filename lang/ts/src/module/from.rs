@@ -3,9 +3,8 @@ use genotype_parser::tree::module::GTModule;
 use super::TSModule;
 
 impl From<GTModule> for TSModule {
-    fn from(module: GTModule) -> Self {
+    fn from(_module: GTModule) -> Self {
         TSModule {
-            path: "./module.ts".to_string(),
             doc: None,
             imports: vec![],
             definitions: vec![],
@@ -24,13 +23,11 @@ mod tests {
     fn test_from() {
         assert_eq!(
             TSModule::from(GTModule {
-                path: "./module".to_string(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![],
             }),
             TSModule {
-                path: "./module.ts".to_string(),
                 doc: None,
                 imports: vec![],
                 definitions: vec![],

@@ -2,6 +2,8 @@ pub mod alias;
 pub mod array;
 pub mod descriptor;
 pub mod import;
+pub mod import_name;
+pub mod import_reference;
 pub mod module;
 pub mod name;
 pub mod object;

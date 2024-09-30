@@ -39,7 +39,6 @@ mod tests {
         let indent = ts_indent();
         assert_eq!(
             TSModule {
-                path: "./module.ts".to_string(),
                 doc: None,
                 imports: vec![
                     TSImport {

@@ -1,38 +1,26 @@
 use pest::iterators::{Pair, Pairs};
 
-use crate::parser::Rule;
+use crate::{
+    parser::Rule,
+    tree::{import_name::GTImportName, import_reference::GTImportReference},
+};
 
-#[derive(Debug, PartialEq, Clone)]
-pub struct GTImport {
-    pub path: String,
-    pub reference: ImportReference,
-}
+use super::GTImport;
 
-pub fn parse_import(
-    pair: Pair<'_, crate::parser::Rule>,
-) -> Result<GTImport, Box<dyn std::error::Error>> {
-    let mut inner = pair.into_inner();
-    let pair = inner.next().unwrap(); // [TODO]
+impl TryFrom<Pair<'_, Rule>> for GTImport {
+    type Error = Box<dyn std::error::Error>;
 
-    let mut inner = pair.into_inner();
-    let pair = inner.next().unwrap(); // [TODO]
+    fn try_from(pair: Pair<'_, Rule>) -> Result<Self, Self::Error> {
+        let mut inner = pair.into_inner();
+        let pair = inner.next().unwrap(); // [TODO]
 
-    let import = parse(inner, pair, ParseState::Path)?;
+        let mut inner = pair.into_inner();
+        let pair = inner.next().unwrap(); // [TODO]
 
-    Ok(import)
-}
+        let import = parse(inner, pair, ParseState::Path)?;
 
-#[derive(Debug, PartialEq, Clone)]
-pub enum ImportReference {
-    Glob,
-    Names(Vec<ImportName>),
-    Name(String),
-}
-
-#[derive(Debug, PartialEq, Clone)]
-pub enum ImportName {
-    Name(String),
-    Alias(String, String),
+        Ok(import)
+    }
 }
 
 fn parse(
@@ -52,7 +40,7 @@ fn parse(
         ParseState::Names(path) => match pair.as_rule() {
             Rule::import_glob => Ok(GTImport {
                 path,
-                reference: ImportReference::Glob,
+                reference: GTImportReference::Glob,
             }),
 
             Rule::import_names => {
@@ -66,15 +54,15 @@ fn parse(
 
                     if let Some(alias) = alias {
                         let alias = alias.as_str().to_string();
-                        names.push(ImportName::Alias(name, alias));
+                        names.push(GTImportName::Alias(name, alias));
                     } else {
-                        names.push(ImportName::Name(name));
+                        names.push(GTImportName::Name(name));
                     }
                 }
 
                 Ok(GTImport {
                     path,
-                    reference: ImportReference::Names(names),
+                    reference: GTImportReference::Names(names),
                 })
             }
 
@@ -82,7 +70,7 @@ fn parse(
                 let name = pair.as_str().to_string();
                 Ok(GTImport {
                     path,
-                    reference: ImportReference::Name(name),
+                    reference: GTImportReference::Name(name),
                 })
             }
 
