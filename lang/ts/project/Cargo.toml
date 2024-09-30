@@ -1,0 +1,12 @@
+[package]
+name = "genotype_lang_ts_project"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+genotype_project = { path = "../../../project" }
+genotype_lang_ts_tree = { path = "../tree" }
+genotype_lang_ts_converter = { path = "../converter" }
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
