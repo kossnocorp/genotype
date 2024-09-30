@@ -1,15 +1,9 @@
-use genotype_lang_core::{indent::Indent, node::Node};
+use genotype_lang_core::{indent::GTIndent, render::GTRender};
 
-use crate::definition_descriptor::TSDefinitionDescriptor;
+use super::TSDefinition;
 
-#[derive(Debug, PartialEq, Clone)]
-pub struct TSDefinition {
-    pub doc: Option<String>,
-    pub descriptor: TSDefinitionDescriptor,
-}
-
-impl Node for TSDefinition {
-    fn render(&self, indent: &Indent) -> String {
+impl GTRender for TSDefinition {
+    fn render(&self, indent: &GTIndent) -> String {
         format!("export {}", self.descriptor.render(&indent))
     }
 }
@@ -18,8 +12,9 @@ impl Node for TSDefinition {
 mod tests {
     use super::*;
     use crate::{
-        alias::TSAlias, indent::ts_indent, interface::TSInterface, name::TSName,
-        primitive::TSPrimitive, property::TSProperty, type_descriptor::TSTypeDescriptor,
+        alias::TSAlias, definition_descriptor::TSDefinitionDescriptor, indent::ts_indent,
+        interface::TSInterface, name::TSName, primitive::TSPrimitive, property::TSProperty,
+        type_descriptor::TSTypeDescriptor,
     };
 
     #[test]

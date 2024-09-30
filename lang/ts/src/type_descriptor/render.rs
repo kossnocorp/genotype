@@ -1,18 +1,9 @@
-use crate::{array::TSArray, name::TSName, primitive::TSPrimitive, tuple::TSTuple, union::TSUnion};
+use genotype_lang_core::{indent::GTIndent, render::GTRender};
 
-use genotype_lang_core::{indent::Indent, node::Node};
+use super::TSTypeDescriptor;
 
-#[derive(Debug, PartialEq, Clone)]
-pub enum TSTypeDescriptor {
-    Primitive(TSPrimitive),
-    Name(TSName),
-    Union(TSUnion),
-    Array(Box<TSArray>),
-    Tuple(Box<TSTuple>),
-}
-
-impl Node for TSTypeDescriptor {
-    fn render(&self, indent: &Indent) -> String {
+impl GTRender for TSTypeDescriptor {
+    fn render(&self, indent: &GTIndent) -> String {
         match self {
             TSTypeDescriptor::Primitive(primitive) => primitive.render(indent),
             TSTypeDescriptor::Name(name) => name.render(indent),
@@ -26,7 +17,10 @@ impl Node for TSTypeDescriptor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{indent::ts_indent, name::TSName, primitive::TSPrimitive, tuple::TSTuple};
+    use crate::{
+        array::TSArray, indent::ts_indent, name::TSName, primitive::TSPrimitive, tuple::TSTuple,
+        union::TSUnion,
+    };
 
     #[test]
     fn test_render_primitive() {

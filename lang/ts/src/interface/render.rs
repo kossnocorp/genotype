@@ -1,14 +1,9 @@
-use crate::{name::TSName, property::TSProperty};
-use genotype_lang_core::{indent::Indent, node::Node};
+use genotype_lang_core::{indent::GTIndent, render::GTRender};
 
-#[derive(Debug, PartialEq, Clone)]
-pub struct TSInterface {
-    pub name: TSName,
-    pub properties: Vec<TSProperty>,
-}
+use super::TSInterface;
 
-impl Node for TSInterface {
-    fn render(&self, indent: &Indent) -> String {
+impl GTRender for TSInterface {
+    fn render(&self, indent: &GTIndent) -> String {
         let prop_indent = indent.increment();
         let properties = self
             .properties
@@ -33,7 +28,8 @@ mod tests {
 
     use super::*;
     use crate::{
-        indent::ts_indent, name::TSName, primitive::TSPrimitive, type_descriptor::TSTypeDescriptor,
+        indent::ts_indent, name::TSName, primitive::TSPrimitive, property::TSProperty,
+        type_descriptor::TSTypeDescriptor,
     };
 
     #[test]

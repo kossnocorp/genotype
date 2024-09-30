@@ -1,15 +1,9 @@
-use genotype_lang_core::{indent::Indent, node::Node};
+use genotype_lang_core::{indent::GTIndent, render::GTRender};
 
-use crate::{alias::TSAlias, interface::TSInterface};
+use super::TSDefinitionDescriptor;
 
-#[derive(Debug, PartialEq, Clone)]
-pub enum TSDefinitionDescriptor {
-    Alias(TSAlias),
-    Interface(TSInterface),
-}
-
-impl Node for TSDefinitionDescriptor {
-    fn render(&self, indent: &Indent) -> String {
+impl GTRender for TSDefinitionDescriptor {
+    fn render(&self, indent: &GTIndent) -> String {
         match self {
             TSDefinitionDescriptor::Alias(alias) => alias.render(indent),
             TSDefinitionDescriptor::Interface(interface) => interface.render(indent),

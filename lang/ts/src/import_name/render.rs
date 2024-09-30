@@ -1,15 +1,9 @@
-use genotype_lang_core::{indent::Indent, node::Node};
+use genotype_lang_core::{indent::GTIndent, render::GTRender};
 
-use crate::name::TSName;
+use super::TSImportName;
 
-#[derive(Debug, PartialEq, Clone)]
-pub enum TSImportName {
-    Name(TSName),
-    Alias(TSName, TSName),
-}
-
-impl Node for TSImportName {
-    fn render(&self, indent: &Indent) -> String {
+impl GTRender for TSImportName {
+    fn render(&self, indent: &GTIndent) -> String {
         match self {
             TSImportName::Name(name) => name.render(indent),
             TSImportName::Alias(name, alias) => {

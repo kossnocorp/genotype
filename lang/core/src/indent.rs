@@ -1,21 +1,21 @@
-pub struct Indent<'a> {
+pub struct GTIndent<'a> {
     symbol: &'a str,
     size: usize,
     pub string: String,
 }
 
-impl Indent<'_> {
-    pub fn new<'a>(symbol: &'a str, size: usize) -> Indent<'a> {
+impl GTIndent<'_> {
+    pub fn new<'a>(symbol: &'a str, size: usize) -> GTIndent<'a> {
         let string = symbol.repeat(size);
-        Indent {
+        GTIndent {
             symbol,
             string,
             size,
         }
     }
 
-    pub fn start<'a>(symbol: &'a str) -> Indent<'a> {
-        Indent::new(symbol, 0)
+    pub fn start<'a>(symbol: &'a str) -> GTIndent<'a> {
+        GTIndent::new(symbol, 0)
     }
 
     pub fn format<T: Into<String>>(&self, code: T) -> String {

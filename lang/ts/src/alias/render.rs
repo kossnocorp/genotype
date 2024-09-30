@@ -1,14 +1,9 @@
-use crate::{name::TSName, type_descriptor::TSTypeDescriptor};
-use genotype_lang_core::{indent::Indent, node::Node};
+use genotype_lang_core::{indent::GTIndent, render::GTRender};
 
-#[derive(Debug, PartialEq, Clone)]
-pub struct TSAlias {
-    pub name: TSName,
-    pub descriptor: TSTypeDescriptor,
-}
+use super::TSAlias;
 
-impl Node for TSAlias {
-    fn render(&self, indent: &Indent) -> String {
+impl GTRender for TSAlias {
+    fn render(&self, indent: &GTIndent) -> String {
         format!(
             "type {} = {};",
             self.name.render(indent),
@@ -21,7 +16,9 @@ impl Node for TSAlias {
 mod tests {
 
     use super::*;
-    use crate::{indent::ts_indent, name::TSName, primitive::TSPrimitive};
+    use crate::{
+        indent::ts_indent, name::TSName, primitive::TSPrimitive, type_descriptor::TSTypeDescriptor,
+    };
 
     #[test]
     fn test_render() {

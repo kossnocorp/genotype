@@ -1,16 +1,9 @@
-use genotype_lang_core::{indent::Indent, node::Node};
+use genotype_lang_core::{indent::GTIndent, render::GTRender};
 
-use crate::{name::TSName, type_descriptor::TSTypeDescriptor};
+use super::TSProperty;
 
-#[derive(Debug, PartialEq, Clone)]
-pub struct TSProperty {
-    pub name: TSName,
-    pub descriptor: TSTypeDescriptor,
-    pub optional: bool,
-}
-
-impl Node for TSProperty {
-    fn render(&self, indent: &Indent) -> String {
+impl GTRender for TSProperty {
+    fn render(&self, indent: &GTIndent) -> String {
         format!(
             "{}{}{}: {}",
             indent.string,
@@ -24,7 +17,9 @@ impl Node for TSProperty {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{indent::ts_indent, primitive::TSPrimitive};
+    use crate::{
+        indent::ts_indent, name::TSName, primitive::TSPrimitive, type_descriptor::TSTypeDescriptor,
+    };
 
     #[test]
     fn test_render_primitive() {

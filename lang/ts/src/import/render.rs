@@ -1,15 +1,9 @@
-use genotype_lang_core::{indent::Indent, node::Node};
+use genotype_lang_core::{indent::GTIndent, render::GTRender};
 
-use crate::import_reference::TSImportReference;
+use super::TSImport;
 
-#[derive(Debug, PartialEq, Clone)]
-pub struct TSImport {
-    pub path: String,
-    pub reference: TSImportReference,
-}
-
-impl Node for TSImport {
-    fn render(&self, indent: &Indent) -> String {
+impl GTRender for TSImport {
+    fn render(&self, indent: &GTIndent) -> String {
         format!(
             r#"import {} from "{}";"#,
             self.reference.render(indent),
@@ -24,6 +18,7 @@ mod tests {
 
     use super::*;
     use crate::import_name::TSImportName;
+    use crate::import_reference::TSImportReference;
     use crate::indent::ts_indent;
     use crate::name::TSName;
 

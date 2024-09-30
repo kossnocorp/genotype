@@ -1,9 +1,9 @@
-use genotype_lang_core::{indent::Indent, node::Node};
+use genotype_lang_core::{indent::GTIndent, render::GTRender};
 
 use super::TSModule;
 
-impl Node for TSModule {
-    fn render(&self, indent: &Indent) -> String {
+impl GTRender for TSModule {
+    fn render(&self, indent: &GTIndent) -> String {
         let imports = self
             .imports
             .iter()

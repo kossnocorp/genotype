@@ -1,16 +1,9 @@
-use genotype_lang_core::{indent::Indent, node::Node};
+use genotype_lang_core::{indent::GTIndent, render::GTRender};
 
-#[derive(Debug, PartialEq, Clone)]
-pub enum TSPrimitive {
-    String,
-    Number,
-    Boolean,
-    Null,
-    Undefined,
-}
+use super::TSPrimitive;
 
-impl Node for TSPrimitive {
-    fn render(&self, _indent: &Indent) -> String {
+impl GTRender for TSPrimitive {
+    fn render(&self, _indent: &GTIndent) -> String {
         match self {
             TSPrimitive::String => "string",
             TSPrimitive::Number => "number",

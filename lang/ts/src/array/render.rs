@@ -1,14 +1,9 @@
-use genotype_lang_core::{indent::Indent, node::Node};
+use genotype_lang_core::{indent::GTIndent, render::GTRender};
 
-use crate::type_descriptor::TSTypeDescriptor;
+use super::TSArray;
 
-#[derive(Debug, PartialEq, Clone)]
-pub struct TSArray {
-    pub descriptor: TSTypeDescriptor,
-}
-
-impl Node for TSArray {
-    fn render(&self, indent: &Indent) -> String {
+impl GTRender for TSArray {
+    fn render(&self, indent: &GTIndent) -> String {
         format!("Array<{}>", self.descriptor.render(indent))
     }
 }

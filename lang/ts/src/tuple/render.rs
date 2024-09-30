@@ -1,14 +1,9 @@
-use genotype_lang_core::{indent::Indent, node::Node};
+use genotype_lang_core::{indent::GTIndent, render::GTRender};
 
-use crate::type_descriptor::TSTypeDescriptor;
+use super::TSTuple;
 
-#[derive(Debug, PartialEq, Clone)]
-pub struct TSTuple {
-    pub descriptors: Vec<TSTypeDescriptor>,
-}
-
-impl Node for TSTuple {
-    fn render(&self, indent: &Indent) -> String {
+impl GTRender for TSTuple {
+    fn render(&self, indent: &GTIndent) -> String {
         let descriptors = self
             .descriptors
             .iter()
@@ -22,7 +17,7 @@ impl Node for TSTuple {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{indent::ts_indent, primitive::TSPrimitive};
+    use crate::{indent::ts_indent, primitive::TSPrimitive, type_descriptor::TSTypeDescriptor};
 
     #[test]
     fn test_render_tuple() {

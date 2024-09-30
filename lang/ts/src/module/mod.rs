@@ -1,6 +1,6 @@
 use crate::{definition::TSDefinition, import::TSImport};
 
-mod from;
+mod parser;
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]

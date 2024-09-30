@@ -1,10 +1,9 @@
-use genotype_lang_core::{indent::Indent, node::Node};
+use genotype_lang_core::{indent::GTIndent, render::GTRender};
 
-#[derive(Debug, PartialEq, Clone)]
-pub struct TSName(pub String);
+use super::TSName;
 
-impl Node for TSName {
-    fn render(&self, _indent: &Indent) -> String {
+impl GTRender for TSName {
+    fn render(&self, _indent: &GTIndent) -> String {
         self.0.clone()
     }
 }

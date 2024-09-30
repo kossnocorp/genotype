@@ -1,16 +1,9 @@
-use genotype_lang_core::{indent::Indent, node::Node};
+use genotype_lang_core::{indent::GTIndent, render::GTRender};
 
-use crate::{import_name::TSImportName, name::TSName};
+use super::TSImportReference;
 
-#[derive(Debug, PartialEq, Clone)]
-pub enum TSImportReference {
-    Default(TSName),
-    Glob(TSName),
-    Named(Vec<TSImportName>),
-}
-
-impl Node for TSImportReference {
-    fn render(&self, indent: &Indent) -> String {
+impl GTRender for TSImportReference {
+    fn render(&self, indent: &GTIndent) -> String {
         match self {
             TSImportReference::Default(name) => name.render(indent),
             TSImportReference::Glob(name) => format!("* as {}", name.render(indent)),
@@ -29,7 +22,7 @@ impl Node for TSImportReference {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{indent::ts_indent, name::TSName};
+    use crate::{import_name::TSImportName, indent::ts_indent, name::TSName};
 
     #[test]
     fn test_render_default() {

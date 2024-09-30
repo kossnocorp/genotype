@@ -1,14 +1,9 @@
-use genotype_lang_core::{indent::Indent, node::Node};
+use genotype_lang_core::{indent::GTIndent, render::GTRender};
 
-use crate::type_descriptor::TSTypeDescriptor;
+use super::TSUnion;
 
-#[derive(Debug, PartialEq, Clone)]
-pub struct TSUnion {
-    pub descriptors: Vec<TSTypeDescriptor>,
-}
-
-impl Node for TSUnion {
-    fn render(&self, indent: &Indent) -> String {
+impl GTRender for TSUnion {
+    fn render(&self, indent: &GTIndent) -> String {
         self.descriptors
             .iter()
             .map(|d| d.render(indent))
@@ -20,7 +15,7 @@ impl Node for TSUnion {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{indent::ts_indent, primitive::TSPrimitive};
+    use crate::{indent::ts_indent, primitive::TSPrimitive, type_descriptor::TSTypeDescriptor};
 
     #[test]
     fn test_render_union() {
