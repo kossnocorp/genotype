@@ -1,3 +1,11 @@
 [workspace]
 resolver = "2"
-members = ["lang/core", "lang/ts", "parser", "project", "visitor"]
+members = [
+  "lang/core/tree",
+  "lang/core/parser",
+  "lang/ts/tree",
+  "lang/ts/parser",
+  "parser",
+  "project",
+  "visitor",
+]

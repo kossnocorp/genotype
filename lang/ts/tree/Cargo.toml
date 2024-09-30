@@ -1,0 +1,10 @@
+[package]
+name = "genotype_lang_ts_tree"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+genotype_lang_core_tree = { path = "../../core/tree" }
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
