@@ -1,6 +1,7 @@
 use crate::{name::TSName, property::TSProperty};
 use genotype_lang_core::{indent::Indent, node::Node};
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct TSInterface {
     pub name: TSName,
     pub properties: Vec<TSProperty>,

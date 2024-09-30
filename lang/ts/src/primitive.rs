@@ -1,5 +1,6 @@
 use genotype_lang_core::{indent::Indent, node::Node};
 
+#[derive(Debug, PartialEq, Clone)]
 pub enum TSPrimitive {
     String,
     Number,

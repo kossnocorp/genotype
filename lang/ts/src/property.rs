@@ -2,6 +2,7 @@ use genotype_lang_core::{indent::Indent, node::Node};
 
 use crate::{name::TSName, type_descriptor::TSTypeDescriptor};
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct TSProperty {
     pub name: TSName,
     pub descriptor: TSTypeDescriptor,

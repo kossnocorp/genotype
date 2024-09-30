@@ -2,6 +2,7 @@ use crate::{array::TSArray, name::TSName, primitive::TSPrimitive, tuple::TSTuple
 
 use genotype_lang_core::{indent::Indent, node::Node};
 
+#[derive(Debug, PartialEq, Clone)]
 pub enum TSTypeDescriptor {
     Primitive(TSPrimitive),
     Name(TSName),

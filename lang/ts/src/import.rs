@@ -2,6 +2,7 @@ use genotype_lang_core::{indent::Indent, node::Node};
 
 use crate::import_reference::TSImportReference;
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct TSImport {
     pub path: String,
     pub reference: TSImportReference,

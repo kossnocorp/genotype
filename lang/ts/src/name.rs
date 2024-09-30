@@ -1,5 +1,6 @@
 use genotype_lang_core::{indent::Indent, node::Node};
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct TSName(pub String);
 
 impl Node for TSName {

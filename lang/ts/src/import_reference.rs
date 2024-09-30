@@ -2,6 +2,7 @@ use genotype_lang_core::{indent::Indent, node::Node};
 
 use crate::{import_name::TSImportName, name::TSName};
 
+#[derive(Debug, PartialEq, Clone)]
 pub enum TSImportReference {
     Default(TSName),
     Glob(TSName),

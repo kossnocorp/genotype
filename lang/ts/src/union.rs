@@ -2,6 +2,7 @@ use genotype_lang_core::{indent::Indent, node::Node};
 
 use crate::type_descriptor::TSTypeDescriptor;
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct TSUnion {
     pub descriptors: Vec<TSTypeDescriptor>,
 }

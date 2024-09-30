@@ -1,13 +1,6 @@
 use genotype_lang_core::{indent::Indent, node::Node};
 
-use crate::{definition::TSDefinition, import::TSImport};
-
-pub struct TSModule {
-    pub path: String,
-    pub doc: Option<String>,
-    pub imports: Vec<TSImport>,
-    pub definitions: Vec<TSDefinition>,
-}
+use super::TSModule;
 
 impl Node for TSModule {
     fn render(&self, indent: &Indent) -> String {
@@ -35,10 +28,10 @@ mod tests {
 
     use super::*;
     use crate::{
-        alias::TSAlias, definition_descriptor::TSDefinitionDescriptor, import_name::TSImportName,
-        import_reference::TSImportReference, indent::ts_indent, interface::TSInterface,
-        name::TSName, primitive::TSPrimitive, property::TSProperty,
-        type_descriptor::TSTypeDescriptor,
+        alias::TSAlias, definition::TSDefinition, definition_descriptor::TSDefinitionDescriptor,
+        import::TSImport, import_name::TSImportName, import_reference::TSImportReference,
+        indent::ts_indent, interface::TSInterface, name::TSName, primitive::TSPrimitive,
+        property::TSProperty, type_descriptor::TSTypeDescriptor,
     };
 
     #[test]

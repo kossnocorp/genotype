@@ -1,6 +1,7 @@
 use crate::{name::TSName, type_descriptor::TSTypeDescriptor};
 use genotype_lang_core::{indent::Indent, node::Node};
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct TSAlias {
     pub name: TSName,
     pub descriptor: TSTypeDescriptor,

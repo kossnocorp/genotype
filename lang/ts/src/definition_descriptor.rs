@@ -2,6 +2,7 @@ use genotype_lang_core::{indent::Indent, node::Node};
 
 use crate::{alias::TSAlias, interface::TSInterface};
 
+#[derive(Debug, PartialEq, Clone)]
 pub enum TSDefinitionDescriptor {
     Alias(TSAlias),
     Interface(TSInterface),

@@ -2,6 +2,7 @@ use genotype_lang_core::{indent::Indent, node::Node};
 
 use crate::definition_descriptor::TSDefinitionDescriptor;
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct TSDefinition {
     pub doc: Option<String>,
     pub descriptor: TSDefinitionDescriptor,
