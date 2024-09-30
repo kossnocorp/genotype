@@ -71,6 +71,7 @@ mod tests {
             array::GTArray,
             descriptor::GTDescriptor,
             import::{ImportName, ImportReference},
+            name::GTName,
             object::GTObject,
             primitive::GTPrimitive,
             property::GTProperty,
@@ -92,13 +93,13 @@ mod tests {
                 aliases: vec![
                     GTAlias {
                         doc: None,
-                        name: "Age".to_string(),
+                        name: GTName("Age".to_string()),
                         descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
                     },
                     GTAlias {
                         doc: None,
-                        name: "AnotherAge".to_string(),
-                        descriptor: GTDescriptor::Name("Age".to_string()),
+                        name: GTName("AnotherAge".to_string()),
+                        descriptor: GTDescriptor::Name(GTName("Age".to_string())),
                     },
                 ],
             },
@@ -116,22 +117,22 @@ mod tests {
                 aliases: vec![
                     GTAlias {
                         doc: None,
-                        name: "String".to_string(),
+                        name: GTName("String".to_string()),
                         descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                     },
                     GTAlias {
                         doc: None,
-                        name: "Int".to_string(),
+                        name: GTName("Int".to_string()),
                         descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
                     },
                     GTAlias {
                         doc: None,
-                        name: "Float".to_string(),
+                        name: GTName("Float".to_string()),
                         descriptor: GTDescriptor::Primitive(GTPrimitive::Float),
                     },
                     GTAlias {
                         doc: None,
-                        name: "Boolean".to_string(),
+                        name: GTName("Boolean".to_string()),
                         descriptor: GTDescriptor::Primitive(GTPrimitive::Boolean),
                     },
                 ],
@@ -150,11 +151,11 @@ mod tests {
                 aliases: vec![
                     GTAlias {
                         doc: None,
-                        name: "Hello".to_string(),
+                        name: GTName("Hello".to_string()),
                         descriptor: GTDescriptor::Object(GTObject {
                             properties: vec![GTProperty {
                                 doc: None,
-                                name: "name".to_string(),
+                                name: GTName("name".to_string()),
                                 descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                                 required: true,
                             }],
@@ -162,24 +163,24 @@ mod tests {
                     },
                     GTAlias {
                         doc: None,
-                        name: "Hello".to_string(),
+                        name: GTName("Hello".to_string()),
                         descriptor: GTDescriptor::Object(GTObject {
                             properties: vec![
                                 GTProperty {
                                     doc: None,
-                                    name: "name".to_string(),
+                                    name: GTName("name".to_string()),
                                     descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                                     required: true,
                                 },
                                 GTProperty {
                                     doc: None,
-                                    name: "age".to_string(),
+                                    name: GTName("age".to_string()),
                                     descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
                                     required: true,
                                 },
                                 GTProperty {
                                     doc: None,
-                                    name: "flag".to_string(),
+                                    name: GTName("flag".to_string()),
                                     descriptor: GTDescriptor::Primitive(GTPrimitive::Boolean),
                                     required: true,
                                 },
@@ -188,21 +189,21 @@ mod tests {
                     },
                     GTAlias {
                         doc: None,
-                        name: "Empty".to_string(),
+                        name: GTName("Empty".to_string()),
                         descriptor: GTDescriptor::Object(GTObject { properties: vec![] }),
                     },
                     GTAlias {
                         doc: None,
-                        name: "Empty".to_string(),
+                        name: GTName("Empty".to_string()),
                         descriptor: GTDescriptor::Object(GTObject { properties: vec![] }),
                     },
                     GTAlias {
                         doc: None,
-                        name: "Hello".to_string(),
+                        name: GTName("Hello".to_string()),
                         descriptor: GTDescriptor::Object(GTObject {
                             properties: vec![GTProperty {
                                 doc: None,
-                                name: "name".to_string(),
+                                name: GTName("name".to_string()),
                                 descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                                 required: true,
                             }],
@@ -210,18 +211,18 @@ mod tests {
                     },
                     GTAlias {
                         doc: None,
-                        name: "Hello".to_string(),
+                        name: GTName("Hello".to_string()),
                         descriptor: GTDescriptor::Object(GTObject {
                             properties: vec![
                                 GTProperty {
                                     doc: None,
-                                    name: "name".to_string(),
+                                    name: GTName("name".to_string()),
                                     descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                                     required: true,
                                 },
                                 GTProperty {
                                     doc: None,
-                                    name: "age".to_string(),
+                                    name: GTName("age".to_string()),
                                     descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
                                     required: true,
                                 },
@@ -244,23 +245,23 @@ mod tests {
                 aliases: vec![
                     GTAlias {
                         doc: Some("Alias comment".to_string()),
-                        name: "Hello".to_string(),
+                        name: GTName("Hello".to_string()),
                         descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                     },
                     GTAlias {
                         doc: Some("Multiline...\n...alias comment".to_string()),
-                        name: "Hello".to_string(),
+                        name: GTName("Hello".to_string()),
                         descriptor: GTDescriptor::Object(GTObject {
                             properties: vec![
                                 GTProperty {
                                     doc: Some("Property comment".to_string()),
-                                    name: "name".to_string(),
+                                    name: GTName("name".to_string()),
                                     descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                                     required: true,
                                 },
                                 GTProperty {
                                     doc: Some("Multiline...\n...property comment".to_string()),
-                                    name: "age".to_string(),
+                                    name: GTName("age".to_string()),
                                     descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
                                     required: true,
                                 },
@@ -269,7 +270,7 @@ mod tests {
                     },
                     GTAlias {
                         doc: None,
-                        name: "Hello".to_string(),
+                        name: GTName("Hello".to_string()),
                         descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                     },
                 ],
@@ -287,12 +288,12 @@ mod tests {
                 imports: vec![],
                 aliases: vec![GTAlias {
                     doc: None,
-                    name: "Hello".to_string(),
+                    name: GTName("Hello".to_string()),
                     descriptor: GTDescriptor::Object(GTObject {
                         properties: vec![
                             GTProperty {
                                 doc: None,
-                                name: "name".to_string(),
+                                name: GTName("name".to_string()),
                                 descriptor: GTDescriptor::Nullable(Box::new(
                                     GTDescriptor::Primitive(GTPrimitive::String),
                                 )),
@@ -300,13 +301,13 @@ mod tests {
                             },
                             GTProperty {
                                 doc: None,
-                                name: "age".to_string(),
+                                name: GTName("age".to_string()),
                                 descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
                                 required: false,
                             },
                             GTProperty {
                                 doc: None,
-                                name: "flag".to_string(),
+                                name: GTName("flag".to_string()),
                                 descriptor: GTDescriptor::Nullable(Box::new(
                                     GTDescriptor::Primitive(GTPrimitive::Boolean),
                                 )),
@@ -330,16 +331,16 @@ mod tests {
                 aliases: vec![
                     GTAlias {
                         doc: None,
-                        name: "Hello".to_string(),
+                        name: GTName("Hello".to_string()),
                         descriptor: GTDescriptor::Object(GTObject {
                             properties: vec![GTProperty {
                                 doc: None,
-                                name: "name".to_string(),
+                                name: GTName("name".to_string()),
                                 descriptor: GTDescriptor::Object(GTObject {
                                     properties: vec![
                                         GTProperty {
                                             doc: None,
-                                            name: "first".to_string(),
+                                            name: GTName("first".to_string()),
                                             descriptor: GTDescriptor::Primitive(
                                                 GTPrimitive::String,
                                             ),
@@ -347,7 +348,7 @@ mod tests {
                                         },
                                         GTProperty {
                                             doc: None,
-                                            name: "last".to_string(),
+                                            name: GTName("last".to_string()),
                                             descriptor: GTDescriptor::Primitive(
                                                 GTPrimitive::String,
                                             ),
@@ -361,19 +362,19 @@ mod tests {
                     },
                     GTAlias {
                         doc: None,
-                        name: "Hello".to_string(),
+                        name: GTName("Hello".to_string()),
                         descriptor: GTDescriptor::Object(GTObject {
                             properties: vec![GTProperty {
                                 doc: None,
-                                name: "name".to_string(),
+                                name: GTName("name".to_string()),
                                 descriptor: GTDescriptor::Alias(Box::new(GTAlias {
                                     doc: None,
-                                    name: "Named".to_string(),
+                                    name: GTName("Named".to_string()),
                                     descriptor: GTDescriptor::Object(GTObject {
                                         properties: vec![
                                             GTProperty {
                                                 doc: None,
-                                                name: "first".to_string(),
+                                                name: GTName("first".to_string()),
                                                 descriptor: GTDescriptor::Primitive(
                                                     GTPrimitive::String,
                                                 ),
@@ -381,7 +382,7 @@ mod tests {
                                             },
                                             GTProperty {
                                                 doc: None,
-                                                name: "last".to_string(),
+                                                name: GTName("last".to_string()),
                                                 descriptor: GTDescriptor::Primitive(
                                                     GTPrimitive::String,
                                                 ),
@@ -409,18 +410,18 @@ mod tests {
                 imports: vec![],
                 aliases: vec![GTAlias {
                     doc: None,
-                    name: "Book".to_string(),
+                    name: GTName("Book".to_string()),
                     descriptor: GTDescriptor::Object(GTObject {
                         properties: vec![
                             GTProperty {
                                 doc: None,
-                                name: "title".to_string(),
+                                name: GTName("title".to_string()),
                                 descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                                 required: true,
                             },
                             GTProperty {
                                 doc: None,
-                                name: "tags".to_string(),
+                                name: GTName("tags".to_string()),
                                 descriptor: GTDescriptor::Array(Box::new(GTArray {
                                     descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                                 })),
@@ -444,12 +445,12 @@ mod tests {
                 aliases: vec![
                     GTAlias {
                         doc: None,
-                        name: "User".to_string(),
+                        name: GTName("User".to_string()),
                         descriptor: GTDescriptor::Object(GTObject {
                             properties: vec![
                                 GTProperty {
                                     doc: None,
-                                    name: "name".to_string(),
+                                    name: GTName("name".to_string()),
                                     descriptor: GTDescriptor::Tuple(GTTuple {
                                         descriptors: vec![
                                             GTDescriptor::Primitive(GTPrimitive::String),
@@ -460,7 +461,7 @@ mod tests {
                                 },
                                 GTProperty {
                                     doc: None,
-                                    name: "address".to_string(),
+                                    name: GTName("address".to_string()),
                                     descriptor: GTDescriptor::Tuple(GTTuple {
                                         descriptors: vec![
                                             GTDescriptor::Primitive(GTPrimitive::Int),
@@ -475,7 +476,7 @@ mod tests {
                     },
                     GTAlias {
                         doc: None,
-                        name: "Address".to_string(),
+                        name: GTName("Address".to_string()),
                         descriptor: GTDescriptor::Tuple(GTTuple {
                             descriptors: vec![
                                 GTDescriptor::Primitive(GTPrimitive::Int),
@@ -517,28 +518,28 @@ mod tests {
                 aliases: vec![
                     GTAlias {
                         doc: None,
-                        name: "Book".to_string(),
+                        name: GTName("Book".to_string()),
                         descriptor: GTDescriptor::Object(GTObject {
                             properties: vec![
                                 GTProperty {
                                     doc: None,
-                                    name: "title".to_string(),
+                                    name: GTName("title".to_string()),
                                     descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                                     required: true,
                                 },
                                 GTProperty {
                                     doc: None,
-                                    name: "author".to_string(),
+                                    name: GTName("author".to_string()),
                                     descriptor: GTDescriptor::Reference(GTReference {
                                         path: "../../author".to_string(),
-                                        name: "Author".to_string(),
+                                        name: GTName("Author".to_string()),
                                     }),
                                     required: true,
                                 },
                                 GTProperty {
                                     doc: None,
-                                    name: "genre".to_string(),
-                                    descriptor: GTDescriptor::Name("Genre".to_string()),
+                                    name: GTName("genre".to_string()),
+                                    descriptor: GTDescriptor::Name(GTName("Genre".to_string())),
                                     required: true,
                                 },
                             ],
@@ -546,10 +547,10 @@ mod tests {
                     },
                     GTAlias {
                         doc: None,
-                        name: "Author".to_string(),
+                        name: GTName("Author".to_string()),
                         descriptor: GTDescriptor::Reference(GTReference {
                             path: "../../author".to_string(),
-                            name: "Author".to_string(),
+                            name: GTName("Author".to_string()),
                         }),
                     },
                 ],

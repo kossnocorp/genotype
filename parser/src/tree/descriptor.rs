@@ -1,6 +1,7 @@
 use super::{
     alias::{parse_alias, GTAlias},
     array::{parse_array, GTArray},
+    name::GTName,
     object::{parse_object, GTObject},
     primitive::{parse_primitive, GTPrimitive},
     reference::{parse_reference, GTReference},
@@ -13,14 +14,12 @@ use pest::iterators::Pair;
 pub enum GTDescriptor {
     Alias(Box<GTAlias>),
     Primitive(GTPrimitive),
-    Name(String),
+    Name(GTName),
     Object(GTObject),
     Array(Box<GTArray>),
     Tuple(GTTuple),
     Reference(GTReference),
     Nullable(Box<GTDescriptor>),
-    // [TODO]
-    // Union(Union),
 }
 
 pub fn parse_descriptor(pair: Pair<'_, Rule>) -> Result<GTDescriptor, Box<dyn std::error::Error>> {
@@ -34,7 +33,7 @@ pub fn parse_descriptor(pair: Pair<'_, Rule>) -> Result<GTDescriptor, Box<dyn st
         }
 
         Rule::name => {
-            let name = pair.as_str().to_string();
+            let name = GTName(pair.as_str().to_string());
             GTDescriptor::Name(name)
         }
 

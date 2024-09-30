@@ -2,10 +2,12 @@ use pest::iterators::Pair;
 
 use crate::parser::Rule;
 
+use super::name::GTName;
+
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTReference {
     pub path: String,
-    pub name: String,
+    pub name: GTName,
 }
 
 pub fn parse_reference(pair: Pair<'_, Rule>) -> Result<GTReference, Box<dyn std::error::Error>> {
@@ -18,6 +20,6 @@ pub fn parse_reference(pair: Pair<'_, Rule>) -> Result<GTReference, Box<dyn std:
 
     Ok(GTReference {
         path: path.to_string(),
-        name: name.to_string(),
+        name: GTName(name.to_string()),
     })
 }

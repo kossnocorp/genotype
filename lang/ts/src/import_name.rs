@@ -22,10 +22,7 @@ impl Node for TSImportName {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        alias::TSAlias, indent::ts_indent, interface::TSInterface, name::TSName,
-        primitive::TSPrimitive, property::TSProperty, type_descriptor::TSTypeDescriptor,
-    };
+    use crate::{indent::ts_indent, name::TSName};
 
     #[test]
     fn test_render_name() {

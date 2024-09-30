@@ -3,6 +3,7 @@ pub mod array;
 pub mod descriptor;
 pub mod import;
 pub mod module;
+pub mod name;
 pub mod object;
 pub mod primitive;
 pub mod property;

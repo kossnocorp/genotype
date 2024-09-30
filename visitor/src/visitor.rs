@@ -1,7 +1,7 @@
 use genotype_parser::tree::{
     alias::GTAlias, array::GTArray, descriptor::GTDescriptor, import::GTImport, module::GTModule,
-    object::GTObject, primitive::GTPrimitive, property::GTProperty, reference::GTReference,
-    tuple::GTTuple,
+    name::GTName, object::GTObject, primitive::GTPrimitive, property::GTProperty,
+    reference::GTReference, tuple::GTTuple,
 };
 
 pub trait GTVisitor {
@@ -25,5 +25,5 @@ pub trait GTVisitor {
 
     fn visit_reference(&mut self, _reference: &GTReference) {}
 
-    fn visit_name(&mut self, _name: &String) {}
+    fn visit_name(&mut self, _name: &GTName) {}
 }

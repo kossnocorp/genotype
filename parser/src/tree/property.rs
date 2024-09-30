@@ -1,11 +1,14 @@
-use super::descriptor::{parse_descriptor, GTDescriptor};
+use super::{
+    descriptor::{parse_descriptor, GTDescriptor},
+    name::GTName,
+};
 use crate::parser::Rule;
 use pest::iterators::{Pair, Pairs};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTProperty {
     pub doc: Option<String>,
-    pub name: String,
+    pub name: GTName,
     pub descriptor: GTDescriptor,
     pub required: bool,
 }
@@ -46,7 +49,7 @@ fn parse(
         }
 
         ParseState::Name(required, doc) => {
-            let name = Some(pair.as_str().to_string()).unwrap(); // [TODO]
+            let name = GTName(pair.as_str().to_string()); // [TODO]
             let pair = inner.next().unwrap(); // [TODO]
             parse(inner, pair, ParseState::Descriptor(required, doc, name))
         }
@@ -66,5 +69,5 @@ fn parse(
 enum ParseState {
     Doc(bool, Option<String>),
     Name(bool, Option<String>),
-    Descriptor(bool, Option<String>, String),
+    Descriptor(bool, Option<String>, GTName),
 }
