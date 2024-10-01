@@ -23,7 +23,7 @@ impl GTProjectVisitor {
         let paths = self
             .deps
             .iter()
-            .map(|path| parent.relative(path))
+            .map(|path| parent.resolve(path))
             .collect::<Result<_, _>>()?;
         Ok(paths)
     }

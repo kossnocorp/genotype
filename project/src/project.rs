@@ -9,15 +9,15 @@ use crate::{module::GTProjectModule, path::GTProjectPath};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTProject {
-    pub path: GTProjectPath,
+    pub root: GTProjectPath,
     pub modules: HashSet<GTProjectModule>,
 }
 
 impl GTProject {
     pub fn load(root: &str, pattern: &str) -> Result<Self, Box<dyn std::error::Error>> {
-        let path: GTProjectPath = root.try_into()?;
+        let root: GTProjectPath = root.try_into()?;
 
-        let entry_paths = glob(path.as_path().join(pattern).to_str().unwrap())?;
+        let entry_paths = glob(root.as_path().join(pattern).to_str().unwrap())?;
         let entries: Vec<GTProjectPath> = entry_paths
             .collect::<Result<Vec<_>, _>>()?
             .iter()
@@ -39,7 +39,7 @@ impl GTProject {
         });
 
         let modules = modules.lock().unwrap().clone();
-        Ok(GTProject { path, modules })
+        Ok(GTProject { root, modules })
     }
 }
 
@@ -122,7 +122,7 @@ mod tests {
 
     fn basic_project() -> GTProject {
         GTProject {
-            path: "./examples/basic".try_into().unwrap(),
+            root: "./examples/basic".try_into().unwrap(),
             modules: vec![
                 GTProjectModule {
                     path: "./examples/basic/author.type".try_into().unwrap(),

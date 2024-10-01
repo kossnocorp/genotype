@@ -5,7 +5,7 @@ use genotype_parser::tree::module::GTModule;
 
 use crate::convert::TSConvert;
 
-pub fn convert_to_ts_module(module: GTModule) -> TSModule {
+pub fn convert_to_ts_module(module: &GTModule) -> TSModule {
     let imports = module
         .imports
         .iter()
@@ -14,7 +14,7 @@ pub fn convert_to_ts_module(module: GTModule) -> TSModule {
 
     let definitions = Mutex::new(Vec::new());
 
-    for alias in module.aliases {
+    for alias in &module.aliases {
         let hoisted = Mutex::new(Vec::new());
 
         let definition = alias.convert(&|definition| {
@@ -55,7 +55,7 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_eq!(
-            convert_to_ts_module(GTModule {
+            convert_to_ts_module(&GTModule {
                 doc: None,
                 imports: vec![
                     GTImport {

@@ -1,27 +1,29 @@
 use std::collections::HashSet;
 
-use genotype_project::{path::GTProjectPath, project::GTProject};
+use genotype_lang_core_project::{
+    module::GTProjectModuleOut, path::GTProjectOutPath, project::GTProjectOut,
+};
+use genotype_project::project::GTProject;
 
 use crate::module::TSProjectModule;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TSProject {
-    path: GTProjectPath,
+    pub out: GTProjectOutPath,
     pub modules: HashSet<TSProjectModule>,
 }
 
-impl From<GTProject> for TSProject {
-    fn from(project: GTProject) -> Self {
+impl GTProjectOut for TSProject {
+    fn generate(project: &GTProject, out: &str) -> Result<Self, Box<dyn std::error::Error>> {
+        let out = GTProjectOutPath::new(&project.root.as_path().join(out));
+
         let modules = project
             .modules
-            .into_iter()
-            .map(|module| TSProjectModule::from(module))
-            .collect();
+            .iter()
+            .map(|module| TSProjectModule::generate(&project.root, module, &out))
+            .collect::<Result<_, _>>()?;
 
-        Self {
-            path: project.path,
-            modules,
-        }
+        Ok(Self { out, modules })
     }
 }
 
@@ -46,6 +48,7 @@ mod tests {
     use genotype_parser::tree::object::GTObject;
     use genotype_parser::tree::primitive::GTPrimitive;
     use genotype_parser::tree::property::GTProperty;
+    use genotype_project::path::GTProjectPath;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -54,12 +57,83 @@ mod tests {
 
     #[test]
     fn test_convert_base() {
+        let root: GTProjectPath = "./examples/basic".try_into().unwrap();
         assert_eq!(
+            TSProject::generate(
+                &GTProject {
+                    root: root.clone(),
+                    modules: vec![
+                        GTProjectModule {
+                            path: "./examples/basic/author.type".try_into().unwrap(),
+                            deps: vec![].into_iter().collect(),
+                            exports: vec![].into_iter().collect(),
+                            module: GTModule {
+                                doc: None,
+                                imports: vec![],
+                                aliases: vec![GTAlias {
+                                    doc: None,
+                                    name: GTName("Author".to_string()),
+                                    descriptor: GTDescriptor::Object(GTObject {
+                                        properties: vec![GTProperty {
+                                            doc: None,
+                                            name: GTName("name".to_string()),
+                                            descriptor: GTDescriptor::Primitive(
+                                                GTPrimitive::String
+                                            ),
+                                            required: true,
+                                        }],
+                                    }),
+                                }],
+                            },
+                        },
+                        GTProjectModule {
+                            path: "./examples/basic/book.type".try_into().unwrap(),
+                            deps: vec![].into_iter().collect(),
+                            exports: vec![].into_iter().collect(),
+                            module: GTModule {
+                                doc: None,
+                                imports: vec![GTImport {
+                                    path: "./author".to_string(),
+                                    reference: GTImportReference::Name(GTName("Author".into())),
+                                }],
+                                aliases: vec![GTAlias {
+                                    doc: None,
+                                    name: GTName("Book".to_string()),
+                                    descriptor: GTDescriptor::Object(GTObject {
+                                        properties: vec![
+                                            GTProperty {
+                                                doc: None,
+                                                name: GTName("title".to_string()),
+                                                descriptor: GTDescriptor::Primitive(
+                                                    GTPrimitive::String
+                                                ),
+                                                required: true,
+                                            },
+                                            GTProperty {
+                                                doc: None,
+                                                name: GTName("author".to_string()),
+                                                descriptor: GTDescriptor::Name(GTName(
+                                                    "Author".to_string(),
+                                                )),
+                                                required: true,
+                                            },
+                                        ],
+                                    }),
+                                }],
+                            },
+                        },
+                    ]
+                    .into_iter()
+                    .collect()
+                },
+                "out"
+            )
+            .unwrap(),
             TSProject {
-                path: "./examples/basic".try_into().unwrap(),
+                out: root.as_path().join("out").into(),
                 modules: vec![
                     TSProjectModule {
-                        path: "./examples/basic/author.type".try_into().unwrap(),
+                        path: root.as_path().join("out/author.ts").into(),
                         module: TSModule {
                             doc: None,
                             imports: vec![],
@@ -74,7 +148,7 @@ mod tests {
                         },
                     },
                     TSProjectModule {
-                        path: "./examples/basic/book.type".try_into().unwrap(),
+                        path: root.as_path().join("out/book.ts").into(),
                         module: TSModule {
                             doc: None,
                             imports: vec![TSImport {
@@ -108,71 +182,6 @@ mod tests {
                 .into_iter()
                 .collect()
             },
-            GTProject {
-                path: "./examples/basic".try_into().unwrap(),
-                modules: vec![
-                    GTProjectModule {
-                        path: "./examples/basic/author.type".try_into().unwrap(),
-                        deps: vec![].into_iter().collect(),
-                        exports: vec![].into_iter().collect(),
-                        module: GTModule {
-                            doc: None,
-                            imports: vec![],
-                            aliases: vec![GTAlias {
-                                doc: None,
-                                name: GTName("Author".to_string()),
-                                descriptor: GTDescriptor::Object(GTObject {
-                                    properties: vec![GTProperty {
-                                        doc: None,
-                                        name: GTName("name".to_string()),
-                                        descriptor: GTDescriptor::Primitive(GTPrimitive::String),
-                                        required: true,
-                                    }],
-                                }),
-                            }],
-                        },
-                    },
-                    GTProjectModule {
-                        path: "./examples/basic/book.type".try_into().unwrap(),
-                        deps: vec![].into_iter().collect(),
-                        exports: vec![].into_iter().collect(),
-                        module: GTModule {
-                            doc: None,
-                            imports: vec![GTImport {
-                                path: "./author".to_string(),
-                                reference: GTImportReference::Name(GTName("Author".into())),
-                            }],
-                            aliases: vec![GTAlias {
-                                doc: None,
-                                name: GTName("Book".to_string()),
-                                descriptor: GTDescriptor::Object(GTObject {
-                                    properties: vec![
-                                        GTProperty {
-                                            doc: None,
-                                            name: GTName("title".to_string()),
-                                            descriptor: GTDescriptor::Primitive(
-                                                GTPrimitive::String
-                                            ),
-                                            required: true,
-                                        },
-                                        GTProperty {
-                                            doc: None,
-                                            name: GTName("author".to_string()),
-                                            descriptor: GTDescriptor::Name(GTName(
-                                                "Author".to_string(),
-                                            )),
-                                            required: true,
-                                        },
-                                    ],
-                                }),
-                            }],
-                        },
-                    },
-                ]
-                .into_iter()
-                .collect()
-            }
-            .into(),
         )
     }
 }

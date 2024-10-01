@@ -20,7 +20,7 @@ impl GTProjectPath {
         &self.path
     }
 
-    pub fn relative(&self, path: &str) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn resolve(&self, path: &str) -> Result<Self, Box<dyn std::error::Error>> {
         let path = format!("{}.type", path);
         Self::try_new(&self.parent.join(path))
     }
