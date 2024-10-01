@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use genotype_lang_core_project::{
     module::GTProjectModuleOut, path::GTProjectOutPath, project::GTProjectOut,
 };
@@ -10,7 +8,7 @@ use crate::module::TSProjectModule;
 #[derive(Debug, PartialEq, Clone)]
 pub struct TSProject {
     pub out: GTProjectOutPath,
-    pub modules: HashSet<TSProjectModule>,
+    pub modules: Vec<TSProjectModule>,
 }
 
 impl GTProjectOut for TSProject {
@@ -65,8 +63,8 @@ mod tests {
                     modules: vec![
                         GTProjectModule {
                             path: "./examples/basic/author.type".try_into().unwrap(),
-                            deps: vec![].into_iter().collect(),
-                            exports: vec![].into_iter().collect(),
+                            deps: vec![],
+                            exports: vec![],
                             module: GTModule {
                                 doc: None,
                                 imports: vec![],
@@ -88,8 +86,8 @@ mod tests {
                         },
                         GTProjectModule {
                             path: "./examples/basic/book.type".try_into().unwrap(),
-                            deps: vec![].into_iter().collect(),
-                            exports: vec![].into_iter().collect(),
+                            deps: vec![],
+                            exports: vec![],
                             module: GTModule {
                                 doc: None,
                                 imports: vec![GTImport {
@@ -123,8 +121,6 @@ mod tests {
                             },
                         },
                     ]
-                    .into_iter()
-                    .collect()
                 },
                 "out"
             )
@@ -179,8 +175,6 @@ mod tests {
                         },
                     },
                 ]
-                .into_iter()
-                .collect()
             },
         )
     }

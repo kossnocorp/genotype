@@ -10,7 +10,7 @@ use crate::{module::GTProjectModule, path::GTProjectPath};
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTProject {
     pub root: GTProjectPath,
-    pub modules: HashSet<GTProjectModule>,
+    pub modules: Vec<GTProjectModule>,
 }
 
 impl GTProject {
@@ -25,7 +25,7 @@ impl GTProject {
             .collect::<Result<Vec<_>, _>>()?;
 
         let processed_paths = Arc::new(Mutex::new(HashSet::new()));
-        let modules = Arc::new(Mutex::new(HashSet::new()));
+        let modules = Arc::new(Mutex::new(Vec::new()));
 
         rayon::scope(|scope| {
             for entry in entries {
@@ -38,7 +38,9 @@ impl GTProject {
             }
         });
 
-        let modules = modules.lock().unwrap().clone();
+        let mut modules = modules.lock().unwrap().clone();
+        modules.sort_by(|a, b| a.path.as_path().cmp(&b.path.as_path()));
+
         Ok(GTProject { root, modules })
     }
 }
@@ -47,7 +49,7 @@ fn process_module(
     path: GTProjectPath,
     scope: &Scope<'_>,
     processed_paths: Arc<Mutex<HashSet<GTProjectPath>>>,
-    modules: Arc<Mutex<HashSet<GTProjectModule>>>,
+    modules: Arc<Mutex<Vec<GTProjectModule>>>,
 ) {
     {
         let mut processed = processed_paths.lock().unwrap();
@@ -71,7 +73,7 @@ fn process_module(
             }
 
             let mut modules = modules.lock().unwrap();
-            modules.insert(module);
+            modules.push(module);
         }
 
         Err(err) => {
@@ -126,14 +128,14 @@ mod tests {
             modules: vec![
                 GTProjectModule {
                     path: "./examples/basic/author.type".try_into().unwrap(),
-                    deps: vec![].into_iter().collect(),
-                    exports: vec![].into_iter().collect(),
+                    deps: vec![],
+                    exports: vec![GTName("Author".into())],
                     module: GTModule {
                         doc: None,
                         imports: vec![],
                         aliases: vec![GTAlias {
                             doc: None,
-                            name: GTName("Author".to_string()),
+                            name: GTName("Author".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 properties: vec![GTProperty {
                                     doc: None,
@@ -147,8 +149,8 @@ mod tests {
                 },
                 GTProjectModule {
                     path: "./examples/basic/book.type".try_into().unwrap(),
-                    deps: vec![].into_iter().collect(),
-                    exports: vec![].into_iter().collect(),
+                    deps: vec!["./examples/basic/author.type".try_into().unwrap()],
+                    exports: vec![GTName("Book".into())],
                     module: GTModule {
                         doc: None,
                         imports: vec![GTImport {
@@ -157,7 +159,7 @@ mod tests {
                         }],
                         aliases: vec![GTAlias {
                             doc: None,
-                            name: GTName("Book".to_string()),
+                            name: GTName("Book".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 properties: vec![
                                     GTProperty {
@@ -181,8 +183,11 @@ mod tests {
                 },
                 GTProjectModule {
                     path: "./examples/basic/order.type".try_into().unwrap(),
-                    deps: vec![].into_iter().collect(),
-                    exports: vec![].into_iter().collect(),
+                    deps: vec![
+                        "./examples/basic/book.type".try_into().unwrap(),
+                        "./examples/basic/user.type".try_into().unwrap(),
+                    ],
+                    exports: vec![GTName("Order".into())],
                     module: GTModule {
                         doc: None,
                         imports: vec![GTImport {
@@ -191,7 +196,7 @@ mod tests {
                         }],
                         aliases: vec![GTAlias {
                             doc: None,
-                            name: GTName("Order".to_string()),
+                            name: GTName("Order".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 properties: vec![
                                     GTProperty {
@@ -220,14 +225,14 @@ mod tests {
                 },
                 GTProjectModule {
                     path: "./examples/basic/user.type".try_into().unwrap(),
-                    deps: vec![].into_iter().collect(),
-                    exports: vec![].into_iter().collect(),
+                    deps: vec![],
+                    exports: vec![GTName("User".into())],
                     module: GTModule {
                         doc: None,
                         imports: vec![],
                         aliases: vec![GTAlias {
                             doc: None,
-                            name: GTName("User".to_string()),
+                            name: GTName("User".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 properties: vec![
                                     GTProperty {
@@ -247,9 +252,7 @@ mod tests {
                         }],
                     },
                 },
-            ]
-            .into_iter()
-            .collect(),
+            ],
         }
     }
 }

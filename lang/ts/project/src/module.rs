@@ -5,7 +5,7 @@ use genotype_lang_ts_converter::module::convert_to_ts_module;
 use genotype_lang_ts_tree::module::TSModule;
 use genotype_project::{module::GTProjectModule, path::GTProjectPath};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct TSProjectModule {
     pub path: GTProjectOutPath,
     pub module: TSModule,
@@ -34,14 +34,6 @@ impl GTProjectModuleOut for TSProjectModule {
         })
     }
 }
-
-impl PartialEq for TSProjectModule {
-    fn eq(&self, other: &Self) -> bool {
-        self.path == other.path
-    }
-}
-
-impl Eq for TSProjectModule {}
 
 impl Hash for TSProjectModule {
     fn hash<H: Hasher>(&self, state: &mut H) {
