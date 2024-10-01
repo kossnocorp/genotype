@@ -1,31 +1,31 @@
-use genotype_visitor::traverse::GTTraverse;
 use glob::glob;
 use rayon::Scope;
 use std::{
     collections::HashSet,
-    path::PathBuf,
     sync::{Arc, Mutex},
 };
 
-use crate::{module::GTProjectModule, visitor::GTProjectVisitor};
+use crate::{module::GTProjectModule, path::GTProjectPath};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTProject {
+    pub path: GTProjectPath,
     pub modules: HashSet<GTProjectModule>,
 }
 
 impl GTProject {
-    pub fn load(pattern: &str) -> Result<Self, Box<dyn std::error::Error>> {
-        let processed_paths = Arc::new(Mutex::new(HashSet::new()));
-        let modules = Arc::new(Mutex::new(HashSet::new()));
+    pub fn load(root: &str, pattern: &str) -> Result<Self, Box<dyn std::error::Error>> {
+        let path: GTProjectPath = root.try_into()?;
 
-        let result = glob(pattern)?;
-
-        let entries: Vec<PathBuf> = result
+        let entry_paths = glob(path.as_path().join(pattern).to_str().unwrap())?;
+        let entries: Vec<GTProjectPath> = entry_paths
             .collect::<Result<Vec<_>, _>>()?
             .iter()
-            .map(|p| p.canonicalize())
+            .map(GTProjectPath::try_new)
             .collect::<Result<Vec<_>, _>>()?;
+
+        let processed_paths = Arc::new(Mutex::new(HashSet::new()));
+        let modules = Arc::new(Mutex::new(HashSet::new()));
 
         rayon::scope(|scope| {
             for entry in entries {
@@ -39,14 +39,14 @@ impl GTProject {
         });
 
         let modules = modules.lock().unwrap().clone();
-        Ok(GTProject { modules })
+        Ok(GTProject { path, modules })
     }
 }
 
 fn process_module(
-    path: PathBuf,
+    path: GTProjectPath,
     scope: &Scope<'_>,
-    processed_paths: Arc<Mutex<HashSet<PathBuf>>>,
+    processed_paths: Arc<Mutex<HashSet<GTProjectPath>>>,
     modules: Arc<Mutex<HashSet<GTProjectModule>>>,
 ) {
     {
@@ -58,9 +58,10 @@ fn process_module(
         }
     }
 
-    match load_module(path) {
-        Ok((module, deps)) => {
-            for dep in deps {
+    match GTProjectModule::load(path.clone()) {
+        Ok(module) => {
+            for dep in module.deps.iter() {
+                let dep = dep.clone();
                 let processed_paths = Arc::clone(&processed_paths);
                 let modules = Arc::clone(&modules);
 
@@ -74,34 +75,9 @@ fn process_module(
         }
 
         Err(err) => {
-            panic!("Error loading module: {:?}", err);
+            panic!("======== Error loading module {:?}: ${:?}", path, err);
         }
     }
-}
-
-fn load_module(
-    path: PathBuf,
-) -> Result<(GTProjectModule, Vec<PathBuf>), Box<dyn std::error::Error>> {
-    let module = TryInto::<GTProjectModule>::try_into(path)?;
-
-    let mut visitor = GTProjectVisitor { deps: vec![] };
-    module.traverse(&mut visitor);
-
-    let dir = module.path.parent().unwrap();
-
-    let deps = visitor
-        .deps
-        .into_iter()
-        .map(|p| {
-            let path = dir.join(p + ".type");
-            path.canonicalize()
-        })
-        .collect::<Result<Vec<PathBuf>, std::io::Error>>()?;
-
-    println!("********* Module: {:?}", module);
-    println!("********* Deps: {:?}", deps);
-
-    Ok((module, deps))
 }
 
 #[cfg(test)]
@@ -116,7 +92,7 @@ mod tests {
 
     #[test]
     fn test_glob() {
-        let project = GTProject::load("./examples/basic/*.type");
+        let project = GTProject::load("./examples/basic", "*.type");
         match project {
             Ok(project) => {
                 assert_eq!(project, basic_project());
@@ -131,7 +107,7 @@ mod tests {
 
     #[test]
     fn test_entry() {
-        let project = GTProject::load("./examples/basic/order.type");
+        let project = GTProject::load("./examples/basic", "order.type");
         match project {
             Ok(project) => {
                 assert_eq!(project, basic_project());
@@ -146,9 +122,12 @@ mod tests {
 
     fn basic_project() -> GTProject {
         GTProject {
+            path: "./examples/basic".try_into().unwrap(),
             modules: vec![
                 GTProjectModule {
-                    path: canonical_path("./examples/basic/author.type"),
+                    path: "./examples/basic/author.type".try_into().unwrap(),
+                    deps: vec![].into_iter().collect(),
+                    exports: vec![].into_iter().collect(),
                     module: GTModule {
                         doc: None,
                         imports: vec![],
@@ -167,7 +146,9 @@ mod tests {
                     },
                 },
                 GTProjectModule {
-                    path: canonical_path("./examples/basic/book.type"),
+                    path: "./examples/basic/book.type".try_into().unwrap(),
+                    deps: vec![].into_iter().collect(),
+                    exports: vec![].into_iter().collect(),
                     module: GTModule {
                         doc: None,
                         imports: vec![GTImport {
@@ -199,7 +180,9 @@ mod tests {
                     },
                 },
                 GTProjectModule {
-                    path: canonical_path("./examples/basic/order.type"),
+                    path: "./examples/basic/order.type".try_into().unwrap(),
+                    deps: vec![].into_iter().collect(),
+                    exports: vec![].into_iter().collect(),
                     module: GTModule {
                         doc: None,
                         imports: vec![GTImport {
@@ -236,7 +219,9 @@ mod tests {
                     },
                 },
                 GTProjectModule {
-                    path: canonical_path("./examples/basic/user.type"),
+                    path: "./examples/basic/user.type".try_into().unwrap(),
+                    deps: vec![].into_iter().collect(),
+                    exports: vec![].into_iter().collect(),
                     module: GTModule {
                         doc: None,
                         imports: vec![],
@@ -266,9 +251,5 @@ mod tests {
             .into_iter()
             .collect(),
         }
-    }
-
-    fn canonical_path(path: &str) -> PathBuf {
-        PathBuf::from(path).canonicalize().unwrap()
     }
 }

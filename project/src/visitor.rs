@@ -1,16 +1,40 @@
+use std::collections::HashSet;
+
 use genotype_parser::tree::{import::GTImport, inline_import::GTInlineImport};
 use genotype_visitor::visitor::GTVisitor;
 
+use crate::path::GTProjectPath;
+
 pub struct GTProjectVisitor {
-    pub deps: Vec<String>,
+    deps: HashSet<String>,
+}
+
+impl GTProjectVisitor {
+    pub fn new() -> Self {
+        Self {
+            deps: HashSet::new(),
+        }
+    }
+
+    pub fn deps(
+        &self,
+        parent: &GTProjectPath,
+    ) -> Result<HashSet<GTProjectPath>, Box<dyn std::error::Error>> {
+        let paths = self
+            .deps
+            .iter()
+            .map(|path| parent.relative(path))
+            .collect::<Result<_, _>>()?;
+        Ok(paths)
+    }
 }
 
 impl GTVisitor for GTProjectVisitor {
     fn visit_import(&mut self, import: &GTImport) {
-        self.deps.push(import.path.clone());
+        self.deps.insert(import.path.clone());
     }
 
     fn visit_inline_import(&mut self, project: &GTInlineImport) {
-        self.deps.push(project.path.clone());
+        self.deps.insert(project.path.clone());
     }
 }

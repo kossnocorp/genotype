@@ -1,0 +1,10 @@
+[package]
+name = "genotype_lang_core_project"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+genotype_project = { path = "../../../project" }
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"

@@ -133,6 +133,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "genotype_lang_core_project"
+version = "0.1.0"
+dependencies = [
+ "genotype_project",
+ "pretty_assertions",
+]
+
+[[package]]
 name = "genotype_lang_core_tree"
 version = "0.1.0"
 dependencies = [
@@ -153,6 +161,7 @@ dependencies = [
 name = "genotype_lang_ts_project"
 version = "0.1.0"
 dependencies = [
+ "genotype_lang_core_project",
  "genotype_lang_ts_converter",
  "genotype_lang_ts_tree",
  "genotype_parser",

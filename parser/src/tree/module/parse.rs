@@ -4,10 +4,8 @@ use crate::parser::{parse_gt_code, Rule};
 
 use super::GTModule;
 
-impl TryFrom<String> for GTModule {
-    type Error = Box<dyn std::error::Error>;
-
-    fn try_from(code: String) -> Result<Self, Self::Error> {
+impl GTModule {
+    pub fn parse(code: String) -> Result<Self, Box<dyn std::error::Error>> {
         let pairs = parse_gt_code(&code)?;
         pairs.try_into()
     }

@@ -1,0 +1,6 @@
+use ./book/Book
+
+Order = {
+  user: ./user/User
+  books: [Book]
+}

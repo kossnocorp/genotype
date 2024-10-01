@@ -1,0 +1,6 @@
+use ./author/Author
+
+Book = {
+  title: string
+  author: Author
+}

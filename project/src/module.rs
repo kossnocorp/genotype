@@ -1,25 +1,39 @@
 use std::{
+    collections::HashSet,
     fs::read_to_string,
     hash::{Hash, Hasher},
-    path::PathBuf,
 };
 
-use genotype_parser::tree::module::GTModule;
+use genotype_parser::tree::{module::GTModule, name::GTName};
 use genotype_visitor::{traverse::GTTraverse, visitor::GTVisitor};
+
+use crate::{path::GTProjectPath, visitor::GTProjectVisitor};
 
 #[derive(Debug, Clone)]
 pub struct GTProjectModule {
-    pub path: PathBuf,
+    pub path: GTProjectPath,
     pub module: GTModule,
+    pub deps: HashSet<GTProjectPath>,
+    pub exports: HashSet<GTName>,
 }
 
-impl TryFrom<PathBuf> for GTProjectModule {
-    type Error = Box<dyn std::error::Error>;
-
-    fn try_from(path: PathBuf) -> Result<Self, Self::Error> {
+impl GTProjectModule {
+    pub fn load(path: GTProjectPath) -> Result<Self, Box<dyn std::error::Error>> {
         let code = read_to_string(&path)?;
-        let module = code.try_into()?;
-        Ok(GTProjectModule { path, module })
+        let module = GTModule::parse(code)?;
+        let exports = HashSet::new();
+
+        let mut visitor = GTProjectVisitor::new();
+        module.traverse(&mut visitor);
+
+        let deps = visitor.deps(&path)?;
+
+        Ok(Self {
+            path,
+            module,
+            deps,
+            exports,
+        })
     }
 }
 

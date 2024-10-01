@@ -1,11 +1,12 @@
 use std::collections::HashSet;
 
-use genotype_project::project::GTProject;
+use genotype_project::{path::GTProjectPath, project::GTProject};
 
 use crate::module::TSProjectModule;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TSProject {
+    path: GTProjectPath,
     pub modules: HashSet<TSProjectModule>,
 }
 
@@ -17,15 +18,15 @@ impl From<GTProject> for TSProject {
             .map(|module| TSProjectModule::from(module))
             .collect();
 
-        Self { modules }
+        Self {
+            path: project.path,
+            modules,
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
-
-    use std::path::PathBuf;
-
     use genotype_lang_ts_tree::definition::TSDefinition;
     use genotype_lang_ts_tree::import::TSImport;
     use genotype_lang_ts_tree::import_name::TSImportName;
@@ -55,9 +56,10 @@ mod tests {
     fn test_convert_base() {
         assert_eq!(
             TSProject {
+                path: "./examples/basic".try_into().unwrap(),
                 modules: vec![
                     TSProjectModule {
-                        path: PathBuf::from("./examples/basic/author.type"),
+                        path: "./examples/basic/author.type".try_into().unwrap(),
                         module: TSModule {
                             doc: None,
                             imports: vec![],
@@ -72,7 +74,7 @@ mod tests {
                         },
                     },
                     TSProjectModule {
-                        path: PathBuf::from("./examples/basic/book.type"),
+                        path: "./examples/basic/book.type".try_into().unwrap(),
                         module: TSModule {
                             doc: None,
                             imports: vec![TSImport {
@@ -107,9 +109,12 @@ mod tests {
                 .collect()
             },
             GTProject {
+                path: "./examples/basic".try_into().unwrap(),
                 modules: vec![
                     GTProjectModule {
-                        path: PathBuf::from("./examples/basic/author.type"),
+                        path: "./examples/basic/author.type".try_into().unwrap(),
+                        deps: vec![].into_iter().collect(),
+                        exports: vec![].into_iter().collect(),
                         module: GTModule {
                             doc: None,
                             imports: vec![],
@@ -128,7 +133,9 @@ mod tests {
                         },
                     },
                     GTProjectModule {
-                        path: PathBuf::from("./examples/basic/book.type"),
+                        path: "./examples/basic/book.type".try_into().unwrap(),
+                        deps: vec![].into_iter().collect(),
+                        exports: vec![].into_iter().collect(),
                         module: GTModule {
                             doc: None,
                             imports: vec![GTImport {

@@ -1,15 +1,12 @@
-use std::{
-    hash::{Hash, Hasher},
-    path::PathBuf,
-};
+use std::hash::{Hash, Hasher};
 
 use genotype_lang_ts_converter::module::convert_to_ts_module;
 use genotype_lang_ts_tree::module::TSModule;
-use genotype_project::module::GTProjectModule;
+use genotype_project::{module::GTProjectModule, path::GTProjectPath};
 
 #[derive(Debug, Clone)]
 pub struct TSProjectModule {
-    pub path: PathBuf,
+    pub path: GTProjectPath,
     pub module: TSModule,
 }
 

@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 genotype_project = { path = "../../../project" }
+genotype_lang_core_project = { path = "../../core/project" }
 genotype_lang_ts_tree = { path = "../tree" }
 genotype_lang_ts_converter = { path = "../converter" }
 
