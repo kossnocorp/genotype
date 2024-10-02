@@ -20,26 +20,25 @@ impl TSConvert<TSImportName> for GTImportName {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::{import_name::TSImportName, name::TSName};
+    use genotype_lang_ts_tree::import_name::TSImportName;
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use genotype_parser::tree::{import_name::GTImportName, name::GTName};
+    use genotype_parser::tree::import_name::GTImportName;
 
     #[test]
     fn test_convert_name() {
         assert_eq!(
-            GTImportName::Name(GTName("Name".to_string())).convert(&|_| {}),
-            TSImportName::Name(TSName("Name".to_string())),
+            GTImportName::Name("Name".into()).convert(&|_| {}),
+            TSImportName::Name("Name".into()),
         );
     }
 
     #[test]
     fn test_convert_alias() {
         assert_eq!(
-            GTImportName::Alias(GTName("Name".to_string()), GTName("Alias".to_string()))
-                .convert(&|_| {}),
-            TSImportName::Alias(TSName("Name".to_string()), TSName("Alias".to_string())),
+            GTImportName::Alias("Name".into(), "Alias".into()).convert(&|_| {}),
+            TSImportName::Alias("Name".into(), "Alias".into()),
         );
     }
 }

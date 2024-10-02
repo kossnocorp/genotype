@@ -1,11 +1,13 @@
-use genotype_parser::tree::{import::GTImport, inline_import::GTInlineImport, name::GTName};
+use genotype_parser::tree::{
+    identifier::GTIdentifier, import::GTImport, inline_import::GTInlineImport, path::GTPath,
+};
 use genotype_visitor::visitor::GTVisitor;
 
 use crate::path::GTProjectPath;
 
 pub struct GTProjectVisitor {
-    deps: Vec<String>,
-    pub exports: Vec<GTName>,
+    deps: Vec<GTPath>,
+    pub exports: Vec<GTIdentifier>,
 }
 
 impl GTProjectVisitor {
@@ -23,7 +25,7 @@ impl GTProjectVisitor {
         let paths = self
             .deps
             .iter()
-            .map(|path| parent.resolve(path))
+            .map(|path| parent.resolve(&path.0))
             .collect::<Result<_, _>>()?;
         Ok(paths)
     }

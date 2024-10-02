@@ -10,18 +10,17 @@ impl GTRender for TSArray {
 
 #[cfg(test)]
 mod tests {
-    use crate::{indent::ts_indent, primitive::TSPrimitive, type_descriptor::TSTypeDescriptor};
+    use crate::{descriptor::TSDescriptor, indent::ts_indent, primitive::TSPrimitive};
 
     use super::*;
 
     #[test]
     fn test_render_array() {
-        let indent = ts_indent();
         assert_eq!(
             TSArray {
-                descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String)
+                descriptor: TSDescriptor::Primitive(TSPrimitive::String)
             }
-            .render(&indent),
+            .render(&ts_indent()),
             "Array<string>"
         );
     }

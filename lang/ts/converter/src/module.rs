@@ -38,15 +38,15 @@ pub fn convert_to_ts_module(module: &GTModule) -> TSModule {
 mod tests {
 
     use genotype_lang_ts_tree::{
-        alias::TSAlias, definition::TSDefinition, import::TSImport,
+        alias::TSAlias, definition::TSDefinition, descriptor::TSDescriptor, import::TSImport,
         import_glob_alias::TSImportGlobAlias, import_name::TSImportName,
-        import_reference::TSImportReference, interface::TSInterface, name::TSName,
-        primitive::TSPrimitive, property::TSProperty, type_descriptor::TSTypeDescriptor,
+        import_reference::TSImportReference, interface::TSInterface, path::TSPath,
+        primitive::TSPrimitive, property::TSProperty, reference::TSReference,
     };
     use genotype_parser::tree::{
         alias::GTAlias, descriptor::GTDescriptor, import::GTImport, import_name::GTImportName,
-        import_reference::GTImportReference, name::GTName, object::GTObject,
-        primitive::GTPrimitive, property::GTProperty,
+        import_reference::GTImportReference, object::GTObject, primitive::GTPrimitive,
+        property::GTProperty, reference::GTReference,
     };
     use pretty_assertions::assert_eq;
 
@@ -59,35 +59,32 @@ mod tests {
                 doc: None,
                 imports: vec![
                     GTImport {
-                        path: "./path/to/module".to_string(),
+                        path: "./path/to/module".into(),
                         reference: GTImportReference::Glob
                     },
                     GTImport {
-                        path: "./path/to/module".to_string(),
+                        path: "./path/to/module".into(),
                         reference: GTImportReference::Names(vec![
-                            GTImportName::Name(GTName("Name".to_string())),
-                            GTImportName::Alias(
-                                GTName("Name".to_string()),
-                                GTName("Alias".to_string())
-                            )
+                            GTImportName::Name("Name".into()),
+                            GTImportName::Alias("Name".into(), "Alias".into())
                         ])
                     }
                 ],
                 aliases: vec![
                     GTAlias {
                         doc: None,
-                        name: GTName("User".to_string()),
+                        name: "User".into(),
                         descriptor: GTDescriptor::Object(GTObject {
                             properties: vec![
                                 GTProperty {
                                     doc: None,
-                                    name: GTName("name".to_string()),
+                                    name: "name".into(),
                                     descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                                     required: true,
                                 },
                                 GTProperty {
                                     doc: None,
-                                    name: GTName("age".to_string()),
+                                    name: "age".into(),
                                     descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
                                     required: false,
                                 }
@@ -96,19 +93,19 @@ mod tests {
                     },
                     GTAlias {
                         doc: None,
-                        name: GTName("Order".to_string()),
+                        name: "Order".into(),
                         descriptor: GTDescriptor::Object(GTObject {
                             properties: vec![GTProperty {
                                 doc: None,
-                                name: GTName("book".to_string()),
+                                name: "book".into(),
                                 descriptor: GTDescriptor::Alias(Box::new(GTAlias {
                                     doc: None,
-                                    name: GTName("Book".to_string()),
+                                    name: "Book".into(),
                                     descriptor: GTDescriptor::Object(GTObject {
                                         properties: vec![
                                             GTProperty {
                                                 doc: None,
-                                                name: GTName("title".to_string()),
+                                                name: "title".into(),
                                                 descriptor: GTDescriptor::Primitive(
                                                     GTPrimitive::String
                                                 ),
@@ -116,9 +113,12 @@ mod tests {
                                             },
                                             GTProperty {
                                                 doc: None,
-                                                name: GTName("author".to_string()),
-                                                descriptor: GTDescriptor::Primitive(
-                                                    GTPrimitive::String
+                                                name: "author".into(),
+                                                descriptor: GTDescriptor::Reference(
+                                                    GTReference::External(
+                                                        "Author".into(),
+                                                        "./path/to/module".into()
+                                                    )
                                                 ),
                                                 required: true,
                                             }
@@ -131,7 +131,7 @@ mod tests {
                     },
                     GTAlias {
                         doc: None,
-                        name: GTName("Name".to_string()),
+                        name: "Name".into(),
                         descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                     },
                 ],
@@ -140,62 +140,62 @@ mod tests {
                 doc: None,
                 imports: vec![
                     TSImport {
-                        path: "./path/to/module".to_string(),
+                        path: TSPath::Unresolved("./path/to/module".into()),
                         reference: TSImportReference::Glob(TSImportGlobAlias::Unresolved)
                     },
                     TSImport {
-                        path: "./path/to/module".to_string(),
+                        path: TSPath::Unresolved("./path/to/module".into()),
                         reference: TSImportReference::Named(vec![
-                            TSImportName::Name(TSName("Name".to_string())),
-                            TSImportName::Alias(
-                                TSName("Name".to_string()),
-                                TSName("Alias".to_string())
-                            )
+                            TSImportName::Name("Name".into()),
+                            TSImportName::Alias("Name".into(), "Alias".into())
                         ])
                     }
                 ],
                 definitions: vec![
                     TSDefinition::Interface(TSInterface {
-                        name: TSName("User".to_string()),
+                        name: "User".into(),
                         properties: vec![
                             TSProperty {
-                                name: TSName("name".to_string()),
-                                descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                                name: "name".into(),
+                                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                                 required: true,
                             },
                             TSProperty {
-                                name: TSName("age".to_string()),
-                                descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Number),
+                                name: "age".into(),
+                                descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
                                 required: false,
                             }
                         ]
                     }),
                     TSDefinition::Interface(TSInterface {
-                        name: TSName("Order".to_string()),
+                        name: "Order".into(),
                         properties: vec![TSProperty {
-                            name: TSName("book".to_string()),
-                            descriptor: TSTypeDescriptor::Name(TSName("Book".into())),
+                            name: "book".into(),
+                            descriptor: TSDescriptor::Reference(TSReference::Local("Book".into(),)),
                             required: true,
                         }]
                     }),
                     TSDefinition::Interface(TSInterface {
-                        name: TSName("Book".to_string()),
+                        name: "Book".into(),
                         properties: vec![
                             TSProperty {
-                                name: TSName("title".to_string()),
-                                descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                                name: "title".into(),
+                                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                                 required: true,
                             },
                             TSProperty {
-                                name: TSName("author".to_string()),
-                                descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                                name: "author".into(),
+                                descriptor: TSDescriptor::Reference(TSReference::External(
+                                    "Author".into(),
+                                    TSPath::Unresolved("./path/to/module".into())
+                                )),
                                 required: true,
                             }
                         ]
                     }),
                     TSDefinition::Alias(TSAlias {
-                        name: TSName("Name".to_string()),
-                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                        name: "Name".into(),
+                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                     }),
                 ]
             },

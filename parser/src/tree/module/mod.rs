@@ -1,10 +1,10 @@
-use super::{alias::GTAlias, import::GTImport};
+use super::{alias::GTAlias, doc::GTDoc, import::GTImport};
 
 mod parse;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTModule {
-    pub doc: Option<String>,
+    pub doc: Option<GTDoc>,
     pub imports: Vec<GTImport>,
     pub aliases: Vec<GTAlias>,
 }

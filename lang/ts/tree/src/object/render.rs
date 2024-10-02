@@ -24,60 +24,56 @@ impl GTRender for TSObject {
 #[cfg(test)]
 mod tests {
     use crate::{
-        indent::ts_indent, name::TSName, primitive::TSPrimitive, property::TSProperty,
-        type_descriptor::TSTypeDescriptor,
+        descriptor::TSDescriptor, indent::ts_indent, primitive::TSPrimitive, property::TSProperty,
     };
 
     use super::*;
 
     #[test]
     fn test_render_empty() {
-        let indent = ts_indent();
-        assert_eq!(TSObject { properties: vec![] }.render(&indent), "{\n}");
+        assert_eq!(TSObject { properties: vec![] }.render(&ts_indent()), "{\n}");
     }
 
     #[test]
     fn test_render_properties() {
-        let indent = ts_indent();
         assert_eq!(
             TSObject {
                 properties: vec![
                     TSProperty {
-                        name: TSName("name".to_string()),
-                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                        name: "name".into(),
+                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                         required: true
                     },
                     TSProperty {
-                        name: TSName("age".to_string()),
-                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Number),
+                        name: "age".into(),
+                        descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
                         required: false
                     }
                 ]
             }
-            .render(&indent),
+            .render(&ts_indent()),
             "{\n  name: string,\n  age?: number\n}"
         );
     }
 
     #[test]
     fn test_render_indent() {
-        let indent = ts_indent().increment();
         assert_eq!(
             TSObject {
                 properties: vec![
                     TSProperty {
-                        name: TSName("name".to_string()),
-                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                        name: "name".into(),
+                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                         required: true
                     },
                     TSProperty {
-                        name: TSName("age".to_string()),
-                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Number),
+                        name: "age".into(),
+                        descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
                         required: false
                     }
                 ]
             }
-            .render(&indent),
+            .render(&ts_indent().increment()),
             "{\n    name: string,\n    age?: number\n  }"
         );
     }

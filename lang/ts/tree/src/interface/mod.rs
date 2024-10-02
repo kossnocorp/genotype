@@ -1,9 +1,9 @@
-use crate::{name::TSName, property::TSProperty};
+use crate::{identifier::TSIdentifier, property::TSProperty};
 
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TSInterface {
-    pub name: TSName,
+    pub name: TSIdentifier,
     pub properties: Vec<TSProperty>,
 }

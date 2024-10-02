@@ -9,7 +9,7 @@ impl TSConvert<TSInlineImport> for GTInlineImport {
         HoistFn: Fn(TSDefinition),
     {
         TSInlineImport {
-            path: self.path.clone(),
+            path: self.path.convert(hoist),
             name: self.name.convert(hoist),
         }
     }
@@ -18,8 +18,7 @@ impl TSConvert<TSInlineImport> for GTInlineImport {
 #[cfg(test)]
 mod tests {
 
-    use genotype_lang_ts_tree::name::TSName;
-    use genotype_parser::tree::name::GTName;
+    use genotype_lang_ts_tree::path::TSPath;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -28,13 +27,13 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             GTInlineImport {
-                path: "./path/to/module".to_string(),
-                name: GTName("Name".to_string()),
+                path: "./path/to/module".into(),
+                name: "Name".into(),
             }
             .convert(&|_| {}),
             TSInlineImport {
-                path: "./path/to/module".to_string(),
-                name: TSName("Name".to_string()),
+                path: TSPath::Unresolved("./path/to/module".into()),
+                name: "Name".into(),
             }
         );
     }

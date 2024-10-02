@@ -22,11 +22,10 @@ mod tests {
 
     #[test]
     fn test_render_primitive() {
-        let indent = ts_indent();
-        assert_eq!(TSPrimitive::String.render(&indent), "string");
-        assert_eq!(TSPrimitive::Number.render(&indent), "number");
-        assert_eq!(TSPrimitive::Boolean.render(&indent), "boolean");
-        assert_eq!(TSPrimitive::Null.render(&indent), "null");
-        assert_eq!(TSPrimitive::Undefined.render(&indent), "undefined");
+                assert_eq!(TSPrimitive::String.render(&ts_indent()), "string");
+        assert_eq!(TSPrimitive::Number.render(&ts_indent()), "number");
+        assert_eq!(TSPrimitive::Boolean.render(&ts_indent()), "boolean");
+        assert_eq!(TSPrimitive::Null.render(&ts_indent()), "null");
+        assert_eq!(TSPrimitive::Undefined.render(&ts_indent()), "undefined");
     }
 }

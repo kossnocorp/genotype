@@ -1,11 +1,11 @@
-use genotype_parser::tree::name::GTName;
+use genotype_parser::tree::path::GTPath;
 
 use crate::visitor::GTVisitor;
 
 use super::GTTraverse;
 
-impl GTTraverse for GTName {
+impl GTTraverse for GTPath {
     fn traverse(&self, visitor: &mut dyn GTVisitor) {
-        visitor.visit_name(&self);
+        visitor.visit_path(&self);
     }
 }

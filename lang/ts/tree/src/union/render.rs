@@ -15,19 +15,18 @@ impl GTRender for TSUnion {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{indent::ts_indent, primitive::TSPrimitive, type_descriptor::TSTypeDescriptor};
+    use crate::{descriptor::TSDescriptor, indent::ts_indent, primitive::TSPrimitive};
 
     #[test]
     fn test_render_union() {
-        let indent = ts_indent();
         assert_eq!(
             TSUnion {
                 descriptors: vec![
-                    TSTypeDescriptor::Primitive(TSPrimitive::String),
-                    TSTypeDescriptor::Primitive(TSPrimitive::Number),
+                    TSDescriptor::Primitive(TSPrimitive::String),
+                    TSDescriptor::Primitive(TSPrimitive::Number),
                 ]
             }
-            .render(&indent),
+            .render(&ts_indent()),
             "string | number"
         );
     }

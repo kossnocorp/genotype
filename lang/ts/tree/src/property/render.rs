@@ -18,56 +18,57 @@ impl GTRender for TSProperty {
 mod tests {
     use super::*;
     use crate::{
-        indent::ts_indent, name::TSName, primitive::TSPrimitive, type_descriptor::TSTypeDescriptor,
+        descriptor::TSDescriptor, indent::ts_indent, path::TSPath, primitive::TSPrimitive,
+        reference::TSReference,
     };
 
     #[test]
     fn test_render_primitive() {
-        let indent = ts_indent();
         assert_eq!(
             TSProperty {
-                name: TSName("name".to_string()),
-                descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                name: "name".into(),
+                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                 required: true
             }
-            .render(&indent),
+            .render(&ts_indent()),
             "name: string"
         );
         assert_eq!(
             TSProperty {
-                name: TSName("name".to_string()),
-                descriptor: TSTypeDescriptor::Name(TSName("Name".to_string())),
+                name: "name".into(),
+                descriptor: TSDescriptor::Reference(TSReference::External(
+                    "Name".into(),
+                    TSPath::Resolved("./path/to/module.ts".into())
+                )),
                 required: true
             }
-            .render(&indent),
+            .render(&ts_indent()),
             "name: Name"
         );
     }
 
     #[test]
     fn test_render_indent() {
-        let indent = ts_indent().increment();
         assert_eq!(
             TSProperty {
-                name: TSName("name".to_string()),
-                descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                name: "name".into(),
+                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                 required: true
             }
-            .render(&indent),
+            .render(&ts_indent().increment()),
             "  name: string"
         );
     }
 
     #[test]
     fn test_render_required() {
-        let indent = ts_indent();
         assert_eq!(
             TSProperty {
-                name: TSName("name".to_string()),
-                descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                name: "name".into(),
+                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                 required: false
             }
-            .render(&indent),
+            .render(&ts_indent()),
             "name?: string"
         );
     }

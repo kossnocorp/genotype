@@ -1,5 +1,5 @@
 use genotype_lang_ts_tree::{
-    definition::TSDefinition, import_glob_alias::TSImportGlobAlias,
+    definition::TSDefinition, import_glob_alias::TSImportGlobAlias, import_name::TSImportName,
     import_reference::TSImportReference,
 };
 use genotype_parser::tree::import_reference::GTImportReference;
@@ -21,18 +21,20 @@ impl TSConvert<TSImportReference> for GTImportReference {
                     .collect::<Vec<_>>(),
             ),
 
-            Self::Name(name) => TSImportReference::Named(vec![name.convert(hoist)]),
+            Self::Name(name) => {
+                TSImportReference::Named(vec![TSImportName::Name(name.convert(hoist))])
+            }
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::{import_name::TSImportName, name::TSName};
+    use genotype_lang_ts_tree::{import_name::TSImportName, reference::TSReference};
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use genotype_parser::tree::{import_name::GTImportName, name::GTName};
+    use genotype_parser::tree::{import_name::GTImportName, reference::GTReference};
 
     #[test]
     fn test_convert_glob() {
@@ -46,13 +48,13 @@ mod tests {
     fn test_convert_names() {
         assert_eq!(
             GTImportReference::Names(vec![
-                GTImportName::Name(GTName("Name".into())),
-                GTImportName::Alias(GTName("Name".into()), GTName("Alias".into()))
+                GTImportName::Name("Name".into()),
+                GTImportName::Alias("Name".into(), "Alias".into())
             ])
             .convert(&|_| {}),
             TSImportReference::Named(vec![
-                TSImportName::Name(TSName("Name".into())),
-                TSImportName::Alias(TSName("Name".into()), TSName("Alias".into()))
+                TSImportName::Name("Name".into()),
+                TSImportName::Alias("Name".into(), "Alias".into())
             ])
         );
     }
@@ -60,8 +62,8 @@ mod tests {
     #[test]
     fn test_convert_name() {
         assert_eq!(
-            GTImportReference::Name(GTName("Name".into())).convert(&|_| {}),
-            TSImportReference::Named(vec![TSImportName::Name(TSName("Name".into()))])
+            GTImportReference::Name("Name".into()).convert(&|_| {}),
+            TSImportReference::Named(vec![TSImportName::Name("Name".into())])
         );
     }
 }

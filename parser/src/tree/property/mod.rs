@@ -1,11 +1,11 @@
-use super::{descriptor::GTDescriptor, name::GTName};
+use super::{descriptor::GTDescriptor, doc::GTDoc, key::GTKey};
 
 mod parse;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTProperty {
-    pub doc: Option<String>,
-    pub name: GTName,
+    pub doc: Option<GTDoc>,
+    pub name: GTKey,
     pub descriptor: GTDescriptor,
     pub required: bool,
 }

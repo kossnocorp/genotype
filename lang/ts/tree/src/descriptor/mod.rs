@@ -1,14 +1,14 @@
 use crate::{
-    array::TSArray, inline_import::TSInlineImport, name::TSName, object::TSObject,
-    primitive::TSPrimitive, tuple::TSTuple, union::TSUnion,
+    array::TSArray, inline_import::TSInlineImport, object::TSObject, primitive::TSPrimitive,
+    reference::TSReference, tuple::TSTuple, union::TSUnion,
 };
 
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]
-pub enum TSTypeDescriptor {
+pub enum TSDescriptor {
     Primitive(TSPrimitive),
-    Name(TSName),
+    Reference(TSReference),
     Union(TSUnion),
     Object(Box<TSObject>),
     Array(Box<TSArray>),

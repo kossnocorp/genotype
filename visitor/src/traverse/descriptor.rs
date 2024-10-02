@@ -9,21 +9,21 @@ impl GTTraverse for GTDescriptor {
         visitor.visit_descriptor(&self);
 
         match self {
-            GTDescriptor::Alias(alias) => alias.traverse(visitor),
+            GTDescriptor::Primitive(primitive) => primitive.traverse(visitor),
+
+            GTDescriptor::Reference(reference) => reference.traverse(visitor),
+
+            GTDescriptor::Nullable(descriptor) => descriptor.traverse(visitor),
 
             GTDescriptor::Object(object) => object.traverse(visitor),
 
-            GTDescriptor::Primitive(primitive) => primitive.traverse(visitor),
-
             GTDescriptor::Array(array) => array.traverse(visitor),
-
-            GTDescriptor::Name(name) => name.traverse(visitor),
 
             GTDescriptor::Tuple(tuple) => tuple.traverse(visitor),
 
-            GTDescriptor::InlineImport(import) => import.traverse(visitor),
+            GTDescriptor::Alias(alias) => alias.traverse(visitor),
 
-            GTDescriptor::Nullable(descriptor) => descriptor.traverse(visitor),
+            GTDescriptor::InlineImport(import) => import.traverse(visitor),
         }
     }
 }

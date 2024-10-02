@@ -1,8 +1,8 @@
-use crate::type_descriptor::TSTypeDescriptor;
+use crate::descriptor::TSDescriptor;
 
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TSArray {
-    pub descriptor: TSTypeDescriptor,
+    pub descriptor: TSDescriptor,
 }

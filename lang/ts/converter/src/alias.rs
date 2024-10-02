@@ -25,15 +25,15 @@ impl TSConvert<TSDefinition> for GTAlias {
 #[cfg(test)]
 mod tests {
     use genotype_lang_ts_tree::{
-        interface::TSInterface, name::TSName, primitive::TSPrimitive, property::TSProperty,
-        type_descriptor::TSTypeDescriptor,
+        descriptor::TSDescriptor, interface::TSInterface, primitive::TSPrimitive,
+        property::TSProperty, reference::TSReference,
     };
     use pretty_assertions::assert_eq;
 
     use super::*;
     use genotype_parser::tree::{
-        alias::GTAlias, descriptor::GTDescriptor, name::GTName, object::GTObject,
-        primitive::GTPrimitive, property::GTProperty,
+        alias::GTAlias, descriptor::GTDescriptor, object::GTObject, primitive::GTPrimitive,
+        property::GTProperty, reference::GTReference,
     };
 
     #[test]
@@ -41,13 +41,13 @@ mod tests {
         assert_eq!(
             GTAlias {
                 doc: None,
-                name: GTName("Name".to_string()),
+                name: "Name".into(),
                 descriptor: GTDescriptor::Primitive(GTPrimitive::Boolean),
             }
             .convert(&|_| {}),
             TSDefinition::Alias(TSAlias {
-                name: TSName("Name".to_string()),
-                descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Boolean),
+                name: "Name".into(),
+                descriptor: TSDescriptor::Primitive(TSPrimitive::Boolean),
             }),
         );
     }
@@ -57,18 +57,18 @@ mod tests {
         assert_eq!(
             GTAlias {
                 doc: None,
-                name: GTName("Book".to_string()),
+                name: "Book".into(),
                 descriptor: GTDescriptor::Object(GTObject {
                     properties: vec![
                         GTProperty {
                             doc: None,
-                            name: GTName("title".to_string()),
+                            name: "title".into(),
                             descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                             required: true,
                         },
                         GTProperty {
                             doc: None,
-                            name: GTName("author".to_string()),
+                            name: "author".into(),
                             descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                             required: true,
                         }
@@ -77,16 +77,16 @@ mod tests {
             }
             .convert(&|_| {}),
             TSDefinition::Interface(TSInterface {
-                name: TSName("Book".to_string()),
+                name: "Book".into(),
                 properties: vec![
                     TSProperty {
-                        name: TSName("title".to_string()),
-                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                        name: "title".into(),
+                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                         required: true,
                     },
                     TSProperty {
-                        name: TSName("author".to_string()),
-                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                        name: "author".into(),
+                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                         required: true,
                     }
                 ]

@@ -5,7 +5,7 @@ use super::TSImportReference;
 impl GTRender for TSImportReference {
     fn render(&self, indent: &GTIndent) -> String {
         match self {
-            TSImportReference::Default(name) => name.render(indent),
+            TSImportReference::Default(name) => name.clone(),
 
             TSImportReference::Glob(name) => format!("* as {}", name.render(indent)),
 
@@ -26,37 +26,33 @@ mod tests {
     use super::*;
     use crate::{
         import_glob_alias::TSImportGlobAlias, import_name::TSImportName, indent::ts_indent,
-        name::TSName,
     };
 
     #[test]
     fn test_render_default() {
-        let indent = ts_indent();
         assert_eq!(
-            TSImportReference::Default(TSName("Name".to_string())).render(&indent),
+            TSImportReference::Default("Name".into()).render(&ts_indent()),
             "Name"
         );
     }
 
     #[test]
     fn test_render_glob() {
-        let indent = ts_indent();
         assert_eq!(
-            TSImportReference::Glob(TSImportGlobAlias::Resolved(TSName("Name".to_string())))
-                .render(&indent),
+            TSImportReference::Glob(TSImportGlobAlias::Resolved("Name".into()))
+                .render(&ts_indent()),
             "* as Name"
         );
     }
 
     #[test]
     fn test_render_named() {
-        let indent = ts_indent();
         assert_eq!(
             TSImportReference::Named(vec![
-                TSImportName::Name(TSName("Name".to_string())),
-                TSImportName::Alias(TSName("Name".to_string()), TSName("Alias".to_string())),
+                TSImportName::Name("Name".into()),
+                TSImportName::Alias("Name".into(), "Alias".into()),
             ])
-            .render(&indent),
+            .render(&ts_indent()),
             "{ Name, Name as Alias }"
         );
     }

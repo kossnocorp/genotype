@@ -1,9 +1,9 @@
-use crate::import_reference::TSImportReference;
+use crate::{import_reference::TSImportReference, path::TSPath};
 
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TSImport {
-    pub path: String,
+    pub path: TSPath,
     pub reference: TSImportReference,
 }

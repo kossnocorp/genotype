@@ -28,57 +28,52 @@ mod tests {
 
     use super::*;
     use crate::{
-        alias::TSAlias, definition::TSDefinition, import::TSImport, import_name::TSImportName,
-        import_reference::TSImportReference, indent::ts_indent, interface::TSInterface,
-        name::TSName, primitive::TSPrimitive, property::TSProperty,
-        type_descriptor::TSTypeDescriptor,
+        alias::TSAlias, definition::TSDefinition, descriptor::TSDescriptor, import::TSImport,
+        import_name::TSImportName, import_reference::TSImportReference, indent::ts_indent,
+        interface::TSInterface, path::TSPath, primitive::TSPrimitive, property::TSProperty,
     };
 
     #[test]
     fn test_render() {
-        let indent = ts_indent();
         assert_eq!(
             TSModule {
                 doc: None,
                 imports: vec![
                     TSImport {
-                        path: "../path/to/module.ts".to_string(),
-                        reference: TSImportReference::Default(TSName("Name".to_string())),
+                        path: TSPath::Resolved("../path/to/module.ts".into()),
+                        reference: TSImportReference::Default("Name".into()),
                     },
                     TSImport {
-                        path: "../path/to/module.ts".to_string(),
+                        path: TSPath::Resolved("../path/to/module.ts".into()),
                         reference: TSImportReference::Named(vec![
-                            TSImportName::Name(TSName("Name".to_string())),
-                            TSImportName::Alias(
-                                TSName("Name".to_string()),
-                                TSName("Alias".to_string())
-                            ),
+                            TSImportName::Name("Name".into()),
+                            TSImportName::Alias("Name".into(), "Alias".into()),
                         ])
                     }
                 ],
                 definitions: vec![
                     TSDefinition::Alias(TSAlias {
-                        name: TSName("Name".to_string()),
-                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                        name: "Name".into(),
+                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                     }),
                     TSDefinition::Interface(TSInterface {
-                        name: TSName("Name".to_string()),
+                        name: "Name".into(),
                         properties: vec![
                             TSProperty {
-                                name: TSName("name".to_string()),
-                                descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                                name: "name".into(),
+                                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                                 required: true
                             },
                             TSProperty {
-                                name: TSName("age".to_string()),
-                                descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Number),
+                                name: "age".into(),
+                                descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
                                 required: false
                             }
                         ]
                     }),
                 ]
             }
-            .render(&indent),
+            .render(&ts_indent()),
             r#"import Name from "../path/to/module.ts";
 import { Name, Name as Alias } from "../path/to/module.ts";
 

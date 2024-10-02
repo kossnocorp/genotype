@@ -1,6 +1,6 @@
 use super::{
-    alias::GTAlias, array::GTArray, inline_import::GTInlineImport, name::GTName, object::GTObject,
-    primitive::GTPrimitive, tuple::GTTuple,
+    alias::GTAlias, array::GTArray, inline_import::GTInlineImport, object::GTObject,
+    primitive::GTPrimitive, reference::GTReference, tuple::GTTuple,
 };
 
 mod parser;
@@ -8,7 +8,7 @@ mod parser;
 #[derive(Debug, PartialEq, Clone)]
 pub enum GTDescriptor {
     Primitive(GTPrimitive),
-    Name(GTName),
+    Reference(GTReference),
     Nullable(Box<GTDescriptor>),
     Object(GTObject),
     Array(Box<GTArray>),

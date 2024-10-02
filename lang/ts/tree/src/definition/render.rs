@@ -17,43 +17,41 @@ impl GTRender for TSDefinition {
 mod tests {
     use super::*;
     use crate::{
-        alias::TSAlias, indent::ts_indent, interface::TSInterface, name::TSName,
-        primitive::TSPrimitive, property::TSProperty, type_descriptor::TSTypeDescriptor,
+        alias::TSAlias, descriptor::TSDescriptor, indent::ts_indent, interface::TSInterface,
+        path::TSPath, primitive::TSPrimitive, property::TSProperty, reference::TSReference,
     };
 
     #[test]
     fn test_render_alias() {
-        let indent = ts_indent();
         assert_eq!(
             TSDefinition::Alias(TSAlias {
-                name: TSName("Name".to_string()),
-                descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                name: "Name".into(),
+                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
             })
-            .render(&indent),
+            .render(&ts_indent()),
             "export type Name = string;"
         );
     }
 
     #[test]
     fn test_render_interface() {
-        let indent = ts_indent();
         assert_eq!(
             TSDefinition::Interface(TSInterface {
-                name: TSName("Name".to_string()),
+                name: "Name".into(),
                 properties: vec![
                     TSProperty {
-                        name: TSName("name".to_string()),
-                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                        name: "name".into(),
+                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                         required: true
                     },
                     TSProperty {
-                        name: TSName("age".to_string()),
-                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Number),
+                        name: "age".into(),
+                        descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
                         required: false
                     }
                 ]
             })
-            .render(&indent),
+            .render(&ts_indent()),
             "export interface Name {\n  name: string;\n  age?: number\n}"
         );
     }

@@ -1,9 +1,9 @@
-use crate::name::TSName;
+use crate::{identifier::TSIdentifier, path::TSPath};
 
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TSInlineImport {
-    pub path: String,
-    pub name: TSName,
+    pub path: TSPath,
+    pub name: TSIdentifier,
 }

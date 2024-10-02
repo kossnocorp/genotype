@@ -14,7 +14,7 @@ impl TryFrom<Pair<'_, Rule>> for GTDescriptor {
         let descriptor = match pair.as_rule() {
             Rule::primitive => GTDescriptor::Primitive(pair.try_into()?),
 
-            Rule::name => GTDescriptor::Name(pair.try_into()?),
+            Rule::name => GTDescriptor::Reference(pair.try_into()?),
 
             Rule::object => GTDescriptor::Object(pair.try_into()?),
 

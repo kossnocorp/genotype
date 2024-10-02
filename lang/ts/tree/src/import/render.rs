@@ -7,7 +7,7 @@ impl GTRender for TSImport {
         format!(
             r#"import {} from "{}";"#,
             self.reference.render(indent),
-            self.path
+            self.path.render(indent)
         )
     }
 }
@@ -21,48 +21,43 @@ mod tests {
     use crate::import_name::TSImportName;
     use crate::import_reference::TSImportReference;
     use crate::indent::ts_indent;
-    use crate::name::TSName;
+    use crate::path::TSPath;
 
     #[test]
     fn test_render_default() {
-        let indent = ts_indent();
         assert_eq!(
             TSImport {
-                path: "../path/to/module.ts".to_string(),
-                reference: TSImportReference::Default(TSName("Name".to_string())),
+                path: TSPath::Resolved("../path/to/module.ts".into()),
+                reference: TSImportReference::Default("Name".into()),
             }
-            .render(&indent),
+            .render(&ts_indent()),
             r#"import Name from "../path/to/module.ts";"#
         );
     }
 
     #[test]
     fn test_render_glob() {
-        let indent = ts_indent();
         assert_eq!(
             TSImport {
-                path: "../path/to/module.ts".to_string(),
-                reference: TSImportReference::Glob(TSImportGlobAlias::Resolved(TSName(
-                    "Name".to_string()
-                ))),
+                path: TSPath::Resolved("../path/to/module.ts".into()),
+                reference: TSImportReference::Glob(TSImportGlobAlias::Resolved("Name".into())),
             }
-            .render(&indent),
+            .render(&ts_indent()),
             r#"import * as Name from "../path/to/module.ts";"#
         );
     }
 
     #[test]
     fn test_render_named() {
-        let indent = ts_indent();
         assert_eq!(
             TSImport {
-                path: "../path/to/module.ts".to_string(),
+                path: TSPath::Resolved("../path/to/module.ts".into()),
                 reference: TSImportReference::Named(vec![
-                    TSImportName::Name(TSName("Name".to_string())),
-                    TSImportName::Alias(TSName("Name".to_string()), TSName("Alias".to_string())),
+                    TSImportName::Name("Name".into()),
+                    TSImportName::Alias("Name".into(), "Alias".into()),
                 ])
             }
-            .render(&indent),
+            .render(&ts_indent()),
             r#"import { Name, Name as Alias } from "../path/to/module.ts";"#
         );
     }

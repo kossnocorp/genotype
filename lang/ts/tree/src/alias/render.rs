@@ -17,22 +17,22 @@ mod tests {
 
     use super::*;
     use crate::{
-        indent::ts_indent, name::TSName, primitive::TSPrimitive, type_descriptor::TSTypeDescriptor,
+        descriptor::TSDescriptor, indent::ts_indent, path::TSPath, primitive::TSPrimitive,
+        reference::TSReference,
     };
 
     #[test]
     fn test_render() {
-        let indent = ts_indent();
         assert_eq!(
             TSAlias {
-                name: TSName("Name".to_string()),
-                descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String)
+                name: "Name".into(),
+                descriptor: TSDescriptor::Primitive(TSPrimitive::String)
             }
-            .render(&indent),
+            .render(&ts_indent()),
             "type Name = string;"
         );
         assert_eq!(
-            TSTypeDescriptor::Primitive(TSPrimitive::String).render(&indent),
+            TSDescriptor::Primitive(TSPrimitive::String).render(&ts_indent()),
             "string"
         );
     }

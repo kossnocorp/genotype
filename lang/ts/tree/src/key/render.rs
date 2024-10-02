@@ -1,8 +1,8 @@
 use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
 
-use super::TSName;
+use super::TSKey;
 
-impl GTRender for TSName {
+impl GTRender for TSKey {
     fn render(&self, _indent: &GTIndent) -> String {
         self.0.clone()
     }
@@ -14,8 +14,7 @@ mod tests {
     use crate::indent::ts_indent;
 
     #[test]
-    fn test_render_name() {
-        let indent = ts_indent();
-        assert_eq!(TSName("foo".to_string()).render(&indent), "foo");
+    fn test_render() {
+                assert_eq!(TSKey("foo".into()).render(&ts_indent()), "foo");
     }
 }

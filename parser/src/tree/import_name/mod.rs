@@ -1,7 +1,7 @@
-use super::name::GTName;
+use super::identifier::GTIdentifier;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum GTImportName {
-    Name(GTName),
-    Alias(GTName, GTName),
+    Name(GTIdentifier),
+    Alias(GTIdentifier, GTIdentifier),
 }

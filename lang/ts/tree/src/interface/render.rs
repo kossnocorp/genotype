@@ -28,67 +28,63 @@ mod tests {
 
     use super::*;
     use crate::{
-        indent::ts_indent, name::TSName, primitive::TSPrimitive, property::TSProperty,
-        type_descriptor::TSTypeDescriptor,
+        descriptor::TSDescriptor, indent::ts_indent, primitive::TSPrimitive, property::TSProperty,
     };
 
     #[test]
     fn test_render_empty() {
-        let indent = ts_indent();
         assert_eq!(
             TSInterface {
-                name: TSName("Name".to_string()),
+                name: "Name".into(),
                 properties: vec![]
             }
-            .render(&indent),
+            .render(&ts_indent()),
             "interface Name {\n}"
         );
     }
 
     #[test]
     fn test_render_properties() {
-        let indent = ts_indent();
         assert_eq!(
             TSInterface {
-                name: TSName("Name".to_string()),
+                name: "Name".into(),
                 properties: vec![
                     TSProperty {
-                        name: TSName("name".to_string()),
-                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                        name: "name".into(),
+                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                         required: true
                     },
                     TSProperty {
-                        name: TSName("age".to_string()),
-                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Number),
+                        name: "age".into(),
+                        descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
                         required: false
                     }
                 ]
             }
-            .render(&indent),
+            .render(&ts_indent()),
             "interface Name {\n  name: string;\n  age?: number\n}"
         );
     }
 
     #[test]
     fn test_render_indent() {
-        let indent = ts_indent().increment();
         assert_eq!(
             TSInterface {
-                name: TSName("Name".to_string()),
+                name: "Name".into(),
                 properties: vec![
                     TSProperty {
-                        name: TSName("name".to_string()),
-                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                        name: "name".into(),
+                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                         required: true
                     },
                     TSProperty {
-                        name: TSName("age".to_string()),
-                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Number),
+                        name: "age".into(),
+                        descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
                         required: false
                     }
                 ]
             }
-            .render(&indent),
+            .render(&ts_indent().increment()),
             "  interface Name {\n    name: string;\n    age?: number\n  }"
         );
     }

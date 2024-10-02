@@ -1,6 +1,9 @@
 use pest::iterators::Pair;
 
-use crate::{parser::Rule, tree::name::GTName};
+use crate::{
+    parser::Rule,
+    tree::{identifier::GTIdentifier, path::GTPath},
+};
 
 use super::GTInlineImport;
 
@@ -16,8 +19,8 @@ impl TryFrom<Pair<'_, Rule>> for GTInlineImport {
         let name = &str[name_index + 1..];
 
         Ok(GTInlineImport {
-            path: path.to_string(),
-            name: GTName(name.to_string()),
+            path: GTPath(path.into()),
+            name: GTIdentifier(name.into()),
         })
     }
 }

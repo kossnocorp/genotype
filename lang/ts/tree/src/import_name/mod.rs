@@ -1,9 +1,9 @@
-use crate::name::TSName;
+use crate::identifier::TSIdentifier;
 
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum TSImportName {
-    Name(TSName),
-    Alias(TSName, TSName),
+    Name(TSIdentifier),
+    Alias(TSIdentifier, TSIdentifier),
 }

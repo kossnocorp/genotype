@@ -2,7 +2,7 @@ use pest::iterators::{Pair, Pairs};
 
 use crate::{
     parser::Rule,
-    tree::{import_name::GTImportName, import_reference::GTImportReference, name::GTName},
+    tree::{import_name::GTImportName, import_reference::GTImportReference, path::GTPath},
 };
 
 use super::GTImport;
@@ -32,7 +32,7 @@ fn parse(
         ParseState::Path => {
             let path = pair.as_str();
             // Remove trailing slash
-            let path = path[..path.len() - 1].to_string();
+            let path = GTPath(path[..path.len() - 1].into());
             let pair = inner.next().unwrap(); // [TODO]
             parse(inner, pair, ParseState::Names(path))
         }
@@ -49,11 +49,11 @@ fn parse(
                 for pair in pair.into_inner() {
                     let mut inner = pair.into_inner();
 
-                    let name = GTName(inner.next().unwrap().as_str().to_string());
+                    let name = inner.next().unwrap().try_into()?;
                     let alias = inner.next();
 
                     if let Some(alias) = alias {
-                        let alias = GTName(alias.as_str().to_string());
+                        let alias = alias.try_into()?;
                         names.push(GTImportName::Alias(name, alias));
                     } else {
                         names.push(GTImportName::Name(name));
@@ -67,7 +67,7 @@ fn parse(
             }
 
             Rule::name => {
-                let name = GTName(pair.as_str().into());
+                let name = pair.try_into()?;
                 Ok(GTImport {
                     path,
                     reference: GTImportReference::Name(name),
@@ -84,5 +84,5 @@ fn parse(
 
 enum ParseState {
     Path,
-    Names(String),
+    Names(GTPath),
 }

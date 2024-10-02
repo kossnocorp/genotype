@@ -1,46 +1,40 @@
 use genotype_lang_ts_tree::{
-    definition::TSDefinition, primitive::TSPrimitive, type_descriptor::TSTypeDescriptor,
-    union::TSUnion,
+    definition::TSDefinition, descriptor::TSDescriptor, primitive::TSPrimitive,
+    reference::TSReference, union::TSUnion,
 };
 use genotype_parser::tree::descriptor::GTDescriptor;
 
 use crate::convert::TSConvert;
 
-impl TSConvert<TSTypeDescriptor> for GTDescriptor {
-    fn convert<HoistFn>(&self, hoist: &HoistFn) -> TSTypeDescriptor
+impl TSConvert<TSDescriptor> for GTDescriptor {
+    fn convert<HoistFn>(&self, hoist: &HoistFn) -> TSDescriptor
     where
         HoistFn: Fn(TSDefinition),
     {
         match self {
-            GTDescriptor::Primitive(primitive) => {
-                TSTypeDescriptor::Primitive(primitive.convert(hoist))
-            }
+            GTDescriptor::Primitive(primitive) => TSDescriptor::Primitive(primitive.convert(hoist)),
 
-            GTDescriptor::Name(name) => TSTypeDescriptor::Name(name.convert(hoist)),
+            GTDescriptor::Reference(name) => TSDescriptor::Reference(name.convert(hoist)),
 
-            GTDescriptor::Nullable(nullable) => TSTypeDescriptor::Union(TSUnion {
+            GTDescriptor::Nullable(nullable) => TSDescriptor::Union(TSUnion {
                 descriptors: vec![
                     nullable.convert(hoist),
-                    TSTypeDescriptor::Primitive(TSPrimitive::Null),
+                    TSDescriptor::Primitive(TSPrimitive::Null),
                 ],
             }),
 
-            GTDescriptor::Object(object) => {
-                TSTypeDescriptor::Object(Box::new(object.convert(hoist)))
-            }
+            GTDescriptor::Object(object) => TSDescriptor::Object(Box::new(object.convert(hoist))),
 
-            GTDescriptor::Array(array) => TSTypeDescriptor::Array(Box::new(array.convert(hoist))),
+            GTDescriptor::Array(array) => TSDescriptor::Array(Box::new(array.convert(hoist))),
 
-            GTDescriptor::Tuple(tuple) => TSTypeDescriptor::Tuple(Box::new(tuple.convert(hoist))),
+            GTDescriptor::Tuple(tuple) => TSDescriptor::Tuple(Box::new(tuple.convert(hoist))),
 
             GTDescriptor::Alias(alias) => {
                 hoist(alias.convert(hoist));
-                TSTypeDescriptor::Name(alias.name.convert(hoist))
+                TSDescriptor::Reference(TSReference::Local(alias.name.convert(hoist)))
             }
 
-            GTDescriptor::InlineImport(import) => {
-                TSTypeDescriptor::InlineImport(import.convert(hoist))
-            }
+            GTDescriptor::InlineImport(import) => TSDescriptor::InlineImport(import.convert(hoist)),
         }
     }
 }
@@ -51,12 +45,12 @@ mod tests {
     use std::sync::Mutex;
 
     use genotype_lang_ts_tree::{
-        alias::TSAlias, array::TSArray, inline_import::TSInlineImport, name::TSName,
-        object::TSObject, property::TSProperty, tuple::TSTuple,
+        alias::TSAlias, array::TSArray, inline_import::TSInlineImport, object::TSObject,
+        path::TSPath, property::TSProperty, reference::TSReference, tuple::TSTuple,
     };
     use genotype_parser::tree::{
-        alias::GTAlias, array::GTArray, inline_import::GTInlineImport, name::GTName,
-        object::GTObject, primitive::GTPrimitive, property::GTProperty, tuple::GTTuple,
+        alias::GTAlias, array::GTArray, inline_import::GTInlineImport, object::GTObject,
+        primitive::GTPrimitive, property::GTProperty, reference::GTReference, tuple::GTTuple,
     };
     use pretty_assertions::assert_eq;
 
@@ -66,15 +60,15 @@ mod tests {
     fn test_convert_primitive() {
         assert_eq!(
             GTDescriptor::Primitive(GTPrimitive::Boolean).convert(&|_| {}),
-            TSTypeDescriptor::Primitive(TSPrimitive::Boolean)
+            TSDescriptor::Primitive(TSPrimitive::Boolean)
         );
     }
 
     #[test]
-    fn test_convert_name() {
+    fn test_convert_reference() {
         assert_eq!(
-            GTDescriptor::Name(GTName("Name".to_string())).convert(&|_| {}),
-            TSTypeDescriptor::Name(TSName("Name".to_string()))
+            GTDescriptor::Reference(GTReference::Unresolved("Name".into())).convert(&|_| {}),
+            TSDescriptor::Reference(TSReference::Unresolved("Name".into()))
         );
     }
 
@@ -83,10 +77,10 @@ mod tests {
         assert_eq!(
             GTDescriptor::Nullable(Box::new(GTDescriptor::Primitive(GTPrimitive::Boolean)))
                 .convert(&|_| {}),
-            TSTypeDescriptor::Union(TSUnion {
+            TSDescriptor::Union(TSUnion {
                 descriptors: vec![
-                    TSTypeDescriptor::Primitive(TSPrimitive::Boolean),
-                    TSTypeDescriptor::Primitive(TSPrimitive::Null),
+                    TSDescriptor::Primitive(TSPrimitive::Boolean),
+                    TSDescriptor::Primitive(TSPrimitive::Null),
                 ]
             })
         );
@@ -99,29 +93,29 @@ mod tests {
                 properties: vec![
                     GTProperty {
                         doc: None,
-                        name: GTName("name".to_string()),
+                        name: "name".into(),
                         descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                         required: true,
                     },
                     GTProperty {
                         doc: None,
-                        name: GTName("age".to_string()),
+                        name: "age".into(),
                         descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
                         required: false,
                     }
                 ]
             })
             .convert(&|_| {}),
-            TSTypeDescriptor::Object(Box::new(TSObject {
+            TSDescriptor::Object(Box::new(TSObject {
                 properties: vec![
                     TSProperty {
-                        name: TSName("name".to_string()),
-                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                        name: "name".into(),
+                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                         required: true,
                     },
                     TSProperty {
-                        name: TSName("age".to_string()),
-                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Number),
+                        name: "age".into(),
+                        descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
                         required: false,
                     }
                 ]
@@ -136,8 +130,8 @@ mod tests {
                 descriptor: GTDescriptor::Primitive(GTPrimitive::Boolean),
             }))
             .convert(&|_| {}),
-            TSTypeDescriptor::Array(Box::new(TSArray {
-                descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Boolean)
+            TSDescriptor::Array(Box::new(TSArray {
+                descriptor: TSDescriptor::Primitive(TSPrimitive::Boolean)
             }))
         );
     }
@@ -152,10 +146,10 @@ mod tests {
                 ]
             })
             .convert(&|_| {}),
-            TSTypeDescriptor::Tuple(Box::new(TSTuple {
+            TSDescriptor::Tuple(Box::new(TSTuple {
                 descriptors: vec![
-                    TSTypeDescriptor::Primitive(TSPrimitive::Boolean),
-                    TSTypeDescriptor::Primitive(TSPrimitive::String),
+                    TSDescriptor::Primitive(TSPrimitive::Boolean),
+                    TSDescriptor::Primitive(TSPrimitive::String),
                 ]
             }))
         );
@@ -167,20 +161,20 @@ mod tests {
         assert_eq!(
             GTDescriptor::Alias(Box::new(GTAlias {
                 doc: None,
-                name: GTName("Name".to_string()),
+                name: "Name".into(),
                 descriptor: GTDescriptor::Primitive(GTPrimitive::Boolean),
             }))
             .convert(&|definition| {
                 let mut hoisted = hoisted.lock().unwrap();
                 hoisted.push(definition);
             }),
-            TSTypeDescriptor::Name(TSName("Name".to_string()))
+            TSDescriptor::Reference(TSReference::Local("Name".into()))
         );
         assert_eq!(
             hoisted.lock().unwrap().clone(),
             vec![TSDefinition::Alias(TSAlias {
-                name: TSName("Name".to_string()),
-                descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Boolean),
+                name: "Name".into(),
+                descriptor: TSDescriptor::Primitive(TSPrimitive::Boolean),
             }),]
         );
     }
@@ -189,13 +183,13 @@ mod tests {
     fn test_convert_inline_import() {
         assert_eq!(
             GTDescriptor::InlineImport(GTInlineImport {
-                path: "./path/to/module".to_string(),
-                name: GTName("Name".to_string())
+                path: "./path/to/module".into(),
+                name: "Name".into()
             })
             .convert(&|_| {}),
-            TSTypeDescriptor::InlineImport(TSInlineImport {
-                path: "./path/to/module".to_string(),
-                name: TSName("Name".to_string())
+            TSDescriptor::InlineImport(TSInlineImport {
+                path: TSPath::Unresolved("./path/to/module".into()),
+                name: "Name".into()
             })
         );
     }

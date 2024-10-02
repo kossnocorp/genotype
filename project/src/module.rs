@@ -3,7 +3,7 @@ use std::{
     hash::{Hash, Hasher},
 };
 
-use genotype_parser::tree::{module::GTModule, name::GTName};
+use genotype_parser::tree::{identifier::GTIdentifier, module::GTModule};
 use genotype_visitor::{traverse::GTTraverse, visitor::GTVisitor};
 
 use crate::{path::GTProjectPath, visitor::GTProjectVisitor};
@@ -13,7 +13,7 @@ pub struct GTProjectModule {
     pub path: GTProjectPath,
     pub module: GTModule,
     pub deps: Vec<GTProjectPath>,
-    pub exports: Vec<GTName>,
+    pub exports: Vec<GTIdentifier>,
 }
 
 impl GTProjectModule {

@@ -21,11 +21,10 @@ impl TSConvert<TSObject> for GTObject {
 #[cfg(test)]
 mod tests {
     use genotype_lang_ts_tree::{
-        name::TSName, primitive::TSPrimitive, property::TSProperty,
-        type_descriptor::TSTypeDescriptor,
+        descriptor::TSDescriptor, primitive::TSPrimitive, property::TSProperty,
     };
     use genotype_parser::tree::{
-        descriptor::GTDescriptor, name::GTName, primitive::GTPrimitive, property::GTProperty,
+        descriptor::GTDescriptor, primitive::GTPrimitive, property::GTProperty,
     };
     use pretty_assertions::assert_eq;
 
@@ -38,13 +37,13 @@ mod tests {
                 properties: vec![
                     GTProperty {
                         doc: None,
-                        name: GTName("name".to_string()),
+                        name: "name".into(),
                         descriptor: GTDescriptor::Primitive(GTPrimitive::String),
                         required: true,
                     },
                     GTProperty {
                         doc: None,
-                        name: GTName("age".to_string()),
+                        name: "age".into(),
                         descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
                         required: false,
                     }
@@ -54,13 +53,13 @@ mod tests {
             TSObject {
                 properties: vec![
                     TSProperty {
-                        name: TSName("name".to_string()),
-                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::String),
+                        name: "name".into(),
+                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                         required: true,
                     },
                     TSProperty {
-                        name: TSName("age".to_string()),
-                        descriptor: TSTypeDescriptor::Primitive(TSPrimitive::Number),
+                        name: "age".into(),
+                        descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
                         required: false,
                     }
                 ]

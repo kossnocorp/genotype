@@ -1,9 +1,9 @@
-use crate::{name::TSName, type_descriptor::TSTypeDescriptor};
+use crate::{descriptor::TSDescriptor, identifier::TSIdentifier};
 
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TSAlias {
-    pub name: TSName,
-    pub descriptor: TSTypeDescriptor,
+    pub name: TSIdentifier,
+    pub descriptor: TSDescriptor,
 }

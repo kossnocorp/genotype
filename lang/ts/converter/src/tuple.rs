@@ -20,7 +20,7 @@ impl TSConvert<TSTuple> for GTTuple {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::{primitive::TSPrimitive, type_descriptor::TSTypeDescriptor};
+    use genotype_lang_ts_tree::{descriptor::TSDescriptor, primitive::TSPrimitive};
     use genotype_parser::tree::{descriptor::GTDescriptor, primitive::GTPrimitive};
     use pretty_assertions::assert_eq;
 
@@ -38,8 +38,8 @@ mod tests {
             .convert(&|_| {}),
             TSTuple {
                 descriptors: vec![
-                    TSTypeDescriptor::Primitive(TSPrimitive::Boolean),
-                    TSTypeDescriptor::Primitive(TSPrimitive::String),
+                    TSDescriptor::Primitive(TSPrimitive::Boolean),
+                    TSDescriptor::Primitive(TSPrimitive::String),
                 ]
             }
         );

@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 genotype_lang_core_tree = { path = "../../core/tree" }
+genotype_parser = { path = "../../../parser" }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

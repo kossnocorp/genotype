@@ -1,6 +1,9 @@
 use pest::iterators::{Pair, Pairs};
 
-use crate::{parser::Rule, tree::name::GTName};
+use crate::{
+    parser::Rule,
+    tree::{doc::GTDoc, key::GTKey},
+};
 
 use super::GTProperty;
 
@@ -26,10 +29,10 @@ fn parse(
                 Rule::line_doc => {
                     let doc = pair.into_inner().find(|p| p.as_rule() == Rule::doc);
                     let doc_acc = if let Some(pair) = doc {
-                        Some(if let Some(str) = doc_acc {
-                            str + "\n" + pair.as_str()
+                        Some(if let Some(doc) = doc_acc {
+                            doc.concat(pair)
                         } else {
-                            pair.as_str().to_string()
+                            pair.into()
                         })
                     } else {
                         doc_acc
@@ -44,7 +47,7 @@ fn parse(
         }
 
         ParseState::Name(required, doc) => {
-            let name = GTName(pair.as_str().to_string()); // [TODO]
+            let name = pair.into();
             let pair = inner.next().unwrap(); // [TODO]
             parse(inner, pair, ParseState::Descriptor(required, doc, name))
         }
@@ -62,7 +65,7 @@ fn parse(
 }
 
 enum ParseState {
-    Doc(bool, Option<String>),
-    Name(bool, Option<String>),
-    Descriptor(bool, Option<String>, GTName),
+    Doc(bool, Option<GTDoc>),
+    Name(bool, Option<GTDoc>),
+    Descriptor(bool, Option<GTDoc>, GTKey),
 }

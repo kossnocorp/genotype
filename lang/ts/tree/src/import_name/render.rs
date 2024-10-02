@@ -16,23 +16,20 @@ impl GTRender for TSImportName {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{indent::ts_indent, name::TSName};
+    use crate::indent::ts_indent;
 
     #[test]
     fn test_render_name() {
-        let indent = ts_indent();
         assert_eq!(
-            TSImportName::Name(TSName("Name".to_string())).render(&indent),
+            TSImportName::Name("Name".into()).render(&ts_indent()),
             "Name"
         );
     }
 
     #[test]
     fn test_render_alias() {
-        let indent = ts_indent();
         assert_eq!(
-            TSImportName::Alias(TSName("Name".to_string()), TSName("Alias".to_string()))
-                .render(&indent),
+            TSImportName::Alias("Name".into(), "Alias".into()).render(&ts_indent()),
             "Name as Alias"
         );
     }

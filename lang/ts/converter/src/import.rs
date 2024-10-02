@@ -9,7 +9,7 @@ impl TSConvert<TSImport> for GTImport {
         HoistFn: Fn(TSDefinition),
     {
         TSImport {
-            path: self.path.clone(),
+            path: self.path.convert(hoist),
             reference: self.reference.convert(hoist),
         }
     }
@@ -19,25 +19,23 @@ impl TSConvert<TSImport> for GTImport {
 mod tests {
     use genotype_lang_ts_tree::{
         import_glob_alias::TSImportGlobAlias, import_name::TSImportName,
-        import_reference::TSImportReference, name::TSName,
+        import_reference::TSImportReference, path::TSPath,
     };
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use genotype_parser::tree::{
-        import_name::GTImportName, import_reference::GTImportReference, name::GTName,
-    };
+    use genotype_parser::tree::{import_name::GTImportName, import_reference::GTImportReference};
 
     #[test]
     fn test_convert_glob() {
         assert_eq!(
             GTImport {
-                path: "./path/to/module".to_string(),
+                path: "./path/to/module".into(),
                 reference: GTImportReference::Glob
             }
             .convert(&|_| {}),
             TSImport {
-                path: "./path/to/module".to_string(),
+                path: TSPath::Unresolved("./path/to/module".into()),
                 reference: TSImportReference::Glob(TSImportGlobAlias::Unresolved)
             }
         );
@@ -47,18 +45,18 @@ mod tests {
     fn test_convert_names() {
         assert_eq!(
             GTImport {
-                path: "./path/to/module".to_string(),
+                path: "./path/to/module".into(),
                 reference: GTImportReference::Names(vec![
-                    GTImportName::Name(GTName("Name".to_string())),
-                    GTImportName::Alias(GTName("Name".to_string()), GTName("Alias".to_string()))
+                    GTImportName::Name("Name".into()),
+                    GTImportName::Alias("Name".into(), "Alias".into())
                 ])
             }
             .convert(&|_| {}),
             TSImport {
-                path: "./path/to/module".to_string(),
+                path: TSPath::Unresolved("./path/to/module".into()),
                 reference: TSImportReference::Named(vec![
-                    TSImportName::Name(TSName("Name".to_string())),
-                    TSImportName::Alias(TSName("Name".to_string()), TSName("Alias".to_string()))
+                    TSImportName::Name("Name".into()),
+                    TSImportName::Alias("Name".into(), "Alias".into())
                 ])
             }
         );
@@ -68,15 +66,13 @@ mod tests {
     fn test_convert_name() {
         assert_eq!(
             GTImport {
-                path: "./path/to/module".to_string(),
-                reference: GTImportReference::Name(GTName("Name".to_string()))
+                path: "./path/to/module".into(),
+                reference: GTImportReference::Name("Name".into())
             }
             .convert(&|_| {}),
             TSImport {
-                path: "./path/to/module".to_string(),
-                reference: TSImportReference::Named(vec![TSImportName::Name(TSName(
-                    "Name".to_string()
-                ))])
+                path: TSPath::Unresolved("./path/to/module".into()),
+                reference: TSImportReference::Named(vec![TSImportName::Name("Name".into())])
             }
         );
     }
