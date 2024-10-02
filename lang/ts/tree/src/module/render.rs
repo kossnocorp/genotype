@@ -37,6 +37,7 @@ mod tests {
     fn test_render() {
         assert_eq!(
             TSModule {
+                path: TSPath::Resolved("../path/to/module.ts".into()),
                 doc: None,
                 imports: vec![
                     TSImport {

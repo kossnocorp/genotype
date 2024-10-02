@@ -1,21 +1,15 @@
-use pest::iterators::Pairs;
-
-use crate::parser::{parse_gt_code, Rule};
+use crate::{
+    parser::{parse_gt_code, Rule},
+    tree::GTPath,
+};
 
 use super::GTModule;
 
 impl GTModule {
-    pub fn parse(code: String) -> Result<Self, Box<dyn std::error::Error>> {
-        let pairs = parse_gt_code(&code)?;
-        pairs.try_into()
-    }
-}
-
-impl TryFrom<Pairs<'_, Rule>> for GTModule {
-    type Error = Box<dyn std::error::Error>;
-
-    fn try_from(mut pairs: Pairs<'_, Rule>) -> Result<Self, Self::Error> {
+    pub fn parse(path: GTPath, code: String) -> Result<Self, Box<dyn std::error::Error>> {
+        let mut pairs = parse_gt_code(&code)?;
         let mut module = GTModule {
+            path,
             doc: None,
             imports: vec![],
             aliases: vec![],
@@ -77,6 +71,7 @@ mod tests {
         assert_module(
             "./examples/syntax/01-alias.type",
             GTModule {
+                path: "./examples/syntax/01-alias.type".into(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
@@ -100,6 +95,7 @@ mod tests {
         assert_module(
             "./examples/syntax/02-primitives.type",
             GTModule {
+                path: "./examples/syntax/02-primitives.type".into(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
@@ -133,6 +129,7 @@ mod tests {
         assert_module(
             "./examples/syntax/03-objects.type",
             GTModule {
+                path: "./examples/syntax/03-objects.type".into(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
@@ -228,6 +225,7 @@ mod tests {
         assert_module(
             "./examples/syntax/04-comments.type",
             GTModule {
+                path: "./examples/syntax/04-comments.type".into(),
                 doc: Some("Module comment...\n...multiline".into()),
                 imports: vec![],
                 aliases: vec![
@@ -271,6 +269,7 @@ mod tests {
         assert_module(
             "./examples/syntax/05-optional.type",
             GTModule {
+                path: "./examples/syntax/05-optional.type".into(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![GTAlias {
@@ -312,6 +311,7 @@ mod tests {
         assert_module(
             "./examples/syntax/06-nested.type",
             GTModule {
+                path: "./examples/syntax/06-nested.type".into(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
@@ -391,6 +391,7 @@ mod tests {
         assert_module(
             "./examples/syntax/07-arrays.type",
             GTModule {
+                path: "./examples/syntax/07-arrays.type".into(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![GTAlias {
@@ -424,6 +425,7 @@ mod tests {
         assert_module(
             "./examples/syntax/08-tuples.type",
             GTModule {
+                path: "./examples/syntax/08-tuples.type".into(),
                 doc: None,
                 imports: vec![],
                 aliases: vec![
@@ -479,6 +481,7 @@ mod tests {
         assert_module(
             "./examples/syntax/09-modules.type",
             GTModule {
+                path: "./examples/syntax/09-modules.type".into(),
                 doc: None,
                 imports: vec![
                     GTImport {
@@ -545,27 +548,7 @@ mod tests {
 
     fn assert_module(path: &str, expected: GTModule) {
         let code = fs::read_to_string(path).expect("cannot read file");
-        let pairs = parse_gt_code(&code);
-
-        match pairs {
-            Ok(pairs) => {
-                let module = TryInto::<GTModule>::try_into(pairs);
-                match module {
-                    Ok(module) => {
-                        assert_eq!(module, expected);
-                    }
-
-                    Err(err) => {
-                        println!("{}", err);
-                        assert!(false, "Failed to build module");
-                    }
-                }
-            }
-
-            Err(err) => {
-                println!("{}", err);
-                assert!(false, "Failed to parse file");
-            }
-        }
+        let module = GTModule::parse(path.into(), code).unwrap();
+        assert_eq!(module, expected);
     }
 }

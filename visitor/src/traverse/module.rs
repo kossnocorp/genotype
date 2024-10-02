@@ -7,6 +7,7 @@ use super::GTTraverse;
 impl GTTraverse for GTModule {
     fn traverse(&mut self, visitor: &mut dyn GTVisitor) {
         visitor.visit_module(self);
+        self.path.traverse(visitor);
 
         if let Some(doc) = &mut self.doc {
             doc.traverse(visitor);
@@ -32,10 +33,10 @@ mod tests {
     #[test]
     fn test_traverse_base() {
         let mut visitor = GTMockVisitor::new();
-        let path = GTPath("./path/to/module".into());
+        let import_path = GTPath("./path/to/module".into());
         let reference = GTImportReference::Glob;
         let import = GTImport {
-            path: path.clone(),
+            path: import_path.clone(),
             reference: reference.clone(),
         };
         let alias = GTAlias {
@@ -43,7 +44,9 @@ mod tests {
             name: "Name".into(),
             descriptor: GTDescriptor::Primitive(GTPrimitive::String),
         };
+        let module_path = GTPath("./path/to/module".into());
         let mut module = GTModule {
+            path: module_path.clone(),
             doc: None,
             imports: vec![import.clone()],
             aliases: vec![alias.clone()],
@@ -54,7 +57,7 @@ mod tests {
             vec![
                 GTMockVisited::Module(module.clone()),
                 GTMockVisited::Import(import.clone()),
-                GTMockVisited::Path(path.clone()),
+                GTMockVisited::Path(import_path.clone()),
                 GTMockVisited::ImportReference(reference.clone()),
                 GTMockVisited::Alias(alias.clone()),
                 GTMockVisited::Descriptor(alias.descriptor.clone()),
@@ -66,10 +69,10 @@ mod tests {
     #[test]
     fn test_traverse_doc() {
         let mut visitor = GTMockVisitor::new();
-        let path = GTPath("./path/to/module".into());
+        let import_path = GTPath("./path/to/import".into());
         let reference = GTImportReference::Glob;
         let import = GTImport {
-            path: path.clone(),
+            path: import_path.clone(),
             reference: reference.clone(),
         };
         let alias = GTAlias {
@@ -77,7 +80,9 @@ mod tests {
             name: "Name".into(),
             descriptor: GTDescriptor::Primitive(GTPrimitive::String),
         };
+        let module_path = GTPath("./path/to/module".into());
         let mut module = GTModule {
+            path: module_path.clone(),
             doc: Some(GTDoc("Hello, world!".into())),
             imports: vec![import.clone()],
             aliases: vec![alias.clone()],
@@ -87,9 +92,10 @@ mod tests {
             visitor.visited,
             vec![
                 GTMockVisited::Module(module.clone()),
+                GTMockVisited::Path(module_path.clone()),
                 GTMockVisited::Doc(module.doc.clone().unwrap()),
                 GTMockVisited::Import(import.clone()),
-                GTMockVisited::Path(path.clone()),
+                GTMockVisited::Path(module_path.clone()),
                 GTMockVisited::ImportReference(reference.clone()),
                 GTMockVisited::Alias(alias.clone()),
                 GTMockVisited::Descriptor(alias.descriptor.clone()),

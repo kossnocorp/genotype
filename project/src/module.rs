@@ -17,9 +17,19 @@ pub struct GTProjectModule {
 }
 
 impl GTProjectModule {
-    pub fn load(path: GTProjectPath) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn load(
+        root: &GTProjectPath,
+        path: GTProjectPath,
+    ) -> Result<Self, Box<dyn std::error::Error>> {
         let code = read_to_string(&path)?;
-        let mut module = GTModule::parse(code)?;
+        let module_path = path
+            .as_path()
+            .strip_prefix(root.as_path())?
+            .with_extension("")
+            .to_str()
+            .unwrap()
+            .into();
+        let mut module = GTModule::parse(module_path, code)?;
 
         let mut visitor = GTProjectLoadVisitor::new();
         module.traverse(&mut visitor);

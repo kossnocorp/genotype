@@ -2,7 +2,7 @@ use genotype_visitor::traverse::GTTraverse;
 use glob::glob;
 use rayon::Scope;
 use std::{
-    collections::HashSet,
+    collections::{HashMap, HashSet},
     sync::{Arc, Mutex},
 };
 
@@ -25,16 +25,18 @@ impl GTProject {
             .map(GTProjectPath::try_new)
             .collect::<Result<Vec<_>, _>>()?;
 
+        let root = Arc::new(root);
         let processed_paths = Arc::new(Mutex::new(HashSet::new()));
         let modules = Arc::new(Mutex::new(Vec::new()));
 
         rayon::scope(|scope| {
             for entry in entries {
+                let root = Arc::clone(&root);
                 let processed_paths = Arc::clone(&processed_paths);
                 let modules = Arc::clone(&modules);
 
                 scope.spawn(|scope| {
-                    process_module(entry, scope, processed_paths, modules);
+                    process_module(root, entry, scope, processed_paths, modules);
                 });
             }
         });
@@ -42,16 +44,25 @@ impl GTProject {
         let mut modules = modules.lock().unwrap().clone();
         modules.sort_by(|a, b| a.path.as_path().cmp(&b.path.as_path()));
 
-        let mut resolver = GTProjectResolveVisitor::new();
+        let mut exports = HashMap::new();
+        for module in modules.iter_mut() {
+            exports.insert(module.path.clone(), module.exports.clone());
+        }
+
+        let mut resolver = GTProjectResolveVisitor::new(exports);
         for module in modules.iter_mut() {
             module.module.traverse(&mut resolver);
         }
 
-        Ok(GTProject { root, modules })
+        Ok(GTProject {
+            root: (*root).clone(),
+            modules,
+        })
     }
 }
 
 fn process_module(
+    root: Arc<GTProjectPath>,
     path: GTProjectPath,
     scope: &Scope<'_>,
     processed_paths: Arc<Mutex<HashSet<GTProjectPath>>>,
@@ -66,15 +77,16 @@ fn process_module(
         }
     }
 
-    match GTProjectModule::load(path.clone()) {
+    match GTProjectModule::load(&root, path.clone()) {
         Ok(module) => {
             for dep in module.deps.iter() {
+                let root = Arc::clone(&root);
                 let dep = dep.clone();
                 let processed_paths = Arc::clone(&processed_paths);
                 let modules = Arc::clone(&modules);
 
                 scope.spawn(|scope| {
-                    process_module(dep, scope, processed_paths, modules);
+                    process_module(root, dep, scope, processed_paths, modules);
                 });
             }
 
@@ -138,6 +150,7 @@ mod tests {
                     deps: vec![],
                     exports: vec!["Author".into()],
                     module: GTModule {
+                        path: "author".into(),
                         doc: None,
                         imports: vec![],
                         aliases: vec![GTAlias {
@@ -159,6 +172,7 @@ mod tests {
                     deps: vec!["./examples/basic/author.type".try_into().unwrap()],
                     exports: vec!["Book".into()],
                     module: GTModule {
+                        path: "book".into(),
                         doc: None,
                         imports: vec![GTImport {
                             path: GTPath("./author".into()),
@@ -178,9 +192,10 @@ mod tests {
                                     GTProperty {
                                         doc: None,
                                         name: "author".into(),
-                                        descriptor: GTDescriptor::Reference(
-                                            GTReference::Unresolved("Author".into()),
-                                        ),
+                                        descriptor: GTDescriptor::Reference(GTReference::External(
+                                            "Author".into(),
+                                            "./author".into(),
+                                        )),
                                         required: true,
                                     },
                                 ],
@@ -196,6 +211,7 @@ mod tests {
                     ],
                     exports: vec!["Order".into()],
                     module: GTModule {
+                        path: "order".into(),
                         doc: None,
                         imports: vec![GTImport {
                             path: GTPath("./book".into()),
@@ -220,7 +236,10 @@ mod tests {
                                         name: "books".into(),
                                         descriptor: GTDescriptor::Array(Box::new(GTArray {
                                             descriptor: GTDescriptor::Reference(
-                                                GTReference::Unresolved("Book".into()),
+                                                GTReference::External(
+                                                    "Book".into(),
+                                                    "./book".into(),
+                                                ),
                                             ),
                                         })),
                                         required: true,
@@ -235,6 +254,7 @@ mod tests {
                     deps: vec![],
                     exports: vec!["User".into()],
                     module: GTModule {
+                        path: "user".into(),
                         doc: None,
                         imports: vec![],
                         aliases: vec![GTAlias {

@@ -28,6 +28,7 @@ pub fn convert_to_ts_module(module: &GTModule) -> TSModule {
     }
 
     TSModule {
+        path: module.path.convert(&|_| {}),
         doc: None,
         imports,
         definitions: definitions.into_inner().unwrap(),
@@ -36,18 +37,8 @@ pub fn convert_to_ts_module(module: &GTModule) -> TSModule {
 
 #[cfg(test)]
 mod tests {
-
-    use genotype_lang_ts_tree::{
-        alias::TSAlias, definition::TSDefinition, descriptor::TSDescriptor, import::TSImport,
-        import_glob_alias::TSImportGlobAlias, import_name::TSImportName,
-        import_reference::TSImportReference, interface::TSInterface, path::TSPath,
-        primitive::TSPrimitive, property::TSProperty, reference::TSReference,
-    };
-    use genotype_parser::tree::{
-        alias::GTAlias, descriptor::GTDescriptor, import::GTImport, import_name::GTImportName,
-        import_reference::GTImportReference, object::GTObject, primitive::GTPrimitive,
-        property::GTProperty, reference::GTReference,
-    };
+    use genotype_lang_ts_tree::*;
+    use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -56,6 +47,7 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             convert_to_ts_module(&GTModule {
+                path: "./path/to/module".into(),
                 doc: None,
                 imports: vec![
                     GTImport {
@@ -137,6 +129,7 @@ mod tests {
                 ],
             }),
             TSModule {
+                path: TSPath::Unresolved("./path/to/module".into()),
                 doc: None,
                 imports: vec![
                     TSImport {
