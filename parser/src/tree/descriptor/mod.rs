@@ -1,18 +1,16 @@
-use super::{
-    alias::GTAlias, array::GTArray, inline_import::GTInlineImport, object::GTObject,
-    primitive::GTPrimitive, reference::GTReference, tuple::GTTuple,
-};
+use super::*;
 
 mod parser;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum GTDescriptor {
-    Primitive(GTPrimitive),
-    Reference(GTReference),
+    Alias(Box<GTAlias>),
+    Array(Box<GTArray>),
+    InlineImport(GTInlineImport),
     Nullable(Box<GTDescriptor>),
     Object(GTObject),
-    Array(Box<GTArray>),
+    Primitive(GTPrimitive),
+    Reference(GTReference),
     Tuple(GTTuple),
-    Alias(Box<GTAlias>),
-    InlineImport(GTInlineImport),
+    Union(GTUnion),
 }

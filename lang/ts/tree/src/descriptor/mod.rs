@@ -7,11 +7,11 @@ mod render;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum TSDescriptor {
+    Array(Box<TSArray>),
+    InlineImport(TSInlineImport),
+    Object(TSObject),
     Primitive(TSPrimitive),
     Reference(TSReference),
+    Tuple(TSTuple),
     Union(TSUnion),
-    Object(Box<TSObject>),
-    Array(Box<TSArray>),
-    Tuple(Box<TSTuple>),
-    InlineImport(TSInlineImport),
 }

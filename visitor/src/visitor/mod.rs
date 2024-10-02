@@ -1,10 +1,7 @@
-use genotype_parser::tree::{
-    alias::GTAlias, array::GTArray, descriptor::GTDescriptor, doc::GTDoc, identifier::GTIdentifier,
-    import::GTImport, import_name::GTImportName, import_reference::GTImportReference,
-    inline_import::GTInlineImport, key::GTKey, module::GTModule, object::GTObject, path::GTPath,
-    primitive::GTPrimitive, property::GTProperty, reference::GTReference, tuple::GTTuple,
-    union::GTUnion,
-};
+use genotype_parser::tree::*;
+
+#[cfg(test)]
+pub mod mock;
 
 pub trait GTVisitor {
     fn visit_alias(&mut self, _alias: &GTAlias) {}

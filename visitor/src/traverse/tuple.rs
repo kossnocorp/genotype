@@ -12,3 +12,29 @@ impl GTTraverse for GTTuple {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::visitor::mock::*;
+    use genotype_parser::tree::*;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_traverse() {
+        let mut visitor = GTMockVisitor::new();
+        let primitive = GTDescriptor::Primitive(GTPrimitive::String);
+        let tuple = GTTuple {
+            descriptors: vec![primitive.clone()],
+        };
+        tuple.traverse(&mut visitor);
+        assert_eq!(
+            visitor.visited,
+            vec![
+                GTMockVisited::Tuple(tuple.clone()),
+                GTMockVisited::Descriptor(primitive),
+                GTMockVisited::Primitive(GTPrimitive::String),
+            ]
+        );
+    }
+}
