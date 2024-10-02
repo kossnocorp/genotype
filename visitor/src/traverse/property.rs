@@ -5,9 +5,9 @@ use crate::visitor::GTVisitor;
 use super::GTTraverse;
 
 impl GTTraverse for GTProperty {
-    fn traverse(&self, visitor: &mut dyn GTVisitor) {
+    fn traverse(&mut self, visitor: &mut dyn GTVisitor) {
         visitor.visit_property(self);
-        if let Some(doc) = &self.doc {
+        if let Some(doc) = &mut self.doc {
             doc.traverse(visitor);
         }
         self.name.traverse(visitor);
@@ -25,7 +25,7 @@ mod tests {
     #[test]
     fn test_traverse_base() {
         let mut visitor = GTMockVisitor::new();
-        let property = GTProperty {
+        let mut property = GTProperty {
             doc: None,
             name: GTKey("key".into()),
             descriptor: GTDescriptor::Primitive(GTPrimitive::String),
@@ -46,7 +46,7 @@ mod tests {
     #[test]
     fn test_traverse_doc() {
         let mut visitor = GTMockVisitor::new();
-        let property = GTProperty {
+        let mut property = GTProperty {
             doc: Some(GTDoc("Hello, world!".into())),
             name: GTKey("key".into()),
             descriptor: GTDescriptor::Primitive(GTPrimitive::String),

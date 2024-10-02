@@ -5,8 +5,8 @@ use crate::visitor::GTVisitor;
 use super::GTTraverse;
 
 impl GTTraverse for GTIdentifier {
-    fn traverse(&self, visitor: &mut dyn GTVisitor) {
-        visitor.visit_identifier(&self);
+    fn traverse(&mut self, visitor: &mut dyn GTVisitor) {
+        visitor.visit_identifier(self);
     }
 }
 
@@ -19,7 +19,7 @@ mod tests {
     #[test]
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
-        let identifier = GTIdentifier("Name".into());
+        let mut identifier = GTIdentifier("Name".into());
         identifier.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,

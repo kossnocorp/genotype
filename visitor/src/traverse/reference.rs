@@ -5,8 +5,8 @@ use crate::visitor::GTVisitor;
 use super::GTTraverse;
 
 impl GTTraverse for GTReference {
-    fn traverse(&self, visitor: &mut dyn GTVisitor) {
-        visitor.visit_reference(&self);
+    fn traverse(&mut self, visitor: &mut dyn GTVisitor) {
+        visitor.visit_reference(self);
         match self {
             GTReference::Unresolved(identifier) => {
                 identifier.traverse(visitor);
@@ -35,7 +35,7 @@ mod tests {
     fn test_traverse_unresolved() {
         let mut visitor = GTMockVisitor::new();
         let identifier = GTIdentifier("Name".into());
-        let reference = GTReference::Unresolved(identifier.clone());
+        let mut reference = GTReference::Unresolved(identifier.clone());
         reference.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,
@@ -50,7 +50,7 @@ mod tests {
     fn test_traverse_local() {
         let mut visitor = GTMockVisitor::new();
         let identifier = GTIdentifier("Name".into());
-        let reference = GTReference::Local(identifier.clone());
+        let mut reference = GTReference::Local(identifier.clone());
         reference.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,
@@ -66,7 +66,7 @@ mod tests {
         let mut visitor = GTMockVisitor::new();
         let identifier = GTIdentifier("Name".into());
         let path = GTPath("./path/to/module".into());
-        let reference = GTReference::External(identifier.clone(), path.clone());
+        let mut reference = GTReference::External(identifier.clone(), path.clone());
         reference.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,

@@ -5,7 +5,7 @@ use crate::visitor::GTVisitor;
 use super::GTTraverse;
 
 impl GTTraverse for GTArray {
-    fn traverse(&self, visitor: &mut dyn GTVisitor) {
+    fn traverse(&mut self, visitor: &mut dyn GTVisitor) {
         visitor.visit_array(self);
         self.descriptor.traverse(visitor);
     }
@@ -21,7 +21,7 @@ mod tests {
     #[test]
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
-        let array = GTArray {
+        let mut array = GTArray {
             descriptor: GTDescriptor::Primitive(GTPrimitive::String),
         };
         array.traverse(&mut visitor);

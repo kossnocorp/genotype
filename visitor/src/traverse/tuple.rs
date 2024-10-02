@@ -5,9 +5,9 @@ use crate::visitor::GTVisitor;
 use super::GTTraverse;
 
 impl GTTraverse for GTTuple {
-    fn traverse(&self, visitor: &mut dyn GTVisitor) {
+    fn traverse(&mut self, visitor: &mut dyn GTVisitor) {
         visitor.visit_tuple(self);
-        for descriptor in &self.descriptors {
+        for descriptor in &mut self.descriptors {
             descriptor.traverse(visitor);
         }
     }
@@ -24,7 +24,7 @@ mod tests {
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
         let primitive = GTDescriptor::Primitive(GTPrimitive::String);
-        let tuple = GTTuple {
+        let mut tuple = GTTuple {
             descriptors: vec![primitive.clone()],
         };
         tuple.traverse(&mut visitor);

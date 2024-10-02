@@ -20,5 +20,5 @@ mod tuple;
 mod union;
 
 pub trait GTTraverse {
-    fn traverse(&self, visitor: &mut dyn GTVisitor);
+    fn traverse(&mut self, visitor: &mut dyn GTVisitor);
 }

@@ -5,18 +5,18 @@ use crate::visitor::GTVisitor;
 use super::GTTraverse;
 
 impl GTTraverse for GTModule {
-    fn traverse(&self, visitor: &mut dyn GTVisitor) {
+    fn traverse(&mut self, visitor: &mut dyn GTVisitor) {
         visitor.visit_module(self);
 
-        if let Some(doc) = &self.doc {
+        if let Some(doc) = &mut self.doc {
             doc.traverse(visitor);
         }
 
-        for import in &self.imports {
+        for import in &mut self.imports {
             import.traverse(visitor);
         }
 
-        for alias in &self.aliases {
+        for alias in &mut self.aliases {
             alias.traverse(visitor);
         }
     }
@@ -43,7 +43,7 @@ mod tests {
             name: "Name".into(),
             descriptor: GTDescriptor::Primitive(GTPrimitive::String),
         };
-        let module = GTModule {
+        let mut module = GTModule {
             doc: None,
             imports: vec![import.clone()],
             aliases: vec![alias.clone()],
@@ -77,7 +77,7 @@ mod tests {
             name: "Name".into(),
             descriptor: GTDescriptor::Primitive(GTPrimitive::String),
         };
-        let module = GTModule {
+        let mut module = GTModule {
             doc: Some(GTDoc("Hello, world!".into())),
             imports: vec![import.clone()],
             aliases: vec![alias.clone()],

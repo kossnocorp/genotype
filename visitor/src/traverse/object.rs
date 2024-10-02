@@ -5,9 +5,9 @@ use crate::visitor::GTVisitor;
 use super::GTTraverse;
 
 impl GTTraverse for GTObject {
-    fn traverse(&self, visitor: &mut dyn GTVisitor) {
+    fn traverse(&mut self, visitor: &mut dyn GTVisitor) {
         visitor.visit_object(self);
-        for property in &self.properties {
+        for property in &mut self.properties {
             property.traverse(visitor);
         }
     }
@@ -29,7 +29,7 @@ mod tests {
             descriptor: GTDescriptor::Primitive(GTPrimitive::String),
             required: true,
         };
-        let object = GTObject {
+        let mut object = GTObject {
             properties: vec![property.clone()],
         };
         object.traverse(&mut visitor);

@@ -5,8 +5,8 @@ use crate::visitor::GTVisitor;
 use super::GTTraverse;
 
 impl GTTraverse for GTImportReference {
-    fn traverse(&self, visitor: &mut dyn GTVisitor) {
-        visitor.visit_import_reference(&self);
+    fn traverse(&mut self, visitor: &mut dyn GTVisitor) {
+        visitor.visit_import_reference(self);
         match self {
             GTImportReference::Glob => {}
             GTImportReference::Names(names) => {
@@ -33,7 +33,7 @@ mod tests {
     #[test]
     fn test_traverse_glob() {
         let mut visitor = GTMockVisitor::new();
-        let reference = GTImportReference::Glob;
+        let mut reference = GTImportReference::Glob;
         reference.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,
@@ -46,7 +46,7 @@ mod tests {
         let mut visitor = GTMockVisitor::new();
         let identifier = GTIdentifier("Name".into());
         let import_name = GTImportName::Name(identifier.clone());
-        let reference = GTImportReference::Names(vec![import_name.clone()]);
+        let mut reference = GTImportReference::Names(vec![import_name.clone()]);
         reference.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,
@@ -62,7 +62,7 @@ mod tests {
     fn test_traverse_name() {
         let mut visitor = GTMockVisitor::new();
         let identifier = GTIdentifier("Name".into());
-        let reference = GTImportReference::Name(identifier.clone());
+        let mut reference = GTImportReference::Name(identifier.clone());
         reference.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,

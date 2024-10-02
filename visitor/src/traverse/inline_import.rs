@@ -5,7 +5,7 @@ use crate::visitor::GTVisitor;
 use super::GTTraverse;
 
 impl GTTraverse for GTInlineImport {
-    fn traverse(&self, visitor: &mut dyn GTVisitor) {
+    fn traverse(&mut self, visitor: &mut dyn GTVisitor) {
         visitor.visit_inline_import(self);
         self.name.traverse(visitor);
         self.path.traverse(visitor);
@@ -22,7 +22,7 @@ mod tests {
     #[test]
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
-        let import = GTInlineImport {
+        let mut import = GTInlineImport {
             path: GTPath("./path/to/module".into()),
             name: "Name".into(),
         };

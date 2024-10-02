@@ -1,3 +1,4 @@
+use genotype_visitor::traverse::GTTraverse;
 use glob::glob;
 use rayon::Scope;
 use std::{
@@ -5,7 +6,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use crate::{module::GTProjectModule, path::GTProjectPath};
+use crate::{module::GTProjectModule, path::GTProjectPath, resolve::GTProjectResolveVisitor};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTProject {
@@ -41,7 +42,10 @@ impl GTProject {
         let mut modules = modules.lock().unwrap().clone();
         modules.sort_by(|a, b| a.path.as_path().cmp(&b.path.as_path()));
 
-        // [TODO] Resolve all names
+        let mut resolver = GTProjectResolveVisitor::new();
+        for module in modules.iter_mut() {
+            module.module.traverse(&mut resolver);
+        }
 
         Ok(GTProject { root, modules })
     }

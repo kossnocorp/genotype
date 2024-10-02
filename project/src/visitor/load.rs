@@ -1,16 +1,14 @@
-use genotype_parser::tree::{
-    identifier::GTIdentifier, import::GTImport, inline_import::GTInlineImport, path::GTPath,
-};
+use genotype_parser::tree::*;
 use genotype_visitor::visitor::GTVisitor;
 
 use crate::path::GTProjectPath;
 
-pub struct GTProjectVisitor {
+pub struct GTProjectLoadVisitor {
     deps: Vec<GTPath>,
     pub exports: Vec<GTIdentifier>,
 }
 
-impl GTProjectVisitor {
+impl GTProjectLoadVisitor {
     pub fn new() -> Self {
         Self {
             deps: vec![],
@@ -31,16 +29,16 @@ impl GTProjectVisitor {
     }
 }
 
-impl GTVisitor for GTProjectVisitor {
-    fn visit_alias(&mut self, alias: &genotype_parser::tree::alias::GTAlias) {
+impl GTVisitor for GTProjectLoadVisitor {
+    fn visit_alias(&mut self, alias: &mut GTAlias) {
         self.exports.push(alias.name.clone());
     }
 
-    fn visit_import(&mut self, import: &GTImport) {
+    fn visit_import(&mut self, import: &mut GTImport) {
         self.deps.push(import.path.clone());
     }
 
-    fn visit_inline_import(&mut self, project: &GTInlineImport) {
+    fn visit_inline_import(&mut self, project: &mut GTInlineImport) {
         self.deps.push(project.path.clone());
     }
 }

@@ -5,9 +5,9 @@ use crate::visitor::GTVisitor;
 use super::GTTraverse;
 
 impl GTTraverse for GTUnion {
-    fn traverse(&self, visitor: &mut dyn GTVisitor) {
-        visitor.visit_union(&self);
-        for descriptor in &self.descriptors {
+    fn traverse(&mut self, visitor: &mut dyn GTVisitor) {
+        visitor.visit_union(self);
+        for descriptor in &mut self.descriptors {
             descriptor.traverse(visitor);
         }
     }
@@ -27,7 +27,7 @@ mod tests {
         let union = GTUnion {
             descriptors: vec![primitive.clone()],
         };
-        let descriptor = GTDescriptor::Union(union.clone());
+        let mut descriptor = GTDescriptor::Union(union.clone());
         descriptor.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,

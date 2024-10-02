@@ -5,9 +5,9 @@ use crate::visitor::GTVisitor;
 use super::GTTraverse;
 
 impl GTTraverse for GTAlias {
-    fn traverse(&self, visitor: &mut dyn GTVisitor) {
+    fn traverse(&mut self, visitor: &mut dyn GTVisitor) {
         visitor.visit_alias(self);
-        if let Some(doc) = &self.doc {
+        if let Some(doc) = &mut self.doc {
             doc.traverse(visitor);
         }
         self.descriptor.traverse(visitor);
@@ -24,7 +24,7 @@ mod tests {
     #[test]
     fn test_traverse_base() {
         let mut visitor = GTMockVisitor::new();
-        let alias = GTAlias {
+        let mut alias = GTAlias {
             doc: None,
             name: "Name".into(),
             descriptor: GTDescriptor::Primitive(GTPrimitive::String),
@@ -43,7 +43,7 @@ mod tests {
     #[test]
     fn test_traverse_doc() {
         let mut visitor = GTMockVisitor::new();
-        let alias = GTAlias {
+        let mut alias = GTAlias {
             doc: Some(GTDoc("Hello, world!".into())),
             name: "Name".into(),
             descriptor: GTDescriptor::Primitive(GTPrimitive::String),
