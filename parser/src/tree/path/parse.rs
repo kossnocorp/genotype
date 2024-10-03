@@ -28,11 +28,10 @@ mod tests {
             book: book/Book
             user: ./misc/../misc/./user/User
         }"#;
-        let parse = GTModule::parse("path/to/module".into(), code.into()).unwrap();
+        let parse = GTModule::parse(code.into()).unwrap();
         assert_eq!(
             parse.module,
             GTModule {
-                path: "path/to/module".into(),
                 doc: None,
                 imports: vec![
                     GTImport {

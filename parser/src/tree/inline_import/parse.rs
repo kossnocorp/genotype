@@ -43,7 +43,7 @@ mod tests {
             book: book/Book
             user: ./misc/user/User
         }"#;
-        let parse = GTModule::parse("path/to/module".into(), code.into()).unwrap();
+        let parse = GTModule::parse(code.into()).unwrap();
         assert_eq!(
             parse.resolve.deps,
             HashSet::from_iter(vec!["book".into(), "./misc/user".into(),])
@@ -56,7 +56,7 @@ mod tests {
             book: book/Book
             user: ./misc/../misc/./user/User
         }"#;
-        let parse = GTModule::parse("path/to/module".into(), code.into()).unwrap();
+        let parse = GTModule::parse(code.into()).unwrap();
         assert_eq!(
             parse.resolve.deps,
             HashSet::from_iter(vec!["book".into(), "./misc/user".into(),])

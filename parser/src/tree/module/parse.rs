@@ -12,10 +12,9 @@ pub struct GTModuleParse {
 }
 
 impl GTModule {
-    pub fn parse(path: GTPath, code: String) -> Result<GTModuleParse, Box<dyn std::error::Error>> {
+    pub fn parse(code: String) -> Result<GTModuleParse, Box<dyn std::error::Error>> {
         let mut pairs = parse_gt_code(&code)?;
         let mut module = GTModule {
-            path,
             doc: None,
             imports: vec![],
             aliases: vec![],
@@ -71,7 +70,6 @@ mod tests {
             "./examples/syntax/01-alias.type",
             GTModuleParse {
                 module: GTModule {
-                    path: "./examples/syntax/01-alias.type".into(),
                     doc: None,
                     imports: vec![],
                     aliases: vec![
@@ -104,7 +102,6 @@ mod tests {
             "./examples/syntax/02-primitives.type",
             GTModuleParse {
                 module: GTModule {
-                    path: "./examples/syntax/02-primitives.type".into(),
                     doc: None,
                     imports: vec![],
                     aliases: vec![
@@ -150,7 +147,6 @@ mod tests {
             "./examples/syntax/03-objects.type",
             GTModuleParse {
                 module: GTModule {
-                    path: "./examples/syntax/03-objects.type".into(),
                     doc: None,
                     imports: vec![],
                     aliases: vec![
@@ -260,7 +256,6 @@ mod tests {
             "./examples/syntax/04-comments.type",
             GTModuleParse {
                 module: GTModule {
-                    path: "./examples/syntax/04-comments.type".into(),
                     doc: Some("Module comment...\n...multiline".into()),
                     imports: vec![],
                     aliases: vec![
@@ -311,7 +306,6 @@ mod tests {
             "./examples/syntax/05-optional.type",
             GTModuleParse {
                 module: GTModule {
-                    path: "./examples/syntax/05-optional.type".into(),
                     doc: None,
                     imports: vec![],
                     aliases: vec![GTAlias {
@@ -360,7 +354,6 @@ mod tests {
             "./examples/syntax/06-nested.type",
             GTModuleParse {
                 module: GTModule {
-                    path: "./examples/syntax/06-nested.type".into(),
                     doc: None,
                     imports: vec![],
                     aliases: vec![
@@ -447,7 +440,6 @@ mod tests {
             "./examples/syntax/07-arrays.type",
             GTModuleParse {
                 module: GTModule {
-                    path: "./examples/syntax/07-arrays.type".into(),
                     doc: None,
                     imports: vec![],
                     aliases: vec![GTAlias {
@@ -488,7 +480,6 @@ mod tests {
             "./examples/syntax/08-tuples.type",
             GTModuleParse {
                 module: GTModule {
-                    path: "./examples/syntax/08-tuples.type".into(),
                     doc: None,
                     imports: vec![],
                     aliases: vec![
@@ -551,7 +542,6 @@ mod tests {
             "./examples/syntax/09-modules.type",
             GTModuleParse {
                 module: GTModule {
-                    path: "./examples/syntax/09-modules.type".into(),
                     doc: None,
                     imports: vec![
                         GTImport {
@@ -624,7 +614,7 @@ mod tests {
 
     fn assert_module(path: &str, expected: GTModuleParse) {
         let code = fs::read_to_string(path).expect("cannot read file");
-        let parse = GTModule::parse(path.into(), code).unwrap();
+        let parse = GTModule::parse(code).unwrap();
         assert_eq!(parse, expected);
     }
 }

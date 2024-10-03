@@ -79,7 +79,7 @@ mod tests {
 
     #[test]
     fn test_parse_exports() {
-        let parse = GTModule::parse("path/to/module".into(), "Hello = string".into()).unwrap();
+        let parse = GTModule::parse("Hello = string".into()).unwrap();
         assert_eq!(parse.resolve.exports, vec!["Hello".into()]);
     }
 }

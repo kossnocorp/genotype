@@ -107,7 +107,7 @@ mod tests {
         let code = r#"use author/*
         use ../user/User
         use ./misc/order/{Order, SomethingElse}"#;
-        let parse = GTModule::parse("path/to/module".into(), code.into()).unwrap();
+        let parse = GTModule::parse(code.into()).unwrap();
         assert_eq!(
             parse.resolve.deps,
             HashSet::from_iter(vec![
@@ -123,7 +123,7 @@ mod tests {
         let code = r#"use author/./*
         use ../user/../user/User
         use ./././misc/order/{Order, SomethingElse}"#;
-        let parse = GTModule::parse("path/to/module".into(), code.into()).unwrap();
+        let parse = GTModule::parse(code.into()).unwrap();
         assert_eq!(
             parse.resolve.deps,
             HashSet::from_iter(vec![
