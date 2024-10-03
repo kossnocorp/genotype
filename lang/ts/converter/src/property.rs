@@ -18,11 +18,11 @@ impl TSConvert<TSProperty> for GTProperty {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::{descriptor::TSDescriptor, primitive::TSPrimitive};
+    use genotype_lang_ts_tree::*;
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use genotype_parser::tree::{descriptor::GTDescriptor, primitive::GTPrimitive};
+    use genotype_parser::tree::*;
 
     #[test]
     fn test_convert() {
@@ -30,7 +30,7 @@ mod tests {
             GTProperty {
                 doc: None,
                 name: "name".into(),
-                descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                descriptor: GTPrimitive::String.into(),
                 required: false,
             }
             .convert(&|_| {}),

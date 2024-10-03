@@ -11,7 +11,7 @@ impl GTReference {
     pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> Self {
         let identifier: GTIdentifier = pair.as_str().into();
         resolve.references.insert(identifier.clone());
-        GTReference::Unresolved(identifier)
+        GTReference(identifier)
     }
 }
 

@@ -66,7 +66,7 @@ mod tests {
             GTDescriptor::Alias(Box::new(GTAlias {
                 doc: None,
                 name: "Name".into(),
-                descriptor: GTDescriptor::Primitive(GTPrimitive::Boolean),
+                descriptor: GTPrimitive::Boolean.into(),
             }))
             .convert(&|definition| {
                 let mut hoisted = hoisted.lock().unwrap();
@@ -87,7 +87,7 @@ mod tests {
     fn test_convert_array() {
         assert_eq!(
             GTDescriptor::Array(Box::new(GTArray {
-                descriptor: GTDescriptor::Primitive(GTPrimitive::Boolean),
+                descriptor: GTPrimitive::Boolean.into(),
             }))
             .convert(&|_| {}),
             TSDescriptor::Array(Box::new(TSArray {
@@ -133,13 +133,13 @@ mod tests {
                     GTProperty {
                         doc: None,
                         name: "name".into(),
-                        descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                        descriptor: GTPrimitive::String.into(),
                         required: true,
                     },
                     GTProperty {
                         doc: None,
                         name: "age".into(),
-                        descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
+                        descriptor: GTPrimitive::Int.into(),
                         required: false,
                     }
                 ]
@@ -182,10 +182,7 @@ mod tests {
     fn test_convert_tuple() {
         assert_eq!(
             GTDescriptor::Tuple(GTTuple {
-                descriptors: vec![
-                    GTDescriptor::Primitive(GTPrimitive::Boolean),
-                    GTDescriptor::Primitive(GTPrimitive::String),
-                ]
+                descriptors: vec![GTPrimitive::Boolean.into(), GTPrimitive::String.into(),]
             })
             .convert(&|_| {}),
             TSDescriptor::Tuple(TSTuple {
@@ -201,10 +198,7 @@ mod tests {
     fn test_convert_union() {
         assert_eq!(
             GTDescriptor::Union(GTUnion {
-                descriptors: vec![
-                    GTDescriptor::Primitive(GTPrimitive::Boolean),
-                    GTDescriptor::Primitive(GTPrimitive::String),
-                ]
+                descriptors: vec![GTPrimitive::Boolean.into(), GTPrimitive::String.into(),]
             })
             .convert(&|_| {}),
             TSDescriptor::Union(TSUnion {

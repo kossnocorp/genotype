@@ -71,13 +71,13 @@ mod tests {
                                 GTProperty {
                                     doc: None,
                                     name: "name".into(),
-                                    descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                                    descriptor: GTPrimitive::String.into(),
                                     required: true,
                                 },
                                 GTProperty {
                                     doc: None,
                                     name: "age".into(),
-                                    descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
+                                    descriptor: GTPrimitive::Int.into(),
                                     required: false,
                                 }
                             ]
@@ -124,7 +124,7 @@ mod tests {
                     GTAlias {
                         doc: None,
                         name: "Name".into(),
-                        descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                        descriptor: GTPrimitive::String.into(),
                     },
                 ],
             }),

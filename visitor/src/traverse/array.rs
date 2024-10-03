@@ -22,7 +22,7 @@ mod tests {
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
         let mut array = GTArray {
-            descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+            descriptor: GTPrimitive::String.into(),,
         };
         array.traverse(&mut visitor);
         assert_eq!(

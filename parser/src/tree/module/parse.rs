@@ -76,14 +76,12 @@ mod tests {
                         GTAlias {
                             doc: None,
                             name: "Age".into(),
-                            descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
+                            descriptor: GTPrimitive::Int.into(),
                         },
                         GTAlias {
                             doc: None,
                             name: "AnotherAge".into(),
-                            descriptor: GTDescriptor::Reference(GTReference::Unresolved(
-                                "Age".into(),
-                            )),
+                            descriptor: GTDescriptor::Reference("Age".into()),
                         },
                     ],
                 },
@@ -108,22 +106,22 @@ mod tests {
                         GTAlias {
                             doc: None,
                             name: "String".into(),
-                            descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                            descriptor: GTPrimitive::String.into(),
                         },
                         GTAlias {
                             doc: None,
                             name: "Int".into(),
-                            descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
+                            descriptor: GTPrimitive::Int.into(),
                         },
                         GTAlias {
                             doc: None,
                             name: "Float".into(),
-                            descriptor: GTDescriptor::Primitive(GTPrimitive::Float),
+                            descriptor: GTPrimitive::Float.into(),
                         },
                         GTAlias {
                             doc: None,
                             name: "Boolean".into(),
-                            descriptor: GTDescriptor::Primitive(GTPrimitive::Boolean),
+                            descriptor: GTPrimitive::Boolean.into(),
                         },
                     ],
                 },
@@ -157,7 +155,7 @@ mod tests {
                                 properties: vec![GTProperty {
                                     doc: None,
                                     name: "name".into(),
-                                    descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                                    descriptor: GTPrimitive::String.into(),
                                     required: true,
                                 }],
                             }),
@@ -170,13 +168,13 @@ mod tests {
                                     GTProperty {
                                         doc: None,
                                         name: "name".into(),
-                                        descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                                        descriptor: GTPrimitive::String.into(),
                                         required: true,
                                     },
                                     GTProperty {
                                         doc: None,
                                         name: "age".into(),
-                                        descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
+                                        descriptor: GTPrimitive::Int.into(),
                                         required: true,
                                     },
                                     GTProperty {
@@ -207,7 +205,7 @@ mod tests {
                                 properties: vec![GTProperty {
                                     doc: None,
                                     name: "name".into(),
-                                    descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                                    descriptor: GTPrimitive::String.into(),
                                     required: true,
                                 }],
                             }),
@@ -220,13 +218,13 @@ mod tests {
                                     GTProperty {
                                         doc: None,
                                         name: "name".into(),
-                                        descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                                        descriptor: GTPrimitive::String.into(),
                                         required: true,
                                     },
                                     GTProperty {
                                         doc: None,
                                         name: "age".into(),
-                                        descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
+                                        descriptor: GTPrimitive::Int.into(),
                                         required: true,
                                     },
                                 ],
@@ -262,7 +260,7 @@ mod tests {
                         GTAlias {
                             doc: Some("Alias comment".into()),
                             name: "Hello".into(),
-                            descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                            descriptor: GTPrimitive::String.into(),
                         },
                         GTAlias {
                             doc: Some("Multiline...\n...alias comment".into()),
@@ -272,13 +270,13 @@ mod tests {
                                     GTProperty {
                                         doc: Some("Property comment".into()),
                                         name: "name".into(),
-                                        descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                                        descriptor: GTPrimitive::String.into(),
                                         required: true,
                                     },
                                     GTProperty {
                                         doc: Some("Multiline...\n...property comment".into()),
                                         name: "age".into(),
-                                        descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
+                                        descriptor: GTPrimitive::Int.into(),
                                         required: true,
                                     },
                                 ],
@@ -287,7 +285,7 @@ mod tests {
                         GTAlias {
                             doc: None,
                             name: "Hello".into(),
-                            descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                            descriptor: GTPrimitive::String.into(),
                         },
                     ],
                 },
@@ -317,21 +315,21 @@ mod tests {
                                     doc: None,
                                     name: "name".into(),
                                     descriptor: GTDescriptor::Nullable(Box::new(
-                                        GTDescriptor::Primitive(GTPrimitive::String),
+                                        GTPrimitive::String.into(),
                                     )),
                                     required: true,
                                 },
                                 GTProperty {
                                     doc: None,
                                     name: "age".into(),
-                                    descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
+                                    descriptor: GTPrimitive::Int.into(),
                                     required: false,
                                 },
                                 GTProperty {
                                     doc: None,
                                     name: "flag".into(),
                                     descriptor: GTDescriptor::Nullable(Box::new(
-                                        GTDescriptor::Primitive(GTPrimitive::Boolean),
+                                        GTPrimitive::Boolean.into(),
                                     )),
                                     required: false,
                                 },
@@ -450,14 +448,14 @@ mod tests {
                                 GTProperty {
                                     doc: None,
                                     name: "title".into(),
-                                    descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                                    descriptor: GTPrimitive::String.into(),
                                     required: true,
                                 },
                                 GTProperty {
                                     doc: None,
                                     name: "tags".into(),
                                     descriptor: GTDescriptor::Array(Box::new(GTArray {
-                                        descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                                        descriptor: GTPrimitive::String.into(),
                                     })),
                                     required: true,
                                 },
@@ -493,8 +491,8 @@ mod tests {
                                         name: "name".into(),
                                         descriptor: GTDescriptor::Tuple(GTTuple {
                                             descriptors: vec![
-                                                GTDescriptor::Primitive(GTPrimitive::String),
-                                                GTDescriptor::Primitive(GTPrimitive::String),
+                                                GTPrimitive::String.into(),
+                                                GTPrimitive::String.into(),
                                             ],
                                         }),
                                         required: true,
@@ -504,9 +502,9 @@ mod tests {
                                         name: "address".into(),
                                         descriptor: GTDescriptor::Tuple(GTTuple {
                                             descriptors: vec![
-                                                GTDescriptor::Primitive(GTPrimitive::Int),
-                                                GTDescriptor::Primitive(GTPrimitive::String),
-                                                GTDescriptor::Primitive(GTPrimitive::String),
+                                                GTPrimitive::Int.into(),
+                                                GTPrimitive::String.into(),
+                                                GTPrimitive::String.into(),
                                             ],
                                         }),
                                         required: true,
@@ -519,9 +517,9 @@ mod tests {
                             name: "Address".into(),
                             descriptor: GTDescriptor::Tuple(GTTuple {
                                 descriptors: vec![
-                                    GTDescriptor::Primitive(GTPrimitive::Int),
-                                    GTDescriptor::Primitive(GTPrimitive::String),
-                                    GTDescriptor::Primitive(GTPrimitive::String),
+                                    GTPrimitive::Int.into(),
+                                    GTPrimitive::String.into(),
+                                    GTPrimitive::String.into(),
                                 ],
                             }),
                         },
@@ -570,7 +568,7 @@ mod tests {
                                     GTProperty {
                                         doc: None,
                                         name: "title".into(),
-                                        descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                                        descriptor: GTPrimitive::String.into(),
                                         required: true,
                                     },
                                     GTProperty {
@@ -585,9 +583,7 @@ mod tests {
                                     GTProperty {
                                         doc: None,
                                         name: "genre".into(),
-                                        descriptor: GTDescriptor::Reference(
-                                            GTReference::Unresolved("Genre".into()),
-                                        ),
+                                        descriptor: GTDescriptor::Reference("Genre".into()),
                                         required: true,
                                     },
                                 ],

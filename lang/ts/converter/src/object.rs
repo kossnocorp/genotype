@@ -20,12 +20,8 @@ impl TSConvert<TSObject> for GTObject {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::{
-        descriptor::TSDescriptor, primitive::TSPrimitive, property::TSProperty,
-    };
-    use genotype_parser::tree::{
-        descriptor::GTDescriptor, primitive::GTPrimitive, property::GTProperty,
-    };
+    use genotype_lang_ts_tree::*;
+    use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -38,13 +34,13 @@ mod tests {
                     GTProperty {
                         doc: None,
                         name: "name".into(),
-                        descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                        descriptor: GTPrimitive::String.into(),
                         required: true,
                     },
                     GTProperty {
                         doc: None,
                         name: "age".into(),
-                        descriptor: GTDescriptor::Primitive(GTPrimitive::Int),
+                        descriptor: GTPrimitive::Int.into(),
                         required: false,
                     }
                 ]

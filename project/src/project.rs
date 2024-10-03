@@ -160,7 +160,7 @@ mod tests {
                                 properties: vec![GTProperty {
                                     doc: None,
                                     name: "name".into(),
-                                    descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                                    descriptor: GTPrimitive::String.into(),
                                     required: true,
                                 }],
                             }),
@@ -186,7 +186,7 @@ mod tests {
                                     GTProperty {
                                         doc: None,
                                         name: "title".into(),
-                                        descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                                        descriptor: GTPrimitive::String.into(),
                                         required: true,
                                     },
                                     GTProperty {
@@ -265,13 +265,13 @@ mod tests {
                                     GTProperty {
                                         doc: None,
                                         name: "email".into(),
-                                        descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                                        descriptor: GTPrimitive::String.into(),
                                         required: true,
                                     },
                                     GTProperty {
                                         doc: None,
                                         name: "name".into(),
-                                        descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                                        descriptor: GTPrimitive::String.into(),
                                         required: true,
                                     },
                                 ],

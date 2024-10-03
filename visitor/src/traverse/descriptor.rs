@@ -43,7 +43,7 @@ mod tests {
         let alias = GTAlias {
             doc: None,
             name: "Name".into(),
-            descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+            descriptor: GTPrimitive::String.into(),
         };
         let mut descriptor = GTDescriptor::Alias(Box::new(alias.clone()));
         descriptor.traverse(&mut visitor);
@@ -62,7 +62,7 @@ mod tests {
     fn test_traverse_array() {
         let mut visitor = GTMockVisitor::new();
         let array = GTArray {
-            descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+            descriptor: GTPrimitive::String.into(),
         };
         let mut descriptor = GTDescriptor::Array(Box::new(array.clone()));
         descriptor.traverse(&mut visitor);
@@ -119,7 +119,7 @@ mod tests {
         let property = GTProperty {
             doc: None,
             name: GTKey("key".into()),
-            descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+            descriptor: GTPrimitive::String.into(),
             required: true,
         };
         let object = GTObject {

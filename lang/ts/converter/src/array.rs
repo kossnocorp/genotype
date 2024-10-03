@@ -16,8 +16,8 @@ impl TSConvert<TSArray> for GTArray {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::{descriptor::TSDescriptor, primitive::TSPrimitive};
-    use genotype_parser::tree::{descriptor::GTDescriptor, primitive::GTPrimitive};
+    use genotype_lang_ts_tree::*;
+    use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -26,7 +26,7 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             GTArray {
-                descriptor: GTDescriptor::Primitive(GTPrimitive::Boolean),
+                descriptor: GTPrimitive::Boolean.into(),
             }
             .convert(&|_| {}),
             TSArray {

@@ -28,7 +28,7 @@ mod tests {
         let mut property = GTProperty {
             doc: None,
             name: GTKey("key".into()),
-            descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+            descriptor: GTPrimitive::String.into(),
             required: true,
         };
         property.traverse(&mut visitor);
@@ -49,7 +49,7 @@ mod tests {
         let mut property = GTProperty {
             doc: Some(GTDoc("Hello, world!".into())),
             name: GTKey("key".into()),
-            descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+            descriptor: GTPrimitive::String.into(),
             required: true,
         };
         property.traverse(&mut visitor);

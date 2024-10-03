@@ -26,7 +26,7 @@ mod tests {
         let property = GTProperty {
             doc: None,
             name: GTKey("key".into()),
-            descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+            descriptor: GTPrimitive::String.into(),
             required: true,
         };
         let mut object = GTObject {

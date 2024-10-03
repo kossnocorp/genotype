@@ -20,8 +20,8 @@ impl TSConvert<TSUnion> for GTUnion {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::{descriptor::TSDescriptor, primitive::TSPrimitive};
-    use genotype_parser::tree::{descriptor::GTDescriptor, primitive::GTPrimitive};
+    use genotype_lang_ts_tree::*;
+    use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -30,10 +30,7 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             GTUnion {
-                descriptors: vec![
-                    GTDescriptor::Primitive(GTPrimitive::Boolean),
-                    GTDescriptor::Primitive(GTPrimitive::String),
-                ]
+                descriptors: vec![GTPrimitive::Boolean.into(), GTPrimitive::String.into(),]
             }
             .convert(&|_| {}),
             TSUnion {

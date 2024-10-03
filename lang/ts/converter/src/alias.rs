@@ -24,17 +24,11 @@ impl TSConvert<TSDefinition> for GTAlias {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::{
-        descriptor::TSDescriptor, interface::TSInterface, primitive::TSPrimitive,
-        property::TSProperty, reference::TSReference,
-    };
+    use genotype_lang_ts_tree::*;
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use genotype_parser::tree::{
-        alias::GTAlias, descriptor::GTDescriptor, object::GTObject, primitive::GTPrimitive,
-        property::GTProperty, reference::GTReference,
-    };
+    use genotype_parser::tree::*;
 
     #[test]
     fn test_convert_alias() {
@@ -42,7 +36,7 @@ mod tests {
             GTAlias {
                 doc: None,
                 name: "Name".into(),
-                descriptor: GTDescriptor::Primitive(GTPrimitive::Boolean),
+                descriptor: GTPrimitive::Boolean.into(),
             }
             .convert(&|_| {}),
             TSDefinition::Alias(TSAlias {
@@ -63,13 +57,13 @@ mod tests {
                         GTProperty {
                             doc: None,
                             name: "title".into(),
-                            descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                            descriptor: GTPrimitive::String.into(),
                             required: true,
                         },
                         GTProperty {
                             doc: None,
                             name: "author".into(),
-                            descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+                            descriptor: GTPrimitive::String.into(),
                             required: true,
                         }
                     ]

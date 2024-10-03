@@ -42,7 +42,7 @@ mod tests {
         let alias = GTAlias {
             doc: None,
             name: "Name".into(),
-            descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+            descriptor: GTPrimitive::String.into(),,
         };
         let module_path = GTPath("./path/to/module".into());
         let mut module = GTModule {
@@ -78,7 +78,7 @@ mod tests {
         let alias = GTAlias {
             doc: None,
             name: "Name".into(),
-            descriptor: GTDescriptor::Primitive(GTPrimitive::String),
+            descriptor: GTPrimitive::String.into(),,
         };
         let module_path = GTPath("./path/to/module".into());
         let mut module = GTModule {
