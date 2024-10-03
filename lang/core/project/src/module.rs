@@ -1,12 +1,12 @@
-use genotype_project::{module::GTProjectModule, path::GTProjectPath};
+use std::path::PathBuf;
 
-use crate::path::GTProjectOutPath;
+use genotype_project::module::GTProjectModule;
 
 pub trait GTProjectModuleOut {
     fn generate(
-        root: &GTProjectPath,
+        root: &PathBuf,
         module: &GTProjectModule,
-        out: &GTProjectOutPath,
+        out: &PathBuf,
     ) -> Result<Self, Box<dyn std::error::Error>>
     where
         Self: Sized;

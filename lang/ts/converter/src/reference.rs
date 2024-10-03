@@ -1,4 +1,4 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, reference::TSReference, TSIdentifier};
+use genotype_lang_ts_tree::{definition::TSDefinition, reference::TSReference};
 use genotype_parser::tree::reference::GTReference;
 
 use crate::convert::TSConvert;

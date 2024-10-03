@@ -1,19 +1,19 @@
-use genotype_lang_core_project::{
-    module::GTProjectModuleOut, path::GTProjectOutPath, project::GTProjectOut,
-};
+use std::path::PathBuf;
+
+use genotype_lang_core_project::{module::GTProjectModuleOut, project::GTProjectOut};
 use genotype_project::project::GTProject;
 
 use crate::module::TSProjectModule;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TSProject {
-    pub out: GTProjectOutPath,
+    pub out: PathBuf,
     pub modules: Vec<TSProjectModule>,
 }
 
 impl GTProjectOut for TSProject {
     fn generate(project: &GTProject, out: &str) -> Result<Self, Box<dyn std::error::Error>> {
-        let out = GTProjectOutPath::new(&project.root.as_path().join(out));
+        let out = project.root.join(out);
 
         let modules = project
             .modules
@@ -27,6 +27,8 @@ impl GTProjectOut for TSProject {
 
 #[cfg(test)]
 mod tests {
+    use std::{collections::HashMap, path::PathBuf, sync::Arc};
+
     use genotype_lang_ts_tree::*;
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
@@ -36,16 +38,25 @@ mod tests {
 
     #[test]
     fn test_convert_base() {
-        let root: GTProjectPath = "./examples/basic".try_into().unwrap();
+        let root = Arc::new(PathBuf::from("./examples/basic").canonicalize().unwrap());
+        let author_path = GTProjectModulePath::try_new(
+            root.clone(),
+            &PathBuf::from("./examples/basic/author.type"),
+        )
+        .unwrap();
+        let book_path = GTProjectModulePath::try_new(
+            root.clone(),
+            &PathBuf::from("./examples/basic/book.type"),
+        )
+        .unwrap();
+
         assert_eq!(
             TSProject::generate(
                 &GTProject {
                     root: root.clone(),
                     modules: vec![
                         GTProjectModule {
-                            path: "./examples/basic/author.type".try_into().unwrap(),
-                            deps: vec![],
-                            exports: vec![],
+                            path: author_path.clone(),
                             module: GTModule {
                                 doc: None,
                                 imports: vec![],
@@ -64,11 +75,13 @@ mod tests {
                                     }),
                                 }],
                             },
+                            resolve: GTProjectModuleResolve {
+                                deps: HashMap::new(),
+                                references: HashMap::new(),
+                            },
                         },
                         GTProjectModule {
-                            path: "./examples/basic/book.type".try_into().unwrap(),
-                            deps: vec![],
-                            exports: vec![],
+                            path: book_path.clone(),
                             module: GTModule {
                                 doc: None,
                                 imports: vec![GTImport {
@@ -99,6 +112,10 @@ mod tests {
                                         ],
                                     }),
                                 }],
+                            },
+                            resolve: GTProjectModuleResolve {
+                                deps: HashMap::new(),
+                                references: HashMap::new(),
                             },
                         },
                     ]

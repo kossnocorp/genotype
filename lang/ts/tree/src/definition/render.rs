@@ -16,10 +16,7 @@ impl GTRender for TSDefinition {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        alias::TSAlias, descriptor::TSDescriptor, indent::ts_indent, interface::TSInterface,
-        path::TSPath, primitive::TSPrimitive, property::TSProperty, reference::TSReference,
-    };
+    use crate::*;
 
     #[test]
     fn test_render_alias() {

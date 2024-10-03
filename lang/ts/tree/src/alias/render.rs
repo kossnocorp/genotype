@@ -16,10 +16,7 @@ impl GTRender for TSAlias {
 mod tests {
 
     use super::*;
-    use crate::{
-        descriptor::TSDescriptor, indent::ts_indent, path::TSPath, primitive::TSPrimitive,
-        reference::TSReference,
-    };
+    use crate::*;
 
     #[test]
     fn test_render() {

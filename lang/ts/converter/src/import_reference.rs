@@ -30,11 +30,11 @@ impl TSConvert<TSImportReference> for GTImportReference {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::{import_name::TSImportName, reference::TSReference};
+    use genotype_lang_ts_tree::*;
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use genotype_parser::tree::{import_name::GTImportName, reference::GTReference};
+    use genotype_parser::tree::*;
 
     #[test]
     fn test_convert_glob() {

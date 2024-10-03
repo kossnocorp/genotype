@@ -1,21 +1,24 @@
-use std::hash::{Hash, Hasher};
+use std::{
+    hash::{Hash, Hasher},
+    path::PathBuf,
+};
 
-use genotype_lang_core_project::{module::GTProjectModuleOut, path::GTProjectOutPath};
+use genotype_lang_core_project::module::GTProjectModuleOut;
 use genotype_lang_ts_converter::module::convert_to_ts_module;
 use genotype_lang_ts_tree::module::TSModule;
-use genotype_project::{module::GTProjectModule, path::GTProjectPath};
+use genotype_project::module::GTProjectModule;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TSProjectModule {
-    pub path: GTProjectOutPath,
+    pub path: PathBuf,
     pub module: TSModule,
 }
 
 impl GTProjectModuleOut for TSProjectModule {
     fn generate(
-        root: &GTProjectPath,
+        root: &PathBuf,
         module: &GTProjectModule,
-        out: &GTProjectOutPath,
+        out: &PathBuf,
     ) -> Result<Self, Box<dyn std::error::Error>> {
         let path = out
             .as_path()
