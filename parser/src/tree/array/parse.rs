@@ -1,15 +1,19 @@
 use pest::iterators::Pair;
 
-use crate::parser::Rule;
+use crate::{
+    parser::Rule,
+    tree::{GTDescriptor, GTResolve},
+};
 
 use super::GTArray;
 
-impl TryFrom<Pair<'_, Rule>> for GTArray {
-    type Error = Box<dyn std::error::Error>;
-
-    fn try_from(pair: Pair<'_, Rule>) -> Result<Self, Self::Error> {
+impl GTArray {
+    pub fn parse(
+        pair: Pair<'_, Rule>,
+        resolve: &mut GTResolve,
+    ) -> Result<Self, Box<dyn std::error::Error>> {
         let pair = pair.into_inner().next().unwrap(); // [TODO]
-        let descriptor = pair.try_into()?;
+        let descriptor = GTDescriptor::parse(pair, resolve)?;
         Ok(GTArray { descriptor })
     }
 }

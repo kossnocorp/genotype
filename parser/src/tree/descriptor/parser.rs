@@ -2,31 +2,34 @@ use pest::iterators::Pair;
 
 use crate::parser::Rule;
 
-use super::GTDescriptor;
+use super::*;
 
-impl TryFrom<Pair<'_, Rule>> for GTDescriptor {
-    type Error = Box<dyn std::error::Error>;
-
-    fn try_from(pair: Pair<'_, Rule>) -> Result<Self, Self::Error> {
+impl GTDescriptor {
+    pub fn parse(
+        pair: Pair<'_, Rule>,
+        resolve: &mut GTResolve,
+    ) -> Result<Self, Box<dyn std::error::Error>> {
         let nullable = pair.as_rule() == Rule::nullable_descriptor;
         let pair = pair.into_inner().next().unwrap(); // [TODO]
 
         let descriptor = match pair.as_rule() {
             Rule::primitive => GTDescriptor::Primitive(pair.try_into()?),
 
-            Rule::name => GTDescriptor::Reference(pair.try_into()?),
+            Rule::name => GTDescriptor::Reference(GTReference::parse(pair, resolve)),
 
-            Rule::object => GTDescriptor::Object(pair.try_into()?),
+            Rule::object => GTDescriptor::Object(GTObject::parse(pair, resolve)?),
 
-            Rule::array => GTDescriptor::Array(Box::new(pair.try_into()?)),
+            Rule::array => GTDescriptor::Array(Box::new(GTArray::parse(pair, resolve)?)),
 
-            Rule::tuple => GTDescriptor::Tuple(pair.try_into()?),
+            Rule::tuple => GTDescriptor::Tuple(GTTuple::parse(pair, resolve)?),
 
-            Rule::descriptor => pair.try_into()?,
+            Rule::descriptor => GTDescriptor::parse(pair, resolve)?,
 
-            Rule::alias => GTDescriptor::Alias(Box::new(pair.try_into()?)),
+            Rule::alias => GTDescriptor::Alias(Box::new(GTAlias::parse(pair, resolve)?)),
 
-            Rule::inline_reference => GTDescriptor::InlineImport(pair.try_into()?),
+            Rule::inline_reference => {
+                GTDescriptor::InlineImport(GTInlineImport::parse(pair, resolve)?)
+            }
 
             _ => {
                 println!("3 ====== unknown rule: {:?}", pair);

@@ -2,25 +2,27 @@ use pest::iterators::{Pair, Pairs};
 
 use crate::{
     parser::Rule,
-    tree::{doc::GTDoc, key::GTKey},
+    tree::{doc::GTDoc, key::GTKey, GTDescriptor, GTResolve},
 };
 
 use super::GTProperty;
 
-impl TryFrom<Pair<'_, Rule>> for GTProperty {
-    type Error = Box<dyn std::error::Error>;
-
-    fn try_from(pair: Pair<'_, Rule>) -> Result<Self, Self::Error> {
+impl GTProperty {
+    pub fn parse(
+        pair: Pair<'_, Rule>,
+        resolve: &mut GTResolve,
+    ) -> Result<Self, Box<dyn std::error::Error>> {
         let required = pair.as_rule() == Rule::required_property;
         let mut inner = pair.into_inner();
         let pair = inner.next().unwrap(); // [TODO]
-        parse(inner, pair, ParseState::Doc(required, None))
+        parse(inner, pair, resolve, ParseState::Doc(required, None))
     }
 }
 
 fn parse(
     mut inner: Pairs<'_, Rule>,
     pair: Pair<'_, Rule>,
+    resolve: &mut GTResolve,
     state: ParseState,
 ) -> Result<GTProperty, Box<dyn std::error::Error>> {
     match state {
@@ -32,28 +34,33 @@ fn parse(
                         Some(if let Some(doc) = doc_acc {
                             doc.concat(pair)
                         } else {
-                            pair.into()
+                            GTDoc::parse(pair)
                         })
                     } else {
                         doc_acc
                     };
 
                     let pair = inner.next().unwrap(); // [TODO]
-                    parse(inner, pair, ParseState::Doc(required, doc_acc))
+                    parse(inner, pair, resolve, ParseState::Doc(required, doc_acc))
                 }
 
-                _ => parse(inner, pair, ParseState::Name(required, doc_acc)),
+                _ => parse(inner, pair, resolve, ParseState::Name(required, doc_acc)),
             }
         }
 
         ParseState::Name(required, doc) => {
-            let name = pair.into();
+            let name = GTKey::parse(pair);
             let pair = inner.next().unwrap(); // [TODO]
-            parse(inner, pair, ParseState::Descriptor(required, doc, name))
+            parse(
+                inner,
+                pair,
+                resolve,
+                ParseState::Descriptor(required, doc, name),
+            )
         }
 
         ParseState::Descriptor(required, doc, name) => {
-            let descriptor = pair.try_into()?;
+            let descriptor = GTDescriptor::parse(pair, resolve)?;
             Ok(GTProperty {
                 doc,
                 name,

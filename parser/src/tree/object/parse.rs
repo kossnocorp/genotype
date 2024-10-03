@@ -1,19 +1,23 @@
 use pest::iterators::Pair;
 
-use crate::parser::Rule;
+use crate::{
+    parser::Rule,
+    tree::{GTProperty, GTResolve},
+};
 
 use super::GTObject;
 
-impl TryFrom<Pair<'_, Rule>> for GTObject {
-    type Error = Box<dyn std::error::Error>;
-
-    fn try_from(pair: Pair<'_, Rule>) -> Result<Self, Self::Error> {
+impl GTObject {
+    pub fn parse(
+        pair: Pair<'_, Rule>,
+        resolve: &mut GTResolve,
+    ) -> Result<Self, Box<dyn std::error::Error>> {
         let mut object = GTObject { properties: vec![] };
 
         for pair in pair.into_inner() {
             match pair.as_rule() {
                 Rule::required_property | Rule::optional_property => {
-                    object.properties.push(pair.try_into()?);
+                    object.properties.push(GTProperty::parse(pair, resolve)?);
                 }
 
                 _ => {

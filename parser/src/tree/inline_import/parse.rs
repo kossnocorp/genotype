@@ -2,15 +2,16 @@ use pest::iterators::Pair;
 
 use crate::{
     parser::Rule,
-    tree::{identifier::GTIdentifier, path::GTPath},
+    tree::{identifier::GTIdentifier, path::GTPath, GTResolve},
 };
 
 use super::GTInlineImport;
 
-impl TryFrom<Pair<'_, Rule>> for GTInlineImport {
-    type Error = Box<dyn std::error::Error>;
-
-    fn try_from(pair: Pair<'_, Rule>) -> Result<Self, Self::Error> {
+impl GTInlineImport {
+    pub fn parse(
+        pair: Pair<'_, Rule>,
+        resolve: &mut GTResolve,
+    ) -> Result<Self, Box<dyn std::error::Error>> {
         let str = pair.as_str().to_string();
 
         // [TODO]
