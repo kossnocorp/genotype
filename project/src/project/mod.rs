@@ -42,8 +42,6 @@ impl GTProject {
 
         let modules = modules.lock().unwrap().clone();
 
-        // modules.sort_by(|a, b| a.0.as_path().cmp(&b.0.as_path()));
-
         let mut modules = modules
             .iter()
             .map(|parse| GTProjectModule::try_new(&modules, parse.clone()))
@@ -176,8 +174,8 @@ mod tests {
                         }],
                     },
                     resolve: GTProjectModuleResolve {
-                        deps: HashMap::from_iter(vec![]),
-                        references: HashMap::from_iter(vec![]),
+                        deps: HashMap::new(),
+                        references: HashMap::new(),
                     },
                 },
                 GTProjectModule {
@@ -210,11 +208,11 @@ mod tests {
                         }],
                     },
                     resolve: GTProjectModuleResolve {
-                        deps: HashMap::from_iter(vec![(
+                        deps: HashMap::from_iter([(
                             "./author".into(),
                             Arc::new(author_path.clone()),
                         )]),
-                        references: HashMap::from_iter(vec![(
+                        references: HashMap::from_iter([(
                             "Author".into(),
                             GTProjectModuleReference::External("./author".into()),
                         )]),
@@ -255,20 +253,14 @@ mod tests {
                         }],
                     },
                     resolve: GTProjectModuleResolve {
-                        deps: HashMap::from_iter(vec![
+                        deps: HashMap::from_iter([
                             ("./book".into(), Arc::new(book_path.clone())),
                             ("./user".into(), Arc::new(user_path.clone())),
                         ]),
-                        references: HashMap::from_iter(vec![
-                            (
-                                "User".into(),
-                                GTProjectModuleReference::External("./user".into()),
-                            ),
-                            (
-                                "Book".into(),
-                                GTProjectModuleReference::External("./book".into()),
-                            ),
-                        ]),
+                        references: HashMap::from_iter([(
+                            "Book".into(),
+                            GTProjectModuleReference::External("./book".into()),
+                        )]),
                     },
                 },
                 GTProjectModule {

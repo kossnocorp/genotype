@@ -74,7 +74,7 @@ mod tests {
 
     #[test]
     fn test_try_new() {
-        let root = Arc::new(PathBuf::from("./examples/basic"));
+        let root = Arc::new(PathBuf::from("./examples/basic").canonicalize().unwrap());
         let path = root.join("author.type");
         let module_path = GTProjectModulePath::try_new(root, &path).unwrap();
         assert_eq!(module_path.as_path(), &path.canonicalize().unwrap());
