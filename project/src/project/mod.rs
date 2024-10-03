@@ -1,31 +1,30 @@
-use genotype_visitor::traverse::GTTraverse;
 use glob::glob;
 use rayon::Scope;
 use std::{
-    collections::{HashMap, HashSet},
+    collections::HashSet,
+    path::PathBuf,
     sync::{Arc, Mutex},
 };
 
-use crate::{module::GTProjectModule, path::GTProjectPath};
+use crate::{GTProjectModule, GTProjectModuleParse, GTProjectModulePath};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTProject {
-    pub root: GTProjectPath,
+    pub root: Arc<PathBuf>,
     pub modules: Vec<GTProjectModule>,
 }
 
 impl GTProject {
     pub fn load(root: &str, pattern: &str) -> Result<Self, Box<dyn std::error::Error>> {
-        let root: GTProjectPath = root.try_into()?;
+        let root = Arc::new(PathBuf::from(root).canonicalize()?);
 
-        let entry_paths = glob(root.as_path().join(pattern).to_str().unwrap())?;
-        let entries: Vec<GTProjectPath> = entry_paths
+        let entry_paths = glob(root.join(pattern).to_str().unwrap())?;
+        let entries: Vec<GTProjectModulePath> = entry_paths
             .collect::<Result<Vec<_>, _>>()?
             .iter()
-            .map(GTProjectPath::try_new)
+            .map(|entry| GTProjectModulePath::try_new(Arc::clone(&root), entry))
             .collect::<Result<Vec<_>, _>>()?;
 
-        let root = Arc::new(root);
         let processed_paths = Arc::new(Mutex::new(HashSet::new()));
         let modules = Arc::new(Mutex::new(Vec::new()));
 
@@ -41,31 +40,30 @@ impl GTProject {
             }
         });
 
-        let mut modules = modules.lock().unwrap().clone();
+        let modules = modules.lock().unwrap().clone();
+
+        // modules.sort_by(|a, b| a.0.as_path().cmp(&b.0.as_path()));
+
+        let mut modules = modules
+            .iter()
+            .map(|parse| GTProjectModule::try_new(&modules, parse.clone()))
+            .collect::<Result<Vec<_>, _>>()?;
+
         modules.sort_by(|a, b| a.path.as_path().cmp(&b.path.as_path()));
 
-        let mut exports = HashMap::new();
-        for module in modules.iter_mut() {
-            exports.insert(module.path.clone(), module.exports.clone());
-        }
-
-        // for module in modules.iter_mut() {
-        //     module.module.traverse(&mut resolver);
-        // }
-
         Ok(GTProject {
-            root: (*root).clone(),
+            root: root.clone(),
             modules,
         })
     }
 }
 
 fn process_module(
-    root: Arc<GTProjectPath>,
-    path: GTProjectPath,
+    root: Arc<PathBuf>,
+    path: GTProjectModulePath,
     scope: &Scope<'_>,
-    processed_paths: Arc<Mutex<HashSet<GTProjectPath>>>,
-    modules: Arc<Mutex<Vec<GTProjectModule>>>,
+    processed_paths: Arc<Mutex<HashSet<GTProjectModulePath>>>,
+    modules: Arc<Mutex<Vec<GTProjectModuleParse>>>,
 ) {
     {
         let mut processed = processed_paths.lock().unwrap();
@@ -76,31 +74,29 @@ fn process_module(
         }
     }
 
-    match GTProjectModule::load(&root, path.clone()) {
-        Ok(module) => {
-            for dep in module.deps.iter() {
-                let root = Arc::clone(&root);
-                let dep = dep.clone();
-                let processed_paths = Arc::clone(&processed_paths);
-                let modules = Arc::clone(&modules);
+    let parse = GTProjectModuleParse::try_new(path).unwrap();
 
-                scope.spawn(|scope| {
-                    process_module(root, dep, scope, processed_paths, modules);
-                });
-            }
+    for path in parse.deps().unwrap() {
+        let root = Arc::clone(&root);
+        let processed_paths = Arc::clone(&processed_paths);
+        let modules = Arc::clone(&modules);
+        println!("{:?}", path);
 
-            let mut modules = modules.lock().unwrap();
-            modules.push(module);
-        }
-
-        Err(err) => {
-            panic!("======== Error loading module {:?}: ${:?}", path, err);
-        }
+        scope.spawn(|scope| {
+            process_module(root, path, scope, processed_paths, modules);
+        });
     }
+
+    let mut modules = modules.lock().unwrap();
+    modules.push(parse);
 }
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashMap;
+
+    use crate::{GTProjectModuleReference, GTProjectModuleResolve};
+
     use super::*;
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
@@ -136,13 +132,33 @@ mod tests {
     }
 
     fn basic_project() -> GTProject {
+        let root = Arc::new(PathBuf::from("./examples/basic").canonicalize().unwrap());
+        let author_path = GTProjectModulePath::try_new(
+            root.clone(),
+            &PathBuf::from("./examples/basic/author.type"),
+        )
+        .unwrap();
+        let book_path = GTProjectModulePath::try_new(
+            root.clone(),
+            &PathBuf::from("./examples/basic/book.type"),
+        )
+        .unwrap();
+        let order_path = GTProjectModulePath::try_new(
+            root.clone(),
+            &PathBuf::from("./examples/basic/order.type"),
+        )
+        .unwrap();
+        let user_path = GTProjectModulePath::try_new(
+            root.clone(),
+            &PathBuf::from("./examples/basic/user.type"),
+        )
+        .unwrap();
+
         GTProject {
-            root: "./examples/basic".try_into().unwrap(),
+            root: root.clone(),
             modules: vec![
                 GTProjectModule {
-                    path: "./examples/basic/author.type".try_into().unwrap(),
-                    deps: vec![],
-                    exports: vec!["Author".into()],
+                    path: author_path.clone(),
                     module: GTModule {
                         doc: None,
                         imports: vec![],
@@ -159,11 +175,13 @@ mod tests {
                             }),
                         }],
                     },
+                    resolve: GTProjectModuleResolve {
+                        deps: HashMap::from_iter(vec![]),
+                        references: HashMap::from_iter(vec![]),
+                    },
                 },
                 GTProjectModule {
-                    path: "./examples/basic/book.type".try_into().unwrap(),
-                    deps: vec!["./examples/basic/author.type".try_into().unwrap()],
-                    exports: vec!["Book".into()],
+                    path: book_path.clone(),
                     module: GTModule {
                         doc: None,
                         imports: vec![GTImport {
@@ -191,14 +209,19 @@ mod tests {
                             }),
                         }],
                     },
+                    resolve: GTProjectModuleResolve {
+                        deps: HashMap::from_iter(vec![(
+                            "./author".into(),
+                            Arc::new(author_path.clone()),
+                        )]),
+                        references: HashMap::from_iter(vec![(
+                            "Author".into(),
+                            GTProjectModuleReference::External("./author".into()),
+                        )]),
+                    },
                 },
                 GTProjectModule {
-                    path: "./examples/basic/order.type".try_into().unwrap(),
-                    deps: vec![
-                        "./examples/basic/book.type".try_into().unwrap(),
-                        "./examples/basic/user.type".try_into().unwrap(),
-                    ],
-                    exports: vec!["Order".into()],
+                    path: order_path.clone(),
                     module: GTModule {
                         doc: None,
                         imports: vec![GTImport {
@@ -231,11 +254,25 @@ mod tests {
                             }),
                         }],
                     },
+                    resolve: GTProjectModuleResolve {
+                        deps: HashMap::from_iter(vec![
+                            ("./book".into(), Arc::new(book_path.clone())),
+                            ("./user".into(), Arc::new(user_path.clone())),
+                        ]),
+                        references: HashMap::from_iter(vec![
+                            (
+                                "User".into(),
+                                GTProjectModuleReference::External("./user".into()),
+                            ),
+                            (
+                                "Book".into(),
+                                GTProjectModuleReference::External("./book".into()),
+                            ),
+                        ]),
+                    },
                 },
                 GTProjectModule {
-                    path: "./examples/basic/user.type".try_into().unwrap(),
-                    deps: vec![],
-                    exports: vec!["User".into()],
+                    path: user_path.clone(),
                     module: GTModule {
                         doc: None,
                         imports: vec![],
@@ -259,6 +296,10 @@ mod tests {
                                 ],
                             }),
                         }],
+                    },
+                    resolve: GTProjectModuleResolve {
+                        deps: HashMap::new(),
+                        references: HashMap::new(),
                     },
                 },
             ],

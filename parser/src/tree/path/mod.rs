@@ -1,4 +1,7 @@
-use std::path::{Component, Path, PathBuf};
+use std::{
+    hash::Hash,
+    path::{Component, Path, PathBuf},
+};
 
 mod parse;
 
