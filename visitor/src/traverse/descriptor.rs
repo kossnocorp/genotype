@@ -81,7 +81,7 @@ mod tests {
     fn test_traverse_inline_import() {
         let mut visitor = GTMockVisitor::new();
         let import = GTInlineImport {
-            path: GTPath("./path/to/module".into()),
+            path: "./path/to/module".into(),
             name: "Name".into(),
         };
         let mut descriptor = GTDescriptor::InlineImport(import.clone());
@@ -159,7 +159,7 @@ mod tests {
     fn test_traverse_reference() {
         let mut visitor = GTMockVisitor::new();
         let identifier = GTIdentifier("Name".into());
-        let reference = GTReference::Local(identifier.clone());
+        let reference = GTReference(identifier.clone());
         let mut descriptor = GTDescriptor::Reference(reference.clone());
         descriptor.traverse(&mut visitor);
         assert_eq!(

@@ -27,7 +27,7 @@ mod tests {
         let mut alias = GTAlias {
             doc: None,
             name: "Name".into(),
-            descriptor: GTPrimitive::String.into(),,
+            descriptor: GTPrimitive::String.into(),
         };
         alias.traverse(&mut visitor);
         assert_eq!(
@@ -46,7 +46,7 @@ mod tests {
         let mut alias = GTAlias {
             doc: Some(GTDoc("Hello, world!".into())),
             name: "Name".into(),
-            descriptor: GTPrimitive::String.into(),,
+            descriptor: GTPrimitive::String.into(),
         };
         alias.traverse(&mut visitor);
         assert_eq!(
