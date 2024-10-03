@@ -17,14 +17,11 @@ impl TSConvert<TSImport> for GTImport {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::{
-        import_glob_alias::TSImportGlobAlias, import_name::TSImportName,
-        import_reference::TSImportReference, path::TSPath,
-    };
+    use genotype_lang_ts_tree::*;
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use genotype_parser::tree::{import_name::GTImportName, import_reference::GTImportReference};
+    use genotype_parser::tree::*;
 
     #[test]
     fn test_convert_glob() {
@@ -35,7 +32,7 @@ mod tests {
             }
             .convert(&|_| {}),
             TSImport {
-                path: TSPath::Unresolved("./path/to/module".into()),
+                path: "./path/to/module".into(),
                 reference: TSImportReference::Glob(TSImportGlobAlias::Unresolved)
             }
         );
@@ -53,7 +50,7 @@ mod tests {
             }
             .convert(&|_| {}),
             TSImport {
-                path: TSPath::Unresolved("./path/to/module".into()),
+                path: "./path/to/module".into(),
                 reference: TSImportReference::Named(vec![
                     TSImportName::Name("Name".into()),
                     TSImportName::Alias("Name".into(), "Alias".into())
@@ -71,7 +68,7 @@ mod tests {
             }
             .convert(&|_| {}),
             TSImport {
-                path: TSPath::Unresolved("./path/to/module".into()),
+                path: "./path/to/module".into(),
                 reference: TSImportReference::Named(vec![TSImportName::Name("Name".into())])
             }
         );

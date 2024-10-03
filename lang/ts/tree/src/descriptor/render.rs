@@ -19,11 +19,7 @@ impl GTRender for TSDescriptor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        array::TSArray, indent::ts_indent, inline_import::TSInlineImport, object::TSObject,
-        path::TSPath, primitive::TSPrimitive, property::TSProperty, reference::TSReference,
-        tuple::TSTuple, union::TSUnion,
-    };
+    use crate::*;
 
     #[test]
     fn test_render_array() {
@@ -40,7 +36,7 @@ mod tests {
     fn test_render_inline_import() {
         assert_eq!(
             TSDescriptor::InlineImport(TSInlineImport {
-                path: TSPath::Resolved("../path/to/module.ts".into()),
+                path: "../path/to/module.ts".into(),
                 name: "Name".into(),
             })
             .render(&ts_indent()),
@@ -88,7 +84,7 @@ mod tests {
     #[test]
     fn test_render_reference() {
         assert_eq!(
-            TSDescriptor::Reference(TSReference::Unresolved("Name".into())).render(&ts_indent()),
+            TSDescriptor::Reference("Name".into()).render(&ts_indent()),
             "Name"
         );
     }

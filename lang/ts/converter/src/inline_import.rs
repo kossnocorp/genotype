@@ -17,8 +17,6 @@ impl TSConvert<TSInlineImport> for GTInlineImport {
 
 #[cfg(test)]
 mod tests {
-
-    use genotype_lang_ts_tree::path::TSPath;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -32,7 +30,7 @@ mod tests {
             }
             .convert(&|_| {}),
             TSInlineImport {
-                path: TSPath::Unresolved("./path/to/module".into()),
+                path: "./path/to/module".into(),
                 name: "Name".into(),
             }
         );

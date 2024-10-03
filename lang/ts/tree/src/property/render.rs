@@ -17,10 +17,7 @@ impl GTRender for TSProperty {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        descriptor::TSDescriptor, indent::ts_indent, path::TSPath, primitive::TSPrimitive,
-        reference::TSReference,
-    };
+    use crate::*;
 
     #[test]
     fn test_render_primitive() {
@@ -36,10 +33,7 @@ mod tests {
         assert_eq!(
             TSProperty {
                 name: "name".into(),
-                descriptor: TSDescriptor::Reference(TSReference::External(
-                    "Name".into(),
-                    TSPath::Resolved("./path/to/module.ts".into())
-                )),
+                descriptor: TSDescriptor::Reference("Name".into()),
                 required: true
             }
             .render(&ts_indent()),

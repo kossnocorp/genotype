@@ -47,7 +47,6 @@ mod tests {
                             deps: vec![],
                             exports: vec![],
                             module: GTModule {
-                                path: "./author".into(),
                                 doc: None,
                                 imports: vec![],
                                 aliases: vec![GTAlias {
@@ -71,7 +70,6 @@ mod tests {
                             deps: vec![],
                             exports: vec![],
                             module: GTModule {
-                                path: "./book".into(),
                                 doc: None,
                                 imports: vec![GTImport {
                                     path: "./author".into(),
@@ -94,10 +92,7 @@ mod tests {
                                                 doc: None,
                                                 name: "author".into(),
                                                 descriptor: GTDescriptor::Reference(
-                                                    GTReference::External(
-                                                        "Author".into(),
-                                                        "./author".into()
-                                                    )
+                                                    "Author".into()
                                                 ),
                                                 required: true,
                                             },
@@ -117,7 +112,6 @@ mod tests {
                     TSProjectModule {
                         path: root.as_path().join("out/author.ts").into(),
                         module: TSModule {
-                            path: TSPath::Unresolved("./author".into()),
                             doc: None,
                             imports: vec![],
                             definitions: vec![TSDefinition::Interface(TSInterface {
@@ -133,10 +127,9 @@ mod tests {
                     TSProjectModule {
                         path: root.as_path().join("out/book.ts").into(),
                         module: TSModule {
-                            path: TSPath::Unresolved("./book".into()),
                             doc: None,
                             imports: vec![TSImport {
-                                path: TSPath::Unresolved("./author".into()),
+                                path: "./author".into(),
                                 reference: TSImportReference::Named(vec![TSImportName::Name(
                                     "Author".into()
                                 )]),
@@ -151,10 +144,7 @@ mod tests {
                                     },
                                     TSProperty {
                                         name: "author".into(),
-                                        descriptor: TSDescriptor::Reference(TSReference::External(
-                                            "Author".into(),
-                                            TSPath::Unresolved("./author".into())
-                                        )),
+                                        descriptor: TSDescriptor::Reference("Author".into()),
                                         required: true,
                                     },
                                 ],

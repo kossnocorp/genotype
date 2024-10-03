@@ -17,13 +17,13 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{indent::ts_indent, path::TSPath};
+    use crate::*;
 
     #[test]
     fn test_render() {
         assert_eq!(
             TSInlineImport {
-                path: TSPath::Resolved("./path/to/module.ts".into()),
+                path: "./path/to/module.ts".into(),
                 name: "Name".into(),
             }
             .render(&ts_indent()),

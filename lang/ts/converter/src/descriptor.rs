@@ -14,7 +14,7 @@ impl TSConvert<TSDescriptor> for GTDescriptor {
         match self {
             GTDescriptor::Alias(alias) => {
                 hoist(alias.convert(hoist));
-                TSDescriptor::Reference(TSReference::Local(alias.name.convert(hoist)))
+                TSDescriptor::Reference(TSReference(alias.name.convert(hoist)))
             }
 
             GTDescriptor::Array(array) => TSDescriptor::Array(Box::new(array.convert(hoist))),
@@ -46,15 +46,8 @@ mod tests {
 
     use std::sync::Mutex;
 
-    use genotype_lang_ts_tree::{
-        alias::TSAlias, array::TSArray, inline_import::TSInlineImport, object::TSObject,
-        path::TSPath, property::TSProperty, reference::TSReference, tuple::TSTuple,
-    };
-    use genotype_parser::tree::{
-        alias::GTAlias, array::GTArray, inline_import::GTInlineImport, object::GTObject,
-        primitive::GTPrimitive, property::GTProperty, reference::GTReference, tuple::GTTuple,
-        GTUnion,
-    };
+    use genotype_lang_ts_tree::*;
+    use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -72,7 +65,7 @@ mod tests {
                 let mut hoisted = hoisted.lock().unwrap();
                 hoisted.push(definition);
             }),
-            TSDescriptor::Reference(TSReference::Local("Name".into()))
+            TSDescriptor::Reference("Name".into())
         );
         assert_eq!(
             hoisted.lock().unwrap().clone(),
@@ -105,7 +98,7 @@ mod tests {
             })
             .convert(&|_| {}),
             TSDescriptor::InlineImport(TSInlineImport {
-                path: TSPath::Unresolved("./path/to/module".into()),
+                path: "./path/to/module".into(),
                 name: "Name".into()
             })
         );
@@ -173,8 +166,8 @@ mod tests {
     #[test]
     fn test_convert_reference() {
         assert_eq!(
-            GTDescriptor::Reference(GTReference::Unresolved("Name".into())).convert(&|_| {}),
-            TSDescriptor::Reference(TSReference::Unresolved("Name".into()))
+            GTDescriptor::Reference("Name".into()).convert(&|_| {}),
+            TSDescriptor::Reference("Name".into())
         );
     }
 

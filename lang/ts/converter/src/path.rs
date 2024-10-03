@@ -8,7 +8,7 @@ impl TSConvert<TSPath> for GTPath {
     where
         HoistFn: Fn(TSDefinition),
     {
-        TSPath::Unresolved(self.0.clone())
+        TSPath(self.as_str().to_owned())
     }
 }
 
@@ -21,8 +21,8 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_eq!(
-            TSPath::Unresolved("./path/to/module".into()),
-            GTPath("./path/to/module".into()).convert(&|_| {}),
+            TSPath("./path/to/module".into()),
+            GTPath::new("./path/to/module".into()).convert(&|_| {}),
         );
     }
 }

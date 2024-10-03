@@ -28,7 +28,6 @@ pub fn convert_to_ts_module(module: &GTModule) -> TSModule {
     }
 
     TSModule {
-        path: module.path.convert(&|_| {}),
         doc: None,
         imports,
         definitions: definitions.into_inner().unwrap(),
@@ -47,7 +46,6 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             convert_to_ts_module(&GTModule {
-                path: "./path/to/module".into(),
                 doc: None,
                 imports: vec![
                     GTImport {
@@ -107,10 +105,7 @@ mod tests {
                                                 doc: None,
                                                 name: "author".into(),
                                                 descriptor: GTDescriptor::Reference(
-                                                    GTReference::External(
-                                                        "Author".into(),
-                                                        "./path/to/module".into()
-                                                    )
+                                                    "Author".into()
                                                 ),
                                                 required: true,
                                             }
@@ -129,15 +124,14 @@ mod tests {
                 ],
             }),
             TSModule {
-                path: TSPath::Unresolved("./path/to/module".into()),
                 doc: None,
                 imports: vec![
                     TSImport {
-                        path: TSPath::Unresolved("./path/to/module".into()),
+                        path: "./path/to/module".into(),
                         reference: TSImportReference::Glob(TSImportGlobAlias::Unresolved)
                     },
                     TSImport {
-                        path: TSPath::Unresolved("./path/to/module".into()),
+                        path: "./path/to/module".into(),
                         reference: TSImportReference::Named(vec![
                             TSImportName::Name("Name".into()),
                             TSImportName::Alias("Name".into(), "Alias".into())
@@ -164,7 +158,7 @@ mod tests {
                         name: "Order".into(),
                         properties: vec![TSProperty {
                             name: "book".into(),
-                            descriptor: TSDescriptor::Reference(TSReference::Local("Book".into(),)),
+                            descriptor: TSDescriptor::Reference("Book".into()),
                             required: true,
                         }]
                     }),
@@ -178,10 +172,7 @@ mod tests {
                             },
                             TSProperty {
                                 name: "author".into(),
-                                descriptor: TSDescriptor::Reference(TSReference::External(
-                                    "Author".into(),
-                                    TSPath::Unresolved("./path/to/module".into())
-                                )),
+                                descriptor: TSDescriptor::Reference("Author".into()),
                                 required: true,
                             }
                         ]

@@ -27,25 +27,20 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{
-        alias::TSAlias, definition::TSDefinition, descriptor::TSDescriptor, import::TSImport,
-        import_name::TSImportName, import_reference::TSImportReference, indent::ts_indent,
-        interface::TSInterface, path::TSPath, primitive::TSPrimitive, property::TSProperty,
-    };
+    use crate::*;
 
     #[test]
     fn test_render() {
         assert_eq!(
             TSModule {
-                path: TSPath::Resolved("../path/to/module.ts".into()),
                 doc: None,
                 imports: vec![
                     TSImport {
-                        path: TSPath::Resolved("../path/to/module.ts".into()),
+                        path: "../path/to/module.ts".into(),
                         reference: TSImportReference::Default("Name".into()),
                     },
                     TSImport {
-                        path: TSPath::Resolved("../path/to/module.ts".into()),
+                        path: "../path/to/module.ts".into(),
                         reference: TSImportReference::Named(vec![
                             TSImportName::Name("Name".into()),
                             TSImportName::Alias("Name".into(), "Alias".into()),

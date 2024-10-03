@@ -1,10 +1,12 @@
-use crate::{identifier::TSIdentifier, path::TSPath};
+use crate::identifier::TSIdentifier;
 
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]
-pub enum TSReference {
-    Unresolved(TSIdentifier),
-    Local(TSIdentifier),
-    External(TSIdentifier, TSPath),
+pub struct TSReference(pub TSIdentifier);
+
+impl From<&str> for TSReference {
+    fn from(str: &str) -> Self {
+        TSReference(str.into())
+    }
 }
