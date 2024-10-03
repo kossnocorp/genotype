@@ -3,7 +3,7 @@ use std::{
     hash::{Hash, Hasher},
 };
 
-use genotype_parser::tree::{identifier::GTIdentifier, module::GTModule};
+use genotype_parser::tree::{identifier::GTIdentifier, module::GTModule, GTPath};
 use genotype_visitor::{traverse::GTTraverse, visitor::GTVisitor};
 
 use crate::{path::GTProjectPath, visitor::load::GTProjectLoadVisitor};
@@ -22,24 +22,24 @@ impl GTProjectModule {
         path: GTProjectPath,
     ) -> Result<Self, Box<dyn std::error::Error>> {
         let code = read_to_string(&path)?;
-        let module_path = path
+        let module_path: GTPath = path
             .as_path()
             .strip_prefix(root.as_path())?
             .with_extension("")
             .to_str()
             .unwrap()
             .into();
-        let mut module = GTModule::parse(module_path, code)?;
+        let mut parse = GTModule::parse(code)?;
 
         let mut visitor = GTProjectLoadVisitor::new();
-        module.traverse(&mut visitor);
+        parse.module.traverse(&mut visitor);
 
         let deps = visitor.deps(&path)?;
         let exports = visitor.exports;
 
         Ok(Self {
             path,
-            module,
+            module: parse.module,
             deps,
             exports,
         })

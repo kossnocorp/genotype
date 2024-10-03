@@ -6,7 +6,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use crate::{module::GTProjectModule, path::GTProjectPath, resolve::GTProjectResolveVisitor};
+use crate::{module::GTProjectModule, path::GTProjectPath};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTProject {
@@ -49,10 +49,9 @@ impl GTProject {
             exports.insert(module.path.clone(), module.exports.clone());
         }
 
-        let mut resolver = GTProjectResolveVisitor::new(exports);
-        for module in modules.iter_mut() {
-            module.module.traverse(&mut resolver);
-        }
+        // for module in modules.iter_mut() {
+        //     module.module.traverse(&mut resolver);
+        // }
 
         Ok(GTProject {
             root: (*root).clone(),
@@ -103,12 +102,7 @@ fn process_module(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_parser::tree::{
-        alias::GTAlias, array::GTArray, descriptor::GTDescriptor, import::GTImport,
-        import_reference::GTImportReference, inline_import::GTInlineImport, module::GTModule,
-        object::GTObject, path::GTPath, primitive::GTPrimitive, property::GTProperty,
-        reference::GTReference,
-    };
+    use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -150,7 +144,6 @@ mod tests {
                     deps: vec![],
                     exports: vec!["Author".into()],
                     module: GTModule {
-                        path: "author".into(),
                         doc: None,
                         imports: vec![],
                         aliases: vec![GTAlias {
@@ -172,10 +165,9 @@ mod tests {
                     deps: vec!["./examples/basic/author.type".try_into().unwrap()],
                     exports: vec!["Book".into()],
                     module: GTModule {
-                        path: "book".into(),
                         doc: None,
                         imports: vec![GTImport {
-                            path: GTPath("./author".into()),
+                            path: "./author".into(),
                             reference: GTImportReference::Name("Author".into()),
                         }],
                         aliases: vec![GTAlias {
@@ -192,10 +184,7 @@ mod tests {
                                     GTProperty {
                                         doc: None,
                                         name: "author".into(),
-                                        descriptor: GTDescriptor::Reference(GTReference::External(
-                                            "Author".into(),
-                                            "./author".into(),
-                                        )),
+                                        descriptor: GTDescriptor::Reference("Author".into()),
                                         required: true,
                                     },
                                 ],
@@ -211,10 +200,9 @@ mod tests {
                     ],
                     exports: vec!["Order".into()],
                     module: GTModule {
-                        path: "order".into(),
                         doc: None,
                         imports: vec![GTImport {
-                            path: GTPath("./book".into()),
+                            path: "./book".into(),
                             reference: GTImportReference::Name("Book".into()),
                         }],
                         aliases: vec![GTAlias {
@@ -226,7 +214,7 @@ mod tests {
                                         doc: None,
                                         name: "user".into(),
                                         descriptor: GTDescriptor::InlineImport(GTInlineImport {
-                                            path: GTPath("./user".into()),
+                                            path: "./user".into(),
                                             name: "User".into(),
                                         }),
                                         required: true,
@@ -235,12 +223,7 @@ mod tests {
                                         doc: None,
                                         name: "books".into(),
                                         descriptor: GTDescriptor::Array(Box::new(GTArray {
-                                            descriptor: GTDescriptor::Reference(
-                                                GTReference::External(
-                                                    "Book".into(),
-                                                    "./book".into(),
-                                                ),
-                                            ),
+                                            descriptor: GTDescriptor::Reference("Book".into()),
                                         })),
                                         required: true,
                                     },
@@ -254,7 +237,6 @@ mod tests {
                     deps: vec![],
                     exports: vec!["User".into()],
                     module: GTModule {
-                        path: "user".into(),
                         doc: None,
                         imports: vec![],
                         aliases: vec![GTAlias {

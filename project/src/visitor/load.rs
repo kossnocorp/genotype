@@ -23,7 +23,7 @@ impl GTProjectLoadVisitor {
         let paths = self
             .deps
             .iter()
-            .map(|path| parent.resolve(&path.0))
+            .map(|path| parent.resolve(path.as_str()))
             .collect::<Result<_, _>>()?;
         Ok(paths)
     }
