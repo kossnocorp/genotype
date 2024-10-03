@@ -77,11 +77,9 @@ mod tests {
 
     use crate::tree::GTModule;
 
-    use super::*;
-
     #[test]
-    fn test_parse_resolve() {
+    fn test_parse_exports() {
         let parse = GTModule::parse("path/to/module".into(), "Hello = string".into()).unwrap();
-        assert_eq!(parse.resolve.exports, vec![GTIdentifier("Hello".into())]);
+        assert_eq!(parse.resolve.exports, vec!["Hello".into()]);
     }
 }

@@ -8,7 +8,7 @@ name = @{ (ASCII_ALPHA)+ }
 
 any_descriptor = _{ nullable_descriptor | descriptor }
 
-descriptor = !{ primitive | object | array | tuple | alias | name | inline_reference }
+descriptor = !{ inline_import | primitive | object | array | tuple | alias | name  }
 
 nullable_descriptor = ${ descriptor ~ "?" }
 
@@ -46,7 +46,7 @@ import_name = { name ~ ("as" ~ name)? }
 
 import_glob = ${ "*" }
 
-inline_reference = @{ path ~ name }
+inline_import = @{ path ~ name }
 
 path = @{ path_segment+ }
 

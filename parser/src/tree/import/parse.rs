@@ -37,7 +37,9 @@ fn parse(
         ParseState::Path => {
             let path = pair.as_str();
             // Remove trailing slash
-            let path = GTPath(path[..path.len() - 1].into());
+            let path = GTPath::new(path[..path.len() - 1].into());
+            resolve.deps.insert(path.clone());
+
             let pair = inner.next().unwrap(); // [TODO]
             parse(inner, pair, resolve, ParseState::Names(path))
         }
@@ -90,4 +92,45 @@ fn parse(
 enum ParseState {
     Path,
     Names(GTPath),
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashSet;
+
+    use pretty_assertions::assert_eq;
+
+    use crate::tree::GTModule;
+
+    #[test]
+    fn test_parse_deps_base() {
+        let code = r#"use author/*
+        use ../user/User
+        use ./misc/order/{Order, SomethingElse}"#;
+        let parse = GTModule::parse("path/to/module".into(), code.into()).unwrap();
+        assert_eq!(
+            parse.resolve.deps,
+            HashSet::from_iter(vec![
+                "author".into(),
+                "../user".into(),
+                "./misc/order".into()
+            ])
+        );
+    }
+
+    #[test]
+    fn test_parse_deps_normalize() {
+        let code = r#"use author/./*
+        use ../user/../user/User
+        use ./././misc/order/{Order, SomethingElse}"#;
+        let parse = GTModule::parse("path/to/module".into(), code.into()).unwrap();
+        assert_eq!(
+            parse.resolve.deps,
+            HashSet::from_iter(vec![
+                "author".into(),
+                "../user".into(),
+                "./misc/order".into(),
+            ])
+        );
+    }
 }

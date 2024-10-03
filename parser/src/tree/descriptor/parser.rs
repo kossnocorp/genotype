@@ -27,7 +27,7 @@ impl GTDescriptor {
 
             Rule::alias => GTDescriptor::Alias(Box::new(GTAlias::parse(pair, resolve)?)),
 
-            Rule::inline_reference => {
+            Rule::inline_import => {
                 GTDescriptor::InlineImport(GTInlineImport::parse(pair, resolve)?)
             }
 

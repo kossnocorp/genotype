@@ -555,11 +555,11 @@ mod tests {
                     doc: None,
                     imports: vec![
                         GTImport {
-                            path: GTPath("author".into()),
+                            path: "author".into(),
                             reference: GTImportReference::Glob,
                         },
                         GTImport {
-                            path: GTPath("../../author".into()),
+                            path: "../../author".into(),
                             reference: GTImportReference::Names(vec![
                                 GTImportName::Name("Author".into()),
                                 GTImportName::Name("Genre".into()),
@@ -567,7 +567,7 @@ mod tests {
                             ]),
                         },
                         GTImport {
-                            path: GTPath("author".into()),
+                            path: "author".into(),
                             reference: GTImportReference::Name("Author".into()),
                         },
                     ],
@@ -587,7 +587,7 @@ mod tests {
                                         doc: None,
                                         name: "author".into(),
                                         descriptor: GTDescriptor::InlineImport(GTInlineImport {
-                                            path: GTPath("../../author".into()),
+                                            path: "../../author".into(),
                                             name: "Author".into(),
                                         }),
                                         required: true,
@@ -607,14 +607,14 @@ mod tests {
                             doc: None,
                             name: "Author".into(),
                             descriptor: GTDescriptor::InlineImport(GTInlineImport {
-                                path: GTPath("../../author".into()),
+                                path: "../../author".into(),
                                 name: "Author".into(),
                             }),
                         },
                     ],
                 },
                 resolve: GTResolve {
-                    deps: HashSet::new(),
+                    deps: HashSet::from_iter(vec!["author".into(), "../../author".into()]),
                     exports: vec!["Book".into(), "Author".into()],
                     references: HashSet::new(),
                 },
