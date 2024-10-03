@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use crate::{
     parser::{parse_gt_code, Rule},
     tree::{GTAlias, GTDoc, GTImport, GTPath, GTResolve},
@@ -22,11 +20,7 @@ impl GTModule {
             imports: vec![],
             aliases: vec![],
         };
-        let mut resolve = GTResolve {
-            deps: HashSet::new(),
-            exports: vec![],
-            references: HashSet::new(),
-        };
+        let mut resolve = GTResolve::new();
 
         let module_pair = pairs.next().unwrap();
         for pair in module_pair.into_inner() {
@@ -97,7 +91,7 @@ mod tests {
                 },
                 resolve: GTResolve {
                     deps: HashSet::new(),
-                    exports: vec![],
+                    exports: vec!["Age".into(), "AnotherAge".into()],
                     references: HashSet::new(),
                 },
             },
@@ -138,7 +132,12 @@ mod tests {
                 },
                 resolve: GTResolve {
                     deps: HashSet::new(),
-                    exports: vec![],
+                    exports: vec![
+                        "String".into(),
+                        "Int".into(),
+                        "Float".into(),
+                        "Boolean".into(),
+                    ],
                     references: HashSet::new(),
                 },
             },
@@ -241,7 +240,14 @@ mod tests {
                 },
                 resolve: GTResolve {
                     deps: HashSet::new(),
-                    exports: vec![],
+                    exports: vec![
+                        "Hello".into(),
+                        "Hello".into(),
+                        "Empty".into(),
+                        "Empty".into(),
+                        "Hello".into(),
+                        "Hello".into(),
+                    ],
                     references: HashSet::new(),
                 },
             },
@@ -292,7 +298,7 @@ mod tests {
                 },
                 resolve: GTResolve {
                     deps: HashSet::new(),
-                    exports: vec![],
+                    exports: vec!["Hello".into(), "Hello".into(), "Hello".into()],
                     references: HashSet::new(),
                 },
             },
@@ -341,7 +347,7 @@ mod tests {
                 },
                 resolve: GTResolve {
                     deps: HashSet::new(),
-                    exports: vec![],
+                    exports: vec!["Hello".into()],
                     references: HashSet::new(),
                 },
             },
@@ -428,7 +434,7 @@ mod tests {
                 },
                 resolve: GTResolve {
                     deps: HashSet::new(),
-                    exports: vec![],
+                    exports: vec!["Hello".into(), "Hello".into(), "Named".into()],
                     references: HashSet::new(),
                 },
             },
@@ -469,7 +475,7 @@ mod tests {
                 },
                 resolve: GTResolve {
                     deps: HashSet::new(),
-                    exports: vec![],
+                    exports: vec!["Book".into()],
                     references: HashSet::new(),
                 },
             },
@@ -532,7 +538,7 @@ mod tests {
                 },
                 resolve: GTResolve {
                     deps: HashSet::new(),
-                    exports: vec![],
+                    exports: vec!["User".into(), "Address".into()],
                     references: HashSet::new(),
                 },
             },
@@ -609,7 +615,7 @@ mod tests {
                 },
                 resolve: GTResolve {
                     deps: HashSet::new(),
-                    exports: vec![],
+                    exports: vec!["Book".into(), "Author".into()],
                     references: HashSet::new(),
                 },
             },

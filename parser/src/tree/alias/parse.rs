@@ -49,6 +49,7 @@ fn parse(
 
         ParseState::Name(doc) => {
             let name = GTIdentifier::parse(pair);
+            resolve.exports.push(name.clone());
             let pair = inner.next().unwrap(); // [TODO]
             parse(inner, pair, resolve, ParseState::Descriptor(doc, name))
         }
@@ -68,4 +69,19 @@ enum ParseState {
     Doc(Option<GTDoc>),
     Name(Option<GTDoc>),
     Descriptor(Option<GTDoc>, GTIdentifier),
+}
+
+#[cfg(test)]
+mod tests {
+    use pretty_assertions::assert_eq;
+
+    use crate::tree::GTModule;
+
+    use super::*;
+
+    #[test]
+    fn test_parse_resolve() {
+        let parse = GTModule::parse("path/to/module".into(), "Hello = string".into()).unwrap();
+        assert_eq!(parse.resolve.exports, vec![GTIdentifier("Hello".into())]);
+    }
 }

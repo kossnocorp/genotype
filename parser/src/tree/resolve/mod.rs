@@ -8,3 +8,13 @@ pub struct GTResolve {
     pub exports: Vec<GTIdentifier>,
     pub references: HashSet<GTIdentifier>,
 }
+
+impl GTResolve {
+    pub fn new() -> Self {
+        GTResolve {
+            deps: HashSet::new(),
+            exports: Vec::new(),
+            references: HashSet::new(),
+        }
+    }
+}
