@@ -1,6 +1,6 @@
 use crate::{
     parser::{parse_gt_code, Rule},
-    tree::{GTAlias, GTDoc, GTImport, GTPath, GTResolve},
+    tree::{GTAlias, GTDoc, GTImport, GTResolve},
 };
 
 use super::GTModule;
@@ -90,7 +90,7 @@ mod tests {
                 resolve: GTResolve {
                     deps: HashSet::new(),
                     exports: vec!["Age".into(), "AnotherAge".into()],
-                    references: HashSet::new(),
+                    references: HashSet::from_iter(vec!["Age".into()]),
                 },
             },
         );
@@ -606,7 +606,7 @@ mod tests {
                 resolve: GTResolve {
                     deps: HashSet::from_iter(vec!["author".into(), "../../author".into()]),
                     exports: vec!["Book".into(), "Author".into()],
-                    references: HashSet::new(),
+                    references: HashSet::from_iter(vec!["Genre".into()]),
                 },
             },
         );

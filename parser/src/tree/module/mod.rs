@@ -1,4 +1,4 @@
-use super::{alias::GTAlias, doc::GTDoc, import::GTImport, GTPath};
+use super::{alias::GTAlias, doc::GTDoc, import::GTImport};
 
 mod parse;
 
