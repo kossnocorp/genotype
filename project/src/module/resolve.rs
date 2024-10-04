@@ -1,6 +1,6 @@
 use std::{collections::HashMap, sync::Arc};
 
-use genotype_parser::tree::{GTIdentifier, GTPath};
+use genotype_parser::tree::{GTIdentifier, GTImportName, GTImportReference, GTPath};
 
 use super::{GTProjectModuleParse, GTProjectModulePath};
 
@@ -42,11 +42,34 @@ impl GTProjectModuleResolve {
                 continue;
             }
 
+            // Find the local path of the reference
             let (local_path, _) = deps
                 .iter()
-                .find(|(_, path)| {
-                    let module = modules.iter().find(|module| module.0 == ***path).unwrap();
-                    module.1.resolve.exports.contains(reference)
+                .find(|(local_path, path)| {
+                    let import = parse.1.module.imports.iter().find(|import| {
+                        if import.path != **local_path {
+                            return false;
+                        }
+
+                        match &import.reference {
+                            GTImportReference::Glob => {
+                                let module =
+                                    modules.iter().find(|module| module.0 == ***path).unwrap();
+                                module.1.resolve.exports.contains(reference)
+                            }
+
+                            GTImportReference::Name(name) => *name == *reference,
+
+                            GTImportReference::Names(names) => {
+                                names.iter().any(|name| match name {
+                                    GTImportName::Name(name) => name == reference,
+
+                                    GTImportName::Alias(_, alias) => alias == reference,
+                                })
+                            }
+                        }
+                    });
+                    !import.is_none()
                 })
                 .unwrap();
 
