@@ -1,10 +1,10 @@
 use genotype_lang_ts_tree::{definition::TSDefinition, union::TSUnion};
 use genotype_parser::tree::union::GTUnion;
 
-use crate::convert::TSConvert;
+use crate::{convert::TSConvert, resolve::TSConvertResolve};
 
 impl TSConvert<TSUnion> for GTUnion {
-    fn convert<HoistFn>(&self, hoist: &HoistFn) -> TSUnion
+    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSUnion
     where
         HoistFn: Fn(TSDefinition),
     {
@@ -12,7 +12,7 @@ impl TSConvert<TSUnion> for GTUnion {
             descriptors: self
                 .descriptors
                 .iter()
-                .map(|descriptor| descriptor.convert(hoist))
+                .map(|descriptor| descriptor.convert(resolve, hoist))
                 .collect(),
         }
     }
@@ -24,6 +24,8 @@ mod tests {
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
 
+    use crate::resolve::TSConvertResolve;
+
     use super::*;
 
     #[test]
@@ -32,7 +34,7 @@ mod tests {
             GTUnion {
                 descriptors: vec![GTPrimitive::Boolean.into(), GTPrimitive::String.into(),]
             }
-            .convert(&|_| {}),
+            .convert(&TSConvertResolve::new(), &|_| {}),
             TSUnion {
                 descriptors: vec![
                     TSDescriptor::Primitive(TSPrimitive::Boolean),

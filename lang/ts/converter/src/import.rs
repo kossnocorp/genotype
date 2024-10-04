@@ -1,16 +1,16 @@
 use genotype_lang_ts_tree::{definition::TSDefinition, import::TSImport};
 use genotype_parser::tree::import::GTImport;
 
-use crate::convert::TSConvert;
+use crate::{convert::TSConvert, resolve::TSConvertResolve};
 
 impl TSConvert<TSImport> for GTImport {
-    fn convert<HoistFn>(&self, hoist: &HoistFn) -> TSImport
+    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSImport
     where
         HoistFn: Fn(TSDefinition),
     {
         TSImport {
-            path: self.path.convert(hoist),
-            reference: self.reference.convert(hoist),
+            path: self.path.convert(resolve, hoist),
+            reference: self.reference.convert(resolve, hoist),
         }
     }
 }
@@ -30,7 +30,7 @@ mod tests {
                 path: "./path/to/module".into(),
                 reference: GTImportReference::Glob
             }
-            .convert(&|_| {}),
+            .convert(&TSConvertResolve::new(), &|_| {}),
             TSImport {
                 path: "./path/to/module".into(),
                 reference: TSImportReference::Glob(TSImportGlobAlias::Unresolved)
@@ -48,7 +48,7 @@ mod tests {
                     GTImportName::Alias("Name".into(), "Alias".into())
                 ])
             }
-            .convert(&|_| {}),
+            .convert(&TSConvertResolve::new(), &|_| {}),
             TSImport {
                 path: "./path/to/module".into(),
                 reference: TSImportReference::Named(vec![
@@ -66,7 +66,7 @@ mod tests {
                 path: "./path/to/module".into(),
                 reference: GTImportReference::Name("Name".into())
             }
-            .convert(&|_| {}),
+            .convert(&TSConvertResolve::new(), &|_| {}),
             TSImport {
                 path: "./path/to/module".into(),
                 reference: TSImportReference::Named(vec![TSImportName::Name("Name".into())])

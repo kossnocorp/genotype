@@ -3,34 +3,39 @@ use std::sync::Mutex;
 use genotype_lang_ts_tree::module::TSModule;
 use genotype_parser::tree::module::GTModule;
 
-use crate::convert::TSConvert;
+use crate::{convert::TSConvert, resolve::TSConvertResolve};
 
-pub fn convert_to_ts_module(module: &GTModule) -> TSModule {
-    let imports = module
-        .imports
-        .iter()
-        .map(|import| import.convert(&|_| {}))
-        .collect();
+#[derive(Debug, PartialEq, Clone)]
+pub struct TSConvertModule(pub TSModule);
 
-    let definitions = Mutex::new(Vec::new());
+impl TSConvertModule {
+    pub fn convert(module: &GTModule, resolve: &TSConvertResolve) -> Self {
+        let imports = module
+            .imports
+            .iter()
+            .map(|import| import.convert(resolve, &|_| {}))
+            .collect();
 
-    for alias in &module.aliases {
-        let hoisted = Mutex::new(Vec::new());
+        let definitions = Mutex::new(Vec::new());
 
-        let definition = alias.convert(&|definition| {
-            let mut hoisted = hoisted.lock().unwrap();
-            hoisted.push(definition);
-        });
+        for alias in &module.aliases {
+            let hoisted = Mutex::new(Vec::new());
 
-        let mut definitions = definitions.lock().unwrap();
-        definitions.push(definition);
-        definitions.extend(hoisted.into_inner().unwrap());
-    }
+            let definition = alias.convert(resolve, &|definition| {
+                let mut hoisted = hoisted.lock().unwrap();
+                hoisted.push(definition);
+            });
 
-    TSModule {
-        doc: None,
-        imports,
-        definitions: definitions.into_inner().unwrap(),
+            let mut definitions = definitions.lock().unwrap();
+            definitions.push(definition);
+            definitions.extend(hoisted.into_inner().unwrap());
+        }
+
+        TSConvertModule(TSModule {
+            doc: None,
+            imports,
+            definitions: definitions.into_inner().unwrap(),
+        })
     }
 }
 
@@ -45,85 +50,88 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_eq!(
-            convert_to_ts_module(&GTModule {
-                doc: None,
-                imports: vec![
-                    GTImport {
-                        path: "./path/to/module".into(),
-                        reference: GTImportReference::Glob
-                    },
-                    GTImport {
-                        path: "./path/to/module".into(),
-                        reference: GTImportReference::Names(vec![
-                            GTImportName::Name("Name".into()),
-                            GTImportName::Alias("Name".into(), "Alias".into())
-                        ])
-                    }
-                ],
-                aliases: vec![
-                    GTAlias {
-                        doc: None,
-                        name: "User".into(),
-                        descriptor: GTDescriptor::Object(GTObject {
-                            properties: vec![
-                                GTProperty {
+            TSConvertModule::convert(
+                &GTModule {
+                    doc: None,
+                    imports: vec![
+                        GTImport {
+                            path: "./path/to/module".into(),
+                            reference: GTImportReference::Glob
+                        },
+                        GTImport {
+                            path: "./path/to/module".into(),
+                            reference: GTImportReference::Names(vec![
+                                GTImportName::Name("Name".into()),
+                                GTImportName::Alias("Name".into(), "Alias".into())
+                            ])
+                        }
+                    ],
+                    aliases: vec![
+                        GTAlias {
+                            doc: None,
+                            name: "User".into(),
+                            descriptor: GTDescriptor::Object(GTObject {
+                                properties: vec![
+                                    GTProperty {
+                                        doc: None,
+                                        name: "name".into(),
+                                        descriptor: GTPrimitive::String.into(),
+                                        required: true,
+                                    },
+                                    GTProperty {
+                                        doc: None,
+                                        name: "age".into(),
+                                        descriptor: GTPrimitive::Int.into(),
+                                        required: false,
+                                    }
+                                ]
+                            }),
+                        },
+                        GTAlias {
+                            doc: None,
+                            name: "Order".into(),
+                            descriptor: GTDescriptor::Object(GTObject {
+                                properties: vec![GTProperty {
                                     doc: None,
-                                    name: "name".into(),
-                                    descriptor: GTPrimitive::String.into(),
+                                    name: "book".into(),
+                                    descriptor: GTDescriptor::Alias(Box::new(GTAlias {
+                                        doc: None,
+                                        name: "Book".into(),
+                                        descriptor: GTDescriptor::Object(GTObject {
+                                            properties: vec![
+                                                GTProperty {
+                                                    doc: None,
+                                                    name: "title".into(),
+                                                    descriptor: GTDescriptor::Primitive(
+                                                        GTPrimitive::String
+                                                    ),
+                                                    required: true,
+                                                },
+                                                GTProperty {
+                                                    doc: None,
+                                                    name: "author".into(),
+                                                    descriptor: GTDescriptor::Reference(
+                                                        "Author".into()
+                                                    ),
+                                                    required: true,
+                                                }
+                                            ]
+                                        })
+                                    })),
                                     required: true,
-                                },
-                                GTProperty {
-                                    doc: None,
-                                    name: "age".into(),
-                                    descriptor: GTPrimitive::Int.into(),
-                                    required: false,
-                                }
-                            ]
-                        }),
-                    },
-                    GTAlias {
-                        doc: None,
-                        name: "Order".into(),
-                        descriptor: GTDescriptor::Object(GTObject {
-                            properties: vec![GTProperty {
-                                doc: None,
-                                name: "book".into(),
-                                descriptor: GTDescriptor::Alias(Box::new(GTAlias {
-                                    doc: None,
-                                    name: "Book".into(),
-                                    descriptor: GTDescriptor::Object(GTObject {
-                                        properties: vec![
-                                            GTProperty {
-                                                doc: None,
-                                                name: "title".into(),
-                                                descriptor: GTDescriptor::Primitive(
-                                                    GTPrimitive::String
-                                                ),
-                                                required: true,
-                                            },
-                                            GTProperty {
-                                                doc: None,
-                                                name: "author".into(),
-                                                descriptor: GTDescriptor::Reference(
-                                                    "Author".into()
-                                                ),
-                                                required: true,
-                                            }
-                                        ]
-                                    })
-                                })),
-                                required: true,
-                            },]
-                        }),
-                    },
-                    GTAlias {
-                        doc: None,
-                        name: "Name".into(),
-                        descriptor: GTPrimitive::String.into(),
-                    },
-                ],
-            }),
-            TSModule {
+                                },]
+                            }),
+                        },
+                        GTAlias {
+                            doc: None,
+                            name: "Name".into(),
+                            descriptor: GTPrimitive::String.into(),
+                        },
+                    ],
+                },
+                &TSConvertResolve::new()
+            ),
+            TSConvertModule(TSModule {
                 doc: None,
                 imports: vec![
                     TSImport {
@@ -182,7 +190,7 @@ mod tests {
                         descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                     }),
                 ]
-            },
+            })
         );
     }
 }

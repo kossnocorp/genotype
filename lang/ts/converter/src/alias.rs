@@ -1,22 +1,26 @@
 use genotype_lang_ts_tree::{alias::TSAlias, definition::TSDefinition, interface::TSInterface};
 use genotype_parser::tree::{alias::GTAlias, descriptor::GTDescriptor};
 
-use crate::convert::TSConvert;
+use crate::{convert::TSConvert, resolve::TSConvertResolve};
 
 impl TSConvert<TSDefinition> for GTAlias {
-    fn convert<HoistFn>(&self, hoist: &HoistFn) -> TSDefinition
+    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSDefinition
     where
         HoistFn: Fn(TSDefinition),
     {
         match &self.descriptor {
             GTDescriptor::Object(object) => TSDefinition::Interface(TSInterface {
-                name: self.name.convert(hoist),
-                properties: object.properties.iter().map(|p| p.convert(hoist)).collect(),
+                name: self.name.convert(resolve, hoist),
+                properties: object
+                    .properties
+                    .iter()
+                    .map(|p| p.convert(resolve, hoist))
+                    .collect(),
             }),
 
             _ => TSDefinition::Alias(TSAlias {
-                name: self.name.convert(hoist),
-                descriptor: self.descriptor.convert(hoist),
+                name: self.name.convert(resolve, hoist),
+                descriptor: self.descriptor.convert(resolve, hoist),
             }),
         }
     }
@@ -38,7 +42,7 @@ mod tests {
                 name: "Name".into(),
                 descriptor: GTPrimitive::Boolean.into(),
             }
-            .convert(&|_| {}),
+            .convert(&TSConvertResolve::new(), &|_| {}),
             TSDefinition::Alias(TSAlias {
                 name: "Name".into(),
                 descriptor: TSDescriptor::Primitive(TSPrimitive::Boolean),
@@ -69,7 +73,7 @@ mod tests {
                     ]
                 })
             }
-            .convert(&|_| {}),
+            .convert(&TSConvertResolve::new(), &|_| {}),
             TSDefinition::Interface(TSInterface {
                 name: "Book".into(),
                 properties: vec![

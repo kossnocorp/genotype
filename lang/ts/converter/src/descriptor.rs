@@ -4,39 +4,45 @@ use genotype_lang_ts_tree::{
 };
 use genotype_parser::tree::descriptor::GTDescriptor;
 
-use crate::convert::TSConvert;
+use crate::{convert::TSConvert, resolve::TSConvertResolve};
 
 impl TSConvert<TSDescriptor> for GTDescriptor {
-    fn convert<HoistFn>(&self, hoist: &HoistFn) -> TSDescriptor
+    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSDescriptor
     where
         HoistFn: Fn(TSDefinition),
     {
         match self {
             GTDescriptor::Alias(alias) => {
-                hoist(alias.convert(hoist));
-                TSDescriptor::Reference(TSReference(alias.name.convert(hoist)))
+                hoist(alias.convert(resolve, hoist));
+                TSDescriptor::Reference(TSReference(alias.name.convert(resolve, hoist)))
             }
 
-            GTDescriptor::Array(array) => TSDescriptor::Array(Box::new(array.convert(hoist))),
+            GTDescriptor::Array(array) => {
+                TSDescriptor::Array(Box::new(array.convert(resolve, hoist)))
+            }
 
-            GTDescriptor::InlineImport(import) => TSDescriptor::InlineImport(import.convert(hoist)),
+            GTDescriptor::InlineImport(import) => {
+                TSDescriptor::InlineImport(import.convert(resolve, hoist))
+            }
 
             GTDescriptor::Nullable(nullable) => TSDescriptor::Union(TSUnion {
                 descriptors: vec![
-                    nullable.convert(hoist),
+                    nullable.convert(resolve, hoist),
                     TSDescriptor::Primitive(TSPrimitive::Null),
                 ],
             }),
 
-            GTDescriptor::Object(object) => TSDescriptor::Object(object.convert(hoist)),
+            GTDescriptor::Object(object) => TSDescriptor::Object(object.convert(resolve, hoist)),
 
-            GTDescriptor::Primitive(primitive) => TSDescriptor::Primitive(primitive.convert(hoist)),
+            GTDescriptor::Primitive(primitive) => {
+                TSDescriptor::Primitive(primitive.convert(resolve, hoist))
+            }
 
-            GTDescriptor::Reference(name) => TSDescriptor::Reference(name.convert(hoist)),
+            GTDescriptor::Reference(name) => TSDescriptor::Reference(name.convert(resolve, hoist)),
 
-            GTDescriptor::Tuple(tuple) => TSDescriptor::Tuple(tuple.convert(hoist)),
+            GTDescriptor::Tuple(tuple) => TSDescriptor::Tuple(tuple.convert(resolve, hoist)),
 
-            GTDescriptor::Union(union) => TSDescriptor::Union(union.convert(hoist)),
+            GTDescriptor::Union(union) => TSDescriptor::Union(union.convert(resolve, hoist)),
         }
     }
 }
@@ -50,6 +56,8 @@ mod tests {
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
 
+    use crate::resolve::TSConvertResolve;
+
     use super::*;
 
     #[test]
@@ -61,7 +69,7 @@ mod tests {
                 name: "Name".into(),
                 descriptor: GTPrimitive::Boolean.into(),
             }))
-            .convert(&|definition| {
+            .convert(&TSConvertResolve::new(), &|definition| {
                 let mut hoisted = hoisted.lock().unwrap();
                 hoisted.push(definition);
             }),
@@ -82,7 +90,7 @@ mod tests {
             GTDescriptor::Array(Box::new(GTArray {
                 descriptor: GTPrimitive::Boolean.into(),
             }))
-            .convert(&|_| {}),
+            .convert(&TSConvertResolve::new(), &|_| {}),
             TSDescriptor::Array(Box::new(TSArray {
                 descriptor: TSDescriptor::Primitive(TSPrimitive::Boolean)
             }))
@@ -96,7 +104,7 @@ mod tests {
                 path: "./path/to/module".into(),
                 name: "Name".into()
             })
-            .convert(&|_| {}),
+            .convert(&TSConvertResolve::new(), &|_| {}),
             TSDescriptor::InlineImport(TSInlineImport {
                 path: "./path/to/module".into(),
                 name: "Name".into()
@@ -108,7 +116,7 @@ mod tests {
     fn test_convert_nullable() {
         assert_eq!(
             GTDescriptor::Nullable(Box::new(GTDescriptor::Primitive(GTPrimitive::Boolean)))
-                .convert(&|_| {}),
+                .convert(&TSConvertResolve::new(), &|_| {}),
             TSDescriptor::Union(TSUnion {
                 descriptors: vec![
                     TSDescriptor::Primitive(TSPrimitive::Boolean),
@@ -137,7 +145,7 @@ mod tests {
                     }
                 ]
             })
-            .convert(&|_| {}),
+            .convert(&TSConvertResolve::new(), &|_| {}),
             TSDescriptor::Object(TSObject {
                 properties: vec![
                     TSProperty {
@@ -158,7 +166,8 @@ mod tests {
     #[test]
     fn test_convert_primitive() {
         assert_eq!(
-            GTDescriptor::Primitive(GTPrimitive::Boolean).convert(&|_| {}),
+            GTDescriptor::Primitive(GTPrimitive::Boolean)
+                .convert(&TSConvertResolve::new(), &|_| {}),
             TSDescriptor::Primitive(TSPrimitive::Boolean)
         );
     }
@@ -166,7 +175,7 @@ mod tests {
     #[test]
     fn test_convert_reference() {
         assert_eq!(
-            GTDescriptor::Reference("Name".into()).convert(&|_| {}),
+            GTDescriptor::Reference("Name".into()).convert(&TSConvertResolve::new(), &|_| {}),
             TSDescriptor::Reference("Name".into())
         );
     }
@@ -177,7 +186,7 @@ mod tests {
             GTDescriptor::Tuple(GTTuple {
                 descriptors: vec![GTPrimitive::Boolean.into(), GTPrimitive::String.into(),]
             })
-            .convert(&|_| {}),
+            .convert(&TSConvertResolve::new(), &|_| {}),
             TSDescriptor::Tuple(TSTuple {
                 descriptors: vec![
                     TSDescriptor::Primitive(TSPrimitive::Boolean),
@@ -193,7 +202,7 @@ mod tests {
             GTDescriptor::Union(GTUnion {
                 descriptors: vec![GTPrimitive::Boolean.into(), GTPrimitive::String.into(),]
             })
-            .convert(&|_| {}),
+            .convert(&TSConvertResolve::new(), &|_| {}),
             TSDescriptor::Union(TSUnion {
                 descriptors: vec![
                     TSDescriptor::Primitive(TSPrimitive::Boolean),

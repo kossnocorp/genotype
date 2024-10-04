@@ -1,10 +1,10 @@
 use genotype_lang_ts_tree::{definition::TSDefinition, tuple::TSTuple};
 use genotype_parser::tree::tuple::GTTuple;
 
-use crate::convert::TSConvert;
+use crate::{convert::TSConvert, resolve::TSConvertResolve};
 
 impl TSConvert<TSTuple> for GTTuple {
-    fn convert<HoistFn>(&self, hoist: &HoistFn) -> TSTuple
+    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSTuple
     where
         HoistFn: Fn(TSDefinition),
     {
@@ -12,7 +12,7 @@ impl TSConvert<TSTuple> for GTTuple {
             descriptors: self
                 .descriptors
                 .iter()
-                .map(|descriptor| descriptor.convert(hoist))
+                .map(|descriptor| descriptor.convert(resolve, hoist))
                 .collect(),
         }
     }
@@ -24,6 +24,8 @@ mod tests {
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
 
+    use crate::resolve::TSConvertResolve;
+
     use super::*;
 
     #[test]
@@ -32,7 +34,7 @@ mod tests {
             GTTuple {
                 descriptors: vec![GTPrimitive::Boolean.into(), GTPrimitive::String.into(),]
             }
-            .convert(&|_| {}),
+            .convert(&TSConvertResolve::new(), &|_| {}),
             TSTuple {
                 descriptors: vec![
                     TSDescriptor::Primitive(TSPrimitive::Boolean),

@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use genotype_lang_core_project::{module::GTProjectModuleOut, project::GTProjectOut};
+use genotype_lang_core_project::{module::GTLangProjectModule, project::GTProjectOut};
 use genotype_project::project::GTProject;
 
 use crate::module::TSProjectModule;

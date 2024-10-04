@@ -15,5 +15,6 @@ pub mod path;
 pub mod primitive;
 pub mod property;
 pub mod reference;
+pub mod resolve;
 pub mod tuple;
 pub mod union;

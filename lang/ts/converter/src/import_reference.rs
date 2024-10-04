@@ -4,10 +4,10 @@ use genotype_lang_ts_tree::{
 };
 use genotype_parser::tree::import_reference::GTImportReference;
 
-use crate::convert::TSConvert;
+use crate::{convert::TSConvert, resolve::TSConvertResolve};
 
 impl TSConvert<TSImportReference> for GTImportReference {
-    fn convert<HoistFn>(&self, hoist: &HoistFn) -> TSImportReference
+    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSImportReference
     where
         HoistFn: Fn(TSDefinition),
     {
@@ -17,12 +17,12 @@ impl TSConvert<TSImportReference> for GTImportReference {
             Self::Names(names) => TSImportReference::Named(
                 names
                     .iter()
-                    .map(|name| name.convert(hoist))
+                    .map(|name| name.convert(resolve, hoist))
                     .collect::<Vec<_>>(),
             ),
 
             Self::Name(name) => {
-                TSImportReference::Named(vec![TSImportName::Name(name.convert(hoist))])
+                TSImportReference::Named(vec![TSImportName::Name(name.convert(resolve, hoist))])
             }
         }
     }
@@ -33,13 +33,15 @@ mod tests {
     use genotype_lang_ts_tree::*;
     use pretty_assertions::assert_eq;
 
+    use crate::resolve::TSConvertResolve;
+
     use super::*;
     use genotype_parser::tree::*;
 
     #[test]
     fn test_convert_glob() {
         assert_eq!(
-            GTImportReference::Glob.convert(&|_| {}),
+            GTImportReference::Glob.convert(&TSConvertResolve::new(), &|_| {}),
             TSImportReference::Glob(TSImportGlobAlias::Unresolved)
         );
     }
@@ -51,7 +53,7 @@ mod tests {
                 GTImportName::Name("Name".into()),
                 GTImportName::Alias("Name".into(), "Alias".into())
             ])
-            .convert(&|_| {}),
+            .convert(&TSConvertResolve::new(), &|_| {}),
             TSImportReference::Named(vec![
                 TSImportName::Name("Name".into()),
                 TSImportName::Alias("Name".into(), "Alias".into())
@@ -62,7 +64,7 @@ mod tests {
     #[test]
     fn test_convert_name() {
         assert_eq!(
-            GTImportReference::Name("Name".into()).convert(&|_| {}),
+            GTImportReference::Name("Name".into()).convert(&TSConvertResolve::new(), &|_| {}),
             TSImportReference::Named(vec![TSImportName::Name("Name".into())])
         );
     }

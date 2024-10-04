@@ -1,16 +1,16 @@
 use genotype_lang_ts_tree::{definition::TSDefinition, property::TSProperty};
 use genotype_parser::tree::property::GTProperty;
 
-use crate::convert::TSConvert;
+use crate::{convert::TSConvert, resolve::TSConvertResolve};
 
 impl TSConvert<TSProperty> for GTProperty {
-    fn convert<HoistFn>(&self, hoist: &HoistFn) -> TSProperty
+    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSProperty
     where
         HoistFn: Fn(TSDefinition),
     {
         TSProperty {
-            name: self.name.convert(hoist),
-            descriptor: self.descriptor.convert(hoist),
+            name: self.name.convert(resolve, hoist),
+            descriptor: self.descriptor.convert(resolve, hoist),
             required: self.required,
         }
     }
@@ -33,7 +33,7 @@ mod tests {
                 descriptor: GTPrimitive::String.into(),
                 required: false,
             }
-            .convert(&|_| {}),
+            .convert(&TSConvertResolve::new(), &|_| {}),
             TSProperty {
                 name: "name".into(),
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String),

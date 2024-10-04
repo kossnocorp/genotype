@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use genotype_project::module::GTProjectModule;
 
-pub trait GTProjectModuleOut {
+pub trait GTLangProjectModule {
     fn generate(
         root: &PathBuf,
         module: &GTProjectModule,

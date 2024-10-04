@@ -1,10 +1,10 @@
 use genotype_lang_ts_tree::{definition::TSDefinition, identifier::TSIdentifier};
 use genotype_parser::tree::identifier::GTIdentifier;
 
-use crate::convert::TSConvert;
+use crate::{convert::TSConvert, resolve::TSConvertResolve};
 
 impl TSConvert<TSIdentifier> for GTIdentifier {
-    fn convert<HoistFn>(&self, _hoist: &HoistFn) -> TSIdentifier
+    fn convert<HoistFn>(&self, _resolve: &TSConvertResolve, _hoist: &HoistFn) -> TSIdentifier
     where
         HoistFn: Fn(TSDefinition),
     {
@@ -22,7 +22,7 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             TSIdentifier("Foo".into()),
-            GTIdentifier("Foo".into()).convert(&|_| {}),
+            GTIdentifier("Foo".into()).convert(&TSConvertResolve::new(), &|_| {}),
         );
     }
 }

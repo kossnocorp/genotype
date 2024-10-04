@@ -1,10 +1,10 @@
 use genotype_lang_ts_tree::{definition::TSDefinition, key::TSKey};
 use genotype_parser::tree::key::GTKey;
 
-use crate::convert::TSConvert;
+use crate::{convert::TSConvert, resolve::TSConvertResolve};
 
 impl TSConvert<TSKey> for GTKey {
-    fn convert<HoistFn>(&self, _hoist: &HoistFn) -> TSKey
+    fn convert<HoistFn>(&self, _resolve: &TSConvertResolve, _hoist: &HoistFn) -> TSKey
     where
         HoistFn: Fn(TSDefinition),
     {
@@ -20,6 +20,9 @@ mod tests {
 
     #[test]
     fn test_convert() {
-        assert_eq!(TSKey("foo".into()), GTKey("foo".into()).convert(&|_| {}),);
+        assert_eq!(
+            TSKey("foo".into()),
+            GTKey("foo".into()).convert(&TSConvertResolve::new(), &|_| {}),
+        );
     }
 }

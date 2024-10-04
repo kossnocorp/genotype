@@ -1,10 +1,10 @@
 use genotype_lang_ts_tree::{definition::TSDefinition, path::TSPath};
 use genotype_parser::tree::path::GTPath;
 
-use crate::convert::TSConvert;
+use crate::{convert::TSConvert, resolve::TSConvertResolve};
 
 impl TSConvert<TSPath> for GTPath {
-    fn convert<HoistFn>(&self, _hoist: &HoistFn) -> TSPath
+    fn convert<HoistFn>(&self, _resolve: &TSConvertResolve, _hoist: &HoistFn) -> TSPath
     where
         HoistFn: Fn(TSDefinition),
     {
@@ -22,7 +22,7 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             TSPath("./path/to/module".into()),
-            GTPath::new("./path/to/module".into()).convert(&|_| {}),
+            GTPath::new("./path/to/module".into()).convert(&TSConvertResolve::new(), &|_| {}),
         );
     }
 }

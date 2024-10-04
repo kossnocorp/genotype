@@ -3,8 +3,8 @@ use std::{
     path::PathBuf,
 };
 
-use genotype_lang_core_project::module::GTProjectModuleOut;
-use genotype_lang_ts_converter::module::convert_to_ts_module;
+use genotype_lang_core_project::module::GTLangProjectModule;
+use genotype_lang_ts_converter::{module::TSConvertModule, resolve::TSConvertResolve};
 use genotype_lang_ts_tree::module::TSModule;
 use genotype_project::module::GTProjectModule;
 
@@ -14,7 +14,7 @@ pub struct TSProjectModule {
     pub module: TSModule,
 }
 
-impl GTProjectModuleOut for TSProjectModule {
+impl GTLangProjectModule for TSProjectModule {
     fn generate(
         root: &PathBuf,
         module: &GTProjectModule,
@@ -31,10 +31,11 @@ impl GTProjectModuleOut for TSProjectModule {
             )
             .into();
 
-        Ok(Self {
-            path,
-            module: convert_to_ts_module(&module.module),
-        })
+        let mut resolve = TSConvertResolve::new();
+
+        let module = TSConvertModule::convert(&module.module, &resolve).0;
+
+        Ok(Self { path, module })
     }
 }
 
