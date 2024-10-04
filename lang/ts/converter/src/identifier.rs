@@ -4,11 +4,11 @@ use genotype_parser::tree::identifier::GTIdentifier;
 use crate::{convert::TSConvert, resolve::TSConvertResolve};
 
 impl TSConvert<TSIdentifier> for GTIdentifier {
-    fn convert<HoistFn>(&self, _resolve: &TSConvertResolve, _hoist: &HoistFn) -> TSIdentifier
+    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, _hoist: &HoistFn) -> TSIdentifier
     where
         HoistFn: Fn(TSDefinition),
     {
-        TSIdentifier(self.0.clone())
+        TSIdentifier(resolve.identifiers.get(&self).unwrap_or(&self).0.clone())
     }
 }
 
@@ -19,10 +19,20 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_convert() {
+    fn test_convert_base() {
         assert_eq!(
             TSIdentifier("Foo".into()),
             GTIdentifier("Foo".into()).convert(&TSConvertResolve::new(), &|_| {}),
+        );
+    }
+
+    #[test]
+    fn test_convert_resolve() {
+        let mut resolve = TSConvertResolve::new();
+        resolve.identifiers.insert("Foo".into(), "foo.Bar".into());
+        assert_eq!(
+            TSIdentifier("foo.Bar".into()),
+            GTIdentifier("Foo".into()).convert(&resolve, &|_| {}),
         );
     }
 }

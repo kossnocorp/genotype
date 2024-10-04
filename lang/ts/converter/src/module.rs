@@ -135,11 +135,11 @@ mod tests {
                 doc: None,
                 imports: vec![
                     TSImport {
-                        path: "./path/to/module".into(),
+                        path: "./path/to/module.ts".into(),
                         reference: TSImportReference::Glob(TSImportGlobAlias::Unresolved)
                     },
                     TSImport {
-                        path: "./path/to/module".into(),
+                        path: "./path/to/module.ts".into(),
                         reference: TSImportReference::Named(vec![
                             TSImportName::Name("Name".into()),
                             TSImportName::Alias("Name".into(), "Alias".into())

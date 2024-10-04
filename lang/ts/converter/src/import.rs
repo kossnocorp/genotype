@@ -32,7 +32,7 @@ mod tests {
             }
             .convert(&TSConvertResolve::new(), &|_| {}),
             TSImport {
-                path: "./path/to/module".into(),
+                path: "./path/to/module.ts".into(),
                 reference: TSImportReference::Glob(TSImportGlobAlias::Unresolved)
             }
         );
@@ -50,7 +50,7 @@ mod tests {
             }
             .convert(&TSConvertResolve::new(), &|_| {}),
             TSImport {
-                path: "./path/to/module".into(),
+                path: "./path/to/module.ts".into(),
                 reference: TSImportReference::Named(vec![
                     TSImportName::Name("Name".into()),
                     TSImportName::Alias("Name".into(), "Alias".into())
@@ -68,7 +68,7 @@ mod tests {
             }
             .convert(&TSConvertResolve::new(), &|_| {}),
             TSImport {
-                path: "./path/to/module".into(),
+                path: "./path/to/module.ts".into(),
                 reference: TSImportReference::Named(vec![TSImportName::Name("Name".into())])
             }
         );

@@ -30,7 +30,7 @@ mod tests {
             }
             .convert(&TSConvertResolve::new(), &|_| {}),
             TSInlineImport {
-                path: "./path/to/module".into(),
+                path: "./path/to/module.ts".into(),
                 name: "Name".into(),
             }
         );

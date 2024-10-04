@@ -146,7 +146,7 @@ mod tests {
                         module: TSModule {
                             doc: None,
                             imports: vec![TSImport {
-                                path: "./author".into(),
+                                path: "./author.ts".into(),
                                 reference: TSImportReference::Named(vec![TSImportName::Name(
                                     "Author".into()
                                 )]),

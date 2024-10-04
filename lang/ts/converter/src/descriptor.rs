@@ -106,7 +106,7 @@ mod tests {
             })
             .convert(&TSConvertResolve::new(), &|_| {}),
             TSDescriptor::InlineImport(TSInlineImport {
-                path: "./path/to/module".into(),
+                path: "./path/to/module.ts".into(),
                 name: "Name".into()
             })
         );
