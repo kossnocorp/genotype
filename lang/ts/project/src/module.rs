@@ -1,4 +1,5 @@
 use std::{
+    collections::HashMap,
     hash::{Hash, Hasher},
     path::PathBuf,
 };
@@ -6,7 +7,8 @@ use std::{
 use genotype_lang_core_project::module::GTLangProjectModule;
 use genotype_lang_ts_converter::{module::TSConvertModule, resolve::TSConvertResolve};
 use genotype_lang_ts_tree::module::TSModule;
-use genotype_project::module::GTProjectModule;
+use genotype_parser::tree::GTImportReference;
+use genotype_project::{module::GTProjectModule, GTProject, GTProjectModuleReference};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TSProjectModule {
@@ -16,7 +18,7 @@ pub struct TSProjectModule {
 
 impl GTLangProjectModule for TSProjectModule {
     fn generate(
-        root: &PathBuf,
+        project: &GTProject,
         module: &GTProjectModule,
         out: &PathBuf,
     ) -> Result<Self, Box<dyn std::error::Error>> {
@@ -26,12 +28,52 @@ impl GTLangProjectModule for TSProjectModule {
                 module
                     .path
                     .as_path()
-                    .strip_prefix(root.as_path())?
+                    .strip_prefix(project.root.as_path())?
                     .with_extension("ts"),
             )
             .into();
 
         let mut resolve = TSConvertResolve::new();
+        let mut prefixes: HashMap<String, u8> = HashMap::new();
+
+        for import in module.module.imports.iter() {
+            if let GTImportReference::Glob = import.reference {
+                let references = module
+                    .resolve
+                    .references
+                    .iter()
+                    .filter(|(_, reference)| {
+                        if let GTProjectModuleReference::External(path) = reference {
+                            return import.path == *path;
+                        }
+                        false
+                    })
+                    .collect::<Vec<_>>();
+
+                if references.len() > 0 {
+                    let str = import.path.as_str();
+                    let name = str.split('/').last().unwrap_or(str).to_string();
+                    let prefix = if let Some(count) = prefixes.get(&name) {
+                        let prefix = format!("{}{}", name, count);
+                        prefixes.insert(name.clone(), count + 1);
+                        prefix
+                    } else {
+                        prefixes.insert(name.clone(), 2);
+                        name
+                    };
+
+                    resolve.globs.insert(import.path.clone(), prefix.clone());
+
+                    references.iter().for_each(|(reference, _)| {
+                        let identifier = (*reference).clone();
+                        let alias = format!("{}.{}", prefix, identifier.0);
+                        resolve
+                            .identifiers
+                            .insert(identifier, alias.as_str().into());
+                    });
+                }
+            }
+        }
 
         let module = TSConvertModule::convert(&module.module, &resolve).0;
 

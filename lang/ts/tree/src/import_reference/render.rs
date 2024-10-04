@@ -7,7 +7,7 @@ impl GTRender for TSImportReference {
         match self {
             TSImportReference::Default(name) => name.clone(),
 
-            TSImportReference::Glob(name) => format!("* as {}", name.render(indent)),
+            TSImportReference::Glob(name) => format!("* as {}", name),
 
             TSImportReference::Named(names) => {
                 let names = names
@@ -24,9 +24,7 @@ impl GTRender for TSImportReference {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        import_glob_alias::TSImportGlobAlias, import_name::TSImportName, indent::ts_indent,
-    };
+    use crate::*;
 
     #[test]
     fn test_render_default() {
@@ -39,9 +37,8 @@ mod tests {
     #[test]
     fn test_render_glob() {
         assert_eq!(
-            TSImportReference::Glob(TSImportGlobAlias::Resolved("Name".into()))
-                .render(&ts_indent()),
-            "* as Name"
+            TSImportReference::Glob("name".into()).render(&ts_indent()),
+            "* as name"
         );
     }
 

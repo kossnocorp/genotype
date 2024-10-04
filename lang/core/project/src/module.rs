@@ -1,10 +1,10 @@
 use std::path::PathBuf;
 
-use genotype_project::module::GTProjectModule;
+use genotype_project::{module::GTProjectModule, GTProject};
 
 pub trait GTLangProjectModule {
     fn generate(
-        root: &PathBuf,
+        project: &GTProject,
         module: &GTProjectModule,
         out: &PathBuf,
     ) -> Result<Self, Box<dyn std::error::Error>>

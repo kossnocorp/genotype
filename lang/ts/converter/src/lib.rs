@@ -6,7 +6,6 @@ pub mod doc;
 pub mod identifier;
 pub mod import;
 pub mod import_name;
-pub mod import_reference;
 pub mod inline_import;
 pub mod key;
 pub mod module;

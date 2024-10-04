@@ -36,10 +36,10 @@ mod tests {
         assert_eq!(
             TSImport {
                 path: "../path/to/module.ts".into(),
-                reference: TSImportReference::Glob(TSImportGlobAlias::Resolved("Name".into())),
+                reference: TSImportReference::Glob("name".into()),
             }
             .render(&ts_indent()),
-            r#"import * as Name from "../path/to/module.ts";"#
+            r#"import * as name from "../path/to/module.ts";"#
         );
     }
 

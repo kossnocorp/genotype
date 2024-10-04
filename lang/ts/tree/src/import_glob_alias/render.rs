@@ -4,11 +4,7 @@ use super::TSImportGlobAlias;
 
 impl GTRender for TSImportGlobAlias {
     fn render(&self, _indent: &GTIndent) -> String {
-        match self {
-            TSImportGlobAlias::Resolved(name) => name.clone(),
-
-            TSImportGlobAlias::Unresolved => panic!("Tried to render unresolved glob import alias"),
-        }
+        self.0.clone()
     }
 }
 
@@ -20,7 +16,7 @@ mod tests {
     #[test]
     fn test_render_resolved() {
         assert_eq!(
-            TSImportGlobAlias::Resolved("Name".into()).render(&ts_indent()),
+            TSImportGlobAlias("Name".into()).render(&ts_indent()),
             "Name"
         );
     }

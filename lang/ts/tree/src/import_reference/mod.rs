@@ -1,10 +1,10 @@
-use crate::{import_glob_alias::TSImportGlobAlias, import_name::TSImportName};
+use crate::import_name::TSImportName;
 
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum TSImportReference {
     Default(String),
-    Glob(TSImportGlobAlias),
+    Glob(String),
     Named(Vec<TSImportName>),
 }

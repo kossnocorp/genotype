@@ -49,6 +49,11 @@ mod tests {
 
     #[test]
     fn test_convert() {
+        let mut resolve = TSConvertResolve::new();
+        resolve
+            .globs
+            .insert("./path/to/module".into(), "module".into());
+
         assert_eq!(
             TSConvertModule::convert(
                 &GTModule {
@@ -129,14 +134,14 @@ mod tests {
                         },
                     ],
                 },
-                &TSConvertResolve::new()
+                &resolve
             ),
             TSConvertModule(TSModule {
                 doc: None,
                 imports: vec![
                     TSImport {
                         path: "./path/to/module.ts".into(),
-                        reference: TSImportReference::Glob(TSImportGlobAlias::Unresolved)
+                        reference: TSImportReference::Glob("module".into())
                     },
                     TSImport {
                         path: "./path/to/module.ts".into(),
