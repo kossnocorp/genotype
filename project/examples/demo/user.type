@@ -1,0 +1,6 @@
+use ./base/*
+
+User = {
+  name: Name
+  email: string
+}

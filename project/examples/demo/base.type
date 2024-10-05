@@ -1,0 +1,8 @@
+Name = {
+  first: string,
+  last?: string
+}
+
+Age = int
+
+Money = float

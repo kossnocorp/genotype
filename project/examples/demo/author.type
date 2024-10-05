@@ -1,0 +1,6 @@
+use ./base/*
+
+Author = {
+  name: Name
+  age?: Age
+}
