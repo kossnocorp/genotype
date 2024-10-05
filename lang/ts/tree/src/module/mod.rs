@@ -1,6 +1,6 @@
 use crate::{definition::TSDefinition, import::TSImport};
 
-mod render;
+pub mod render;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TSModule {

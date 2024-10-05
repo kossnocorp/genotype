@@ -1,27 +1,48 @@
+use genotype_lang_core_tree::render::GTRender;
+use genotype_lang_ts_tree::ts_indent;
 use std::path::PathBuf;
 
-use genotype_lang_core_project::{module::GTLangProjectModule, project::GTProjectOut};
+use genotype_lang_core_project::{
+    module::{GTLangProjectModule, GTLangProjectModuleRender},
+    project::{GTLangProject, GTLangProjectRender},
+};
 use genotype_project::project::GTProject;
 
 use crate::module::TSProjectModule;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TSProject {
-    pub out: PathBuf,
+    pub root: PathBuf,
     pub modules: Vec<TSProjectModule>,
 }
 
-impl GTProjectOut for TSProject {
+impl GTLangProject for TSProject {
     fn generate(project: &GTProject, out: &str) -> Result<Self, Box<dyn std::error::Error>> {
-        let out = project.root.join(out);
+        let root = project.root.join(out);
 
         let modules = project
             .modules
             .iter()
-            .map(|module| TSProjectModule::generate(&project, module, &out))
+            .map(|module| TSProjectModule::generate(&project, module, &root))
             .collect::<Result<_, _>>()?;
 
-        Ok(Self { out, modules })
+        Ok(Self { root, modules })
+    }
+
+    fn render(&self) -> Result<GTLangProjectRender, Box<dyn std::error::Error>> {
+        let modules = self
+            .modules
+            .iter()
+            .map(|module| GTLangProjectModuleRender {
+                path: module.path.clone(),
+                code: module.module.render(&ts_indent()),
+            })
+            .collect::<Vec<_>>();
+
+        Ok(GTLangProjectRender {
+            root: self.root.clone(),
+            modules,
+        })
     }
 }
 
@@ -30,11 +51,9 @@ mod tests {
     use std::{path::PathBuf, sync::Arc};
 
     use genotype_lang_ts_tree::*;
-    use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use genotype_project::*;
 
     #[test]
     fn test_convert_base() {
@@ -44,7 +63,7 @@ mod tests {
         assert_eq!(
             TSProject::generate(&project, "out").unwrap(),
             TSProject {
-                out: root.as_path().join("out").into(),
+                root: root.as_path().join("out").into(),
                 modules: vec![
                     TSProjectModule {
                         path: root.as_path().join("out/author.ts").into(),
@@ -101,7 +120,7 @@ mod tests {
         assert_eq!(
             TSProject::generate(&project, "out").unwrap(),
             TSProject {
-                out: root.as_path().join("out").into(),
+                root: root.as_path().join("out").into(),
                 modules: vec![
                     TSProjectModule {
                         path: root.as_path().join("out/author.ts").into(),
@@ -158,6 +177,43 @@ mod tests {
                     },
                 ]
             },
+        )
+    }
+
+    #[test]
+    fn test_render() {
+        let root = Arc::new(PathBuf::from("./examples/basic").canonicalize().unwrap());
+        let project = GTProject::load("./examples/basic", "*.type").unwrap();
+
+        assert_eq!(
+            TSProject::generate(&project, "out")
+                .unwrap()
+                .render()
+                .unwrap(),
+            GTLangProjectRender {
+                root: root.join("out"),
+                modules: vec![
+                    GTLangProjectModuleRender {
+                        path: root.join("out/author.ts"),
+                        code: r#"export interface Author {
+  name: string;
+}
+"#
+                        .into()
+                    },
+                    GTLangProjectModuleRender {
+                        path: root.join("out/book.ts"),
+                        code: r#"import { Author } from "./author.ts";
+
+export interface Book {
+  title: string;
+  author: Author;
+}
+"#
+                        .into()
+                    }
+                ]
+            }
         )
     }
 }

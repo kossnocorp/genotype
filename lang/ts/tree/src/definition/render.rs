@@ -49,7 +49,10 @@ mod tests {
                 ]
             })
             .render(&ts_indent()),
-            "export interface Name {\n  name: string;\n  age?: number\n}"
+            r#"export interface Name {
+  name: string;
+  age?: number;
+}"#
         );
     }
 }

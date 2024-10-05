@@ -10,6 +10,7 @@ impl GTRender for TSModule {
             .map(|import| import.render(indent))
             .collect::<Vec<String>>()
             .join("\n");
+        let has_imports = !imports.is_empty();
 
         let definitions = self
             .definitions
@@ -17,8 +18,21 @@ impl GTRender for TSModule {
             .map(|definition| definition.render(indent))
             .collect::<Vec<String>>()
             .join("\n\n");
+        let has_definitions = !definitions.is_empty();
 
-        format!("{}\n\n{}\n", imports, definitions)
+        let mut str = imports;
+
+        if has_imports && has_definitions {
+            str.push_str("\n\n");
+        }
+
+        str.push_str(&definitions);
+
+        if has_imports || has_definitions {
+            str.push_str("\n");
+        }
+
+        str
     }
 }
 
@@ -77,7 +91,7 @@ export type Name = string;
 
 export interface Name {
   name: string;
-  age?: number
+  age?: number;
 }
 "#
         );

@@ -11,3 +11,9 @@ pub trait GTLangProjectModule {
     where
         Self: Sized;
 }
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct GTLangProjectModuleRender {
+    pub path: PathBuf,
+    pub code: String,
+}

@@ -8,9 +8,9 @@ impl GTRender for TSInterface {
         let properties = self
             .properties
             .iter()
-            .map(|property| property.render(&prop_indent))
+            .map(|property| property.render(&prop_indent) + ";")
             .collect::<Vec<String>>()
-            .join(";\n");
+            .join("\n");
         format!(
             "{}interface {} {}\n{}{}{}",
             indent.string,
@@ -25,6 +25,8 @@ impl GTRender for TSInterface {
 
 #[cfg(test)]
 mod tests {
+
+    use pretty_assertions::assert_eq;
 
     use super::*;
     use crate::{
@@ -62,7 +64,10 @@ mod tests {
                 ]
             }
             .render(&ts_indent()),
-            "interface Name {\n  name: string;\n  age?: number\n}"
+            r#"interface Name {
+  name: string;
+  age?: number;
+}"#
         );
     }
 
@@ -85,7 +90,10 @@ mod tests {
                 ]
             }
             .render(&ts_indent().increment()),
-            "  interface Name {\n    name: string;\n    age?: number\n  }"
+            r#"  interface Name {
+    name: string;
+    age?: number;
+  }"#
         );
     }
 }
