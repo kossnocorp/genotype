@@ -1,234 +1,354 @@
 {
-  "scopeName": "source.genotype",
-  "name": "Genotype",
   "fileTypes": ["type"],
+  "name": "Genotype",
+  "scopeName": "source.genotype",
   "patterns": [
-    { "include": "#moduleDoc" },
-    { "include": "#lineDoc" },
-    { "include": "#comments" },
-    { "include": "#imports" },
-    { "include": "#alias" }
+    {
+      "include": "#moduleDoc"
+    },
+    {
+      "include": "#lineDoc"
+    },
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#imports"
+    },
+    {
+      "include": "#alias"
+    }
   ],
   "repository": {
-    "moduleDoc": {
+    "alias": {
       "patterns": [
         {
-          "name": "comment.block.documentation.genotype",
-          "match": "^\\s*//!.*$"
+          "begin": "^\\s*(\\b[A-Za-z][A-Za-z0-9]*\\b)\\s*(=)",
+          "end": "(?=$)",
+          "name": "meta.alias.genotype",
+          "patterns": [
+            {
+              "include": "#descriptor"
+            },
+            {
+              "include": "#comments"
+            }
+          ],
+          "beginCaptures": {
+            "1": {
+              "name": "entity.name.type.alias.genotype"
+            },
+            "2": {
+              "name": "keyword.operator.assignment.genotype"
+            }
+          }
         }
       ]
     },
-    "lineDoc": {
+    "array": {
+      "begin": "\\[",
+      "end": "\\]",
+      "name": "meta.array.genotype",
       "patterns": [
         {
-          "name": "comment.line.documentation.genotype",
-          "match": "^\\s*///.*$"
+          "include": "#descriptor"
+        },
+        {
+          "include": "#comments"
         }
-      ]
+      ],
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.brackets.begin.genotype"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.brackets.end.genotype"
+        }
+      }
     },
     "comments": {
       "patterns": [
-        { "include": "#lineDoc" },
         {
-          "name": "comment.line.double-slash.genotype",
-          "match": "^\\s*//[^/!].*$"
+          "include": "#lineDoc"
         },
         {
-          "name": "comment.block.genotype",
+          "match": "^\\s*//[^/!].*$",
+          "name": "comment.line.double-slash.genotype"
+        },
+        {
           "begin": "/\\*",
           "end": "\\*/",
-          "patterns": [{ "include": "#comments" }]
+          "name": "comment.block.genotype",
+          "patterns": [
+            {
+              "include": "#comments"
+            }
+          ]
+        }
+      ]
+    },
+    "descriptor": {
+      "patterns": [
+        {
+          "include": "#primitive"
+        },
+        {
+          "include": "#nullableOperator"
+        },
+        {
+          "include": "#object"
+        },
+        {
+          "include": "#array"
+        },
+        {
+          "include": "#tuple"
+        },
+        {
+          "include": "#inlineImport"
+        },
+        {
+          "include": "#identifier"
+        },
+        {
+          "include": "#comments"
+        }
+      ]
+    },
+    "identifier": {
+      "match": "\\b(?!as\\b|string\\b|int\\b|float\\b|boolean\\b)[A-Za-z][A-Za-z0-9]*\\b",
+      "name": "entity.name.type.genotype"
+    },
+    "importReference": {
+      "patterns": [
+        {
+          "match": "\\*",
+          "name": "keyword.operator.glob.genotype"
+        },
+        {
+          "begin": "\\{",
+          "end": "\\}",
+          "name": "meta.import.names.genotype",
+          "patterns": [
+            {
+              "match": "\\b(?!as\\b)([A-Za-z][A-Za-z0-9]*)\\b\\s*(as)\\s*\\b([A-Za-z][A-Za-z0-9]*)\\b",
+              "name": "meta.aliased.type.genotype",
+              "captures": {
+                "1": {
+                  "name": "meta.aliased.type.genotype"
+                },
+                "2": {
+                  "name": "keyword.control.import.alias.genotype"
+                },
+                "3": {
+                  "name": "entity.name.type.alias.genotype"
+                }
+              }
+            },
+            {
+              "match": "\\b(?!as\\b)([A-Za-z][A-Za-z0-9]*)\\b",
+              "name": "meta.definition.type.genotype",
+              "captures": {
+                "1": {
+                  "name": "entity.name.type.genotype"
+                }
+              }
+            },
+            {
+              "match": ",",
+              "name": "punctuation.separator.comma.genotype"
+            },
+            {
+              "include": "#comments"
+            }
+          ],
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.section.block.begin.genotype"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.section.block.end.genotype"
+            }
+          }
+        },
+        {
+          "match": "\\b(?!as\\b)([A-Za-z][A-Za-z0-9]*)\\b",
+          "name": "meta.definition.type.genotype",
+          "captures": {
+            "1": {
+              "name": "entity.name.type.genotype"
+            }
+          }
         }
       ]
     },
     "imports": {
       "patterns": [
         {
-          "name": "meta.import.genotype",
           "begin": "^\\s*(use)\\b",
-          "beginCaptures": {
-            "1": { "name": "keyword.control.import.genotype" }
-          },
           "end": "(?=$)",
+          "name": "meta.import.genotype",
           "patterns": [
-            { "include": "#path" },
-            { "include": "#importReference" },
-            { "include": "#comments" }
-          ]
-        }
-      ]
-    },
-    "path": {
-      "patterns": [
-        {
-          "name": "string.path.genotype",
-          "match": "((?:\\.\\./|\\./|[^/\\s]+/)+)"
-        }
-      ]
-    },
-    "importReference": {
-      "patterns": [
-        {
-          "name": "keyword.operator.glob.genotype",
-          "match": "\\*"
-        },
-        {
-          "name": "meta.import.names.genotype",
-          "begin": "\\{",
+            {
+              "include": "#path"
+            },
+            {
+              "include": "#importReference"
+            },
+            {
+              "include": "#comments"
+            }
+          ],
           "beginCaptures": {
-            "0": { "name": "punctuation.section.block.begin.genotype" }
-          },
-          "end": "\\}",
-          "endCaptures": {
-            "0": { "name": "punctuation.section.block.end.genotype" }
-          },
-          "patterns": [
-            {
-              "name": "meta.aliased.type.genotype",
-              "match": "\\b(?!as\\b)([A-Za-z][A-Za-z0-9]*)\\b\\s*(as)\\s*\\b([A-Za-z][A-Za-z0-9]*)\\b",
-              "captures": {
-                "1": { "name": "meta.aliased.type.genotype" },
-                "2": { "name": "keyword.control.import.alias.genotype" },
-                "3": { "name": "entity.name.type.alias.genotype" }
-              }
-            },
-            {
-              "name": "meta.definition.type.genotype",
-              "match": "\\b(?!as\\b)([A-Za-z][A-Za-z0-9]*)\\b",
-              "captures": {
-                "1": { "name": "entity.name.type.genotype" }
-              }
-            },
-            {
-              "name": "punctuation.separator.comma.genotype",
-              "match": ","
-            },
-            { "include": "#comments" }
-          ]
-        },
-        {
-          "name": "meta.definition.type.genotype",
-          "match": "\\b(?!as\\b)([A-Za-z][A-Za-z0-9]*)\\b",
-          "captures": {
-            "1": { "name": "entity.name.type.genotype" }
+            "1": {
+              "name": "keyword.control.import.genotype"
+            }
           }
         }
       ]
     },
-    "alias": {
+    "inlineImport": {
+      "match": "((?:\\.\\./|\\./|[^/\\s]+/)+)([A-Za-z][A-Za-z0-9]*)",
+      "name": "meta.inline-import.genotype",
+      "captures": {
+        "1": {
+          "name": "entity.name.import.path.genotype"
+        },
+        "2": {
+          "name": "entity.name.type.genotype"
+        }
+      }
+    },
+    "lineDoc": {
       "patterns": [
         {
-          "name": "meta.alias.genotype",
-          "begin": "^\\s*(\\b[A-Za-z][A-Za-z0-9]*\\b)\\s*(=)",
-          "beginCaptures": {
-            "1": { "name": "entity.name.type.alias.genotype" },
-            "2": { "name": "keyword.operator.assignment.genotype" }
-          },
-          "end": "(?=$)",
-          "patterns": [{ "include": "#descriptor" }, { "include": "#comments" }]
+          "match": "^\\s*///.*$",
+          "name": "comment.line.documentation.genotype"
         }
       ]
     },
-    "descriptor": {
+    "moduleDoc": {
       "patterns": [
-        { "include": "#primitive" },
-        { "include": "#nullableOperator" },
-        { "include": "#object" },
-        { "include": "#array" },
-        { "include": "#tuple" },
-        { "include": "#inlineImport" },
-        { "include": "#identifier" },
-        { "include": "#comments" }
+        {
+          "match": "^\\s*//!.*$",
+          "name": "comment.block.documentation.genotype"
+        }
+      ]
+    },
+    "nullableOperator": {
+      "match": "\\?",
+      "name": "keyword.operator.nullable.genotype"
+    },
+    "object": {
+      "begin": "\\{",
+      "end": "\\}",
+      "name": "meta.object.genotype",
+      "patterns": [
+        {
+          "include": "#properties"
+        },
+        {
+          "include": "#comments"
+        }
+      ],
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.block.begin.genotype"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.block.end.genotype"
+        }
+      }
+    },
+    "path": {
+      "patterns": [
+        {
+          "match": "((?:\\.\\./|\\./|[^/\\s]+/)+)",
+          "name": "string.path.genotype"
+        }
       ]
     },
     "primitive": {
-      "name": "storage.type.primitive.genotype",
-      "match": "\\b(string|int|float|boolean)\\b"
-    },
-    "nullableOperator": {
-      "name": "keyword.operator.nullable.genotype",
-      "match": "\\?"
-    },
-    "object": {
-      "name": "meta.object.genotype",
-      "begin": "\\{",
-      "beginCaptures": {
-        "0": { "name": "punctuation.section.block.begin.genotype" }
-      },
-      "end": "\\}",
-      "endCaptures": {
-        "0": { "name": "punctuation.section.block.end.genotype" }
-      },
-      "patterns": [{ "include": "#properties" }, { "include": "#comments" }]
+      "match": "\\b(string|int|float|boolean)\\b",
+      "name": "storage.type.primitive.genotype"
     },
     "properties": {
       "patterns": [
-        { "include": "#lineDoc" },
-        { "include": "#property" },
         {
-          "name": "punctuation.separator.comma.genotype",
-          "match": ","
+          "include": "#lineDoc"
         },
-        { "include": "#comments" }
+        {
+          "include": "#property"
+        },
+        {
+          "match": ",",
+          "name": "punctuation.separator.comma.genotype"
+        },
+        {
+          "include": "#comments"
+        }
       ]
     },
     "property": {
       "patterns": [
         {
-          "name": "meta.property.genotype",
           "begin": "\\s*(\\b[A-Za-z][A-Za-z0-9]*\\b)(\\??)(:|\\?:)",
-          "beginCaptures": {
-            "1": { "name": "variable.other.property.genotype" },
-            "2": { "name": "keyword.operator.optional.genotype" },
-            "3": { "name": "punctuation.separator.key-value.genotype" }
-          },
           "end": "(?=,|\\}|$)",
-          "patterns": [{ "include": "#descriptor" }, { "include": "#comments" }]
+          "name": "meta.property.genotype",
+          "patterns": [
+            {
+              "include": "#descriptor"
+            },
+            {
+              "include": "#comments"
+            }
+          ],
+          "beginCaptures": {
+            "1": {
+              "name": "variable.other.property.genotype"
+            },
+            "2": {
+              "name": "keyword.operator.optional.genotype"
+            },
+            "3": {
+              "name": "punctuation.separator.key-value.genotype"
+            }
+          }
         }
       ]
     },
-    "array": {
-      "name": "meta.array.genotype",
-      "begin": "\\[",
-      "beginCaptures": {
-        "0": { "name": "punctuation.section.brackets.begin.genotype" }
-      },
-      "end": "\\]",
-      "endCaptures": {
-        "0": { "name": "punctuation.section.brackets.end.genotype" }
-      },
-      "patterns": [{ "include": "#descriptor" }, { "include": "#comments" }]
-    },
     "tuple": {
-      "name": "meta.tuple.genotype",
       "begin": "\\(",
-      "beginCaptures": {
-        "0": { "name": "punctuation.section.group.begin.genotype" }
-      },
       "end": "\\)",
-      "endCaptures": {
-        "0": { "name": "punctuation.section.group.end.genotype" }
-      },
+      "name": "meta.tuple.genotype",
       "patterns": [
-        { "include": "#descriptor" },
         {
-          "name": "punctuation.separator.comma.genotype",
-          "match": ","
+          "include": "#descriptor"
         },
-        { "include": "#comments" }
-      ]
-    },
-    "inlineImport": {
-      "name": "meta.inline-import.genotype",
-      "match": "((?:\\.\\./|\\./|[^/\\s]+/)+)([A-Za-z][A-Za-z0-9]*)",
-      "captures": {
-        "1": { "name": "entity.name.import.path.genotype" },
-        "2": { "name": "entity.name.type.genotype" }
+        {
+          "match": ",",
+          "name": "punctuation.separator.comma.genotype"
+        },
+        {
+          "include": "#comments"
+        }
+      ],
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.group.begin.genotype"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.group.end.genotype"
+        }
       }
-    },
-    "identifier": {
-      "name": "entity.name.type.genotype",
-      "match": "\\b(?!as\\b|string\\b|int\\b|float\\b|boolean\\b)[A-Za-z][A-Za-z0-9]*\\b"
     }
   }
 }

@@ -1,0 +1,5 @@
+build:
+  toml2json ./src/syntax.toml --pretty > ./syntaxes/genotype.tmLanguage.json
+
+install:
+  cargo install toml2json

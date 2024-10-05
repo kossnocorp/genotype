@@ -1,0 +1,262 @@
+scopeName = "source.genotype"
+name = "Genotype"
+fileTypes = ["type"]
+
+[[patterns]]
+include = "#moduleDoc"
+
+[[patterns]]
+include = "#lineDoc"
+
+[[patterns]]
+include = "#comments"
+
+[[patterns]]
+include = "#imports"
+
+[[patterns]]
+include = "#alias"
+
+[[repository.moduleDoc.patterns]]
+name = "comment.block.documentation.genotype"
+match = "^\\s*//!.*$"
+
+[[repository.lineDoc.patterns]]
+name = "comment.line.documentation.genotype"
+match = "^\\s*///.*$"
+
+[[repository.comments.patterns]]
+include = "#lineDoc"
+
+[[repository.comments.patterns]]
+name = "comment.line.double-slash.genotype"
+match = "^\\s*//[^/!].*$"
+
+[[repository.comments.patterns]]
+name = "comment.block.genotype"
+begin = "/\\*"
+end = "\\*/"
+
+[[repository.comments.patterns.patterns]]
+include = "#comments"
+
+[[repository.imports.patterns]]
+name = "meta.import.genotype"
+begin = "^\\s*(use)\\b"
+end = "(?=$)"
+
+[repository.imports.patterns.beginCaptures.1]
+name = "keyword.control.import.genotype"
+
+[[repository.imports.patterns.patterns]]
+include = "#path"
+
+[[repository.imports.patterns.patterns]]
+include = "#importReference"
+
+[[repository.imports.patterns.patterns]]
+include = "#comments"
+
+[[repository.path.patterns]]
+name = "string.path.genotype"
+match = "((?:\\.\\./|\\./|[^/\\s]+/)+)"
+
+[[repository.importReference.patterns]]
+name = "keyword.operator.glob.genotype"
+match = "\\*"
+
+[[repository.importReference.patterns]]
+name = "meta.import.names.genotype"
+begin = "\\{"
+end = "\\}"
+
+[repository.importReference.patterns.beginCaptures.0]
+name = "punctuation.section.block.begin.genotype"
+
+[repository.importReference.patterns.endCaptures.0]
+name = "punctuation.section.block.end.genotype"
+
+[[repository.importReference.patterns.patterns]]
+name = "meta.aliased.type.genotype"
+match = "\\b(?!as\\b)([A-Za-z][A-Za-z0-9]*)\\b\\s*(as)\\s*\\b([A-Za-z][A-Za-z0-9]*)\\b"
+
+[repository.importReference.patterns.patterns.captures.1]
+name = "meta.aliased.type.genotype"
+
+[repository.importReference.patterns.patterns.captures.2]
+name = "keyword.control.import.alias.genotype"
+
+[repository.importReference.patterns.patterns.captures.3]
+name = "entity.name.type.alias.genotype"
+
+[[repository.importReference.patterns.patterns]]
+name = "meta.definition.type.genotype"
+match = "\\b(?!as\\b)([A-Za-z][A-Za-z0-9]*)\\b"
+
+[repository.importReference.patterns.patterns.captures.1]
+name = "entity.name.type.genotype"
+
+[[repository.importReference.patterns.patterns]]
+name = "punctuation.separator.comma.genotype"
+match = ","
+
+[[repository.importReference.patterns.patterns]]
+include = "#comments"
+
+[[repository.importReference.patterns]]
+name = "meta.definition.type.genotype"
+match = "\\b(?!as\\b)([A-Za-z][A-Za-z0-9]*)\\b"
+
+[repository.importReference.patterns.captures.1]
+name = "entity.name.type.genotype"
+
+[[repository.alias.patterns]]
+name = "meta.alias.genotype"
+begin = "^\\s*(\\b[A-Za-z][A-Za-z0-9]*\\b)\\s*(=)"
+end = "(?=$)"
+
+[repository.alias.patterns.beginCaptures.1]
+name = "entity.name.type.alias.genotype"
+
+[repository.alias.patterns.beginCaptures.2]
+name = "keyword.operator.assignment.genotype"
+
+[[repository.alias.patterns.patterns]]
+include = "#descriptor"
+
+[[repository.alias.patterns.patterns]]
+include = "#comments"
+
+[[repository.descriptor.patterns]]
+include = "#primitive"
+
+[[repository.descriptor.patterns]]
+include = "#nullableOperator"
+
+[[repository.descriptor.patterns]]
+include = "#object"
+
+[[repository.descriptor.patterns]]
+include = "#array"
+
+[[repository.descriptor.patterns]]
+include = "#tuple"
+
+[[repository.descriptor.patterns]]
+include = "#inlineImport"
+
+[[repository.descriptor.patterns]]
+include = "#identifier"
+
+[[repository.descriptor.patterns]]
+include = "#comments"
+
+[repository.primitive]
+name = "storage.type.primitive.genotype"
+match = "\\b(string|int|float|boolean)\\b"
+
+[repository.nullableOperator]
+name = "keyword.operator.nullable.genotype"
+match = "\\?"
+
+[repository.object]
+name = "meta.object.genotype"
+begin = "\\{"
+end = "\\}"
+
+[repository.object.beginCaptures.0]
+name = "punctuation.section.block.begin.genotype"
+
+[repository.object.endCaptures.0]
+name = "punctuation.section.block.end.genotype"
+
+[[repository.object.patterns]]
+include = "#properties"
+
+[[repository.object.patterns]]
+include = "#comments"
+
+[[repository.properties.patterns]]
+include = "#lineDoc"
+
+[[repository.properties.patterns]]
+include = "#property"
+
+[[repository.properties.patterns]]
+name = "punctuation.separator.comma.genotype"
+match = ","
+
+[[repository.properties.patterns]]
+include = "#comments"
+
+[[repository.property.patterns]]
+name = "meta.property.genotype"
+begin = "\\s*(\\b[A-Za-z][A-Za-z0-9]*\\b)(\\??)(:|\\?:)"
+end = "(?=,|\\}|$)"
+
+[repository.property.patterns.beginCaptures.1]
+name = "variable.other.property.genotype"
+
+[repository.property.patterns.beginCaptures.2]
+name = "keyword.operator.optional.genotype"
+
+[repository.property.patterns.beginCaptures.3]
+name = "punctuation.separator.key-value.genotype"
+
+[[repository.property.patterns.patterns]]
+include = "#descriptor"
+
+[[repository.property.patterns.patterns]]
+include = "#comments"
+
+[repository.array]
+name = "meta.array.genotype"
+begin = "\\["
+end = "\\]"
+
+[repository.array.beginCaptures.0]
+name = "punctuation.section.brackets.begin.genotype"
+
+[repository.array.endCaptures.0]
+name = "punctuation.section.brackets.end.genotype"
+
+[[repository.array.patterns]]
+include = "#descriptor"
+
+[[repository.array.patterns]]
+include = "#comments"
+
+[repository.tuple]
+name = "meta.tuple.genotype"
+begin = "\\("
+end = "\\)"
+
+[repository.tuple.beginCaptures.0]
+name = "punctuation.section.group.begin.genotype"
+
+[repository.tuple.endCaptures.0]
+name = "punctuation.section.group.end.genotype"
+
+[[repository.tuple.patterns]]
+include = "#descriptor"
+
+[[repository.tuple.patterns]]
+name = "punctuation.separator.comma.genotype"
+match = ","
+
+[[repository.tuple.patterns]]
+include = "#comments"
+
+[repository.inlineImport]
+name = "meta.inline-import.genotype"
+match = "((?:\\.\\./|\\./|[^/\\s]+/)+)([A-Za-z][A-Za-z0-9]*)"
+
+[repository.inlineImport.captures.1]
+name = "entity.name.import.path.genotype"
+
+[repository.inlineImport.captures.2]
+name = "entity.name.type.genotype"
+
+[repository.identifier]
+name = "entity.name.type.genotype"
+match = "\\b(?!as\\b|string\\b|int\\b|float\\b|boolean\\b)[A-Za-z][A-Za-z0-9]*\\b"
