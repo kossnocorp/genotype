@@ -10,4 +10,6 @@ members = [
   "parser",
   "project",
   "visitor",
+  "writer",
+  "cli",
 ]

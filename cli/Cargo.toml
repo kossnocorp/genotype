@@ -1,0 +1,14 @@
+[package]
+name = "genotype_cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+genotype_project = { path = "../project" }
+genotype_writer = { path = "../writer" }
+genotype_lang_core_project = { path = "../lang/core/project" }
+genotype_lang_ts_project = { path = "../lang/ts/project" }
+clap = { version = "4.5.19", features = ["derive"] }
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"

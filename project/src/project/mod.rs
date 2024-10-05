@@ -78,7 +78,6 @@ fn process_module(
         let root = Arc::clone(&root);
         let processed_paths = Arc::clone(&processed_paths);
         let modules = Arc::clone(&modules);
-        println!("{:?}", path);
 
         scope.spawn(|scope| {
             process_module(root, path, scope, processed_paths, modules);
