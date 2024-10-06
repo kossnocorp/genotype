@@ -1,5 +1,7 @@
 {
-  "fileTypes": ["type"],
+  "fileTypes": [
+    "type"
+  ],
   "name": "Genotype",
   "scopeName": "source.genotype",
   "patterns": [
