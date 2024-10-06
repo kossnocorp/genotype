@@ -2,9 +2,13 @@
 name = "genotype_lang_core_project"
 version = "0.1.0"
 edition = "2021"
+description = "Genotype language target project crate"
+authors = ["Sasha Koss <koss@nocorp.me>"]
+license = "MIT"
+repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_project = { path = "../../../project" }
+genotype_project = { version = "0.1.0", path = "../../../project" }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

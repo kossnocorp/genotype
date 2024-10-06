@@ -2,14 +2,18 @@
 name = "genotype_lang_ts_project"
 version = "0.1.0"
 edition = "2021"
+description = "Genotype language TypeScript target project crate"
+authors = ["Sasha Koss <koss@nocorp.me>"]
+license = "MIT"
+repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_parser = { path = "../../../parser" }
-genotype_project = { path = "../../../project" }
-genotype_lang_core_tree = { path = "../../core/tree" }
-genotype_lang_core_project = { path = "../../core/project" }
-genotype_lang_ts_tree = { path = "../tree" }
-genotype_lang_ts_converter = { path = "../converter" }
+genotype_parser = { version = "0.1.1", path = "../../../parser" }
+genotype_project = { version = "0.1.0", path = "../../../project" }
+genotype_lang_core_tree = { version = "0.1.0", path = "../../core/tree" }
+genotype_lang_core_project = { version = "0.1.0", path = "../../core/project" }
+genotype_lang_ts_tree = { version = "0.1.0", path = "../tree" }
+genotype_lang_ts_converter = { version = "0.1.0", path = "../converter" }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

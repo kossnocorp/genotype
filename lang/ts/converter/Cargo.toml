@@ -2,11 +2,15 @@
 name = "genotype_lang_ts_converter"
 version = "0.1.0"
 edition = "2021"
+description = "Genotype language TypeScript target converter crate"
+authors = ["Sasha Koss <koss@nocorp.me>"]
+license = "MIT"
+repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_parser = { path = "../../../parser" }
-genotype_lang_core_converter = { path = "../../core/converter" }
-genotype_lang_ts_tree = { path = "../tree" }
+genotype_parser = { version = "0.1.1", path = "../../../parser" }
+genotype_lang_core_converter = { version = "0.1.0", path = "../../core/converter" }
+genotype_lang_ts_tree = { version = "0.1.0", path = "../tree" }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
