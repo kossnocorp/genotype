@@ -30,6 +30,7 @@ mod tests {
             required: true,
         };
         let mut object = GTObject {
+            extensions: vec![],
             properties: vec![property.clone()],
         };
         object.traverse(&mut visitor);

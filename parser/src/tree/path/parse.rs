@@ -54,6 +54,7 @@ mod tests {
                     doc: None,
                     name: "Order".into(),
                     descriptor: GTDescriptor::Object(GTObject {
+                        extensions: vec![],
                         properties: vec![
                             GTProperty {
                                 doc: None,

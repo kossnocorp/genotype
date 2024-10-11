@@ -30,6 +30,7 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             GTObject {
+                extensions: vec![],
                 properties: vec![
                     GTProperty {
                         doc: None,

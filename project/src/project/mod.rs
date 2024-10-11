@@ -163,6 +163,7 @@ mod tests {
                             doc: None,
                             name: "Author".into(),
                             descriptor: GTDescriptor::Object(GTObject {
+                                extensions: vec![],
                                 properties: vec![GTProperty {
                                     doc: None,
                                     name: "name".into(),
@@ -189,6 +190,7 @@ mod tests {
                             doc: None,
                             name: "Book".into(),
                             descriptor: GTDescriptor::Object(GTObject {
+                                extensions: vec![],
                                 properties: vec![
                                     GTProperty {
                                         doc: None,
@@ -229,6 +231,7 @@ mod tests {
                             doc: None,
                             name: "Order".into(),
                             descriptor: GTDescriptor::Object(GTObject {
+                                extensions: vec![],
                                 properties: vec![
                                     GTProperty {
                                         doc: None,
@@ -271,6 +274,7 @@ mod tests {
                             doc: None,
                             name: "User".into(),
                             descriptor: GTDescriptor::Object(GTObject {
+                                extensions: vec![],
                                 properties: vec![
                                     GTProperty {
                                         doc: None,

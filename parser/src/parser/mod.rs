@@ -59,6 +59,11 @@ mod tests {
         parse_file("./examples/syntax/09-modules.type");
     }
 
+    #[test]
+    fn test_extensions() {
+        parse_file("./examples/syntax/10-extensions.type");
+    }
+
     fn parse_file(file: &str) {
         let code = fs::read_to_string(file).expect("cannot read file");
         let pairs = parse_gt_code(&code);
