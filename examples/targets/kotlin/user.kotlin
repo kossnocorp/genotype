@@ -1,0 +1,9 @@
+data class User(
+    val name: Name,
+    val age: Int?
+)
+
+data class Name(
+    val first: String,
+    val last: String
+)
