@@ -7,6 +7,9 @@ use super::GTTraverse;
 impl GTTraverse for GTObject {
     fn traverse(&mut self, visitor: &mut dyn GTVisitor) {
         visitor.visit_object(self);
+        for extension in &mut self.extensions {
+            extension.traverse(visitor);
+        }
         for property in &mut self.properties {
             property.traverse(visitor);
         }
@@ -23,6 +26,9 @@ mod tests {
     #[test]
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
+        let extension = GTExtension {
+            reference: GTReference("Name".into()),
+        };
         let property = GTProperty {
             doc: None,
             name: GTKey("key".into()),
@@ -30,7 +36,7 @@ mod tests {
             required: true,
         };
         let mut object = GTObject {
-            extensions: vec![],
+            extensions: vec![extension.clone()],
             properties: vec![property.clone()],
         };
         object.traverse(&mut visitor);
@@ -38,6 +44,9 @@ mod tests {
             visitor.visited,
             vec![
                 GTMockVisited::Object(object.clone()),
+                GTMockVisited::Extension(extension.clone()),
+                GTMockVisited::Reference(extension.reference.clone()),
+                GTMockVisited::Identifier(extension.reference.0.clone()),
                 GTMockVisited::Property(property.clone()),
                 GTMockVisited::Key(property.name.clone()),
                 GTMockVisited::Descriptor(property.descriptor.clone()),

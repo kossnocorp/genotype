@@ -8,6 +8,7 @@ pub enum GTMockVisited {
     Array(GTArray),
     Descriptor(GTDescriptor),
     Doc(GTDoc),
+    Extension(GTExtension),
     Identifier(GTIdentifier),
     Import(GTImport),
     ImportName(GTImportName),
@@ -52,6 +53,11 @@ impl GTVisitor for GTMockVisitor {
 
     fn visit_doc(&mut self, doc: &mut GTDoc) {
         self.visited.push(GTMockVisited::Doc(doc.clone()));
+    }
+
+    fn visit_extension(&mut self, extension: &mut GTExtension) {
+        self.visited
+            .push(GTMockVisited::Extension(extension.clone()));
     }
 
     fn visit_identifier(&mut self, identifier: &mut GTIdentifier) {

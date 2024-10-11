@@ -12,6 +12,8 @@ pub trait GTVisitor {
 
     fn visit_doc(&mut self, _doc: &mut GTDoc) {}
 
+    fn visit_extension(&mut self, _extension: &mut GTExtension) {}
+
     fn visit_identifier(&mut self, _identifier: &mut GTIdentifier) {}
 
     fn visit_import(&mut self, _import: &mut GTImport) {}
