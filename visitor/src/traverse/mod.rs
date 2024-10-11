@@ -4,6 +4,7 @@ mod alias;
 mod array;
 mod descriptor;
 mod doc;
+mod extension;
 mod identifier;
 mod import;
 mod import_name;
