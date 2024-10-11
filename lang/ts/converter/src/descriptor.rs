@@ -130,6 +130,7 @@ mod tests {
     fn test_convert_object() {
         assert_eq!(
             GTDescriptor::Object(GTObject {
+                extensions: vec![],
                 properties: vec![
                     GTProperty {
                         doc: None,

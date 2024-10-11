@@ -123,6 +123,7 @@ mod tests {
             required: true,
         };
         let object = GTObject {
+            extensions: vec![],
             properties: vec![property.clone()],
         };
         let mut descriptor = GTDescriptor::Object(object.clone());

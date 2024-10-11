@@ -152,6 +152,7 @@ mod tests {
                             doc: None,
                             name: "Hello".into(),
                             descriptor: GTDescriptor::Object(GTObject {
+                                extensions: vec![],
                                 properties: vec![GTProperty {
                                     doc: None,
                                     name: "name".into(),
@@ -164,6 +165,7 @@ mod tests {
                             doc: None,
                             name: "Hello".into(),
                             descriptor: GTDescriptor::Object(GTObject {
+                                extensions: vec![],
                                 properties: vec![
                                     GTProperty {
                                         doc: None,
@@ -191,17 +193,24 @@ mod tests {
                         GTAlias {
                             doc: None,
                             name: "Empty".into(),
-                            descriptor: GTDescriptor::Object(GTObject { properties: vec![] }),
+                            descriptor: GTDescriptor::Object(GTObject {
+                                extensions: vec![],
+                                properties: vec![],
+                            }),
                         },
                         GTAlias {
                             doc: None,
                             name: "Empty".into(),
-                            descriptor: GTDescriptor::Object(GTObject { properties: vec![] }),
+                            descriptor: GTDescriptor::Object(GTObject {
+                                extensions: vec![],
+                                properties: vec![],
+                            }),
                         },
                         GTAlias {
                             doc: None,
                             name: "Hello".into(),
                             descriptor: GTDescriptor::Object(GTObject {
+                                extensions: vec![],
                                 properties: vec![GTProperty {
                                     doc: None,
                                     name: "name".into(),
@@ -214,6 +223,7 @@ mod tests {
                             doc: None,
                             name: "Hello".into(),
                             descriptor: GTDescriptor::Object(GTObject {
+                                extensions: vec![],
                                 properties: vec![
                                     GTProperty {
                                         doc: None,
@@ -266,6 +276,7 @@ mod tests {
                             doc: Some("Multiline...\n...alias comment".into()),
                             name: "Hello".into(),
                             descriptor: GTDescriptor::Object(GTObject {
+                                extensions: vec![],
                                 properties: vec![
                                     GTProperty {
                                         doc: Some("Property comment".into()),
@@ -310,6 +321,7 @@ mod tests {
                         doc: None,
                         name: "Hello".into(),
                         descriptor: GTDescriptor::Object(GTObject {
+                            extensions: vec![],
                             properties: vec![
                                 GTProperty {
                                     doc: None,
@@ -359,10 +371,12 @@ mod tests {
                             doc: None,
                             name: "Hello".into(),
                             descriptor: GTDescriptor::Object(GTObject {
+                                extensions: vec![],
                                 properties: vec![GTProperty {
                                     doc: None,
                                     name: "name".into(),
                                     descriptor: GTDescriptor::Object(GTObject {
+                                        extensions: vec![],
                                         properties: vec![
                                             GTProperty {
                                                 doc: None,
@@ -390,6 +404,7 @@ mod tests {
                             doc: None,
                             name: "Hello".into(),
                             descriptor: GTDescriptor::Object(GTObject {
+                                extensions: vec![],
                                 properties: vec![GTProperty {
                                     doc: None,
                                     name: "name".into(),
@@ -397,6 +412,7 @@ mod tests {
                                         doc: None,
                                         name: "Named".into(),
                                         descriptor: GTDescriptor::Object(GTObject {
+                                            extensions: vec![],
                                             properties: vec![
                                                 GTProperty {
                                                     doc: None,
@@ -444,6 +460,7 @@ mod tests {
                         doc: None,
                         name: "Book".into(),
                         descriptor: GTDescriptor::Object(GTObject {
+                            extensions: vec![],
                             properties: vec![
                                 GTProperty {
                                     doc: None,
@@ -485,6 +502,7 @@ mod tests {
                             doc: None,
                             name: "User".into(),
                             descriptor: GTDescriptor::Object(GTObject {
+                                extensions: vec![],
                                 properties: vec![
                                     GTProperty {
                                         doc: None,
@@ -564,6 +582,7 @@ mod tests {
                             doc: None,
                             name: "Book".into(),
                             descriptor: GTDescriptor::Object(GTObject {
+                                extensions: vec![],
                                 properties: vec![
                                     GTProperty {
                                         doc: None,
@@ -603,6 +622,77 @@ mod tests {
                     deps: HashSet::from_iter(vec!["author".into(), "../../author".into()]),
                     exports: vec!["Book".into(), "Author".into()],
                     references: HashSet::from_iter(vec!["Genre".into()]),
+                },
+            },
+        );
+    }
+
+    #[test]
+    fn test_extensions() {
+        assert_module(
+            "./examples/syntax/10-extensions.type",
+            GTModuleParse {
+                module: GTModule {
+                    doc: None,
+                    imports: vec![],
+                    aliases: vec![
+                        GTAlias {
+                            doc: None,
+                            name: "Base".into(),
+                            descriptor: GTDescriptor::Object(GTObject {
+                                extensions: vec![],
+                                properties: vec![
+                                    GTProperty {
+                                        doc: None,
+                                        name: "name".into(),
+                                        descriptor: GTPrimitive::String.into(),
+                                        required: true,
+                                    },
+                                    GTProperty {
+                                        doc: None,
+                                        name: "age".into(),
+                                        descriptor: GTPrimitive::Int.into(),
+                                        required: true,
+                                    },
+                                ],
+                            }),
+                        },
+                        GTAlias {
+                            doc: None,
+                            name: "Processor".into(),
+                            descriptor: GTDescriptor::Object(GTObject {
+                                extensions: vec![GTExtension {
+                                    reference: GTReference("Base".into()),
+                                }],
+                                properties: vec![GTProperty {
+                                    doc: None,
+                                    name: "cores".into(),
+                                    descriptor: GTPrimitive::Int.into(),
+                                    required: true,
+                                }],
+                            }),
+                        },
+                        GTAlias {
+                            doc: None,
+                            name: "User".into(),
+                            descriptor: GTDescriptor::Object(GTObject {
+                                extensions: vec![GTExtension {
+                                    reference: GTReference("Base".into()),
+                                }],
+                                properties: vec![GTProperty {
+                                    doc: None,
+                                    name: "email".into(),
+                                    descriptor: GTPrimitive::String.into(),
+                                    required: true,
+                                }],
+                            }),
+                        },
+                    ],
+                },
+                resolve: GTResolve {
+                    deps: HashSet::new(),
+                    exports: vec!["Base".into(), "Processor".into(), "User".into()],
+                    references: HashSet::from_iter(vec!["Base".into()]),
                 },
             },
         );

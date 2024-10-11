@@ -20,7 +20,9 @@ object = { "{" ~ properties? ~ "}" }
 
 properties = _{ any_property ~ (","? ~ any_property)* ~ ","? }
 
-any_property = _{ optional_property | required_property }
+any_property = _{ extension_property | optional_property | required_property }
+
+extension_property = { "..." ~ name }
 
 required_property = { line_doc* ~ name ~ ":" ~ any_descriptor }
 

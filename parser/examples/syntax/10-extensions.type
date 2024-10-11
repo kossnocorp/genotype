@@ -1,0 +1,14 @@
+Base = {
+  name: string,
+  age: int
+}
+
+Processor = {
+  ...Base,
+  cores: int
+}
+
+User = {
+  ...Base,
+  email: string
+}
