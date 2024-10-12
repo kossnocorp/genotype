@@ -14,3 +14,9 @@ pub enum GTDescriptor {
     Tuple(GTTuple),
     Union(GTUnion),
 }
+
+impl From<GTObject> for GTDescriptor {
+    fn from(object: GTObject) -> Self {
+        GTDescriptor::Object(object)
+    }
+}

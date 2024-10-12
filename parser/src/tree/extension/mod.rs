@@ -6,3 +6,11 @@ mod parse;
 pub struct GTExtension {
     pub reference: GTReference,
 }
+
+impl From<&str> for GTExtension {
+    fn from(str: &str) -> Self {
+        GTExtension {
+            reference: str.into(),
+        }
+    }
+}

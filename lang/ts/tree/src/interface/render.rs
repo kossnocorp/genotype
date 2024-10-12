@@ -43,10 +43,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{
-        descriptor::TSDescriptor, indent::ts_indent, primitive::TSPrimitive, property::TSProperty,
-        TSReference,
-    };
+    use crate::*;
 
     #[test]
     fn test_render_empty() {

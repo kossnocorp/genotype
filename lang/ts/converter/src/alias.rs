@@ -11,7 +11,11 @@ impl TSConvert<TSDefinition> for GTAlias {
         match &self.descriptor {
             GTDescriptor::Object(object) => TSDefinition::Interface(TSInterface {
                 name: self.name.convert(resolve, hoist),
-                extensions: vec![],
+                extensions: object
+                    .extensions
+                    .iter()
+                    .map(|e| e.convert(resolve, hoist))
+                    .collect(),
                 properties: object
                     .properties
                     .iter()
@@ -29,6 +33,8 @@ impl TSConvert<TSDefinition> for GTAlias {
 
 #[cfg(test)]
 mod tests {
+    use std::vec;
+
     use genotype_lang_ts_tree::*;
     use pretty_assertions::assert_eq;
 
@@ -91,6 +97,81 @@ mod tests {
                         required: true,
                     }
                 ]
+            }),
+        );
+    }
+
+    #[test]
+    fn test_convert_extensions() {
+        assert_eq!(
+            GTAlias {
+                doc: None,
+                name: "Book".into(),
+                descriptor: GTDescriptor::Object(GTObject {
+                    extensions: vec!["Good".into(),],
+                    properties: vec![GTProperty {
+                        doc: None,
+                        name: "author".into(),
+                        descriptor: GTPrimitive::String.into(),
+                        required: true,
+                    }]
+                })
+            }
+            .convert(&TSConvertResolve::new(), &|_| {}),
+            TSDefinition::Interface(TSInterface {
+                name: "Book".into(),
+                extensions: vec!["Good".into()],
+                properties: vec![TSProperty {
+                    name: "author".into(),
+                    descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                    required: true,
+                }]
+            }),
+        );
+
+        assert_eq!(
+            GTAlias {
+                doc: None,
+                name: "Book".into(),
+                descriptor: GTDescriptor::Union(GTUnion {
+                    descriptors: vec![
+                        GTObject {
+                            extensions: vec!["Good".into(),],
+                            properties: vec![GTProperty {
+                                doc: None,
+                                name: "author".into(),
+                                descriptor: GTPrimitive::String.into(),
+                                required: true,
+                            }]
+                        }
+                        .into(),
+                        GTPrimitive::String.into(),
+                    ]
+                },)
+            }
+            .convert(&TSConvertResolve::new(), &|_| {}),
+            TSDefinition::Alias(TSAlias {
+                name: "Book".into(),
+                descriptor: TSUnion {
+                    descriptors: vec![
+                        TSIntersection {
+                            descriptors: vec![
+                                TSObject {
+                                    properties: vec![TSProperty {
+                                        name: "author".into(),
+                                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                                        required: true,
+                                    }]
+                                }
+                                .into(),
+                                "Good".into()
+                            ],
+                        }
+                        .into(),
+                        TSPrimitive::String.into(),
+                    ]
+                }
+                .into(),
             }),
         );
     }
