@@ -24,14 +24,15 @@ mod tests {
         assert_eq!(
             TSIntersection {
                 descriptors: vec![
-                    TSDescriptor::Object(TSObject {
+                    TSObject {
                         properties: vec![TSProperty {
                             name: "hello".into(),
-                            descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                            descriptor: TSPrimitive::String.into(),
                             required: true,
-                        },],
-                    }),
-                    TSDescriptor::Reference("World".into()),
+                        }],
+                    }
+                    .into(),
+                    "World".into(),
                 ]
             }
             .render(&ts_indent()),

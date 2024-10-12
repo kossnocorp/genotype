@@ -1,6 +1,6 @@
 use genotype_lang_ts_tree::{
     definition::TSDefinition, descriptor::TSDescriptor, primitive::TSPrimitive,
-    reference::TSReference, union::TSUnion,
+    reference::TSReference, union::TSUnion, TSIntersection,
 };
 use genotype_parser::tree::descriptor::GTDescriptor;
 
@@ -32,7 +32,23 @@ impl TSConvert<TSDescriptor> for GTDescriptor {
                 ],
             }),
 
-            GTDescriptor::Object(object) => TSDescriptor::Object(object.convert(resolve, hoist)),
+            GTDescriptor::Object(object) => {
+                let descriptor = TSDescriptor::Object(object.convert(resolve, hoist));
+                if object.extensions.is_empty() {
+                    descriptor
+                } else {
+                    let mut descriptors: Vec<TSDescriptor> = vec![descriptor];
+                    let extensions = object
+                        .extensions
+                        .iter()
+                        .map(|extension| {
+                            TSDescriptor::from(extension.reference.convert(resolve, hoist))
+                        })
+                        .collect::<Vec<TSDescriptor>>();
+                    descriptors.extend(extensions);
+                    TSDescriptor::Intersection(TSIntersection { descriptors })
+                }
+            }
 
             GTDescriptor::Primitive(primitive) => {
                 TSDescriptor::Primitive(primitive.convert(resolve, hoist))
@@ -151,14 +167,40 @@ mod tests {
                 properties: vec![
                     TSProperty {
                         name: "name".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                        descriptor: TSPrimitive::String.into(),
                         required: true,
                     },
                     TSProperty {
                         name: "age".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
+                        descriptor: TSPrimitive::Number.into(),
                         required: false,
                     }
+                ]
+            })
+        );
+
+        assert_eq!(
+            GTDescriptor::Object(GTObject {
+                extensions: vec!["Good".into()],
+                properties: vec![GTProperty {
+                    doc: None,
+                    name: "title".into(),
+                    descriptor: GTPrimitive::String.into(),
+                    required: true,
+                },]
+            })
+            .convert(&TSConvertResolve::new(), &|_| {}),
+            TSDescriptor::Intersection(TSIntersection {
+                descriptors: vec![
+                    TSObject {
+                        properties: vec![TSProperty {
+                            name: "title".into(),
+                            descriptor: TSPrimitive::String.into(),
+                            required: true,
+                        },]
+                    }
+                    .into(),
+                    "Good".into()
                 ]
             })
         );

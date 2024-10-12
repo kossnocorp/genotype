@@ -7,6 +7,7 @@ impl GTRender for TSDescriptor {
         match self {
             TSDescriptor::Array(array) => array.render(indent),
             TSDescriptor::InlineImport(import) => import.render(indent),
+            TSDescriptor::Intersection(intersection) => intersection.render(indent),
             TSDescriptor::Primitive(primitive) => primitive.render(indent),
             TSDescriptor::Reference(name) => name.render(indent),
             TSDescriptor::Object(object) => object.render(indent),
@@ -41,6 +42,29 @@ mod tests {
             })
             .render(&ts_indent()),
             r#"import("../path/to/module.ts").Name"#
+        );
+    }
+
+    #[test]
+    fn test_render_intersection() {
+        assert_eq!(
+            TSDescriptor::Intersection(TSIntersection {
+                descriptors: vec![
+                    TSObject {
+                        properties: vec![TSProperty {
+                            name: "hello".into(),
+                            descriptor: TSPrimitive::String.into(),
+                            required: true,
+                        }],
+                    }
+                    .into(),
+                    "World".into(),
+                ]
+            })
+            .render(&ts_indent()),
+            r#"{
+  hello: string
+} & World"#
         );
     }
 
