@@ -157,6 +157,7 @@ mod tests {
                 definitions: vec![
                     TSDefinition::Interface(TSInterface {
                         name: "User".into(),
+                        extensions: vec![],
                         properties: vec![
                             TSProperty {
                                 name: "name".into(),
@@ -172,6 +173,7 @@ mod tests {
                     }),
                     TSDefinition::Interface(TSInterface {
                         name: "Order".into(),
+                        extensions: vec![],
                         properties: vec![TSProperty {
                             name: "book".into(),
                             descriptor: TSDescriptor::Reference("Book".into()),
@@ -180,6 +182,7 @@ mod tests {
                     }),
                     TSDefinition::Interface(TSInterface {
                         name: "Book".into(),
+                        extensions: vec![],
                         properties: vec![
                             TSProperty {
                                 name: "title".into(),

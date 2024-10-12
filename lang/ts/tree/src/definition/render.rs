@@ -35,6 +35,7 @@ mod tests {
         assert_eq!(
             TSDefinition::Interface(TSInterface {
                 name: "Name".into(),
+                extensions: vec![],
                 properties: vec![
                     TSProperty {
                         name: "name".into(),

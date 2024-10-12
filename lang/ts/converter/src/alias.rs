@@ -11,6 +11,7 @@ impl TSConvert<TSDefinition> for GTAlias {
         match &self.descriptor {
             GTDescriptor::Object(object) => TSDefinition::Interface(TSInterface {
                 name: self.name.convert(resolve, hoist),
+                extensions: vec![],
                 properties: object
                     .properties
                     .iter()
@@ -77,6 +78,7 @@ mod tests {
             .convert(&TSConvertResolve::new(), &|_| {}),
             TSDefinition::Interface(TSInterface {
                 name: "Book".into(),
+                extensions: vec![],
                 properties: vec![
                     TSProperty {
                         name: "title".into(),
