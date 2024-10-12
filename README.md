@@ -2,6 +2,18 @@
 
 🚧 Work in progress
 
+## Roadmap
+
+The current goal is to ship v0.1. There's an immediate need for Genotype in the projects I'm working on, so the first version would include everything to start using it in production. Namely:
+
+- [ ] Literals support
+- [ ] Rust target
+- [ ] Documentation generation
+- [ ] Complete package generation
+- [ ] Tagging/mapping support
+- [ ] Annotations to precisely define int/float types
+- [ ] Errors reporting
+
 ## Design
 
 ### Principles
