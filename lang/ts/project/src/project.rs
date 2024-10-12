@@ -72,6 +72,7 @@ mod tests {
                             imports: vec![],
                             definitions: vec![TSDefinition::Interface(TSInterface {
                                 name: "Author".into(),
+                                extensions: vec![],
                                 properties: vec![TSProperty {
                                     name: "name".into(),
                                     descriptor: TSDescriptor::Primitive(TSPrimitive::String),
@@ -92,6 +93,7 @@ mod tests {
                             }],
                             definitions: vec![TSDefinition::Interface(TSInterface {
                                 name: "Book".into(),
+                                extensions: vec![],
                                 properties: vec![
                                     TSProperty {
                                         name: "title".into(),
@@ -130,6 +132,7 @@ mod tests {
                             definitions: vec![
                                 TSDefinition::Interface(TSInterface {
                                     name: "Author".into(),
+                                    extensions: vec![],
                                     properties: vec![TSProperty {
                                         name: "name".into(),
                                         descriptor: TSDescriptor::Reference("AuthorName".into()),
@@ -153,6 +156,7 @@ mod tests {
                             }],
                             definitions: vec![TSDefinition::Interface(TSInterface {
                                 name: "Book".into(),
+                                extensions: vec![],
                                 properties: vec![
                                     TSProperty {
                                         name: "title".into(),

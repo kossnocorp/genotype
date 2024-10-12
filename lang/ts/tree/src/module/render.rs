@@ -68,6 +68,7 @@ mod tests {
                     }),
                     TSDefinition::Interface(TSInterface {
                         name: "Name".into(),
+                        extensions: vec![],
                         properties: vec![
                             TSProperty {
                                 name: "name".into(),
