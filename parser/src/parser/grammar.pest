@@ -8,11 +8,35 @@ name = @{ (ASCII_ALPHA)+ }
 
 any_descriptor = _{ nullable_descriptor | descriptor }
 
-descriptor = !{ inline_import | primitive | object | array | tuple | alias | name  }
+descriptor = !{ literal | inline_import | primitive | object | array | tuple | alias | name  }
 
 nullable_descriptor = ${ descriptor ~ "?" }
 
 primitive = { "string" | "int" | "float" | "boolean" }
+
+// Literals
+
+literal = { string_literal | float_literal | integer_literal | boolean_literal }
+
+string_literal = @{ "\"" ~ string_inner ~ "\"" }
+
+string_inner = @{ (!("\"" | "\\") ~ ANY)* ~ (string_escape ~ string_inner)? }
+
+string_escape  = @{ "\\" ~ ("\"" | "\\" | "/" | "b" | "f" | "n" | "r" | "t" | string_unicode) }
+
+string_unicode = @{ "u" ~ ASCII_HEX_DIGIT{4} }
+
+integer_literal = @{ ("+" | "-")? ~ integer }
+
+float_literal = @{ ("+" | "-")? ~ integer ~ ("." ~ digits ~ exponent? | exponent)? }
+
+integer =  @{ "0" | (ASCII_NONZERO_DIGIT ~ digits?) }
+
+digits = @{ (ASCII_DIGIT | ("_" ~ ASCII_DIGIT))+ }
+
+exponent = @{ ("E" | "e") ~ ("+" | "-")? ~ ASCII_DIGIT+ }
+
+boolean_literal = ${ "true" | "false" }
 
 // Objects
 

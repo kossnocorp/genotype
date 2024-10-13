@@ -1,0 +1,33 @@
+CommentBase = {
+  v: 2
+  text: string
+}
+
+UserComment = {
+  ...CommentBase
+  type: "user"
+  userId: string
+  published: boolean
+}
+
+SystemComment = {
+  ...CommentBase
+  type: "system"
+  published: true
+}
+
+False = false
+
+Float = 1.000_123
+
+Number = 1_234_567
+
+String = "Hello, \"world\"! \\"
+
+NegativeInt = -1
+
+NegativeFloat = -1.0
+
+LargeInt = 1e6
+
+SmallFloat = 3.5e-4

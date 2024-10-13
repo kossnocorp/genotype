@@ -64,6 +64,11 @@ mod tests {
         parse_file("./examples/syntax/10-extensions.type");
     }
 
+    #[test]
+    fn test_literals() {
+        parse_file("./examples/syntax/11-literals.type");
+    }
+
     fn parse_file(file: &str) {
         let code = fs::read_to_string(file).expect("cannot read file");
         let pairs = parse_gt_code(&code);
