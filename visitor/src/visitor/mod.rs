@@ -26,6 +26,8 @@ pub trait GTVisitor {
 
     fn visit_key(&mut self, _key: &mut GTKey) {}
 
+    fn visit_literal(&mut self, _literal: &mut GTLiteral) {}
+
     fn visit_module(&mut self, _module: &mut GTModule) {}
 
     fn visit_object(&mut self, _object: &mut GTObject) {}

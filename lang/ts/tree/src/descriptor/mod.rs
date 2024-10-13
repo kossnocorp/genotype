@@ -7,6 +7,7 @@ pub enum TSDescriptor {
     Array(Box<TSArray>),
     InlineImport(TSInlineImport),
     Intersection(TSIntersection),
+    Literal(TSLiteral),
     Object(TSObject),
     Primitive(TSPrimitive),
     Reference(TSReference),

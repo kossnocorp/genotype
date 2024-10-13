@@ -28,6 +28,6 @@ NegativeInt = -1
 
 NegativeFloat = -1.0
 
-LargeInt = 1e6
+LargeFloat = 1e6
 
 SmallFloat = 3.5e-4

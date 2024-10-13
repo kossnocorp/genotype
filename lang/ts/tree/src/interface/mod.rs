@@ -1,4 +1,4 @@
-use crate::{identifier::TSIdentifier, property::TSProperty, TSExtension, TSReference};
+use crate::{identifier::TSIdentifier, property::TSProperty, TSExtension};
 
 mod render;
 

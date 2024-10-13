@@ -31,6 +31,8 @@ impl GTDescriptor {
                 GTDescriptor::InlineImport(GTInlineImport::parse(pair, resolve)?)
             }
 
+            Rule::literal => GTDescriptor::Literal(pair.try_into()?),
+
             _ => {
                 println!("3 ====== unknown rule: {:?}", pair);
                 unreachable!("unknown rule");

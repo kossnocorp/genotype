@@ -9,6 +9,7 @@ pub mod import;
 pub mod import_name;
 pub mod inline_import;
 pub mod key;
+pub mod literal;
 pub mod module;
 pub mod object;
 pub mod path;

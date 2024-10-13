@@ -16,9 +16,11 @@ primitive = { "string" | "int" | "float" | "boolean" }
 
 // Literals
 
-literal = { string_literal | float_literal | integer_literal | boolean_literal }
+literal = { literal_string | literal_float | literal_integer | literal_boolean }
 
-string_literal = @{ "\"" ~ string_inner ~ "\"" }
+literal_string = ${ quote ~ string_inner ~ quote }
+
+quote = _{ "\"" }
 
 string_inner = @{ (!("\"" | "\\") ~ ANY)* ~ (string_escape ~ string_inner)? }
 
@@ -26,9 +28,9 @@ string_escape  = @{ "\\" ~ ("\"" | "\\" | "/" | "b" | "f" | "n" | "r" | "t" | st
 
 string_unicode = @{ "u" ~ ASCII_HEX_DIGIT{4} }
 
-integer_literal = @{ ("+" | "-")? ~ integer }
+literal_integer = @{ ("+" | "-")? ~ integer }
 
-float_literal = @{ ("+" | "-")? ~ integer ~ ("." ~ digits ~ exponent? | exponent)? }
+literal_float = @{ ("+" | "-")? ~ integer ~ ("." ~ digits ~ exponent? | exponent) }
 
 integer =  @{ "0" | (ASCII_NONZERO_DIGIT ~ digits?) }
 
@@ -36,7 +38,7 @@ digits = @{ (ASCII_DIGIT | ("_" ~ ASCII_DIGIT))+ }
 
 exponent = @{ ("E" | "e") ~ ("+" | "-")? ~ ASCII_DIGIT+ }
 
-boolean_literal = ${ "true" | "false" }
+literal_boolean = ${ "true" | "false" }
 
 // Objects
 
