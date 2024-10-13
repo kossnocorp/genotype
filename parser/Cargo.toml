@@ -9,8 +9,10 @@ repository = "https://github.com/kossnocorp/genotype"
 
 
 [dependencies]
-pest = "2.7.12"
-pest_derive = "2.7.12"
+miette = { version = "7.2.0", features = ["fancy"] }
+pest = { version = "2.7.13", features = ["miette-error"] }
+pest_derive = "2.7.13"
+thiserror = "1.0.64"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
