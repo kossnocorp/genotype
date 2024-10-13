@@ -15,6 +15,8 @@ impl GTTraverse for GTDescriptor {
 
             GTDescriptor::InlineImport(import) => import.traverse(visitor),
 
+            GTDescriptor::Literal(literal) => literal.traverse(visitor),
+
             GTDescriptor::Nullable(descriptor) => descriptor.traverse(visitor),
 
             GTDescriptor::Object(object) => object.traverse(visitor),

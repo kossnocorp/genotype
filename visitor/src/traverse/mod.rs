@@ -11,6 +11,7 @@ mod import_name;
 mod import_reference;
 mod inline_import;
 mod key;
+mod literal;
 mod module;
 mod object;
 mod path;

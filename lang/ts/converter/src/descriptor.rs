@@ -25,6 +25,10 @@ impl TSConvert<TSDescriptor> for GTDescriptor {
                 TSDescriptor::InlineImport(import.convert(resolve, hoist))
             }
 
+            GTDescriptor::Literal(literal) => {
+                TSDescriptor::Literal(literal.convert(resolve, hoist))
+            }
+
             GTDescriptor::Nullable(nullable) => TSDescriptor::Union(TSUnion {
                 descriptors: vec![
                     nullable.convert(resolve, hoist),

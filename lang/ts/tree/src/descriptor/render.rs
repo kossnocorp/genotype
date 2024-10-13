@@ -8,6 +8,7 @@ impl GTRender for TSDescriptor {
             TSDescriptor::Array(array) => array.render(indent),
             TSDescriptor::InlineImport(import) => import.render(indent),
             TSDescriptor::Intersection(intersection) => intersection.render(indent),
+            TSDescriptor::Literal(literal) => literal.render(indent),
             TSDescriptor::Primitive(primitive) => primitive.render(indent),
             TSDescriptor::Reference(name) => name.render(indent),
             TSDescriptor::Object(object) => object.render(indent),

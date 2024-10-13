@@ -14,6 +14,7 @@ pub enum GTMockVisited {
     ImportName(GTImportName),
     ImportReference(GTImportReference),
     InlineImport(GTInlineImport),
+    Literal(GTLiteral),
     Key(GTKey),
     Module(GTModule),
     Object(GTObject),
@@ -82,6 +83,10 @@ impl GTVisitor for GTMockVisitor {
     fn visit_inline_import(&mut self, inline_import: &mut GTInlineImport) {
         self.visited
             .push(GTMockVisited::InlineImport(inline_import.clone()));
+    }
+
+    fn visit_literal(&mut self, literal: &mut GTLiteral) {
+        self.visited.push(GTMockVisited::Literal(literal.clone()));
     }
 
     fn visit_key(&mut self, key: &mut GTKey) {

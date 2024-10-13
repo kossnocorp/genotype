@@ -698,6 +698,151 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_literals() {
+        assert_module(
+            "./examples/syntax/11-literals.type",
+            GTModuleParse {
+                module: GTModule {
+                    doc: None,
+                    imports: vec![],
+                    aliases: vec![
+                        GTAlias {
+                            doc: None,
+                            name: "CommentBase".into(),
+                            descriptor: GTObject {
+                                extensions: vec![],
+                                properties: vec![
+                                    GTProperty {
+                                        doc: None,
+                                        name: "v".into(),
+                                        descriptor: GTLiteral::Integer(2).into(),
+                                        required: true,
+                                    },
+                                    GTProperty {
+                                        doc: None,
+                                        name: "text".into(),
+                                        descriptor: GTPrimitive::String.into(),
+                                        required: true,
+                                    },
+                                ],
+                            }
+                            .into(),
+                        },
+                        GTAlias {
+                            doc: None,
+                            name: "UserComment".into(),
+                            descriptor: GTObject {
+                                extensions: vec!["CommentBase".into()],
+                                properties: vec![
+                                    GTProperty {
+                                        doc: None,
+                                        name: "type".into(),
+                                        descriptor: GTLiteral::String("user".into()).into(),
+                                        required: true,
+                                    },
+                                    GTProperty {
+                                        doc: None,
+                                        name: "userId".into(),
+                                        descriptor: GTPrimitive::String.into(),
+                                        required: true,
+                                    },
+                                    GTProperty {
+                                        doc: None,
+                                        name: "published".into(),
+                                        descriptor: GTPrimitive::Boolean.into(),
+                                        required: true,
+                                    },
+                                ],
+                            }
+                            .into(),
+                        },
+                        GTAlias {
+                            doc: None,
+                            name: "SystemComment".into(),
+                            descriptor: GTObject {
+                                extensions: vec!["CommentBase".into()],
+                                properties: vec![
+                                    GTProperty {
+                                        doc: None,
+                                        name: "type".into(),
+                                        descriptor: GTLiteral::String("system".into()).into(),
+                                        required: true,
+                                    },
+                                    GTProperty {
+                                        doc: None,
+                                        name: "published".into(),
+                                        descriptor: GTLiteral::Boolean(true).into(),
+                                        required: true,
+                                    },
+                                ],
+                            }
+                            .into(),
+                        },
+                        GTAlias {
+                            doc: None,
+                            name: "False".into(),
+                            descriptor: GTLiteral::Boolean(false).into(),
+                        },
+                        GTAlias {
+                            doc: None,
+                            name: "Float".into(),
+                            descriptor: GTLiteral::Float(1.000_123).into(),
+                        },
+                        GTAlias {
+                            doc: None,
+                            name: "Number".into(),
+                            descriptor: GTLiteral::Integer(1_234_567).into(),
+                        },
+                        GTAlias {
+                            doc: None,
+                            name: "String".into(),
+                            descriptor: GTLiteral::String("Hello, \\\"world\\\"! \\\\".into())
+                                .into(),
+                        },
+                        GTAlias {
+                            doc: None,
+                            name: "NegativeInt".into(),
+                            descriptor: GTLiteral::Integer(-1).into(),
+                        },
+                        GTAlias {
+                            doc: None,
+                            name: "NegativeFloat".into(),
+                            descriptor: GTLiteral::Float(-1.0).into(),
+                        },
+                        GTAlias {
+                            doc: None,
+                            name: "LargeFloat".into(),
+                            descriptor: GTLiteral::Float(1e6).into(),
+                        },
+                        GTAlias {
+                            doc: None,
+                            name: "SmallFloat".into(),
+                            descriptor: GTLiteral::Float(3.5e-4).into(),
+                        },
+                    ],
+                },
+                resolve: GTResolve {
+                    deps: HashSet::new(),
+                    exports: vec![
+                        "CommentBase".into(),
+                        "UserComment".into(),
+                        "SystemComment".into(),
+                        "False".into(),
+                        "Float".into(),
+                        "Number".into(),
+                        "String".into(),
+                        "NegativeInt".into(),
+                        "NegativeFloat".into(),
+                        "LargeFloat".into(),
+                        "SmallFloat".into(),
+                    ],
+                    references: HashSet::from_iter(vec!["CommentBase".into()]),
+                },
+            },
+        );
+    }
+
     fn assert_module(path: &str, expected: GTModuleParse) {
         let code = fs::read_to_string(path).expect("cannot read file");
         let parse = GTModule::parse(code).unwrap();
