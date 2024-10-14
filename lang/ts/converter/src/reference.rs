@@ -15,6 +15,7 @@ impl TSConvert<TSReference> for GTReference {
 #[cfg(test)]
 mod tests {
     use genotype_lang_ts_tree::*;
+    use genotype_parser::GTIdentifier;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -23,7 +24,8 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             TSReference("Name".into()),
-            GTReference("Name".into()).convert(&TSConvertResolve::new(), &|_| {}),
+            GTReference(GTIdentifier::new((0, 0).into(), "Name".into()))
+                .convert(&TSConvertResolve::new(), &|_| {}),
         );
     }
 }

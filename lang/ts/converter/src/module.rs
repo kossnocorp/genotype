@@ -67,15 +67,18 @@ mod tests {
                         GTImport {
                             path: "./path/to/module".into(),
                             reference: GTImportReference::Names(vec![
-                                GTImportName::Name("Name".into()),
-                                GTImportName::Alias("Name".into(), "Alias".into())
+                                GTImportName::Name(GTIdentifier::new((0, 0).into(), "Name".into())),
+                                GTImportName::Alias(
+                                    GTIdentifier::new((0, 0).into(), "Name".into()),
+                                    GTIdentifier::new((0, 0).into(), "Alias".into())
+                                )
                             ])
                         }
                     ],
                     aliases: vec![
                         GTAlias {
                             doc: None,
-                            name: "User".into(),
+                            name: GTIdentifier::new((0, 0).into(), "User".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![],
                                 properties: vec![
@@ -96,7 +99,7 @@ mod tests {
                         },
                         GTAlias {
                             doc: None,
-                            name: "Order".into(),
+                            name: GTIdentifier::new((0, 0).into(), "Order".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![],
                                 properties: vec![GTProperty {
@@ -104,7 +107,7 @@ mod tests {
                                     name: "book".into(),
                                     descriptor: GTDescriptor::Alias(Box::new(GTAlias {
                                         doc: None,
-                                        name: "Book".into(),
+                                        name: GTIdentifier::new((0, 0).into(), "Book".into()),
                                         descriptor: GTDescriptor::Object(GTObject {
                                             extensions: vec![],
                                             properties: vec![
@@ -119,9 +122,11 @@ mod tests {
                                                 GTProperty {
                                                     doc: None,
                                                     name: "author".into(),
-                                                    descriptor: GTDescriptor::Reference(
+                                                    descriptor: GTIdentifier::new(
+                                                        (0, 0).into(),
                                                         "Author".into()
-                                                    ),
+                                                    )
+                                                    .into(),
                                                     required: true,
                                                 }
                                             ]
@@ -133,7 +138,7 @@ mod tests {
                         },
                         GTAlias {
                             doc: None,
-                            name: "Name".into(),
+                            name: GTIdentifier::new((0, 0).into(), "Name".into()),
                             descriptor: GTPrimitive::String((0, 0).into()).into(),
                         },
                     ],

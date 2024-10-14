@@ -7,7 +7,7 @@ use std::{
 use genotype_lang_core_project::module::GTLangProjectModule;
 use genotype_lang_ts_converter::{module::TSConvertModule, resolve::TSConvertResolve};
 use genotype_lang_ts_tree::module::TSModule;
-use genotype_parser::tree::GTImportReference;
+use genotype_parser::{tree::GTImportReference, GTIdentifier};
 use genotype_project::{module::GTProjectModule, GTProject, GTProjectModuleReference};
 
 #[derive(Debug, PartialEq, Clone)]
@@ -66,10 +66,11 @@ impl GTLangProjectModule for TSProjectModule {
 
                     references.iter().for_each(|(reference, _)| {
                         let identifier = (*reference).clone();
-                        let alias = format!("{}.{}", prefix, identifier.0);
+                        let span = identifier.0.clone();
+                        let alias = format!("{}.{}", prefix, identifier.1);
                         resolve
                             .identifiers
-                            .insert(identifier, alias.as_str().into());
+                            .insert(identifier, GTIdentifier::new(span, alias));
                     });
                 }
             }

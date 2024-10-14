@@ -165,7 +165,7 @@ mod tests {
                         imports: vec![],
                         aliases: vec![GTAlias {
                             doc: None,
-                            name: "Author".into(),
+                            name: GTIdentifier::new((0, 6).into(), "Author".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![],
                                 properties: vec![GTProperty {
@@ -192,11 +192,14 @@ mod tests {
                         doc: None,
                         imports: vec![GTImport {
                             path: "./author".into(),
-                            reference: GTImportReference::Name("Author".into()),
+                            reference: GTImportReference::Name(GTIdentifier::new(
+                                (13, 19).into(),
+                                "Author".into(),
+                            )),
                         }],
                         aliases: vec![GTAlias {
                             doc: None,
-                            name: "Book".into(),
+                            name: GTIdentifier::new((21, 25).into(), "Book".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![],
                                 properties: vec![
@@ -209,7 +212,10 @@ mod tests {
                                     GTProperty {
                                         doc: None,
                                         name: "author".into(),
-                                        descriptor: GTDescriptor::Reference("Author".into()),
+                                        descriptor: GTDescriptor::Reference(
+                                            GTIdentifier::new((56, 62).into(), "Author".into())
+                                                .into(),
+                                        ),
                                         required: true,
                                     },
                                 ],
@@ -222,7 +228,7 @@ mod tests {
                             Arc::new(author_path.clone()),
                         )]),
                         references: HashMap::from_iter([(
-                            "Author".into(),
+                            GTIdentifier::new((56, 62).into(), "Author".into()),
                             GTProjectModuleReference::External("./author".into()),
                         )]),
                     },
@@ -237,11 +243,14 @@ mod tests {
                         doc: None,
                         imports: vec![GTImport {
                             path: "./book".into(),
-                            reference: GTImportReference::Name("Book".into()),
+                            reference: GTImportReference::Name(GTIdentifier::new(
+                                (11, 15).into(),
+                                "Book".into(),
+                            )),
                         }],
                         aliases: vec![GTAlias {
                             doc: None,
-                            name: "Order".into(),
+                            name: GTIdentifier::new((17, 22).into(), "Order".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![],
                                 properties: vec![
@@ -250,7 +259,7 @@ mod tests {
                                         name: "user".into(),
                                         descriptor: GTDescriptor::InlineImport(GTInlineImport {
                                             path: "./user".into(),
-                                            name: "User".into(),
+                                            name: GTIdentifier::new((0, 0).into(), "User".into()),
                                         }),
                                         required: true,
                                     },
@@ -258,7 +267,10 @@ mod tests {
                                         doc: None,
                                         name: "books".into(),
                                         descriptor: GTDescriptor::Array(Box::new(GTArray {
-                                            descriptor: GTDescriptor::Reference("Book".into()),
+                                            descriptor: GTDescriptor::Reference(
+                                                GTIdentifier::new((57, 61).into(), "Book".into())
+                                                    .into(),
+                                            ),
                                         })),
                                         required: true,
                                     },
@@ -272,7 +284,7 @@ mod tests {
                             ("./user".into(), Arc::new(user_path.clone())),
                         ]),
                         references: HashMap::from_iter([(
-                            "Book".into(),
+                            GTIdentifier::new((57, 61).into(), "Book".into()),
                             GTProjectModuleReference::External("./book".into()),
                         )]),
                     },
@@ -288,7 +300,7 @@ mod tests {
                         imports: vec![],
                         aliases: vec![GTAlias {
                             doc: None,
-                            name: "User".into(),
+                            name: GTIdentifier::new((0, 4).into(), "User".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![],
                                 properties: vec![

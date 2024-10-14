@@ -37,7 +37,13 @@ impl GTProjectModuleResolve {
             };
 
             // Check if the reference is local
-            if parse.1.resolve.exports.contains(reference) {
+            if parse
+                .1
+                .resolve
+                .exports
+                .iter()
+                .any(|export| export.1 == reference.1)
+            {
                 references.insert(reference.clone(), GTProjectModuleReference::Local);
                 continue;
             }
@@ -55,16 +61,21 @@ impl GTProjectModuleResolve {
                             GTImportReference::Glob => {
                                 let module =
                                     modules.iter().find(|module| module.0 == ***path).unwrap();
-                                module.1.resolve.exports.contains(reference)
+                                module
+                                    .1
+                                    .resolve
+                                    .exports
+                                    .iter()
+                                    .any(|export| export.1 == reference.1)
                             }
 
-                            GTImportReference::Name(name) => *name == *reference,
+                            GTImportReference::Name(name) => name.1 == reference.1,
 
                             GTImportReference::Names(names) => {
                                 names.iter().any(|name| match name {
-                                    GTImportName::Name(name) => name == reference,
+                                    GTImportName::Name(name) => name.1 == reference.1,
 
-                                    GTImportName::Alias(_, alias) => alias == reference,
+                                    GTImportName::Alias(_, alias) => alias.1 == reference.1,
                                 })
                             }
                         }

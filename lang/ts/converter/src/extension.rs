@@ -17,6 +17,7 @@ impl TSConvert<TSExtension> for GTExtension {
 #[cfg(test)]
 mod tests {
     use genotype_lang_ts_tree::*;
+    use genotype_parser::GTIdentifier;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -28,7 +29,7 @@ mod tests {
                 reference: "Name".into()
             },
             GTExtension {
-                reference: "Name".into()
+                reference: GTIdentifier::new((0, 0).into(), "Name".into()).into()
             }
             .convert(&TSConvertResolve::new(), &|_| {}),
         );

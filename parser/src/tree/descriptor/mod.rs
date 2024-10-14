@@ -27,3 +27,15 @@ impl From<GTLiteral> for GTDescriptor {
         GTDescriptor::Literal(literal)
     }
 }
+
+impl From<GTReference> for GTDescriptor {
+    fn from(reference: GTReference) -> Self {
+        GTDescriptor::Reference(reference)
+    }
+}
+
+impl From<GTIdentifier> for GTDescriptor {
+    fn from(identifier: GTIdentifier) -> Self {
+        GTDescriptor::Reference(identifier.into())
+    }
+}

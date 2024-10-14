@@ -22,7 +22,7 @@ impl GTInlineImport {
 
         Ok(GTInlineImport {
             path,
-            name: GTIdentifier(name.into()),
+            name: GTIdentifier::new((0, 0).into(), name.into()),
         })
     }
 }

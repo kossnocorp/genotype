@@ -6,6 +6,6 @@ use super::GTIdentifier;
 
 impl GTIdentifier {
     pub fn parse(pair: Pair<'_, Rule>) -> Self {
-        GTIdentifier(pair.as_str().into())
+        GTIdentifier::new(pair.as_span().into(), pair.as_str().into())
     }
 }

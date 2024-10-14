@@ -46,7 +46,7 @@ mod tests {
         assert_eq!(
             GTAlias {
                 doc: None,
-                name: "Name".into(),
+                name: GTIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }
             .convert(&TSConvertResolve::new(), &|_| {}),
@@ -62,7 +62,7 @@ mod tests {
         assert_eq!(
             GTAlias {
                 doc: None,
-                name: "Book".into(),
+                name: GTIdentifier::new((0, 0).into(), "Book".into()),
                 descriptor: GTDescriptor::Object(GTObject {
                     extensions: vec![],
                     properties: vec![
@@ -106,9 +106,9 @@ mod tests {
         assert_eq!(
             GTAlias {
                 doc: None,
-                name: "Book".into(),
+                name: GTIdentifier::new((0, 0).into(), "Book".into()),
                 descriptor: GTDescriptor::Object(GTObject {
-                    extensions: vec!["Good".into(),],
+                    extensions: vec![GTIdentifier::new((0, 0).into(), "Good".into()).into()],
                     properties: vec![GTProperty {
                         doc: None,
                         name: "author".into(),
@@ -132,21 +132,23 @@ mod tests {
         assert_eq!(
             GTAlias {
                 doc: None,
-                name: "Book".into(),
+                name: GTIdentifier::new((0, 0).into(), "Book".into()),
                 descriptor: GTDescriptor::Union(GTUnion {
                     descriptors: vec![
-                        GTObject {
-                            extensions: vec!["Good".into(),],
-                            properties: vec![GTProperty {
-                                doc: None,
-                                name: "author".into(),
-                                descriptor: GTPrimitive::String((0, 0).into()).into(),
-                                required: true,
-                            }]
-                        }
-                        .into(),
-                        GTPrimitive::String((0, 0).into()).into(),
-                    ]
+                            GTObject {
+                                extensions: vec![
+                                    GTIdentifier::new((0, 0).into(), "Good".into()).into()
+                                ],
+                                properties: vec![GTProperty {
+                                    doc: None,
+                                    name: "author".into(),
+                                    descriptor: GTPrimitive::String((0, 0).into()).into(),
+                                    required: true,
+                                }]
+                            }
+                            .into(),
+                            GTPrimitive::String((0, 0).into()).into(),
+                        ]
                 },)
             }
             .convert(&TSConvertResolve::new(), &|_| {}),

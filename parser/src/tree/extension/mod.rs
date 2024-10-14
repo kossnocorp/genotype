@@ -1,4 +1,4 @@
-use super::GTReference;
+use super::{GTIdentifier, GTReference};
 
 mod parse;
 
@@ -7,10 +7,16 @@ pub struct GTExtension {
     pub reference: GTReference,
 }
 
-impl From<&str> for GTExtension {
-    fn from(str: &str) -> Self {
+impl From<GTReference> for GTExtension {
+    fn from(reference: GTReference) -> Self {
+        GTExtension { reference }
+    }
+}
+
+impl From<GTIdentifier> for GTExtension {
+    fn from(idenfitier: GTIdentifier) -> Self {
         GTExtension {
-            reference: str.into(),
+            reference: idenfitier.into(),
         }
     }
 }

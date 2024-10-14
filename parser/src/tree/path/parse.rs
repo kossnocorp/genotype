@@ -45,19 +45,25 @@ mod tests {
                     },
                     GTImport {
                         path: "../user".into(),
-                        reference: GTImportReference::Name("User".into()),
+                        reference: GTImportReference::Name(GTIdentifier::new(
+                            (43, 47).into(),
+                            "User".into()
+                        )),
                     },
                     GTImport {
                         path: "./misc/order".into(),
                         reference: GTImportReference::Names(vec![
-                            GTImportName::Name("Order".into(),),
-                            GTImportName::Name("SomethingElse".into(),),
+                            GTImportName::Name(GTIdentifier::new((78, 83).into(), "Order".into()),),
+                            GTImportName::Name(GTIdentifier::new(
+                                (85, 98).into(),
+                                "SomethingElse".into()
+                            ),),
                         ],),
                     },
                 ],
                 aliases: vec![GTAlias {
                     doc: None,
-                    name: "Order".into(),
+                    name: GTIdentifier::new((117, 122).into(), "Order".into()),
                     descriptor: GTDescriptor::Object(GTObject {
                         extensions: vec![],
                         properties: vec![
@@ -65,7 +71,7 @@ mod tests {
                                 doc: None,
                                 name: "book".into(),
                                 descriptor: GTDescriptor::InlineImport(GTInlineImport {
-                                    name: "Book".into(),
+                                    name: GTIdentifier::new((0, 0).into(), "Book".into()),
                                     path: "book".into(),
                                 },),
                                 required: true,
@@ -74,7 +80,7 @@ mod tests {
                                 doc: None,
                                 name: "user".into(),
                                 descriptor: GTDescriptor::InlineImport(GTInlineImport {
-                                    name: "User".into(),
+                                    name: GTIdentifier::new((0, 0).into(), "User".into()),
                                     path: "./misc/user".into(),
                                 },),
                                 required: true,

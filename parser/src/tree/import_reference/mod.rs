@@ -6,3 +6,9 @@ pub enum GTImportReference {
     Names(Vec<GTImportName>),
     Name(GTIdentifier),
 }
+
+impl From<GTIdentifier> for GTImportReference {
+    fn from(identifier: GTIdentifier) -> Self {
+        GTImportReference::Name(identifier)
+    }
+}

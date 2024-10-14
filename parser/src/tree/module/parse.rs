@@ -104,20 +104,26 @@ mod tests {
                     aliases: vec![
                         GTAlias {
                             doc: None,
-                            name: "Age".into(),
+                            name: GTIdentifier::new((0, 3).into(), "Age".into()),
                             descriptor: GTPrimitive::Int((6, 9).into()).into(),
                         },
                         GTAlias {
                             doc: None,
-                            name: "AnotherAge".into(),
-                            descriptor: GTDescriptor::Reference("Age".into()),
+                            name: GTIdentifier::new((11, 21).into(), "AnotherAge".into()),
+                            descriptor: GTIdentifier::new((24, 27).into(), "Age".into()).into(),
                         },
                     ],
                 },
                 resolve: GTResolve {
                     deps: HashSet::new(),
-                    exports: vec!["Age".into(), "AnotherAge".into()],
-                    references: HashSet::from_iter(vec!["Age".into()]),
+                    exports: vec![
+                        GTIdentifier::new((0, 3).into(), "Age".into()),
+                        GTIdentifier::new((11, 21).into(), "AnotherAge".into()),
+                    ],
+                    references: HashSet::from_iter(vec![GTIdentifier::new(
+                        (24, 27).into(),
+                        "Age".into(),
+                    )]),
                 },
             },
         );
@@ -136,22 +142,22 @@ mod tests {
                     aliases: vec![
                         GTAlias {
                             doc: None,
-                            name: "String".into(),
+                            name: GTIdentifier::new((0, 6).into(), "String".into()),
                             descriptor: GTPrimitive::String((9, 15).into()).into(),
                         },
                         GTAlias {
                             doc: None,
-                            name: "Int".into(),
+                            name: GTIdentifier::new((17, 20).into(), "Int".into()),
                             descriptor: GTPrimitive::Int((23, 26).into()).into(),
                         },
                         GTAlias {
                             doc: None,
-                            name: "Float".into(),
+                            name: GTIdentifier::new((28, 33).into(), "Float".into()),
                             descriptor: GTPrimitive::Float((36, 41).into()).into(),
                         },
                         GTAlias {
                             doc: None,
-                            name: "Boolean".into(),
+                            name: GTIdentifier::new((43, 50).into(), "Boolean".into()),
                             descriptor: GTPrimitive::Boolean((53, 60).into()).into(),
                         },
                     ],
@@ -159,10 +165,10 @@ mod tests {
                 resolve: GTResolve {
                     deps: HashSet::new(),
                     exports: vec![
-                        "String".into(),
-                        "Int".into(),
-                        "Float".into(),
-                        "Boolean".into(),
+                        GTIdentifier::new((0, 6).into(), "String".into()),
+                        GTIdentifier::new((17, 20).into(), "Int".into()),
+                        GTIdentifier::new((28, 33).into(), "Float".into()),
+                        GTIdentifier::new((43, 50).into(), "Boolean".into()),
                     ],
                     references: HashSet::new(),
                 },
@@ -183,7 +189,7 @@ mod tests {
                     aliases: vec![
                         GTAlias {
                             doc: None,
-                            name: "Hello".into(),
+                            name: GTIdentifier::new((0, 5).into(), "Hello".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![],
                                 properties: vec![GTProperty {
@@ -196,7 +202,7 @@ mod tests {
                         },
                         GTAlias {
                             doc: None,
-                            name: "Hello".into(),
+                            name: GTIdentifier::new((28, 33).into(), "Hello".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![],
                                 properties: vec![
@@ -225,7 +231,7 @@ mod tests {
                         },
                         GTAlias {
                             doc: None,
-                            name: "Empty".into(),
+                            name: GTIdentifier::new((83, 88).into(), "Empty".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![],
                                 properties: vec![],
@@ -233,7 +239,7 @@ mod tests {
                         },
                         GTAlias {
                             doc: None,
-                            name: "Empty".into(),
+                            name: GTIdentifier::new((95, 100).into(), "Empty".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![],
                                 properties: vec![],
@@ -241,7 +247,7 @@ mod tests {
                         },
                         GTAlias {
                             doc: None,
-                            name: "Hello".into(),
+                            name: GTIdentifier::new((111, 116).into(), "Hello".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![],
                                 properties: vec![GTProperty {
@@ -254,7 +260,7 @@ mod tests {
                         },
                         GTAlias {
                             doc: None,
-                            name: "Hello".into(),
+                            name: GTIdentifier::new((137, 142).into(), "Hello".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![],
                                 properties: vec![
@@ -278,12 +284,12 @@ mod tests {
                 resolve: GTResolve {
                     deps: HashSet::new(),
                     exports: vec![
-                        "Hello".into(),
-                        "Hello".into(),
-                        "Empty".into(),
-                        "Empty".into(),
-                        "Hello".into(),
-                        "Hello".into(),
+                        GTIdentifier::new((0, 5).into(), "Hello".into()),
+                        GTIdentifier::new((28, 33).into(), "Hello".into()),
+                        GTIdentifier::new((83, 88).into(), "Empty".into()),
+                        GTIdentifier::new((95, 100).into(), "Empty".into()),
+                        GTIdentifier::new((111, 116).into(), "Hello".into()),
+                        GTIdentifier::new((137, 142).into(), "Hello".into()),
                     ],
                     references: HashSet::new(),
                 },
@@ -304,12 +310,12 @@ mod tests {
                     aliases: vec![
                         GTAlias {
                             doc: Some("Alias comment".into()),
-                            name: "Hello".into(),
+                            name: GTIdentifier::new((76, 81).into(), "Hello".into()),
                             descriptor: GTPrimitive::String((105, 111).into()).into(),
                         },
                         GTAlias {
                             doc: Some("Multiline...\n...alias comment".into()),
-                            name: "Hello".into(),
+                            name: GTIdentifier::new((151, 156).into(), "Hello".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![],
                                 properties: vec![
@@ -330,14 +336,18 @@ mod tests {
                         },
                         GTAlias {
                             doc: None,
-                            name: "Hello".into(),
+                            name: GTIdentifier::new((258, 263).into(), "Hello".into()),
                             descriptor: GTPrimitive::String((266, 272).into()).into(),
                         },
                     ],
                 },
                 resolve: GTResolve {
                     deps: HashSet::new(),
-                    exports: vec!["Hello".into(), "Hello".into(), "Hello".into()],
+                    exports: vec![
+                        GTIdentifier::new((76, 81).into(), "Hello".into()),
+                        GTIdentifier::new((151, 156).into(), "Hello".into()),
+                        GTIdentifier::new((258, 263).into(), "Hello".into()),
+                    ],
                     references: HashSet::new(),
                 },
             },
@@ -356,7 +366,7 @@ mod tests {
                     imports: vec![],
                     aliases: vec![GTAlias {
                         doc: None,
-                        name: "Hello".into(),
+                        name: GTIdentifier::new((0, 5).into(), "Hello".into()),
                         descriptor: GTDescriptor::Object(GTObject {
                             extensions: vec![],
                             properties: vec![
@@ -388,7 +398,7 @@ mod tests {
                 },
                 resolve: GTResolve {
                     deps: HashSet::new(),
-                    exports: vec!["Hello".into()],
+                    exports: vec![GTIdentifier::new((0, 5).into(), "Hello".into())],
                     references: HashSet::new(),
                 },
             },
@@ -408,7 +418,7 @@ mod tests {
                     aliases: vec![
                         GTAlias {
                             doc: None,
-                            name: "Hello".into(),
+                            name: GTIdentifier::new((0, 5).into(), "Hello".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![],
                                 properties: vec![GTProperty {
@@ -441,7 +451,7 @@ mod tests {
                         },
                         GTAlias {
                             doc: None,
-                            name: "Hello".into(),
+                            name: GTIdentifier::new((62, 67).into(), "Hello".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![],
                                 properties: vec![GTProperty {
@@ -449,7 +459,7 @@ mod tests {
                                     name: "name".into(),
                                     descriptor: GTDescriptor::Alias(Box::new(GTAlias {
                                         doc: None,
-                                        name: "Named".into(),
+                                        name: GTIdentifier::new((80, 85).into(), "Named".into()),
                                         descriptor: GTDescriptor::Object(GTObject {
                                             extensions: vec![],
                                             properties: vec![
@@ -480,7 +490,11 @@ mod tests {
                 },
                 resolve: GTResolve {
                     deps: HashSet::new(),
-                    exports: vec!["Hello".into(), "Hello".into(), "Named".into()],
+                    exports: vec![
+                        GTIdentifier::new((0, 5).into(), "Hello".into()),
+                        GTIdentifier::new((62, 67).into(), "Hello".into()),
+                        GTIdentifier::new((80, 85).into(), "Named".into()),
+                    ],
                     references: HashSet::new(),
                 },
             },
@@ -499,7 +513,7 @@ mod tests {
                     imports: vec![],
                     aliases: vec![GTAlias {
                         doc: None,
-                        name: "Book".into(),
+                        name: GTIdentifier::new((0, 4).into(), "Book".into()),
                         descriptor: GTDescriptor::Object(GTObject {
                             extensions: vec![],
                             properties: vec![
@@ -523,7 +537,7 @@ mod tests {
                 },
                 resolve: GTResolve {
                     deps: HashSet::new(),
-                    exports: vec!["Book".into()],
+                    exports: vec![GTIdentifier::new((0, 4).into(), "Book".into())],
                     references: HashSet::new(),
                 },
             },
@@ -543,7 +557,7 @@ mod tests {
                     aliases: vec![
                         GTAlias {
                             doc: None,
-                            name: "User".into(),
+                            name: GTIdentifier::new((0, 4).into(), "User".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![],
                                 properties: vec![
@@ -575,7 +589,7 @@ mod tests {
                         },
                         GTAlias {
                             doc: None,
-                            name: "Address".into(),
+                            name: GTIdentifier::new((70, 77).into(), "Address".into()),
                             descriptor: GTDescriptor::Tuple(GTTuple {
                                 descriptors: vec![
                                     GTPrimitive::Int((81, 84).into()).into(),
@@ -588,7 +602,10 @@ mod tests {
                 },
                 resolve: GTResolve {
                     deps: HashSet::new(),
-                    exports: vec!["User".into(), "Address".into()],
+                    exports: vec![
+                        GTIdentifier::new((0, 4).into(), "User".into()),
+                        GTIdentifier::new((70, 77).into(), "Address".into()),
+                    ],
                     references: HashSet::new(),
                 },
             },
@@ -612,20 +629,32 @@ mod tests {
                         GTImport {
                             path: "../../author".into(),
                             reference: GTImportReference::Names(vec![
-                                GTImportName::Name("Author".into()),
-                                GTImportName::Name("Genre".into()),
-                                GTImportName::Alias("Something".into(), "Else".into()),
+                                GTImportName::Name(GTIdentifier::new(
+                                    (31, 37).into(),
+                                    "Author".into(),
+                                )),
+                                GTImportName::Name(GTIdentifier::new(
+                                    (39, 44).into(),
+                                    "Genre".into(),
+                                )),
+                                GTImportName::Alias(
+                                    GTIdentifier::new((46, 55).into(), "Something".into()),
+                                    GTIdentifier::new((59, 63).into(), "Else".into()),
+                                ),
                             ]),
                         },
                         GTImport {
                             path: "author".into(),
-                            reference: GTImportReference::Name("Author".into()),
+                            reference: GTImportReference::Name(GTIdentifier::new(
+                                (76, 82).into(),
+                                "Author".into(),
+                            )),
                         },
                     ],
                     aliases: vec![
                         GTAlias {
                             doc: None,
-                            name: "Book".into(),
+                            name: GTIdentifier::new((84, 88).into(), "Book".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![],
                                 properties: vec![
@@ -640,14 +669,18 @@ mod tests {
                                         name: "author".into(),
                                         descriptor: GTDescriptor::InlineImport(GTInlineImport {
                                             path: "../../author".into(),
-                                            name: "Author".into(),
+                                            name: GTIdentifier::new((0, 0).into(), "Author".into()),
                                         }),
                                         required: true,
                                     },
                                     GTProperty {
                                         doc: None,
                                         name: "genre".into(),
-                                        descriptor: GTDescriptor::Reference("Genre".into()),
+                                        descriptor: GTIdentifier::new(
+                                            (148, 153).into(),
+                                            "Genre".into(),
+                                        )
+                                        .into(),
                                         required: true,
                                     },
                                 ],
@@ -655,18 +688,24 @@ mod tests {
                         },
                         GTAlias {
                             doc: None,
-                            name: "Author".into(),
+                            name: GTIdentifier::new((157, 163).into(), "Author".into()),
                             descriptor: GTDescriptor::InlineImport(GTInlineImport {
                                 path: "../../author".into(),
-                                name: "Author".into(),
+                                name: GTIdentifier::new((0, 0).into(), "Author".into()),
                             }),
                         },
                     ],
                 },
                 resolve: GTResolve {
                     deps: HashSet::from_iter(vec!["author".into(), "../../author".into()]),
-                    exports: vec!["Book".into(), "Author".into()],
-                    references: HashSet::from_iter(vec!["Genre".into()]),
+                    exports: vec![
+                        GTIdentifier::new((84, 88).into(), "Book".into()),
+                        GTIdentifier::new((157, 163).into(), "Author".into()),
+                    ],
+                    references: HashSet::from_iter(vec![GTIdentifier::new(
+                        (148, 153).into(),
+                        "Genre".into(),
+                    )]),
                 },
             },
         );
@@ -685,7 +724,7 @@ mod tests {
                     aliases: vec![
                         GTAlias {
                             doc: None,
-                            name: "Base".into(),
+                            name: GTIdentifier::new((0, 4).into(), "Base".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![],
                                 properties: vec![
@@ -706,10 +745,13 @@ mod tests {
                         },
                         GTAlias {
                             doc: None,
-                            name: "Processor".into(),
+                            name: GTIdentifier::new((39, 48).into(), "Processor".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![GTExtension {
-                                    reference: GTReference("Base".into()),
+                                    reference: GTReference(GTIdentifier::new(
+                                        (58, 62).into(),
+                                        "Base".into(),
+                                    )),
                                 }],
                                 properties: vec![GTProperty {
                                     doc: None,
@@ -721,10 +763,13 @@ mod tests {
                         },
                         GTAlias {
                             doc: None,
-                            name: "User".into(),
+                            name: GTIdentifier::new((80, 84).into(), "User".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![GTExtension {
-                                    reference: GTReference("Base".into()),
+                                    reference: GTReference(GTIdentifier::new(
+                                        (94, 98).into(),
+                                        "Base".into(),
+                                    )),
                                 }],
                                 properties: vec![GTProperty {
                                     doc: None,
@@ -738,8 +783,15 @@ mod tests {
                 },
                 resolve: GTResolve {
                     deps: HashSet::new(),
-                    exports: vec!["Base".into(), "Processor".into(), "User".into()],
-                    references: HashSet::from_iter(vec!["Base".into()]),
+                    exports: vec![
+                        GTIdentifier::new((0, 4).into(), "Base".into()),
+                        GTIdentifier::new((39, 48).into(), "Processor".into()),
+                        GTIdentifier::new((80, 84).into(), "User".into()),
+                    ],
+                    references: HashSet::from_iter(vec![
+                        GTIdentifier::new((58, 62).into(), "Base".into()),
+                        GTIdentifier::new((94, 98).into(), "Base".into()),
+                    ]),
                 },
             },
         );
@@ -758,7 +810,7 @@ mod tests {
                     aliases: vec![
                         GTAlias {
                             doc: None,
-                            name: "CommentBase".into(),
+                            name: GTIdentifier::new((0, 11).into(), "CommentBase".into()),
                             descriptor: GTObject {
                                 extensions: vec![],
                                 properties: vec![
@@ -780,9 +832,13 @@ mod tests {
                         },
                         GTAlias {
                             doc: None,
-                            name: "UserComment".into(),
+                            name: GTIdentifier::new((41, 52).into(), "UserComment".into()),
                             descriptor: GTObject {
-                                extensions: vec!["CommentBase".into()],
+                                extensions: vec![GTIdentifier::new(
+                                    (62, 73).into(),
+                                    "CommentBase".into(),
+                                )
+                                .into()],
                                 properties: vec![
                                     GTProperty {
                                         doc: None,
@@ -808,9 +864,13 @@ mod tests {
                         },
                         GTAlias {
                             doc: None,
-                            name: "SystemComment".into(),
+                            name: GTIdentifier::new((130, 143).into(), "SystemComment".into()),
                             descriptor: GTObject {
-                                extensions: vec!["CommentBase".into()],
+                                extensions: vec![GTIdentifier::new(
+                                    (153, 164).into(),
+                                    "CommentBase".into(),
+                                )
+                                .into()],
                                 properties: vec![
                                     GTProperty {
                                         doc: None,
@@ -830,43 +890,43 @@ mod tests {
                         },
                         GTAlias {
                             doc: None,
-                            name: "False".into(),
+                            name: GTIdentifier::new((203, 208).into(), "False".into()),
                             descriptor: GTLiteral::Boolean(false).into(),
                         },
                         GTAlias {
                             doc: None,
-                            name: "Float".into(),
+                            name: GTIdentifier::new((218, 223).into(), "Float".into()),
                             descriptor: GTLiteral::Float(1.000_123).into(),
                         },
                         GTAlias {
                             doc: None,
-                            name: "Number".into(),
+                            name: GTIdentifier::new((237, 243).into(), "Number".into()),
                             descriptor: GTLiteral::Integer(1_234_567).into(),
                         },
                         GTAlias {
                             doc: None,
-                            name: "String".into(),
+                            name: GTIdentifier::new((257, 263).into(), "String".into()),
                             descriptor: GTLiteral::String("Hello, \\\"world\\\"! \\\\".into())
                                 .into(),
                         },
                         GTAlias {
                             doc: None,
-                            name: "NegativeInt".into(),
+                            name: GTIdentifier::new((290, 301).into(), "NegativeInt".into()),
                             descriptor: GTLiteral::Integer(-1).into(),
                         },
                         GTAlias {
                             doc: None,
-                            name: "NegativeFloat".into(),
+                            name: GTIdentifier::new((308, 321).into(), "NegativeFloat".into()),
                             descriptor: GTLiteral::Float(-1.0).into(),
                         },
                         GTAlias {
                             doc: None,
-                            name: "LargeFloat".into(),
+                            name: GTIdentifier::new((330, 340).into(), "LargeFloat".into()),
                             descriptor: GTLiteral::Float(1e6).into(),
                         },
                         GTAlias {
                             doc: None,
-                            name: "SmallFloat".into(),
+                            name: GTIdentifier::new((348, 358).into(), "SmallFloat".into()),
                             descriptor: GTLiteral::Float(3.5e-4).into(),
                         },
                     ],
@@ -874,19 +934,22 @@ mod tests {
                 resolve: GTResolve {
                     deps: HashSet::new(),
                     exports: vec![
-                        "CommentBase".into(),
-                        "UserComment".into(),
-                        "SystemComment".into(),
-                        "False".into(),
-                        "Float".into(),
-                        "Number".into(),
-                        "String".into(),
-                        "NegativeInt".into(),
-                        "NegativeFloat".into(),
-                        "LargeFloat".into(),
-                        "SmallFloat".into(),
+                        GTIdentifier::new((0, 11).into(), "CommentBase".into()),
+                        GTIdentifier::new((41, 52).into(), "UserComment".into()),
+                        GTIdentifier::new((130, 143).into(), "SystemComment".into()),
+                        GTIdentifier::new((203, 208).into(), "False".into()),
+                        GTIdentifier::new((218, 223).into(), "Float".into()),
+                        GTIdentifier::new((237, 243).into(), "Number".into()),
+                        GTIdentifier::new((257, 263).into(), "String".into()),
+                        GTIdentifier::new((290, 301).into(), "NegativeInt".into()),
+                        GTIdentifier::new((308, 321).into(), "NegativeFloat".into()),
+                        GTIdentifier::new((330, 340).into(), "LargeFloat".into()),
+                        GTIdentifier::new((348, 358).into(), "SmallFloat".into()),
                     ],
-                    references: HashSet::from_iter(vec!["CommentBase".into()]),
+                    references: HashSet::from_iter(vec![
+                        GTIdentifier::new((62, 73).into(), "CommentBase".into()),
+                        GTIdentifier::new((153, 164).into(), "CommentBase".into()),
+                    ]),
                 },
             },
         );

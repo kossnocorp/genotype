@@ -1,7 +1,7 @@
 use miette::SourceSpan;
 use pest::Span;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone)]
 pub struct GTSpan(pub usize, pub usize);
 
 impl GTSpan {

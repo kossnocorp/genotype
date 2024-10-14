@@ -68,8 +68,11 @@ mod tests {
             GTImport {
                 path: "./path/to/module".into(),
                 reference: GTImportReference::Names(vec![
-                    GTImportName::Name("Name".into()),
-                    GTImportName::Alias("Name".into(), "Alias".into())
+                    GTImportName::Name(GTIdentifier::new((0, 0).into(), "Name".into())),
+                    GTImportName::Alias(
+                        GTIdentifier::new((0, 0).into(), "Name".into()),
+                        GTIdentifier::new((0, 0).into(), "Alias".into())
+                    )
                 ])
             }
             .convert(&TSConvertResolve::new(), &|_| {}),
@@ -88,7 +91,7 @@ mod tests {
         assert_eq!(
             GTImport {
                 path: "./path/to/module".into(),
-                reference: GTImportReference::Name("Name".into())
+                reference: GTIdentifier::new((0, 0).into(), "Name".into()).into()
             }
             .convert(&TSConvertResolve::new(), &|_| {}),
             TSImport {

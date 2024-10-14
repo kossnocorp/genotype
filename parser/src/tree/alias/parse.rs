@@ -73,12 +73,15 @@ enum ParseState {
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use crate::tree::GTModule;
+    use crate::{tree::GTModule, GTIdentifier};
 
     #[test]
     fn test_parse_exports() {
         let source_code = crate::GTSourceCode::new("module.type".into(), "Hello = string".into());
         let parse = GTModule::parse(source_code).unwrap();
-        assert_eq!(parse.resolve.exports, vec!["Hello".into()]);
+        assert_eq!(
+            parse.resolve.exports,
+            vec![GTIdentifier::new((0, 5).into(), "Hello".into())]
+        );
     }
 }

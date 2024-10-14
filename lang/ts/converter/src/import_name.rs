@@ -24,12 +24,13 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use genotype_parser::tree::import_name::GTImportName;
+    use genotype_parser::{tree::import_name::GTImportName, GTIdentifier};
 
     #[test]
     fn test_convert_name() {
         assert_eq!(
-            GTImportName::Name("Name".into()).convert(&TSConvertResolve::new(), &|_| {}),
+            GTImportName::Name(GTIdentifier::new((0, 0).into(), "Name".into()))
+                .convert(&TSConvertResolve::new(), &|_| {}),
             TSImportName::Name("Name".into()),
         );
     }
@@ -37,8 +38,11 @@ mod tests {
     #[test]
     fn test_convert_alias() {
         assert_eq!(
-            GTImportName::Alias("Name".into(), "Alias".into())
-                .convert(&TSConvertResolve::new(), &|_| {}),
+            GTImportName::Alias(
+                GTIdentifier::new((0, 0).into(), "Name".into()),
+                GTIdentifier::new((0, 0).into(), "Alias".into())
+            )
+            .convert(&TSConvertResolve::new(), &|_| {}),
             TSImportName::Alias("Name".into(), "Alias".into()),
         );
     }

@@ -86,7 +86,7 @@ mod tests {
         assert_eq!(
             GTDescriptor::Alias(Box::new(GTAlias {
                 doc: None,
-                name: "Name".into(),
+                name: GTIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }))
             .convert(&TSConvertResolve::new(), &|definition| {
@@ -122,7 +122,7 @@ mod tests {
         assert_eq!(
             GTDescriptor::InlineImport(GTInlineImport {
                 path: "./path/to/module".into(),
-                name: "Name".into()
+                name: GTIdentifier::new((0, 0).into(), "Name".into())
             })
             .convert(&TSConvertResolve::new(), &|_| {}),
             TSDescriptor::InlineImport(TSInlineImport {
@@ -182,7 +182,7 @@ mod tests {
 
         assert_eq!(
             GTDescriptor::Object(GTObject {
-                extensions: vec!["Good".into()],
+                extensions: vec![GTIdentifier::new((0, 0).into(), "Good".into()).into()],
                 properties: vec![GTProperty {
                     doc: None,
                     name: "title".into(),
@@ -219,7 +219,8 @@ mod tests {
     #[test]
     fn test_convert_reference() {
         assert_eq!(
-            GTDescriptor::Reference("Name".into()).convert(&TSConvertResolve::new(), &|_| {}),
+            GTDescriptor::Reference(GTIdentifier::new((0, 0).into(), "Name".into()).into())
+                .convert(&TSConvertResolve::new(), &|_| {}),
             TSDescriptor::Reference("Name".into())
         );
     }

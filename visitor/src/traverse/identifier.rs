@@ -19,7 +19,7 @@ mod tests {
     #[test]
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
-        let mut identifier = GTIdentifier("Name".into());
+        let mut identifier = GTIdentifier::new((0, 0).into(), "Name".into());
         identifier.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,

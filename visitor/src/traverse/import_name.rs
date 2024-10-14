@@ -27,7 +27,7 @@ mod tests {
     #[test]
     fn test_traverse_name() {
         let mut visitor = GTMockVisitor::new();
-        let identifier = GTIdentifier("Name".into());
+        let identifier = GTIdentifier::new((0, 0).into(), "Name".into());
         let mut import_name = GTImportName::Name(identifier.clone());
         import_name.traverse(&mut visitor);
         assert_eq!(
@@ -42,8 +42,8 @@ mod tests {
     #[test]
     fn test_traverse_alias() {
         let mut visitor = GTMockVisitor::new();
-        let identifier = GTIdentifier("Name".into());
-        let alias = GTIdentifier("Alias".into());
+        let identifier = GTIdentifier::new((0, 0).into(), "Name".into());
+        let alias = GTIdentifier::new((0, 0).into(), "Alias".into());
         let mut import_name = GTImportName::Alias(identifier.clone(), alias.clone());
         import_name.traverse(&mut visitor);
         assert_eq!(

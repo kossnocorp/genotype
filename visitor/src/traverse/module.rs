@@ -40,7 +40,7 @@ mod tests {
         };
         let alias = GTAlias {
             doc: None,
-            name: "Name".into(),
+            name: GTIdentifier::new((0, 0).into(), "Name".into()),
             descriptor: GTPrimitive::String((0, 0).into()).into(),
         };
         let mut module = GTModule {
@@ -75,7 +75,7 @@ mod tests {
         };
         let alias = GTAlias {
             doc: None,
-            name: "Name".into(),
+            name: GTIdentifier::new((0, 0).into(), "Name".into()),
             descriptor: GTPrimitive::String((0, 0).into()).into(),
         };
         let mut module = GTModule {

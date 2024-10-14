@@ -44,7 +44,7 @@ mod tests {
         let mut visitor = GTMockVisitor::new();
         let alias = GTAlias {
             doc: None,
-            name: "Name".into(),
+            name: GTIdentifier::new((0, 0).into(), "Name".into()),
             descriptor: GTPrimitive::String((0, 0).into()).into(),
         };
         let mut descriptor = GTDescriptor::Alias(Box::new(alias.clone()));
@@ -84,7 +84,7 @@ mod tests {
         let mut visitor = GTMockVisitor::new();
         let import = GTInlineImport {
             path: "./path/to/module".into(),
-            name: "Name".into(),
+            name: GTIdentifier::new((0, 0).into(), "Name".into()),
         };
         let mut descriptor = GTDescriptor::InlineImport(import.clone());
         descriptor.traverse(&mut visitor);
@@ -161,7 +161,7 @@ mod tests {
     #[test]
     fn test_traverse_reference() {
         let mut visitor = GTMockVisitor::new();
-        let identifier = GTIdentifier("Name".into());
+        let identifier = GTIdentifier::new((0, 0).into(), "Name".into());
         let reference = GTReference(identifier.clone());
         let mut descriptor = GTDescriptor::Reference(reference.clone());
         descriptor.traverse(&mut visitor);

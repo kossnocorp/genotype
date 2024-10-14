@@ -8,7 +8,7 @@ impl TSConvert<TSIdentifier> for GTIdentifier {
     where
         HoistFn: Fn(TSDefinition),
     {
-        TSIdentifier(resolve.identifiers.get(&self).unwrap_or(&self).0.clone())
+        TSIdentifier(resolve.identifiers.get(&self).unwrap_or(&self).1.clone())
     }
 }
 
@@ -22,17 +22,21 @@ mod tests {
     fn test_convert_base() {
         assert_eq!(
             TSIdentifier("Foo".into()),
-            GTIdentifier("Foo".into()).convert(&TSConvertResolve::new(), &|_| {}),
+            GTIdentifier::new((0, 0).into(), "Foo".into())
+                .convert(&TSConvertResolve::new(), &|_| {}),
         );
     }
 
     #[test]
     fn test_convert_resolve() {
         let mut resolve = TSConvertResolve::new();
-        resolve.identifiers.insert("Foo".into(), "foo.Bar".into());
+        resolve.identifiers.insert(
+            GTIdentifier::new((0, 0).into(), "Foo".into()),
+            GTIdentifier::new((0, 0).into(), "foo.Bar".into()),
+        );
         assert_eq!(
             TSIdentifier("foo.Bar".into()),
-            GTIdentifier("Foo".into()).convert(&resolve, &|_| {}),
+            GTIdentifier::new((0, 0).into(), "Foo".into()).convert(&resolve, &|_| {}),
         );
     }
 }
