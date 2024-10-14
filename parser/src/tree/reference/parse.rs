@@ -9,7 +9,7 @@ use super::GTReference;
 
 impl GTReference {
     pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> Self {
-        let identifier: GTIdentifier = GTIdentifier::parse(pair);
+        let identifier: GTIdentifier = pair.into();
         resolve.references.insert(identifier.clone());
         GTReference(identifier)
     }

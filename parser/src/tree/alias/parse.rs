@@ -46,7 +46,7 @@ fn parse(
         }
 
         ParseState::Name(doc) => {
-            let name = GTIdentifier::parse(pair);
+            let name: GTIdentifier = pair.into();
             resolve.exports.push(name.clone());
             let pair = inner.next().unwrap(); // [TODO]
             parse(inner, pair, resolve, ParseState::Descriptor(doc, name))

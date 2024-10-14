@@ -45,12 +45,11 @@ fn parse(
                 for pair in pair.into_inner() {
                     let mut inner = pair.into_inner();
 
-                    let name = GTIdentifier::parse(inner.next().unwrap());
+                    let name = inner.next().unwrap().into();
                     let alias = inner.next();
 
                     if let Some(alias) = alias {
-                        let alias = GTIdentifier::parse(alias);
-                        names.push(GTImportName::Alias(name, alias));
+                        names.push(GTImportName::Alias(name, alias.into()));
                     } else {
                         names.push(GTImportName::Name(name));
                     }
@@ -62,13 +61,10 @@ fn parse(
                 })
             }
 
-            Rule::name => {
-                let name = GTIdentifier::parse(pair);
-                Ok(GTImport {
-                    path,
-                    reference: GTImportReference::Name(name),
-                })
-            }
+            Rule::name => Ok(GTImport {
+                path,
+                reference: GTImportReference::Name(pair.into()),
+            }),
 
             _ => {
                 println!("5 ====== unknown rule: {:?}", pair);
