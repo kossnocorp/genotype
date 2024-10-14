@@ -1,23 +1,51 @@
 use pest::iterators::Pair;
 
-use crate::parser::Rule;
+use crate::{diagnostic::error::GTNodeParseError, parser::Rule};
 
 use super::GTPrimitive;
 
 impl TryFrom<Pair<'_, Rule>> for GTPrimitive {
-    type Error = Box<dyn std::error::Error>;
+    type Error = GTNodeParseError;
 
     fn try_from(pair: Pair<'_, Rule>) -> Result<Self, Self::Error> {
+        let span = pair.as_span().into();
+
         match pair.as_str() {
-            "boolean" => Ok(GTPrimitive::Boolean),
+            "boolean" => Ok(GTPrimitive::Boolean(span)),
 
-            "string" => Ok(GTPrimitive::String),
+            "string" => Ok(GTPrimitive::String(span)),
 
-            "int" => Ok(GTPrimitive::Int),
+            "int" => Ok(GTPrimitive::Int(span)),
 
-            "float" => Ok(GTPrimitive::Float),
+            "float" => Ok(GTPrimitive::Float(span)),
 
-            _ => Err("Unknown primitive".into()),
+            _ => Err(GTNodeParseError(span, "unknown primitive")),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{diagnostic::span::GTSpan, parser::GenotypeParser};
+    use pest::Parser;
+
+    use super::*;
+
+    #[test]
+    fn test_from_pair() {
+        let mut pairs = GenotypeParser::parse(Rule::primitive, "boolean").unwrap();
+        assert_eq!(
+            GTPrimitive::try_from(pairs.next().unwrap()).unwrap(),
+            GTPrimitive::Boolean(GTSpan(0, 7))
+        );
+    }
+
+    #[test]
+    fn test_error() {
+        let mut pairs = GenotypeParser::parse(Rule::literal_boolean, "false").unwrap();
+        assert_eq!(
+            GTPrimitive::try_from(pairs.next().unwrap()).unwrap_err(),
+            GTNodeParseError((0, 5).into(), "unknown primitive")
+        );
     }
 }

@@ -32,7 +32,7 @@ mod tests {
         let property = GTProperty {
             doc: None,
             name: GTKey("key".into()),
-            descriptor: GTPrimitive::String.into(),
+            descriptor: GTPrimitive::String((0, 0).into()).into(),
             required: true,
         };
         let mut object = GTObject {
@@ -50,7 +50,7 @@ mod tests {
                 GTMockVisited::Property(property.clone()),
                 GTMockVisited::Key(property.name.clone()),
                 GTMockVisited::Descriptor(property.descriptor.clone()),
-                GTMockVisited::Primitive(GTPrimitive::String),
+                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
             ]
         );
     }

@@ -32,7 +32,10 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             GTTuple {
-                descriptors: vec![GTPrimitive::Boolean.into(), GTPrimitive::String.into(),]
+                descriptors: vec![
+                    GTPrimitive::Boolean((0, 0).into()).into(),
+                    GTPrimitive::String((0, 0).into()).into(),
+                ]
             }
             .convert(&TSConvertResolve::new(), &|_| {}),
             TSTuple {

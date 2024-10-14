@@ -1,11 +1,11 @@
 use pest::iterators::Pair;
 
-use crate::parser::Rule;
+use crate::{diagnostic::error::GTNodeParseError, parser::Rule};
 
 use super::GTLiteral;
 
 impl TryFrom<Pair<'_, Rule>> for GTLiteral {
-    type Error = Box<dyn std::error::Error>;
+    type Error = GTNodeParseError;
 
     fn try_from(pair: Pair<'_, Rule>) -> Result<Self, Self::Error> {
         let pair = pair.into_inner().next().unwrap();

@@ -16,22 +16,27 @@ impl TryFrom<Pair<'_, Rule>> for GTPath {
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use crate::tree::*;
+    use crate::{tree::*, GTSourceCode};
 
     #[test]
     fn test_parse_normalize() {
-        let code = r#"use author/./*
+        let source_code = GTSourceCode::new(
+            "module.type".into(),
+            r#"use author/./*
         use ../user/../user/User
         use ./././misc/order/{Order, SomethingElse}
         
         Order = {
             book: book/Book
             user: ./misc/../misc/./user/User
-        }"#;
-        let parse = GTModule::parse(code.into()).unwrap();
+        }"#
+            .into(),
+        );
+        let parse = GTModule::parse(source_code.clone()).unwrap();
         assert_eq!(
             parse.module,
             GTModule {
+                source_code,
                 doc: None,
                 imports: vec![
                     GTImport {

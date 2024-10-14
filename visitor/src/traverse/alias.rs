@@ -27,7 +27,7 @@ mod tests {
         let mut alias = GTAlias {
             doc: None,
             name: "Name".into(),
-            descriptor: GTPrimitive::String.into(),
+            descriptor: GTPrimitive::String((0, 0).into()).into(),
         };
         alias.traverse(&mut visitor);
         assert_eq!(
@@ -35,7 +35,7 @@ mod tests {
             vec![
                 GTMockVisited::Alias(alias.clone()),
                 GTMockVisited::Descriptor(alias.descriptor.clone()),
-                GTMockVisited::Primitive(GTPrimitive::String),
+                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
             ]
         );
     }
@@ -46,7 +46,7 @@ mod tests {
         let mut alias = GTAlias {
             doc: Some(GTDoc("Hello, world!".into())),
             name: "Name".into(),
-            descriptor: GTPrimitive::String.into(),
+            descriptor: GTPrimitive::String((0, 0).into()).into(),
         };
         alias.traverse(&mut visitor);
         assert_eq!(
@@ -55,7 +55,7 @@ mod tests {
                 GTMockVisited::Alias(alias.clone()),
                 GTMockVisited::Doc(alias.doc.clone().unwrap()),
                 GTMockVisited::Descriptor(alias.descriptor.clone()),
-                GTMockVisited::Primitive(GTPrimitive::String),
+                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
             ]
         );
     }

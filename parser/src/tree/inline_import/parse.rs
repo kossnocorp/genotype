@@ -1,6 +1,7 @@
 use pest::iterators::Pair;
 
 use crate::{
+    diagnostic::error::GTNodeParseError,
     parser::Rule,
     tree::{identifier::GTIdentifier, path::GTPath, GTResolve},
 };
@@ -8,10 +9,7 @@ use crate::{
 use super::GTInlineImport;
 
 impl GTInlineImport {
-    pub fn parse(
-        pair: Pair<'_, Rule>,
-        resolve: &mut GTResolve,
-    ) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> Result<Self, GTNodeParseError> {
         let str = pair.as_str().to_string();
 
         // [TODO]
@@ -39,11 +37,15 @@ mod tests {
 
     #[test]
     fn test_parse_deps_base() {
-        let code = r#"Order = {
-            book: book/Book
-            user: ./misc/user/User
-        }"#;
-        let parse = GTModule::parse(code.into()).unwrap();
+        let source_code = crate::GTSourceCode::new(
+            "module.type".into(),
+            r#"Order = {
+                book: book/Book
+                user: ./misc/user/User
+            }"#
+            .into(),
+        );
+        let parse = GTModule::parse(source_code).unwrap();
         assert_eq!(
             parse.resolve.deps,
             HashSet::from_iter(vec!["book".into(), "./misc/user".into(),])
@@ -52,11 +54,15 @@ mod tests {
 
     #[test]
     fn test_parse_deps_normalize() {
-        let code = r#"Order = {
-            book: book/Book
-            user: ./misc/../misc/./user/User
-        }"#;
-        let parse = GTModule::parse(code.into()).unwrap();
+        let source_code = crate::GTSourceCode::new(
+            "module.type".into(),
+            r#"Order = {
+                book: book/Book
+                user: ./misc/../misc/./user/User
+            }"#
+            .into(),
+        );
+        let parse = GTModule::parse(source_code).unwrap();
         assert_eq!(
             parse.resolve.deps,
             HashSet::from_iter(vec!["book".into(), "./misc/user".into(),])

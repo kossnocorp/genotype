@@ -1,6 +1,7 @@
 use pest::iterators::Pair;
 
 use crate::{
+    diagnostic::error::GTNodeParseError,
     parser::Rule,
     tree::{GTExtension, GTProperty, GTResolve},
 };
@@ -8,10 +9,7 @@ use crate::{
 use super::GTObject;
 
 impl GTObject {
-    pub fn parse(
-        pair: Pair<'_, Rule>,
-        resolve: &mut GTResolve,
-    ) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> Result<Self, GTNodeParseError> {
         let mut object = GTObject {
             extensions: vec![],
             properties: vec![],

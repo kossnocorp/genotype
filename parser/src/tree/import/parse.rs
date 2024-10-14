@@ -1,20 +1,9 @@
 use pest::iterators::{Pair, Pairs};
 
-use crate::{
-    parser::Rule,
-    tree::{
-        import_name::GTImportName, import_reference::GTImportReference, path::GTPath, GTIdentifier,
-        GTResolve,
-    },
-};
-
-use super::GTImport;
+use crate::*;
 
 impl GTImport {
-    pub fn parse(
-        pair: Pair<'_, Rule>,
-        resolve: &mut GTResolve,
-    ) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> Result<Self, GTNodeParseError> {
         let mut inner = pair.into_inner();
         let pair = inner.next().unwrap(); // [TODO]
 
@@ -32,7 +21,7 @@ fn parse(
     pair: Pair<'_, Rule>,
     resolve: &mut GTResolve,
     state: ParseState,
-) -> Result<GTImport, Box<dyn std::error::Error>> {
+) -> Result<GTImport, GTNodeParseError> {
     match state {
         ParseState::Path => {
             let path = pair.as_str();
@@ -100,14 +89,18 @@ mod tests {
 
     use pretty_assertions::assert_eq;
 
-    use crate::tree::GTModule;
+    use crate::{tree::GTModule, GTSourceCode};
 
     #[test]
     fn test_parse_deps_base() {
-        let code = r#"use author/*
-        use ../user/User
-        use ./misc/order/{Order, SomethingElse}"#;
-        let parse = GTModule::parse(code.into()).unwrap();
+        let source_code = GTSourceCode::new(
+            "module.type".into(),
+            r#"use author/*
+            use ../user/User
+            use ./misc/order/{Order, SomethingElse}"#
+                .into(),
+        );
+        let parse = GTModule::parse(source_code).unwrap();
         assert_eq!(
             parse.resolve.deps,
             HashSet::from_iter(vec![
@@ -120,10 +113,14 @@ mod tests {
 
     #[test]
     fn test_parse_deps_normalize() {
-        let code = r#"use author/./*
-        use ../user/../user/User
-        use ./././misc/order/{Order, SomethingElse}"#;
-        let parse = GTModule::parse(code.into()).unwrap();
+        let source_code = GTSourceCode::new(
+            "module.type".into(),
+            r#"use author/./*
+            use ../user/../user/User
+            use ./././misc/order/{Order, SomethingElse}"#
+                .into(),
+        );
+        let parse = GTModule::parse(source_code).unwrap();
         assert_eq!(
             parse.resolve.deps,
             HashSet::from_iter(vec![

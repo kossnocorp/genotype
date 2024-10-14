@@ -30,7 +30,7 @@ mod tests {
             GTProperty {
                 doc: None,
                 name: "name".into(),
-                descriptor: GTPrimitive::String.into(),
+                descriptor: GTPrimitive::String((0, 0).into()).into(),
                 required: false,
             }
             .convert(&TSConvertResolve::new(), &|_| {}),

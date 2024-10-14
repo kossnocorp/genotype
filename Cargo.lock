@@ -333,9 +333,11 @@ version = "0.1.0"
 dependencies = [
  "genotype_parser",
  "glob",
+ "miette",
  "num_cpus",
  "pretty_assertions",
  "rayon",
+ "thiserror",
 ]
 
 [[package]]

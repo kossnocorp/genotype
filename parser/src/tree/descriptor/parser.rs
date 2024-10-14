@@ -1,14 +1,11 @@
 use pest::iterators::Pair;
 
-use crate::parser::Rule;
+use crate::{diagnostic::error::GTNodeParseError, parser::Rule};
 
 use super::*;
 
 impl GTDescriptor {
-    pub fn parse(
-        pair: Pair<'_, Rule>,
-        resolve: &mut GTResolve,
-    ) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> Result<Self, GTNodeParseError> {
         let nullable = pair.as_rule() == Rule::nullable_descriptor;
         let pair = pair.into_inner().next().unwrap(); // [TODO]
 

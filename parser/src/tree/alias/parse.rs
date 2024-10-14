@@ -1,6 +1,7 @@
 use pest::iterators::{Pair, Pairs};
 
 use crate::{
+    diagnostic::error::GTNodeParseError,
     parser::Rule,
     tree::{doc::GTDoc, identifier::GTIdentifier, GTDescriptor, GTResolve},
 };
@@ -8,10 +9,7 @@ use crate::{
 use super::GTAlias;
 
 impl GTAlias {
-    pub fn parse(
-        pair: Pair<'_, Rule>,
-        resolve: &mut GTResolve,
-    ) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> Result<Self, GTNodeParseError> {
         let mut inner = pair.into_inner();
         let pair = inner.next().unwrap(); // [TODO]
         parse(inner, pair, resolve, ParseState::Doc(None))
@@ -23,7 +21,7 @@ fn parse(
     pair: Pair<'_, Rule>,
     resolve: &mut GTResolve,
     state: ParseState,
-) -> Result<GTAlias, Box<dyn std::error::Error>> {
+) -> Result<GTAlias, GTNodeParseError> {
     match state {
         ParseState::Doc(doc_acc) => {
             match pair.as_rule() {
@@ -79,7 +77,8 @@ mod tests {
 
     #[test]
     fn test_parse_exports() {
-        let parse = GTModule::parse("Hello = string".into()).unwrap();
+        let source_code = crate::GTSourceCode::new("module.type".into(), "Hello = string".into());
+        let parse = GTModule::parse(source_code).unwrap();
         assert_eq!(parse.resolve.exports, vec!["Hello".into()]);
     }
 }

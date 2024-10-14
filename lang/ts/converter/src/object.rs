@@ -35,13 +35,13 @@ mod tests {
                     GTProperty {
                         doc: None,
                         name: "name".into(),
-                        descriptor: GTPrimitive::String.into(),
+                        descriptor: GTPrimitive::String((0, 0).into()).into(),
                         required: true,
                     },
                     GTProperty {
                         doc: None,
                         name: "age".into(),
-                        descriptor: GTPrimitive::Int.into(),
+                        descriptor: GTPrimitive::Int((0, 0).into()).into(),
                         required: false,
                     }
                 ]

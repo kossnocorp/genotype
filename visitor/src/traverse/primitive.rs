@@ -19,11 +19,11 @@ mod tests {
     #[test]
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
-        let mut primitive = GTPrimitive::String;
+        let mut primitive = GTPrimitive::String((0, 0).into());
         primitive.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,
-            vec![GTMockVisited::Primitive(GTPrimitive::String),]
+            vec![GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),]
         );
     }
 }

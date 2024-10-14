@@ -9,10 +9,10 @@ impl TSConvert<TSPrimitive> for GTPrimitive {
         HoistFn: Fn(TSDefinition),
     {
         match self {
-            GTPrimitive::Boolean => TSPrimitive::Boolean,
-            GTPrimitive::String => TSPrimitive::String,
-            GTPrimitive::Int => TSPrimitive::Number,
-            GTPrimitive::Float => TSPrimitive::Number,
+            GTPrimitive::Boolean(span) => TSPrimitive::Boolean,
+            GTPrimitive::String(span) => TSPrimitive::String,
+            GTPrimitive::Int(span) => TSPrimitive::Number,
+            GTPrimitive::Float(span) => TSPrimitive::Number,
         }
     }
 }
@@ -29,19 +29,19 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_eq!(
-            GTPrimitive::Boolean.convert(&TSConvertResolve::new(), &|_| {}),
+            GTPrimitive::Boolean((0, 0).into()).convert(&TSConvertResolve::new(), &|_| {}),
             TSPrimitive::Boolean
         );
         assert_eq!(
-            GTPrimitive::String.convert(&TSConvertResolve::new(), &|_| {}),
+            GTPrimitive::String((0, 0).into()).convert(&TSConvertResolve::new(), &|_| {}),
             TSPrimitive::String
         );
         assert_eq!(
-            GTPrimitive::Int.convert(&TSConvertResolve::new(), &|_| {}),
+            GTPrimitive::Int((0, 0).into()).convert(&TSConvertResolve::new(), &|_| {}),
             TSPrimitive::Number
         );
         assert_eq!(
-            GTPrimitive::Float.convert(&TSConvertResolve::new(), &|_| {}),
+            GTPrimitive::Float((0, 0).into()).convert(&TSConvertResolve::new(), &|_| {}),
             TSPrimitive::Number
         );
     }

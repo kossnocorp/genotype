@@ -1,3 +1,4 @@
+use crate::diagnostic::error::GTNodeParseError;
 use parser::Rule;
 use pest::iterators::Pair;
 use tree::{GTDescriptor, GTResolve};
@@ -7,10 +8,7 @@ use crate::*;
 use super::GTTuple;
 
 impl GTTuple {
-    pub fn parse(
-        pair: Pair<'_, Rule>,
-        resolve: &mut GTResolve,
-    ) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> Result<Self, GTNodeParseError> {
         let mut tuple = GTTuple {
             descriptors: vec![],
         };

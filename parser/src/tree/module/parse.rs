@@ -1,9 +1,7 @@
-use crate::{
-    parser::{parse_gt_code, Rule},
-    tree::{GTAlias, GTDoc, GTImport, GTResolve},
-};
+use miette::Result;
+use pest::iterators::Pairs;
 
-use super::GTModule;
+use crate::*;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTModuleParse {
@@ -12,23 +10,40 @@ pub struct GTModuleParse {
 }
 
 impl GTModule {
-    pub fn parse(code: String) -> Result<GTModuleParse, Box<dyn std::error::Error>> {
-        let mut pairs = parse_gt_code(&code)?;
-        let mut module = GTModule {
-            doc: None,
-            imports: vec![],
-            aliases: vec![],
-        };
+    pub fn parse<'a>(source_code: GTSourceCode) -> Result<GTModuleParse> {
+        match parse_gt_code(&source_code.content) {
+            Ok(mut pairs) => match Self::parse_pairs(&mut pairs) {
+                Ok(result) => Ok(GTModuleParse {
+                    resolve: result.resolve,
+                    module: GTModule {
+                        source_code,
+                        doc: result.doc,
+                        imports: result.imports,
+                        aliases: result.aliases,
+                    },
+                }),
+
+                Err(error) => Err(GTModuleParseError::from_node_error(source_code, error).into()),
+            },
+
+            Err(error) => Err(GTModuleParseError::from_pest_error(source_code, error).into()),
+        }
+    }
+
+    fn parse_pairs(pairs: &mut Pairs<'_, Rule>) -> Result<ModuleParseResult, GTNodeParseError> {
+        let mut doc: Option<GTDoc> = None;
+        let mut imports = vec![];
+        let mut aliases = vec![];
         let mut resolve = GTResolve::new();
 
         let module_pair = pairs.next().unwrap();
         for pair in module_pair.into_inner() {
             match pair.as_rule() {
                 Rule::module_doc => {
-                    let doc = pair.into_inner().find(|p| p.as_rule() == Rule::doc);
-                    if let Some(pair) = doc {
-                        module.doc = Some(if let Some(doc) = module.doc {
-                            doc.concat(pair)
+                    let doc_pair = pair.into_inner().find(|p| p.as_rule() == Rule::doc);
+                    if let Some(pair) = doc_pair {
+                        doc = Some(if let Some(doc_pair) = doc {
+                            doc_pair.concat(pair)
                         } else {
                             GTDoc::parse(pair)
                         });
@@ -36,11 +51,11 @@ impl GTModule {
                 }
 
                 Rule::import => {
-                    module.imports.push(GTImport::parse(pair, &mut resolve)?);
+                    imports.push(GTImport::parse(pair, &mut resolve)?);
                 }
 
                 Rule::alias => {
-                    module.aliases.push(GTAlias::parse(pair, &mut resolve)?);
+                    aliases.push(GTAlias::parse(pair, &mut resolve)?);
                 }
 
                 Rule::EOI => {}
@@ -52,8 +67,20 @@ impl GTModule {
             }
         }
 
-        Ok(GTModuleParse { module, resolve })
+        Ok(ModuleParseResult {
+            doc,
+            imports,
+            aliases,
+            resolve,
+        })
     }
+}
+
+struct ModuleParseResult {
+    doc: Option<GTDoc>,
+    imports: Vec<GTImport>,
+    aliases: Vec<GTAlias>,
+    resolve: GTResolve,
 }
 
 #[cfg(test)]
@@ -62,21 +89,23 @@ mod tests {
     use pretty_assertions::assert_eq;
     use std::{collections::HashSet, fs};
 
-    use super::GTModuleParse;
+    use super::*;
 
     #[test]
     fn test_alias() {
+        let source_code = read_source_code("./examples/syntax/01-alias.type");
         assert_module(
-            "./examples/syntax/01-alias.type",
+            source_code.clone(),
             GTModuleParse {
                 module: GTModule {
+                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
                             doc: None,
                             name: "Age".into(),
-                            descriptor: GTPrimitive::Int.into(),
+                            descriptor: GTPrimitive::Int((6, 9).into()).into(),
                         },
                         GTAlias {
                             doc: None,
@@ -96,32 +125,34 @@ mod tests {
 
     #[test]
     fn test_primitives() {
+        let source_code = read_source_code("./examples/syntax/02-primitives.type");
         assert_module(
-            "./examples/syntax/02-primitives.type",
+            source_code.clone(),
             GTModuleParse {
                 module: GTModule {
+                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
                             doc: None,
                             name: "String".into(),
-                            descriptor: GTPrimitive::String.into(),
+                            descriptor: GTPrimitive::String((9, 15).into()).into(),
                         },
                         GTAlias {
                             doc: None,
                             name: "Int".into(),
-                            descriptor: GTPrimitive::Int.into(),
+                            descriptor: GTPrimitive::Int((23, 26).into()).into(),
                         },
                         GTAlias {
                             doc: None,
                             name: "Float".into(),
-                            descriptor: GTPrimitive::Float.into(),
+                            descriptor: GTPrimitive::Float((36, 41).into()).into(),
                         },
                         GTAlias {
                             doc: None,
                             name: "Boolean".into(),
-                            descriptor: GTPrimitive::Boolean.into(),
+                            descriptor: GTPrimitive::Boolean((53, 60).into()).into(),
                         },
                     ],
                 },
@@ -141,10 +172,12 @@ mod tests {
 
     #[test]
     fn test_objects() {
+        let source_code = read_source_code("./examples/syntax/03-objects.type");
         assert_module(
-            "./examples/syntax/03-objects.type",
+            source_code.clone(),
             GTModuleParse {
                 module: GTModule {
+                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![
@@ -156,7 +189,7 @@ mod tests {
                                 properties: vec![GTProperty {
                                     doc: None,
                                     name: "name".into(),
-                                    descriptor: GTPrimitive::String.into(),
+                                    descriptor: GTPrimitive::String((18, 24).into()).into(),
                                     required: true,
                                 }],
                             }),
@@ -170,20 +203,20 @@ mod tests {
                                     GTProperty {
                                         doc: None,
                                         name: "name".into(),
-                                        descriptor: GTPrimitive::String.into(),
+                                        descriptor: GTPrimitive::String((46, 52).into()).into(),
                                         required: true,
                                     },
                                     GTProperty {
                                         doc: None,
                                         name: "age".into(),
-                                        descriptor: GTPrimitive::Int.into(),
+                                        descriptor: GTPrimitive::Int((60, 63).into()).into(),
                                         required: true,
                                     },
                                     GTProperty {
                                         doc: None,
                                         name: "flag".into(),
                                         descriptor: GTDescriptor::Primitive(
-                                            GTPrimitive::Boolean.into(),
+                                            GTPrimitive::Boolean((72, 79).into()).into(),
                                         ),
                                         required: true,
                                     },
@@ -214,7 +247,7 @@ mod tests {
                                 properties: vec![GTProperty {
                                     doc: None,
                                     name: "name".into(),
-                                    descriptor: GTPrimitive::String.into(),
+                                    descriptor: GTPrimitive::String((127, 133).into()).into(),
                                     required: true,
                                 }],
                             }),
@@ -228,13 +261,13 @@ mod tests {
                                     GTProperty {
                                         doc: None,
                                         name: "name".into(),
-                                        descriptor: GTPrimitive::String.into(),
+                                        descriptor: GTPrimitive::String((153, 159).into()).into(),
                                         required: true,
                                     },
                                     GTProperty {
                                         doc: None,
                                         name: "age".into(),
-                                        descriptor: GTPrimitive::Int.into(),
+                                        descriptor: GTPrimitive::Int((166, 169).into()).into(),
                                         required: true,
                                     },
                                 ],
@@ -260,17 +293,19 @@ mod tests {
 
     #[test]
     fn test_comments() {
+        let source_code = read_source_code("./examples/syntax/04-comments.type");
         assert_module(
-            "./examples/syntax/04-comments.type",
+            source_code.clone(),
             GTModuleParse {
                 module: GTModule {
+                    source_code,
                     doc: Some("Module comment...\n...multiline".into()),
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
                             doc: Some("Alias comment".into()),
                             name: "Hello".into(),
-                            descriptor: GTPrimitive::String.into(),
+                            descriptor: GTPrimitive::String((105, 111).into()).into(),
                         },
                         GTAlias {
                             doc: Some("Multiline...\n...alias comment".into()),
@@ -281,13 +316,13 @@ mod tests {
                                     GTProperty {
                                         doc: Some("Property comment".into()),
                                         name: "name".into(),
-                                        descriptor: GTPrimitive::String.into(),
+                                        descriptor: GTPrimitive::String((192, 198).into()).into(),
                                         required: true,
                                     },
                                     GTProperty {
                                         doc: Some("Multiline...\n...property comment".into()),
                                         name: "age".into(),
-                                        descriptor: GTPrimitive::Int.into(),
+                                        descriptor: GTPrimitive::Int((251, 254).into()).into(),
                                         required: true,
                                     },
                                 ],
@@ -296,7 +331,7 @@ mod tests {
                         GTAlias {
                             doc: None,
                             name: "Hello".into(),
-                            descriptor: GTPrimitive::String.into(),
+                            descriptor: GTPrimitive::String((266, 272).into()).into(),
                         },
                     ],
                 },
@@ -311,10 +346,12 @@ mod tests {
 
     #[test]
     fn test_optional() {
+        let source_code = read_source_code("./examples/syntax/05-optional.type");
         assert_module(
-            "./examples/syntax/05-optional.type",
+            source_code.clone(),
             GTModuleParse {
                 module: GTModule {
+                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![GTAlias {
@@ -327,21 +364,21 @@ mod tests {
                                     doc: None,
                                     name: "name".into(),
                                     descriptor: GTDescriptor::Nullable(Box::new(
-                                        GTPrimitive::String.into(),
+                                        GTPrimitive::String((18, 24).into()).into(),
                                     )),
                                     required: true,
                                 },
                                 GTProperty {
                                     doc: None,
                                     name: "age".into(),
-                                    descriptor: GTPrimitive::Int.into(),
+                                    descriptor: GTPrimitive::Int((34, 37).into()).into(),
                                     required: false,
                                 },
                                 GTProperty {
                                     doc: None,
                                     name: "flag".into(),
                                     descriptor: GTDescriptor::Nullable(Box::new(
-                                        GTPrimitive::Boolean.into(),
+                                        GTPrimitive::Boolean((47, 54).into()).into(),
                                     )),
                                     required: false,
                                 },
@@ -360,10 +397,12 @@ mod tests {
 
     #[test]
     fn test_nested() {
+        let source_code = read_source_code("./examples/syntax/06-nested.type");
         assert_module(
-            "./examples/syntax/06-nested.type",
+            source_code.clone(),
             GTModuleParse {
                 module: GTModule {
+                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![
@@ -382,7 +421,7 @@ mod tests {
                                                 doc: None,
                                                 name: "first".into(),
                                                 descriptor: GTDescriptor::Primitive(
-                                                    GTPrimitive::String,
+                                                    GTPrimitive::String((31, 37).into()),
                                                 ),
                                                 required: true,
                                             },
@@ -390,7 +429,7 @@ mod tests {
                                                 doc: None,
                                                 name: "last".into(),
                                                 descriptor: GTDescriptor::Primitive(
-                                                    GTPrimitive::String,
+                                                    GTPrimitive::String((48, 54).into()),
                                                 ),
                                                 required: true,
                                             },
@@ -418,7 +457,7 @@ mod tests {
                                                     doc: None,
                                                     name: "first".into(),
                                                     descriptor: GTDescriptor::Primitive(
-                                                        GTPrimitive::String,
+                                                        GTPrimitive::String((101, 107).into()),
                                                     ),
                                                     required: true,
                                                 },
@@ -426,7 +465,7 @@ mod tests {
                                                     doc: None,
                                                     name: "last".into(),
                                                     descriptor: GTDescriptor::Primitive(
-                                                        GTPrimitive::String,
+                                                        GTPrimitive::String((118, 124).into()),
                                                     ),
                                                     required: true,
                                                 },
@@ -450,10 +489,12 @@ mod tests {
 
     #[test]
     fn test_arrays() {
+        let source_code = read_source_code("./examples/syntax/07-arrays.type");
         assert_module(
-            "./examples/syntax/07-arrays.type",
+            source_code.clone(),
             GTModuleParse {
                 module: GTModule {
+                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![GTAlias {
@@ -465,14 +506,14 @@ mod tests {
                                 GTProperty {
                                     doc: None,
                                     name: "title".into(),
-                                    descriptor: GTPrimitive::String.into(),
+                                    descriptor: GTPrimitive::String((18, 24).into()).into(),
                                     required: true,
                                 },
                                 GTProperty {
                                     doc: None,
                                     name: "tags".into(),
                                     descriptor: GTDescriptor::Array(Box::new(GTArray {
-                                        descriptor: GTPrimitive::String.into(),
+                                        descriptor: GTPrimitive::String((34, 40).into()).into(),
                                     })),
                                     required: true,
                                 },
@@ -491,10 +532,12 @@ mod tests {
 
     #[test]
     fn test_tuples() {
+        let source_code = read_source_code("./examples/syntax/08-tuples.type");
         assert_module(
-            "./examples/syntax/08-tuples.type",
+            source_code.clone(),
             GTModuleParse {
                 module: GTModule {
+                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![
@@ -509,8 +552,8 @@ mod tests {
                                         name: "name".into(),
                                         descriptor: GTDescriptor::Tuple(GTTuple {
                                             descriptors: vec![
-                                                GTPrimitive::String.into(),
-                                                GTPrimitive::String.into(),
+                                                GTPrimitive::String((18, 24).into()).into(),
+                                                GTPrimitive::String((26, 32).into()).into(),
                                             ],
                                         }),
                                         required: true,
@@ -520,9 +563,9 @@ mod tests {
                                         name: "address".into(),
                                         descriptor: GTDescriptor::Tuple(GTTuple {
                                             descriptors: vec![
-                                                GTPrimitive::Int.into(),
-                                                GTPrimitive::String.into(),
-                                                GTPrimitive::String.into(),
+                                                GTPrimitive::Int((46, 49).into()).into(),
+                                                GTPrimitive::String((51, 57).into()).into(),
+                                                GTPrimitive::String((59, 65).into()).into(),
                                             ],
                                         }),
                                         required: true,
@@ -535,9 +578,9 @@ mod tests {
                             name: "Address".into(),
                             descriptor: GTDescriptor::Tuple(GTTuple {
                                 descriptors: vec![
-                                    GTPrimitive::Int.into(),
-                                    GTPrimitive::String.into(),
-                                    GTPrimitive::String.into(),
+                                    GTPrimitive::Int((81, 84).into()).into(),
+                                    GTPrimitive::String((86, 92).into()).into(),
+                                    GTPrimitive::String((94, 100).into()).into(),
                                 ],
                             }),
                         },
@@ -554,10 +597,12 @@ mod tests {
 
     #[test]
     fn test_modules() {
+        let source_code = read_source_code("./examples/syntax/09-modules.type");
         assert_module(
-            "./examples/syntax/09-modules.type",
+            source_code.clone(),
             GTModuleParse {
                 module: GTModule {
+                    source_code,
                     doc: None,
                     imports: vec![
                         GTImport {
@@ -587,7 +632,7 @@ mod tests {
                                     GTProperty {
                                         doc: None,
                                         name: "title".into(),
-                                        descriptor: GTPrimitive::String.into(),
+                                        descriptor: GTPrimitive::String((102, 108).into()).into(),
                                         required: true,
                                     },
                                     GTProperty {
@@ -629,10 +674,12 @@ mod tests {
 
     #[test]
     fn test_extensions() {
+        let source_code = read_source_code("./examples/syntax/10-extensions.type");
         assert_module(
-            "./examples/syntax/10-extensions.type",
+            source_code.clone(),
             GTModuleParse {
                 module: GTModule {
+                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![
@@ -645,13 +692,13 @@ mod tests {
                                     GTProperty {
                                         doc: None,
                                         name: "name".into(),
-                                        descriptor: GTPrimitive::String.into(),
+                                        descriptor: GTPrimitive::String((17, 23).into()).into(),
                                         required: true,
                                     },
                                     GTProperty {
                                         doc: None,
                                         name: "age".into(),
-                                        descriptor: GTPrimitive::Int.into(),
+                                        descriptor: GTPrimitive::Int((32, 35).into()).into(),
                                         required: true,
                                     },
                                 ],
@@ -667,7 +714,7 @@ mod tests {
                                 properties: vec![GTProperty {
                                     doc: None,
                                     name: "cores".into(),
-                                    descriptor: GTPrimitive::Int.into(),
+                                    descriptor: GTPrimitive::Int((73, 76).into()).into(),
                                     required: true,
                                 }],
                             }),
@@ -682,7 +729,7 @@ mod tests {
                                 properties: vec![GTProperty {
                                     doc: None,
                                     name: "email".into(),
-                                    descriptor: GTPrimitive::String.into(),
+                                    descriptor: GTPrimitive::String((109, 115).into()).into(),
                                     required: true,
                                 }],
                             }),
@@ -700,10 +747,12 @@ mod tests {
 
     #[test]
     fn test_literals() {
+        let source_code = read_source_code("./examples/syntax/11-literals.type");
         assert_module(
-            "./examples/syntax/11-literals.type",
+            source_code.clone(),
             GTModuleParse {
                 module: GTModule {
+                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![
@@ -722,7 +771,7 @@ mod tests {
                                     GTProperty {
                                         doc: None,
                                         name: "text".into(),
-                                        descriptor: GTPrimitive::String.into(),
+                                        descriptor: GTPrimitive::String((31, 37).into()).into(),
                                         required: true,
                                     },
                                 ],
@@ -744,13 +793,13 @@ mod tests {
                                     GTProperty {
                                         doc: None,
                                         name: "userId".into(),
-                                        descriptor: GTPrimitive::String.into(),
+                                        descriptor: GTPrimitive::String((99, 105).into()).into(),
                                         required: true,
                                     },
                                     GTProperty {
                                         doc: None,
                                         name: "published".into(),
-                                        descriptor: GTPrimitive::Boolean.into(),
+                                        descriptor: GTPrimitive::Boolean((119, 126).into()).into(),
                                         required: true,
                                     },
                                 ],
@@ -843,9 +892,16 @@ mod tests {
         );
     }
 
-    fn assert_module(path: &str, expected: GTModuleParse) {
-        let code = fs::read_to_string(path).expect("cannot read file");
-        let parse = GTModule::parse(code).unwrap();
+    fn read_source_code(path: &str) -> GTSourceCode {
+        let content = fs::read_to_string(path).expect("cannot read file");
+        GTSourceCode {
+            name: path.into(),
+            content,
+        }
+    }
+
+    fn assert_module(source_code: GTSourceCode, expected: GTModuleParse) {
+        let parse = GTModule::parse(source_code).unwrap();
         assert_eq!(parse, expected);
     }
 }

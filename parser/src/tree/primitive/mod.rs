@@ -1,13 +1,15 @@
+use crate::diagnostic::span::GTSpan;
+
 use super::GTDescriptor;
 
 mod parse;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum GTPrimitive {
-    Boolean,
-    String,
-    Int,
-    Float,
+    Boolean(GTSpan),
+    String(GTSpan),
+    Int(GTSpan),
+    Float(GTSpan),
 }
 
 impl Into<GTDescriptor> for GTPrimitive {

@@ -87,7 +87,7 @@ mod tests {
             GTDescriptor::Alias(Box::new(GTAlias {
                 doc: None,
                 name: "Name".into(),
-                descriptor: GTPrimitive::Boolean.into(),
+                descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }))
             .convert(&TSConvertResolve::new(), &|definition| {
                 let mut hoisted = hoisted.lock().unwrap();
@@ -108,7 +108,7 @@ mod tests {
     fn test_convert_array() {
         assert_eq!(
             GTDescriptor::Array(Box::new(GTArray {
-                descriptor: GTPrimitive::Boolean.into(),
+                descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }))
             .convert(&TSConvertResolve::new(), &|_| {}),
             TSDescriptor::Array(Box::new(TSArray {
@@ -135,13 +135,10 @@ mod tests {
     #[test]
     fn test_convert_nullable() {
         assert_eq!(
-            GTDescriptor::Nullable(Box::new(GTDescriptor::Primitive(GTPrimitive::Boolean)))
+            GTDescriptor::Nullable(Box::new(GTPrimitive::Boolean((0, 0).into()).into()))
                 .convert(&TSConvertResolve::new(), &|_| {}),
             TSDescriptor::Union(TSUnion {
-                descriptors: vec![
-                    TSDescriptor::Primitive(TSPrimitive::Boolean),
-                    TSDescriptor::Primitive(TSPrimitive::Null),
-                ]
+                descriptors: vec![TSPrimitive::Boolean.into(), TSPrimitive::Null.into(),]
             })
         );
     }
@@ -155,13 +152,13 @@ mod tests {
                     GTProperty {
                         doc: None,
                         name: "name".into(),
-                        descriptor: GTPrimitive::String.into(),
+                        descriptor: GTPrimitive::String((0, 0).into()).into(),
                         required: true,
                     },
                     GTProperty {
                         doc: None,
                         name: "age".into(),
-                        descriptor: GTPrimitive::Int.into(),
+                        descriptor: GTPrimitive::Int((0, 0).into()).into(),
                         required: false,
                     }
                 ]
@@ -189,7 +186,7 @@ mod tests {
                 properties: vec![GTProperty {
                     doc: None,
                     name: "title".into(),
-                    descriptor: GTPrimitive::String.into(),
+                    descriptor: GTPrimitive::String((0, 0).into()).into(),
                     required: true,
                 },]
             })
@@ -213,7 +210,7 @@ mod tests {
     #[test]
     fn test_convert_primitive() {
         assert_eq!(
-            GTDescriptor::Primitive(GTPrimitive::Boolean)
+            GTDescriptor::Primitive(GTPrimitive::Boolean((0, 0).into()))
                 .convert(&TSConvertResolve::new(), &|_| {}),
             TSDescriptor::Primitive(TSPrimitive::Boolean)
         );
@@ -231,7 +228,10 @@ mod tests {
     fn test_convert_tuple() {
         assert_eq!(
             GTDescriptor::Tuple(GTTuple {
-                descriptors: vec![GTPrimitive::Boolean.into(), GTPrimitive::String.into(),]
+                descriptors: vec![
+                    GTPrimitive::Boolean((0, 0).into()).into(),
+                    GTPrimitive::String((0, 0).into()).into(),
+                ]
             })
             .convert(&TSConvertResolve::new(), &|_| {}),
             TSDescriptor::Tuple(TSTuple {
@@ -247,7 +247,10 @@ mod tests {
     fn test_convert_union() {
         assert_eq!(
             GTDescriptor::Union(GTUnion {
-                descriptors: vec![GTPrimitive::Boolean.into(), GTPrimitive::String.into(),]
+                descriptors: vec![
+                    GTPrimitive::Boolean((0, 0).into()).into(),
+                    GTPrimitive::String((0, 0).into()).into(),
+                ]
             })
             .convert(&TSConvertResolve::new(), &|_| {}),
             TSDescriptor::Union(TSUnion {

@@ -45,7 +45,7 @@ mod tests {
         let alias = GTAlias {
             doc: None,
             name: "Name".into(),
-            descriptor: GTPrimitive::String.into(),
+            descriptor: GTPrimitive::String((0, 0).into()).into(),
         };
         let mut descriptor = GTDescriptor::Alias(Box::new(alias.clone()));
         descriptor.traverse(&mut visitor);
@@ -55,7 +55,7 @@ mod tests {
                 GTMockVisited::Descriptor(descriptor.clone()),
                 GTMockVisited::Alias(alias.clone()),
                 GTMockVisited::Descriptor(alias.descriptor.clone()),
-                GTMockVisited::Primitive(GTPrimitive::String),
+                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
             ]
         );
     }
@@ -64,7 +64,7 @@ mod tests {
     fn test_traverse_array() {
         let mut visitor = GTMockVisitor::new();
         let array = GTArray {
-            descriptor: GTPrimitive::String.into(),
+            descriptor: GTPrimitive::String((0, 0).into()).into(),
         };
         let mut descriptor = GTDescriptor::Array(Box::new(array.clone()));
         descriptor.traverse(&mut visitor);
@@ -74,7 +74,7 @@ mod tests {
                 GTMockVisited::Descriptor(descriptor.clone()),
                 GTMockVisited::Array(array.clone()),
                 GTMockVisited::Descriptor(array.descriptor.clone()),
-                GTMockVisited::Primitive(GTPrimitive::String),
+                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
             ]
         );
     }
@@ -102,7 +102,7 @@ mod tests {
     #[test]
     fn test_traverse_nullable() {
         let mut visitor = GTMockVisitor::new();
-        let primitive = GTDescriptor::Primitive(GTPrimitive::String);
+        let primitive = GTDescriptor::Primitive(GTPrimitive::String((0, 0).into()));
         let mut descriptor = GTDescriptor::Nullable(Box::new(primitive.clone()));
         descriptor.traverse(&mut visitor);
         assert_eq!(
@@ -110,7 +110,7 @@ mod tests {
             vec![
                 GTMockVisited::Descriptor(descriptor.clone()),
                 GTMockVisited::Descriptor(primitive.clone()),
-                GTMockVisited::Primitive(GTPrimitive::String),
+                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
             ]
         );
     }
@@ -121,7 +121,7 @@ mod tests {
         let property = GTProperty {
             doc: None,
             name: GTKey("key".into()),
-            descriptor: GTPrimitive::String.into(),
+            descriptor: GTPrimitive::String((0, 0).into()).into(),
             required: true,
         };
         let object = GTObject {
@@ -138,7 +138,7 @@ mod tests {
                 GTMockVisited::Property(property.clone()),
                 GTMockVisited::Key(property.name.clone()),
                 GTMockVisited::Descriptor(property.descriptor.clone()),
-                GTMockVisited::Primitive(GTPrimitive::String),
+                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
             ]
         );
     }
@@ -146,14 +146,14 @@ mod tests {
     #[test]
     fn test_traverse_primitive() {
         let mut visitor = GTMockVisitor::new();
-        let primitive = GTPrimitive::String;
+        let primitive = GTPrimitive::String((0, 0).into());
         let mut descriptor = GTDescriptor::Primitive(primitive.clone());
         descriptor.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,
             vec![
                 GTMockVisited::Descriptor(descriptor.clone()),
-                GTMockVisited::Primitive(GTPrimitive::String),
+                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
             ]
         );
     }
@@ -178,7 +178,7 @@ mod tests {
     #[test]
     fn test_traverse_tuple() {
         let mut visitor = GTMockVisitor::new();
-        let primitive = GTDescriptor::Primitive(GTPrimitive::String);
+        let primitive = GTDescriptor::Primitive(GTPrimitive::String((0, 0).into()));
         let tuple = GTTuple {
             descriptors: vec![primitive.clone()],
         };
@@ -190,7 +190,7 @@ mod tests {
                 GTMockVisited::Descriptor(descriptor.clone()),
                 GTMockVisited::Tuple(tuple.clone()),
                 GTMockVisited::Descriptor(primitive),
-                GTMockVisited::Primitive(GTPrimitive::String),
+                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
             ]
         );
     }
@@ -198,7 +198,7 @@ mod tests {
     #[test]
     fn test_traverse_union() {
         let mut visitor = GTMockVisitor::new();
-        let primitive = GTDescriptor::Primitive(GTPrimitive::String);
+        let primitive = GTDescriptor::Primitive(GTPrimitive::String((0, 0).into()));
         let union = GTUnion {
             descriptors: vec![primitive.clone()],
         };
@@ -210,7 +210,7 @@ mod tests {
                 GTMockVisited::Descriptor(descriptor.clone()),
                 GTMockVisited::Union(union.clone()),
                 GTMockVisited::Descriptor(primitive),
-                GTMockVisited::Primitive(GTPrimitive::String),
+                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
             ]
         );
     }

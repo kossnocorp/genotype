@@ -1,16 +1,23 @@
 use std::fs::read_to_string;
 
-use genotype_parser::tree::{GTModule, GTModuleParse};
+use genotype_parser::{
+    tree::{GTModule, GTModuleParse},
+    GTSourceCode,
+};
 
 use super::GTProjectModulePath;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTProjectModuleParse(pub GTProjectModulePath, pub GTModuleParse);
 
-impl GTProjectModuleParse {
+impl<'a> GTProjectModuleParse {
     pub fn try_new(path: GTProjectModulePath) -> Result<Self, Box<dyn std::error::Error>> {
         let code = read_to_string(&path)?;
-        let parse = GTModule::parse(code)?;
+        let source_code = GTSourceCode {
+            name: path.as_name(),
+            content: code.clone(),
+        };
+        let parse = GTModule::parse(source_code)?;
         Ok(Self(path, parse))
     }
 

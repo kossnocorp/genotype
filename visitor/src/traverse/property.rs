@@ -28,7 +28,7 @@ mod tests {
         let mut property = GTProperty {
             doc: None,
             name: GTKey("key".into()),
-            descriptor: GTPrimitive::String.into(),
+            descriptor: GTPrimitive::String((0, 0).into()).into(),
             required: true,
         };
         property.traverse(&mut visitor);
@@ -38,7 +38,7 @@ mod tests {
                 GTMockVisited::Property(property.clone()),
                 GTMockVisited::Key(property.name.clone()),
                 GTMockVisited::Descriptor(property.descriptor.clone()),
-                GTMockVisited::Primitive(GTPrimitive::String),
+                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
             ]
         );
     }
@@ -49,7 +49,7 @@ mod tests {
         let mut property = GTProperty {
             doc: Some(GTDoc("Hello, world!".into())),
             name: GTKey("key".into()),
-            descriptor: GTPrimitive::String.into(),
+            descriptor: GTPrimitive::String((0, 0).into()).into(),
             required: true,
         };
         property.traverse(&mut visitor);
@@ -60,7 +60,7 @@ mod tests {
                 GTMockVisited::Doc(property.doc.clone().unwrap()),
                 GTMockVisited::Key(property.name.clone()),
                 GTMockVisited::Descriptor(property.descriptor.clone()),
-                GTMockVisited::Primitive(GTPrimitive::String),
+                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
             ]
         );
     }

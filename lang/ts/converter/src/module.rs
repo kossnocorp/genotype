@@ -42,7 +42,7 @@ impl TSConvertModule {
 #[cfg(test)]
 mod tests {
     use genotype_lang_ts_tree::*;
-    use genotype_parser::tree::*;
+    use genotype_parser::{tree::*, GTSourceCode};
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -57,6 +57,7 @@ mod tests {
         assert_eq!(
             TSConvertModule::convert(
                 &GTModule {
+                    source_code: GTSourceCode::new("module.type".into(), "".into()),
                     doc: None,
                     imports: vec![
                         GTImport {
@@ -81,13 +82,13 @@ mod tests {
                                     GTProperty {
                                         doc: None,
                                         name: "name".into(),
-                                        descriptor: GTPrimitive::String.into(),
+                                        descriptor: GTPrimitive::String((0, 0).into()).into(),
                                         required: true,
                                     },
                                     GTProperty {
                                         doc: None,
                                         name: "age".into(),
-                                        descriptor: GTPrimitive::Int.into(),
+                                        descriptor: GTPrimitive::Int((0, 0).into()).into(),
                                         required: false,
                                     }
                                 ]
@@ -111,7 +112,7 @@ mod tests {
                                                     doc: None,
                                                     name: "title".into(),
                                                     descriptor: GTDescriptor::Primitive(
-                                                        GTPrimitive::String
+                                                        GTPrimitive::String((0, 0).into())
                                                     ),
                                                     required: true,
                                                 },
@@ -133,7 +134,7 @@ mod tests {
                         GTAlias {
                             doc: None,
                             name: "Name".into(),
-                            descriptor: GTPrimitive::String.into(),
+                            descriptor: GTPrimitive::String((0, 0).into()).into(),
                         },
                     ],
                 },

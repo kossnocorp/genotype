@@ -32,7 +32,10 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             GTUnion {
-                descriptors: vec![GTPrimitive::Boolean.into(), GTPrimitive::String.into(),]
+                descriptors: vec![
+                    GTPrimitive::Boolean((0, 0).into()).into(),
+                    GTPrimitive::String((0, 0).into()).into(),
+                ]
             }
             .convert(&TSConvertResolve::new(), &|_| {}),
             TSUnion {

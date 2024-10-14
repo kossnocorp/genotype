@@ -90,12 +90,12 @@ fn process_module(
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
+    use std::{collections::HashMap, fs::read_to_string};
 
     use crate::{GTProjectModuleReference, GTProjectModuleResolve};
 
     use super::*;
-    use genotype_parser::tree::*;
+    use genotype_parser::{tree::*, GTSourceCode};
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -157,6 +157,10 @@ mod tests {
                 GTProjectModule {
                     path: author_path.clone(),
                     module: GTModule {
+                        source_code: GTSourceCode::new(
+                            author_path.as_name(),
+                            read_to_string(&author_path).unwrap(),
+                        ),
                         doc: None,
                         imports: vec![],
                         aliases: vec![GTAlias {
@@ -167,7 +171,7 @@ mod tests {
                                 properties: vec![GTProperty {
                                     doc: None,
                                     name: "name".into(),
-                                    descriptor: GTPrimitive::String.into(),
+                                    descriptor: GTPrimitive::String((19, 25).into()).into(),
                                     required: true,
                                 }],
                             }),
@@ -181,6 +185,10 @@ mod tests {
                 GTProjectModule {
                     path: book_path.clone(),
                     module: GTModule {
+                        source_code: GTSourceCode::new(
+                            book_path.as_name(),
+                            read_to_string(&book_path).unwrap(),
+                        ),
                         doc: None,
                         imports: vec![GTImport {
                             path: "./author".into(),
@@ -195,7 +203,7 @@ mod tests {
                                     GTProperty {
                                         doc: None,
                                         name: "title".into(),
-                                        descriptor: GTPrimitive::String.into(),
+                                        descriptor: GTPrimitive::String((39, 45).into()).into(),
                                         required: true,
                                     },
                                     GTProperty {
@@ -222,6 +230,10 @@ mod tests {
                 GTProjectModule {
                     path: order_path.clone(),
                     module: GTModule {
+                        source_code: GTSourceCode::new(
+                            order_path.as_name(),
+                            read_to_string(&order_path).unwrap(),
+                        ),
                         doc: None,
                         imports: vec![GTImport {
                             path: "./book".into(),
@@ -268,6 +280,10 @@ mod tests {
                 GTProjectModule {
                     path: user_path.clone(),
                     module: GTModule {
+                        source_code: GTSourceCode::new(
+                            user_path.as_name(),
+                            read_to_string(&user_path).unwrap(),
+                        ),
                         doc: None,
                         imports: vec![],
                         aliases: vec![GTAlias {
@@ -279,13 +295,13 @@ mod tests {
                                     GTProperty {
                                         doc: None,
                                         name: "email".into(),
-                                        descriptor: GTPrimitive::String.into(),
+                                        descriptor: GTPrimitive::String((18, 24).into()).into(),
                                         required: true,
                                     },
                                     GTProperty {
                                         doc: None,
                                         name: "name".into(),
-                                        descriptor: GTPrimitive::String.into(),
+                                        descriptor: GTPrimitive::String((33, 39).into()).into(),
                                         required: true,
                                     },
                                 ],

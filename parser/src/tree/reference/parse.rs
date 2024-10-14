@@ -21,11 +21,12 @@ mod tests {
 
     use pretty_assertions::assert_eq;
 
-    use crate::tree::GTModule;
+    use crate::{tree::GTModule, GTSourceCode};
 
     #[test]
     fn test_parse_references() {
-        let parse = GTModule::parse(
+        let parse = GTModule::parse(GTSourceCode::new(
+            "module.type".into(),
             r#"use user/User
 
             Author = {
@@ -35,7 +36,7 @@ mod tests {
             
             Name = string"#
                 .into(),
-        )
+        ))
         .unwrap();
         assert_eq!(
             parse.resolve.references,

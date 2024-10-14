@@ -47,7 +47,7 @@ mod tests {
             GTAlias {
                 doc: None,
                 name: "Name".into(),
-                descriptor: GTPrimitive::Boolean.into(),
+                descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }
             .convert(&TSConvertResolve::new(), &|_| {}),
             TSDefinition::Alias(TSAlias {
@@ -69,13 +69,13 @@ mod tests {
                         GTProperty {
                             doc: None,
                             name: "title".into(),
-                            descriptor: GTPrimitive::String.into(),
+                            descriptor: GTPrimitive::String((0, 0).into()).into(),
                             required: true,
                         },
                         GTProperty {
                             doc: None,
                             name: "author".into(),
-                            descriptor: GTPrimitive::String.into(),
+                            descriptor: GTPrimitive::String((0, 0).into()).into(),
                             required: true,
                         }
                     ]
@@ -112,7 +112,7 @@ mod tests {
                     properties: vec![GTProperty {
                         doc: None,
                         name: "author".into(),
-                        descriptor: GTPrimitive::String.into(),
+                        descriptor: GTPrimitive::String((0, 0).into()).into(),
                         required: true,
                     }]
                 })
@@ -140,12 +140,12 @@ mod tests {
                             properties: vec![GTProperty {
                                 doc: None,
                                 name: "author".into(),
-                                descriptor: GTPrimitive::String.into(),
+                                descriptor: GTPrimitive::String((0, 0).into()).into(),
                                 required: true,
                             }]
                         }
                         .into(),
-                        GTPrimitive::String.into(),
+                        GTPrimitive::String((0, 0).into()).into(),
                     ]
                 },)
             }

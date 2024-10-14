@@ -26,7 +26,7 @@ impl GTTraverse for GTModule {
 mod tests {
     use super::*;
     use crate::visitor::mock::*;
-    use genotype_parser::tree::*;
+    use genotype_parser::{tree::*, GTSourceCode};
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -41,9 +41,10 @@ mod tests {
         let alias = GTAlias {
             doc: None,
             name: "Name".into(),
-            descriptor: GTPrimitive::String.into(),
+            descriptor: GTPrimitive::String((0, 0).into()).into(),
         };
         let mut module = GTModule {
+            source_code: GTSourceCode::new("module.type".into(), "".into()),
             doc: None,
             imports: vec![import.clone()],
             aliases: vec![alias.clone()],
@@ -58,7 +59,7 @@ mod tests {
                 GTMockVisited::ImportReference(reference.clone()),
                 GTMockVisited::Alias(alias.clone()),
                 GTMockVisited::Descriptor(alias.descriptor.clone()),
-                GTMockVisited::Primitive(GTPrimitive::String),
+                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
             ]
         );
     }
@@ -75,9 +76,10 @@ mod tests {
         let alias = GTAlias {
             doc: None,
             name: "Name".into(),
-            descriptor: GTPrimitive::String.into(),
+            descriptor: GTPrimitive::String((0, 0).into()).into(),
         };
         let mut module = GTModule {
+            source_code: GTSourceCode::new("module.type".into(), "".into()),
             doc: Some(GTDoc("Hello, world!".into())),
             imports: vec![import.clone()],
             aliases: vec![alias.clone()],
@@ -93,7 +95,7 @@ mod tests {
                 GTMockVisited::ImportReference(reference.clone()),
                 GTMockVisited::Alias(alias.clone()),
                 GTMockVisited::Descriptor(alias.descriptor.clone()),
-                GTMockVisited::Primitive(GTPrimitive::String),
+                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
             ]
         );
     }

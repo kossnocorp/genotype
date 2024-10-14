@@ -22,6 +22,10 @@ impl GTProjectModulePath {
         &self.id
     }
 
+    pub fn as_name(&self) -> String {
+        self.id.as_str().into()
+    }
+
     pub fn resolve(&self, path: &GTPath) -> Result<Self, Box<dyn std::error::Error>> {
         let path = format!("{}.type", path.as_str());
         Self::try_new(

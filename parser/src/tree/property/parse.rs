@@ -1,6 +1,7 @@
 use pest::iterators::{Pair, Pairs};
 
 use crate::{
+    diagnostic::error::GTNodeParseError,
     parser::Rule,
     tree::{doc::GTDoc, key::GTKey, GTDescriptor, GTResolve},
 };
@@ -8,10 +9,7 @@ use crate::{
 use super::GTProperty;
 
 impl GTProperty {
-    pub fn parse(
-        pair: Pair<'_, Rule>,
-        resolve: &mut GTResolve,
-    ) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> Result<Self, GTNodeParseError> {
         let required = pair.as_rule() == Rule::required_property;
         let mut inner = pair.into_inner();
         let pair = inner.next().unwrap(); // [TODO]
@@ -24,7 +22,7 @@ fn parse(
     pair: Pair<'_, Rule>,
     resolve: &mut GTResolve,
     state: ParseState,
-) -> Result<GTProperty, Box<dyn std::error::Error>> {
+) -> Result<GTProperty, GTNodeParseError> {
     match state {
         ParseState::Doc(required, doc_acc) => {
             match pair.as_rule() {
