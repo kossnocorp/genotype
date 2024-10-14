@@ -623,11 +623,11 @@ mod tests {
                     doc: None,
                     imports: vec![
                         GTImport {
-                            path: "author".into(),
+                            path: GTPath::new((4, 10).into(), "author"),
                             reference: GTImportReference::Glob,
                         },
                         GTImport {
-                            path: "../../author".into(),
+                            path: GTPath::new((17, 29).into(), "../../author"),
                             reference: GTImportReference::Names(vec![
                                 GTImportName::Name(GTIdentifier::new(
                                     (31, 37).into(),
@@ -644,7 +644,7 @@ mod tests {
                             ]),
                         },
                         GTImport {
-                            path: "author".into(),
+                            path: GTPath::new((69, 75).into(), "author"),
                             reference: GTImportReference::Name(GTIdentifier::new(
                                 (76, 82).into(),
                                 "Author".into(),
@@ -668,8 +668,11 @@ mod tests {
                                         doc: None,
                                         name: "author".into(),
                                         descriptor: GTDescriptor::InlineImport(GTInlineImport {
-                                            path: "../../author".into(),
-                                            name: GTIdentifier::new((0, 0).into(), "Author".into()),
+                                            path: GTPath::new((119, 131).into(), "../../author"),
+                                            name: GTIdentifier::new(
+                                                (132, 138).into(),
+                                                "Author".into(),
+                                            ),
                                         }),
                                         required: true,
                                     },
@@ -690,14 +693,20 @@ mod tests {
                             doc: None,
                             name: GTIdentifier::new((157, 163).into(), "Author".into()),
                             descriptor: GTDescriptor::InlineImport(GTInlineImport {
-                                path: "../../author".into(),
-                                name: GTIdentifier::new((0, 0).into(), "Author".into()),
+                                path: GTPath::new((166, 178).into(), "../../author"),
+                                name: GTIdentifier::new((179, 185).into(), "Author".into()),
                             }),
                         },
                     ],
                 },
                 resolve: GTResolve {
-                    deps: HashSet::from_iter(vec!["author".into(), "../../author".into()]),
+                    deps: HashSet::from_iter(vec![
+                        GTPath::new((4, 10).into(), "author"),
+                        GTPath::new((17, 29).into(), "../../author"),
+                        GTPath::new((69, 75).into(), "author"),
+                        GTPath::new((119, 131).into(), "../../author"),
+                        GTPath::new((166, 178).into(), "../../author"),
+                    ]),
                     exports: vec![
                         GTIdentifier::new((84, 88).into(), "Book".into()),
                         GTIdentifier::new((157, 163).into(), "Author".into()),

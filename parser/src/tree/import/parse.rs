@@ -24,9 +24,8 @@ fn parse(
 ) -> Result<GTImport, GTNodeParseError> {
     match state {
         ParseState::Path => {
-            let path = pair.as_str();
-            // Remove trailing slash
-            let path = GTPath::new(path[..path.len() - 1].into());
+            let (path, _) = GTPath::parse(pair)?;
+
             resolve.deps.insert(path.clone());
 
             let pair = inner.next().unwrap(); // [TODO]
@@ -85,7 +84,7 @@ mod tests {
 
     use pretty_assertions::assert_eq;
 
-    use crate::{tree::GTModule, GTSourceCode};
+    use crate::*;
 
     #[test]
     fn test_parse_deps_base() {
@@ -100,9 +99,9 @@ mod tests {
         assert_eq!(
             parse.resolve.deps,
             HashSet::from_iter(vec![
-                "author".into(),
-                "../user".into(),
-                "./misc/order".into()
+                GTPath::new((4, 10).into(), "author"),
+                GTPath::new((29, 36).into(), "../user"),
+                GTPath::new((58, 70).into(), "./misc/order")
             ])
         );
     }
@@ -120,9 +119,9 @@ mod tests {
         assert_eq!(
             parse.resolve.deps,
             HashSet::from_iter(vec![
-                "author".into(),
-                "../user".into(),
-                "./misc/order".into(),
+                GTPath::new((4, 12).into(), "author"),
+                GTPath::new((31, 46).into(), "../user"),
+                GTPath::new((68, 84).into(), "./misc/order"),
             ])
         );
     }

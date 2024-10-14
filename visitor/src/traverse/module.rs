@@ -32,7 +32,7 @@ mod tests {
     #[test]
     fn test_traverse_base() {
         let mut visitor = GTMockVisitor::new();
-        let import_path = GTPath::new("./path/to/module".into());
+        let import_path = GTPath::new((0, 0).into(), "./path/to/module");
         let reference = GTImportReference::Glob;
         let import = GTImport {
             path: import_path.clone(),
@@ -67,7 +67,7 @@ mod tests {
     #[test]
     fn test_traverse_doc() {
         let mut visitor = GTMockVisitor::new();
-        let import_path = GTPath::new("./path/to/import".into());
+        let import_path = GTPath::new((0, 0).into(), "./path/to/import");
         let reference = GTImportReference::Glob;
         let import = GTImport {
             path: import_path.clone(),

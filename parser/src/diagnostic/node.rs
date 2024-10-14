@@ -2,6 +2,7 @@
 pub enum GTNode {
     Extension,
     Literal,
+    Path,
     Primitive,
 }
 
@@ -10,6 +11,7 @@ impl GTNode {
         match self {
             Self::Extension => "extension",
             Self::Literal => "literal",
+            Self::Path => "path",
             Self::Primitive => "primitive",
         }
     }

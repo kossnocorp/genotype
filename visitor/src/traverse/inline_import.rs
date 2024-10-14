@@ -16,14 +16,14 @@ impl GTTraverse for GTInlineImport {
 mod tests {
     use super::*;
     use crate::visitor::mock::*;
-    use genotype_parser::GTIdentifier;
+    use genotype_parser::*;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
         let mut import = GTInlineImport {
-            path: "./path/to/module".into(),
+            path: GTPath::new((0, 0).into(), "./path/to/module"),
             name: GTIdentifier::new((0, 0).into(), "Name".into()),
         };
         import.traverse(&mut visitor);

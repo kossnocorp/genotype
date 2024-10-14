@@ -41,13 +41,14 @@ impl GTProjectModulePath {
     }
 
     pub fn id(root: &PathBuf, path: &PathBuf) -> Result<GTPath, Box<dyn std::error::Error>> {
-        Ok(path
-            .as_path()
-            .strip_prefix(root.as_path())?
-            .with_extension("")
-            .to_str()
-            .unwrap()
-            .into())
+        Ok(GTPath::new(
+            (0, 0).into(),
+            path.as_path()
+                .strip_prefix(root.as_path())?
+                .with_extension("")
+                .to_str()
+                .unwrap(),
+        ))
     }
 }
 

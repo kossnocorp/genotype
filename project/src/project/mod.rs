@@ -191,7 +191,7 @@ mod tests {
                         ),
                         doc: None,
                         imports: vec![GTImport {
-                            path: "./author".into(),
+                            path: GTPath::new((4, 12).into(), "./author"),
                             reference: GTImportReference::Name(GTIdentifier::new(
                                 (13, 19).into(),
                                 "Author".into(),
@@ -224,12 +224,15 @@ mod tests {
                     },
                     resolve: GTProjectModuleResolve {
                         deps: HashMap::from_iter([(
-                            "./author".into(),
+                            GTPath::new((4, 12).into(), "./author"),
                             Arc::new(author_path.clone()),
                         )]),
                         references: HashMap::from_iter([(
                             GTIdentifier::new((56, 62).into(), "Author".into()),
-                            GTProjectModuleReference::External("./author".into()),
+                            GTProjectModuleReference::External(GTPath::new(
+                                (4, 12).into(),
+                                "./author",
+                            )),
                         )]),
                     },
                 },
@@ -242,7 +245,7 @@ mod tests {
                         ),
                         doc: None,
                         imports: vec![GTImport {
-                            path: "./book".into(),
+                            path: GTPath::new((4, 10).into(), "./book"),
                             reference: GTImportReference::Name(GTIdentifier::new(
                                 (11, 15).into(),
                                 "Book".into(),
@@ -258,8 +261,8 @@ mod tests {
                                         doc: None,
                                         name: "user".into(),
                                         descriptor: GTDescriptor::InlineImport(GTInlineImport {
-                                            path: "./user".into(),
-                                            name: GTIdentifier::new((0, 0).into(), "User".into()),
+                                            path: GTPath::new((35, 41).into(), "./user"),
+                                            name: GTIdentifier::new((42, 46).into(), "User".into()),
                                         }),
                                         required: true,
                                     },
@@ -280,12 +283,21 @@ mod tests {
                     },
                     resolve: GTProjectModuleResolve {
                         deps: HashMap::from_iter([
-                            ("./book".into(), Arc::new(book_path.clone())),
-                            ("./user".into(), Arc::new(user_path.clone())),
+                            (
+                                GTPath::new((4, 10).into(), "./book"),
+                                Arc::new(book_path.clone()),
+                            ),
+                            (
+                                GTPath::new((35, 41).into(), "./user"),
+                                Arc::new(user_path.clone()),
+                            ),
                         ]),
                         references: HashMap::from_iter([(
                             GTIdentifier::new((57, 61).into(), "Book".into()),
-                            GTProjectModuleReference::External("./book".into()),
+                            GTProjectModuleReference::External(GTPath::new(
+                                (4, 10).into(),
+                                "./book",
+                            )),
                         )]),
                     },
                 },

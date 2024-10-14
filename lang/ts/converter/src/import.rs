@@ -41,17 +41,18 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use genotype_parser::tree::*;
+    use genotype_parser::*;
 
     #[test]
     fn test_convert_glob() {
         let mut resolve = TSConvertResolve::new();
-        resolve
-            .globs
-            .insert("./path/to/module".into(), "module".into());
+        resolve.globs.insert(
+            GTPath::new((0, 0).into(), "./path/to/module"),
+            "module".into(),
+        );
         assert_eq!(
             GTImport {
-                path: "./path/to/module".into(),
+                path: GTPath::new((0, 0).into(), "./path/to/module"),
                 reference: GTImportReference::Glob
             }
             .convert(&resolve, &|_| {}),
@@ -66,7 +67,7 @@ mod tests {
     fn test_convert_names() {
         assert_eq!(
             GTImport {
-                path: "./path/to/module".into(),
+                path: GTPath::new((0, 0).into(), "./path/to/module"),
                 reference: GTImportReference::Names(vec![
                     GTImportName::Name(GTIdentifier::new((0, 0).into(), "Name".into())),
                     GTImportName::Alias(
@@ -90,7 +91,7 @@ mod tests {
     fn test_convert_name() {
         assert_eq!(
             GTImport {
-                path: "./path/to/module".into(),
+                path: GTPath::new((0, 0).into(), "./path/to/module"),
                 reference: GTIdentifier::new((0, 0).into(), "Name".into()).into()
             }
             .convert(&TSConvertResolve::new(), &|_| {}),

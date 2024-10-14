@@ -1,25 +1,65 @@
 use pest::iterators::Pair;
 
-use crate::parser::Rule;
+use crate::{parser::Rule, GTNode, GTNodeParseError, GTNodeParseResult, GTSpan};
 
 use super::GTPath;
 
-impl TryFrom<Pair<'_, Rule>> for GTPath {
-    type Error = Box<dyn std::error::Error>;
+impl GTPath {
+    pub fn parse(pair: Pair<'_, Rule>) -> GTNodeParseResult<(GTPath, (GTSpan, String))> {
+        let span = pair.as_span();
+        let span_start = span.start();
+        let str = pair.as_str().to_string();
 
-    fn try_from(pair: Pair<'_, Rule>) -> Result<Self, Self::Error> {
-        Ok(GTPath::new(pair.as_str()))
+        let name_index = str
+            .rfind("/")
+            .ok_or_else(|| GTNodeParseError::Internal(pair.as_span().into(), GTNode::Path))?;
+
+        let path = &str[..name_index];
+        let path_span = (span_start, span_start + name_index).into();
+
+        let name = &str[name_index + 1..];
+        let name_span = (span_start + name_index + 1, span.end()).into();
+
+        Ok((GTPath::new(path_span, path), (name_span, name.into())))
+    }
+}
+
+impl From<Pair<'_, Rule>> for GTPath {
+    fn from(pair: Pair<'_, Rule>) -> Self {
+        GTPath::new(pair.as_span().into(), pair.as_str())
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::*;
+    use pest::Parser;
     use pretty_assertions::assert_eq;
 
-    use crate::{tree::*, GTSourceCode};
+    #[test]
+    fn test_parse() {
+        let mut pairs = GenotypeParser::parse(Rule::path, "./hello/world/").unwrap();
+        assert_eq!(
+            GTPath::new((0, 14).into(), "./hello/world/"),
+            pairs.next().unwrap().into()
+        );
+    }
 
     #[test]
-    fn test_parse_normalize() {
+    fn test_split() {
+        let mut pairs = GenotypeParser::parse(Rule::inline_import, "./hello/World").unwrap();
+        let result = GTPath::parse(pairs.next().unwrap()).unwrap();
+        assert_eq!(
+            result,
+            (
+                GTPath::new((0, 7).into(), "./hello"),
+                ((8, 13).into(), "World".into())
+            )
+        );
+    }
+
+    #[test]
+    fn test_normalize() {
         let source_code = GTSourceCode::new(
             "module.type".into(),
             r#"use author/./*
@@ -40,18 +80,18 @@ mod tests {
                 doc: None,
                 imports: vec![
                     GTImport {
-                        path: "author".into(),
+                        path: GTPath::new((4, 12).into(), "author"),
                         reference: GTImportReference::Glob,
                     },
                     GTImport {
-                        path: "../user".into(),
+                        path: GTPath::new((27, 42).into(), "../user"),
                         reference: GTImportReference::Name(GTIdentifier::new(
                             (43, 47).into(),
                             "User".into()
                         )),
                     },
                     GTImport {
-                        path: "./misc/order".into(),
+                        path: GTPath::new((60, 76).into(), "./misc/order"),
                         reference: GTImportReference::Names(vec![
                             GTImportName::Name(GTIdentifier::new((78, 83).into(), "Order".into()),),
                             GTImportName::Name(GTIdentifier::new(
@@ -71,8 +111,8 @@ mod tests {
                                 doc: None,
                                 name: "book".into(),
                                 descriptor: GTDescriptor::InlineImport(GTInlineImport {
-                                    name: GTIdentifier::new((0, 0).into(), "Book".into()),
-                                    path: "book".into(),
+                                    name: GTIdentifier::new((150, 154).into(), "Book".into()),
+                                    path: GTPath::new((145, 149).into(), "book"),
                                 },),
                                 required: true,
                             },
@@ -80,8 +120,8 @@ mod tests {
                                 doc: None,
                                 name: "user".into(),
                                 descriptor: GTDescriptor::InlineImport(GTInlineImport {
-                                    name: GTIdentifier::new((0, 0).into(), "User".into()),
-                                    path: "./misc/user".into(),
+                                    name: GTIdentifier::new((195, 199).into(), "User".into()),
+                                    path: GTPath::new((173, 194).into(), "./misc/user"),
                                 },),
                                 required: true,
                             },

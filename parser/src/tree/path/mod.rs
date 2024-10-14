@@ -3,24 +3,20 @@ use std::{
     path::{Component, Path, PathBuf},
 };
 
+use crate::GTSpan;
+
 mod parse;
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone)]
-pub struct GTPath(String);
+pub struct GTPath(pub GTSpan, String);
 
 impl GTPath {
-    pub fn new(path: &str) -> Self {
-        GTPath(normalize(path))
+    pub fn new(span: GTSpan, path: &str) -> Self {
+        GTPath(span, normalize(path))
     }
 
     pub fn as_str(&self) -> &str {
-        &self.0
-    }
-}
-
-impl From<&str> for GTPath {
-    fn from(str: &str) -> Self {
-        GTPath::new(str)
+        &self.1
     }
 }
 
@@ -77,21 +73,24 @@ mod tests {
 
     #[test]
     fn test_normalize() {
-        assert_eq!(GTPath::new("./path/to/../module").as_str(), "./path/module");
         assert_eq!(
-            GTPath::new("./path/./to/./module").as_str(),
+            GTPath::new((0, 0).into(), "./path/to/../module").as_str(),
+            "./path/module"
+        );
+        assert_eq!(
+            GTPath::new((0, 0).into(), "./path/./to/./module").as_str(),
             "./path/to/module"
         );
         assert_eq!(
-            GTPath::new("path/./to/./module/../module").as_str(),
+            GTPath::new((0, 0).into(), "path/./to/./module/../module").as_str(),
             "path/to/module"
         );
         assert_eq!(
-            GTPath::new("./././path/./to/./module/../module").as_str(),
+            GTPath::new((0, 0).into(), "./././path/./to/./module/../module").as_str(),
             "./path/to/module"
         );
         assert_eq!(
-            GTPath::new("../../../path/./to/./module/../module").as_str(),
+            GTPath::new((0, 0).into(), "../../../path/./to/./module/../module").as_str(),
             "../../../path/to/module"
         );
     }

@@ -10,19 +10,13 @@ use super::GTInlineImport;
 
 impl GTInlineImport {
     pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> Result<Self, GTNodeParseError> {
-        let str = pair.as_str().to_string();
+        let (path, (name_span, name)) = GTPath::parse(pair)?;
 
-        // [TODO]
-        let name_index = str.rfind("/").unwrap();
-        let path = &str[..name_index];
-        let name = &str[name_index + 1..];
-
-        let path = GTPath::new(path);
         resolve.deps.insert(path.clone());
 
         Ok(GTInlineImport {
             path,
-            name: GTIdentifier::new((0, 0).into(), name.into()),
+            name: GTIdentifier::new(name_span, name),
         })
     }
 }
@@ -33,7 +27,7 @@ mod tests {
 
     use pretty_assertions::assert_eq;
 
-    use crate::tree::GTModule;
+    use crate::*;
 
     #[test]
     fn test_parse_deps_base() {
@@ -48,7 +42,10 @@ mod tests {
         let parse = GTModule::parse(source_code).unwrap();
         assert_eq!(
             parse.resolve.deps,
-            HashSet::from_iter(vec!["book".into(), "./misc/user".into(),])
+            HashSet::from_iter(vec![
+                GTPath::new((32, 36).into(), "book"),
+                GTPath::new((64, 75).into(), "./misc/user"),
+            ])
         );
     }
 
@@ -65,7 +62,10 @@ mod tests {
         let parse = GTModule::parse(source_code).unwrap();
         assert_eq!(
             parse.resolve.deps,
-            HashSet::from_iter(vec!["book".into(), "./misc/user".into(),])
+            HashSet::from_iter(vec![
+                GTPath::new((32, 36).into(), "book"),
+                GTPath::new((64, 85).into(), "./misc/user"),
+            ])
         );
     }
 }

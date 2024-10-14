@@ -22,19 +22,21 @@ mod tests {
     fn test_convert_base() {
         assert_eq!(
             TSPath("./path/to/module.ts".into()),
-            GTPath::new("./path/to/module".into()).convert(&TSConvertResolve::new(), &|_| {}),
+            GTPath::new((0, 0).into(), "./path/to/module")
+                .convert(&TSConvertResolve::new(), &|_| {}),
         );
     }
 
     #[test]
     fn test_convert_resolve() {
         let mut resolve = TSConvertResolve::new();
-        resolve
-            .paths
-            .insert("./path/to/module".into(), "./path/to/module/index".into());
+        resolve.paths.insert(
+            GTPath::new((0, 0).into(), "./path/to/module"),
+            GTPath::new((0, 0).into(), "./path/to/module/index"),
+        );
         assert_eq!(
             TSPath("./path/to/module/index.ts".into()),
-            GTPath::new("./path/to/module".into()).convert(&resolve, &|_| {}),
+            GTPath::new((0, 0).into(), "./path/to/module").convert(&resolve, &|_| {}),
         );
     }
 }

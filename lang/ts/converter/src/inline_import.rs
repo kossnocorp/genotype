@@ -17,7 +17,7 @@ impl TSConvert<TSInlineImport> for GTInlineImport {
 
 #[cfg(test)]
 mod tests {
-    use genotype_parser::GTIdentifier;
+    use genotype_parser::*;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -26,7 +26,7 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             GTInlineImport {
-                path: "./path/to/module".into(),
+                path: GTPath::new((0, 0).into(), "./path/to/module"),
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
             }
             .convert(&TSConvertResolve::new(), &|_| {}),
