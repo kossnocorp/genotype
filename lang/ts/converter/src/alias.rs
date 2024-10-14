@@ -108,7 +108,10 @@ mod tests {
                 doc: None,
                 name: GTIdentifier::new((0, 0).into(), "Book".into()),
                 descriptor: GTDescriptor::Object(GTObject {
-                    extensions: vec![GTIdentifier::new((0, 0).into(), "Good".into()).into()],
+                    extensions: vec![GTExtension {
+                        span: (0, 0).into(),
+                        reference: GTIdentifier::new((0, 0).into(), "Good".into()).into()
+                    }],
                     properties: vec![GTProperty {
                         doc: None,
                         name: "author".into(),
@@ -135,20 +138,21 @@ mod tests {
                 name: GTIdentifier::new((0, 0).into(), "Book".into()),
                 descriptor: GTDescriptor::Union(GTUnion {
                     descriptors: vec![
-                            GTObject {
-                                extensions: vec![
-                                    GTIdentifier::new((0, 0).into(), "Good".into()).into()
-                                ],
-                                properties: vec![GTProperty {
-                                    doc: None,
-                                    name: "author".into(),
-                                    descriptor: GTPrimitive::String((0, 0).into()).into(),
-                                    required: true,
-                                }]
-                            }
-                            .into(),
-                            GTPrimitive::String((0, 0).into()).into(),
-                        ]
+                        GTObject {
+                            extensions: vec![GTExtension {
+                                span: (0, 0).into(),
+                                reference: GTIdentifier::new((0, 0).into(), "Good".into()).into()
+                            }],
+                            properties: vec![GTProperty {
+                                doc: None,
+                                name: "author".into(),
+                                descriptor: GTPrimitive::String((0, 0).into()).into(),
+                                required: true,
+                            }]
+                        }
+                        .into(),
+                        GTPrimitive::String((0, 0).into()).into(),
+                    ]
                 },)
             }
             .convert(&TSConvertResolve::new(), &|_| {}),

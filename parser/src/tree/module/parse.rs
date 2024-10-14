@@ -748,6 +748,7 @@ mod tests {
                             name: GTIdentifier::new((39, 48).into(), "Processor".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![GTExtension {
+                                    span: (55, 62).into(),
                                     reference: GTReference(GTIdentifier::new(
                                         (58, 62).into(),
                                         "Base".into(),
@@ -766,6 +767,7 @@ mod tests {
                             name: GTIdentifier::new((80, 84).into(), "User".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![GTExtension {
+                                    span: (91, 98).into(),
                                     reference: GTReference(GTIdentifier::new(
                                         (94, 98).into(),
                                         "Base".into(),
@@ -834,11 +836,13 @@ mod tests {
                             doc: None,
                             name: GTIdentifier::new((41, 52).into(), "UserComment".into()),
                             descriptor: GTObject {
-                                extensions: vec![GTIdentifier::new(
-                                    (62, 73).into(),
-                                    "CommentBase".into(),
-                                )
-                                .into()],
+                                extensions: vec![GTExtension {
+                                    span: (59, 73).into(),
+                                    reference: GTReference(GTIdentifier::new(
+                                        (62, 73).into(),
+                                        "CommentBase".into(),
+                                    )),
+                                }],
                                 properties: vec![
                                     GTProperty {
                                         doc: None,
@@ -866,11 +870,14 @@ mod tests {
                             doc: None,
                             name: GTIdentifier::new((130, 143).into(), "SystemComment".into()),
                             descriptor: GTObject {
-                                extensions: vec![GTIdentifier::new(
-                                    (153, 164).into(),
-                                    "CommentBase".into(),
-                                )
-                                .into()],
+                                extensions: vec![GTExtension {
+                                    span: (150, 164).into(),
+                                    reference: GTIdentifier::new(
+                                        (153, 164).into(),
+                                        "CommentBase".into(),
+                                    )
+                                    .into(),
+                                }],
                                 properties: vec![
                                     GTProperty {
                                         doc: None,

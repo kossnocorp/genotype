@@ -1,6 +1,6 @@
 use pest::iterators::Pair;
 
-use crate::{diagnostic::error::GTNodeParseError, parser::Rule};
+use crate::{diagnostic::error::GTNodeParseError, parser::Rule, GTNode};
 
 use super::GTPrimitive;
 
@@ -19,17 +19,15 @@ impl TryFrom<Pair<'_, Rule>> for GTPrimitive {
 
             "float" => Ok(GTPrimitive::Float(span)),
 
-            _ => Err(GTNodeParseError(span, "unknown primitive")),
+            _ => Err(GTNodeParseError::Internal(span, GTNode::Primitive)),
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{diagnostic::span::GTSpan, parser::GenotypeParser};
+    use crate::*;
     use pest::Parser;
-
-    use super::*;
 
     #[test]
     fn test_from_pair() {
@@ -45,7 +43,7 @@ mod tests {
         let mut pairs = GenotypeParser::parse(Rule::literal_boolean, "false").unwrap();
         assert_eq!(
             GTPrimitive::try_from(pairs.next().unwrap()).unwrap_err(),
-            GTNodeParseError((0, 5).into(), "unknown primitive")
+            GTNodeParseError::Internal((0, 5).into(), GTNode::Primitive)
         );
     }
 }

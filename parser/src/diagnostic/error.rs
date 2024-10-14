@@ -1,12 +1,28 @@
 use crate::Rule;
 
-use super::{span::GTSpan, GTSourceCode};
+use super::{span::GTSpan, GTNode, GTSourceCode};
 use miette::{Diagnostic, LabeledSpan, SourceCode};
 use pest::error::InputLocation;
 use thiserror::Error;
 
 #[derive(Debug, PartialEq)]
-pub struct GTNodeParseError(pub GTSpan, pub &'static str);
+pub enum GTNodeParseError {
+    Internal(GTSpan, GTNode),
+}
+
+impl GTNodeParseError {
+    pub fn span(&self) -> GTSpan {
+        match self {
+            Self::Internal(span, _) => span.clone(),
+        }
+    }
+
+    pub fn message(&self) -> String {
+        match self {
+            Self::Internal(_, node) => format!("failed to parse {:?} node", node.name()),
+        }
+    }
+}
 
 #[derive(Error, Debug, PartialEq)]
 #[error("Failed to parse module")]
@@ -39,8 +55,8 @@ impl GTModuleParseError {
         Self {
             code: "GTE002",
             source_code,
-            span: error.0,
-            message: error.1.to_string(),
+            span: error.span(),
+            message: format!("expected {} node", error.message()),
         }
     }
 }

@@ -27,6 +27,7 @@ mod tests {
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
         let extension = GTExtension {
+            span: (0, 0).into(),
             reference: GTIdentifier::new((0, 0).into(), "Name".into()).into(),
         };
         let property = GTProperty {

@@ -182,7 +182,10 @@ mod tests {
 
         assert_eq!(
             GTDescriptor::Object(GTObject {
-                extensions: vec![GTIdentifier::new((0, 0).into(), "Good".into()).into()],
+                extensions: vec![GTExtension {
+                    span: (0, 0).into(),
+                    reference: GTIdentifier::new((0, 0).into(), "Good".into()).into()
+                }],
                 properties: vec![GTProperty {
                     doc: None,
                     name: "title".into(),
