@@ -1,9 +1,11 @@
+use crate::GTSpan;
+
 mod parse;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum GTLiteral {
-    String(String),
-    Integer(i64),
-    Float(f64),
-    Boolean(bool),
+    String(GTSpan, String),
+    Integer(GTSpan, i64),
+    Float(GTSpan, f64),
+    Boolean(GTSpan, bool),
 }

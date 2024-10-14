@@ -819,7 +819,7 @@ mod tests {
                                     GTProperty {
                                         doc: None,
                                         name: "v".into(),
-                                        descriptor: GTLiteral::Integer(2).into(),
+                                        descriptor: GTLiteral::Integer((21, 22).into(), 2).into(),
                                         required: true,
                                     },
                                     GTProperty {
@@ -847,7 +847,11 @@ mod tests {
                                     GTProperty {
                                         doc: None,
                                         name: "type".into(),
-                                        descriptor: GTLiteral::String("user".into()).into(),
+                                        descriptor: GTLiteral::String(
+                                            (82, 88).into(),
+                                            "user".into(),
+                                        )
+                                        .into(),
                                         required: true,
                                     },
                                     GTProperty {
@@ -882,13 +886,18 @@ mod tests {
                                     GTProperty {
                                         doc: None,
                                         name: "type".into(),
-                                        descriptor: GTLiteral::String("system".into()).into(),
+                                        descriptor: GTLiteral::String(
+                                            (173, 181).into(),
+                                            "system".into(),
+                                        )
+                                        .into(),
                                         required: true,
                                     },
                                     GTProperty {
                                         doc: None,
                                         name: "published".into(),
-                                        descriptor: GTLiteral::Boolean(true).into(),
+                                        descriptor: GTLiteral::Boolean((195, 199).into(), true)
+                                            .into(),
                                         required: true,
                                     },
                                 ],
@@ -898,43 +907,46 @@ mod tests {
                         GTAlias {
                             doc: None,
                             name: GTIdentifier::new((203, 208).into(), "False".into()),
-                            descriptor: GTLiteral::Boolean(false).into(),
+                            descriptor: GTLiteral::Boolean((211, 216).into(), false).into(),
                         },
                         GTAlias {
                             doc: None,
                             name: GTIdentifier::new((218, 223).into(), "Float".into()),
-                            descriptor: GTLiteral::Float(1.000_123).into(),
+                            descriptor: GTLiteral::Float((226, 235).into(), 1.000_123).into(),
                         },
                         GTAlias {
                             doc: None,
                             name: GTIdentifier::new((237, 243).into(), "Number".into()),
-                            descriptor: GTLiteral::Integer(1_234_567).into(),
+                            descriptor: GTLiteral::Integer((246, 255).into(), 1_234_567).into(),
                         },
                         GTAlias {
                             doc: None,
                             name: GTIdentifier::new((257, 263).into(), "String".into()),
-                            descriptor: GTLiteral::String("Hello, \\\"world\\\"! \\\\".into())
-                                .into(),
+                            descriptor: GTLiteral::String(
+                                (266, 288).into(),
+                                "Hello, \\\"world\\\"! \\\\".into(),
+                            )
+                            .into(),
                         },
                         GTAlias {
                             doc: None,
                             name: GTIdentifier::new((290, 301).into(), "NegativeInt".into()),
-                            descriptor: GTLiteral::Integer(-1).into(),
+                            descriptor: GTLiteral::Integer((304, 306).into(), -1).into(),
                         },
                         GTAlias {
                             doc: None,
                             name: GTIdentifier::new((308, 321).into(), "NegativeFloat".into()),
-                            descriptor: GTLiteral::Float(-1.0).into(),
+                            descriptor: GTLiteral::Float((324, 328).into(), -1.0).into(),
                         },
                         GTAlias {
                             doc: None,
                             name: GTIdentifier::new((330, 340).into(), "LargeFloat".into()),
-                            descriptor: GTLiteral::Float(1e6).into(),
+                            descriptor: GTLiteral::Float((343, 346).into(), 1e6).into(),
                         },
                         GTAlias {
                             doc: None,
                             name: GTIdentifier::new((348, 358).into(), "SmallFloat".into()),
-                            descriptor: GTLiteral::Float(3.5e-4).into(),
+                            descriptor: GTLiteral::Float((361, 367).into(), 3.5e-4).into(),
                         },
                     ],
                 },

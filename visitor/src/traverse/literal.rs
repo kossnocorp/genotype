@@ -19,7 +19,7 @@ mod tests {
     #[test]
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
-        let mut literal = GTLiteral::String("Hello, world!".into());
+        let mut literal = GTLiteral::String((0, 0).into(), "Hello, world!".into());
         literal.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,

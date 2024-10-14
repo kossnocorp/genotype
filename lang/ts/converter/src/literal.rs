@@ -9,10 +9,10 @@ impl TSConvert<TSLiteral> for GTLiteral {
         HoistFn: Fn(TSDefinition),
     {
         match self {
-            GTLiteral::Boolean(value) => TSLiteral::Boolean(*value),
-            GTLiteral::Integer(value) => TSLiteral::Integer(*value),
-            GTLiteral::Float(value) => TSLiteral::Float(*value),
-            GTLiteral::String(value) => TSLiteral::String(value.clone()),
+            GTLiteral::Boolean(_, value) => TSLiteral::Boolean(*value),
+            GTLiteral::Integer(_, value) => TSLiteral::Integer(*value),
+            GTLiteral::Float(_, value) => TSLiteral::Float(*value),
+            GTLiteral::String(_, value) => TSLiteral::String(value.clone()),
         }
     }
 }
@@ -27,19 +27,20 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             TSLiteral::Boolean(true),
-            GTLiteral::Boolean(true).convert(&TSConvertResolve::new(), &|_| {}),
+            GTLiteral::Boolean((0, 0).into(), true).convert(&TSConvertResolve::new(), &|_| {}),
         );
         assert_eq!(
             TSLiteral::Integer(-123),
-            GTLiteral::Integer(-123).convert(&TSConvertResolve::new(), &|_| {}),
+            GTLiteral::Integer((0, 0).into(), -123).convert(&TSConvertResolve::new(), &|_| {}),
         );
         assert_eq!(
             TSLiteral::Float(1.23),
-            GTLiteral::Float(1.23).convert(&TSConvertResolve::new(), &|_| {}),
+            GTLiteral::Float((0, 0).into(), 1.23).convert(&TSConvertResolve::new(), &|_| {}),
         );
         assert_eq!(
             TSLiteral::String("Hello, world!".into()),
-            GTLiteral::String("Hello, world!".into()).convert(&TSConvertResolve::new(), &|_| {}),
+            GTLiteral::String((0, 0).into(), "Hello, world!".into())
+                .convert(&TSConvertResolve::new(), &|_| {}),
         );
     }
 }
