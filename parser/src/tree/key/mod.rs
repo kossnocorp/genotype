@@ -1,10 +1,12 @@
+use crate::GTSpan;
+
 mod parse;
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone)]
-pub struct GTKey(pub String);
+pub struct GTKey(pub GTSpan, pub String);
 
-impl From<&str> for GTKey {
-    fn from(str: &str) -> Self {
-        GTKey(str.into())
+impl GTKey {
+    pub fn new(span: GTSpan, name: String) -> Self {
+        Self(span, name)
     }
 }

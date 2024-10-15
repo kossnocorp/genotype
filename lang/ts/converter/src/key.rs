@@ -8,7 +8,7 @@ impl TSConvert<TSKey> for GTKey {
     where
         HoistFn: Fn(TSDefinition),
     {
-        TSKey(self.0.clone())
+        TSKey(self.1.clone())
     }
 }
 
@@ -22,7 +22,7 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             TSKey("foo".into()),
-            GTKey("foo".into()).convert(&TSConvertResolve::new(), &|_| {}),
+            GTKey::new((0, 0).into(), "foo".into()).convert(&TSConvertResolve::new(), &|_| {}),
         );
     }
 }

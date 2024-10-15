@@ -68,13 +68,13 @@ mod tests {
                     properties: vec![
                         GTProperty {
                             doc: None,
-                            name: "title".into(),
+                            name: GTKey::new((0, 0).into(), "title".into()),
                             descriptor: GTPrimitive::String((0, 0).into()).into(),
                             required: true,
                         },
                         GTProperty {
                             doc: None,
-                            name: "author".into(),
+                            name: GTKey::new((0, 0).into(), "author".into()),
                             descriptor: GTPrimitive::String((0, 0).into()).into(),
                             required: true,
                         }
@@ -114,7 +114,7 @@ mod tests {
                     }],
                     properties: vec![GTProperty {
                         doc: None,
-                        name: "author".into(),
+                        name: GTKey::new((0, 0).into(), "author".into()),
                         descriptor: GTPrimitive::String((0, 0).into()).into(),
                         required: true,
                     }]
@@ -145,7 +145,7 @@ mod tests {
                             }],
                             properties: vec![GTProperty {
                                 doc: None,
-                                name: "author".into(),
+                                name: GTKey::new((0, 0).into(), "author".into()),
                                 descriptor: GTPrimitive::String((0, 0).into()).into(),
                                 required: true,
                             }]

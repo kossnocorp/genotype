@@ -201,7 +201,7 @@ mod tests {
                         properties: vec![
                             GTProperty {
                                 doc: None,
-                                name: "book".into(),
+                                name: GTKey::new((139, 143).into(), "book".into()),
                                 descriptor: GTDescriptor::InlineImport(GTInlineImport {
                                     name: GTIdentifier::new((150, 154).into(), "Book".into()),
                                     path: GTPath::parse((145, 149).into(), "book").unwrap(),
@@ -210,7 +210,7 @@ mod tests {
                             },
                             GTProperty {
                                 doc: None,
-                                name: "user".into(),
+                                name: GTKey::new((167, 171).into(), "user".into()),
                                 descriptor: GTDescriptor::InlineImport(GTInlineImport {
                                     name: GTIdentifier::new((195, 199).into(), "User".into()),
                                     path: GTPath::parse((173, 194).into(), "./misc/user").unwrap(),

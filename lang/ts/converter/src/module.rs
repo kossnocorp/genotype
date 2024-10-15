@@ -85,13 +85,13 @@ mod tests {
                                 properties: vec![
                                     GTProperty {
                                         doc: None,
-                                        name: "name".into(),
+                                        name: GTKey::new((0, 0).into(), "name".into()),
                                         descriptor: GTPrimitive::String((0, 0).into()).into(),
                                         required: true,
                                     },
                                     GTProperty {
                                         doc: None,
-                                        name: "age".into(),
+                                        name: GTKey::new((0, 0).into(), "age".into()),
                                         descriptor: GTPrimitive::Int((0, 0).into()).into(),
                                         required: false,
                                     }
@@ -105,7 +105,7 @@ mod tests {
                                 extensions: vec![],
                                 properties: vec![GTProperty {
                                     doc: None,
-                                    name: "book".into(),
+                                    name: GTKey::new((0, 0).into(), "book".into()),
                                     descriptor: GTDescriptor::Alias(Box::new(GTAlias {
                                         doc: None,
                                         name: GTIdentifier::new((0, 0).into(), "Book".into()),
@@ -114,7 +114,7 @@ mod tests {
                                             properties: vec![
                                                 GTProperty {
                                                     doc: None,
-                                                    name: "title".into(),
+                                                    name: GTKey::new((0, 0).into(), "title".into()),
                                                     descriptor: GTDescriptor::Primitive(
                                                         GTPrimitive::String((0, 0).into())
                                                     ),
@@ -122,7 +122,10 @@ mod tests {
                                                 },
                                                 GTProperty {
                                                     doc: None,
-                                                    name: "author".into(),
+                                                    name: GTKey::new(
+                                                        (0, 0).into(),
+                                                        "author".into()
+                                                    ),
                                                     descriptor: GTIdentifier::new(
                                                         (0, 0).into(),
                                                         "Author".into()

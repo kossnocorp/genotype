@@ -34,13 +34,13 @@ mod tests {
                 properties: vec![
                     GTProperty {
                         doc: None,
-                        name: "name".into(),
+                        name: GTKey::new((0, 0).into(), "name".into()),
                         descriptor: GTPrimitive::String((0, 0).into()).into(),
                         required: true,
                     },
                     GTProperty {
                         doc: None,
-                        name: "age".into(),
+                        name: GTKey::new((0, 0).into(), "age".into()),
                         descriptor: GTPrimitive::Int((0, 0).into()).into(),
                         required: false,
                     }

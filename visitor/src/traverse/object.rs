@@ -32,7 +32,7 @@ mod tests {
         };
         let property = GTProperty {
             doc: None,
-            name: GTKey("key".into()),
+            name: GTKey((0, 0).into(), "key".into()),
             descriptor: GTPrimitive::String((0, 0).into()).into(),
             required: true,
         };

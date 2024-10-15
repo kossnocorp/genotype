@@ -19,7 +19,7 @@ mod tests {
     #[test]
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
-        let mut key = GTKey("name".into());
+        let mut key = GTKey((0, 0).into(), "name".into());
         key.traverse(&mut visitor);
         assert_eq!(visitor.visited, vec![GTMockVisited::Key(key.clone()),]);
     }
