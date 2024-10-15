@@ -262,6 +262,7 @@ mod tests {
                                         doc: None,
                                         name: GTKey::new((29, 33).into(), "user".into()),
                                         descriptor: GTDescriptor::InlineImport(GTInlineImport {
+                                            span: (35, 46).into(),
                                             path: GTPath::parse((35, 41).into(), "./user").unwrap(),
                                             name: GTIdentifier::new((42, 46).into(), "User".into()),
                                         }),

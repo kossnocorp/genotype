@@ -10,11 +10,13 @@ use super::GTInlineImport;
 
 impl GTInlineImport {
     pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> Result<Self, GTNodeParseError> {
+        let span = pair.as_span().into();
         let (path, (name_span, name)) = GTPath::split_parse(pair)?;
 
         resolve.deps.insert(path.clone());
 
         Ok(GTInlineImport {
+            span,
             path,
             name: GTIdentifier::new(name_span, name),
         })
@@ -23,11 +25,25 @@ impl GTInlineImport {
 
 #[cfg(test)]
 mod tests {
+    use pest::Parser;
+    use pretty_assertions::assert_eq;
     use std::collections::HashSet;
 
-    use pretty_assertions::assert_eq;
-
     use crate::*;
+
+    #[test]
+    fn test_parse() {
+        let mut pairs =
+            GenotypeParser::parse(Rule::inline_import, "./path/to/module/Name").unwrap();
+        assert_eq!(
+            GTInlineImport::parse(pairs.next().unwrap(), &mut GTResolve::new()).unwrap(),
+            GTInlineImport {
+                span: (0, 21).into(),
+                name: GTIdentifier::new((17, 21).into(), "Name".into()),
+                path: GTPath::parse((0, 16).into(), "./path/to/module").unwrap(),
+            }
+        );
+    }
 
     #[test]
     fn test_parse_deps_base() {

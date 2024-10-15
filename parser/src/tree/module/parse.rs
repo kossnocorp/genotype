@@ -677,6 +677,7 @@ mod tests {
                                         doc: None,
                                         name: GTKey::new((111, 117).into(), "author".into()),
                                         descriptor: GTDescriptor::InlineImport(GTInlineImport {
+                                            span: (119, 138).into(),
                                             path: GTPath::parse((119, 131).into(), "../../author")
                                                 .unwrap(),
                                             name: GTIdentifier::new(
@@ -703,6 +704,7 @@ mod tests {
                             doc: None,
                             name: GTIdentifier::new((157, 163).into(), "Author".into()),
                             descriptor: GTDescriptor::InlineImport(GTInlineImport {
+                                span: (166, 185).into(),
                                 path: GTPath::parse((166, 178).into(), "../../author").unwrap(),
                                 name: GTIdentifier::new((179, 185).into(), "Author".into()),
                             }),

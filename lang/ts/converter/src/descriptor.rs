@@ -121,6 +121,7 @@ mod tests {
     fn test_convert_inline_import() {
         assert_eq!(
             GTDescriptor::InlineImport(GTInlineImport {
+                span: (0, 0).into(),
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 name: GTIdentifier::new((0, 0).into(), "Name".into())
             })

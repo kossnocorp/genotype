@@ -23,6 +23,7 @@ mod tests {
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
         let mut import = GTInlineImport {
+            span: (0, 0).into(),
             path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
             name: GTIdentifier::new((0, 0).into(), "Name".into()),
         };
