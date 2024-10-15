@@ -137,6 +137,7 @@ mod tests {
                 doc: None,
                 name: GTIdentifier::new((0, 0).into(), "Book".into()),
                 descriptor: GTDescriptor::Union(GTUnion {
+                    span: (0, 0).into(),
                     descriptors: vec![
                         GTObject {
                             extensions: vec![GTExtension {

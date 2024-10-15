@@ -25,6 +25,7 @@ mod tests {
         let mut visitor = GTMockVisitor::new();
         let primitive = GTDescriptor::Primitive(GTPrimitive::String((0, 0).into()));
         let union = GTUnion {
+            span: (0, 0).into(),
             descriptors: vec![primitive.clone()],
         };
         let mut descriptor = GTDescriptor::Union(union.clone());
