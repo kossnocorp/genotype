@@ -533,6 +533,7 @@ mod tests {
                                     doc: None,
                                     name: GTKey::new((27, 31).into(), "tags".into()),
                                     descriptor: GTDescriptor::Array(Box::new(GTArray {
+                                        span: (33, 41).into(),
                                         descriptor: GTPrimitive::String((34, 40).into()).into(),
                                     })),
                                     required: true,

@@ -272,6 +272,7 @@ mod tests {
                                         doc: None,
                                         name: GTKey::new((49, 54).into(), "books".into()),
                                         descriptor: GTDescriptor::Array(Box::new(GTArray {
+                                            span: (56, 62).into(),
                                             descriptor: GTDescriptor::Reference(
                                                 GTIdentifier::new((57, 61).into(), "Book".into())
                                                     .into(),

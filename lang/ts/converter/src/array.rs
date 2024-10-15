@@ -26,6 +26,7 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             GTArray {
+                span: (0, 0).into(),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }
             .convert(&TSConvertResolve::new(), &|_| {}),

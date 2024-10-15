@@ -64,6 +64,7 @@ mod tests {
     fn test_traverse_array() {
         let mut visitor = GTMockVisitor::new();
         let array = GTArray {
+            span: (0, 0).into(),
             descriptor: GTPrimitive::String((0, 0).into()).into(),
         };
         let mut descriptor = GTDescriptor::Array(Box::new(array.clone()));
