@@ -572,6 +572,7 @@ mod tests {
                                         doc: None,
                                         name: GTKey::new((11, 15).into(), "name".into()),
                                         descriptor: GTDescriptor::Tuple(GTTuple {
+                                            span: (17, 33).into(),
                                             descriptors: vec![
                                                 GTPrimitive::String((18, 24).into()).into(),
                                                 GTPrimitive::String((26, 32).into()).into(),
@@ -583,6 +584,7 @@ mod tests {
                                         doc: None,
                                         name: GTKey::new((36, 43).into(), "address".into()),
                                         descriptor: GTDescriptor::Tuple(GTTuple {
+                                            span: (45, 66).into(),
                                             descriptors: vec![
                                                 GTPrimitive::Int((46, 49).into()).into(),
                                                 GTPrimitive::String((51, 57).into()).into(),
@@ -598,6 +600,7 @@ mod tests {
                             doc: None,
                             name: GTIdentifier::new((70, 77).into(), "Address".into()),
                             descriptor: GTDescriptor::Tuple(GTTuple {
+                                span: (80, 101).into(),
                                 descriptors: vec![
                                     GTPrimitive::Int((81, 84).into()).into(),
                                     GTPrimitive::String((86, 92).into()).into(),

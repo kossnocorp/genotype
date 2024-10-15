@@ -234,6 +234,7 @@ mod tests {
     fn test_convert_tuple() {
         assert_eq!(
             GTDescriptor::Tuple(GTTuple {
+                span: (0, 0).into(),
                 descriptors: vec![
                     GTPrimitive::Boolean((0, 0).into()).into(),
                     GTPrimitive::String((0, 0).into()).into(),

@@ -9,7 +9,9 @@ use super::GTTuple;
 
 impl GTTuple {
     pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> Result<Self, GTNodeParseError> {
+        let span = pair.as_span().into();
         let mut tuple = GTTuple {
+            span,
             descriptors: vec![],
         };
 
@@ -19,5 +21,29 @@ impl GTTuple {
         }
 
         Ok(tuple)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use pest::Parser;
+    use pretty_assertions::assert_eq;
+
+    use crate::*;
+
+    #[test]
+    fn test_parse() {
+        let mut pairs = GenotypeParser::parse(Rule::tuple, "(string, int)").unwrap();
+        let mut resolve = GTResolve::new();
+        assert_eq!(
+            GTTuple::parse(pairs.next().unwrap(), &mut resolve).unwrap(),
+            GTTuple {
+                span: (0, 13).into(),
+                descriptors: vec![
+                    GTDescriptor::Primitive(GTPrimitive::String((1, 7).into())),
+                    GTDescriptor::Primitive(GTPrimitive::Int((9, 12).into())),
+                ],
+            }
+        );
     }
 }
