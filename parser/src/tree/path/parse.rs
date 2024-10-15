@@ -203,6 +203,7 @@ mod tests {
                     },
                 ],
                 aliases: vec![GTAlias {
+                    span: (133, 237).into(),
                     doc: None,
                     name: GTIdentifier::new((133, 138).into(), "Order".into()),
                     descriptor: GTDescriptor::Object(GTObject {

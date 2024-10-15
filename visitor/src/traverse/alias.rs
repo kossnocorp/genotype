@@ -25,6 +25,7 @@ mod tests {
     fn test_traverse_base() {
         let mut visitor = GTMockVisitor::new();
         let mut alias = GTAlias {
+            span: (0, 0).into(),
             doc: None,
             name: GTIdentifier::new((0, 0).into(), "Name".into()),
             descriptor: GTPrimitive::String((0, 0).into()).into(),
@@ -44,7 +45,8 @@ mod tests {
     fn test_traverse_doc() {
         let mut visitor = GTMockVisitor::new();
         let mut alias = GTAlias {
-            doc: Some(GTDoc("Hello, world!".into())),
+            span: (0, 0).into(),
+            doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
             name: GTIdentifier::new((0, 0).into(), "Name".into()),
             descriptor: GTPrimitive::String((0, 0).into()).into(),
         };

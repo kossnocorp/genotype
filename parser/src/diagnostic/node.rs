@@ -1,5 +1,6 @@
 #[derive(Debug, PartialEq)]
 pub enum GTNode {
+    Alias,
     Array,
     Extension,
     Import,
@@ -13,6 +14,7 @@ pub enum GTNode {
 impl GTNode {
     pub fn name(&self) -> &'static str {
         match self {
+            Self::Alias => "alias",
             Self::Array => "array",
             Self::Extension => "extension",
             Self::Import => "import",

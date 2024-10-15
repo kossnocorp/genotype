@@ -1,11 +1,6 @@
 use pest::iterators::Pair;
 
-use crate::{
-    diagnostic::error::GTNodeParseError,
-    parser::Rule,
-    tree::{GTReference, GTResolve},
-    GTNode, GTNodeParseResult,
-};
+use crate::*;
 
 use super::GTExtension;
 

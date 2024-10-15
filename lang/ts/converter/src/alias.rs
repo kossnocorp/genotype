@@ -45,6 +45,7 @@ mod tests {
     fn test_convert_alias() {
         assert_eq!(
             GTAlias {
+                span: (0, 0).into(),
                 doc: None,
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
@@ -61,6 +62,7 @@ mod tests {
     fn test_convert_interface() {
         assert_eq!(
             GTAlias {
+                span: (0, 0).into(),
                 doc: None,
                 name: GTIdentifier::new((0, 0).into(), "Book".into()),
                 descriptor: GTDescriptor::Object(GTObject {
@@ -108,6 +110,7 @@ mod tests {
     fn test_convert_extensions() {
         assert_eq!(
             GTAlias {
+                span: (0, 0).into(),
                 doc: None,
                 name: GTIdentifier::new((0, 0).into(), "Book".into()),
                 descriptor: GTDescriptor::Object(GTObject {
@@ -139,6 +142,7 @@ mod tests {
 
         assert_eq!(
             GTAlias {
+                span: (0, 0).into(),
                 doc: None,
                 name: GTIdentifier::new((0, 0).into(), "Book".into()),
                 descriptor: GTDescriptor::Union(GTUnion {

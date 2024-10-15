@@ -1,18 +1,18 @@
 use pest::iterators::{Pair, Pairs};
 
-use crate::{
-    diagnostic::error::GTNodeParseError,
-    parser::Rule,
-    tree::{doc::GTDoc, identifier::GTIdentifier, GTDescriptor, GTResolve},
-};
+use crate::*;
 
 use super::GTAlias;
 
 impl GTAlias {
-    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> Result<Self, GTNodeParseError> {
+    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> GTNodeParseResult<Self> {
+        let span: GTSpan = pair.as_span().into();
         let mut inner = pair.into_inner();
-        let pair = inner.next().unwrap(); // [TODO]
-        parse(inner, pair, resolve, ParseState::Doc(None))
+
+        match inner.next() {
+            Some(pair) => parse(inner, pair, resolve, ParseState::Doc(span, None)),
+            None => Err(GTNodeParseError::Internal(span, GTNode::Alias)),
+        }
     }
 }
 
@@ -21,40 +21,49 @@ fn parse(
     pair: Pair<'_, Rule>,
     resolve: &mut GTResolve,
     state: ParseState,
-) -> Result<GTAlias, GTNodeParseError> {
+) -> GTNodeParseResult<GTAlias> {
     match state {
-        ParseState::Doc(doc_acc) => {
-            match pair.as_rule() {
-                Rule::line_doc => {
-                    let doc = pair.into_inner().find(|p| p.as_rule() == Rule::doc);
-                    let doc_acc = if let Some(pair) = doc {
-                        Some(if let Some(doc) = doc_acc {
-                            doc.concat(pair)
-                        } else {
-                            GTDoc::parse(pair)
-                        })
+        ParseState::Doc(span, doc_acc) => match pair.as_rule() {
+            Rule::line_doc => {
+                let doc = pair.into_inner().find(|p| p.as_rule() == Rule::doc);
+                let doc_acc = if let Some(pair) = doc {
+                    Some(if let Some(doc) = doc_acc {
+                        doc.concat(pair)
                     } else {
-                        doc_acc
-                    };
+                        GTDoc::parse(pair)
+                    })
+                } else {
+                    doc_acc
+                };
 
-                    let pair = inner.next().unwrap(); // [TODO]
-                    parse(inner, pair, resolve, ParseState::Doc(doc_acc))
+                match inner.next() {
+                    Some(pair) => parse(inner, pair, resolve, ParseState::Doc(span, doc_acc)),
+                    None => Err(GTNodeParseError::Internal(span, GTNode::Alias)),
                 }
+            }
 
-                _ => parse(inner, pair, resolve, ParseState::Name(doc_acc)),
+            _ => parse(inner, pair, resolve, ParseState::Name(span, doc_acc)),
+        },
+
+        ParseState::Name(span, doc) => {
+            let name: GTIdentifier = pair.into();
+            resolve.exports.push(name.clone());
+
+            match inner.next() {
+                Some(pair) => parse(
+                    inner,
+                    pair,
+                    resolve,
+                    ParseState::Descriptor(span, doc, name),
+                ),
+                None => Err(GTNodeParseError::Internal(span, GTNode::Alias)),
             }
         }
 
-        ParseState::Name(doc) => {
-            let name: GTIdentifier = pair.into();
-            resolve.exports.push(name.clone());
-            let pair = inner.next().unwrap(); // [TODO]
-            parse(inner, pair, resolve, ParseState::Descriptor(doc, name))
-        }
-
-        ParseState::Descriptor(doc, name) => {
+        ParseState::Descriptor(span, doc, name) => {
             let descriptor = GTDescriptor::parse(pair, resolve)?;
             Ok(GTAlias {
+                span,
                 doc,
                 name,
                 descriptor,
@@ -64,16 +73,42 @@ fn parse(
 }
 
 enum ParseState {
-    Doc(Option<GTDoc>),
-    Name(Option<GTDoc>),
-    Descriptor(Option<GTDoc>, GTIdentifier),
+    Doc(GTSpan, Option<GTDoc>),
+    Name(GTSpan, Option<GTDoc>),
+    Descriptor(GTSpan, Option<GTDoc>, GTIdentifier),
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::*;
+    use pest::Parser;
     use pretty_assertions::assert_eq;
 
-    use crate::{tree::GTModule, GTIdentifier};
+    #[test]
+    fn test_parse() {
+        let mut pairs = GenotypeParser::parse(Rule::alias, "Hello = { world: string }").unwrap();
+        let mut resove = GTResolve::new();
+        assert_eq!(
+            GTAlias::parse(pairs.next().unwrap(), &mut resove).unwrap(),
+            GTAlias {
+                span: (0, 25).into(),
+                name: GTIdentifier::new((0, 5).into(), "Hello".into()),
+                doc: None,
+                descriptor: GTObject {
+                    span: (8, 25).into(),
+                    extensions: vec![],
+                    properties: vec![GTProperty {
+                        span: (10, 23).into(),
+                        doc: None,
+                        name: GTKey((10, 15).into(), "world".into()),
+                        descriptor: GTPrimitive::String((17, 23).into()).into(),
+                        required: true,
+                    }]
+                }
+                .into()
+            }
+        );
+    }
 
     #[test]
     fn test_parse_exports() {

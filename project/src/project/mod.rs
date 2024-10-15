@@ -164,6 +164,7 @@ mod tests {
                         doc: None,
                         imports: vec![],
                         aliases: vec![GTAlias {
+                            span: (0, 27).into(),
                             doc: None,
                             name: GTIdentifier::new((0, 6).into(), "Author".into()),
                             descriptor: GTDescriptor::Object(GTObject {
@@ -201,6 +202,7 @@ mod tests {
                             ),
                         }],
                         aliases: vec![GTAlias {
+                            span: (21, 64).into(),
                             doc: None,
                             name: GTIdentifier::new((21, 25).into(), "Book".into()),
                             descriptor: GTDescriptor::Object(GTObject {
@@ -258,6 +260,7 @@ mod tests {
                             ),
                         }],
                         aliases: vec![GTAlias {
+                            span: (17, 64).into(),
                             doc: None,
                             name: GTIdentifier::new((17, 22).into(), "Order".into()),
                             descriptor: GTDescriptor::Object(GTObject {
@@ -321,6 +324,7 @@ mod tests {
                         doc: None,
                         imports: vec![],
                         aliases: vec![GTAlias {
+                            span: (0, 41).into(),
                             doc: None,
                             name: GTIdentifier::new((0, 4).into(), "User".into()),
                             descriptor: GTDescriptor::Object(GTObject {

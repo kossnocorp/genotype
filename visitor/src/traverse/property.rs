@@ -49,7 +49,7 @@ mod tests {
         let mut visitor = GTMockVisitor::new();
         let mut property = GTProperty {
             span: (0, 0).into(),
-            doc: Some(GTDoc("Hello, world!".into())),
+            doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
             name: GTKey((0, 0).into(), "key".into()),
             descriptor: GTPrimitive::String((0, 0).into()).into(),
             required: true,

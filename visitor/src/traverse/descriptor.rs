@@ -43,6 +43,7 @@ mod tests {
     fn test_traverse_alias() {
         let mut visitor = GTMockVisitor::new();
         let alias = GTAlias {
+            span: (0, 0).into(),
             doc: None,
             name: GTIdentifier::new((0, 0).into(), "Name".into()),
             descriptor: GTPrimitive::String((0, 0).into()).into(),

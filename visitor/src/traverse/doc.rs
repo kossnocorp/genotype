@@ -19,7 +19,7 @@ mod tests {
     #[test]
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
-        let mut doc = GTDoc("Hello, world!".into());
+        let mut doc = GTDoc::new((0, 0).into(), "Hello, world!".into());
         doc.traverse(&mut visitor);
         assert_eq!(visitor.visited, vec![GTMockVisited::Doc(doc.clone()),]);
     }

@@ -103,11 +103,13 @@ mod tests {
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
+                            span: (0, 9).into(),
                             doc: None,
                             name: GTIdentifier::new((0, 3).into(), "Age".into()),
                             descriptor: GTPrimitive::Int((6, 9).into()).into(),
                         },
                         GTAlias {
+                            span: (11, 27).into(),
                             doc: None,
                             name: GTIdentifier::new((11, 21).into(), "AnotherAge".into()),
                             descriptor: GTIdentifier::new((24, 27).into(), "Age".into()).into(),
@@ -141,21 +143,25 @@ mod tests {
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
+                            span: (0, 15).into(),
                             doc: None,
                             name: GTIdentifier::new((0, 6).into(), "String".into()),
                             descriptor: GTPrimitive::String((9, 15).into()).into(),
                         },
                         GTAlias {
+                            span: (17, 26).into(),
                             doc: None,
                             name: GTIdentifier::new((17, 20).into(), "Int".into()),
                             descriptor: GTPrimitive::Int((23, 26).into()).into(),
                         },
                         GTAlias {
+                            span: (28, 41).into(),
                             doc: None,
                             name: GTIdentifier::new((28, 33).into(), "Float".into()),
                             descriptor: GTPrimitive::Float((36, 41).into()).into(),
                         },
                         GTAlias {
+                            span: (43, 60).into(),
                             doc: None,
                             name: GTIdentifier::new((43, 50).into(), "Boolean".into()),
                             descriptor: GTPrimitive::Boolean((53, 60).into()).into(),
@@ -188,6 +194,7 @@ mod tests {
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
+                            span: (0, 26).into(),
                             doc: None,
                             name: GTIdentifier::new((0, 5).into(), "Hello".into()),
                             descriptor: GTDescriptor::Object(GTObject {
@@ -203,6 +210,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            span: (28, 81).into(),
                             doc: None,
                             name: GTIdentifier::new((28, 33).into(), "Hello".into()),
                             descriptor: GTDescriptor::Object(GTObject {
@@ -236,6 +244,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            span: (83, 93).into(),
                             doc: None,
                             name: GTIdentifier::new((83, 88).into(), "Empty".into()),
                             descriptor: GTDescriptor::Object(GTObject {
@@ -245,6 +254,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            span: (95, 109).into(),
                             doc: None,
                             name: GTIdentifier::new((95, 100).into(), "Empty".into()),
                             descriptor: GTDescriptor::Object(GTObject {
@@ -254,6 +264,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            span: (111, 135).into(),
                             doc: None,
                             name: GTIdentifier::new((111, 116).into(), "Hello".into()),
                             descriptor: GTDescriptor::Object(GTObject {
@@ -269,6 +280,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            span: (137, 171).into(),
                             doc: None,
                             name: GTIdentifier::new((137, 142).into(), "Hello".into()),
                             descriptor: GTDescriptor::Object(GTObject {
@@ -318,16 +330,24 @@ mod tests {
             GTModuleParse {
                 module: GTModule {
                     source_code,
-                    doc: Some("Module comment...\n...multiline".into()),
+                    doc: Some(GTDoc::new(
+                        (4, 38).into(),
+                        "Module comment...\n...multiline".into(),
+                    )),
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
-                            doc: Some("Alias comment".into()),
+                            span: (58, 111).into(),
+                            doc: Some(GTDoc::new((62, 75).into(), "Alias comment".into())),
                             name: GTIdentifier::new((76, 81).into(), "Hello".into()),
                             descriptor: GTPrimitive::String((105, 111).into()).into(),
                         },
                         GTAlias {
-                            doc: Some("Multiline...\n...alias comment".into()),
+                            span: (113, 256).into(),
+                            doc: Some(GTDoc::new(
+                                (117, 150).into(),
+                                "Multiline...\n...alias comment".into(),
+                            )),
                             name: GTIdentifier::new((151, 156).into(), "Hello".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 span: (159, 256).into(),
@@ -335,14 +355,20 @@ mod tests {
                                 properties: vec![
                                     GTProperty {
                                         span: (163, 198).into(),
-                                        doc: Some("Property comment".into()),
+                                        doc: Some(GTDoc::new(
+                                            (167, 183).into(),
+                                            "Property comment".into(),
+                                        )),
                                         name: GTKey::new((186, 190).into(), "name".into()),
                                         descriptor: GTPrimitive::String((192, 198).into()).into(),
                                         required: true,
                                     },
                                     GTProperty {
                                         span: (201, 254).into(),
-                                        doc: Some("Multiline...\n...property comment".into()),
+                                        doc: Some(GTDoc::new(
+                                            (205, 243).into(),
+                                            "Multiline...\n...property comment".into(),
+                                        )),
                                         name: GTKey::new((246, 249).into(), "age".into()),
                                         descriptor: GTPrimitive::Int((251, 254).into()).into(),
                                         required: true,
@@ -351,6 +377,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            span: (258, 272).into(),
                             doc: None,
                             name: GTIdentifier::new((258, 263).into(), "Hello".into()),
                             descriptor: GTPrimitive::String((266, 272).into()).into(),
@@ -381,6 +408,7 @@ mod tests {
                     doc: None,
                     imports: vec![],
                     aliases: vec![GTAlias {
+                        span: (0, 57).into(),
                         doc: None,
                         name: GTIdentifier::new((0, 5).into(), "Hello".into()),
                         descriptor: GTDescriptor::Object(GTObject {
@@ -437,6 +465,7 @@ mod tests {
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
+                            span: (0, 60).into(),
                             doc: None,
                             name: GTIdentifier::new((0, 5).into(), "Hello".into()),
                             descriptor: GTDescriptor::Object(GTObject {
@@ -475,6 +504,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            span: (62, 130).into(),
                             doc: None,
                             name: GTIdentifier::new((62, 67).into(), "Hello".into()),
                             descriptor: GTDescriptor::Object(GTObject {
@@ -485,6 +515,7 @@ mod tests {
                                     doc: None,
                                     name: GTKey::new((74, 78).into(), "name".into()),
                                     descriptor: GTDescriptor::Alias(Box::new(GTAlias {
+                                        span: (80, 128).into(),
                                         doc: None,
                                         name: GTIdentifier::new((80, 85).into(), "Named".into()),
                                         descriptor: GTDescriptor::Object(GTObject {
@@ -548,6 +579,7 @@ mod tests {
                     doc: None,
                     imports: vec![],
                     aliases: vec![GTAlias {
+                        span: (0, 43).into(),
                         doc: None,
                         name: GTIdentifier::new((0, 4).into(), "Book".into()),
                         descriptor: GTDescriptor::Object(GTObject {
@@ -596,6 +628,7 @@ mod tests {
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
+                            span: (0, 68).into(),
                             doc: None,
                             name: GTIdentifier::new((0, 4).into(), "User".into()),
                             descriptor: GTDescriptor::Object(GTObject {
@@ -633,6 +666,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            span: (70, 101).into(),
                             doc: None,
                             name: GTIdentifier::new((70, 77).into(), "Address".into()),
                             descriptor: GTDescriptor::Tuple(GTTuple {
@@ -706,6 +740,7 @@ mod tests {
                     ],
                     aliases: vec![
                         GTAlias {
+                            span: (84, 155).into(),
                             doc: None,
                             name: GTIdentifier::new((84, 88).into(), "Book".into()),
                             descriptor: GTDescriptor::Object(GTObject {
@@ -749,6 +784,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            span: (157, 185).into(),
                             doc: None,
                             name: GTIdentifier::new((157, 163).into(), "Author".into()),
                             descriptor: GTDescriptor::InlineImport(GTInlineImport {
@@ -792,6 +828,7 @@ mod tests {
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
+                            span: (0, 37).into(),
                             doc: None,
                             name: GTIdentifier::new((0, 4).into(), "Base".into()),
                             descriptor: GTDescriptor::Object(GTObject {
@@ -816,6 +853,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            span: (39, 78).into(),
                             doc: None,
                             name: GTIdentifier::new((39, 48).into(), "Processor".into()),
                             descriptor: GTDescriptor::Object(GTObject {
@@ -837,6 +875,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            span: (80, 117).into(),
                             doc: None,
                             name: GTIdentifier::new((80, 84).into(), "User".into()),
                             descriptor: GTDescriptor::Object(GTObject {
@@ -887,6 +926,7 @@ mod tests {
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
+                            span: (0, 39).into(),
                             doc: None,
                             name: GTIdentifier::new((0, 11).into(), "CommentBase".into()),
                             descriptor: GTObject {
@@ -912,6 +952,7 @@ mod tests {
                             .into(),
                         },
                         GTAlias {
+                            span: (41, 128).into(),
                             doc: None,
                             name: GTIdentifier::new((41, 52).into(), "UserComment".into()),
                             descriptor: GTObject {
@@ -954,6 +995,7 @@ mod tests {
                             .into(),
                         },
                         GTAlias {
+                            span: (130, 201).into(),
                             doc: None,
                             name: GTIdentifier::new((130, 143).into(), "SystemComment".into()),
                             descriptor: GTObject {
@@ -991,21 +1033,25 @@ mod tests {
                             .into(),
                         },
                         GTAlias {
+                            span: (203, 216).into(),
                             doc: None,
                             name: GTIdentifier::new((203, 208).into(), "False".into()),
                             descriptor: GTLiteral::Boolean((211, 216).into(), false).into(),
                         },
                         GTAlias {
+                            span: (218, 235).into(),
                             doc: None,
                             name: GTIdentifier::new((218, 223).into(), "Float".into()),
                             descriptor: GTLiteral::Float((226, 235).into(), 1.000_123).into(),
                         },
                         GTAlias {
+                            span: (237, 255).into(),
                             doc: None,
                             name: GTIdentifier::new((237, 243).into(), "Number".into()),
                             descriptor: GTLiteral::Integer((246, 255).into(), 1_234_567).into(),
                         },
                         GTAlias {
+                            span: (257, 288).into(),
                             doc: None,
                             name: GTIdentifier::new((257, 263).into(), "String".into()),
                             descriptor: GTLiteral::String(
@@ -1015,21 +1061,25 @@ mod tests {
                             .into(),
                         },
                         GTAlias {
+                            span: (290, 306).into(),
                             doc: None,
                             name: GTIdentifier::new((290, 301).into(), "NegativeInt".into()),
                             descriptor: GTLiteral::Integer((304, 306).into(), -1).into(),
                         },
                         GTAlias {
+                            span: (308, 328).into(),
                             doc: None,
                             name: GTIdentifier::new((308, 321).into(), "NegativeFloat".into()),
                             descriptor: GTLiteral::Float((324, 328).into(), -1.0).into(),
                         },
                         GTAlias {
+                            span: (330, 346).into(),
                             doc: None,
                             name: GTIdentifier::new((330, 340).into(), "LargeFloat".into()),
                             descriptor: GTLiteral::Float((343, 346).into(), 1e6).into(),
                         },
                         GTAlias {
+                            span: (348, 367).into(),
                             doc: None,
                             name: GTIdentifier::new((348, 358).into(), "SmallFloat".into()),
                             descriptor: GTLiteral::Float((361, 367).into(), 3.5e-4).into(),

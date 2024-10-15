@@ -85,6 +85,7 @@ mod tests {
         let hoisted = Mutex::new(vec![]);
         assert_eq!(
             GTDescriptor::Alias(Box::new(GTAlias {
+                span: (0, 0).into(),
                 doc: None,
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),

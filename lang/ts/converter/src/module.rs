@@ -87,6 +87,7 @@ mod tests {
                     ],
                     aliases: vec![
                         GTAlias {
+                            span: (0, 0).into(),
                             doc: None,
                             name: GTIdentifier::new((0, 0).into(), "User".into()),
                             descriptor: GTDescriptor::Object(GTObject {
@@ -111,6 +112,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            span: (0, 0).into(),
                             doc: None,
                             name: GTIdentifier::new((0, 0).into(), "Order".into()),
                             descriptor: GTDescriptor::Object(GTObject {
@@ -121,6 +123,7 @@ mod tests {
                                     doc: None,
                                     name: GTKey::new((0, 0).into(), "book".into()),
                                     descriptor: GTDescriptor::Alias(Box::new(GTAlias {
+                                        span: (0, 0).into(),
                                         doc: None,
                                         name: GTIdentifier::new((0, 0).into(), "Book".into()),
                                         descriptor: GTDescriptor::Object(GTObject {
@@ -158,6 +161,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            span: (0, 0).into(),
                             doc: None,
                             name: GTIdentifier::new((0, 0).into(), "Name".into()),
                             descriptor: GTPrimitive::String((0, 0).into()).into(),

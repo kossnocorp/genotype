@@ -8,7 +8,7 @@ impl TSConvert<TSDoc> for GTDoc {
     where
         HoistFn: Fn(TSDefinition),
     {
-        TSDoc(self.0.clone())
+        TSDoc(self.1.clone())
     }
 }
 
@@ -22,7 +22,7 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             TSDoc("Hello, world!".into()),
-            GTDoc("Hello, world!".into()).convert(&TSConvertResolve::new(), &|_| {}),
+            GTDoc((0, 0).into(), "Hello, world!".into()).convert(&TSConvertResolve::new(), &|_| {}),
         );
     }
 }

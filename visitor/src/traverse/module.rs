@@ -40,6 +40,7 @@ mod tests {
             reference: reference.clone(),
         };
         let alias = GTAlias {
+            span: (0, 0).into(),
             doc: None,
             name: GTIdentifier::new((0, 0).into(), "Name".into()),
             descriptor: GTPrimitive::String((0, 0).into()).into(),
@@ -76,13 +77,14 @@ mod tests {
             reference: reference.clone(),
         };
         let alias = GTAlias {
+            span: (0, 0).into(),
             doc: None,
             name: GTIdentifier::new((0, 0).into(), "Name".into()),
             descriptor: GTPrimitive::String((0, 0).into()).into(),
         };
         let mut module = GTModule {
             source_code: GTSourceCode::new("module.type".into(), "".into()),
-            doc: Some(GTDoc("Hello, world!".into())),
+            doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
             imports: vec![import.clone()],
             aliases: vec![alias.clone()],
         };
