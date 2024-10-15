@@ -188,11 +188,14 @@ mod tests {
                         span: (64, 107).into(),
                         path: GTPath::parse((68, 84).into(), "./misc/order").unwrap(),
                         reference: GTImportReference::Names(vec![
-                            GTImportName::Name(GTIdentifier::new((86, 91).into(), "Order".into()),),
-                            GTImportName::Name(GTIdentifier::new(
+                            GTImportName::Name(
+                                (86, 91).into(),
+                                GTIdentifier::new((86, 91).into(), "Order".into())
+                            ),
+                            GTImportName::Name(
                                 (93, 106).into(),
-                                "SomethingElse".into()
-                            ),),
+                                GTIdentifier::new((93, 106).into(), "SomethingElse".into()),
+                            ),
                         ],),
                     },
                 ],

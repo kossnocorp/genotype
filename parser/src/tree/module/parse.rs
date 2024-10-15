@@ -641,15 +641,16 @@ mod tests {
                             span: (13, 64).into(),
                             path: GTPath::parse((17, 29).into(), "../../author").unwrap(),
                             reference: GTImportReference::Names(vec![
-                                GTImportName::Name(GTIdentifier::new(
+                                GTImportName::Name(
                                     (31, 37).into(),
-                                    "Author".into(),
-                                )),
-                                GTImportName::Name(GTIdentifier::new(
+                                    GTIdentifier::new((31, 37).into(), "Author".into()),
+                                ),
+                                GTImportName::Name(
                                     (39, 44).into(),
-                                    "Genre".into(),
-                                )),
+                                    GTIdentifier::new((39, 44).into(), "Genre".into()),
+                                ),
                                 GTImportName::Alias(
+                                    (46, 63).into(),
                                     GTIdentifier::new((46, 55).into(), "Something".into()),
                                     GTIdentifier::new((59, 63).into(), "Else".into()),
                                 ),

@@ -8,8 +8,8 @@ impl GTTraverse for GTImportName {
     fn traverse(&mut self, visitor: &mut dyn GTVisitor) {
         visitor.visit_import_name(self);
         match self {
-            GTImportName::Name(name) => name.traverse(visitor),
-            GTImportName::Alias(name, alias) => {
+            GTImportName::Name(_, name) => name.traverse(visitor),
+            GTImportName::Alias(_, name, alias) => {
                 name.traverse(visitor);
                 alias.traverse(visitor);
             }
@@ -28,7 +28,7 @@ mod tests {
     fn test_traverse_name() {
         let mut visitor = GTMockVisitor::new();
         let identifier = GTIdentifier::new((0, 0).into(), "Name".into());
-        let mut import_name = GTImportName::Name(identifier.clone());
+        let mut import_name = GTImportName::Name((0, 0).into(), identifier.clone());
         import_name.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,
@@ -44,7 +44,7 @@ mod tests {
         let mut visitor = GTMockVisitor::new();
         let identifier = GTIdentifier::new((0, 0).into(), "Name".into());
         let alias = GTIdentifier::new((0, 0).into(), "Alias".into());
-        let mut import_name = GTImportName::Alias(identifier.clone(), alias.clone());
+        let mut import_name = GTImportName::Alias((0, 0).into(), identifier.clone(), alias.clone());
         import_name.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,

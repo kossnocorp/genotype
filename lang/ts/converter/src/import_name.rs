@@ -9,9 +9,9 @@ impl TSConvert<TSImportName> for GTImportName {
         HoistFn: Fn(TSDefinition),
     {
         match self {
-            Self::Name(name) => TSImportName::Name(name.convert(resolve, hoist)),
+            Self::Name(_, name) => TSImportName::Name(name.convert(resolve, hoist)),
 
-            Self::Alias(name, alias) => {
+            Self::Alias(_, name, alias) => {
                 TSImportName::Alias(name.convert(resolve, hoist), alias.convert(resolve, hoist))
             }
         }
@@ -29,8 +29,11 @@ mod tests {
     #[test]
     fn test_convert_name() {
         assert_eq!(
-            GTImportName::Name(GTIdentifier::new((0, 0).into(), "Name".into()))
-                .convert(&TSConvertResolve::new(), &|_| {}),
+            GTImportName::Name(
+                (0, 0).into(),
+                GTIdentifier::new((0, 0).into(), "Name".into())
+            )
+            .convert(&TSConvertResolve::new(), &|_| {}),
             TSImportName::Name("Name".into()),
         );
     }
@@ -39,6 +42,7 @@ mod tests {
     fn test_convert_alias() {
         assert_eq!(
             GTImportName::Alias(
+                (0, 0).into(),
                 GTIdentifier::new((0, 0).into(), "Name".into()),
                 GTIdentifier::new((0, 0).into(), "Alias".into())
             )

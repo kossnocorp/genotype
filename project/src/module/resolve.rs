@@ -73,9 +73,9 @@ impl GTProjectModuleResolve {
 
                             GTImportReference::Names(names) => {
                                 names.iter().any(|name| match name {
-                                    GTImportName::Name(name) => name.1 == reference.1,
+                                    GTImportName::Name(_, name) => name.1 == reference.1,
 
-                                    GTImportName::Alias(_, alias) => alias.1 == reference.1,
+                                    GTImportName::Alias(_, _, alias) => alias.1 == reference.1,
                                 })
                             }
                         }

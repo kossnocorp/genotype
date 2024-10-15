@@ -45,7 +45,7 @@ mod tests {
     fn test_traverse_names() {
         let mut visitor = GTMockVisitor::new();
         let identifier = GTIdentifier::new((0, 0).into(), "Name".into());
-        let import_name = GTImportName::Name(identifier.clone());
+        let import_name = GTImportName::Name((0, 0).into(), identifier.clone());
         let mut reference = GTImportReference::Names(vec![import_name.clone()]);
         reference.traverse(&mut visitor);
         assert_eq!(

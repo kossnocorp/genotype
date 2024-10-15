@@ -47,6 +47,7 @@ fn parse(
                 let mut names = vec![];
 
                 for pair in pair.into_inner() {
+                    let name_span = pair.as_span().into();
                     let mut inner = pair.into_inner();
 
                     let name = inner
@@ -55,9 +56,9 @@ fn parse(
                         .into();
 
                     if let Some(alias) = inner.next() {
-                        names.push(GTImportName::Alias(name, alias.into()));
+                        names.push(GTImportName::Alias(name_span, name, alias.into()));
                     } else {
-                        names.push(GTImportName::Name(name));
+                        names.push(GTImportName::Name(name_span, name));
                     }
                 }
 
