@@ -8,7 +8,7 @@ impl TSConvert<TSReference> for GTReference {
     where
         HoistFn: Fn(TSDefinition),
     {
-        TSReference(self.0.convert(resolve, hoist))
+        TSReference(self.1.convert(resolve, hoist))
     }
 }
 
@@ -24,8 +24,11 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             TSReference("Name".into()),
-            GTReference(GTIdentifier::new((0, 0).into(), "Name".into()))
-                .convert(&TSConvertResolve::new(), &|_| {}),
+            GTReference(
+                (0, 0).into(),
+                GTIdentifier::new((0, 0).into(), "Name".into())
+            )
+            .convert(&TSConvertResolve::new(), &|_| {}),
         );
     }
 }

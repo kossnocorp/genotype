@@ -774,10 +774,10 @@ mod tests {
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![GTExtension {
                                     span: (55, 62).into(),
-                                    reference: GTReference(GTIdentifier::new(
+                                    reference: GTReference(
                                         (58, 62).into(),
-                                        "Base".into(),
-                                    )),
+                                        GTIdentifier::new((58, 62).into(), "Base".into()),
+                                    ),
                                 }],
                                 properties: vec![GTProperty {
                                     doc: None,
@@ -793,10 +793,10 @@ mod tests {
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![GTExtension {
                                     span: (91, 98).into(),
-                                    reference: GTReference(GTIdentifier::new(
+                                    reference: GTReference(
                                         (94, 98).into(),
-                                        "Base".into(),
-                                    )),
+                                        GTIdentifier::new((94, 98).into(), "Base".into()),
+                                    ),
                                 }],
                                 properties: vec![GTProperty {
                                     doc: None,
@@ -863,10 +863,10 @@ mod tests {
                             descriptor: GTObject {
                                 extensions: vec![GTExtension {
                                     span: (59, 73).into(),
-                                    reference: GTReference(GTIdentifier::new(
+                                    reference: GTReference(
                                         (62, 73).into(),
-                                        "CommentBase".into(),
-                                    )),
+                                        GTIdentifier::new((62, 73).into(), "CommentBase".into()),
+                                    ),
                                 }],
                                 properties: vec![
                                     GTProperty {

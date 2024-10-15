@@ -9,9 +9,10 @@ use super::GTReference;
 
 impl GTReference {
     pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> Self {
+        let span = pair.as_span().into();
         let identifier: GTIdentifier = pair.into();
         resolve.references.insert(identifier.clone());
-        GTReference(identifier)
+        GTReference(span, identifier)
     }
 }
 
