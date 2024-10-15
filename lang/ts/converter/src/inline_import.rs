@@ -26,7 +26,7 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             GTInlineImport {
-                path: GTPath::new((0, 0).into(), "./path/to/module"),
+                path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
             }
             .convert(&TSConvertResolve::new(), &|_| {}),

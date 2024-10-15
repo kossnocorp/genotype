@@ -10,7 +10,7 @@ use super::GTInlineImport;
 
 impl GTInlineImport {
     pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> Result<Self, GTNodeParseError> {
-        let (path, (name_span, name)) = GTPath::parse(pair)?;
+        let (path, (name_span, name)) = GTPath::split_parse(pair)?;
 
         resolve.deps.insert(path.clone());
 
@@ -43,8 +43,8 @@ mod tests {
         assert_eq!(
             parse.resolve.deps,
             HashSet::from_iter(vec![
-                GTPath::new((32, 36).into(), "book"),
-                GTPath::new((64, 75).into(), "./misc/user"),
+                GTPath::parse((32, 36).into(), "book").unwrap(),
+                GTPath::parse((64, 75).into(), "./misc/user").unwrap(),
             ])
         );
     }
@@ -63,8 +63,8 @@ mod tests {
         assert_eq!(
             parse.resolve.deps,
             HashSet::from_iter(vec![
-                GTPath::new((32, 36).into(), "book"),
-                GTPath::new((64, 85).into(), "./misc/user"),
+                GTPath::parse((32, 36).into(), "book").unwrap(),
+                GTPath::parse((64, 85).into(), "./misc/user").unwrap(),
             ])
         );
     }

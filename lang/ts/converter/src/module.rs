@@ -51,7 +51,7 @@ mod tests {
     fn test_convert() {
         let mut resolve = TSConvertResolve::new();
         resolve.globs.insert(
-            GTPath::new((0, 0).into(), "./path/to/module"),
+            GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
             "module".into(),
         );
 
@@ -62,11 +62,11 @@ mod tests {
                     doc: None,
                     imports: vec![
                         GTImport {
-                            path: GTPath::new((0, 0).into(), "./path/to/module"),
+                            path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                             reference: GTImportReference::Glob
                         },
                         GTImport {
-                            path: GTPath::new((0, 0).into(), "./path/to/module"),
+                            path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                             reference: GTImportReference::Names(vec![
                                 GTImportName::Name(GTIdentifier::new((0, 0).into(), "Name".into())),
                                 GTImportName::Alias(

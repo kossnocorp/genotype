@@ -24,7 +24,7 @@ mod tests {
     #[test]
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
-        let path = GTPath::new((0, 0).into(), "./path/to/module");
+        let path = GTPath::parse((0, 0).into(), "./path/to/module").unwrap();
         let reference = GTImportReference::Glob;
         let mut import = GTImport {
             path: path.clone(),

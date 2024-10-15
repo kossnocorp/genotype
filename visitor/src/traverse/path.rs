@@ -19,7 +19,7 @@ mod tests {
     #[test]
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
-        let mut path = GTPath::new((0, 0).into(), "./path/to/module");
+        let mut path = GTPath::parse((0, 0).into(), "./path/to/module").unwrap();
         path.traverse(&mut visitor);
         assert_eq!(visitor.visited, vec![GTMockVisited::Path(path.clone()),]);
     }

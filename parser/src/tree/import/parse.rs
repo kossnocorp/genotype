@@ -24,7 +24,7 @@ fn parse(
 ) -> Result<GTImport, GTNodeParseError> {
     match state {
         ParseState::Path => {
-            let (path, _) = GTPath::parse(pair)?;
+            let (path, _) = GTPath::split_parse(pair)?;
 
             resolve.deps.insert(path.clone());
 
@@ -99,9 +99,9 @@ mod tests {
         assert_eq!(
             parse.resolve.deps,
             HashSet::from_iter(vec![
-                GTPath::new((4, 10).into(), "author"),
-                GTPath::new((29, 36).into(), "../user"),
-                GTPath::new((58, 70).into(), "./misc/order")
+                GTPath::parse((4, 10).into(), "author").unwrap(),
+                GTPath::parse((29, 36).into(), "../user").unwrap(),
+                GTPath::parse((58, 70).into(), "./misc/order").unwrap()
             ])
         );
     }
@@ -119,9 +119,9 @@ mod tests {
         assert_eq!(
             parse.resolve.deps,
             HashSet::from_iter(vec![
-                GTPath::new((4, 12).into(), "author"),
-                GTPath::new((31, 46).into(), "../user"),
-                GTPath::new((68, 84).into(), "./misc/order"),
+                GTPath::parse((4, 12).into(), "author").unwrap(),
+                GTPath::parse((31, 46).into(), "../user").unwrap(),
+                GTPath::parse((68, 84).into(), "./misc/order").unwrap(),
             ])
         );
     }
