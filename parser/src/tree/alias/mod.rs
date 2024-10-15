@@ -1,6 +1,6 @@
 use crate::GTSpan;
 
-use super::{descriptor::GTDescriptor, doc::GTDoc, identifier::GTIdentifier};
+use super::*;
 
 mod parse;
 

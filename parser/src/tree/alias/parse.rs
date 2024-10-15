@@ -30,7 +30,7 @@ fn parse(
                     Some(if let Some(doc) = doc_acc {
                         doc.concat(pair)
                     } else {
-                        GTDoc::parse(pair)
+                        pair.into()
                     })
                 } else {
                     doc_acc

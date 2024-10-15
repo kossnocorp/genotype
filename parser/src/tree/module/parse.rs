@@ -1,5 +1,5 @@
 use miette::Result;
-use pest::iterators::Pairs;
+use pest::iterators::Pair;
 
 use crate::*;
 
@@ -12,31 +12,43 @@ pub struct GTModuleParse {
 impl GTModule {
     pub fn parse<'a>(source_code: GTSourceCode) -> Result<GTModuleParse> {
         match parse_gt_code(&source_code.content) {
-            Ok(mut pairs) => match Self::parse_pairs(&mut pairs) {
-                Ok(result) => Ok(GTModuleParse {
-                    resolve: result.resolve,
-                    module: GTModule {
-                        source_code,
-                        doc: result.doc,
-                        imports: result.imports,
-                        aliases: result.aliases,
-                    },
-                }),
+            Ok(mut pairs) => match pairs.next() {
+                Some(pair) => match Self::parse_pairs(pair) {
+                    Ok(result) => Ok(GTModuleParse {
+                        resolve: result.resolve,
+                        module: GTModule {
+                            source_code,
+                            doc: result.doc,
+                            imports: result.imports,
+                            aliases: result.aliases,
+                        },
+                    }),
 
-                Err(error) => Err(GTModuleParseError::from_node_error(source_code, error).into()),
+                    Err(error) => {
+                        Err(GTModuleParseError::from_node_error(source_code, error).into())
+                    }
+                },
+
+                None => {
+                    let span = (0, source_code.content.len()).into();
+                    Err(GTModuleParseError::from_node_error(
+                        source_code,
+                        GTNodeParseError::Internal(span, GTNode::Module),
+                    )
+                    .into())
+                }
             },
 
             Err(error) => Err(GTModuleParseError::from_pest_error(source_code, error).into()),
         }
     }
 
-    fn parse_pairs(pairs: &mut Pairs<'_, Rule>) -> Result<ModuleParseResult, GTNodeParseError> {
+    fn parse_pairs(module_pair: Pair<'_, Rule>) -> GTNodeParseResult<ModuleParseResult> {
         let mut doc: Option<GTDoc> = None;
         let mut imports = vec![];
         let mut aliases = vec![];
         let mut resolve = GTResolve::new();
 
-        let module_pair = pairs.next().unwrap();
         for pair in module_pair.into_inner() {
             match pair.as_rule() {
                 Rule::module_doc => {
@@ -45,7 +57,7 @@ impl GTModule {
                         doc = Some(if let Some(doc_pair) = doc {
                             doc_pair.concat(pair)
                         } else {
-                            GTDoc::parse(pair)
+                            pair.into()
                         });
                     }
                 }
@@ -61,8 +73,10 @@ impl GTModule {
                 Rule::EOI => {}
 
                 _ => {
-                    println!("1 ====== unknown rule: {:?}", pair);
-                    unreachable!("unknown rule");
+                    return Err(GTNodeParseError::Internal(
+                        pair.as_span().into(),
+                        GTNode::Module,
+                    ))
                 }
             }
         }

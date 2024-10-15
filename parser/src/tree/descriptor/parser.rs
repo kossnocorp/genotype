@@ -1,13 +1,18 @@
 use pest::iterators::Pair;
 
-use crate::{diagnostic::error::GTNodeParseError, parser::Rule};
+use crate::{parser::Rule, GTNode, GTNodeParseError, GTNodeParseResult, GTSpan};
 
 use super::*;
 
 impl GTDescriptor {
-    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> Result<Self, GTNodeParseError> {
+    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> GTNodeParseResult<Self> {
         let nullable = pair.as_rule() == Rule::nullable_descriptor;
-        let pair = pair.into_inner().next().unwrap(); // [TODO]
+
+        let span: GTSpan = pair.as_span().into();
+        let pair = pair
+            .into_inner()
+            .next()
+            .ok_or_else(|| GTNodeParseError::Internal(span.clone(), GTNode::Descriptor))?;
 
         let descriptor = match pair.as_rule() {
             Rule::primitive => GTDescriptor::Primitive(pair.try_into()?),
@@ -30,10 +35,7 @@ impl GTDescriptor {
 
             Rule::literal => GTDescriptor::Literal(pair.try_into()?),
 
-            _ => {
-                println!("3 ====== unknown rule: {:?}", pair);
-                unreachable!("unknown rule");
-            }
+            _ => return Err(GTNodeParseError::Internal(span.clone(), GTNode::Descriptor)),
         };
 
         if nullable {

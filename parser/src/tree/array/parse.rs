@@ -1,11 +1,6 @@
 use pest::iterators::Pair;
 
-use crate::{
-    diagnostic::error::GTNodeParseError,
-    parser::Rule,
-    tree::{GTDescriptor, GTResolve},
-    GTNode, GTNodeParseResult, GTSpan,
-};
+use crate::*;
 
 use super::GTArray;
 
@@ -25,7 +20,6 @@ impl GTArray {
 mod tests {
     use pest::Parser;
     use pretty_assertions::assert_eq;
-    use std::collections::HashSet;
 
     use crate::*;
 
