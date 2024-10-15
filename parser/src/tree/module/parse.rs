@@ -191,6 +191,7 @@ mod tests {
                             doc: None,
                             name: GTIdentifier::new((0, 5).into(), "Hello".into()),
                             descriptor: GTDescriptor::Object(GTObject {
+                                span: (8, 26).into(),
                                 extensions: vec![],
                                 properties: vec![GTProperty {
                                     span: (12, 24).into(),
@@ -205,6 +206,7 @@ mod tests {
                             doc: None,
                             name: GTIdentifier::new((28, 33).into(), "Hello".into()),
                             descriptor: GTDescriptor::Object(GTObject {
+                                span: (36, 81).into(),
                                 extensions: vec![],
                                 properties: vec![
                                     GTProperty {
@@ -237,6 +239,7 @@ mod tests {
                             doc: None,
                             name: GTIdentifier::new((83, 88).into(), "Empty".into()),
                             descriptor: GTDescriptor::Object(GTObject {
+                                span: (91, 93).into(),
                                 extensions: vec![],
                                 properties: vec![],
                             }),
@@ -245,6 +248,7 @@ mod tests {
                             doc: None,
                             name: GTIdentifier::new((95, 100).into(), "Empty".into()),
                             descriptor: GTDescriptor::Object(GTObject {
+                                span: (103, 109).into(),
                                 extensions: vec![],
                                 properties: vec![],
                             }),
@@ -253,6 +257,7 @@ mod tests {
                             doc: None,
                             name: GTIdentifier::new((111, 116).into(), "Hello".into()),
                             descriptor: GTDescriptor::Object(GTObject {
+                                span: (119, 135).into(),
                                 extensions: vec![],
                                 properties: vec![GTProperty {
                                     span: (121, 133).into(),
@@ -267,6 +272,7 @@ mod tests {
                             doc: None,
                             name: GTIdentifier::new((137, 142).into(), "Hello".into()),
                             descriptor: GTDescriptor::Object(GTObject {
+                                span: (145, 171).into(),
                                 extensions: vec![],
                                 properties: vec![
                                     GTProperty {
@@ -324,6 +330,7 @@ mod tests {
                             doc: Some("Multiline...\n...alias comment".into()),
                             name: GTIdentifier::new((151, 156).into(), "Hello".into()),
                             descriptor: GTDescriptor::Object(GTObject {
+                                span: (159, 256).into(),
                                 extensions: vec![],
                                 properties: vec![
                                     GTProperty {
@@ -377,6 +384,7 @@ mod tests {
                         doc: None,
                         name: GTIdentifier::new((0, 5).into(), "Hello".into()),
                         descriptor: GTDescriptor::Object(GTObject {
+                            span: (8, 57).into(),
                             extensions: vec![],
                             properties: vec![
                                 GTProperty {
@@ -432,12 +440,14 @@ mod tests {
                             doc: None,
                             name: GTIdentifier::new((0, 5).into(), "Hello".into()),
                             descriptor: GTDescriptor::Object(GTObject {
+                                span: (8, 60).into(),
                                 extensions: vec![],
                                 properties: vec![GTProperty {
                                     span: (12, 58).into(),
                                     doc: None,
                                     name: GTKey::new((12, 16).into(), "name".into()),
                                     descriptor: GTDescriptor::Object(GTObject {
+                                        span: (18, 58).into(),
                                         extensions: vec![],
                                         properties: vec![
                                             GTProperty {
@@ -468,6 +478,7 @@ mod tests {
                             doc: None,
                             name: GTIdentifier::new((62, 67).into(), "Hello".into()),
                             descriptor: GTDescriptor::Object(GTObject {
+                                span: (70, 130).into(),
                                 extensions: vec![],
                                 properties: vec![GTProperty {
                                     span: (74, 128).into(),
@@ -477,6 +488,7 @@ mod tests {
                                         doc: None,
                                         name: GTIdentifier::new((80, 85).into(), "Named".into()),
                                         descriptor: GTDescriptor::Object(GTObject {
+                                            span: (88, 128).into(),
                                             extensions: vec![],
                                             properties: vec![
                                                 GTProperty {
@@ -539,6 +551,7 @@ mod tests {
                         doc: None,
                         name: GTIdentifier::new((0, 4).into(), "Book".into()),
                         descriptor: GTDescriptor::Object(GTObject {
+                            span: (7, 43).into(),
                             extensions: vec![],
                             properties: vec![
                                 GTProperty {
@@ -586,6 +599,7 @@ mod tests {
                             doc: None,
                             name: GTIdentifier::new((0, 4).into(), "User".into()),
                             descriptor: GTDescriptor::Object(GTObject {
+                                span: (7, 68).into(),
                                 extensions: vec![],
                                 properties: vec![
                                     GTProperty {
@@ -695,6 +709,7 @@ mod tests {
                             doc: None,
                             name: GTIdentifier::new((84, 88).into(), "Book".into()),
                             descriptor: GTDescriptor::Object(GTObject {
+                                span: (91, 155).into(),
                                 extensions: vec![],
                                 properties: vec![
                                     GTProperty {
@@ -780,6 +795,7 @@ mod tests {
                             doc: None,
                             name: GTIdentifier::new((0, 4).into(), "Base".into()),
                             descriptor: GTDescriptor::Object(GTObject {
+                                span: (7, 37).into(),
                                 extensions: vec![],
                                 properties: vec![
                                     GTProperty {
@@ -803,6 +819,7 @@ mod tests {
                             doc: None,
                             name: GTIdentifier::new((39, 48).into(), "Processor".into()),
                             descriptor: GTDescriptor::Object(GTObject {
+                                span: (51, 78).into(),
                                 extensions: vec![GTExtension {
                                     span: (55, 62).into(),
                                     reference: GTReference(
@@ -823,6 +840,7 @@ mod tests {
                             doc: None,
                             name: GTIdentifier::new((80, 84).into(), "User".into()),
                             descriptor: GTDescriptor::Object(GTObject {
+                                span: (87, 117).into(),
                                 extensions: vec![GTExtension {
                                     span: (91, 98).into(),
                                     reference: GTReference(
@@ -872,6 +890,7 @@ mod tests {
                             doc: None,
                             name: GTIdentifier::new((0, 11).into(), "CommentBase".into()),
                             descriptor: GTObject {
+                                span: (14, 39).into(),
                                 extensions: vec![],
                                 properties: vec![
                                     GTProperty {
@@ -896,6 +915,7 @@ mod tests {
                             doc: None,
                             name: GTIdentifier::new((41, 52).into(), "UserComment".into()),
                             descriptor: GTObject {
+                                span: (55, 128).into(),
                                 extensions: vec![GTExtension {
                                     span: (59, 73).into(),
                                     reference: GTReference(
@@ -937,6 +957,7 @@ mod tests {
                             doc: None,
                             name: GTIdentifier::new((130, 143).into(), "SystemComment".into()),
                             descriptor: GTObject {
+                                span: (146, 201).into(),
                                 extensions: vec![GTExtension {
                                     span: (150, 164).into(),
                                     reference: GTIdentifier::new(

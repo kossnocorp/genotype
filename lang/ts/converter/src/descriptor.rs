@@ -149,6 +149,7 @@ mod tests {
     fn test_convert_object() {
         assert_eq!(
             GTDescriptor::Object(GTObject {
+                span: (0, 0).into(),
                 extensions: vec![],
                 properties: vec![
                     GTProperty {
@@ -186,6 +187,7 @@ mod tests {
 
         assert_eq!(
             GTDescriptor::Object(GTObject {
+                span: (0, 0).into(),
                 extensions: vec![GTExtension {
                     span: (0, 0).into(),
                     reference: GTIdentifier::new((0, 0).into(), "Good".into()).into()

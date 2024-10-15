@@ -206,6 +206,7 @@ mod tests {
                     doc: None,
                     name: GTIdentifier::new((133, 138).into(), "Order".into()),
                     descriptor: GTDescriptor::Object(GTObject {
+                        span: (141, 237).into(),
                         extensions: vec![],
                         properties: vec![
                             GTProperty {

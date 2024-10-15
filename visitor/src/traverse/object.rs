@@ -38,6 +38,7 @@ mod tests {
             required: true,
         };
         let mut object = GTObject {
+            span: (0, 0).into(),
             extensions: vec![extension.clone()],
             properties: vec![property.clone()],
         };
