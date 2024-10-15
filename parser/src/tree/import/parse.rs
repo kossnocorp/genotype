@@ -3,14 +3,17 @@ use pest::iterators::{Pair, Pairs};
 use crate::*;
 
 impl GTImport {
-    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> Result<Self, GTNodeParseError> {
-        let mut inner = pair.into_inner();
-        let pair = inner.next().unwrap(); // [TODO]
+    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> GTNodeParseResult<Self> {
+        let span: GTSpan = pair.as_span().into();
+        let else_err = || GTNodeParseError::Internal(span.clone(), GTNode::Import);
 
         let mut inner = pair.into_inner();
-        let pair = inner.next().unwrap(); // [TODO]
+        let pair = inner.next().ok_or_else(else_err)?;
 
-        let import = parse(inner, pair, resolve, ParseState::Path)?;
+        let mut inner = pair.into_inner();
+        let pair = inner.next().ok_or_else(else_err)?;
+
+        let import = parse(inner, pair, resolve, ParseState::Path(span))?;
 
         Ok(import)
     }
@@ -21,19 +24,21 @@ fn parse(
     pair: Pair<'_, Rule>,
     resolve: &mut GTResolve,
     state: ParseState,
-) -> Result<GTImport, GTNodeParseError> {
+) -> GTNodeParseResult<GTImport> {
     match state {
-        ParseState::Path => {
+        ParseState::Path(span) => {
             let (path, _) = GTPath::split_parse(pair)?;
-
             resolve.deps.insert(path.clone());
 
-            let pair = inner.next().unwrap(); // [TODO]
-            parse(inner, pair, resolve, ParseState::Names(path))
+            match inner.next() {
+                Some(pair) => parse(inner, pair, resolve, ParseState::Names(span, path)),
+                None => Err(GTNodeParseError::Internal(span.clone(), GTNode::Import)),
+            }
         }
 
-        ParseState::Names(path) => match pair.as_rule() {
+        ParseState::Names(span, path) => match pair.as_rule() {
             Rule::import_glob => Ok(GTImport {
+                span,
                 path,
                 reference: GTImportReference::Glob,
             }),
@@ -44,10 +49,12 @@ fn parse(
                 for pair in pair.into_inner() {
                     let mut inner = pair.into_inner();
 
-                    let name = inner.next().unwrap().into();
-                    let alias = inner.next();
+                    let name = inner
+                        .next()
+                        .ok_or_else(|| GTNodeParseError::Internal(span.clone(), GTNode::Import))?
+                        .into();
 
-                    if let Some(alias) = alias {
+                    if let Some(alias) = inner.next() {
                         names.push(GTImportName::Alias(name, alias.into()));
                     } else {
                         names.push(GTImportName::Name(name));
@@ -55,36 +62,53 @@ fn parse(
                 }
 
                 Ok(GTImport {
+                    span,
                     path,
                     reference: GTImportReference::Names(names),
                 })
             }
 
             Rule::name => Ok(GTImport {
+                span,
                 path,
                 reference: GTImportReference::Name(pair.into()),
             }),
 
-            _ => {
-                println!("5 ====== unknown rule: {:?}", pair);
-                unreachable!("unknown rule");
-            }
+            _ => Err(GTNodeParseError::Internal(span, GTNode::Import)),
         },
     }
 }
 
 enum ParseState {
-    Path,
-    Names(GTPath),
+    Path(GTSpan),
+    Names(GTSpan, GTPath),
 }
 
 #[cfg(test)]
 mod tests {
     use std::collections::HashSet;
 
+    use pest::Parser;
     use pretty_assertions::assert_eq;
 
     use crate::*;
+
+    #[test]
+    fn test_parse() {
+        let mut pairs = GenotypeParser::parse(Rule::import, "use ./hello/World").unwrap();
+        let mut resove = GTResolve::new();
+        assert_eq!(
+            GTImport::parse(pairs.next().unwrap(), &mut resove).unwrap(),
+            GTImport {
+                span: (0, 17).into(),
+                path: GTPath::parse((4, 11).into(), "./hello").unwrap(),
+                reference: GTImportReference::Name(GTIdentifier::new(
+                    (12, 17).into(),
+                    "World".into()
+                ))
+            }
+        );
+    }
 
     #[test]
     fn test_parse_deps_base() {

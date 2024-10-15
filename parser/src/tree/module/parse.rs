@@ -629,10 +629,12 @@ mod tests {
                     doc: None,
                     imports: vec![
                         GTImport {
+                            span: (0, 12).into(),
                             path: GTPath::parse((4, 10).into(), "author").unwrap(),
                             reference: GTImportReference::Glob,
                         },
                         GTImport {
+                            span: (13, 64).into(),
                             path: GTPath::parse((17, 29).into(), "../../author").unwrap(),
                             reference: GTImportReference::Names(vec![
                                 GTImportName::Name(GTIdentifier::new(
@@ -650,6 +652,7 @@ mod tests {
                             ]),
                         },
                         GTImport {
+                            span: (65, 82).into(),
                             path: GTPath::parse((69, 75).into(), "author").unwrap(),
                             reference: GTImportReference::Name(GTIdentifier::new(
                                 (76, 82).into(),

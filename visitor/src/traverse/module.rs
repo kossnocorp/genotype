@@ -35,6 +35,7 @@ mod tests {
         let import_path = GTPath::parse((0, 0).into(), "./path/to/module").unwrap();
         let reference = GTImportReference::Glob;
         let import = GTImport {
+            span: (0, 0).into(),
             path: import_path.clone(),
             reference: reference.clone(),
         };
@@ -70,6 +71,7 @@ mod tests {
         let import_path = GTPath::parse((0, 0).into(), "./path/to/import").unwrap();
         let reference = GTImportReference::Glob;
         let import = GTImport {
+            span: (0, 0).into(),
             path: import_path.clone(),
             reference: reference.clone(),
         };

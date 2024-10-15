@@ -155,13 +155,13 @@ mod tests {
         let source_code = GTSourceCode::new(
             "module.type".into(),
             r#"use author/./*
-        use ../user/../user/User
-        use ./././misc/order/{Order, SomethingElse}
-        
-        Order = {
-            book: book/Book
-            user: ./misc/../misc/./user/User
-        }"#
+            use ../user/../user/User
+            use ./././misc/order/{Order, SomethingElse}
+            
+            Order = {
+                book: book/Book
+                user: ./misc/../misc/./user/User
+            }"#
             .into(),
         );
         let parse = GTModule::parse(source_code.clone()).unwrap();
@@ -172,22 +172,25 @@ mod tests {
                 doc: None,
                 imports: vec![
                     GTImport {
+                        span: (0, 14).into(),
                         path: GTPath::parse((4, 12).into(), "author").unwrap(),
                         reference: GTImportReference::Glob,
                     },
                     GTImport {
-                        path: GTPath::parse((27, 42).into(), "../user").unwrap(),
+                        span: (27, 51).into(),
+                        path: GTPath::parse((31, 46).into(), "../user").unwrap(),
                         reference: GTImportReference::Name(GTIdentifier::new(
-                            (43, 47).into(),
+                            (47, 51).into(),
                             "User".into()
                         )),
                     },
                     GTImport {
-                        path: GTPath::parse((60, 76).into(), "./misc/order").unwrap(),
+                        span: (64, 107).into(),
+                        path: GTPath::parse((68, 84).into(), "./misc/order").unwrap(),
                         reference: GTImportReference::Names(vec![
-                            GTImportName::Name(GTIdentifier::new((78, 83).into(), "Order".into()),),
+                            GTImportName::Name(GTIdentifier::new((86, 91).into(), "Order".into()),),
                             GTImportName::Name(GTIdentifier::new(
-                                (85, 98).into(),
+                                (93, 106).into(),
                                 "SomethingElse".into()
                             ),),
                         ],),
@@ -195,25 +198,25 @@ mod tests {
                 ],
                 aliases: vec![GTAlias {
                     doc: None,
-                    name: GTIdentifier::new((117, 122).into(), "Order".into()),
+                    name: GTIdentifier::new((133, 138).into(), "Order".into()),
                     descriptor: GTDescriptor::Object(GTObject {
                         extensions: vec![],
                         properties: vec![
                             GTProperty {
                                 doc: None,
-                                name: GTKey::new((139, 143).into(), "book".into()),
+                                name: GTKey::new((159, 163).into(), "book".into()),
                                 descriptor: GTDescriptor::InlineImport(GTInlineImport {
-                                    name: GTIdentifier::new((150, 154).into(), "Book".into()),
-                                    path: GTPath::parse((145, 149).into(), "book").unwrap(),
+                                    name: GTIdentifier::new((170, 174).into(), "Book".into()),
+                                    path: GTPath::parse((165, 169).into(), "book").unwrap(),
                                 },),
                                 required: true,
                             },
                             GTProperty {
                                 doc: None,
-                                name: GTKey::new((167, 171).into(), "user".into()),
+                                name: GTKey::new((191, 195).into(), "user".into()),
                                 descriptor: GTDescriptor::InlineImport(GTInlineImport {
-                                    name: GTIdentifier::new((195, 199).into(), "User".into()),
-                                    path: GTPath::parse((173, 194).into(), "./misc/user").unwrap(),
+                                    name: GTIdentifier::new((219, 223).into(), "User".into()),
+                                    path: GTPath::parse((197, 218).into(), "./misc/user").unwrap(),
                                 },),
                                 required: true,
                             },

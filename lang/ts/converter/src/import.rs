@@ -52,6 +52,7 @@ mod tests {
         );
         assert_eq!(
             GTImport {
+                span: (0, 0).into(),
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 reference: GTImportReference::Glob
             }
@@ -67,6 +68,7 @@ mod tests {
     fn test_convert_names() {
         assert_eq!(
             GTImport {
+                span: (0, 0).into(),
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 reference: GTImportReference::Names(vec![
                     GTImportName::Name(GTIdentifier::new((0, 0).into(), "Name".into())),
@@ -91,6 +93,7 @@ mod tests {
     fn test_convert_name() {
         assert_eq!(
             GTImport {
+                span: (0, 0).into(),
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 reference: GTIdentifier::new((0, 0).into(), "Name".into()).into()
             }

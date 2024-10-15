@@ -191,6 +191,7 @@ mod tests {
                         ),
                         doc: None,
                         imports: vec![GTImport {
+                            span: (0, 19).into(),
                             path: GTPath::parse((4, 12).into(), "./author").unwrap(),
                             reference: GTImportReference::Name(GTIdentifier::new(
                                 (13, 19).into(),
@@ -244,6 +245,7 @@ mod tests {
                         ),
                         doc: None,
                         imports: vec![GTImport {
+                            span: (0, 15).into(),
                             path: GTPath::parse((4, 10).into(), "./book").unwrap(),
                             reference: GTImportReference::Name(GTIdentifier::new(
                                 (11, 15).into(),
