@@ -174,29 +174,32 @@ mod tests {
                     GTImport {
                         span: (0, 14).into(),
                         path: GTPath::parse((4, 12).into(), "author").unwrap(),
-                        reference: GTImportReference::Glob,
+                        reference: GTImportReference::Glob((13, 14).into()),
                     },
                     GTImport {
                         span: (27, 51).into(),
                         path: GTPath::parse((31, 46).into(), "../user").unwrap(),
-                        reference: GTImportReference::Name(GTIdentifier::new(
+                        reference: GTImportReference::Name(
                             (47, 51).into(),
-                            "User".into()
-                        )),
+                            GTIdentifier::new((47, 51).into(), "User".into())
+                        ),
                     },
                     GTImport {
                         span: (64, 107).into(),
                         path: GTPath::parse((68, 84).into(), "./misc/order").unwrap(),
-                        reference: GTImportReference::Names(vec![
-                            GTImportName::Name(
-                                (86, 91).into(),
-                                GTIdentifier::new((86, 91).into(), "Order".into())
-                            ),
-                            GTImportName::Name(
-                                (93, 106).into(),
-                                GTIdentifier::new((93, 106).into(), "SomethingElse".into()),
-                            ),
-                        ],),
+                        reference: GTImportReference::Names(
+                            (85, 107).into(),
+                            vec![
+                                GTImportName::Name(
+                                    (86, 91).into(),
+                                    GTIdentifier::new((86, 91).into(), "Order".into())
+                                ),
+                                GTImportName::Name(
+                                    (93, 106).into(),
+                                    GTIdentifier::new((93, 106).into(), "SomethingElse".into()),
+                                ),
+                            ],
+                        ),
                     },
                 ],
                 aliases: vec![GTAlias {

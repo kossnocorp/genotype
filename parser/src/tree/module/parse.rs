@@ -635,34 +635,37 @@ mod tests {
                         GTImport {
                             span: (0, 12).into(),
                             path: GTPath::parse((4, 10).into(), "author").unwrap(),
-                            reference: GTImportReference::Glob,
+                            reference: GTImportReference::Glob((11, 12).into()),
                         },
                         GTImport {
                             span: (13, 64).into(),
                             path: GTPath::parse((17, 29).into(), "../../author").unwrap(),
-                            reference: GTImportReference::Names(vec![
-                                GTImportName::Name(
-                                    (31, 37).into(),
-                                    GTIdentifier::new((31, 37).into(), "Author".into()),
-                                ),
-                                GTImportName::Name(
-                                    (39, 44).into(),
-                                    GTIdentifier::new((39, 44).into(), "Genre".into()),
-                                ),
-                                GTImportName::Alias(
-                                    (46, 63).into(),
-                                    GTIdentifier::new((46, 55).into(), "Something".into()),
-                                    GTIdentifier::new((59, 63).into(), "Else".into()),
-                                ),
-                            ]),
+                            reference: GTImportReference::Names(
+                                (30, 64).into(),
+                                vec![
+                                    GTImportName::Name(
+                                        (31, 37).into(),
+                                        GTIdentifier::new((31, 37).into(), "Author".into()),
+                                    ),
+                                    GTImportName::Name(
+                                        (39, 44).into(),
+                                        GTIdentifier::new((39, 44).into(), "Genre".into()),
+                                    ),
+                                    GTImportName::Alias(
+                                        (46, 63).into(),
+                                        GTIdentifier::new((46, 55).into(), "Something".into()),
+                                        GTIdentifier::new((59, 63).into(), "Else".into()),
+                                    ),
+                                ],
+                            ),
                         },
                         GTImport {
                             span: (65, 82).into(),
                             path: GTPath::parse((69, 75).into(), "author").unwrap(),
-                            reference: GTImportReference::Name(GTIdentifier::new(
+                            reference: GTImportReference::Name(
                                 (76, 82).into(),
-                                "Author".into(),
-                            )),
+                                GTIdentifier::new((76, 82).into(), "Author".into()),
+                            ),
                         },
                     ],
                     aliases: vec![

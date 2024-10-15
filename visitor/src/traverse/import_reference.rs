@@ -8,13 +8,13 @@ impl GTTraverse for GTImportReference {
     fn traverse(&mut self, visitor: &mut dyn GTVisitor) {
         visitor.visit_import_reference(self);
         match self {
-            GTImportReference::Glob => {}
-            GTImportReference::Names(names) => {
+            GTImportReference::Glob(_) => {}
+            GTImportReference::Names(_, names) => {
                 for name in names {
                     name.traverse(visitor);
                 }
             }
-            GTImportReference::Name(name) => {
+            GTImportReference::Name(_, name) => {
                 name.traverse(visitor);
             }
         }
@@ -33,7 +33,7 @@ mod tests {
     #[test]
     fn test_traverse_glob() {
         let mut visitor = GTMockVisitor::new();
-        let mut reference = GTImportReference::Glob;
+        let mut reference = GTImportReference::Glob((0, 0).into());
         reference.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,
@@ -46,7 +46,7 @@ mod tests {
         let mut visitor = GTMockVisitor::new();
         let identifier = GTIdentifier::new((0, 0).into(), "Name".into());
         let import_name = GTImportName::Name((0, 0).into(), identifier.clone());
-        let mut reference = GTImportReference::Names(vec![import_name.clone()]);
+        let mut reference = GTImportReference::Names((0, 0).into(), vec![import_name.clone()]);
         reference.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,
@@ -62,7 +62,7 @@ mod tests {
     fn test_traverse_name() {
         let mut visitor = GTMockVisitor::new();
         let identifier = GTIdentifier::new((0, 0).into(), "Name".into());
-        let mut reference = GTImportReference::Name(identifier.clone());
+        let mut reference = GTImportReference::Name((0, 0).into(), identifier.clone());
         reference.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,

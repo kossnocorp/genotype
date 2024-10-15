@@ -193,10 +193,10 @@ mod tests {
                         imports: vec![GTImport {
                             span: (0, 19).into(),
                             path: GTPath::parse((4, 12).into(), "./author").unwrap(),
-                            reference: GTImportReference::Name(GTIdentifier::new(
+                            reference: GTImportReference::Name(
                                 (13, 19).into(),
-                                "Author".into(),
-                            )),
+                                GTIdentifier::new((13, 19).into(), "Author".into()),
+                            ),
                         }],
                         aliases: vec![GTAlias {
                             doc: None,
@@ -247,10 +247,10 @@ mod tests {
                         imports: vec![GTImport {
                             span: (0, 15).into(),
                             path: GTPath::parse((4, 10).into(), "./book").unwrap(),
-                            reference: GTImportReference::Name(GTIdentifier::new(
+                            reference: GTImportReference::Name(
                                 (11, 15).into(),
-                                "Book".into(),
-                            )),
+                                GTIdentifier::new((11, 15).into(), "Book".into()),
+                            ),
                         }],
                         aliases: vec![GTAlias {
                             doc: None,

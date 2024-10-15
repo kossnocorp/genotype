@@ -58,7 +58,7 @@ impl GTProjectModuleResolve {
                         }
 
                         match &import.reference {
-                            GTImportReference::Glob => {
+                            GTImportReference::Glob(_) => {
                                 let module =
                                     modules.iter().find(|module| module.0 == ***path).unwrap();
                                 module
@@ -69,9 +69,9 @@ impl GTProjectModuleResolve {
                                     .any(|export| export.1 == reference.1)
                             }
 
-                            GTImportReference::Name(name) => name.1 == reference.1,
+                            GTImportReference::Name(_, name) => name.1 == reference.1,
 
-                            GTImportReference::Names(names) => {
+                            GTImportReference::Names(_, names) => {
                                 names.iter().any(|name| match name {
                                     GTImportName::Name(_, name) => name.1 == reference.1,
 

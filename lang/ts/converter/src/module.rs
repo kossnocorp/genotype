@@ -64,22 +64,25 @@ mod tests {
                         GTImport {
                             span: (0, 0).into(),
                             path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
-                            reference: GTImportReference::Glob
+                            reference: GTImportReference::Glob((0, 0).into())
                         },
                         GTImport {
                             span: (0, 0).into(),
                             path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
-                            reference: GTImportReference::Names(vec![
-                                GTImportName::Name(
-                                    (0, 0).into(),
-                                    GTIdentifier::new((0, 0).into(), "Name".into())
-                                ),
-                                GTImportName::Alias(
-                                    (0, 0).into(),
-                                    GTIdentifier::new((0, 0).into(), "Name".into()),
-                                    GTIdentifier::new((0, 0).into(), "Alias".into())
-                                )
-                            ])
+                            reference: GTImportReference::Names(
+                                (0, 0).into(),
+                                vec![
+                                    GTImportName::Name(
+                                        (0, 0).into(),
+                                        GTIdentifier::new((0, 0).into(), "Name".into())
+                                    ),
+                                    GTImportName::Alias(
+                                        (0, 0).into(),
+                                        GTIdentifier::new((0, 0).into(), "Name".into()),
+                                        GTIdentifier::new((0, 0).into(), "Alias".into())
+                                    )
+                                ]
+                            )
                         }
                     ],
                     aliases: vec![

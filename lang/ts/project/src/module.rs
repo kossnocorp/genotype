@@ -37,7 +37,7 @@ impl GTLangProjectModule for TSProjectModule {
         let mut prefixes: HashMap<String, u8> = HashMap::new();
 
         for import in module.module.imports.iter() {
-            if let GTImportReference::Glob = import.reference {
+            if let GTImportReference::Glob(_) = import.reference {
                 let references = module
                     .resolve
                     .references

@@ -36,47 +36,53 @@ fn parse(
             }
         }
 
-        ParseState::Names(span, path) => match pair.as_rule() {
-            Rule::import_glob => Ok(GTImport {
-                span,
-                path,
-                reference: GTImportReference::Glob,
-            }),
+        ParseState::Names(span, path) => {
+            let ref_span = pair.as_span().into();
 
-            Rule::import_names => {
-                let mut names = vec![];
-
-                for pair in pair.into_inner() {
-                    let name_span = pair.as_span().into();
-                    let mut inner = pair.into_inner();
-
-                    let name = inner
-                        .next()
-                        .ok_or_else(|| GTNodeParseError::Internal(span.clone(), GTNode::Import))?
-                        .into();
-
-                    if let Some(alias) = inner.next() {
-                        names.push(GTImportName::Alias(name_span, name, alias.into()));
-                    } else {
-                        names.push(GTImportName::Name(name_span, name));
-                    }
-                }
-
-                Ok(GTImport {
+            match pair.as_rule() {
+                Rule::import_glob => Ok(GTImport {
                     span,
                     path,
-                    reference: GTImportReference::Names(names),
-                })
+                    reference: GTImportReference::Glob(ref_span),
+                }),
+
+                Rule::import_names => {
+                    let mut names = vec![];
+
+                    for pair in pair.into_inner() {
+                        let name_span = pair.as_span().into();
+                        let mut inner = pair.into_inner();
+
+                        let name = inner
+                            .next()
+                            .ok_or_else(|| {
+                                GTNodeParseError::Internal(span.clone(), GTNode::Import)
+                            })?
+                            .into();
+
+                        if let Some(alias) = inner.next() {
+                            names.push(GTImportName::Alias(name_span, name, alias.into()));
+                        } else {
+                            names.push(GTImportName::Name(name_span, name));
+                        }
+                    }
+
+                    Ok(GTImport {
+                        span,
+                        path,
+                        reference: GTImportReference::Names(ref_span, names),
+                    })
+                }
+
+                Rule::name => Ok(GTImport {
+                    span,
+                    path,
+                    reference: GTImportReference::Name(ref_span, pair.into()),
+                }),
+
+                _ => Err(GTNodeParseError::Internal(span, GTNode::Import)),
             }
-
-            Rule::name => Ok(GTImport {
-                span,
-                path,
-                reference: GTImportReference::Name(pair.into()),
-            }),
-
-            _ => Err(GTNodeParseError::Internal(span, GTNode::Import)),
-        },
+        }
     }
 }
 
@@ -103,10 +109,10 @@ mod tests {
             GTImport {
                 span: (0, 17).into(),
                 path: GTPath::parse((4, 11).into(), "./hello").unwrap(),
-                reference: GTImportReference::Name(GTIdentifier::new(
+                reference: GTImportReference::Name(
                     (12, 17).into(),
-                    "World".into()
-                ))
+                    GTIdentifier::new((12, 17).into(), "World".into())
+                )
             }
         );
     }

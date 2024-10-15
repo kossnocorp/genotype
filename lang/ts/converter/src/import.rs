@@ -11,19 +11,19 @@ impl TSConvert<TSImport> for GTImport {
         HoistFn: Fn(TSDefinition),
     {
         let reference = match &self.reference {
-            GTImportReference::Glob => {
+            GTImportReference::Glob(_) => {
                 // [TODO]
                 TSImportReference::Glob(resolve.globs.get(&self.path).unwrap().clone())
             }
 
-            GTImportReference::Names(names) => TSImportReference::Named(
+            GTImportReference::Names(_, names) => TSImportReference::Named(
                 names
                     .iter()
                     .map(|name| name.convert(resolve, hoist))
                     .collect::<Vec<_>>(),
             ),
 
-            GTImportReference::Name(name) => {
+            GTImportReference::Name(_, name) => {
                 TSImportReference::Named(vec![TSImportName::Name(name.convert(resolve, hoist))])
             }
         };
@@ -54,7 +54,7 @@ mod tests {
             GTImport {
                 span: (0, 0).into(),
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
-                reference: GTImportReference::Glob
+                reference: GTImportReference::Glob((0, 0).into())
             }
             .convert(&resolve, &|_| {}),
             TSImport {
@@ -70,17 +70,20 @@ mod tests {
             GTImport {
                 span: (0, 0).into(),
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
-                reference: GTImportReference::Names(vec![
-                    GTImportName::Name(
-                        (0, 0).into(),
-                        GTIdentifier::new((0, 0).into(), "Name".into())
-                    ),
-                    GTImportName::Alias(
-                        (0, 0).into(),
-                        GTIdentifier::new((0, 0).into(), "Name".into()),
-                        GTIdentifier::new((0, 0).into(), "Alias".into())
-                    )
-                ])
+                reference: GTImportReference::Names(
+                    (0, 0).into(),
+                    vec![
+                        GTImportName::Name(
+                            (0, 0).into(),
+                            GTIdentifier::new((0, 0).into(), "Name".into())
+                        ),
+                        GTImportName::Alias(
+                            (0, 0).into(),
+                            GTIdentifier::new((0, 0).into(), "Name".into()),
+                            GTIdentifier::new((0, 0).into(), "Alias".into())
+                        )
+                    ]
+                )
             }
             .convert(&TSConvertResolve::new(), &|_| {}),
             TSImport {
