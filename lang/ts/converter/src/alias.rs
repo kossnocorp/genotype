@@ -67,12 +67,14 @@ mod tests {
                     extensions: vec![],
                     properties: vec![
                         GTProperty {
+                            span: (0, 0).into(),
                             doc: None,
                             name: GTKey::new((0, 0).into(), "title".into()),
                             descriptor: GTPrimitive::String((0, 0).into()).into(),
                             required: true,
                         },
                         GTProperty {
+                            span: (0, 0).into(),
                             doc: None,
                             name: GTKey::new((0, 0).into(), "author".into()),
                             descriptor: GTPrimitive::String((0, 0).into()).into(),
@@ -113,6 +115,7 @@ mod tests {
                         reference: GTIdentifier::new((0, 0).into(), "Good".into()).into()
                     }],
                     properties: vec![GTProperty {
+                        span: (0, 0).into(),
                         doc: None,
                         name: GTKey::new((0, 0).into(), "author".into()),
                         descriptor: GTPrimitive::String((0, 0).into()).into(),
@@ -145,6 +148,7 @@ mod tests {
                                 reference: GTIdentifier::new((0, 0).into(), "Good".into()).into()
                             }],
                             properties: vec![GTProperty {
+                                span: (0, 0).into(),
                                 doc: None,
                                 name: GTKey::new((0, 0).into(), "author".into()),
                                 descriptor: GTPrimitive::String((0, 0).into()).into(),

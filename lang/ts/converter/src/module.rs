@@ -93,12 +93,14 @@ mod tests {
                                 extensions: vec![],
                                 properties: vec![
                                     GTProperty {
+                                        span: (0, 0).into(),
                                         doc: None,
                                         name: GTKey::new((0, 0).into(), "name".into()),
                                         descriptor: GTPrimitive::String((0, 0).into()).into(),
                                         required: true,
                                     },
                                     GTProperty {
+                                        span: (0, 0).into(),
                                         doc: None,
                                         name: GTKey::new((0, 0).into(), "age".into()),
                                         descriptor: GTPrimitive::Int((0, 0).into()).into(),
@@ -113,6 +115,7 @@ mod tests {
                             descriptor: GTDescriptor::Object(GTObject {
                                 extensions: vec![],
                                 properties: vec![GTProperty {
+                                    span: (0, 0).into(),
                                     doc: None,
                                     name: GTKey::new((0, 0).into(), "book".into()),
                                     descriptor: GTDescriptor::Alias(Box::new(GTAlias {
@@ -122,6 +125,7 @@ mod tests {
                                             extensions: vec![],
                                             properties: vec![
                                                 GTProperty {
+                                                    span: (0, 0).into(),
                                                     doc: None,
                                                     name: GTKey::new((0, 0).into(), "title".into()),
                                                     descriptor: GTDescriptor::Primitive(
@@ -130,6 +134,7 @@ mod tests {
                                                     required: true,
                                                 },
                                                 GTProperty {
+                                                    span: (0, 0).into(),
                                                     doc: None,
                                                     name: GTKey::new(
                                                         (0, 0).into(),

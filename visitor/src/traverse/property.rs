@@ -26,6 +26,7 @@ mod tests {
     fn test_traverse_base() {
         let mut visitor = GTMockVisitor::new();
         let mut property = GTProperty {
+            span: (0, 0).into(),
             doc: None,
             name: GTKey((0, 0).into(), "key".into()),
             descriptor: GTPrimitive::String((0, 0).into()).into(),
@@ -47,6 +48,7 @@ mod tests {
     fn test_traverse_doc() {
         let mut visitor = GTMockVisitor::new();
         let mut property = GTProperty {
+            span: (0, 0).into(),
             doc: Some(GTDoc("Hello, world!".into())),
             name: GTKey((0, 0).into(), "key".into()),
             descriptor: GTPrimitive::String((0, 0).into()).into(),

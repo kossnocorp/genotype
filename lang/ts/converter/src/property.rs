@@ -28,6 +28,7 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             GTProperty {
+                span: (0, 0).into(),
                 doc: None,
                 name: GTKey::new((0, 0).into(), "name".into()),
                 descriptor: GTPrimitive::String((0, 0).into()).into(),

@@ -209,6 +209,7 @@ mod tests {
                         extensions: vec![],
                         properties: vec![
                             GTProperty {
+                                span: (159, 174).into(),
                                 doc: None,
                                 name: GTKey::new((159, 163).into(), "book".into()),
                                 descriptor: GTDescriptor::InlineImport(GTInlineImport {
@@ -219,6 +220,7 @@ mod tests {
                                 required: true,
                             },
                             GTProperty {
+                                span: (191, 223).into(),
                                 doc: None,
                                 name: GTKey::new((191, 195).into(), "user".into()),
                                 descriptor: GTDescriptor::InlineImport(GTInlineImport {

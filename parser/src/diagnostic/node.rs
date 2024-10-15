@@ -6,6 +6,7 @@ pub enum GTNode {
     Literal,
     Path,
     Primitive,
+    Property,
 }
 
 impl GTNode {
@@ -17,6 +18,7 @@ impl GTNode {
             Self::Literal => "literal",
             Self::Path => "path",
             Self::Primitive => "primitive",
+            Self::Property => "property",
         }
     }
 }

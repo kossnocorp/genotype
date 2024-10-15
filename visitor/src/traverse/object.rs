@@ -31,6 +31,7 @@ mod tests {
             reference: GTIdentifier::new((0, 0).into(), "Name".into()).into(),
         };
         let property = GTProperty {
+            span: (0, 0).into(),
             doc: None,
             name: GTKey((0, 0).into(), "key".into()),
             descriptor: GTPrimitive::String((0, 0).into()).into(),
