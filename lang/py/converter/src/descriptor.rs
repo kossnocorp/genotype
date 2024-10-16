@@ -128,7 +128,7 @@ mod tests {
             //     path: "./path/to/module.ts".into(),
             //     name: "Name".into()
             // })
-            PYDescriptor::Reference(PYReference::new("NOPE".into(), false))
+            PYDescriptor::Reference(PYReference::new("TODO".into(), false))
         );
     }
 
@@ -171,7 +171,7 @@ mod tests {
             //         }
             //     ]
             // })
-            PYDescriptor::Reference(PYReference::new("NOPE".into(), false))
+            PYDescriptor::Reference(PYReference::new("TODO".into(), false))
         );
 
         assert_eq!(
@@ -204,7 +204,7 @@ mod tests {
             //         "Good".into()
             //     ]
             // })
-            PYDescriptor::Reference(PYReference::new("NOPE".into(), false))
+            PYDescriptor::Reference(PYReference::new("TODO".into(), false))
         );
     }
 
@@ -222,7 +222,7 @@ mod tests {
         assert_eq!(
             GTDescriptor::Reference(GTIdentifier::new((0, 0).into(), "Name".into()).into())
                 .convert(&PYConvertResolve::new(), &|_| {}),
-            PYReference::new("Name".into(), false).into()
+            PYReference::new("Name".into(), true).into()
         );
         // [TODO] Depending on context, set forward reference
         assert_eq!(

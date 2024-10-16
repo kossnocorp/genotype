@@ -222,7 +222,7 @@ mod tests {
                             },
                             PYProperty {
                                 name: "author".into(),
-                                descriptor: PYReference::new("Author".into(), false).into(),
+                                descriptor: PYReference::new("Author".into(), true).into(),
                                 required: true,
                             }
                         ]

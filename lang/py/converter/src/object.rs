@@ -67,7 +67,7 @@ mod tests {
             //         }
             //     ]
             // }
-            PYReference::new("NOPE".into(), false)
+            PYReference::new("TODO".into(), false)
         );
     }
 }

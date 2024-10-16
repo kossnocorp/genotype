@@ -131,7 +131,7 @@ mod tests {
             .convert(&PYConvertResolve::new(), &|_| {}),
             PYDefinition::Interface(PYClass {
                 name: "Book".into(),
-                extensions: vec![PYReference::new("Good".into(), false).into()],
+                extensions: vec![PYReference::new("Good".into(), true).into()],
                 properties: vec![PYProperty {
                     name: "author".into(),
                     descriptor: PYDescriptor::Primitive(PYPrimitive::String),
@@ -187,6 +187,7 @@ mod tests {
                         //     ],
                         // }
                         // .into(),
+                        PYReference::new("TODO".into(), false).into(),
                         PYPrimitive::String.into(),
                     ]
                 }

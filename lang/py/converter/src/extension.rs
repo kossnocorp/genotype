@@ -26,7 +26,7 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             PYExtension {
-                reference: PYReference::new("Name".into(), false)
+                reference: PYReference::new("Name".into(), true)
             },
             GTExtension {
                 span: (0, 0).into(),

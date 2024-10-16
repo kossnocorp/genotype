@@ -24,7 +24,7 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_eq!(
-            PYReference::new("Name".into(), false),
+            PYReference::new("Name".into(), true),
             GTReference(
                 (0, 0).into(),
                 GTIdentifier::new((0, 0).into(), "Name".into())

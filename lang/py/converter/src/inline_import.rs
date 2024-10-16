@@ -34,7 +34,7 @@ mod tests {
             }
             .convert(&PYConvertResolve::new(), &|_| {}),
             // [TODo]
-            PYReference::new("NOPE".into(), false),
+            PYReference::new("TODO".into(), false),
         );
     }
 }
