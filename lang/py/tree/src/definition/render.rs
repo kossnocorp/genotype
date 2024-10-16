@@ -8,7 +8,7 @@ impl PYRender for PYDefinition {
     fn render(&self, indent: &GTIndent, options: &PYOptions) -> String {
         match self {
             PYDefinition::Alias(alias) => alias.render(indent, options),
-            PYDefinition::Interface(interface) => interface.render(indent, options),
+            PYDefinition::Class(interface) => interface.render(indent, options),
         }
     }
 }
@@ -34,7 +34,7 @@ mod tests {
     #[test]
     fn test_render_class() {
         assert_eq!(
-            PYDefinition::Interface(PYClass {
+            PYDefinition::Class(PYClass {
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![

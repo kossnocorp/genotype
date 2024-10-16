@@ -67,7 +67,7 @@ mod tests {
                         name: "Name".into(),
                         descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                     }),
-                    PYDefinition::Interface(PYClass {
+                    PYDefinition::Class(PYClass {
                         name: "Name".into(),
                         extensions: vec![],
                         properties: vec![

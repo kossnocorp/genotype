@@ -186,7 +186,7 @@ mod tests {
                     }
                 ],
                 definitions: vec![
-                    PYDefinition::Interface(PYClass {
+                    PYDefinition::Class(PYClass {
                         name: "User".into(),
                         extensions: vec![],
                         properties: vec![
@@ -202,7 +202,7 @@ mod tests {
                             }
                         ]
                     }),
-                    PYDefinition::Interface(PYClass {
+                    PYDefinition::Class(PYClass {
                         name: "Order".into(),
                         extensions: vec![],
                         properties: vec![PYProperty {
@@ -211,7 +211,7 @@ mod tests {
                             required: true,
                         }]
                     }),
-                    PYDefinition::Interface(PYClass {
+                    PYDefinition::Class(PYClass {
                         name: "Book".into(),
                         extensions: vec![],
                         properties: vec![

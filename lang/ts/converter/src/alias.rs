@@ -165,7 +165,7 @@ mod tests {
                         .into(),
                         GTPrimitive::String((0, 0).into()).into(),
                     ]
-                },)
+                })
             }
             .convert(&TSConvertResolve::new(), &|_| {}),
             TSDefinition::Alias(TSAlias {

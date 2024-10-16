@@ -9,7 +9,7 @@ impl PYConvert<PYDefinition> for GTAlias {
         HoistFn: Fn(PYDefinition),
     {
         match &self.descriptor {
-            GTDescriptor::Object(object) => PYDefinition::Interface(PYClass {
+            GTDescriptor::Object(object) => PYDefinition::Class(PYClass {
                 name: self.name.convert(resolve, hoist),
                 extensions: object
                     .extensions
@@ -33,13 +33,12 @@ impl PYConvert<PYDefinition> for GTAlias {
 
 #[cfg(test)]
 mod tests {
-    use std::vec;
+    use std::sync::Mutex;
 
     use genotype_lang_py_tree::*;
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use genotype_parser::tree::*;
 
     #[test]
     fn test_convert_alias() {
@@ -59,7 +58,7 @@ mod tests {
     }
 
     #[test]
-    fn test_convert_interface() {
+    fn test_convert_class() {
         assert_eq!(
             GTAlias {
                 span: (0, 0).into(),
@@ -87,7 +86,7 @@ mod tests {
                 })
             }
             .convert(&PYConvertResolve::new(), &|_| {}),
-            PYDefinition::Interface(PYClass {
+            PYDefinition::Class(PYClass {
                 name: "Book".into(),
                 extensions: vec![],
                 properties: vec![
@@ -107,39 +106,8 @@ mod tests {
     }
 
     #[test]
-    fn test_convert_extensions() {
-        assert_eq!(
-            GTAlias {
-                span: (0, 0).into(),
-                doc: None,
-                name: GTIdentifier::new((0, 0).into(), "Book".into()),
-                descriptor: GTDescriptor::Object(GTObject {
-                    span: (0, 0).into(),
-                    extensions: vec![GTExtension {
-                        span: (0, 0).into(),
-                        reference: GTIdentifier::new((0, 0).into(), "Good".into()).into()
-                    }],
-                    properties: vec![GTProperty {
-                        span: (0, 0).into(),
-                        doc: None,
-                        name: GTKey::new((0, 0).into(), "author".into()),
-                        descriptor: GTPrimitive::String((0, 0).into()).into(),
-                        required: true,
-                    }]
-                })
-            }
-            .convert(&PYConvertResolve::new(), &|_| {}),
-            PYDefinition::Interface(PYClass {
-                name: "Book".into(),
-                extensions: vec![PYReference::new("Good".into(), true).into()],
-                properties: vec![PYProperty {
-                    name: "author".into(),
-                    descriptor: PYDescriptor::Primitive(PYPrimitive::String),
-                    required: true,
-                }]
-            }),
-        );
-
+    fn test_convert_hoisting() {
+        let hoisted = Mutex::new(vec![]);
         assert_eq!(
             GTAlias {
                 span: (0, 0).into(),
@@ -150,10 +118,7 @@ mod tests {
                     descriptors: vec![
                         GTObject {
                             span: (0, 0).into(),
-                            extensions: vec![GTExtension {
-                                span: (0, 0).into(),
-                                reference: GTIdentifier::new((0, 0).into(), "Good".into()).into()
-                            }],
+                            extensions: vec![],
                             properties: vec![GTProperty {
                                 span: (0, 0).into(),
                                 doc: None,
@@ -165,34 +130,41 @@ mod tests {
                         .into(),
                         GTPrimitive::String((0, 0).into()).into(),
                     ]
-                },)
+                })
             }
-            .convert(&PYConvertResolve::new(), &|_| {}),
+            .convert(&PYConvertResolve::new(), &|definition| {
+                let mut hoisted = hoisted.lock().unwrap();
+                hoisted.push(definition);
+            }),
             PYDefinition::Alias(PYAlias {
                 name: "Book".into(),
                 descriptor: PYUnion {
                     descriptors: vec![
-                        // [TODO] Hoist class instead of converting to a intersection
-                        // PYIntersection {
-                        //     descriptors: vec![
-                        //         PYClass {
-                        //             properties: vec![PYProperty {
-                        //                 name: "author".into(),
-                        //                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
-                        //                 required: true,
-                        //             }]
-                        //         }
-                        //         .into(),
-                        //         "Good".into()
-                        //     ],
-                        // }
-                        // .into(),
-                        PYReference::new("TODO".into(), false).into(),
+                        // [TODO]
+                        PYReference::new(
+                            /* [TODO] BookObj */ "TODO".into(),
+                            /* [TODO] true */ false
+                        )
+                        .into(),
                         PYPrimitive::String.into(),
                     ]
                 }
                 .into(),
-            }),
+            })
+        );
+        assert_eq!(
+            hoisted.into_inner().unwrap(),
+            // [TODO]
+            // vec![PYDefinition::Class(PYClass {
+            //     name: "BookObj".into(),
+            //     extensions: vec![],
+            //     properties: vec![PYProperty {
+            //         name: "author".into(),
+            //         descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+            //         required: true,
+            //     }]
+            // })]
+            vec![]
         );
     }
 }
