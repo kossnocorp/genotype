@@ -18,7 +18,7 @@ impl PYRender for PYClass {
         let extensions = self
             .extensions
             .iter()
-            .map(|extension| extension.render(indent))
+            .map(|extension| extension.render(indent, options))
             .collect::<Vec<String>>()
             .join(", ");
 
@@ -117,7 +117,10 @@ class Name:
         assert_eq!(
             PYClass {
                 name: "Name".into(),
-                extensions: vec!["Hello".into(), "World".into()],
+                extensions: vec![
+                    PYReference::new("Hello".into(), false).into(),
+                    PYReference::new("World".into(), false).into()
+                ],
                 properties: vec![PYProperty {
                     name: "name".into(),
                     descriptor: PYDescriptor::Primitive(PYPrimitive::String),

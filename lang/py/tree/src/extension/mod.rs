@@ -7,10 +7,14 @@ pub struct PYExtension {
     pub reference: PYReference,
 }
 
-impl From<&str> for PYExtension {
-    fn from(str: &str) -> Self {
-        PYExtension {
-            reference: str.into(),
-        }
+impl PYExtension {
+    pub fn new(reference: PYReference) -> Self {
+        PYExtension { reference }
+    }
+}
+
+impl From<PYReference> for PYExtension {
+    fn from(reference: PYReference) -> Self {
+        PYExtension::new(reference)
     }
 }

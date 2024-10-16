@@ -1,6 +1,6 @@
 use genotype_lang_core_tree::indent::GTIndent;
 
-use crate::{descriptor, PYOptions, PYRender, PYVersion};
+use crate::{PYOptions, PYRender, PYVersion};
 
 use super::PYUnion;
 

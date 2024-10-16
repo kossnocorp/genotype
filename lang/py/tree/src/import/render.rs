@@ -1,14 +1,28 @@
 use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use genotype_parser::reference;
+
+use crate::PYImportReference;
 
 use super::PYImport;
 
 impl GTRender for PYImport {
     fn render(&self, indent: &GTIndent) -> String {
-        format!(
-            r#"import {} from "{}";"#,
-            self.reference.render(indent),
-            self.path.render(indent)
-        )
+        let path = self.path.render(indent);
+        let reference = self.reference.render(indent);
+
+        match self.reference {
+            PYImportReference::Default(_) => {
+                if reference.is_empty() {
+                    format!(r#"import {}"#, path)
+                } else {
+                    format!(r#"import {} as {}"#, path, reference)
+                }
+            }
+
+            _ => {
+                format!(r#"from {} import {}"#, path, reference)
+            }
+        }
     }
 }
 
@@ -23,11 +37,19 @@ mod tests {
     fn test_render_default() {
         assert_eq!(
             PYImport {
-                path: "../path/to/module.ts".into(),
-                reference: PYImportReference::Default("Name".into()),
+                path: ".path.to.module".into(),
+                reference: PYImportReference::Default(Some("name".into())),
             }
             .render(&py_indent()),
-            r#"import Name from "../path/to/module.ts";"#
+            r#"import .path.to.module as name"#
+        );
+        assert_eq!(
+            PYImport {
+                path: ".path.to.module".into(),
+                reference: PYImportReference::Default(None),
+            }
+            .render(&py_indent()),
+            r#"import .path.to.module"#
         );
     }
 
@@ -35,11 +57,11 @@ mod tests {
     fn test_render_glob() {
         assert_eq!(
             PYImport {
-                path: "../path/to/module.ts".into(),
-                reference: PYImportReference::Glob("name".into()),
+                path: ".path.to.module".into(),
+                reference: PYImportReference::Glob,
             }
             .render(&py_indent()),
-            r#"import * as name from "../path/to/module.ts";"#
+            r#"from .path.to.module import *"#
         );
     }
 
@@ -47,14 +69,14 @@ mod tests {
     fn test_render_named() {
         assert_eq!(
             PYImport {
-                path: "../path/to/module.ts".into(),
+                path: ".path.to.module".into(),
                 reference: PYImportReference::Named(vec![
                     PYImportName::Name("Name".into()),
                     PYImportName::Alias("Name".into(), "Alias".into()),
                 ])
             }
             .render(&py_indent()),
-            r#"import { Name, Name as Alias } from "../path/to/module.ts";"#
+            r#"from .path.to.module import Name, Name as Alias"#
         );
     }
 }

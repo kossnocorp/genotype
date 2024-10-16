@@ -28,9 +28,5 @@ mod tests {
             .render(&ts_indent()),
             "type Name = string;"
         );
-        assert_eq!(
-            TSDescriptor::Primitive(TSPrimitive::String).render(&ts_indent()),
-            "string"
-        );
     }
 }

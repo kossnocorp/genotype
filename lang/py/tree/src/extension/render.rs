@@ -1,25 +1,27 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use genotype_lang_core_tree::indent::GTIndent;
+
+use crate::{PYOptions, PYRender};
 
 use super::PYExtension;
 
-impl GTRender for PYExtension {
-    fn render(&self, indent: &GTIndent) -> String {
-        self.reference.render(indent)
+impl PYRender for PYExtension {
+    fn render(&self, indent: &GTIndent, options: &PYOptions) -> String {
+        self.reference.render(indent, options)
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::indent::py_indent;
+    use crate::{indent::py_indent, PYReference};
 
     #[test]
     fn test_render() {
         assert_eq!(
             PYExtension {
-                reference: "Foo".into()
+                reference: PYReference::new("Foo".into(), false)
             }
-            .render(&py_indent()),
+            .render(&py_indent(), &PYOptions::default()),
             "Foo"
         );
     }

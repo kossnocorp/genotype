@@ -8,7 +8,7 @@ impl PYRender for PYDescriptor {
             PYDescriptor::List(array) => array.render(indent, options),
             PYDescriptor::Literal(literal) => literal.render(indent),
             PYDescriptor::Primitive(primitive) => primitive.render(indent),
-            PYDescriptor::Reference(name) => name.render(indent),
+            PYDescriptor::Reference(name) => name.render(indent, options),
             PYDescriptor::Tuple(tuple) => tuple.render(indent, options),
             PYDescriptor::Union(union) => union.render(indent, options),
         }
@@ -49,7 +49,8 @@ mod tests {
     #[test]
     fn test_render_reference() {
         assert_eq!(
-            PYDescriptor::Reference("Name".into()).render(&py_indent(), &PYOptions::default()),
+            PYDescriptor::Reference(PYReference::new("Name".into(), false))
+                .render(&py_indent(), &PYOptions::default()),
             "Name"
         );
     }

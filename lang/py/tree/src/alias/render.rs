@@ -1,16 +1,19 @@
 use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
 
-use crate::{PYOptions, PYRender};
+use crate::{PYOptions, PYRender, PYVersion};
 
 use super::PYAlias;
 
 impl PYRender for PYAlias {
     fn render(&self, indent: &GTIndent, options: &PYOptions) -> String {
-        format!(
-            "type {} = {};",
-            self.name.render(indent),
-            self.descriptor.render(indent, options)
-        )
+        let name = self.name.render(indent);
+        let descriptor = self.descriptor.render(indent, options);
+
+        if let PYVersion::Legacy = options.version {
+            format!("{} : TypeAlias = {}", name, descriptor)
+        } else {
+            format!("type {} = {}", name, descriptor)
+        }
     }
 }
 
@@ -28,12 +31,19 @@ mod tests {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String)
             }
             .render(&py_indent(), &PYOptions::default()),
-            "type Name = str;"
+            "type Name = str"
         );
+    }
+
+    #[test]
+    fn test_render_legacy() {
         assert_eq!(
-            PYDescriptor::Primitive(PYPrimitive::String)
-                .render(&py_indent(), &PYOptions::default()),
-            "str"
+            PYAlias {
+                name: "Name".into(),
+                descriptor: PYDescriptor::Primitive(PYPrimitive::String)
+            }
+            .render(&py_indent(), &PYOptions::new(PYVersion::Legacy)),
+            "Name : TypeAlias = str"
         );
     }
 }

@@ -1,10 +1,10 @@
-use crate::import_name::PYImportName;
+use crate::{import_name::PYImportName, PYIdentifier};
 
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum PYImportReference {
-    Default(String),
-    Glob(String),
+    Default(Option<PYIdentifier>),
+    Glob,
     Named(Vec<PYImportName>),
 }

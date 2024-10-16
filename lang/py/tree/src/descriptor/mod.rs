@@ -12,12 +12,6 @@ pub enum PYDescriptor {
     Union(PYUnion),
 }
 
-impl From<&str> for PYDescriptor {
-    fn from(str: &str) -> Self {
-        PYDescriptor::Reference(str.into())
-    }
-}
-
 impl From<PYPrimitive> for PYDescriptor {
     fn from(primitive: PYPrimitive) -> Self {
         PYDescriptor::Primitive(primitive)

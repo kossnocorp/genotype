@@ -5,18 +5,21 @@ use super::PYImportReference;
 impl GTRender for PYImportReference {
     fn render(&self, indent: &GTIndent) -> String {
         match self {
-            PYImportReference::Default(name) => name.clone(),
-
-            PYImportReference::Glob(name) => format!("* as {}", name),
-
-            PYImportReference::Named(names) => {
-                let names = names
-                    .iter()
-                    .map(|name| name.render(indent))
-                    .collect::<Vec<String>>()
-                    .join(", ");
-                format!("{{ {} }}", names)
+            PYImportReference::Default(name) => {
+                if let Some(name) = name {
+                    name.render(indent)
+                } else {
+                    "".into()
+                }
             }
+
+            PYImportReference::Glob => "*".into(),
+
+            PYImportReference::Named(names) => names
+                .iter()
+                .map(|name| name.render(indent))
+                .collect::<Vec<String>>()
+                .join(", "),
         }
     }
 }
@@ -29,17 +32,15 @@ mod tests {
     #[test]
     fn test_render_default() {
         assert_eq!(
-            PYImportReference::Default("Name".into()).render(&py_indent()),
+            PYImportReference::Default(Some("Name".into())).render(&py_indent()),
             "Name"
         );
+        assert_eq!(PYImportReference::Default(None).render(&py_indent()), "");
     }
 
     #[test]
     fn test_render_glob() {
-        assert_eq!(
-            PYImportReference::Glob("name".into()).render(&py_indent()),
-            "* as name"
-        );
+        assert_eq!(PYImportReference::Glob.render(&py_indent()), "*");
     }
 
     #[test]
@@ -50,7 +51,7 @@ mod tests {
                 PYImportName::Alias("Name".into(), "Alias".into()),
             ])
             .render(&py_indent()),
-            "{ Name, Name as Alias }"
+            "Name, Name as Alias"
         );
     }
 }

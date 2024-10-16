@@ -27,7 +27,7 @@ mod tests {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
             })
             .render(&py_indent(), &PYOptions::default()),
-            "type Name = str;"
+            "type Name = str"
         );
     }
 

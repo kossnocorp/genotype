@@ -43,7 +43,7 @@ mod tests {
         assert_eq!(
             PYProperty {
                 name: "name".into(),
-                descriptor: PYDescriptor::Reference("Name".into()),
+                descriptor: PYReference::new("Name".into(), false).into(),
                 required: true
             }
             .render(&py_indent(), &PYOptions::default()),

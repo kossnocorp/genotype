@@ -51,11 +51,11 @@ mod tests {
                 doc: None,
                 imports: vec![
                     PYImport {
-                        path: "../path/to/module.ts".into(),
-                        reference: PYImportReference::Default("Name".into()),
+                        path: ".path.to.module".into(),
+                        reference: PYImportReference::Default(Some("name".into())),
                     },
                     PYImport {
-                        path: "../path/to/module.ts".into(),
+                        path: ".path.to.module".into(),
                         reference: PYImportReference::Named(vec![
                             PYImportName::Name("Name".into()),
                             PYImportName::Alias("Name".into(), "Alias".into()),
@@ -86,10 +86,10 @@ mod tests {
                 ]
             }
             .render(&py_indent(), &PYOptions::default()),
-            r#"import Name from "../path/to/module.ts";
-import { Name, Name as Alias } from "../path/to/module.ts";
+            r#"import .path.to.module as name
+from .path.to.module import Name, Name as Alias
 
-type Name = str;
+type Name = str
 
 @dataclass
 class Name:
