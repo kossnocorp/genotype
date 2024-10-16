@@ -1,14 +1,14 @@
-use genotype_lang_ts_tree::{array::TSArray, definition::TSDefinition};
+use genotype_lang_py_tree::*;
 use genotype_parser::tree::array::GTArray;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{convert::PYConvert, resolve::PYConvertResolve};
 
-impl TSConvert<TSArray> for GTArray {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSArray
+impl PYConvert<PYList> for GTArray {
+    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYList
     where
-        HoistFn: Fn(TSDefinition),
+        HoistFn: Fn(PYDefinition),
     {
-        TSArray {
+        PYList {
             descriptor: self.descriptor.convert(resolve, hoist),
         }
     }
@@ -16,7 +16,7 @@ impl TSConvert<TSArray> for GTArray {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::*;
+    use genotype_lang_py_tree::*;
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
 
@@ -29,9 +29,9 @@ mod tests {
                 span: (0, 0).into(),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
-            TSArray {
-                descriptor: TSDescriptor::Primitive(TSPrimitive::Boolean)
+            .convert(&PYConvertResolve::new(), &|_| {}),
+            PYList {
+                descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean)
             }
         );
     }

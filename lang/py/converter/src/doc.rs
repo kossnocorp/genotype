@@ -1,14 +1,14 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, doc::TSDoc};
+use genotype_lang_py_tree::{definition::PYDefinition, doc::PYDoc};
 use genotype_parser::tree::doc::GTDoc;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{convert::PYConvert, resolve::PYConvertResolve};
 
-impl TSConvert<TSDoc> for GTDoc {
-    fn convert<HoistFn>(&self, _resolve: &TSConvertResolve, _hoist: &HoistFn) -> TSDoc
+impl PYConvert<PYDoc> for GTDoc {
+    fn convert<HoistFn>(&self, _resolve: &PYConvertResolve, _hoist: &HoistFn) -> PYDoc
     where
-        HoistFn: Fn(TSDefinition),
+        HoistFn: Fn(PYDefinition),
     {
-        TSDoc(self.1.clone())
+        PYDoc(self.1.clone())
     }
 }
 
@@ -21,8 +21,8 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_eq!(
-            TSDoc("Hello, world!".into()),
-            GTDoc((0, 0).into(), "Hello, world!".into()).convert(&TSConvertResolve::new(), &|_| {}),
+            PYDoc("Hello, world!".into()),
+            GTDoc((0, 0).into(), "Hello, world!".into()).convert(&PYConvertResolve::new(), &|_| {}),
         );
     }
 }

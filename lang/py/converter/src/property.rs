@@ -1,14 +1,14 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, property::TSProperty};
+use genotype_lang_py_tree::{definition::PYDefinition, property::PYProperty};
 use genotype_parser::tree::property::GTProperty;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{convert::PYConvert, resolve::PYConvertResolve};
 
-impl TSConvert<TSProperty> for GTProperty {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSProperty
+impl PYConvert<PYProperty> for GTProperty {
+    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYProperty
     where
-        HoistFn: Fn(TSDefinition),
+        HoistFn: Fn(PYDefinition),
     {
-        TSProperty {
+        PYProperty {
             name: self.name.convert(resolve, hoist),
             descriptor: self.descriptor.convert(resolve, hoist),
             required: self.required,
@@ -18,7 +18,7 @@ impl TSConvert<TSProperty> for GTProperty {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::*;
+    use genotype_lang_py_tree::*;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -34,10 +34,10 @@ mod tests {
                 descriptor: GTPrimitive::String((0, 0).into()).into(),
                 required: false,
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
-            TSProperty {
+            .convert(&PYConvertResolve::new(), &|_| {}),
+            PYProperty {
                 name: "name".into(),
-                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                 required: false,
             }
         );

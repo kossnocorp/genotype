@@ -1,19 +1,19 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, primitive::TSPrimitive};
+use genotype_lang_py_tree::{definition::PYDefinition, primitive::PYPrimitive};
 use genotype_parser::tree::primitive::GTPrimitive;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{convert::PYConvert, resolve::PYConvertResolve};
 
-impl TSConvert<TSPrimitive> for GTPrimitive {
-    fn convert<HoistFn>(&self, _resolve: &TSConvertResolve, _hoist: &HoistFn) -> TSPrimitive
+impl PYConvert<PYPrimitive> for GTPrimitive {
+    fn convert<HoistFn>(&self, _resolve: &PYConvertResolve, _hoist: &HoistFn) -> PYPrimitive
     where
-        HoistFn: Fn(TSDefinition),
+        HoistFn: Fn(PYDefinition),
     {
         match self {
-            GTPrimitive::Boolean(_) => TSPrimitive::Boolean,
-            GTPrimitive::String(_) => TSPrimitive::String,
-            GTPrimitive::Int(_) => TSPrimitive::Number,
-            GTPrimitive::Float(_) => TSPrimitive::Number,
-            GTPrimitive::Null(_) => TSPrimitive::Null,
+            GTPrimitive::Boolean(_) => PYPrimitive::Boolean,
+            GTPrimitive::String(_) => PYPrimitive::String,
+            GTPrimitive::Int(_) => PYPrimitive::Int,
+            GTPrimitive::Float(_) => PYPrimitive::Float,
+            GTPrimitive::Null(_) => PYPrimitive::None,
         }
     }
 }
@@ -22,7 +22,7 @@ impl TSConvert<TSPrimitive> for GTPrimitive {
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use crate::resolve::TSConvertResolve;
+    use crate::resolve::PYConvertResolve;
 
     use super::*;
     use genotype_parser::tree::primitive::GTPrimitive;
@@ -30,20 +30,24 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_eq!(
-            GTPrimitive::Boolean((0, 0).into()).convert(&TSConvertResolve::new(), &|_| {}),
-            TSPrimitive::Boolean
+            GTPrimitive::Boolean((0, 0).into()).convert(&PYConvertResolve::new(), &|_| {}),
+            PYPrimitive::Boolean
         );
         assert_eq!(
-            GTPrimitive::String((0, 0).into()).convert(&TSConvertResolve::new(), &|_| {}),
-            TSPrimitive::String
+            GTPrimitive::String((0, 0).into()).convert(&PYConvertResolve::new(), &|_| {}),
+            PYPrimitive::String
         );
         assert_eq!(
-            GTPrimitive::Int((0, 0).into()).convert(&TSConvertResolve::new(), &|_| {}),
-            TSPrimitive::Number
+            GTPrimitive::Int((0, 0).into()).convert(&PYConvertResolve::new(), &|_| {}),
+            PYPrimitive::Int
         );
         assert_eq!(
-            GTPrimitive::Float((0, 0).into()).convert(&TSConvertResolve::new(), &|_| {}),
-            TSPrimitive::Number
+            GTPrimitive::Float((0, 0).into()).convert(&PYConvertResolve::new(), &|_| {}),
+            PYPrimitive::Float
+        );
+        assert_eq!(
+            GTPrimitive::Null((0, 0).into()).convert(&PYConvertResolve::new(), &|_| {}),
+            PYPrimitive::None
         );
     }
 }

@@ -1,20 +1,21 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, reference::TSReference};
+use genotype_lang_py_tree::{definition::PYDefinition, reference::PYReference};
 use genotype_parser::tree::reference::GTReference;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{convert::PYConvert, resolve::PYConvertResolve};
 
-impl TSConvert<TSReference> for GTReference {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSReference
+impl PYConvert<PYReference> for GTReference {
+    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYReference
     where
-        HoistFn: Fn(TSDefinition),
+        HoistFn: Fn(PYDefinition),
     {
-        TSReference(self.1.convert(resolve, hoist))
+        // [TODO] Resolve the reference properly
+        PYReference::new(self.1.convert(resolve, hoist), true)
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::*;
+    use genotype_lang_py_tree::*;
     use genotype_parser::GTIdentifier;
     use pretty_assertions::assert_eq;
 
@@ -23,12 +24,12 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_eq!(
-            TSReference("Name".into()),
+            PYReference::new("Name".into(), false),
             GTReference(
                 (0, 0).into(),
                 GTIdentifier::new((0, 0).into(), "Name".into())
             )
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&PYConvertResolve::new(), &|_| {}),
         );
     }
 }

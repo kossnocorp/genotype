@@ -1,18 +1,18 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, TSLiteral};
+use genotype_lang_py_tree::{definition::PYDefinition, PYLiteral};
 use genotype_parser::tree::GTLiteral;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{convert::PYConvert, resolve::PYConvertResolve};
 
-impl TSConvert<TSLiteral> for GTLiteral {
-    fn convert<HoistFn>(&self, _resolve: &TSConvertResolve, _hoist: &HoistFn) -> TSLiteral
+impl PYConvert<PYLiteral> for GTLiteral {
+    fn convert<HoistFn>(&self, _resolve: &PYConvertResolve, _hoist: &HoistFn) -> PYLiteral
     where
-        HoistFn: Fn(TSDefinition),
+        HoistFn: Fn(PYDefinition),
     {
         match self {
-            GTLiteral::Boolean(_, value) => TSLiteral::Boolean(*value),
-            GTLiteral::Integer(_, value) => TSLiteral::Integer(*value),
-            GTLiteral::Float(_, value) => TSLiteral::Float(*value),
-            GTLiteral::String(_, value) => TSLiteral::String(value.clone()),
+            GTLiteral::Boolean(_, value) => PYLiteral::Boolean(*value),
+            GTLiteral::Integer(_, value) => PYLiteral::Integer(*value),
+            GTLiteral::Float(_, value) => PYLiteral::Float(*value),
+            GTLiteral::String(_, value) => PYLiteral::String(value.clone()),
         }
     }
 }
@@ -26,21 +26,21 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_eq!(
-            TSLiteral::Boolean(true),
-            GTLiteral::Boolean((0, 0).into(), true).convert(&TSConvertResolve::new(), &|_| {}),
+            PYLiteral::Boolean(true),
+            GTLiteral::Boolean((0, 0).into(), true).convert(&PYConvertResolve::new(), &|_| {}),
         );
         assert_eq!(
-            TSLiteral::Integer(-123),
-            GTLiteral::Integer((0, 0).into(), -123).convert(&TSConvertResolve::new(), &|_| {}),
+            PYLiteral::Integer(-123),
+            GTLiteral::Integer((0, 0).into(), -123).convert(&PYConvertResolve::new(), &|_| {}),
         );
         assert_eq!(
-            TSLiteral::Float(1.23),
-            GTLiteral::Float((0, 0).into(), 1.23).convert(&TSConvertResolve::new(), &|_| {}),
+            PYLiteral::Float(1.23),
+            GTLiteral::Float((0, 0).into(), 1.23).convert(&PYConvertResolve::new(), &|_| {}),
         );
         assert_eq!(
-            TSLiteral::String("Hello, world!".into()),
+            PYLiteral::String("Hello, world!".into()),
             GTLiteral::String((0, 0).into(), "Hello, world!".into())
-                .convert(&TSConvertResolve::new(), &|_| {}),
+                .convert(&PYConvertResolve::new(), &|_| {}),
         );
     }
 }

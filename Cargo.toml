@@ -8,7 +8,7 @@ members = [
   "lang/ts/converter",
   "lang/ts/project",
   "lang/py/tree",
-  # "lang/ts/converter",
+  "lang/py/converter",
   # "lang/ts/project",
   "parser",
   "project",

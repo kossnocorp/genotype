@@ -1,58 +1,63 @@
-use genotype_lang_ts_tree::*;
+use genotype_lang_py_tree::*;
 use genotype_parser::tree::descriptor::GTDescriptor;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{convert::PYConvert, resolve::PYConvertResolve};
 
-impl TSConvert<TSDescriptor> for GTDescriptor {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSDescriptor
+impl PYConvert<PYDescriptor> for GTDescriptor {
+    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYDescriptor
     where
-        HoistFn: Fn(TSDefinition),
+        HoistFn: Fn(PYDefinition),
     {
         match self {
             GTDescriptor::Alias(alias) => {
                 hoist(alias.convert(resolve, hoist));
-                TSDescriptor::Reference(TSReference(alias.name.convert(resolve, hoist)))
+                // [TODO]
+                PYDescriptor::Reference(PYReference::new(alias.name.convert(resolve, hoist), false))
             }
 
             GTDescriptor::Array(array) => {
-                TSDescriptor::Array(Box::new(array.convert(resolve, hoist)))
+                PYDescriptor::List(Box::new(array.convert(resolve, hoist)))
             }
 
             GTDescriptor::InlineImport(import) => {
-                TSDescriptor::InlineImport(import.convert(resolve, hoist))
+                // [TODO] Hoist to imports instead
+                // PYDescriptor::InlineImport(import.convert(resolve, hoist))
+                PYDescriptor::Reference(PYReference::new("TODO".into(), false))
             }
 
             GTDescriptor::Literal(literal) => {
-                TSDescriptor::Literal(literal.convert(resolve, hoist))
+                PYDescriptor::Literal(literal.convert(resolve, hoist))
             }
 
             GTDescriptor::Object(object) => {
-                let descriptor = TSDescriptor::Object(object.convert(resolve, hoist));
-                if object.extensions.is_empty() {
-                    descriptor
-                } else {
-                    let mut descriptors: Vec<TSDescriptor> = vec![descriptor];
-                    let extensions = object
-                        .extensions
-                        .iter()
-                        .map(|extension| {
-                            TSDescriptor::from(extension.reference.convert(resolve, hoist))
-                        })
-                        .collect::<Vec<TSDescriptor>>();
-                    descriptors.extend(extensions);
-                    TSDescriptor::Intersection(TSIntersection { descriptors })
-                }
+                // [TODO] Resolve to class or hoist reference
+                // let descriptor = PYDescriptor::Object(object.convert(resolve, hoist));
+                // if object.extensions.is_empty() {
+                //     descriptor
+                // } else {
+                //     let mut descriptors: Vec<PYDescriptor> = vec![descriptor];
+                //     let extensions = object
+                //         .extensions
+                //         .iter()
+                //         .map(|extension| {
+                //             PYDescriptor::from(extension.reference.convert(resolve, hoist))
+                //         })
+                //         .collect::<Vec<PYDescriptor>>();
+                //     descriptors.extend(extensions);
+                //     PYDescriptor::Intersection(PYIntersection { descriptors })
+                // }
+                PYDescriptor::Reference(PYReference::new("TODO".into(), false))
             }
 
             GTDescriptor::Primitive(primitive) => {
-                TSDescriptor::Primitive(primitive.convert(resolve, hoist))
+                PYDescriptor::Primitive(primitive.convert(resolve, hoist))
             }
 
-            GTDescriptor::Reference(name) => TSDescriptor::Reference(name.convert(resolve, hoist)),
+            GTDescriptor::Reference(name) => PYDescriptor::Reference(name.convert(resolve, hoist)),
 
-            GTDescriptor::Tuple(tuple) => TSDescriptor::Tuple(tuple.convert(resolve, hoist)),
+            GTDescriptor::Tuple(tuple) => PYDescriptor::Tuple(tuple.convert(resolve, hoist)),
 
-            GTDescriptor::Union(union) => TSDescriptor::Union(union.convert(resolve, hoist)),
+            GTDescriptor::Union(union) => PYDescriptor::Union(union.convert(resolve, hoist)),
         }
     }
 }
@@ -62,11 +67,11 @@ mod tests {
 
     use std::sync::Mutex;
 
-    use genotype_lang_ts_tree::*;
+    use genotype_lang_py_tree::*;
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
 
-    use crate::resolve::TSConvertResolve;
+    use crate::resolve::PYConvertResolve;
 
     use super::*;
 
@@ -80,17 +85,17 @@ mod tests {
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }))
-            .convert(&TSConvertResolve::new(), &|definition| {
+            .convert(&PYConvertResolve::new(), &|definition| {
                 let mut hoisted = hoisted.lock().unwrap();
                 hoisted.push(definition);
             }),
-            TSDescriptor::Reference("Name".into())
+            PYReference::new("Name".into(), false).into()
         );
         assert_eq!(
             hoisted.lock().unwrap().clone(),
-            vec![TSDefinition::Alias(TSAlias {
+            vec![PYDefinition::Alias(PYAlias {
                 name: "Name".into(),
-                descriptor: TSDescriptor::Primitive(TSPrimitive::Boolean),
+                descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
             }),]
         );
     }
@@ -102,9 +107,9 @@ mod tests {
                 span: (0, 0).into(),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }))
-            .convert(&TSConvertResolve::new(), &|_| {}),
-            TSDescriptor::Array(Box::new(TSArray {
-                descriptor: TSDescriptor::Primitive(TSPrimitive::Boolean)
+            .convert(&PYConvertResolve::new(), &|_| {}),
+            PYDescriptor::List(Box::new(PYList {
+                descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean)
             }))
         );
     }
@@ -117,11 +122,13 @@ mod tests {
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 name: GTIdentifier::new((0, 0).into(), "Name".into())
             })
-            .convert(&TSConvertResolve::new(), &|_| {}),
-            TSDescriptor::InlineImport(TSInlineImport {
-                path: "./path/to/module.ts".into(),
-                name: "Name".into()
-            })
+            .convert(&PYConvertResolve::new(), &|_| {}),
+            // [TODO]
+            // PYDescriptor::InlineImport(PYInlineImport {
+            //     path: "./path/to/module.ts".into(),
+            //     name: "Name".into()
+            // })
+            PYDescriptor::Reference(PYReference::new("NOPE".into(), false))
         );
     }
 
@@ -148,21 +155,23 @@ mod tests {
                     }
                 ]
             })
-            .convert(&TSConvertResolve::new(), &|_| {}),
-            TSDescriptor::Object(TSObject {
-                properties: vec![
-                    TSProperty {
-                        name: "name".into(),
-                        descriptor: TSPrimitive::String.into(),
-                        required: true,
-                    },
-                    TSProperty {
-                        name: "age".into(),
-                        descriptor: TSPrimitive::Number.into(),
-                        required: false,
-                    }
-                ]
-            })
+            .convert(&PYConvertResolve::new(), &|_| {}),
+            // [TODO]
+            // PYDescriptor::Object(PYObject {
+            //     properties: vec![
+            //         PYProperty {
+            //             name: "name".into(),
+            //             descriptor: PYPrimitive::String.into(),
+            //             required: true,
+            //         },
+            //         PYProperty {
+            //             name: "age".into(),
+            //             descriptor: PYPrimitive::Number.into(),
+            //             required: false,
+            //         }
+            //     ]
+            // })
+            PYDescriptor::Reference(PYReference::new("NOPE".into(), false))
         );
 
         assert_eq!(
@@ -180,20 +189,22 @@ mod tests {
                     required: true,
                 },]
             })
-            .convert(&TSConvertResolve::new(), &|_| {}),
-            TSDescriptor::Intersection(TSIntersection {
-                descriptors: vec![
-                    TSObject {
-                        properties: vec![TSProperty {
-                            name: "title".into(),
-                            descriptor: TSPrimitive::String.into(),
-                            required: true,
-                        },]
-                    }
-                    .into(),
-                    "Good".into()
-                ]
-            })
+            .convert(&PYConvertResolve::new(), &|_| {}),
+            // [TODO]
+            // PYDescriptor::Intersection(PYIntersection {
+            //     descriptors: vec![
+            //         PYObject {
+            //             properties: vec![PYProperty {
+            //                 name: "title".into(),
+            //                 descriptor: PYPrimitive::String.into(),
+            //                 required: true,
+            //             },]
+            //         }
+            //         .into(),
+            //         "Good".into()
+            //     ]
+            // })
+            PYDescriptor::Reference(PYReference::new("NOPE".into(), false))
         );
     }
 
@@ -201,8 +212,8 @@ mod tests {
     fn test_convert_primitive() {
         assert_eq!(
             GTDescriptor::Primitive(GTPrimitive::Boolean((0, 0).into()))
-                .convert(&TSConvertResolve::new(), &|_| {}),
-            TSDescriptor::Primitive(TSPrimitive::Boolean)
+                .convert(&PYConvertResolve::new(), &|_| {}),
+            PYDescriptor::Primitive(PYPrimitive::Boolean)
         );
     }
 
@@ -210,8 +221,14 @@ mod tests {
     fn test_convert_reference() {
         assert_eq!(
             GTDescriptor::Reference(GTIdentifier::new((0, 0).into(), "Name".into()).into())
-                .convert(&TSConvertResolve::new(), &|_| {}),
-            TSDescriptor::Reference("Name".into())
+                .convert(&PYConvertResolve::new(), &|_| {}),
+            PYReference::new("Name".into(), false).into()
+        );
+        // [TODO] Depending on context, set forward reference
+        assert_eq!(
+            GTDescriptor::Reference(GTIdentifier::new((0, 0).into(), "Name".into()).into())
+                .convert(&PYConvertResolve::new(), &|_| {}),
+            PYReference::new("Name".into(), true).into()
         );
     }
 
@@ -225,11 +242,11 @@ mod tests {
                     GTPrimitive::String((0, 0).into()).into(),
                 ]
             })
-            .convert(&TSConvertResolve::new(), &|_| {}),
-            TSDescriptor::Tuple(TSTuple {
+            .convert(&PYConvertResolve::new(), &|_| {}),
+            PYDescriptor::Tuple(PYTuple {
                 descriptors: vec![
-                    TSDescriptor::Primitive(TSPrimitive::Boolean),
-                    TSDescriptor::Primitive(TSPrimitive::String),
+                    PYDescriptor::Primitive(PYPrimitive::Boolean),
+                    PYDescriptor::Primitive(PYPrimitive::String),
                 ]
             })
         );
@@ -245,11 +262,11 @@ mod tests {
                     GTPrimitive::String((0, 0).into()).into(),
                 ]
             })
-            .convert(&TSConvertResolve::new(), &|_| {}),
-            TSDescriptor::Union(TSUnion {
+            .convert(&PYConvertResolve::new(), &|_| {}),
+            PYDescriptor::Union(PYUnion {
                 descriptors: vec![
-                    TSDescriptor::Primitive(TSPrimitive::Boolean),
-                    TSDescriptor::Primitive(TSPrimitive::String),
+                    PYDescriptor::Primitive(PYPrimitive::Boolean),
+                    PYDescriptor::Primitive(PYPrimitive::String),
                 ]
             })
         );

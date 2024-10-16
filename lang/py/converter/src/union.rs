@@ -1,14 +1,14 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, union::TSUnion};
+use genotype_lang_py_tree::{definition::PYDefinition, union::PYUnion};
 use genotype_parser::tree::union::GTUnion;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{convert::PYConvert, resolve::PYConvertResolve};
 
-impl TSConvert<TSUnion> for GTUnion {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSUnion
+impl PYConvert<PYUnion> for GTUnion {
+    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYUnion
     where
-        HoistFn: Fn(TSDefinition),
+        HoistFn: Fn(PYDefinition),
     {
-        TSUnion {
+        PYUnion {
             descriptors: self
                 .descriptors
                 .iter()
@@ -20,11 +20,11 @@ impl TSConvert<TSUnion> for GTUnion {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::*;
+    use genotype_lang_py_tree::*;
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
 
-    use crate::resolve::TSConvertResolve;
+    use crate::resolve::PYConvertResolve;
 
     use super::*;
 
@@ -38,11 +38,11 @@ mod tests {
                     GTPrimitive::String((0, 0).into()).into(),
                 ]
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
-            TSUnion {
+            .convert(&PYConvertResolve::new(), &|_| {}),
+            PYUnion {
                 descriptors: vec![
-                    TSDescriptor::Primitive(TSPrimitive::Boolean),
-                    TSDescriptor::Primitive(TSPrimitive::String),
+                    PYDescriptor::Primitive(PYPrimitive::Boolean),
+                    PYDescriptor::Primitive(PYPrimitive::String),
                 ]
             }
         );

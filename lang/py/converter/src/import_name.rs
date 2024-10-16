@@ -1,18 +1,18 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, import_name::TSImportName};
+use genotype_lang_py_tree::{definition::PYDefinition, import_name::PYImportName};
 use genotype_parser::tree::import_name::GTImportName;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{convert::PYConvert, resolve::PYConvertResolve};
 
-impl TSConvert<TSImportName> for GTImportName {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSImportName
+impl PYConvert<PYImportName> for GTImportName {
+    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYImportName
     where
-        HoistFn: Fn(TSDefinition),
+        HoistFn: Fn(PYDefinition),
     {
         match self {
-            Self::Name(_, name) => TSImportName::Name(name.convert(resolve, hoist)),
+            Self::Name(_, name) => PYImportName::Name(name.convert(resolve, hoist)),
 
             Self::Alias(_, name, alias) => {
-                TSImportName::Alias(name.convert(resolve, hoist), alias.convert(resolve, hoist))
+                PYImportName::Alias(name.convert(resolve, hoist), alias.convert(resolve, hoist))
             }
         }
     }
@@ -20,7 +20,7 @@ impl TSConvert<TSImportName> for GTImportName {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::import_name::TSImportName;
+    use genotype_lang_py_tree::import_name::PYImportName;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -33,8 +33,8 @@ mod tests {
                 (0, 0).into(),
                 GTIdentifier::new((0, 0).into(), "Name".into())
             )
-            .convert(&TSConvertResolve::new(), &|_| {}),
-            TSImportName::Name("Name".into()),
+            .convert(&PYConvertResolve::new(), &|_| {}),
+            PYImportName::Name("Name".into()),
         );
     }
 
@@ -46,8 +46,8 @@ mod tests {
                 GTIdentifier::new((0, 0).into(), "Name".into()),
                 GTIdentifier::new((0, 0).into(), "Alias".into())
             )
-            .convert(&TSConvertResolve::new(), &|_| {}),
-            TSImportName::Alias("Name".into(), "Alias".into()),
+            .convert(&PYConvertResolve::new(), &|_| {}),
+            PYImportName::Alias("Name".into(), "Alias".into()),
         );
     }
 }

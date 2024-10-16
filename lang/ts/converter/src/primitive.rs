@@ -45,5 +45,9 @@ mod tests {
             GTPrimitive::Float((0, 0).into()).convert(&TSConvertResolve::new(), &|_| {}),
             TSPrimitive::Number
         );
+        assert_eq!(
+            GTPrimitive::Null((0, 0).into()).convert(&TSConvertResolve::new(), &|_| {}),
+            TSPrimitive::Null
+        );
     }
 }

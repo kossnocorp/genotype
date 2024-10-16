@@ -1,14 +1,14 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, key::TSKey};
+use genotype_lang_py_tree::{definition::PYDefinition, key::PYKey};
 use genotype_parser::tree::key::GTKey;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{convert::PYConvert, resolve::PYConvertResolve};
 
-impl TSConvert<TSKey> for GTKey {
-    fn convert<HoistFn>(&self, _resolve: &TSConvertResolve, _hoist: &HoistFn) -> TSKey
+impl PYConvert<PYKey> for GTKey {
+    fn convert<HoistFn>(&self, _resolve: &PYConvertResolve, _hoist: &HoistFn) -> PYKey
     where
-        HoistFn: Fn(TSDefinition),
+        HoistFn: Fn(PYDefinition),
     {
-        TSKey(self.1.clone())
+        PYKey(self.1.clone())
     }
 }
 
@@ -21,8 +21,8 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_eq!(
-            TSKey("foo".into()),
-            GTKey::new((0, 0).into(), "foo".into()).convert(&TSConvertResolve::new(), &|_| {}),
+            PYKey("foo".into()),
+            GTKey::new((0, 0).into(), "foo".into()).convert(&PYConvertResolve::new(), &|_| {}),
         );
     }
 }

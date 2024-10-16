@@ -1,15 +1,15 @@
-use genotype_lang_ts_tree::{alias::TSAlias, definition::TSDefinition, interface::TSInterface};
-use genotype_parser::tree::{alias::GTAlias, descriptor::GTDescriptor};
+use genotype_lang_py_tree::*;
+use genotype_parser::*;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{convert::PYConvert, resolve::PYConvertResolve};
 
-impl TSConvert<TSDefinition> for GTAlias {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSDefinition
+impl PYConvert<PYDefinition> for GTAlias {
+    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYDefinition
     where
-        HoistFn: Fn(TSDefinition),
+        HoistFn: Fn(PYDefinition),
     {
         match &self.descriptor {
-            GTDescriptor::Object(object) => TSDefinition::Interface(TSInterface {
+            GTDescriptor::Object(object) => PYDefinition::Interface(PYClass {
                 name: self.name.convert(resolve, hoist),
                 extensions: object
                     .extensions
@@ -23,7 +23,7 @@ impl TSConvert<TSDefinition> for GTAlias {
                     .collect(),
             }),
 
-            _ => TSDefinition::Alias(TSAlias {
+            _ => PYDefinition::Alias(PYAlias {
                 name: self.name.convert(resolve, hoist),
                 descriptor: self.descriptor.convert(resolve, hoist),
             }),
@@ -35,7 +35,7 @@ impl TSConvert<TSDefinition> for GTAlias {
 mod tests {
     use std::vec;
 
-    use genotype_lang_ts_tree::*;
+    use genotype_lang_py_tree::*;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -50,10 +50,10 @@ mod tests {
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
-            TSDefinition::Alias(TSAlias {
+            .convert(&PYConvertResolve::new(), &|_| {}),
+            PYDefinition::Alias(PYAlias {
                 name: "Name".into(),
-                descriptor: TSDescriptor::Primitive(TSPrimitive::Boolean),
+                descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
             }),
         );
     }
@@ -86,19 +86,19 @@ mod tests {
                     ]
                 })
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
-            TSDefinition::Interface(TSInterface {
+            .convert(&PYConvertResolve::new(), &|_| {}),
+            PYDefinition::Interface(PYClass {
                 name: "Book".into(),
                 extensions: vec![],
                 properties: vec![
-                    TSProperty {
+                    PYProperty {
                         name: "title".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                        descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                         required: true,
                     },
-                    TSProperty {
+                    PYProperty {
                         name: "author".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                        descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                         required: true,
                     }
                 ]
@@ -128,13 +128,13 @@ mod tests {
                     }]
                 })
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
-            TSDefinition::Interface(TSInterface {
+            .convert(&PYConvertResolve::new(), &|_| {}),
+            PYDefinition::Interface(PYClass {
                 name: "Book".into(),
-                extensions: vec!["Good".into()],
-                properties: vec![TSProperty {
+                extensions: vec![PYReference::new("Good".into(), false).into()],
+                properties: vec![PYProperty {
                     name: "author".into(),
-                    descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                    descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                     required: true,
                 }]
             }),
@@ -167,26 +167,27 @@ mod tests {
                     ]
                 },)
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
-            TSDefinition::Alias(TSAlias {
+            .convert(&PYConvertResolve::new(), &|_| {}),
+            PYDefinition::Alias(PYAlias {
                 name: "Book".into(),
-                descriptor: TSUnion {
+                descriptor: PYUnion {
                     descriptors: vec![
-                        TSIntersection {
-                            descriptors: vec![
-                                TSObject {
-                                    properties: vec![TSProperty {
-                                        name: "author".into(),
-                                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
-                                        required: true,
-                                    }]
-                                }
-                                .into(),
-                                "Good".into()
-                            ],
-                        }
-                        .into(),
-                        TSPrimitive::String.into(),
+                        // [TODO] Hoist class instead of converting to a intersection
+                        // PYIntersection {
+                        //     descriptors: vec![
+                        //         PYClass {
+                        //             properties: vec![PYProperty {
+                        //                 name: "author".into(),
+                        //                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                        //                 required: true,
+                        //             }]
+                        //         }
+                        //         .into(),
+                        //         "Good".into()
+                        //     ],
+                        // }
+                        // .into(),
+                        PYPrimitive::String.into(),
                     ]
                 }
                 .into(),

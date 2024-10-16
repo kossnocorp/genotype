@@ -1,26 +1,28 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, object::TSObject};
+use genotype_lang_py_tree::{definition::PYDefinition, PYReference};
 use genotype_parser::tree::object::GTObject;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{convert::PYConvert, resolve::PYConvertResolve};
 
-impl TSConvert<TSObject> for GTObject {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSObject
+impl PYConvert<PYReference> for GTObject {
+    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYReference
     where
-        HoistFn: Fn(TSDefinition),
+        HoistFn: Fn(PYDefinition),
     {
-        TSObject {
-            properties: self
-                .properties
-                .iter()
-                .map(|property| property.convert(resolve, hoist))
-                .collect(),
-        }
+        // [TODO] Implement this
+        // PYObject {
+        //     properties: self
+        //         .properties
+        //         .iter()
+        //         .map(|property| property.convert(resolve, hoist))
+        //         .collect(),
+        // }
+        PYReference::new("TODO".into(), false)
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::*;
+    use genotype_lang_py_tree::*;
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
 
@@ -49,21 +51,23 @@ mod tests {
                     }
                 ]
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
-            TSObject {
-                properties: vec![
-                    TSProperty {
-                        name: "name".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
-                        required: true,
-                    },
-                    TSProperty {
-                        name: "age".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
-                        required: false,
-                    }
-                ]
-            }
+            .convert(&PYConvertResolve::new(), &|_| {}),
+            // [TODO]
+            // PYObject {
+            //     properties: vec![
+            //         PYProperty {
+            //             name: "name".into(),
+            //             descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+            //             required: true,
+            //         },
+            //         PYProperty {
+            //             name: "age".into(),
+            //             descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
+            //             required: false,
+            //         }
+            //     ]
+            // }
+            PYReference::new("NOPE".into(), false)
         );
     }
 }

@@ -1,15 +1,15 @@
 use std::sync::Mutex;
 
-use genotype_lang_ts_tree::module::TSModule;
+use genotype_lang_py_tree::module::PYModule;
 use genotype_parser::tree::module::GTModule;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{convert::PYConvert, resolve::PYConvertResolve};
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct TSConvertModule(pub TSModule);
+pub struct PYConvertModule(pub PYModule);
 
-impl TSConvertModule {
-    pub fn convert(module: &GTModule, resolve: &TSConvertResolve) -> Self {
+impl PYConvertModule {
+    pub fn convert(module: &GTModule, resolve: &PYConvertResolve) -> Self {
         let imports = module
             .imports
             .iter()
@@ -31,7 +31,7 @@ impl TSConvertModule {
             definitions.extend(hoisted.into_inner().unwrap());
         }
 
-        TSConvertModule(TSModule {
+        PYConvertModule(PYModule {
             doc: None,
             imports,
             definitions: definitions.into_inner().unwrap(),
@@ -41,7 +41,7 @@ impl TSConvertModule {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::*;
+    use genotype_lang_py_tree::*;
     use genotype_parser::{tree::*, GTSourceCode};
     use pretty_assertions::assert_eq;
 
@@ -49,14 +49,14 @@ mod tests {
 
     #[test]
     fn test_convert() {
-        let mut resolve = TSConvertResolve::new();
+        let mut resolve = PYConvertResolve::new();
         resolve.globs.insert(
             GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
             "module".into(),
         );
 
         assert_eq!(
-            TSConvertModule::convert(
+            PYConvertModule::convert(
                 &GTModule {
                     source_code: GTSourceCode::new("module.type".into(), "".into()),
                     doc: None,
@@ -170,66 +170,66 @@ mod tests {
                 },
                 &resolve
             ),
-            TSConvertModule(TSModule {
+            PYConvertModule(PYModule {
                 doc: None,
                 imports: vec![
-                    TSImport {
+                    PYImport {
                         path: "./path/to/module.ts".into(),
-                        reference: TSImportReference::Glob("module".into())
+                        reference: PYImportReference::Glob
                     },
-                    TSImport {
+                    PYImport {
                         path: "./path/to/module.ts".into(),
-                        reference: TSImportReference::Named(vec![
-                            TSImportName::Name("Name".into()),
-                            TSImportName::Alias("Name".into(), "Alias".into())
+                        reference: PYImportReference::Named(vec![
+                            PYImportName::Name("Name".into()),
+                            PYImportName::Alias("Name".into(), "Alias".into())
                         ])
                     }
                 ],
                 definitions: vec![
-                    TSDefinition::Interface(TSInterface {
+                    PYDefinition::Interface(PYClass {
                         name: "User".into(),
                         extensions: vec![],
                         properties: vec![
-                            TSProperty {
+                            PYProperty {
                                 name: "name".into(),
-                                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                                descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                                 required: true,
                             },
-                            TSProperty {
+                            PYProperty {
                                 name: "age".into(),
-                                descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
+                                descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
                                 required: false,
                             }
                         ]
                     }),
-                    TSDefinition::Interface(TSInterface {
+                    PYDefinition::Interface(PYClass {
                         name: "Order".into(),
                         extensions: vec![],
-                        properties: vec![TSProperty {
+                        properties: vec![PYProperty {
                             name: "book".into(),
-                            descriptor: TSDescriptor::Reference("Book".into()),
+                            descriptor: PYReference::new("Book".into(), false).into(),
                             required: true,
                         }]
                     }),
-                    TSDefinition::Interface(TSInterface {
+                    PYDefinition::Interface(PYClass {
                         name: "Book".into(),
                         extensions: vec![],
                         properties: vec![
-                            TSProperty {
+                            PYProperty {
                                 name: "title".into(),
-                                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                                descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                                 required: true,
                             },
-                            TSProperty {
+                            PYProperty {
                                 name: "author".into(),
-                                descriptor: TSDescriptor::Reference("Author".into()),
+                                descriptor: PYReference::new("Author".into(), false).into(),
                                 required: true,
                             }
                         ]
                     }),
-                    TSDefinition::Alias(TSAlias {
+                    PYDefinition::Alias(PYAlias {
                         name: "Name".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                        descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                     }),
                 ]
             })

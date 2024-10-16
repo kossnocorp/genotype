@@ -1,14 +1,14 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, tuple::TSTuple};
+use genotype_lang_py_tree::{definition::PYDefinition, tuple::PYTuple};
 use genotype_parser::tree::tuple::GTTuple;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{convert::PYConvert, resolve::PYConvertResolve};
 
-impl TSConvert<TSTuple> for GTTuple {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSTuple
+impl PYConvert<PYTuple> for GTTuple {
+    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYTuple
     where
-        HoistFn: Fn(TSDefinition),
+        HoistFn: Fn(PYDefinition),
     {
-        TSTuple {
+        PYTuple {
             descriptors: self
                 .descriptors
                 .iter()
@@ -20,11 +20,11 @@ impl TSConvert<TSTuple> for GTTuple {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::*;
+    use genotype_lang_py_tree::*;
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
 
-    use crate::resolve::TSConvertResolve;
+    use crate::resolve::PYConvertResolve;
 
     use super::*;
 
@@ -38,11 +38,11 @@ mod tests {
                     GTPrimitive::String((0, 0).into()).into(),
                 ]
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
-            TSTuple {
+            .convert(&PYConvertResolve::new(), &|_| {}),
+            PYTuple {
                 descriptors: vec![
-                    TSDescriptor::Primitive(TSPrimitive::Boolean),
-                    TSDescriptor::Primitive(TSPrimitive::String),
+                    PYDescriptor::Primitive(PYPrimitive::Boolean),
+                    PYDescriptor::Primitive(PYPrimitive::String),
                 ]
             }
         );

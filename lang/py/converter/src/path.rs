@@ -1,14 +1,14 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, path::TSPath};
+use genotype_lang_py_tree::{definition::PYDefinition, path::PYPath};
 use genotype_parser::tree::path::GTPath;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{convert::PYConvert, resolve::PYConvertResolve};
 
-impl TSConvert<TSPath> for GTPath {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, _hoist: &HoistFn) -> TSPath
+impl PYConvert<PYPath> for GTPath {
+    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, _hoist: &HoistFn) -> PYPath
     where
-        HoistFn: Fn(TSDefinition),
+        HoistFn: Fn(PYDefinition),
     {
-        TSPath(resolve.paths.get(&self).unwrap_or(self).as_str().to_owned() + ".ts")
+        PYPath(resolve.paths.get(&self).unwrap_or(self).as_str().to_owned() + ".ts")
     }
 }
 
@@ -21,22 +21,22 @@ mod tests {
     #[test]
     fn test_convert_base() {
         assert_eq!(
-            TSPath("./path/to/module.ts".into()),
+            PYPath("./path/to/module.ts".into()),
             GTPath::parse((0, 0).into(), "./path/to/module")
                 .unwrap()
-                .convert(&TSConvertResolve::new(), &|_| {}),
+                .convert(&PYConvertResolve::new(), &|_| {}),
         );
     }
 
     #[test]
     fn test_convert_resolve() {
-        let mut resolve = TSConvertResolve::new();
+        let mut resolve = PYConvertResolve::new();
         resolve.paths.insert(
             GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
             GTPath::parse((0, 0).into(), "./path/to/module/index").unwrap(),
         );
         assert_eq!(
-            TSPath("./path/to/module/index.ts".into()),
+            PYPath("./path/to/module/index.ts".into()),
             GTPath::parse((0, 0).into(), "./path/to/module")
                 .unwrap()
                 .convert(&resolve, &|_| {}),

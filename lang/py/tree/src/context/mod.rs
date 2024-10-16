@@ -18,5 +18,10 @@ impl PYContext {
 }
 
 pub trait PYContextResolve {
-    fn resolve(&self, _context: &mut PYContext, _options: &PYOptions) {}
+    fn resolve(self, _context: &mut PYContext, _options: &PYOptions) -> Self
+    where
+        Self: Sized,
+    {
+        self
+    }
 }

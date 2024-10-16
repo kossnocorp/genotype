@@ -1,9 +1,9 @@
-use genotype_lang_ts_tree::definition::TSDefinition;
+use genotype_lang_py_tree::definition::PYDefinition;
 
-use crate::resolve::TSConvertResolve;
+use crate::resolve::PYConvertResolve;
 
-pub trait TSConvert<TSNode> {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSNode
+pub trait PYConvert<PYNode> {
+    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYNode
     where
-        HoistFn: Fn(TSDefinition);
+        HoistFn: Fn(PYDefinition);
 }

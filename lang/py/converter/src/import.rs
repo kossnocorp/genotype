@@ -1,22 +1,22 @@
-use genotype_lang_ts_tree::{
-    definition::TSDefinition, import::TSImport, TSImportName, TSImportReference,
+use genotype_lang_py_tree::{
+    definition::PYDefinition, import::PYImport, PYImportName, PYImportReference,
 };
 use genotype_parser::tree::{import::GTImport, GTImportReference};
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{convert::PYConvert, resolve::PYConvertResolve};
 
-impl TSConvert<TSImport> for GTImport {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSImport
+impl PYConvert<PYImport> for GTImport {
+    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYImport
     where
-        HoistFn: Fn(TSDefinition),
+        HoistFn: Fn(PYDefinition),
     {
         let reference = match &self.reference {
             GTImportReference::Glob(_) => {
                 // [TODO]
-                TSImportReference::Glob(resolve.globs.get(&self.path).unwrap().clone())
+                PYImportReference::Glob
             }
 
-            GTImportReference::Names(_, names) => TSImportReference::Named(
+            GTImportReference::Names(_, names) => PYImportReference::Named(
                 names
                     .iter()
                     .map(|name| name.convert(resolve, hoist))
@@ -24,11 +24,11 @@ impl TSConvert<TSImport> for GTImport {
             ),
 
             GTImportReference::Name(_, name) => {
-                TSImportReference::Named(vec![TSImportName::Name(name.convert(resolve, hoist))])
+                PYImportReference::Named(vec![PYImportName::Name(name.convert(resolve, hoist))])
             }
         };
 
-        TSImport {
+        PYImport {
             path: self.path.convert(resolve, hoist),
             reference,
         }
@@ -37,7 +37,7 @@ impl TSConvert<TSImport> for GTImport {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::*;
+    use genotype_lang_py_tree::*;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -45,7 +45,7 @@ mod tests {
 
     #[test]
     fn test_convert_glob() {
-        let mut resolve = TSConvertResolve::new();
+        let mut resolve = PYConvertResolve::new();
         resolve.globs.insert(
             GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
             "module".into(),
@@ -57,9 +57,9 @@ mod tests {
                 reference: GTImportReference::Glob((0, 0).into())
             }
             .convert(&resolve, &|_| {}),
-            TSImport {
+            PYImport {
                 path: "./path/to/module.ts".into(),
-                reference: TSImportReference::Glob("module".into())
+                reference: PYImportReference::Glob
             }
         );
     }
@@ -85,12 +85,12 @@ mod tests {
                     ]
                 )
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
-            TSImport {
+            .convert(&PYConvertResolve::new(), &|_| {}),
+            PYImport {
                 path: "./path/to/module.ts".into(),
-                reference: TSImportReference::Named(vec![
-                    TSImportName::Name("Name".into()),
-                    TSImportName::Alias("Name".into(), "Alias".into())
+                reference: PYImportReference::Named(vec![
+                    PYImportName::Name("Name".into()),
+                    PYImportName::Alias("Name".into(), "Alias".into())
                 ])
             }
         );
@@ -104,10 +104,10 @@ mod tests {
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 reference: GTIdentifier::new((0, 0).into(), "Name".into()).into()
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
-            TSImport {
+            .convert(&PYConvertResolve::new(), &|_| {}),
+            PYImport {
                 path: "./path/to/module.ts".into(),
-                reference: TSImportReference::Named(vec![TSImportName::Name("Name".into())])
+                reference: PYImportReference::Named(vec![PYImportName::Name("Name".into())])
             }
         );
     }
