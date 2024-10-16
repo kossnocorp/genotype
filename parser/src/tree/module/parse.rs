@@ -1121,56 +1121,56 @@ mod tests {
         );
     }
 
-    // #[test]
-    // fn test_unions() {
-    //     let source_code = read_source_code("./examples/syntax/12-unions.type");
-    //     assert_module(
-    //         source_code.clone(),
-    //         GTModuleParse {
-    //             module: GTModule {
-    //                 source_code,
-    //                 doc: None,
-    //                 imports: vec![],
-    //                 aliases: vec![
-    //                     GTAlias {
-    //                         span: (0, 39).into(),
-    //                         doc: None,
-    //                         name: GTIdentifier::new((0, 5).into(), "Hello".into()),
-    //                         descriptor: GTUnion {
-    //                             span: (0, 39).into(),
-    //                             descriptors: vec![
-    //                                 GTLiteral::String((0, 0).into(), "Sasha".into()).into(),
-    //                                 GTLiteral::String((0, 0).into(), "world".into()).into(),
-    //                             ],
-    //                         }
-    //                         .into(),
-    //                     },
-    //                     GTAlias {
-    //                         span: (0, 39).into(),
-    //                         doc: None,
-    //                         name: GTIdentifier::new((0, 5).into(), "Multiline".into()),
-    //                         descriptor: GTUnion {
-    //                             span: (0, 39).into(),
-    //                             descriptors: vec![
-    //                                 GTLiteral::String((0, 0).into(), "Hello".into()).into(),
-    //                                 GTPrimitive::String((0, 0).into()).into(),
-    //                             ],
-    //                         }
-    //                         .into(),
-    //                     },
-    //                 ],
-    //             },
-    //             resolve: GTResolve {
-    //                 deps: HashSet::new(),
-    //                 exports: vec![
-    //                     GTIdentifier::new((0, 11).into(), "Hello".into()),
-    //                     GTIdentifier::new((41, 52).into(), "Multiline".into()),
-    //                 ],
-    //                 references: HashSet::new(),
-    //             },
-    //         },
-    //     );
-    // }
+    #[test]
+    fn test_unions() {
+        let source_code = read_source_code("./examples/syntax/12-unions.type");
+        assert_module(
+            source_code.clone(),
+            GTModuleParse {
+                module: GTModule {
+                    source_code,
+                    doc: None,
+                    imports: vec![],
+                    aliases: vec![
+                        GTAlias {
+                            span: (0, 25).into(),
+                            doc: None,
+                            name: GTIdentifier::new((0, 5).into(), "Hello".into()),
+                            descriptor: GTUnion {
+                                span: (8, 25).into(),
+                                descriptors: vec![
+                                    GTLiteral::String((8, 15).into(), "Sasha".into()).into(),
+                                    GTLiteral::String((18, 25).into(), "world".into()).into(),
+                                ],
+                            }
+                            .into(),
+                        },
+                        GTAlias {
+                            span: (27, 61).into(),
+                            doc: None,
+                            name: GTIdentifier::new((27, 36).into(), "Multiline".into()),
+                            descriptor: GTUnion {
+                                span: (41, 61).into(),
+                                descriptors: vec![
+                                    GTLiteral::String((43, 50).into(), "Hello".into()).into(),
+                                    GTPrimitive::String((55, 61).into()).into(),
+                                ],
+                            }
+                            .into(),
+                        },
+                    ],
+                },
+                resolve: GTResolve {
+                    deps: HashSet::new(),
+                    exports: vec![
+                        GTIdentifier::new((0, 5).into(), "Hello".into()),
+                        GTIdentifier::new((27, 36).into(), "Multiline".into()),
+                    ],
+                    references: HashSet::new(),
+                },
+            },
+        );
+    }
 
     fn read_source_code(path: &str) -> GTSourceCode {
         let content = fs::read_to_string(path).expect("cannot read file");

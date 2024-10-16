@@ -69,10 +69,10 @@ mod tests {
         parse_file("./examples/syntax/11-literals.type");
     }
 
-    // #[test]
-    // fn test_unions() {
-    //     parse_file("./examples/syntax/12-unions.type");
-    // }
+    #[test]
+    fn test_unions() {
+        parse_file("./examples/syntax/12-unions.type");
+    }
 
     fn parse_file(file: &str) {
         let code = fs::read_to_string(file).expect("cannot read file");

@@ -1,12 +1,14 @@
 module = { SOI ~ (module_doc)* ~ (import | alias)* ~ EOI }
 
-alias = { line_doc* ~ name ~ "=" ~ (descriptor) }
+alias = { line_doc* ~ name ~ "=" ~ descriptor }
 
 name = @{ (ASCII_ALPHA)+ }
 
 // Descriptors
 
-descriptor = !{ literal | inline_import | primitive | object | array | tuple | alias | name  }
+descriptor = @{ "|"? ~ WHITESPACE* ~ descriptor_inner ~ (WHITESPACE* ~ "|" ~ WHITESPACE* ~ descriptor_inner)* }
+
+descriptor_inner = !{ literal | inline_import | primitive | object | array | tuple | alias | name }
 
 primitive = { "string" | "int" | "float" | "boolean" | "null" }
 
@@ -57,12 +59,6 @@ array = { "[" ~ descriptor ~ "]" }
 // Tuples
 
 tuple = { "(" ~ descriptor ~ ("," ~ descriptor)* ~ ")" }
-
-// Unions
-
-union = {  descriptor ~ (union_delimiter ~ descriptor)+ }
-
-union_delimiter = _{ "|" }
 
 // Modules
 

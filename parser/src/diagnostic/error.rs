@@ -56,7 +56,7 @@ impl GTModuleParseError {
             code: "GTP002",
             source_code,
             span: error.span(),
-            message: format!("expected {} node", error.message()),
+            message: error.message(),
         }
     }
 }
