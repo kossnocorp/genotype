@@ -1,6 +1,6 @@
 mod render;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone)]
 pub struct PYPath(pub String);
 
 impl From<&str> for PYPath {

@@ -1,5 +1,6 @@
 pub mod alias;
 pub mod class;
+pub mod context;
 pub mod definition;
 pub mod descriptor;
 pub mod doc;
@@ -24,6 +25,7 @@ pub mod union;
 
 pub use alias::*;
 pub use class::*;
+pub use context::*;
 pub use definition::*;
 pub use descriptor::*;
 pub use doc::*;
