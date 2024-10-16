@@ -288,6 +288,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "genotype_lang_py_tree"
+version = "0.1.0"
+dependencies = [
+ "genotype_lang_core_tree",
+ "genotype_parser",
+ "pretty_assertions",
+]
+
+[[package]]
 name = "genotype_lang_ts_converter"
 version = "0.1.0"
 dependencies = [

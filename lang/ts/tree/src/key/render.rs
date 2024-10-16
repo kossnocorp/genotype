@@ -15,6 +15,6 @@ mod tests {
 
     #[test]
     fn test_render() {
-                assert_eq!(TSKey("foo".into()).render(&ts_indent()), "foo");
+        assert_eq!(TSKey("foo".into()).render(&ts_indent()), "foo");
     }
 }

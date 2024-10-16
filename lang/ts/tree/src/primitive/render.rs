@@ -22,7 +22,7 @@ mod tests {
 
     #[test]
     fn test_render_primitive() {
-                assert_eq!(TSPrimitive::String.render(&ts_indent()), "string");
+        assert_eq!(TSPrimitive::String.render(&ts_indent()), "string");
         assert_eq!(TSPrimitive::Number.render(&ts_indent()), "number");
         assert_eq!(TSPrimitive::Boolean.render(&ts_indent()), "boolean");
         assert_eq!(TSPrimitive::Null.render(&ts_indent()), "null");

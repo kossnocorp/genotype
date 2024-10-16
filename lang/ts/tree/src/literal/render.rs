@@ -52,6 +52,10 @@ mod tests {
     #[test]
     fn test_render_string() {
         assert_eq!(
+            TSLiteral::String("Hi!".into()).render(&ts_indent()),
+            "\"Hi!\""
+        );
+        assert_eq!(
             TSLiteral::String("Hello, \"world\"!\\".into()).render(&ts_indent()),
             "\"Hello, \\\"world\\\"!\\\\\""
         );
