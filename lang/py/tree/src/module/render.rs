@@ -42,7 +42,6 @@ impl PYRender for PYModule {
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use super::*;
     use crate::*;
 
     #[test]
@@ -68,7 +67,7 @@ mod tests {
                         name: "Name".into(),
                         descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                     }),
-                    PYDefinition::Interface(PYInterface {
+                    PYDefinition::Interface(PYClass {
                         name: "Name".into(),
                         extensions: vec![],
                         properties: vec![
@@ -90,12 +89,12 @@ mod tests {
             r#"import Name from "../path/to/module.ts";
 import { Name, Name as Alias } from "../path/to/module.ts";
 
-export type Name = str;
+type Name = str;
 
-export interface Name {
-    name: str;
-    age?: int;
-}
+@dataclass
+class Name:
+    name: str
+    age: Optional[int] = None
 "#
         );
     }

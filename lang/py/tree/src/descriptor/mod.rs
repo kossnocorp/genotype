@@ -6,7 +6,6 @@ mod render;
 pub enum PYDescriptor {
     List(Box<PYList>),
     Literal(PYLiteral),
-    Object(PYObject),
     Primitive(PYPrimitive),
     Reference(PYReference),
     Tuple(PYTuple),
@@ -16,12 +15,6 @@ pub enum PYDescriptor {
 impl From<&str> for PYDescriptor {
     fn from(str: &str) -> Self {
         PYDescriptor::Reference(str.into())
-    }
-}
-
-impl From<PYObject> for PYDescriptor {
-    fn from(object: PYObject) -> Self {
-        PYDescriptor::Object(object)
     }
 }
 

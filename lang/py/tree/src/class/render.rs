@@ -1,24 +1,39 @@
-use genotype_lang_core_tree::indent::GTIndent;
+use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
 
 use crate::{PYOptions, PYRender};
 
-use super::PYObject;
+use super::PYClass;
 
-impl PYRender for PYObject {
+impl PYRender for PYClass {
     fn render(&self, indent: &GTIndent, options: &PYOptions) -> String {
         let prop_indent = indent.increment();
+
         let properties = self
             .properties
             .iter()
             .map(|property| property.render(&prop_indent, options))
             .collect::<Vec<String>>()
-            .join(",\n");
+            .join("\n");
+
+        let extensions = self
+            .extensions
+            .iter()
+            .map(|extension| extension.render(indent))
+            .collect::<Vec<String>>()
+            .join(", ");
+
         format!(
-            "{}\n{}{}{}",
-            "{",
-            properties,
+            "{}@dataclass\n{}class {}{}:{}{}",
+            indent.string,
+            indent.string,
+            self.name.render(indent),
+            if extensions.len() > 0 {
+                format!("({})", extensions)
+            } else {
+                "".into()
+            },
             if properties.len() > 0 { "\n" } else { "" },
-            indent.format("}")
+            properties,
         )
     }
 }
@@ -27,24 +42,28 @@ impl PYRender for PYObject {
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use crate::{
-        descriptor::PYDescriptor, indent::py_indent, primitive::PYPrimitive, property::PYProperty,
-    };
-
-    use super::*;
+    use crate::*;
 
     #[test]
     fn test_render_empty() {
         assert_eq!(
-            PYObject { properties: vec![] }.render(&py_indent(), &PYOptions::default()),
-            "{\n}"
+            PYClass {
+                name: "Name".into(),
+                extensions: vec![],
+                properties: vec![]
+            }
+            .render(&py_indent(), &PYOptions::default()),
+            r#"@dataclass
+class Name:"#
         );
     }
 
     #[test]
     fn test_render_properties() {
         assert_eq!(
-            PYObject {
+            PYClass {
+                name: "Name".into(),
+                extensions: vec![],
                 properties: vec![
                     PYProperty {
                         name: "name".into(),
@@ -59,14 +78,19 @@ mod tests {
                 ]
             }
             .render(&py_indent(), &PYOptions::default()),
-            "{\n    name: str,\n    age?: int\n}"
+            r#"@dataclass
+class Name:
+    name: str
+    age: Optional[int] = None"#
         );
     }
 
     #[test]
     fn test_render_indent() {
         assert_eq!(
-            PYObject {
+            PYClass {
+                name: "Name".into(),
+                extensions: vec![],
                 properties: vec![
                     PYProperty {
                         name: "name".into(),
@@ -81,7 +105,29 @@ mod tests {
                 ]
             }
             .render(&py_indent().increment(), &PYOptions::default()),
-            "{\n        name: str,\n        age?: int\n    }"
+            r#"    @dataclass
+    class Name:
+        name: str
+        age: Optional[int] = None"#
+        );
+    }
+
+    #[test]
+    fn test_render_extensions() {
+        assert_eq!(
+            PYClass {
+                name: "Name".into(),
+                extensions: vec!["Hello".into(), "World".into()],
+                properties: vec![PYProperty {
+                    name: "name".into(),
+                    descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                    required: true
+                },]
+            }
+            .render(&py_indent(), &PYOptions::default()),
+            r#"@dataclass
+class Name(Hello, World):
+    name: str"#
         );
     }
 }

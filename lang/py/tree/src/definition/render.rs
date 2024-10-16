@@ -6,12 +6,10 @@ use super::PYDefinition;
 
 impl PYRender for PYDefinition {
     fn render(&self, indent: &GTIndent, options: &PYOptions) -> String {
-        let definition = match self {
+        match self {
             PYDefinition::Alias(alias) => alias.render(indent, options),
             PYDefinition::Interface(interface) => interface.render(indent, options),
-        };
-
-        format!("export {}", definition)
+        }
     }
 }
 
@@ -29,14 +27,14 @@ mod tests {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
             })
             .render(&py_indent(), &PYOptions::default()),
-            "export type Name = str;"
+            "type Name = str;"
         );
     }
 
     #[test]
-    fn test_render_interface() {
+    fn test_render_class() {
         assert_eq!(
-            PYDefinition::Interface(PYInterface {
+            PYDefinition::Interface(PYClass {
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![
@@ -53,10 +51,10 @@ mod tests {
                 ]
             })
             .render(&py_indent(), &PYOptions::default()),
-            r#"export interface Name {
-    name: str;
-    age?: int;
-}"#
+            r#"@dataclass
+class Name:
+    name: str
+    age: Optional[int] = None"#
         );
     }
 }

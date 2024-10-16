@@ -9,7 +9,6 @@ impl PYRender for PYDescriptor {
             PYDescriptor::Literal(literal) => literal.render(indent),
             PYDescriptor::Primitive(primitive) => primitive.render(indent),
             PYDescriptor::Reference(name) => name.render(indent),
-            PYDescriptor::Object(object) => object.render(indent, options),
             PYDescriptor::Tuple(tuple) => tuple.render(indent, options),
             PYDescriptor::Union(union) => union.render(indent, options),
         }
@@ -30,31 +29,6 @@ mod tests {
             }))
             .render(&py_indent(), &PYOptions::default()),
             "list[int]"
-        );
-    }
-
-    #[test]
-    fn test_render_object() {
-        assert_eq!(
-            PYDescriptor::Object(PYObject {
-                properties: vec![
-                    PYProperty {
-                        name: "name".into(),
-                        descriptor: PYDescriptor::Primitive(PYPrimitive::String),
-                        required: true
-                    },
-                    PYProperty {
-                        name: "age".into(),
-                        descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
-                        required: false
-                    }
-                ]
-            })
-            .render(&py_indent(), &PYOptions::default()),
-            r#"{
-    name: str,
-    age?: int
-}"#
         );
     }
 
@@ -90,7 +64,7 @@ mod tests {
                 ]
             })
             .render(&py_indent(), &PYOptions::default()),
-            "[int, str]"
+            "tuple[int, str]"
         );
     }
 

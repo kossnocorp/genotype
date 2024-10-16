@@ -6,12 +6,19 @@ use super::PYProperty;
 
 impl PYRender for PYProperty {
     fn render(&self, indent: &GTIndent, options: &PYOptions) -> String {
+        let descriptor = self.descriptor.render(indent, options);
+
+        let descriptor = if self.required {
+            descriptor
+        } else {
+            format!("Optional[{descriptor}] = None")
+        };
+
         format!(
-            "{}{}{}: {}",
+            "{}{}: {}",
             indent.string,
             self.name.render(indent),
-            if self.required { "" } else { "?" },
-            self.descriptor.render(indent, options)
+            descriptor
         )
     }
 }
@@ -66,7 +73,7 @@ mod tests {
                 required: false
             }
             .render(&py_indent(), &PYOptions::default()),
-            "name?: str"
+            "name: Optional[str] = None"
         );
     }
 }

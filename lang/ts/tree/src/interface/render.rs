@@ -124,10 +124,10 @@ mod tests {
                     required: true
                 },]
             }
-            .render(&ts_indent().increment()),
-            r#"  interface Name extends Hello, World {
-    name: string;
-  }"#
+            .render(&ts_indent()),
+            r#"interface Name extends Hello, World {
+  name: string;
+}"#
         );
     }
 }
