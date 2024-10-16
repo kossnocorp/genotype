@@ -17,8 +17,6 @@ impl GTTraverse for GTDescriptor {
 
             GTDescriptor::Literal(literal) => literal.traverse(visitor),
 
-            GTDescriptor::Nullable(descriptor) => descriptor.traverse(visitor),
-
             GTDescriptor::Object(object) => object.traverse(visitor),
 
             GTDescriptor::Primitive(primitive) => primitive.traverse(visitor),
@@ -98,22 +96,6 @@ mod tests {
                 GTMockVisited::InlineImport(import.clone()),
                 GTMockVisited::Identifier(import.name.clone()),
                 GTMockVisited::Path(import.path.clone()),
-            ]
-        );
-    }
-
-    #[test]
-    fn test_traverse_nullable() {
-        let mut visitor = GTMockVisitor::new();
-        let primitive = GTDescriptor::Primitive(GTPrimitive::String((0, 0).into()));
-        let mut descriptor = GTDescriptor::Nullable(Box::new(primitive.clone()));
-        descriptor.traverse(&mut visitor);
-        assert_eq!(
-            visitor.visited,
-            vec![
-                GTMockVisited::Descriptor(descriptor.clone()),
-                GTMockVisited::Descriptor(primitive.clone()),
-                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
             ]
         );
     }

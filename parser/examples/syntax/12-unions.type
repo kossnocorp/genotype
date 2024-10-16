@@ -1,0 +1,5 @@
+Hello = "Sasha" | "world"
+
+Multiline =
+  | "Hello"
+  | string

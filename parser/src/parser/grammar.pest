@@ -1,18 +1,14 @@
 module = { SOI ~ (module_doc)* ~ (import | alias)* ~ EOI }
 
-alias = { line_doc* ~ name ~ "=" ~ (any_descriptor) }
+alias = { line_doc* ~ name ~ "=" ~ (descriptor) }
 
 name = @{ (ASCII_ALPHA)+ }
 
 // Descriptors
 
-any_descriptor = _{ nullable_descriptor | descriptor }
-
 descriptor = !{ literal | inline_import | primitive | object | array | tuple | alias | name  }
 
-nullable_descriptor = ${ descriptor ~ "?" }
-
-primitive = { "string" | "int" | "float" | "boolean" }
+primitive = { "string" | "int" | "float" | "boolean" | "null" }
 
 // Literals
 
@@ -50,17 +46,23 @@ any_property = _{ extension_property | optional_property | required_property }
 
 extension_property = { "..." ~ name }
 
-required_property = { line_doc* ~ name ~ ":" ~ any_descriptor }
+required_property = { line_doc* ~ name ~ ":" ~ descriptor }
 
-optional_property = { line_doc* ~ name ~ "?:" ~ any_descriptor }
+optional_property = { line_doc* ~ name ~ "?:" ~ descriptor }
 
 // Arrays
 
-array = { "[" ~ any_descriptor ~ "]" }
+array = { "[" ~ descriptor ~ "]" }
 
 // Tuples
 
-tuple = { "(" ~ any_descriptor ~ ("," ~ any_descriptor)* ~ ")" }
+tuple = { "(" ~ descriptor ~ ("," ~ descriptor)* ~ ")" }
+
+// Unions
+
+union = {  descriptor ~ (union_delimiter ~ descriptor)+ }
+
+union_delimiter = _{ "|" }
 
 // Modules
 

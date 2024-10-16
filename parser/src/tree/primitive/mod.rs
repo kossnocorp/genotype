@@ -10,6 +10,7 @@ pub enum GTPrimitive {
     String(GTSpan),
     Int(GTSpan),
     Float(GTSpan),
+    Null(GTSpan),
 }
 
 impl Into<GTDescriptor> for GTPrimitive {

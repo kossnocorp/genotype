@@ -8,7 +8,6 @@ pub enum GTDescriptor {
     Array(Box<GTArray>),
     InlineImport(GTInlineImport),
     Literal(GTLiteral),
-    Nullable(Box<GTDescriptor>),
     Object(GTObject),
     Primitive(GTPrimitive),
     Reference(GTReference),
@@ -37,5 +36,11 @@ impl From<GTReference> for GTDescriptor {
 impl From<GTIdentifier> for GTDescriptor {
     fn from(identifier: GTIdentifier) -> Self {
         GTDescriptor::Reference(identifier.into())
+    }
+}
+
+impl From<GTUnion> for GTDescriptor {
+    fn from(union: GTUnion) -> Self {
+        GTDescriptor::Union(union)
     }
 }

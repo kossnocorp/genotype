@@ -19,6 +19,8 @@ impl TryFrom<Pair<'_, Rule>> for GTPrimitive {
 
             "float" => Ok(GTPrimitive::Float(span)),
 
+            "null" => Ok(GTPrimitive::Null(span)),
+
             _ => Err(GTNodeParseError::Internal(span, GTNode::Primitive)),
         }
     }

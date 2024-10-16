@@ -9,10 +9,11 @@ impl TSConvert<TSPrimitive> for GTPrimitive {
         HoistFn: Fn(TSDefinition),
     {
         match self {
-            GTPrimitive::Boolean(span) => TSPrimitive::Boolean,
-            GTPrimitive::String(span) => TSPrimitive::String,
-            GTPrimitive::Int(span) => TSPrimitive::Number,
-            GTPrimitive::Float(span) => TSPrimitive::Number,
+            GTPrimitive::Boolean(_) => TSPrimitive::Boolean,
+            GTPrimitive::String(_) => TSPrimitive::String,
+            GTPrimitive::Int(_) => TSPrimitive::Number,
+            GTPrimitive::Float(_) => TSPrimitive::Number,
+            GTPrimitive::Null(_) => TSPrimitive::Null,
         }
     }
 }

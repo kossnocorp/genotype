@@ -78,7 +78,7 @@ impl Diagnostic for GTModuleParseError {
         Some(Box::new(self.code))
     }
 
-    fn help<'a>(&'a self) -> Option<Box<dyn core::fmt::Display + 'a>> {
-        Some(Box::new("Hello, world!".to_string()))
-    }
+    // fn help<'a>(&'a self) -> Option<Box<dyn core::fmt::Display + 'a>> {
+    //     Some(Box::new("Hello, world!".to_string()))
+    // }
 }

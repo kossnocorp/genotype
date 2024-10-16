@@ -180,6 +180,12 @@ mod tests {
                             name: GTIdentifier::new((43, 50).into(), "Boolean".into()),
                             descriptor: GTPrimitive::Boolean((53, 60).into()).into(),
                         },
+                        GTAlias {
+                            span: (62, 73).into(),
+                            doc: None,
+                            name: GTIdentifier::new((62, 66).into(), "Null".into()),
+                            descriptor: GTPrimitive::Null((69, 73).into()).into(),
+                        },
                     ],
                 },
                 resolve: GTResolve {
@@ -189,6 +195,7 @@ mod tests {
                         GTIdentifier::new((17, 20).into(), "Int".into()),
                         GTIdentifier::new((28, 33).into(), "Float".into()),
                         GTIdentifier::new((43, 50).into(), "Boolean".into()),
+                        GTIdentifier::new((62, 66).into(), "Null".into()),
                     ],
                     references: HashSet::new(),
                 },
@@ -422,36 +429,26 @@ mod tests {
                     doc: None,
                     imports: vec![],
                     aliases: vec![GTAlias {
-                        span: (0, 57).into(),
+                        span: (0, 38).into(),
                         doc: None,
                         name: GTIdentifier::new((0, 5).into(), "Hello".into()),
                         descriptor: GTDescriptor::Object(GTObject {
-                            span: (8, 57).into(),
+                            span: (8, 38).into(),
                             extensions: vec![],
                             properties: vec![
                                 GTProperty {
-                                    span: (12, 25).into(),
+                                    span: (12, 24).into(),
                                     doc: None,
                                     name: GTKey::new((12, 16).into(), "name".into()),
-                                    descriptor: GTDescriptor::Nullable(Box::new(
-                                        GTPrimitive::String((18, 24).into()).into(),
-                                    )),
+                                    descriptor: GTPrimitive::String((18, 24).into()).into(),
+
                                     required: true,
                                 },
                                 GTProperty {
-                                    span: (28, 37).into(),
+                                    span: (27, 36).into(),
                                     doc: None,
-                                    name: GTKey::new((28, 31).into(), "age".into()),
-                                    descriptor: GTPrimitive::Int((34, 37).into()).into(),
-                                    required: false,
-                                },
-                                GTProperty {
-                                    span: (40, 55).into(),
-                                    doc: None,
-                                    name: GTKey::new((40, 44).into(), "flag".into()),
-                                    descriptor: GTDescriptor::Nullable(Box::new(
-                                        GTPrimitive::Boolean((47, 54).into()).into(),
-                                    )),
+                                    name: GTKey::new((27, 30).into(), "age".into()),
+                                    descriptor: GTPrimitive::Int((33, 36).into()).into(),
                                     required: false,
                                 },
                             ],
@@ -1123,6 +1120,57 @@ mod tests {
             },
         );
     }
+
+    // #[test]
+    // fn test_unions() {
+    //     let source_code = read_source_code("./examples/syntax/12-unions.type");
+    //     assert_module(
+    //         source_code.clone(),
+    //         GTModuleParse {
+    //             module: GTModule {
+    //                 source_code,
+    //                 doc: None,
+    //                 imports: vec![],
+    //                 aliases: vec![
+    //                     GTAlias {
+    //                         span: (0, 39).into(),
+    //                         doc: None,
+    //                         name: GTIdentifier::new((0, 5).into(), "Hello".into()),
+    //                         descriptor: GTUnion {
+    //                             span: (0, 39).into(),
+    //                             descriptors: vec![
+    //                                 GTLiteral::String((0, 0).into(), "Sasha".into()).into(),
+    //                                 GTLiteral::String((0, 0).into(), "world".into()).into(),
+    //                             ],
+    //                         }
+    //                         .into(),
+    //                     },
+    //                     GTAlias {
+    //                         span: (0, 39).into(),
+    //                         doc: None,
+    //                         name: GTIdentifier::new((0, 5).into(), "Multiline".into()),
+    //                         descriptor: GTUnion {
+    //                             span: (0, 39).into(),
+    //                             descriptors: vec![
+    //                                 GTLiteral::String((0, 0).into(), "Hello".into()).into(),
+    //                                 GTPrimitive::String((0, 0).into()).into(),
+    //                             ],
+    //                         }
+    //                         .into(),
+    //                     },
+    //                 ],
+    //             },
+    //             resolve: GTResolve {
+    //                 deps: HashSet::new(),
+    //                 exports: vec![
+    //                     GTIdentifier::new((0, 11).into(), "Hello".into()),
+    //                     GTIdentifier::new((41, 52).into(), "Multiline".into()),
+    //                 ],
+    //                 references: HashSet::new(),
+    //             },
+    //         },
+    //     );
+    // }
 
     fn read_source_code(path: &str) -> GTSourceCode {
         let content = fs::read_to_string(path).expect("cannot read file");

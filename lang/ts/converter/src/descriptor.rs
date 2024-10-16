@@ -1,7 +1,4 @@
-use genotype_lang_ts_tree::{
-    definition::TSDefinition, descriptor::TSDescriptor, primitive::TSPrimitive,
-    reference::TSReference, union::TSUnion, TSIntersection,
-};
+use genotype_lang_ts_tree::*;
 use genotype_parser::tree::descriptor::GTDescriptor;
 
 use crate::{convert::TSConvert, resolve::TSConvertResolve};
@@ -28,13 +25,6 @@ impl TSConvert<TSDescriptor> for GTDescriptor {
             GTDescriptor::Literal(literal) => {
                 TSDescriptor::Literal(literal.convert(resolve, hoist))
             }
-
-            GTDescriptor::Nullable(nullable) => TSDescriptor::Union(TSUnion {
-                descriptors: vec![
-                    nullable.convert(resolve, hoist),
-                    TSDescriptor::Primitive(TSPrimitive::Null),
-                ],
-            }),
 
             GTDescriptor::Object(object) => {
                 let descriptor = TSDescriptor::Object(object.convert(resolve, hoist));
@@ -131,17 +121,6 @@ mod tests {
             TSDescriptor::InlineImport(TSInlineImport {
                 path: "./path/to/module.ts".into(),
                 name: "Name".into()
-            })
-        );
-    }
-
-    #[test]
-    fn test_convert_nullable() {
-        assert_eq!(
-            GTDescriptor::Nullable(Box::new(GTPrimitive::Boolean((0, 0).into()).into()))
-                .convert(&TSConvertResolve::new(), &|_| {}),
-            TSDescriptor::Union(TSUnion {
-                descriptors: vec![TSPrimitive::Boolean.into(), TSPrimitive::Null.into(),]
             })
         );
     }
