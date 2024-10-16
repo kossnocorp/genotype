@@ -13,6 +13,9 @@ genotype_writer = { version = "0.1.0", path = "../writer" }
 genotype_lang_core_project = { version = "0.1.0", path = "../lang/core/project" }
 genotype_lang_ts_project = { version = "0.1.0", path = "../lang/ts/project" }
 clap = { version = "4.5.19", features = ["derive"] }
+miette = { version = "7.2.0", features = ["fancy"] }
+thiserror = "1.0.64"
+owo-colors = "4.1.0"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

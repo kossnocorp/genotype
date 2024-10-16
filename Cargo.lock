@@ -258,7 +258,10 @@ dependencies = [
  "genotype_lang_ts_project",
  "genotype_project",
  "genotype_writer",
+ "miette",
+ "owo-colors",
  "pretty_assertions",
+ "thiserror",
 ]
 
 [[package]]

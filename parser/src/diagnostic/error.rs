@@ -44,7 +44,7 @@ impl GTModuleParseError {
         .into();
 
         Self {
-            code: "GTE001",
+            code: "GTP001",
             source_code,
             message,
             span,
@@ -53,7 +53,7 @@ impl GTModuleParseError {
 
     pub fn from_node_error(source_code: GTSourceCode, error: GTNodeParseError) -> Self {
         Self {
-            code: "GTE002",
+            code: "GTP002",
             source_code,
             span: error.span(),
             message: format!("expected {} node", error.message()),

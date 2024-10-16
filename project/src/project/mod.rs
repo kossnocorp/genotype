@@ -6,7 +6,10 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use crate::{GTProjectModule, GTProjectModuleParse, GTProjectModulePath};
+use crate::{
+    error::GTProjectError, result::GTProjectResult, GTProjectModule, GTProjectModuleParse,
+    GTProjectModulePath,
+};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTProject {
@@ -15,15 +18,26 @@ pub struct GTProject {
 }
 
 impl GTProject {
-    pub fn load(root: &str, pattern: &str) -> Result<Self, Box<dyn std::error::Error>> {
-        let root = Arc::new(PathBuf::from(root).canonicalize()?);
+    pub fn load(root: &str, pattern: &str) -> GTProjectResult<Self> {
+        let root = PathBuf::from(root)
+            .canonicalize()
+            .map_err(|_| GTProjectError::Canonicalize(format!("root directory {root}")))?;
+        let root = Arc::new(root);
+        let pattern_path = root.join(pattern);
+        let pattern = pattern_path.to_str().unwrap();
 
-        let entry_paths = glob(root.join(pattern).to_str().unwrap())?;
+        let entry_paths = glob(pattern).map_err(|_| GTProjectError::Unknown)?;
         let entries: Vec<GTProjectModulePath> = entry_paths
-            .collect::<Result<Vec<_>, _>>()?
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(|_| GTProjectError::Unknown)?
             .iter()
             .map(|entry| GTProjectModulePath::try_new(Arc::clone(&root), entry))
-            .collect::<Result<Vec<_>, _>>()?;
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(|_| GTProjectError::Unknown)?;
+
+        if entries.is_empty() {
+            return Err(GTProjectError::NoEntries(pattern.into()));
+        }
 
         let processed_paths = Arc::new(Mutex::new(HashSet::new()));
         let modules = Arc::new(Mutex::new(Vec::new()));
@@ -45,7 +59,8 @@ impl GTProject {
         let mut modules = modules
             .iter()
             .map(|parse| GTProjectModule::try_new(&modules, parse.clone()))
-            .collect::<Result<Vec<_>, _>>()?;
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(|_| GTProjectError::Unknown)?;
 
         modules.sort_by(|a, b| a.path.as_path().cmp(&b.path.as_path()));
 
