@@ -499,7 +499,7 @@ mod tests {
                                         span: (18, 58).into(),
                                         name: GTObjectName::Anonymous(
                                             (18, 58).into(),
-                                            GTObjectNameParent::Key(
+                                            GTObjectNameParent::Property(
                                                 GTIdentifier::new((0, 5).into(), "Hello".into()),
                                                 vec![GTKey::new((12, 16).into(), "name".into())],
                                             ),
@@ -548,13 +548,10 @@ mod tests {
                                         name: GTIdentifier::new((80, 85).into(), "Named".into()),
                                         descriptor: GTDescriptor::Object(GTObject {
                                             span: (88, 128).into(),
-                                            name: GTObjectName::Anonymous(
-                                                (88, 128).into(),
-                                                GTObjectNameParent::Alias(GTIdentifier::new(
-                                                    (80, 85).into(),
-                                                    "Named".into(),
-                                                )),
-                                            ),
+                                            name: GTObjectName::Named(GTIdentifier::new(
+                                                (80, 85).into(),
+                                                "Named".into(),
+                                            )),
                                             extensions: vec![],
                                             properties: vec![
                                                 GTProperty {

@@ -9,10 +9,20 @@ impl GTProperty {
         let span: GTSpan = pair.as_span().into();
         let required = pair.as_rule() == Rule::required_property;
         let mut inner = pair.into_inner();
+
         let pair = inner
             .next()
             .ok_or_else(|| GTNodeParseError::Internal(span.clone(), GTNode::Property))?;
-        parse(inner, pair, context, ParseState::Doc(span, required, None))
+        let property = parse(
+            inner,
+            pair,
+            context,
+            ParseState::Doc(span.clone(), required, None),
+        )?;
+
+        context.pop_parent(span, GTNode::Property)?;
+
+        Ok(property)
     }
 }
 
@@ -57,6 +67,11 @@ fn parse(
 
         ParseState::Name(span, required, doc) => {
             let name = GTKey::parse(pair);
+
+            context
+                .parents
+                .push(GTContextParent::Property(name.clone()));
+
             match inner.next() {
                 Some(pair) => parse(
                     inner,
@@ -85,4 +100,43 @@ enum ParseState {
     Doc(GTSpan, bool, Option<GTDoc>),
     Name(GTSpan, bool, Option<GTDoc>),
     Descriptor(GTSpan, bool, Option<GTDoc>, GTKey),
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::*;
+    use pest::Parser;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_parse() {
+        let mut pairs = GenotypeParser::parse(Rule::any_property, "world: string").unwrap();
+        assert_eq!(
+            GTProperty::parse(pairs.next().unwrap(), &mut GTContext::new()).unwrap(),
+            GTProperty {
+                span: (0, 13).into(),
+                doc: None,
+                name: GTKey::new((0, 5).into(), "world".into()),
+                descriptor: GTPrimitive::String((7, 13).into()).into(),
+                required: true
+            }
+        );
+    }
+
+    #[test]
+    fn test_parse_parent() {
+        let mut pairs = GenotypeParser::parse(Rule::any_property, "world: string").unwrap();
+        let parents = vec![GTContextParent::Alias(GTIdentifier::new(
+            (0, 5).into(),
+            "Hello".into(),
+        ))];
+        let mut context = GTContext {
+            parents: parents.clone(),
+            resolve: GTResolve::new(),
+        };
+
+        GTProperty::parse(pairs.next().unwrap(), &mut context).unwrap();
+
+        assert_eq!(context.parents, parents);
+    }
 }

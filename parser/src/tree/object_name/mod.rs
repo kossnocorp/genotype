@@ -16,5 +16,5 @@ impl From<GTIdentifier> for GTObjectName {
 #[derive(Debug, PartialEq, Clone)]
 pub enum GTObjectNameParent {
     Alias(GTIdentifier),
-    Key(GTIdentifier, Vec<GTKey>),
+    Property(GTIdentifier, Vec<GTKey>),
 }

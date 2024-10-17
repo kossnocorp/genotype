@@ -7,9 +7,16 @@ use super::GTObject;
 impl GTObject {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
         let span: GTSpan = pair.as_span().into();
+
+        let name = context.object_parent(span.clone())?;
+        let anonymous = matches!(name, GTObjectName::Named(_));
+        if anonymous {
+            context.parents.push(GTContextParent::Anonymous);
+        }
+
         let mut object = GTObject {
             span: span.clone(),
-            name: GTObjectName::Named(GTIdentifier::new(span, "TODO".into())),
+            name,
             extensions: vec![],
             properties: vec![],
         };
@@ -28,6 +35,10 @@ impl GTObject {
             }
         }
 
+        if anonymous {
+            context.pop_parent(span, GTNode::Object)?;
+        }
+
         Ok(object)
     }
 }
@@ -43,12 +54,18 @@ mod tests {
     #[test]
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::object, "{ hello: string }").unwrap();
-        let mut context = GTContext::new();
+        let mut context = GTContext {
+            resolve: GTResolve::new(),
+            parents: vec![GTContextParent::Alias(GTIdentifier::new(
+                (0, 5).into(),
+                "Hello".into(),
+            ))],
+        };
         assert_eq!(
             GTObject::parse(pairs.next().unwrap(), &mut context).unwrap(),
             GTObject {
                 span: (0, 17).into(),
-                name: GTObjectName::Named(GTIdentifier::new((0, 17).into(), "TODO".into())),
+                name: GTObjectName::Named(GTIdentifier::new((0, 5).into(), "Hello".into())),
                 extensions: vec![],
                 properties: vec![GTProperty {
                     span: (2, 15).into(),
@@ -100,4 +117,7 @@ mod tests {
             ])
         );
     }
+
+    #[test]
+    fn test_parse_context() {}
 }

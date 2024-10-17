@@ -9,10 +9,14 @@ impl GTAlias {
         let span: GTSpan = pair.as_span().into();
         let mut inner = pair.into_inner();
 
-        match inner.next() {
-            Some(pair) => parse(inner, pair, context, ParseState::Doc(span, None)),
-            None => Err(GTNodeParseError::Internal(span, GTNode::Alias)),
-        }
+        let pair = inner
+            .next()
+            .ok_or_else(|| GTNodeParseError::Internal(span.clone(), GTNode::Alias))?;
+        let alias = parse(inner, pair, context, ParseState::Doc(span.clone(), None))?;
+
+        context.pop_parent(span, GTNode::Alias)?;
+
+        Ok(alias)
     }
 }
 
@@ -47,7 +51,9 @@ fn parse(
 
         ParseState::Name(span, doc) => {
             let name: GTIdentifier = pair.into();
+
             context.resolve.exports.push(name.clone());
+            context.parents.push(GTContextParent::Alias(name.clone()));
 
             match inner.next() {
                 Some(pair) => parse(
@@ -87,13 +93,8 @@ mod tests {
     #[test]
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::alias, "Hello = { world: string }").unwrap();
-        let resolve = GTResolve::new();
-        let mut context = GTContext {
-            object_parent: None,
-            resolve,
-        };
         assert_eq!(
-            GTAlias::parse(pairs.next().unwrap(), &mut context).unwrap(),
+            GTAlias::parse(pairs.next().unwrap(), &mut GTContext::new()).unwrap(),
             GTAlias {
                 span: (0, 25).into(),
                 name: GTIdentifier::new((0, 5).into(), "Hello".into()),
@@ -123,5 +124,22 @@ mod tests {
             parse.resolve.exports,
             vec![GTIdentifier::new((0, 5).into(), "Hello".into())]
         );
+    }
+
+    #[test]
+    fn test_parse_parent() {
+        let mut pairs = GenotypeParser::parse(Rule::alias, "Hello = { world: string }").unwrap();
+        let parents = vec![GTContextParent::Alias(GTIdentifier::new(
+            (0, 5).into(),
+            "Hello".into(),
+        ))];
+        let mut context = GTContext {
+            parents: parents.clone(),
+            resolve: GTResolve::new(),
+        };
+
+        GTAlias::parse(pairs.next().unwrap(), &mut context).unwrap();
+
+        assert_eq!(context.parents, parents);
     }
 }

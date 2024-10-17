@@ -11,6 +11,11 @@ impl GTDescriptor {
         let mut descriptors = vec![];
         let mut inner = pair.into_inner();
 
+        let is_union = inner.len() > 1;
+        if is_union {
+            context.parents.push(GTContextParent::Anonymous);
+        }
+
         while let Some(pair) = inner.next() {
             let pair = pair.into_inner().next().unwrap();
             let descriptor = match pair.as_rule() {
@@ -38,6 +43,10 @@ impl GTDescriptor {
             };
 
             descriptors.push(descriptor);
+        }
+
+        if is_union {
+            context.pop_parent(span.clone(), GTNode::Descriptor)?;
         }
 
         match descriptors.as_slice() {

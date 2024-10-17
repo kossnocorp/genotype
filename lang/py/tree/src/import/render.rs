@@ -1,5 +1,4 @@
 use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
-use genotype_parser::reference;
 
 use crate::PYImportReference;
 
