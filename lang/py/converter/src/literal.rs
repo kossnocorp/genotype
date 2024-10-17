@@ -1,24 +1,27 @@
-use genotype_lang_py_tree::PYLiteral;
+use genotype_lang_py_tree::{PYContextResolve, PYLiteral};
 use genotype_parser::tree::GTLiteral;
 
 use crate::{context::PYConvertContext, convert::PYConvert};
 
 impl PYConvert<PYLiteral> for GTLiteral {
-    fn convert(&self, _context: &mut PYConvertContext) -> PYLiteral {
+    fn convert(&self, context: &mut PYConvertContext) -> PYLiteral {
         match self {
             GTLiteral::Boolean(_, value) => PYLiteral::Boolean(*value),
             GTLiteral::Integer(_, value) => PYLiteral::Integer(*value),
             GTLiteral::Float(_, value) => PYLiteral::Float(*value),
             GTLiteral::String(_, value) => PYLiteral::String(value.clone()),
         }
+        .resolve(&mut context.tree, &context.options)
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashSet;
+
     use pretty_assertions::assert_eq;
 
-    use crate::context::PYConvertContext;
+    use crate::{context::PYConvertContext, mock::mock_context};
 
     use super::*;
 
@@ -40,6 +43,20 @@ mod tests {
             PYLiteral::String("Hello, world!".into()),
             GTLiteral::String((0, 0).into(), "Hello, world!".into())
                 .convert(&mut PYConvertContext::default()),
+        );
+    }
+
+    #[test]
+    fn test_convert_resolve() {
+        let (_, context) = mock_context();
+        let mut context = context;
+        assert_eq!(
+            GTLiteral::Boolean((0, 0).into(), false).convert(&mut context),
+            PYLiteral::Boolean(false)
+        );
+        assert_eq!(
+            context.tree.imports,
+            HashSet::from_iter(vec![("typing".into(), "Literal".into())]),
         );
     }
 }

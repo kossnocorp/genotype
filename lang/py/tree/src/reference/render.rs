@@ -1,6 +1,6 @@
 use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
 
-use crate::{options, PYOptions, PYRender, PYVersion};
+use crate::{PYOptions, PYRender, PYVersion};
 
 use super::PYReference;
 

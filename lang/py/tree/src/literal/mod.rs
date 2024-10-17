@@ -1,3 +1,4 @@
+mod context;
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]

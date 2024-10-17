@@ -8,16 +8,21 @@ impl PYConvert<PYDefinition> for GTAlias {
         match &self.descriptor {
             GTDescriptor::Object(object) => PYDefinition::Class(object.convert(context)),
 
-            _ => PYDefinition::Alias(PYAlias {
-                name: self.name.convert(context),
-                descriptor: self.descriptor.convert(context),
-            }),
+            _ => PYDefinition::Alias(
+                PYAlias {
+                    name: self.name.convert(context),
+                    descriptor: self.descriptor.convert(context),
+                }
+                .resolve(&mut context.tree, &context.options),
+            ),
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashSet;
+
     use genotype_lang_py_tree::*;
     use pretty_assertions::assert_eq;
 
@@ -146,6 +151,30 @@ mod tests {
                     required: true,
                 }]
             })]
+        );
+    }
+
+    #[test]
+    fn test_convert_resolve() {
+        let (_, context) = mock_context();
+        let mut context = context;
+        context.options.version = PYVersion::Legacy;
+        assert_eq!(
+            GTAlias {
+                span: (0, 0).into(),
+                doc: None,
+                name: GTIdentifier::new((0, 0).into(), "Name".into()),
+                descriptor: GTPrimitive::String((0, 0).into()).into(),
+            }
+            .convert(&mut context),
+            PYDefinition::Alias(PYAlias {
+                name: "Name".into(),
+                descriptor: PYPrimitive::String.into(),
+            })
+        );
+        assert_eq!(
+            context.tree.imports,
+            HashSet::from_iter(vec![("typing".into(), "TypeAlias".into())]),
         );
     }
 }
