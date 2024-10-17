@@ -18,12 +18,10 @@ impl PYConvert<PYDefinition> for GTAlias {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::{Arc, Mutex};
-
     use genotype_lang_py_tree::*;
     use pretty_assertions::assert_eq;
 
-    use crate::resolve::PYConvertResolve;
+    use crate::mock::mock_context;
 
     use super::*;
 
@@ -95,17 +93,8 @@ mod tests {
 
     #[test]
     fn test_convert_hoisted() {
-        let hoisted = Arc::new(Mutex::new(vec![]));
-        let mut context = {
-            let hoisted = Arc::clone(&hoisted);
-            PYConvertContext::new(
-                PYConvertResolve::new(),
-                Box::new(move |definition| {
-                    let mut hoisted = hoisted.lock().unwrap();
-                    hoisted.push(definition);
-                }),
-            )
-        };
+        let (hoisted, context) = mock_context();
+        let mut context = context;
         assert_eq!(
             GTAlias {
                 span: (0, 0).into(),

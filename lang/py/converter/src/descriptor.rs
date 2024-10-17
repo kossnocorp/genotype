@@ -45,30 +45,18 @@ impl PYConvert<PYDescriptor> for GTDescriptor {
 
 #[cfg(test)]
 mod tests {
-
-    use std::sync::{Arc, Mutex};
-
     use genotype_lang_py_tree::*;
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
 
-    use crate::resolve::PYConvertResolve;
+    use crate::mock::mock_context;
 
     use super::*;
 
     #[test]
     fn test_convert_alias() {
-        let hoisted = Arc::new(Mutex::new(vec![]));
-        let mut context = {
-            let hoisted = Arc::clone(&hoisted);
-            PYConvertContext::new(
-                PYConvertResolve::new(),
-                Box::new(move |definition| {
-                    let mut hoisted = hoisted.lock().unwrap();
-                    hoisted.push(definition);
-                }),
-            )
-        };
+        let (hoisted, context) = mock_context();
+        let mut context = context;
         assert_eq!(
             GTDescriptor::Alias(Box::new(GTAlias {
                 span: (0, 0).into(),
@@ -122,17 +110,8 @@ mod tests {
 
     #[test]
     fn test_convert_object() {
-        let hoisted = Arc::new(Mutex::new(vec![]));
-        let mut context = {
-            let hoisted = Arc::clone(&hoisted);
-            PYConvertContext::new(
-                PYConvertResolve::new(),
-                Box::new(move |definition| {
-                    let mut hoisted = hoisted.lock().unwrap();
-                    hoisted.push(definition);
-                }),
-            )
-        };
+        let (hoisted, context) = mock_context();
+        let mut context = context;
         assert_eq!(
             GTDescriptor::Object(GTObject {
                 span: (0, 0).into(),
