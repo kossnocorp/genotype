@@ -5,7 +5,7 @@ use crate::{parser::Rule, GTNode, GTNodeParseError, GTNodeParseResult, GTSpan};
 use super::*;
 
 impl GTDescriptor {
-    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> GTNodeParseResult<Self> {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
         let span: GTSpan = pair.as_span().into();
 
         let mut descriptors = vec![];
@@ -16,20 +16,20 @@ impl GTDescriptor {
             let descriptor = match pair.as_rule() {
                 Rule::primitive => GTDescriptor::Primitive(pair.try_into()?),
 
-                Rule::name => GTDescriptor::Reference(GTReference::parse(pair, resolve)),
+                Rule::name => GTDescriptor::Reference(GTReference::parse(pair, context)),
 
-                Rule::object => GTDescriptor::Object(GTObject::parse(pair, resolve)?),
+                Rule::object => GTDescriptor::Object(GTObject::parse(pair, context)?),
 
-                Rule::array => GTDescriptor::Array(Box::new(GTArray::parse(pair, resolve)?)),
+                Rule::array => GTDescriptor::Array(Box::new(GTArray::parse(pair, context)?)),
 
-                Rule::tuple => GTDescriptor::Tuple(GTTuple::parse(pair, resolve)?),
+                Rule::tuple => GTDescriptor::Tuple(GTTuple::parse(pair, context)?),
 
-                Rule::descriptor => GTDescriptor::parse(pair, resolve)?,
+                Rule::descriptor => GTDescriptor::parse(pair, context)?,
 
-                Rule::alias => GTDescriptor::Alias(Box::new(GTAlias::parse(pair, resolve)?)),
+                Rule::alias => GTDescriptor::Alias(Box::new(GTAlias::parse(pair, context)?)),
 
                 Rule::inline_import => {
-                    GTDescriptor::InlineImport(GTInlineImport::parse(pair, resolve)?)
+                    GTDescriptor::InlineImport(GTInlineImport::parse(pair, context)?)
                 }
 
                 Rule::literal => GTDescriptor::Literal(pair.try_into()?),

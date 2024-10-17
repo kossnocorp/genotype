@@ -47,7 +47,7 @@ impl GTModule {
         let mut doc: Option<GTDoc> = None;
         let mut imports = vec![];
         let mut aliases = vec![];
-        let mut resolve = GTResolve::new();
+        let mut context = GTContext::new();
 
         for pair in module_pair.into_inner() {
             match pair.as_rule() {
@@ -63,11 +63,11 @@ impl GTModule {
                 }
 
                 Rule::import => {
-                    imports.push(GTImport::parse(pair, &mut resolve)?);
+                    imports.push(GTImport::parse(pair, &mut context)?);
                 }
 
                 Rule::alias => {
-                    aliases.push(GTAlias::parse(pair, &mut resolve)?);
+                    aliases.push(GTAlias::parse(pair, &mut context)?);
                 }
 
                 Rule::EOI => {}
@@ -85,7 +85,7 @@ impl GTModule {
             doc,
             imports,
             aliases,
-            resolve,
+            resolve: context.resolve,
         })
     }
 }

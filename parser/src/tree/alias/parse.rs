@@ -5,12 +5,12 @@ use crate::*;
 use super::GTAlias;
 
 impl GTAlias {
-    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> GTNodeParseResult<Self> {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
         let span: GTSpan = pair.as_span().into();
         let mut inner = pair.into_inner();
 
         match inner.next() {
-            Some(pair) => parse(inner, pair, resolve, ParseState::Doc(span, None)),
+            Some(pair) => parse(inner, pair, context, ParseState::Doc(span, None)),
             None => Err(GTNodeParseError::Internal(span, GTNode::Alias)),
         }
     }
@@ -19,7 +19,7 @@ impl GTAlias {
 fn parse(
     mut inner: Pairs<'_, Rule>,
     pair: Pair<'_, Rule>,
-    resolve: &mut GTResolve,
+    context: &mut GTContext,
     state: ParseState,
 ) -> GTNodeParseResult<GTAlias> {
     match state {
@@ -37,23 +37,23 @@ fn parse(
                 };
 
                 match inner.next() {
-                    Some(pair) => parse(inner, pair, resolve, ParseState::Doc(span, doc_acc)),
+                    Some(pair) => parse(inner, pair, context, ParseState::Doc(span, doc_acc)),
                     None => Err(GTNodeParseError::Internal(span, GTNode::Alias)),
                 }
             }
 
-            _ => parse(inner, pair, resolve, ParseState::Name(span, doc_acc)),
+            _ => parse(inner, pair, context, ParseState::Name(span, doc_acc)),
         },
 
         ParseState::Name(span, doc) => {
             let name: GTIdentifier = pair.into();
-            resolve.exports.push(name.clone());
+            context.resolve.exports.push(name.clone());
 
             match inner.next() {
                 Some(pair) => parse(
                     inner,
                     pair,
-                    resolve,
+                    context,
                     ParseState::Descriptor(span, doc, name),
                 ),
                 None => Err(GTNodeParseError::Internal(span, GTNode::Alias)),
@@ -61,7 +61,7 @@ fn parse(
         }
 
         ParseState::Descriptor(span, doc, name) => {
-            let descriptor = GTDescriptor::parse(pair, resolve)?;
+            let descriptor = GTDescriptor::parse(pair, context)?;
             Ok(GTAlias {
                 span,
                 doc,
@@ -87,9 +87,13 @@ mod tests {
     #[test]
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::alias, "Hello = { world: string }").unwrap();
-        let mut resove = GTResolve::new();
+        let resolve = GTResolve::new();
+        let mut context = GTContext {
+            object_parent: None,
+            resolve,
+        };
         assert_eq!(
-            GTAlias::parse(pairs.next().unwrap(), &mut resove).unwrap(),
+            GTAlias::parse(pairs.next().unwrap(), &mut context).unwrap(),
             GTAlias {
                 span: (0, 25).into(),
                 name: GTIdentifier::new((0, 5).into(), "Hello".into()),

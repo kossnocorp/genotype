@@ -5,13 +5,13 @@ use crate::*;
 use super::GTArray;
 
 impl GTArray {
-    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> GTNodeParseResult<Self> {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
         let span: GTSpan = pair.as_span().into();
         let pair = pair
             .into_inner()
             .next()
             .ok_or_else(|| GTNodeParseError::Internal(span.clone(), GTNode::Array))?;
-        let descriptor = GTDescriptor::parse(pair, resolve)?;
+        let descriptor = GTDescriptor::parse(pair, context)?;
         Ok(GTArray { span, descriptor })
     }
 }
@@ -27,7 +27,7 @@ mod tests {
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::array, "[string]").unwrap();
         assert_eq!(
-            GTArray::parse(pairs.next().unwrap(), &mut GTResolve::new()).unwrap(),
+            GTArray::parse(pairs.next().unwrap(), &mut GTContext::new()).unwrap(),
             GTArray {
                 span: (0, 8).into(),
                 descriptor: GTDescriptor::Primitive(GTPrimitive::String((1, 7).into())),
@@ -39,7 +39,7 @@ mod tests {
     fn test_error() {
         let mut pairs = GenotypeParser::parse(Rule::literal_boolean, "false").unwrap();
         assert_eq!(
-            GTArray::parse(pairs.next().unwrap(), &mut GTResolve::new()).unwrap_err(),
+            GTArray::parse(pairs.next().unwrap(), &mut GTContext::new()).unwrap_err(),
             GTNodeParseError::Internal((0, 5).into(), GTNode::Array)
         );
     }

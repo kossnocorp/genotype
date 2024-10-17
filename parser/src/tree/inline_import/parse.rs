@@ -3,17 +3,18 @@ use pest::iterators::Pair;
 use crate::{
     diagnostic::error::GTNodeParseError,
     parser::Rule,
-    tree::{identifier::GTIdentifier, path::GTPath, GTResolve},
+    tree::{identifier::GTIdentifier, path::GTPath},
+    GTContext,
 };
 
 use super::GTInlineImport;
 
 impl GTInlineImport {
-    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> Result<Self, GTNodeParseError> {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> Result<Self, GTNodeParseError> {
         let span = pair.as_span().into();
         let (path, (name_span, name)) = GTPath::split_parse(pair)?;
 
-        resolve.deps.insert(path.clone());
+        context.resolve.deps.insert(path.clone());
 
         Ok(GTInlineImport {
             span,
@@ -36,7 +37,7 @@ mod tests {
         let mut pairs =
             GenotypeParser::parse(Rule::inline_import, "./path/to/module/Name").unwrap();
         assert_eq!(
-            GTInlineImport::parse(pairs.next().unwrap(), &mut GTResolve::new()).unwrap(),
+            GTInlineImport::parse(pairs.next().unwrap(), &mut GTContext::new()).unwrap(),
             GTInlineImport {
                 span: (0, 21).into(),
                 name: GTIdentifier::new((17, 21).into(), "Name".into()),

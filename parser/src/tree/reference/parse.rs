@@ -1,17 +1,14 @@
 use pest::iterators::Pair;
 
-use crate::{
-    parser::Rule,
-    tree::{GTIdentifier, GTResolve},
-};
+use crate::{parser::Rule, tree::GTIdentifier, GTContext};
 
 use super::GTReference;
 
 impl GTReference {
-    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> Self {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> Self {
         let span = pair.as_span().into();
         let identifier: GTIdentifier = pair.into();
-        resolve.references.insert(identifier.clone());
+        context.resolve.references.insert(identifier.clone());
         GTReference(span, identifier)
     }
 }

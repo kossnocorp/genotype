@@ -5,13 +5,13 @@ use crate::*;
 use super::GTExtension;
 
 impl GTExtension {
-    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> GTNodeParseResult<Self> {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
         let span = pair.as_span().into();
 
         match pair.into_inner().next() {
             Some(pair) => Ok(GTExtension {
                 span,
-                reference: GTReference::parse(pair, resolve),
+                reference: GTReference::parse(pair, context),
             }),
 
             None => Err(GTNodeParseError::Internal(span, GTNode::Extension)),
@@ -28,9 +28,9 @@ mod tests {
     #[test]
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::extension_property, "...Hello").unwrap();
-        let mut resove = GTResolve::new();
+        let mut context = GTContext::new();
         assert_eq!(
-            GTExtension::parse(pairs.next().unwrap(), &mut resove).unwrap(),
+            GTExtension::parse(pairs.next().unwrap(), &mut context).unwrap(),
             GTExtension {
                 span: GTSpan(0, 8),
                 reference: GTIdentifier::new(GTSpan(3, 8), "Hello".into()).into()
@@ -41,9 +41,9 @@ mod tests {
     #[test]
     fn test_error() {
         let mut pairs = GenotypeParser::parse(Rule::literal_boolean, "false").unwrap();
-        let mut resove = GTResolve::new();
+        let mut context = GTContext::new();
         assert_eq!(
-            GTExtension::parse(pairs.next().unwrap(), &mut resove).unwrap_err(),
+            GTExtension::parse(pairs.next().unwrap(), &mut context).unwrap_err(),
             GTNodeParseError::Internal((0, 5).into(), GTNode::Extension)
         );
     }

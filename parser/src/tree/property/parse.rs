@@ -5,21 +5,21 @@ use crate::*;
 use super::GTProperty;
 
 impl GTProperty {
-    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> GTNodeParseResult<Self> {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
         let span: GTSpan = pair.as_span().into();
         let required = pair.as_rule() == Rule::required_property;
         let mut inner = pair.into_inner();
         let pair = inner
             .next()
             .ok_or_else(|| GTNodeParseError::Internal(span.clone(), GTNode::Property))?;
-        parse(inner, pair, resolve, ParseState::Doc(span, required, None))
+        parse(inner, pair, context, ParseState::Doc(span, required, None))
     }
 }
 
 fn parse(
     mut inner: Pairs<'_, Rule>,
     pair: Pair<'_, Rule>,
-    resolve: &mut GTResolve,
+    context: &mut GTContext,
     state: ParseState,
 ) -> GTNodeParseResult<GTProperty> {
     match state {
@@ -40,7 +40,7 @@ fn parse(
                     Some(pair) => parse(
                         inner,
                         pair,
-                        resolve,
+                        context,
                         ParseState::Doc(span, required, doc_acc),
                     ),
                     None => Err(GTNodeParseError::Internal(span, GTNode::Property)),
@@ -50,7 +50,7 @@ fn parse(
             _ => parse(
                 inner,
                 pair,
-                resolve,
+                context,
                 ParseState::Name(span, required, doc_acc),
             ),
         },
@@ -61,7 +61,7 @@ fn parse(
                 Some(pair) => parse(
                     inner,
                     pair,
-                    resolve,
+                    context,
                     ParseState::Descriptor(span, required, doc, name),
                 ),
                 None => Err(GTNodeParseError::Internal(span, GTNode::Property)),
@@ -69,7 +69,7 @@ fn parse(
         }
 
         ParseState::Descriptor(span, required, doc, name) => {
-            let descriptor = GTDescriptor::parse(pair, resolve)?;
+            let descriptor = GTDescriptor::parse(pair, context)?;
             Ok(GTProperty {
                 span,
                 doc,

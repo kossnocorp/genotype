@@ -8,7 +8,7 @@ use crate::*;
 use super::GTTuple;
 
 impl GTTuple {
-    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> Result<Self, GTNodeParseError> {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> Result<Self, GTNodeParseError> {
         let span = pair.as_span().into();
         let mut tuple = GTTuple {
             span,
@@ -16,7 +16,7 @@ impl GTTuple {
         };
 
         for pair in pair.into_inner() {
-            let descriptor = GTDescriptor::parse(pair, resolve)?;
+            let descriptor = GTDescriptor::parse(pair, context)?;
             tuple.descriptors.push(descriptor);
         }
 
@@ -34,9 +34,9 @@ mod tests {
     #[test]
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::tuple, "(string, int)").unwrap();
-        let mut resolve = GTResolve::new();
+        let mut context = GTContext::new();
         assert_eq!(
-            GTTuple::parse(pairs.next().unwrap(), &mut resolve).unwrap(),
+            GTTuple::parse(pairs.next().unwrap(), &mut context).unwrap(),
             GTTuple {
                 span: (0, 13).into(),
                 descriptors: vec![

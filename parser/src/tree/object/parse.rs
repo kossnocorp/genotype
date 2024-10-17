@@ -5,7 +5,7 @@ use crate::*;
 use super::GTObject;
 
 impl GTObject {
-    pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> GTNodeParseResult<Self> {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
         let span: GTSpan = pair.as_span().into();
         let mut object = GTObject {
             span: span.clone(),
@@ -17,11 +17,11 @@ impl GTObject {
         for pair in pair.into_inner() {
             match pair.as_rule() {
                 Rule::required_property | Rule::optional_property => {
-                    object.properties.push(GTProperty::parse(pair, resolve)?);
+                    object.properties.push(GTProperty::parse(pair, context)?);
                 }
 
                 Rule::extension_property => {
-                    object.extensions.push(GTExtension::parse(pair, resolve)?);
+                    object.extensions.push(GTExtension::parse(pair, context)?);
                 }
 
                 _ => return Err(GTNodeParseError::Internal(object.span, GTNode::Object)),
@@ -43,9 +43,9 @@ mod tests {
     #[test]
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::object, "{ hello: string }").unwrap();
-        let mut resove = GTResolve::new();
+        let mut context = GTContext::new();
         assert_eq!(
-            GTObject::parse(pairs.next().unwrap(), &mut resove).unwrap(),
+            GTObject::parse(pairs.next().unwrap(), &mut context).unwrap(),
             GTObject {
                 span: (0, 17).into(),
                 name: GTObjectName::Named(GTIdentifier::new((0, 17).into(), "TODO".into())),
