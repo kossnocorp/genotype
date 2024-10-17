@@ -1,0 +1,14 @@
+Order = {
+  delivery: {
+    address: {
+      street: string,
+      city: string
+    }
+  }
+}
+
+Email = string | {
+  name: string,
+  email: string,
+}
+

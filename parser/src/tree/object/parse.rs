@@ -119,5 +119,32 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_context() {}
+    fn test_parse_name() {
+        let mut pairs = GenotypeParser::parse(Rule::object, "{ hello: string }").unwrap();
+        let mut context = GTContext {
+            resolve: GTResolve::new(),
+            parents: vec![
+                GTContextParent::Alias(GTIdentifier::new((0, 5).into(), "Hello".into())),
+                GTContextParent::Anonymous,
+            ],
+        };
+        assert_eq!(
+            GTObject::parse(pairs.next().unwrap(), &mut context).unwrap(),
+            GTObject {
+                span: (0, 17).into(),
+                name: GTObjectName::Anonymous(
+                    (0, 17).into(),
+                    GTObjectNameParent::Alias(GTIdentifier::new((0, 5).into(), "Hello".into()))
+                ),
+                extensions: vec![],
+                properties: vec![GTProperty {
+                    span: (2, 15).into(),
+                    doc: None,
+                    name: GTKey((2, 7).into(), "hello".into()),
+                    descriptor: GTPrimitive::String((9, 15).into()).into(),
+                    required: true,
+                }]
+            }
+        );
+    }
 }

@@ -354,6 +354,7 @@ name = "genotype_project"
 version = "0.1.0"
 dependencies = [
  "genotype_parser",
+ "genotype_visitor",
  "glob",
  "miette",
  "num_cpus",

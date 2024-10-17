@@ -1,3 +1,4 @@
+use genotype_visitor::traverse::GTTraverse;
 use glob::glob;
 use rayon::Scope;
 use std::{
@@ -8,7 +9,7 @@ use std::{
 
 use crate::{
     error::GTProjectError, result::GTProjectResult, GTProjectModule, GTProjectModuleParse,
-    GTProjectModulePath,
+    GTProjectModulePath, GTProjectVistor,
 };
 
 #[derive(Debug, PartialEq, Clone)]
@@ -49,12 +50,19 @@ impl GTProject {
                 let modules = Arc::clone(&modules);
 
                 scope.spawn(|scope| {
-                    process_module(root, entry, scope, processed_paths, modules);
+                    Self::load_module(root, entry, scope, processed_paths, modules);
                 });
             }
         });
 
-        let modules = modules.lock().unwrap().clone();
+        let mut modules = modules.lock().unwrap().clone();
+
+        for module in &mut modules {
+            let mut visitor = GTProjectVistor::new();
+            let parse = &mut module.1;
+            parse.module.traverse(&mut visitor);
+            parse.resolve.exports.extend(visitor.object_aliases);
+        }
 
         let mut modules = modules
             .iter()
@@ -62,6 +70,8 @@ impl GTProject {
             .collect::<Result<Vec<_>, _>>()
             .map_err(|_| GTProjectError::Unknown)?;
 
+        // [TODO] It's needed for tests, hide behind cfg(test), keep or replace with something like
+        // set? Using HashSet will require Eq which will consequently break tests.
         modules.sort_by(|a, b| a.path.as_path().cmp(&b.path.as_path()));
 
         Ok(GTProject {
@@ -69,38 +79,37 @@ impl GTProject {
             modules,
         })
     }
-}
 
-fn process_module(
-    root: Arc<PathBuf>,
-    path: GTProjectModulePath,
-    scope: &Scope<'_>,
-    processed_paths: Arc<Mutex<HashSet<GTProjectModulePath>>>,
-    modules: Arc<Mutex<Vec<GTProjectModuleParse>>>,
-) {
-    {
-        let mut processed = processed_paths.lock().unwrap();
-        if processed.contains(&path) {
-            return;
-        } else {
+    fn load_module(
+        root: Arc<PathBuf>,
+        path: GTProjectModulePath,
+        scope: &Scope<'_>,
+        processed_paths: Arc<Mutex<HashSet<GTProjectModulePath>>>,
+        modules: Arc<Mutex<Vec<GTProjectModuleParse>>>,
+    ) {
+        {
+            let mut processed = processed_paths.lock().unwrap();
+            if processed.contains(&path) {
+                return;
+            }
             processed.insert(path.clone());
         }
+
+        let parse = GTProjectModuleParse::try_new(path).unwrap();
+
+        for path in parse.deps().unwrap() {
+            let root = Arc::clone(&root);
+            let processed_paths = Arc::clone(&processed_paths);
+            let modules = Arc::clone(&modules);
+
+            scope.spawn(|scope| {
+                Self::load_module(root, path, scope, processed_paths, modules);
+            });
+        }
+
+        let mut modules = modules.lock().unwrap();
+        modules.push(parse);
     }
-
-    let parse = GTProjectModuleParse::try_new(path).unwrap();
-
-    for path in parse.deps().unwrap() {
-        let root = Arc::clone(&root);
-        let processed_paths = Arc::clone(&processed_paths);
-        let modules = Arc::clone(&modules);
-
-        scope.spawn(|scope| {
-            process_module(root, path, scope, processed_paths, modules);
-        });
-    }
-
-    let mut modules = modules.lock().unwrap();
-    modules.push(parse);
 }
 
 #[cfg(test)]
@@ -116,31 +125,201 @@ mod tests {
     #[test]
     fn test_glob() {
         let project = GTProject::load("./examples/basic", "*.type");
-        match project {
-            Ok(project) => {
-                assert_eq!(project, basic_project());
-            }
-
-            Err(err) => {
-                println!("{}", err);
-                assert!(false, "Failed to load project");
-            }
-        }
+        assert_eq!(project.unwrap(), basic_project());
     }
 
     #[test]
     fn test_entry() {
         let project = GTProject::load("./examples/basic", "order.type");
-        match project {
-            Ok(project) => {
-                assert_eq!(project, basic_project());
-            }
+        assert_eq!(project.unwrap(), basic_project());
+    }
 
-            Err(err) => {
-                println!("{}", err);
-                assert!(false, "Failed to load project");
+    #[test]
+    fn test_process_anonymous() {
+        let root = Arc::new(PathBuf::from("./examples/process").canonicalize().unwrap());
+        let module_path = GTProjectModulePath::try_new(
+            root.clone(),
+            &PathBuf::from("./examples/process/anonymous.type"),
+        )
+        .unwrap();
+        let project = GTProject::load("./examples/process", "anonymous.type");
+        assert_eq!(
+            project.unwrap(),
+            GTProject {
+                root: root.clone(),
+                modules: vec![GTProjectModule {
+                    path: module_path.clone(),
+                    module: GTModule {
+                        source_code: GTSourceCode::new(
+                            module_path.as_name(),
+                            read_to_string(&module_path).unwrap(),
+                        ),
+                        doc: None,
+                        imports: vec![],
+                        aliases: vec![
+                            GTAlias {
+                                span: (0, 91).into(),
+                                doc: None,
+                                name: GTIdentifier::new((0, 5).into(), "Order".into()),
+                                descriptor: GTObject {
+                                    span: (8, 91).into(),
+                                    name: GTIdentifier::new((0, 5).into(), "Order".into()).into(),
+                                    extensions: vec![],
+                                    properties: vec![GTProperty {
+                                        span: (12, 89).into(),
+                                        doc: None,
+                                        name: GTKey::new((12, 20).into(), "delivery".into()),
+                                        descriptor: GTObject {
+                                            span: (22, 89).into(),
+                                            name: GTObjectName::Alias(
+                                                GTIdentifier::new(
+                                                    (22, 89).into(),
+                                                    "OrderDelivery".into()
+                                                ),
+                                                GTObjectNameParent::Property(
+                                                    GTIdentifier::new(
+                                                        (0, 5).into(),
+                                                        "Order".into()
+                                                    ),
+                                                    vec![GTKey::new(
+                                                        (12, 20).into(),
+                                                        "delivery".into()
+                                                    )]
+                                                ),
+                                            ),
+                                            extensions: vec![],
+                                            properties: vec![GTProperty {
+                                                span: (28, 85).into(),
+                                                doc: None,
+                                                name: GTKey::new((28, 35).into(), "address".into()),
+                                                descriptor: GTObject {
+                                                    span: (37, 85).into(),
+                                                    name: GTObjectName::Alias(
+                                                        GTIdentifier::new(
+                                                            (37, 85).into(),
+                                                            "OrderDeliveryAddress".into()
+                                                        ),
+                                                        GTObjectNameParent::Property(
+                                                            GTIdentifier::new(
+                                                                (0, 5).into(),
+                                                                "Order".into()
+                                                            ),
+                                                            vec![
+                                                                GTKey::new(
+                                                                    (12, 20).into(),
+                                                                    "delivery".into()
+                                                                ),
+                                                                GTKey::new(
+                                                                    (28, 35).into(),
+                                                                    "address".into()
+                                                                )
+                                                            ]
+                                                        ),
+                                                    ),
+                                                    extensions: vec![],
+                                                    properties: vec![
+                                                        GTProperty {
+                                                            span: (45, 59).into(),
+                                                            doc: None,
+                                                            name: GTKey::new(
+                                                                (45, 51).into(),
+                                                                "street".into()
+                                                            ),
+                                                            descriptor: GTPrimitive::String(
+                                                                (53, 59).into()
+                                                            )
+                                                            .into(),
+                                                            required: true,
+                                                        },
+                                                        GTProperty {
+                                                            span: (67, 79).into(),
+                                                            doc: None,
+                                                            name: GTKey::new(
+                                                                (67, 71).into(),
+                                                                "city".into()
+                                                            ),
+                                                            descriptor: GTPrimitive::String(
+                                                                (73, 79).into()
+                                                            )
+                                                            .into(),
+                                                            required: true,
+                                                        }
+                                                    ],
+                                                }
+                                                .into(),
+                                                required: true,
+                                            }],
+                                        }
+                                        .into(),
+                                        required: true,
+                                    }],
+                                }
+                                .into(),
+                            },
+                            GTAlias {
+                                span: (93, 146).into(),
+                                doc: None,
+                                name: GTIdentifier::new((93, 98).into(), "Email".into()),
+                                descriptor: GTUnion {
+                                    span: (101, 146).into(),
+                                    descriptors: vec![
+                                        GTPrimitive::String((101, 107).into()).into(),
+                                        GTObject {
+                                            span: (110, 146).into(),
+                                            name: GTObjectName::Alias(
+                                                GTIdentifier::new(
+                                                    (110, 146).into(),
+                                                    "EmailObj".into()
+                                                ),
+                                                GTObjectNameParent::Alias(GTIdentifier::new(
+                                                    (93, 98).into(),
+                                                    "Email".into()
+                                                ),),
+                                            ),
+                                            extensions: vec![],
+                                            properties: vec![
+                                                GTProperty {
+                                                    span: (114, 126).into(),
+                                                    doc: None,
+                                                    name: GTKey::new(
+                                                        (114, 118).into(),
+                                                        "name".into()
+                                                    ),
+                                                    descriptor: GTPrimitive::String(
+                                                        (120, 126).into()
+                                                    )
+                                                    .into(),
+                                                    required: true,
+                                                },
+                                                GTProperty {
+                                                    span: (130, 143).into(),
+                                                    doc: None,
+                                                    name: GTKey::new(
+                                                        (130, 135).into(),
+                                                        "email".into()
+                                                    ),
+                                                    descriptor: GTPrimitive::String(
+                                                        (137, 143).into()
+                                                    )
+                                                    .into(),
+                                                    required: true,
+                                                }
+                                            ],
+                                        }
+                                        .into(),
+                                    ]
+                                }
+                                .into()
+                            }
+                        ],
+                    },
+                    resolve: GTProjectModuleResolve {
+                        deps: HashMap::new(),
+                        references: HashMap::new(),
+                    },
+                },],
             }
-        }
+        );
     }
 
     fn basic_project() -> GTProject {

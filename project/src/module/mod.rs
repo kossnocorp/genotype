@@ -20,6 +20,7 @@ impl GTProjectModule {
         parse: GTProjectModuleParse,
     ) -> Result<Self, Box<dyn std::error::Error>> {
         let resolve = GTProjectModuleResolve::try_new(modules, &parse)?;
+
         Ok(GTProjectModule {
             path: parse.0,
             module: parse.1.module,

@@ -110,6 +110,8 @@ mod tests {
             descriptor: GTPrimitive::String((0, 0).into()).into(),
             required: true,
         };
+        let name_identifier = GTIdentifier::new((0, 0).into(), "Name".into());
+        let name = GTObjectName::Named(name_identifier.clone());
         let object = GTObject {
             span: (0, 0).into(),
             name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Name".into())),
@@ -123,6 +125,8 @@ mod tests {
             vec![
                 GTMockVisited::Descriptor(descriptor.clone()),
                 GTMockVisited::Object(object.clone()),
+                GTMockVisited::ObjectName(name.clone()),
+                GTMockVisited::Identifier(name_identifier.clone()),
                 GTMockVisited::Property(property.clone()),
                 GTMockVisited::Key(property.name.clone()),
                 GTMockVisited::Descriptor(property.descriptor.clone()),
