@@ -31,6 +31,7 @@ mod tests {
         assert_eq!(
             GTObject {
                 span: (0, 0).into(),
+                name: GTIdentifier::new((0, 0).into(), "Person".into()).into(),
                 extensions: vec![],
                 properties: vec![
                     GTProperty {

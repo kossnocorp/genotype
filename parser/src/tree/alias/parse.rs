@@ -96,6 +96,7 @@ mod tests {
                 doc: None,
                 descriptor: GTObject {
                     span: (8, 25).into(),
+                    name: GTIdentifier::new((0, 5).into(), "Hello".into()).into(),
                     extensions: vec![],
                     properties: vec![GTProperty {
                         span: (10, 23).into(),

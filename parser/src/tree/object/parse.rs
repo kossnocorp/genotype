@@ -6,9 +6,10 @@ use super::GTObject;
 
 impl GTObject {
     pub fn parse(pair: Pair<'_, Rule>, resolve: &mut GTResolve) -> GTNodeParseResult<Self> {
-        let span = pair.as_span().into();
+        let span: GTSpan = pair.as_span().into();
         let mut object = GTObject {
-            span,
+            span: span.clone(),
+            name: GTObjectName::Named(GTIdentifier::new(span, "TODO".into())),
             extensions: vec![],
             properties: vec![],
         };
@@ -47,6 +48,7 @@ mod tests {
             GTObject::parse(pairs.next().unwrap(), &mut resove).unwrap(),
             GTObject {
                 span: (0, 17).into(),
+                name: GTObjectName::Named(GTIdentifier::new((0, 17).into(), "TODO".into())),
                 extensions: vec![],
                 properties: vec![GTProperty {
                     span: (2, 15).into(),

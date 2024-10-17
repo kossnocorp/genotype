@@ -67,6 +67,7 @@ mod tests {
                 name: GTIdentifier::new((0, 0).into(), "Book".into()),
                 descriptor: GTDescriptor::Object(GTObject {
                     span: (0, 0).into(),
+                    name: GTIdentifier::new((0, 0).into(), "Book".into()).into(),
                     extensions: vec![],
                     properties: vec![
                         GTProperty {
@@ -115,6 +116,7 @@ mod tests {
                 name: GTIdentifier::new((0, 0).into(), "Book".into()),
                 descriptor: GTDescriptor::Object(GTObject {
                     span: (0, 0).into(),
+                    name: GTIdentifier::new((0, 0).into(), "Book".into()).into(),
                     extensions: vec![GTExtension {
                         span: (0, 0).into(),
                         reference: GTIdentifier::new((0, 0).into(), "Good".into()).into()
@@ -150,6 +152,13 @@ mod tests {
                     descriptors: vec![
                         GTObject {
                             span: (0, 0).into(),
+                            name: GTObjectName::Anonymous(
+                                (0, 0).into(),
+                                GTObjectNameParent::Alias(GTIdentifier::new(
+                                    (0, 0).into(),
+                                    "BookAuthor".into()
+                                ))
+                            ),
                             extensions: vec![GTExtension {
                                 span: (0, 0).into(),
                                 reference: GTIdentifier::new((0, 0).into(), "Good".into()).into()

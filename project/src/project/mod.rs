@@ -184,6 +184,7 @@ mod tests {
                             name: GTIdentifier::new((0, 6).into(), "Author".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 span: (9, 27).into(),
+                                name: GTIdentifier::new((0, 6).into(), "Author".into()).into(),
                                 extensions: vec![],
                                 properties: vec![GTProperty {
                                     span: (13, 25).into(),
@@ -222,6 +223,7 @@ mod tests {
                             name: GTIdentifier::new((21, 25).into(), "Book".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 span: (28, 64).into(),
+                                name: GTIdentifier::new((21, 25).into(), "Book".into()).into(),
                                 extensions: vec![],
                                 properties: vec![
                                     GTProperty {
@@ -280,6 +282,7 @@ mod tests {
                             name: GTIdentifier::new((17, 22).into(), "Order".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 span: (25, 64).into(),
+                                name: GTIdentifier::new((17, 22).into(), "Order".into()).into(),
                                 extensions: vec![],
                                 properties: vec![
                                     GTProperty {
@@ -344,6 +347,7 @@ mod tests {
                             name: GTIdentifier::new((0, 4).into(), "User".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 span: (7, 41).into(),
+                                name: GTIdentifier::new((0, 4).into(), "User".into()).into(),
                                 extensions: vec![],
                                 properties: vec![
                                     GTProperty {
