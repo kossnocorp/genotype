@@ -1,34 +1,43 @@
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
 use genotype_lang_py_tree::module::PYModule;
 use genotype_parser::tree::module::GTModule;
 
-use crate::{convert::PYConvert, resolve::PYConvertResolve};
+use crate::{context::PYConvertContext, convert::PYConvert, resolve::PYConvertResolve};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct PYConvertModule(pub PYModule);
 
 impl PYConvertModule {
     pub fn convert(module: &GTModule, resolve: &PYConvertResolve) -> Self {
+        let mut import_context = PYConvertContext::new(resolve.clone(), Box::new(|_| {}));
         let imports = module
             .imports
             .iter()
-            .map(|import| import.convert(resolve, &|_| {}))
+            .map(|import| import.convert(&mut import_context))
             .collect();
 
         let definitions = Mutex::new(Vec::new());
 
         for alias in &module.aliases {
-            let hoisted = Mutex::new(Vec::new());
+            let hoisted = Arc::new(Mutex::new(Vec::new()));
 
-            let definition = alias.convert(resolve, &|definition| {
-                let mut hoisted = hoisted.lock().unwrap();
-                hoisted.push(definition);
-            });
+            let mut context = {
+                let hoisted = Arc::clone(&hoisted);
+                PYConvertContext::new(
+                    resolve.clone(),
+                    Box::new(move |definition| {
+                        let mut hoisted = hoisted.lock().unwrap();
+                        hoisted.push(definition);
+                    }),
+                )
+            };
+
+            let definition = alias.convert(&mut context);
 
             let mut definitions = definitions.lock().unwrap();
             definitions.push(definition);
-            definitions.extend(hoisted.into_inner().unwrap());
+            definitions.extend(hoisted.lock().unwrap().clone());
         }
 
         PYConvertModule(PYModule {

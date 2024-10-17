@@ -1,15 +1,12 @@
-use genotype_lang_py_tree::{definition::PYDefinition, reference::PYReference};
+use genotype_lang_py_tree::reference::PYReference;
 use genotype_parser::tree::reference::GTReference;
 
-use crate::{convert::PYConvert, resolve::PYConvertResolve};
+use crate::{context::PYConvertContext, convert::PYConvert};
 
 impl PYConvert<PYReference> for GTReference {
-    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYReference
-    where
-        HoistFn: Fn(PYDefinition),
-    {
+    fn convert(&self, context: &mut PYConvertContext) -> PYReference {
         // [TODO] Resolve the reference properly
-        PYReference::new(self.1.convert(resolve, hoist), true)
+        PYReference::new(self.1.convert(context), true)
     }
 }
 
@@ -29,7 +26,7 @@ mod tests {
                 (0, 0).into(),
                 GTIdentifier::new((0, 0).into(), "Name".into())
             )
-            .convert(&PYConvertResolve::new(), &|_| {}),
+            .convert(&mut PYConvertContext::default()),
         );
     }
 }

@@ -1,23 +1,19 @@
 use genotype_lang_py_tree::*;
 use genotype_parser::tree::descriptor::GTDescriptor;
 
-use crate::{convert::PYConvert, resolve::PYConvertResolve};
+use crate::{context::PYConvertContext, convert::PYConvert};
 
 impl PYConvert<PYDescriptor> for GTDescriptor {
-    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYDescriptor
-    where
-        HoistFn: Fn(PYDefinition),
-    {
+    fn convert(&self, context: &mut PYConvertContext) -> PYDescriptor {
         match self {
             GTDescriptor::Alias(alias) => {
-                hoist(alias.convert(resolve, hoist));
+                let definition = alias.convert(context);
+                context.hoist(definition);
                 // [TODO]
-                PYDescriptor::Reference(PYReference::new(alias.name.convert(resolve, hoist), false))
+                PYDescriptor::Reference(PYReference::new(alias.name.convert(context), false))
             }
 
-            GTDescriptor::Array(array) => {
-                PYDescriptor::List(Box::new(array.convert(resolve, hoist)))
-            }
+            GTDescriptor::Array(array) => PYDescriptor::List(Box::new(array.convert(context))),
 
             GTDescriptor::InlineImport(import) => {
                 // [TODO] Hoist to imports instead
@@ -25,39 +21,24 @@ impl PYConvert<PYDescriptor> for GTDescriptor {
                 PYDescriptor::Reference(PYReference::new("TODO".into(), false))
             }
 
-            GTDescriptor::Literal(literal) => {
-                PYDescriptor::Literal(literal.convert(resolve, hoist))
-            }
+            GTDescriptor::Literal(literal) => PYDescriptor::Literal(literal.convert(context)),
 
             GTDescriptor::Object(object) => {
-                // [TODO] Resolve to class or hoist reference
-                // let descriptor = PYDescriptor::Object(object.convert(resolve, hoist));
-                // if object.extensions.is_empty() {
-                //     descriptor
-                // } else {
-                //     let mut descriptors: Vec<PYDescriptor> = vec![descriptor];
-                //     let extensions = object
-                //         .extensions
-                //         .iter()
-                //         .map(|extension| {
-                //             PYDescriptor::from(extension.reference.convert(resolve, hoist))
-                //         })
-                //         .collect::<Vec<PYDescriptor>>();
-                //     descriptors.extend(extensions);
-                //     PYDescriptor::Intersection(PYIntersection { descriptors })
-                // }
-                PYDescriptor::Reference(PYReference::new("TODO".into(), false))
+                let class = object.convert(context);
+                let reference = PYReference::new(class.name.clone(), true);
+                context.hoist(PYDefinition::Class(class));
+                PYDescriptor::Reference(reference)
             }
 
             GTDescriptor::Primitive(primitive) => {
-                PYDescriptor::Primitive(primitive.convert(resolve, hoist))
+                PYDescriptor::Primitive(primitive.convert(context))
             }
 
-            GTDescriptor::Reference(name) => PYDescriptor::Reference(name.convert(resolve, hoist)),
+            GTDescriptor::Reference(name) => PYDescriptor::Reference(name.convert(context)),
 
-            GTDescriptor::Tuple(tuple) => PYDescriptor::Tuple(tuple.convert(resolve, hoist)),
+            GTDescriptor::Tuple(tuple) => PYDescriptor::Tuple(tuple.convert(context)),
 
-            GTDescriptor::Union(union) => PYDescriptor::Union(union.convert(resolve, hoist)),
+            GTDescriptor::Union(union) => PYDescriptor::Union(union.convert(context)),
         }
     }
 }
@@ -65,7 +46,7 @@ impl PYConvert<PYDescriptor> for GTDescriptor {
 #[cfg(test)]
 mod tests {
 
-    use std::sync::Mutex;
+    use std::sync::{Arc, Mutex};
 
     use genotype_lang_py_tree::*;
     use genotype_parser::tree::*;
@@ -77,7 +58,17 @@ mod tests {
 
     #[test]
     fn test_convert_alias() {
-        let hoisted = Mutex::new(vec![]);
+        let hoisted = Arc::new(Mutex::new(vec![]));
+        let mut context = {
+            let hoisted = Arc::clone(&hoisted);
+            PYConvertContext::new(
+                PYConvertResolve::new(),
+                Box::new(move |definition| {
+                    let mut hoisted = hoisted.lock().unwrap();
+                    hoisted.push(definition);
+                }),
+            )
+        };
         assert_eq!(
             GTDescriptor::Alias(Box::new(GTAlias {
                 span: (0, 0).into(),
@@ -85,10 +76,7 @@ mod tests {
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }))
-            .convert(&PYConvertResolve::new(), &|definition| {
-                let mut hoisted = hoisted.lock().unwrap();
-                hoisted.push(definition);
-            }),
+            .convert(&mut context),
             PYReference::new("Name".into(), false).into()
         );
         assert_eq!(
@@ -107,7 +95,7 @@ mod tests {
                 span: (0, 0).into(),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }))
-            .convert(&PYConvertResolve::new(), &|_| {}),
+            .convert(&mut PYConvertContext::default()),
             PYDescriptor::List(Box::new(PYList {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean)
             }))
@@ -122,7 +110,7 @@ mod tests {
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 name: GTIdentifier::new((0, 0).into(), "Name".into())
             })
-            .convert(&PYConvertResolve::new(), &|_| {}),
+            .convert(&mut PYConvertContext::default()),
             // [TODO]
             // PYDescriptor::InlineImport(PYInlineImport {
             //     path: "./path/to/module.ts".into(),
@@ -134,6 +122,17 @@ mod tests {
 
     #[test]
     fn test_convert_object() {
+        let hoisted = Arc::new(Mutex::new(vec![]));
+        let mut context = {
+            let hoisted = Arc::clone(&hoisted);
+            PYConvertContext::new(
+                PYConvertResolve::new(),
+                Box::new(move |definition| {
+                    let mut hoisted = hoisted.lock().unwrap();
+                    hoisted.push(definition);
+                }),
+            )
+        };
         assert_eq!(
             GTDescriptor::Object(GTObject {
                 span: (0, 0).into(),
@@ -156,57 +155,27 @@ mod tests {
                     }
                 ]
             })
-            .convert(&PYConvertResolve::new(), &|_| {}),
-            // [TODO]
-            // PYDescriptor::Object(PYObject {
-            //     properties: vec![
-            //         PYProperty {
-            //             name: "name".into(),
-            //             descriptor: PYPrimitive::String.into(),
-            //             required: true,
-            //         },
-            //         PYProperty {
-            //             name: "age".into(),
-            //             descriptor: PYPrimitive::Number.into(),
-            //             required: false,
-            //         }
-            //     ]
-            // })
-            PYDescriptor::Reference(PYReference::new("TODO".into(), false))
+            .convert(&mut context),
+            PYDescriptor::Reference(PYReference::new("Person".into(), true))
         );
-
         assert_eq!(
-            GTDescriptor::Object(GTObject {
-                span: (0, 0).into(),
-                name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Book".into())),
-                extensions: vec![GTExtension {
-                    span: (0, 0).into(),
-                    reference: GTIdentifier::new((0, 0).into(), "Good".into()).into()
-                }],
-                properties: vec![GTProperty {
-                    span: (0, 0).into(),
-                    doc: None,
-                    name: GTKey::new((0, 0).into(), "title".into()),
-                    descriptor: GTPrimitive::String((0, 0).into()).into(),
-                    required: true,
-                },]
-            })
-            .convert(&PYConvertResolve::new(), &|_| {}),
-            // [TODO]
-            // PYDescriptor::Intersection(PYIntersection {
-            //     descriptors: vec![
-            //         PYObject {
-            //             properties: vec![PYProperty {
-            //                 name: "title".into(),
-            //                 descriptor: PYPrimitive::String.into(),
-            //                 required: true,
-            //             },]
-            //         }
-            //         .into(),
-            //         "Good".into()
-            //     ]
-            // })
-            PYDescriptor::Reference(PYReference::new("TODO".into(), false))
+            hoisted.lock().unwrap().clone(),
+            vec![PYDefinition::Class(PYClass {
+                name: "Person".into(),
+                extensions: vec![],
+                properties: vec![
+                    PYProperty {
+                        name: "name".into(),
+                        descriptor: PYPrimitive::String.into(),
+                        required: true,
+                    },
+                    PYProperty {
+                        name: "age".into(),
+                        descriptor: PYPrimitive::Int.into(),
+                        required: false,
+                    }
+                ]
+            })]
         );
     }
 
@@ -214,7 +183,7 @@ mod tests {
     fn test_convert_primitive() {
         assert_eq!(
             GTDescriptor::Primitive(GTPrimitive::Boolean((0, 0).into()))
-                .convert(&PYConvertResolve::new(), &|_| {}),
+                .convert(&mut PYConvertContext::default()),
             PYDescriptor::Primitive(PYPrimitive::Boolean)
         );
     }
@@ -223,13 +192,13 @@ mod tests {
     fn test_convert_reference() {
         assert_eq!(
             GTDescriptor::Reference(GTIdentifier::new((0, 0).into(), "Name".into()).into())
-                .convert(&PYConvertResolve::new(), &|_| {}),
+                .convert(&mut PYConvertContext::default()),
             PYReference::new("Name".into(), true).into()
         );
         // [TODO] Depending on context, set forward reference
         assert_eq!(
             GTDescriptor::Reference(GTIdentifier::new((0, 0).into(), "Name".into()).into())
-                .convert(&PYConvertResolve::new(), &|_| {}),
+                .convert(&mut PYConvertContext::default()),
             PYReference::new("Name".into(), true).into()
         );
     }
@@ -244,7 +213,7 @@ mod tests {
                     GTPrimitive::String((0, 0).into()).into(),
                 ]
             })
-            .convert(&PYConvertResolve::new(), &|_| {}),
+            .convert(&mut PYConvertContext::default()),
             PYDescriptor::Tuple(PYTuple {
                 descriptors: vec![
                     PYDescriptor::Primitive(PYPrimitive::Boolean),
@@ -264,7 +233,7 @@ mod tests {
                     GTPrimitive::String((0, 0).into()).into(),
                 ]
             })
-            .convert(&PYConvertResolve::new(), &|_| {}),
+            .convert(&mut PYConvertContext::default()),
             PYDescriptor::Union(PYUnion {
                 descriptors: vec![
                     PYDescriptor::Primitive(PYPrimitive::Boolean),

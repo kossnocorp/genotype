@@ -1,15 +1,12 @@
 use genotype_lang_py_tree::*;
 use genotype_parser::tree::array::GTArray;
 
-use crate::{convert::PYConvert, resolve::PYConvertResolve};
+use crate::{context::PYConvertContext, convert::PYConvert};
 
 impl PYConvert<PYList> for GTArray {
-    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYList
-    where
-        HoistFn: Fn(PYDefinition),
-    {
+    fn convert(&self, context: &mut PYConvertContext) -> PYList {
         PYList {
-            descriptor: self.descriptor.convert(resolve, hoist),
+            descriptor: self.descriptor.convert(context),
         }
     }
 }
@@ -20,6 +17,8 @@ mod tests {
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
 
+    use crate::context::PYConvertContext;
+
     use super::*;
 
     #[test]
@@ -29,7 +28,7 @@ mod tests {
                 span: (0, 0).into(),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }
-            .convert(&PYConvertResolve::new(), &|_| {}),
+            .convert(&mut PYConvertContext::default()),
             PYList {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean)
             }

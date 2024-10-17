@@ -1,18 +1,15 @@
-use genotype_lang_py_tree::{definition::PYDefinition, import_name::PYImportName};
+use genotype_lang_py_tree::import_name::PYImportName;
 use genotype_parser::tree::import_name::GTImportName;
 
-use crate::{convert::PYConvert, resolve::PYConvertResolve};
+use crate::{context::PYConvertContext, convert::PYConvert};
 
 impl PYConvert<PYImportName> for GTImportName {
-    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYImportName
-    where
-        HoistFn: Fn(PYDefinition),
-    {
+    fn convert(&self, context: &mut PYConvertContext) -> PYImportName {
         match self {
-            Self::Name(_, name) => PYImportName::Name(name.convert(resolve, hoist)),
+            Self::Name(_, name) => PYImportName::Name(name.convert(context)),
 
             Self::Alias(_, name, alias) => {
-                PYImportName::Alias(name.convert(resolve, hoist), alias.convert(resolve, hoist))
+                PYImportName::Alias(name.convert(context), alias.convert(context))
             }
         }
     }
@@ -22,6 +19,8 @@ impl PYConvert<PYImportName> for GTImportName {
 mod tests {
     use genotype_lang_py_tree::import_name::PYImportName;
     use pretty_assertions::assert_eq;
+
+    use crate::context::PYConvertContext;
 
     use super::*;
     use genotype_parser::{tree::import_name::GTImportName, GTIdentifier};
@@ -33,7 +32,7 @@ mod tests {
                 (0, 0).into(),
                 GTIdentifier::new((0, 0).into(), "Name".into())
             )
-            .convert(&PYConvertResolve::new(), &|_| {}),
+            .convert(&mut PYConvertContext::default()),
             PYImportName::Name("Name".into()),
         );
     }
@@ -46,7 +45,7 @@ mod tests {
                 GTIdentifier::new((0, 0).into(), "Name".into()),
                 GTIdentifier::new((0, 0).into(), "Alias".into())
             )
-            .convert(&PYConvertResolve::new(), &|_| {}),
+            .convert(&mut PYConvertContext::default()),
             PYImportName::Alias("Name".into(), "Alias".into()),
         );
     }

@@ -1,13 +1,10 @@
-use genotype_lang_py_tree::{definition::PYDefinition, primitive::PYPrimitive};
+use genotype_lang_py_tree::primitive::PYPrimitive;
 use genotype_parser::tree::primitive::GTPrimitive;
 
-use crate::{convert::PYConvert, resolve::PYConvertResolve};
+use crate::{context::PYConvertContext, convert::PYConvert};
 
 impl PYConvert<PYPrimitive> for GTPrimitive {
-    fn convert<HoistFn>(&self, _resolve: &PYConvertResolve, _hoist: &HoistFn) -> PYPrimitive
-    where
-        HoistFn: Fn(PYDefinition),
-    {
+    fn convert(&self, _resolve: &mut PYConvertContext) -> PYPrimitive {
         match self {
             GTPrimitive::Boolean(_) => PYPrimitive::Boolean,
             GTPrimitive::String(_) => PYPrimitive::String,
@@ -22,31 +19,29 @@ impl PYConvert<PYPrimitive> for GTPrimitive {
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use crate::resolve::PYConvertResolve;
-
     use super::*;
     use genotype_parser::tree::primitive::GTPrimitive;
 
     #[test]
     fn test_convert() {
         assert_eq!(
-            GTPrimitive::Boolean((0, 0).into()).convert(&PYConvertResolve::new(), &|_| {}),
+            GTPrimitive::Boolean((0, 0).into()).convert(&mut PYConvertContext::default()),
             PYPrimitive::Boolean
         );
         assert_eq!(
-            GTPrimitive::String((0, 0).into()).convert(&PYConvertResolve::new(), &|_| {}),
+            GTPrimitive::String((0, 0).into()).convert(&mut PYConvertContext::default()),
             PYPrimitive::String
         );
         assert_eq!(
-            GTPrimitive::Int((0, 0).into()).convert(&PYConvertResolve::new(), &|_| {}),
+            GTPrimitive::Int((0, 0).into()).convert(&mut PYConvertContext::default()),
             PYPrimitive::Int
         );
         assert_eq!(
-            GTPrimitive::Float((0, 0).into()).convert(&PYConvertResolve::new(), &|_| {}),
+            GTPrimitive::Float((0, 0).into()).convert(&mut PYConvertContext::default()),
             PYPrimitive::Float
         );
         assert_eq!(
-            GTPrimitive::Null((0, 0).into()).convert(&PYConvertResolve::new(), &|_| {}),
+            GTPrimitive::Null((0, 0).into()).convert(&mut PYConvertContext::default()),
             PYPrimitive::None
         );
     }

@@ -1,16 +1,13 @@
-use genotype_lang_py_tree::{definition::PYDefinition, property::PYProperty};
+use genotype_lang_py_tree::property::PYProperty;
 use genotype_parser::tree::property::GTProperty;
 
-use crate::{convert::PYConvert, resolve::PYConvertResolve};
+use crate::{context::PYConvertContext, convert::PYConvert};
 
 impl PYConvert<PYProperty> for GTProperty {
-    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYProperty
-    where
-        HoistFn: Fn(PYDefinition),
-    {
+    fn convert(&self, context: &mut PYConvertContext) -> PYProperty {
         PYProperty {
-            name: self.name.convert(resolve, hoist),
-            descriptor: self.descriptor.convert(resolve, hoist),
+            name: self.name.convert(context),
+            descriptor: self.descriptor.convert(context),
             required: self.required,
         }
     }
@@ -34,7 +31,7 @@ mod tests {
                 descriptor: GTPrimitive::String((0, 0).into()).into(),
                 required: false,
             }
-            .convert(&PYConvertResolve::new(), &|_| {}),
+            .convert(&mut PYConvertContext::default()),
             PYProperty {
                 name: "name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),

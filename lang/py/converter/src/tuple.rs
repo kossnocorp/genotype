@@ -1,18 +1,15 @@
-use genotype_lang_py_tree::{definition::PYDefinition, tuple::PYTuple};
+use genotype_lang_py_tree::tuple::PYTuple;
 use genotype_parser::tree::tuple::GTTuple;
 
-use crate::{convert::PYConvert, resolve::PYConvertResolve};
+use crate::{context::PYConvertContext, convert::PYConvert};
 
 impl PYConvert<PYTuple> for GTTuple {
-    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYTuple
-    where
-        HoistFn: Fn(PYDefinition),
-    {
+    fn convert(&self, context: &mut PYConvertContext) -> PYTuple {
         PYTuple {
             descriptors: self
                 .descriptors
                 .iter()
-                .map(|descriptor| descriptor.convert(resolve, hoist))
+                .map(|descriptor| descriptor.convert(context))
                 .collect(),
         }
     }
@@ -23,8 +20,6 @@ mod tests {
     use genotype_lang_py_tree::*;
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
-
-    use crate::resolve::PYConvertResolve;
 
     use super::*;
 
@@ -38,7 +33,7 @@ mod tests {
                     GTPrimitive::String((0, 0).into()).into(),
                 ]
             }
-            .convert(&PYConvertResolve::new(), &|_| {}),
+            .convert(&mut PYConvertContext::default()),
             PYTuple {
                 descriptors: vec![
                     PYDescriptor::Primitive(PYPrimitive::Boolean),

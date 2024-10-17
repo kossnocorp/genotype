@@ -1,13 +1,10 @@
-use genotype_lang_py_tree::{definition::PYDefinition, key::PYKey};
+use genotype_lang_py_tree::key::PYKey;
 use genotype_parser::tree::key::GTKey;
 
-use crate::{convert::PYConvert, resolve::PYConvertResolve};
+use crate::{context::PYConvertContext, convert::PYConvert};
 
 impl PYConvert<PYKey> for GTKey {
-    fn convert<HoistFn>(&self, _resolve: &PYConvertResolve, _hoist: &HoistFn) -> PYKey
-    where
-        HoistFn: Fn(PYDefinition),
-    {
+    fn convert(&self, _context: &mut PYConvertContext) -> PYKey {
         PYKey(self.1.clone())
     }
 }
@@ -16,13 +13,15 @@ impl PYConvert<PYKey> for GTKey {
 mod tests {
     use pretty_assertions::assert_eq;
 
+    use crate::context::PYConvertContext;
+
     use super::*;
 
     #[test]
     fn test_convert() {
         assert_eq!(
             PYKey("foo".into()),
-            GTKey::new((0, 0).into(), "foo".into()).convert(&PYConvertResolve::new(), &|_| {}),
+            GTKey::new((0, 0).into(), "foo".into()).convert(&mut PYConvertContext::default()),
         );
     }
 }

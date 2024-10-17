@@ -1,31 +1,16 @@
 use genotype_lang_py_tree::*;
 use genotype_parser::*;
 
-use crate::{convert::PYConvert, resolve::PYConvertResolve};
+use crate::{context::PYConvertContext, convert::PYConvert};
 
 impl PYConvert<PYDefinition> for GTAlias {
-    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYDefinition
-    where
-        HoistFn: Fn(PYDefinition),
-    {
+    fn convert(&self, context: &mut PYConvertContext) -> PYDefinition {
         match &self.descriptor {
-            GTDescriptor::Object(object) => PYDefinition::Class(PYClass {
-                name: self.name.convert(resolve, hoist),
-                extensions: object
-                    .extensions
-                    .iter()
-                    .map(|e| e.convert(resolve, hoist))
-                    .collect(),
-                properties: object
-                    .properties
-                    .iter()
-                    .map(|p| p.convert(resolve, hoist))
-                    .collect(),
-            }),
+            GTDescriptor::Object(object) => PYDefinition::Class(object.convert(context)),
 
             _ => PYDefinition::Alias(PYAlias {
-                name: self.name.convert(resolve, hoist),
-                descriptor: self.descriptor.convert(resolve, hoist),
+                name: self.name.convert(context),
+                descriptor: self.descriptor.convert(context),
             }),
         }
     }
@@ -33,10 +18,12 @@ impl PYConvert<PYDefinition> for GTAlias {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Mutex;
+    use std::sync::{Arc, Mutex};
 
     use genotype_lang_py_tree::*;
     use pretty_assertions::assert_eq;
+
+    use crate::resolve::PYConvertResolve;
 
     use super::*;
 
@@ -49,7 +36,7 @@ mod tests {
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }
-            .convert(&PYConvertResolve::new(), &|_| {}),
+            .convert(&mut PYConvertContext::default()),
             PYDefinition::Alias(PYAlias {
                 name: "Name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
@@ -86,7 +73,7 @@ mod tests {
                     ]
                 })
             }
-            .convert(&PYConvertResolve::new(), &|_| {}),
+            .convert(&mut PYConvertContext::default()),
             PYDefinition::Class(PYClass {
                 name: "Book".into(),
                 extensions: vec![],
@@ -107,8 +94,18 @@ mod tests {
     }
 
     #[test]
-    fn test_convert_hoisting() {
-        let hoisted = Mutex::new(vec![]);
+    fn test_convert_hoisted() {
+        let hoisted = Arc::new(Mutex::new(vec![]));
+        let mut context = {
+            let hoisted = Arc::clone(&hoisted);
+            PYConvertContext::new(
+                PYConvertResolve::new(),
+                Box::new(move |definition| {
+                    let mut hoisted = hoisted.lock().unwrap();
+                    hoisted.push(definition);
+                }),
+            )
+        };
         assert_eq!(
             GTAlias {
                 span: (0, 0).into(),
@@ -137,20 +134,12 @@ mod tests {
                     ]
                 })
             }
-            .convert(&PYConvertResolve::new(), &|definition| {
-                let mut hoisted = hoisted.lock().unwrap();
-                hoisted.push(definition);
-            }),
+            .convert(&mut context),
             PYDefinition::Alias(PYAlias {
                 name: "Book".into(),
                 descriptor: PYUnion {
                     descriptors: vec![
-                        // [TODO]
-                        PYReference::new(
-                            /* [TODO] BookObj */ "TODO".into(),
-                            /* [TODO] true */ false
-                        )
-                        .into(),
+                        PYReference::new("BookObj".into(), true).into(),
                         PYPrimitive::String.into(),
                     ]
                 }
@@ -158,18 +147,16 @@ mod tests {
             })
         );
         assert_eq!(
-            hoisted.into_inner().unwrap(),
-            // [TODO]
-            // vec![PYDefinition::Class(PYClass {
-            //     name: "BookObj".into(),
-            //     extensions: vec![],
-            //     properties: vec![PYProperty {
-            //         name: "author".into(),
-            //         descriptor: PYDescriptor::Primitive(PYPrimitive::String),
-            //         required: true,
-            //     }]
-            // })]
-            vec![]
+            hoisted.lock().unwrap().clone(),
+            vec![PYDefinition::Class(PYClass {
+                name: "BookObj".into(),
+                extensions: vec![],
+                properties: vec![PYProperty {
+                    name: "author".into(),
+                    descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                    required: true,
+                }]
+            })]
         );
     }
 }

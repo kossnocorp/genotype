@@ -1,15 +1,12 @@
-use genotype_lang_py_tree::{definition::PYDefinition, PYExtension};
+use genotype_lang_py_tree::PYExtension;
 use genotype_parser::tree::GTExtension;
 
-use crate::{convert::PYConvert, resolve::PYConvertResolve};
+use crate::{context::PYConvertContext, convert::PYConvert};
 
 impl PYConvert<PYExtension> for GTExtension {
-    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYExtension
-    where
-        HoistFn: Fn(PYDefinition),
-    {
+    fn convert(&self, context: &mut PYConvertContext) -> PYExtension {
         PYExtension {
-            reference: self.reference.convert(resolve, hoist),
+            reference: self.reference.convert(context),
         }
     }
 }
@@ -32,7 +29,7 @@ mod tests {
                 span: (0, 0).into(),
                 reference: GTIdentifier::new((0, 0).into(), "Name".into()).into()
             }
-            .convert(&PYConvertResolve::new(), &|_| {}),
+            .convert(&mut PYConvertContext::default()),
         );
     }
 }

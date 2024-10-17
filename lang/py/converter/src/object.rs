@@ -1,22 +1,21 @@
-use genotype_lang_py_tree::{definition::PYDefinition, PYReference};
-use genotype_parser::tree::object::GTObject;
+use genotype_lang_py_tree::*;
+use genotype_parser::*;
 
-use crate::{convert::PYConvert, resolve::PYConvertResolve};
+use crate::{context::PYConvertContext, convert::PYConvert};
 
-impl PYConvert<PYReference> for GTObject {
-    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYReference
-    where
-        HoistFn: Fn(PYDefinition),
-    {
-        // [TODO] Implement this
-        // PYObject {
-        //     properties: self
-        //         .properties
-        //         .iter()
-        //         .map(|property| property.convert(resolve, hoist))
-        //         .collect(),
-        // }
-        PYReference::new("TODO".into(), false)
+impl PYConvert<PYClass> for GTObject {
+    fn convert(&self, context: &mut PYConvertContext) -> PYClass {
+        let name = match &self.name {
+            GTObjectName::Named(identifier) => identifier.convert(context),
+            GTObjectName::Alias(identifier, _) => identifier.convert(context),
+            _ => panic!("Invalid object name"),
+        };
+
+        PYClass {
+            name,
+            extensions: self.extensions.iter().map(|e| e.convert(context)).collect(),
+            properties: self.properties.iter().map(|p| p.convert(context)).collect(),
+        }
     }
 }
 
@@ -52,23 +51,23 @@ mod tests {
                     }
                 ]
             }
-            .convert(&PYConvertResolve::new(), &|_| {}),
-            // [TODO]
-            // PYObject {
-            //     properties: vec![
-            //         PYProperty {
-            //             name: "name".into(),
-            //             descriptor: PYDescriptor::Primitive(PYPrimitive::String),
-            //             required: true,
-            //         },
-            //         PYProperty {
-            //             name: "age".into(),
-            //             descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
-            //             required: false,
-            //         }
-            //     ]
-            // }
-            PYReference::new("TODO".into(), false)
+            .convert(&mut PYConvertContext::default()),
+            PYClass {
+                name: "Person".into(),
+                extensions: vec![],
+                properties: vec![
+                    PYProperty {
+                        name: "name".into(),
+                        descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                        required: true,
+                    },
+                    PYProperty {
+                        name: "age".into(),
+                        descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
+                        required: false,
+                    }
+                ]
+            }
         );
     }
 }

@@ -1,9 +1,5 @@
-use genotype_lang_py_tree::definition::PYDefinition;
-
-use crate::resolve::PYConvertResolve;
+use crate::context::PYConvertContext;
 
 pub trait PYConvert<PYNode> {
-    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYNode
-    where
-        HoistFn: Fn(PYDefinition);
+    fn convert(&self, context: &mut PYConvertContext) -> PYNode;
 }

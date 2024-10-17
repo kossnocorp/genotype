@@ -1,15 +1,10 @@
-use genotype_lang_py_tree::{
-    definition::PYDefinition, import::PYImport, PYImportName, PYImportReference,
-};
+use genotype_lang_py_tree::{import::PYImport, PYImportName, PYImportReference};
 use genotype_parser::tree::{import::GTImport, GTImportReference};
 
-use crate::{convert::PYConvert, resolve::PYConvertResolve};
+use crate::{context::PYConvertContext, convert::PYConvert};
 
 impl PYConvert<PYImport> for GTImport {
-    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYImport
-    where
-        HoistFn: Fn(PYDefinition),
-    {
+    fn convert(&self, context: &mut PYConvertContext) -> PYImport {
         let reference = match &self.reference {
             GTImportReference::Glob(_) => {
                 // [TODO]
@@ -19,17 +14,17 @@ impl PYConvert<PYImport> for GTImport {
             GTImportReference::Names(_, names) => PYImportReference::Named(
                 names
                     .iter()
-                    .map(|name| name.convert(resolve, hoist))
+                    .map(|name| name.convert(context))
                     .collect::<Vec<_>>(),
             ),
 
             GTImportReference::Name(_, name) => {
-                PYImportReference::Named(vec![PYImportName::Name(name.convert(resolve, hoist))])
+                PYImportReference::Named(vec![PYImportName::Name(name.convert(context))])
             }
         };
 
         PYImport {
-            path: self.path.convert(resolve, hoist),
+            path: self.path.convert(context),
             reference,
         }
     }
@@ -40,13 +35,15 @@ mod tests {
     use genotype_lang_py_tree::*;
     use pretty_assertions::assert_eq;
 
+    use crate::context::PYConvertContext;
+
     use super::*;
     use genotype_parser::*;
 
     #[test]
     fn test_convert_glob() {
-        let mut resolve = PYConvertResolve::new();
-        resolve.globs.insert(
+        let mut context = PYConvertContext::default();
+        context.resolve.globs.insert(
             GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
             "module".into(),
         );
@@ -56,7 +53,7 @@ mod tests {
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 reference: GTImportReference::Glob((0, 0).into())
             }
-            .convert(&resolve, &|_| {}),
+            .convert(&mut context),
             PYImport {
                 path: "./path/to/module.ts".into(),
                 reference: PYImportReference::Glob
@@ -85,7 +82,7 @@ mod tests {
                     ]
                 )
             }
-            .convert(&PYConvertResolve::new(), &|_| {}),
+            .convert(&mut PYConvertContext::default()),
             PYImport {
                 path: "./path/to/module.ts".into(),
                 reference: PYImportReference::Named(vec![
@@ -104,7 +101,7 @@ mod tests {
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 reference: GTIdentifier::new((0, 0).into(), "Name".into()).into()
             }
-            .convert(&PYConvertResolve::new(), &|_| {}),
+            .convert(&mut PYConvertContext::default()),
             PYImport {
                 path: "./path/to/module.ts".into(),
                 reference: PYImportReference::Named(vec![PYImportName::Name("Name".into())])

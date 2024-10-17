@@ -1,18 +1,15 @@
-use genotype_lang_py_tree::{definition::PYDefinition, union::PYUnion};
+use genotype_lang_py_tree::union::PYUnion;
 use genotype_parser::tree::union::GTUnion;
 
-use crate::{convert::PYConvert, resolve::PYConvertResolve};
+use crate::{context::PYConvertContext, convert::PYConvert};
 
 impl PYConvert<PYUnion> for GTUnion {
-    fn convert<HoistFn>(&self, resolve: &PYConvertResolve, hoist: &HoistFn) -> PYUnion
-    where
-        HoistFn: Fn(PYDefinition),
-    {
+    fn convert(&self, context: &mut PYConvertContext) -> PYUnion {
         PYUnion {
             descriptors: self
                 .descriptors
                 .iter()
-                .map(|descriptor| descriptor.convert(resolve, hoist))
+                .map(|descriptor| descriptor.convert(context))
                 .collect(),
         }
     }
@@ -24,7 +21,7 @@ mod tests {
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
 
-    use crate::resolve::PYConvertResolve;
+    use crate::context::PYConvertContext;
 
     use super::*;
 
@@ -38,7 +35,7 @@ mod tests {
                     GTPrimitive::String((0, 0).into()).into(),
                 ]
             }
-            .convert(&PYConvertResolve::new(), &|_| {}),
+            .convert(&mut PYConvertContext::default()),
             PYUnion {
                 descriptors: vec![
                     PYDescriptor::Primitive(PYPrimitive::Boolean),
