@@ -1,9 +1,9 @@
-use crate::{PYContext, PYContextResolve, PYVersion};
+use crate::{PYContext, PYContextResolve, PYOptions, PYVersion};
 
 use super::PYAlias;
 
 impl PYContextResolve for PYAlias {
-    fn resolve(self, context: &mut PYContext, options: &crate::PYOptions) -> Self {
+    fn resolve(self, context: &mut PYContext, options: &PYOptions) -> Self {
         if let PYVersion::Legacy = options.version {
             context
                 .imports
@@ -43,7 +43,6 @@ mod tests {
             context,
             PYContext {
                 imports: HashSet::from_iter(vec![("typing".into(), "TypeAlias".into())]),
-                ..PYContext::new()
             }
         );
     }
