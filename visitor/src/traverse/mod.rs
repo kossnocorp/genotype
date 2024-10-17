@@ -14,6 +14,7 @@ mod key;
 mod literal;
 mod module;
 mod object;
+mod object_name;
 mod path;
 mod primitive;
 mod property;

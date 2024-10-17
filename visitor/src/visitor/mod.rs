@@ -32,6 +32,8 @@ pub trait GTVisitor {
 
     fn visit_object(&mut self, _object: &mut GTObject) {}
 
+    fn visit_object_name(&mut self, _name: &mut GTObjectName) {}
+
     fn visit_path(&mut self, _path: &mut GTPath) {}
 
     fn visit_primitive(&mut self, _primitive: &mut GTPrimitive) {}

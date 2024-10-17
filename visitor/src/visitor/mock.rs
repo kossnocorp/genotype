@@ -18,6 +18,7 @@ pub enum GTMockVisited {
     Key(GTKey),
     Module(GTModule),
     Object(GTObject),
+    ObjectName(GTObjectName),
     Path(GTPath),
     Primitive(GTPrimitive),
     Property(GTProperty),
@@ -99,6 +100,10 @@ impl GTVisitor for GTMockVisitor {
 
     fn visit_object(&mut self, object: &mut GTObject) {
         self.visited.push(GTMockVisited::Object(object.clone()));
+    }
+
+    fn visit_object_name(&mut self, name: &mut GTObjectName) {
+        self.visited.push(GTMockVisited::ObjectName(name.clone()));
     }
 
     fn visit_path(&mut self, path: &mut GTPath) {
