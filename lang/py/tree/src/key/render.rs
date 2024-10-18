@@ -4,7 +4,7 @@ use super::PYKey;
 
 impl GTRender for PYKey {
     fn render(&self, _indent: &GTIndent) -> String {
-        self.name.clone()
+        self.0.clone()
     }
 }
 
@@ -15,6 +15,6 @@ mod tests {
 
     #[test]
     fn test_render() {
-        assert_eq!(PYKey::new("foo".into(), None).render(&py_indent()), "foo");
+        assert_eq!(PYKey("foo".into()).render(&py_indent()), "foo");
     }
 }
