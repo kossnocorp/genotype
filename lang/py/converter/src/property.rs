@@ -10,18 +10,14 @@ impl PYConvert<PYProperty> for GTProperty {
             descriptor: self.descriptor.convert(context),
             required: self.required,
         }
-        .resolve(&mut context.tree, &context.options)
+        .resolve(context)
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashSet;
-
     use genotype_lang_py_tree::*;
     use pretty_assertions::assert_eq;
-
-    use crate::mock::mock_context;
 
     use super::*;
     use genotype_parser::tree::*;
@@ -47,9 +43,8 @@ mod tests {
 
     #[test]
     fn test_convert_resolve() {
-        let (_, context) = mock_context();
-        let mut context = context;
-        context.options.version = PYVersion::Legacy;
+        let mut context =
+            PYConvertContext::new(Default::default(), PYOptions::new(PYVersion::Legacy));
         assert_eq!(
             GTProperty {
                 doc: None,
@@ -66,8 +61,11 @@ mod tests {
             }
         );
         assert_eq!(
-            context.tree.imports,
-            HashSet::from_iter(vec![("typing".into(), "Optional".into())]),
+            context.as_dependencies(),
+            vec![PYImport {
+                path: "typing".into(),
+                reference: PYImportReference::Named(vec!["Optional".into()]),
+            }]
         );
     }
 }

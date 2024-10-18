@@ -16,19 +16,15 @@ impl PYConvert<PYClass> for GTObject {
             extensions: self.extensions.iter().map(|e| e.convert(context)).collect(),
             properties: self.properties.iter().map(|p| p.convert(context)).collect(),
         }
-        .resolve(&mut context.tree, &context.options)
+        .resolve(context)
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashSet;
-
     use genotype_lang_py_tree::*;
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
-
-    use crate::mock::mock_context;
 
     use super::*;
 
@@ -78,8 +74,7 @@ mod tests {
 
     #[test]
     fn test_convert_resolve() {
-        let (_, context) = mock_context();
-        let mut context = context;
+        let mut context = PYConvertContext::default();
         assert_eq!(
             GTObject {
                 span: (0, 0).into(),
@@ -95,8 +90,11 @@ mod tests {
             }
         );
         assert_eq!(
-            context.tree.imports,
-            HashSet::from_iter(vec![("dataclasses".into(), "dataclass".into())]),
+            context.as_dependencies(),
+            vec![PYImport {
+                path: "dataclasses".into(),
+                reference: PYImportReference::Named(vec!["dataclass".into()]),
+            }]
         );
     }
 }

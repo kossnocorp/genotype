@@ -7,12 +7,7 @@ impl PYConvert<PYPath> for GTPath {
     fn convert(&self, context: &mut PYConvertContext) -> PYPath {
         PYPath(
             context
-                .resolve
-                .paths
-                .get(&self)
-                .unwrap_or(self)
-                .as_str()
-                .to_owned()
+                .resolve_path(self)
                 .replace("../", "..")
                 .replace("./", ".")
                 .replace("/", "."),
@@ -24,7 +19,7 @@ impl PYConvert<PYPath> for GTPath {
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use crate::context::PYConvertContext;
+    use crate::{context::PYConvertContext, resolve::PYConvertResolve};
 
     use super::*;
 
@@ -60,11 +55,12 @@ mod tests {
 
     #[test]
     fn test_convert_resolve() {
-        let mut context = PYConvertContext::default();
-        context.resolve.paths.insert(
+        let mut resolve = PYConvertResolve::default();
+        resolve.paths.insert(
             GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
             GTPath::parse((0, 0).into(), "./path/to/another/module").unwrap(),
         );
+        let mut context = PYConvertContext::new(resolve, Default::default());
         assert_eq!(
             PYPath(".path.to.another.module".into()),
             GTPath::parse((0, 0).into(), "./path/to/module")

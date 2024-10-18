@@ -10,14 +10,14 @@ impl PYConvert<PYDefinition> for GTAlias {
 
             _ => {
                 let identifier = self.name.convert(context);
-                context.define(&identifier);
+                context.push_defined(&identifier);
 
                 PYDefinition::Alias(
                     PYAlias {
                         name: identifier,
                         descriptor: self.descriptor.convert(context),
                     }
-                    .resolve(&mut context.tree, &context.options),
+                    .resolve(context),
                 )
             }
         }
@@ -26,12 +26,8 @@ impl PYConvert<PYDefinition> for GTAlias {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashSet;
-
     use genotype_lang_py_tree::*;
     use pretty_assertions::assert_eq;
-
-    use crate::mock::mock_context;
 
     use super::*;
 
@@ -103,8 +99,7 @@ mod tests {
 
     #[test]
     fn test_convert_hoisted() {
-        let (hoisted, context) = mock_context();
-        let mut context = context;
+        let mut context = PYConvertContext::default();
         assert_eq!(
             GTAlias {
                 span: (0, 0).into(),
@@ -145,8 +140,9 @@ mod tests {
                 .into(),
             })
         );
+        let hoisted = context.drain_hoisted();
         assert_eq!(
-            hoisted.lock().unwrap().clone(),
+            hoisted,
             vec![PYDefinition::Class(PYClass {
                 name: "BookObj".into(),
                 extensions: vec![],
@@ -161,9 +157,8 @@ mod tests {
 
     #[test]
     fn test_convert_resolve() {
-        let (_, context) = mock_context();
-        let mut context = context;
-        context.options.version = PYVersion::Legacy;
+        let mut context =
+            PYConvertContext::new(Default::default(), PYOptions::new(PYVersion::Legacy));
         assert_eq!(
             GTAlias {
                 span: (0, 0).into(),
@@ -178,15 +173,17 @@ mod tests {
             })
         );
         assert_eq!(
-            context.tree.imports,
-            HashSet::from_iter(vec![("typing".into(), "TypeAlias".into())]),
+            context.as_dependencies(),
+            vec![PYImport {
+                path: "typing".into(),
+                reference: PYImportReference::Named(vec!["TypeAlias".into()]),
+            }]
         );
     }
 
     #[test]
     fn test_forward() {
-        let (_, context) = mock_context();
-        let mut context = context;
+        let mut context = PYConvertContext::default();
         assert_eq!(
             GTAlias {
                 span: (0, 0).into(),
@@ -200,7 +197,7 @@ mod tests {
                 descriptor: PYPrimitive::String.into(),
             })
         );
-        assert!(context.is_forward(&"Hello".into()));
-        assert!(!context.is_forward(&"Name".into()));
+        assert!(context.is_forward_identifier(&"Hello".into()));
+        assert!(!context.is_forward_identifier(&"Name".into()));
     }
 }

@@ -1,5 +1,3 @@
-use std::sync::{Arc, Mutex};
-
 use genotype_lang_py_tree::module::PYModule;
 use genotype_parser::tree::module::GTModule;
 
@@ -10,43 +8,26 @@ pub struct PYConvertModule(pub PYModule);
 
 impl PYConvertModule {
     pub fn convert(module: &GTModule, resolve: &PYConvertResolve) -> Self {
-        let mut import_context = PYConvertContext::new(resolve.clone(), Box::new(|_| {}));
-        let imports = module
-            .imports
-            .iter()
-            .map(|import| import.convert(&mut import_context))
-            .collect();
+        // [TODO] Get rid of unnecessary clone
+        let mut context = PYConvertContext::new(resolve.clone(), Default::default());
 
-        let definitions = Mutex::new(Vec::new());
+        for import in &module.imports {
+            let import = import.convert(&mut context);
+            context.push_import(import);
+        }
 
         for alias in &module.aliases {
-            let hoisted = Arc::new(Mutex::new(Vec::new()));
-
-            let mut context = {
-                let hoisted = Arc::clone(&hoisted);
-                PYConvertContext::new(
-                    resolve.clone(),
-                    Box::new(move |definition| {
-                        let mut hoisted = hoisted.lock().unwrap();
-                        hoisted.push(definition);
-                    }),
-                )
-            };
-
-            // [TODO] Switch to using context to store hoisted definitions
-            context.pop_hoisted();
-
             let definition = alias.convert(&mut context);
-
-            let mut definitions = definitions.lock().unwrap();
-            definitions.push(definition);
-            definitions.extend(hoisted.lock().unwrap().clone());
+            context.push_definition(definition);
         }
+
+        let imports = context.drain_imports();
+        let definitions = context.drain_definitions();
 
         PYConvertModule(PYModule {
             doc: None,
             imports,
-            definitions: definitions.into_inner().unwrap(),
+            definitions,
         })
     }
 }
@@ -61,7 +42,7 @@ mod tests {
 
     #[test]
     fn test_convert() {
-        let mut resolve = PYConvertResolve::new();
+        let mut resolve = PYConvertResolve::default();
         resolve.globs.insert(
             GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
             "module".into(),
@@ -199,6 +180,18 @@ mod tests {
                             PYImportName::Name("Name".into()),
                             PYImportName::Alias("Name".into(), "Alias".into())
                         ])
+                    },
+                    PYImport {
+                        path: "typing".into(),
+                        reference: PYImportReference::Named(vec![PYImportName::Name(
+                            "Optional".into()
+                        ),])
+                    },
+                    PYImport {
+                        path: "dataclasses".into(),
+                        reference: PYImportReference::Named(vec![PYImportName::Name(
+                            "dataclass".into()
+                        ),])
                     }
                 ],
                 definitions: vec![

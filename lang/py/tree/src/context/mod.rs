@@ -1,25 +1,10 @@
-use std::collections::HashSet;
+use crate::{PYIdentifier, PYPath, PYVersion};
 
-use crate::{PYIdentifier, PYOptions, PYPath};
+#[cfg(test)]
+pub mod mock;
 
-#[derive(Debug, PartialEq, Clone)]
-pub struct PYContext {
-    pub imports: HashSet<(PYPath, PYIdentifier)>,
-}
+pub trait PYContext {
+    fn import(&mut self, path: PYPath, name: PYIdentifier);
 
-impl PYContext {
-    pub fn new() -> Self {
-        PYContext {
-            imports: HashSet::new(),
-        }
-    }
-}
-
-pub trait PYContextResolve {
-    fn resolve(self, _context: &mut PYContext, _options: &PYOptions) -> Self
-    where
-        Self: Sized,
-    {
-        self
-    }
+    fn is_version(&self, version: PYVersion) -> bool;
 }

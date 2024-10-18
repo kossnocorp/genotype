@@ -1,37 +1,35 @@
-use crate::{PYContext, PYContextResolve, PYOptions};
+use crate::{PYContext, PYContextResolve};
 
 use super::PYClass;
 
 impl PYContextResolve for PYClass {
-    fn resolve(self, context: &mut PYContext, _options: &PYOptions) -> Self {
-        context
-            .imports
-            .insert(("dataclasses".into(), "dataclass".into()));
+    fn resolve<Context>(self, context: &mut Context) -> Self
+    where
+        Context: PYContext,
+    {
+        context.import("dataclasses".into(), "dataclass".into());
         self
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashSet;
-
     use crate::*;
+    use mock::PYContextMock;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_resolve() {
-        let mut context = PYContext::new();
+        let mut context = PYContextMock::default();
         let alias = PYClass {
             name: "Foo".into(),
             extensions: vec![],
             properties: vec![],
         };
-        alias.resolve(&mut context, &PYOptions::default());
+        alias.resolve(&mut context);
         assert_eq!(
-            context,
-            PYContext {
-                imports: HashSet::from_iter(vec![("dataclasses".into(), "dataclass".into())]),
-            }
+            context.as_imports(),
+            vec![("dataclasses".into(), "dataclass".into())]
         );
     }
 }

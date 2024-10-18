@@ -9,8 +9,8 @@ pub struct PYConvertResolve {
     pub identifiers: HashMap<GTIdentifier, GTIdentifier>,
 }
 
-impl PYConvertResolve {
-    pub fn new() -> Self {
+impl Default for PYConvertResolve {
+    fn default() -> Self {
         Self {
             paths: HashMap::new(),
             globs: HashMap::new(),

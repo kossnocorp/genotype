@@ -1,7 +1,7 @@
 use crate::diagnostic::error::GTNodeParseError;
 use parser::Rule;
 use pest::iterators::Pair;
-use tree::{GTDescriptor, GTResolve};
+use tree::GTDescriptor;
 
 use crate::*;
 

@@ -20,6 +20,3 @@ pub mod reference;
 pub mod resolve;
 pub mod tuple;
 pub mod union;
-
-#[cfg(test)]
-pub mod mock;

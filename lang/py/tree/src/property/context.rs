@@ -3,9 +3,12 @@ use crate::*;
 use super::PYProperty;
 
 impl PYContextResolve for PYProperty {
-    fn resolve(self, context: &mut PYContext, _options: &PYOptions) -> Self {
+    fn resolve<Context>(self, context: &mut Context) -> Self
+    where
+        Context: PYContext,
+    {
         if !self.required {
-            context.imports.insert(("typing".into(), "Optional".into()));
+            context.import("typing".into(), "Optional".into());
         }
         self
     }
@@ -13,37 +16,34 @@ impl PYContextResolve for PYProperty {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashSet;
-
     use crate::*;
+    use mock::PYContextMock;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_resolve() {
-        let mut context = PYContext::new();
+        let mut context = PYContextMock::default();
         let alias = PYProperty {
             name: "foo".into(),
             descriptor: PYPrimitive::String.into(),
             required: true,
         };
-        alias.resolve(&mut context, &PYOptions::default());
-        assert_eq!(context, PYContext::new());
+        alias.resolve(&mut context);
+        assert_eq!(context.as_imports(), vec![]);
     }
 
     #[test]
     fn test_resolve_optional() {
-        let mut context = PYContext::new();
+        let mut context = PYContextMock::default();
         let alias = PYProperty {
             name: "foo".into(),
             descriptor: PYPrimitive::String.into(),
             required: false,
         };
-        alias.resolve(&mut context, &PYOptions::default());
+        alias.resolve(&mut context);
         assert_eq!(
-            context,
-            PYContext {
-                imports: HashSet::from_iter(vec![("typing".into(), "Optional".into())]),
-            }
+            context.as_imports(),
+            vec![("typing".into(), "Optional".into())]
         );
     }
 }

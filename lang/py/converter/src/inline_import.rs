@@ -7,15 +7,14 @@ impl PYConvert<PYReference> for GTInlineImport {
     fn convert(&self, context: &mut PYConvertContext) -> PYReference {
         let name = self.name.convert(context);
         let path = self.path.convert(context);
-        context.import(path, name.clone());
+        context.add_dependency(path, name.clone());
         PYReference::new(name, false)
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashSet;
-
+    use genotype_lang_py_tree::{PYImport, PYImportReference};
     use genotype_parser::*;
     use pretty_assertions::assert_eq;
 
@@ -34,8 +33,11 @@ mod tests {
             PYReference::new("Name".into(), false),
         );
         assert_eq!(
-            context.tree.imports,
-            HashSet::from_iter(vec![(".path.to.module".into(), "Name".into())])
+            context.as_dependencies(),
+            vec![PYImport {
+                path: ".path.to.module".into(),
+                reference: PYImportReference::Named(vec!["Name".into()]),
+            }]
         );
     }
 }

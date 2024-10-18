@@ -1,3 +1,4 @@
+#[derive(Debug, PartialEq)]
 pub enum PYVersion {
     Legacy,
     V3_12,

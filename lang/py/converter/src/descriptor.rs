@@ -6,10 +6,7 @@ use crate::{context::PYConvertContext, convert::PYConvert};
 impl PYConvert<PYDescriptor> for GTDescriptor {
     fn convert(&self, context: &mut PYConvertContext) -> PYDescriptor {
         match self {
-            GTDescriptor::Alias(alias) => {
-                let identifier = context.hoist(|context| alias.convert(context));
-                PYReference::new(identifier, true).into()
-            }
+            GTDescriptor::Alias(alias) => context.hoist(|context| alias.convert(context)).into(),
 
             GTDescriptor::Array(array) => array.convert(context).into(),
 
@@ -17,11 +14,9 @@ impl PYConvert<PYDescriptor> for GTDescriptor {
 
             GTDescriptor::Literal(literal) => literal.convert(context).into(),
 
-            GTDescriptor::Object(object) => {
-                let identifier =
-                    context.hoist(|context| PYDefinition::Class(object.convert(context)));
-                PYReference::new(identifier, true).into()
-            }
+            GTDescriptor::Object(object) => context
+                .hoist(|context| PYDefinition::Class(object.convert(context)))
+                .into(),
 
             GTDescriptor::Primitive(primitive) => primitive.convert(context).into(),
 
@@ -36,20 +31,15 @@ impl PYConvert<PYDescriptor> for GTDescriptor {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashSet;
-
     use genotype_lang_py_tree::*;
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
-
-    use crate::mock::mock_context;
 
     use super::*;
 
     #[test]
     fn test_convert_alias() {
-        let (hoisted, context) = mock_context();
-        let mut context = context;
+        let mut context = PYConvertContext::default();
         assert_eq!(
             GTDescriptor::Alias(Box::new(GTAlias {
                 span: (0, 0).into(),
@@ -60,8 +50,9 @@ mod tests {
             .convert(&mut context),
             PYReference::new("Name".into(), true).into()
         );
+        let hoisted = context.drain_hoisted();
         assert_eq!(
-            hoisted.lock().unwrap().clone(),
+            hoisted,
             vec![PYDefinition::Alias(PYAlias {
                 name: "Name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
@@ -96,15 +87,17 @@ mod tests {
             PYDescriptor::Reference(PYReference::new("Name".into(), false))
         );
         assert_eq!(
-            context.tree.imports,
-            HashSet::from_iter(vec![(".path.to.module".into(), "Name".into())])
+            context.as_dependencies(),
+            vec![PYImport {
+                path: ".path.to.module".into(),
+                reference: PYImportReference::Named(vec!["Name".into()]),
+            }]
         );
     }
 
     #[test]
     fn test_convert_object() {
-        let (hoisted, context) = mock_context();
-        let mut context = context;
+        let mut context = PYConvertContext::default();
         assert_eq!(
             GTDescriptor::Object(GTObject {
                 span: (0, 0).into(),
@@ -130,8 +123,9 @@ mod tests {
             .convert(&mut context),
             PYDescriptor::Reference(PYReference::new("Person".into(), true))
         );
+        let hoisted = context.drain_hoisted();
         assert_eq!(
-            hoisted.lock().unwrap().clone(),
+            hoisted,
             vec![PYDefinition::Class(PYClass {
                 name: "Person".into(),
                 extensions: vec![],

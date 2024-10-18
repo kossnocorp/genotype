@@ -12,19 +12,17 @@ impl PYConvert<PYTuple> for GTTuple {
                 .map(|descriptor| descriptor.convert(context))
                 .collect(),
         }
-        .resolve(&mut context.tree, &context.options)
+        .resolve(context)
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashSet;
-
     use genotype_lang_py_tree::*;
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
 
-    use crate::mock::mock_context;
+    use crate::resolve::PYConvertResolve;
 
     use super::*;
 
@@ -50,9 +48,10 @@ mod tests {
 
     #[test]
     fn test_convert_resolve() {
-        let (_, context) = mock_context();
-        let mut context = context;
-        context.options.version = PYVersion::Legacy;
+        let mut context = PYConvertContext::new(
+            PYConvertResolve::default(),
+            PYOptions::new(PYVersion::Legacy),
+        );
         assert_eq!(
             GTTuple {
                 span: (0, 0).into(),
@@ -64,8 +63,11 @@ mod tests {
             }
         );
         assert_eq!(
-            context.tree.imports,
-            HashSet::from_iter(vec![("typing".into(), "Tuple".into())]),
+            context.as_dependencies(),
+            vec![PYImport {
+                path: "typing".into(),
+                reference: PYImportReference::Named(vec!["Tuple".into()]),
+            }]
         );
     }
 }

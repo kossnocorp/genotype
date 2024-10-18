@@ -5,15 +5,7 @@ use crate::{context::PYConvertContext, convert::PYConvert};
 
 impl PYConvert<PYIdentifier> for GTIdentifier {
     fn convert(&self, context: &mut PYConvertContext) -> PYIdentifier {
-        PYIdentifier(
-            context
-                .resolve
-                .identifiers
-                .get(&self)
-                .unwrap_or(&self)
-                .1
-                .clone(),
-        )
+        PYIdentifier(context.resolve_identifier(self))
     }
 }
 
@@ -36,11 +28,12 @@ mod tests {
 
     #[test]
     fn test_convert_resolve() {
-        let mut context = PYConvertContext::default();
-        context.resolve.identifiers.insert(
+        let mut resolve = PYConvertResolve::default();
+        resolve.identifiers.insert(
             GTIdentifier::new((0, 0).into(), "Foo".into()),
             GTIdentifier::new((0, 0).into(), "foo.Bar".into()),
         );
+        let mut context = PYConvertContext::new(resolve.clone(), Default::default());
         assert_eq!(
             PYIdentifier("foo.Bar".into()),
             GTIdentifier::new((0, 0).into(), "Foo".into()).convert(&mut context),

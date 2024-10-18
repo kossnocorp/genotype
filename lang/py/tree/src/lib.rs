@@ -20,6 +20,7 @@ pub mod primitive;
 pub mod property;
 pub mod reference;
 pub mod render;
+pub mod resolve;
 pub mod tuple;
 pub mod union;
 
@@ -45,5 +46,6 @@ pub use primitive::*;
 pub use property::*;
 pub use reference::*;
 pub use render::*;
+pub use resolve::*;
 pub use tuple::*;
 pub use union::*;

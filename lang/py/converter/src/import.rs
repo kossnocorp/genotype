@@ -6,10 +6,7 @@ use crate::{context::PYConvertContext, convert::PYConvert};
 impl PYConvert<PYImport> for GTImport {
     fn convert(&self, context: &mut PYConvertContext) -> PYImport {
         let reference = match &self.reference {
-            GTImportReference::Glob(_) => {
-                // [TODO]
-                PYImportReference::Glob
-            }
+            GTImportReference::Glob(_) => PYImportReference::Glob,
 
             GTImportReference::Names(_, names) => PYImportReference::Named(
                 names
@@ -35,18 +32,19 @@ mod tests {
     use genotype_lang_py_tree::*;
     use pretty_assertions::assert_eq;
 
-    use crate::context::PYConvertContext;
+    use crate::resolve::PYConvertResolve;
 
     use super::*;
     use genotype_parser::*;
 
     #[test]
     fn test_convert_glob() {
-        let mut context = PYConvertContext::default();
-        context.resolve.globs.insert(
+        let mut resolve = PYConvertResolve::default();
+        resolve.globs.insert(
             GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
             "module".into(),
         );
+        let mut context = PYConvertContext::default();
         assert_eq!(
             GTImport {
                 span: (0, 0).into(),

@@ -1,31 +1,31 @@
-use crate::{PYContext, PYContextResolve, PYOptions};
+use crate::{PYContext, PYContextResolve};
 
 use super::PYLiteral;
 
 impl PYContextResolve for PYLiteral {
-    fn resolve(self, context: &mut PYContext, _options: &PYOptions) -> Self {
-        context.imports.insert(("typing".into(), "Literal".into()));
+    fn resolve<Context>(self, context: &mut Context) -> Self
+    where
+        Context: PYContext,
+    {
+        context.import("typing".into(), "Literal".into());
         self
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashSet;
-
     use crate::*;
+    use mock::PYContextMock;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_resolve() {
-        let mut context = PYContext::new();
+        let mut context = PYContextMock::default();
         let literal = PYLiteral::Boolean(true);
-        literal.resolve(&mut context, &PYOptions::default());
+        literal.resolve(&mut context);
         assert_eq!(
-            context,
-            PYContext {
-                imports: HashSet::from_iter(vec![("typing".into(), "Literal".into())]),
-            }
+            context.as_imports(),
+            vec![("typing".into(), "Literal".into())]
         );
     }
 }

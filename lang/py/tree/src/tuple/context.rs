@@ -3,9 +3,12 @@ use crate::*;
 use super::PYTuple;
 
 impl PYContextResolve for PYTuple {
-    fn resolve(self, context: &mut PYContext, options: &PYOptions) -> Self {
-        if let PYVersion::Legacy = options.version {
-            context.imports.insert(("typing".into(), "Tuple".into()));
+    fn resolve<Context>(self, context: &mut Context) -> Self
+    where
+        Context: PYContext,
+    {
+        if context.is_version(PYVersion::Legacy) {
+            context.import("typing".into(), "Tuple".into());
         }
         self
     }
@@ -13,33 +16,30 @@ impl PYContextResolve for PYTuple {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashSet;
-
     use crate::*;
+    use mock::PYContextMock;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_resolve() {
-        let mut context = PYContext::new();
+        let mut context = PYContextMock::default();
         let tuple = PYTuple {
             descriptors: vec![PYPrimitive::String.into()],
         };
-        tuple.resolve(&mut context, &PYOptions::default());
-        assert_eq!(context, PYContext::new());
+        tuple.resolve(&mut context);
+        assert_eq!(context.as_imports(), vec![]);
     }
 
     #[test]
     fn test_resolve_legacy() {
-        let mut context = PYContext::new();
+        let mut context = PYContextMock::new(PYVersion::Legacy);
         let tuple = PYTuple {
             descriptors: vec![PYPrimitive::String.into()],
         };
-        tuple.resolve(&mut context, &PYOptions::new(PYVersion::Legacy));
+        tuple.resolve(&mut context);
         assert_eq!(
-            context,
-            PYContext {
-                imports: HashSet::from_iter(vec![("typing".into(), "Tuple".into())]),
-            }
+            context.as_imports(),
+            vec![("typing".into(), "Tuple".into())],
         );
     }
 }
