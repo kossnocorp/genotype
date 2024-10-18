@@ -62,7 +62,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![("typing".into(), "Optional".into())]
+            vec![(PYDependency::Typing, "Optional".into())]
         );
     }
 }

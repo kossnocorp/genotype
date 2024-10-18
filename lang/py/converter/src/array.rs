@@ -52,7 +52,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![("typing".into(), "List".into())]
+            vec![(PYDependency::Typing, "List".into())]
         );
     }
 }

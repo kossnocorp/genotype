@@ -1,4 +1,4 @@
-use crate::{PYContext, PYContextResolve};
+use crate::*;
 
 use super::PYLiteral;
 
@@ -7,7 +7,7 @@ impl PYContextResolve for PYLiteral {
     where
         Context: PYContext,
     {
-        context.import("typing".into(), "Literal".into());
+        context.import(PYDependency::Typing, "Literal".into());
         self
     }
 }
@@ -25,7 +25,7 @@ mod tests {
         literal.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
-            vec![("typing".into(), "Literal".into())]
+            vec![(PYDependency::Typing, "Literal".into())]
         );
     }
 }

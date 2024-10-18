@@ -1,9 +1,9 @@
-use crate::{PYIdentifier, PYOptions, PYPath, PYVersion};
+use crate::{PYDependency, PYIdentifier, PYOptions, PYVersion};
 
 use super::PYContext;
 
 pub struct PYContextMock {
-    imports: Vec<(PYPath, PYIdentifier)>,
+    imports: Vec<(PYDependency, PYIdentifier)>,
 
     options: PYOptions,
 }
@@ -16,12 +16,12 @@ impl PYContextMock {
         }
     }
 
-    pub fn with_imports(mut self, imports: Vec<(PYPath, PYIdentifier)>) -> Self {
+    pub fn with_imports(mut self, imports: Vec<(PYDependency, PYIdentifier)>) -> Self {
         self.imports = imports;
         self
     }
 
-    pub fn as_imports(&self) -> &[(PYPath, PYIdentifier)] {
+    pub fn as_imports(&self) -> &[(PYDependency, PYIdentifier)] {
         &self.imports
     }
 }
@@ -33,7 +33,7 @@ impl Default for PYContextMock {
 }
 
 impl PYContext for PYContextMock {
-    fn import(&mut self, path: PYPath, name: PYIdentifier) {
+    fn import(&mut self, path: PYDependency, name: PYIdentifier) {
         self.imports.push((path, name));
     }
 

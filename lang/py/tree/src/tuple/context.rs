@@ -8,7 +8,7 @@ impl PYContextResolve for PYTuple {
         Context: PYContext,
     {
         if context.is_version(PYVersion::Legacy) {
-            context.import("typing".into(), "Tuple".into());
+            context.import(PYDependency::Typing, "Tuple".into());
         }
         self
     }
@@ -39,7 +39,7 @@ mod tests {
         tuple.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
-            vec![("typing".into(), "Tuple".into())],
+            vec![(PYDependency::Typing, "Tuple".into())],
         );
     }
 }

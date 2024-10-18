@@ -51,8 +51,7 @@ mod tests {
                 ]
             })
             .render(&py_indent(), &PYOptions::default()),
-            r#"@dataclass
-class Name:
+            r#"class Name(GenotypeModel):
     name: str
     age: Optional[int] = None"#
         );

@@ -64,7 +64,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![("typing".into(), "Tuple".into())]
+            vec![(PYDependency::Typing, "Tuple".into())]
         );
     }
 }

@@ -1,4 +1,4 @@
-use crate::{PYContext, PYContextResolve, PYVersion};
+use crate::{PYContext, PYContextResolve, PYDependency, PYVersion};
 
 use super::PYAlias;
 
@@ -8,7 +8,7 @@ impl PYContextResolve for PYAlias {
         Context: PYContext,
     {
         if context.is_version(PYVersion::Legacy) {
-            context.import("typing".into(), "TypeAlias".into());
+            context.import(PYDependency::Typing, "TypeAlias".into());
         }
         self
     }
@@ -41,7 +41,7 @@ mod tests {
         alias.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
-            vec![("typing".into(), "TypeAlias".into())]
+            vec![(PYDependency::Typing, "TypeAlias".into())]
         );
     }
 }

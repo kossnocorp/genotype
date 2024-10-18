@@ -1,4 +1,4 @@
-use crate::{PYContext, PYContextResolve};
+use crate::{PYContext, PYContextResolve, PYDependency};
 
 use super::PYClass;
 
@@ -7,7 +7,7 @@ impl PYContextResolve for PYClass {
     where
         Context: PYContext,
     {
-        context.import("dataclasses".into(), "dataclass".into());
+        context.import(PYDependency::Runtime, "GenotypeModel".into());
         self
     }
 }
@@ -29,7 +29,7 @@ mod tests {
         alias.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
-            vec![("dataclasses".into(), "dataclass".into())]
+            vec![(PYDependency::Runtime, "GenotypeModel".into())]
         );
     }
 }

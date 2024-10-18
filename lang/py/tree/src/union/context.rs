@@ -8,7 +8,7 @@ impl PYContextResolve for PYUnion {
         Context: PYContext,
     {
         if context.is_version(PYVersion::Legacy) {
-            context.import("typing".into(), "Union".into());
+            context.import(PYDependency::Typing, "Union".into());
         }
         self
     }
@@ -39,7 +39,7 @@ mod tests {
         union.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
-            vec![("typing".into(), "Union".into())]
+            vec![(PYDependency::Typing, "Union".into())]
         );
     }
 }

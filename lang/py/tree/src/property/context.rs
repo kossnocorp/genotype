@@ -8,7 +8,7 @@ impl PYContextResolve for PYProperty {
         Context: PYContext,
     {
         if !self.required {
-            context.import("typing".into(), "Optional".into());
+            context.import(PYDependency::Typing, "Optional".into());
         }
         self
     }
@@ -43,7 +43,7 @@ mod tests {
         alias.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
-            vec![("typing".into(), "Optional".into())]
+            vec![(PYDependency::Typing, "Optional".into())]
         );
     }
 }

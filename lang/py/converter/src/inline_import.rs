@@ -1,4 +1,4 @@
-use genotype_lang_py_tree::PYReference;
+use genotype_lang_py_tree::{PYContext, PYDependency, PYReference};
 use genotype_parser::tree::inline_import::GTInlineImport;
 
 use crate::{context::PYConvertContext, convert::PYConvert};
@@ -7,13 +7,14 @@ impl PYConvert<PYReference> for GTInlineImport {
     fn convert(&self, context: &mut PYConvertContext) -> PYReference {
         let name = self.name.convert(context);
         let path = self.path.convert(context);
-        context.add_dependency(path, name.clone());
+        context.import(PYDependency::Local(path), name.clone());
         PYReference::new(name, false)
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use genotype_lang_py_tree::PYDependency;
     use genotype_parser::*;
     use pretty_assertions::assert_eq;
 
@@ -33,7 +34,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![(".path.to.module".into(), "Name".into())]
+            vec![(PYDependency::Local(".path.to.module".into()), "Name".into())]
         );
     }
 }

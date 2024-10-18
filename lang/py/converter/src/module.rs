@@ -188,9 +188,9 @@ mod tests {
                         ),])
                     },
                     PYImport {
-                        path: "dataclasses".into(),
+                        path: "genotype".into(),
                         reference: PYImportReference::Named(vec![PYImportName::Name(
-                            "dataclass".into()
+                            "GenotypeModel".into()
                         ),])
                     }
                 ],

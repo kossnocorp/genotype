@@ -174,7 +174,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![("typing".into(), "TypeAlias".into()),]
+            vec![(PYDependency::Typing, "TypeAlias".into()),]
         );
     }
 

@@ -64,7 +64,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![("typing".into(), "Union".into())]
+            vec![(PYDependency::Typing, "Union".into())]
         );
     }
 }

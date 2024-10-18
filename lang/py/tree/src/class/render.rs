@@ -15,16 +15,17 @@ impl PYRender for PYClass {
             .collect::<Vec<String>>()
             .join("\n");
 
-        let extensions = self
-            .extensions
-            .iter()
-            .map(|extension| extension.render(indent, options))
-            .collect::<Vec<String>>()
-            .join(", ");
+        let mut extensions = vec!["GenotypeModel".to_string()];
+        extensions.extend(
+            self.extensions
+                .iter()
+                .map(|extension| extension.render(indent, options))
+                .collect::<Vec<_>>(),
+        );
+        let extensions = extensions.join(", ");
 
         format!(
-            "{}@dataclass\n{}class {}{}:{}{}",
-            indent.string,
+            "{}class {}{}:{}{}",
             indent.string,
             self.name.render(indent),
             if extensions.len() > 0 {
@@ -53,8 +54,7 @@ mod tests {
                 properties: vec![]
             }
             .render(&py_indent(), &PYOptions::default()),
-            r#"@dataclass
-class Name:"#
+            r#"class Name(GenotypeModel):"#
         );
     }
 
@@ -78,8 +78,7 @@ class Name:"#
                 ]
             }
             .render(&py_indent(), &PYOptions::default()),
-            r#"@dataclass
-class Name:
+            r#"class Name(GenotypeModel):
     name: str
     age: Optional[int] = None"#
         );
@@ -105,8 +104,7 @@ class Name:
                 ]
             }
             .render(&py_indent().increment(), &PYOptions::default()),
-            r#"    @dataclass
-    class Name:
+            r#"    class Name(GenotypeModel):
         name: str
         age: Optional[int] = None"#
         );
@@ -128,8 +126,7 @@ class Name:
                 },]
             }
             .render(&py_indent(), &PYOptions::default()),
-            r#"@dataclass
-class Name(Hello, World):
+            r#"class Name(GenotypeModel, Hello, World):
     name: str"#
         );
     }

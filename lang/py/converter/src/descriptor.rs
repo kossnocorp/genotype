@@ -88,7 +88,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![(".path.to.module".into(), "Name".into()),]
+            vec![(PYDependency::Local(".path.to.module".into()), "Name".into()),]
         );
     }
 

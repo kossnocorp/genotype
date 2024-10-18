@@ -1,9 +1,6 @@
-use std::{collections::HashSet, vec};
+use std::vec;
 
-use genotype_lang_py_tree::{
-    PYContext, PYDefinition, PYIdentifier, PYImport, PYImportReference, PYOptions, PYPath,
-    PYReference,
-};
+use genotype_lang_py_tree::*;
 use genotype_parser::{GTIdentifier, GTPath};
 
 use crate::resolve::PYConvertResolve;
@@ -17,7 +14,7 @@ pub struct PYConvertContext {
     hoisting: bool,
     hoist_defined: Vec<PYIdentifier>,
     hoisted: Vec<PYDefinition>,
-    dependencies: HashSet<(PYPath, PYIdentifier)>,
+    dependencies: Vec<(PYDependency, PYIdentifier)>,
 }
 
 impl PYContext for PYConvertContext {
@@ -25,8 +22,11 @@ impl PYContext for PYConvertContext {
         self.options.version == version
     }
 
-    fn import(&mut self, path: PYPath, name: PYIdentifier) {
-        self.dependencies.insert((path, name));
+    fn import(&mut self, dependency: PYDependency, name: PYIdentifier) {
+        let dependency = (dependency, name);
+        if !self.dependencies.contains(&dependency) {
+            self.dependencies.push(dependency);
+        }
     }
 }
 
@@ -41,7 +41,7 @@ impl PYConvertContext {
             hoisting: false,
             hoist_defined: vec![],
             hoisted: vec![],
-            dependencies: HashSet::new(),
+            dependencies: vec![],
         }
     }
 
@@ -63,12 +63,8 @@ impl PYConvertContext {
             .to_owned()
     }
 
-    pub fn add_dependency(&mut self, path: PYPath, name: PYIdentifier) {
-        self.dependencies.insert((path, name));
-    }
-
     #[cfg(test)]
-    pub fn as_dependencies(&self) -> Vec<(PYPath, PYIdentifier)> {
+    pub fn as_dependencies(&self) -> Vec<(PYDependency, PYIdentifier)> {
         self.dependencies.clone().into_iter().collect()
     }
 
@@ -105,9 +101,11 @@ impl PYConvertContext {
     pub fn drain_imports(&mut self) -> Vec<PYImport> {
         let mut imports: Vec<_> = self.imports.drain(..).collect();
 
-        let dependencies = self.dependencies.drain();
-        for (path, name) in dependencies {
-            let import = imports.iter_mut().find(|import| import.path == path);
+        let dependencies = self.dependencies.drain(..);
+        for (dependency, name) in dependencies {
+            let import = imports
+                .iter_mut()
+                .find(|import| import.path == dependency.as_path());
 
             if let Some(import) = import {
                 if let PYImportReference::Named(names) = &mut import.reference {
@@ -116,7 +114,7 @@ impl PYConvertContext {
                 }
             }
             imports.push(PYImport {
-                path,
+                path: dependency.as_path(),
                 reference: PYImportReference::Named(vec![name.into()]),
             });
         }

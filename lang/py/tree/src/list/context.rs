@@ -1,4 +1,4 @@
-use crate::{PYContext, PYContextResolve, PYVersion};
+use crate::*;
 
 use super::PYList;
 
@@ -8,7 +8,7 @@ impl PYContextResolve for PYList {
         Context: PYContext,
     {
         if context.is_version(PYVersion::Legacy) {
-            context.import("typing".into(), "List".into());
+            context.import(PYDependency::Typing, "List".into());
         }
         self
     }
@@ -37,6 +37,9 @@ mod tests {
             descriptor: PYPrimitive::String.into(),
         };
         list.resolve(&mut context);
-        assert_eq!(context.as_imports(), vec![("typing".into(), "List".into())]);
+        assert_eq!(
+            context.as_imports(),
+            vec![(PYDependency::Typing, "List".into())]
+        );
     }
 }

@@ -17,7 +17,7 @@ impl PYConvert<PYLiteral> for GTLiteral {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_py_tree::{PYImport, PYImportReference};
+    use genotype_lang_py_tree::{PYDependency, PYImport, PYImportReference};
     use pretty_assertions::assert_eq;
 
     use crate::context::PYConvertContext;
@@ -54,7 +54,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![("typing".into(), "Literal".into())]
+            vec![(PYDependency::Typing, "Literal".into())]
         );
     }
 }
