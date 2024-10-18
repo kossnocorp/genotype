@@ -88,10 +88,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![PYImport {
-                path: ".path.to.module".into(),
-                reference: PYImportReference::Named(vec!["Name".into()]),
-            }]
+            vec![(".path.to.module".into(), "Name".into()),]
         );
     }
 

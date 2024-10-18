@@ -67,14 +67,9 @@ impl PYConvertContext {
         self.dependencies.insert((path, name));
     }
 
-    pub fn as_dependencies(&self) -> Vec<PYImport> {
-        self.dependencies
-            .iter()
-            .map(|(path, name)| PYImport {
-                path: path.clone(),
-                reference: PYImportReference::Named(vec![name.clone().into()]),
-            })
-            .collect()
+    #[cfg(test)]
+    pub fn as_dependencies(&self) -> Vec<(PYPath, PYIdentifier)> {
+        self.dependencies.clone().into_iter().collect()
     }
 
     pub fn hoist<HoistFn>(&mut self, mut hoist_fn: HoistFn) -> PYReference

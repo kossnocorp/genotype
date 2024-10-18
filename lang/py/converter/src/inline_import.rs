@@ -14,7 +14,6 @@ impl PYConvert<PYReference> for GTInlineImport {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_py_tree::{PYImport, PYImportReference};
     use genotype_parser::*;
     use pretty_assertions::assert_eq;
 
@@ -34,10 +33,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![PYImport {
-                path: ".path.to.module".into(),
-                reference: PYImportReference::Named(vec!["Name".into()]),
-            }]
+            vec![(".path.to.module".into(), "Name".into())]
         );
     }
 }

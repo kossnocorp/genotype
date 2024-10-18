@@ -54,10 +54,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![PYImport {
-                path: "typing".into(),
-                reference: PYImportReference::Named(vec!["Literal".into()]),
-            }]
+            vec![("typing".into(), "Literal".into())]
         );
     }
 }

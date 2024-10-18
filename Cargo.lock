@@ -294,6 +294,7 @@ dependencies = [
  "genotype_lang_core_converter",
  "genotype_lang_py_tree",
  "genotype_parser",
+ "heck",
  "pretty_assertions",
 ]
 

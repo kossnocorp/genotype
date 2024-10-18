@@ -91,10 +91,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![PYImport {
-                path: "dataclasses".into(),
-                reference: PYImportReference::Named(vec!["dataclass".into()]),
-            }]
+            vec![("dataclasses".into(), "dataclass".into())]
         );
     }
 }
