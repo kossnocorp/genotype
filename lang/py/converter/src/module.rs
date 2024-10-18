@@ -33,6 +33,9 @@ impl PYConvertModule {
                 )
             };
 
+            // [TODO] Switch to using context to store hoisted definitions
+            context.pop_hoisted();
+
             let definition = alias.convert(&mut context);
 
             let mut definitions = definitions.lock().unwrap();
@@ -72,12 +75,12 @@ mod tests {
                     imports: vec![
                         GTImport {
                             span: (0, 0).into(),
-                            path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+                            path: GTPath::parse((0, 0).into(), ".path.to.module").unwrap(),
                             reference: GTImportReference::Glob((0, 0).into())
                         },
                         GTImport {
                             span: (0, 0).into(),
-                            path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+                            path: GTPath::parse((0, 0).into(), ".path.to.module").unwrap(),
                             reference: GTImportReference::Names(
                                 (0, 0).into(),
                                 vec![
@@ -187,11 +190,11 @@ mod tests {
                 doc: None,
                 imports: vec![
                     PYImport {
-                        path: "./path/to/module.ts".into(),
+                        path: ".path.to.module".into(),
                         reference: PYImportReference::Glob
                     },
                     PYImport {
-                        path: "./path/to/module.ts".into(),
+                        path: ".path.to.module".into(),
                         reference: PYImportReference::Named(vec![
                             PYImportName::Name("Name".into()),
                             PYImportName::Alias("Name".into(), "Alias".into())
@@ -220,7 +223,7 @@ mod tests {
                         extensions: vec![],
                         properties: vec![PYProperty {
                             name: "book".into(),
-                            descriptor: PYReference::new("Book".into(), false).into(),
+                            descriptor: PYReference::new("Book".into(), true).into(),
                             required: true,
                         }]
                     }),

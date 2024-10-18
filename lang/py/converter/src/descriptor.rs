@@ -7,44 +7,37 @@ impl PYConvert<PYDescriptor> for GTDescriptor {
     fn convert(&self, context: &mut PYConvertContext) -> PYDescriptor {
         match self {
             GTDescriptor::Alias(alias) => {
-                let definition = alias.convert(context);
-                context.hoist(definition);
-                // [TODO]
-                PYDescriptor::Reference(PYReference::new(alias.name.convert(context), false))
+                let identifier = context.hoist(|context| alias.convert(context));
+                PYReference::new(identifier, true).into()
             }
 
-            GTDescriptor::Array(array) => PYDescriptor::List(Box::new(array.convert(context))),
+            GTDescriptor::Array(array) => array.convert(context).into(),
 
-            GTDescriptor::InlineImport(import) => {
-                // [TODO] Hoist to imports instead
-                // PYDescriptor::InlineImport(import.convert(resolve, hoist))
-                PYDescriptor::Reference(PYReference::new("TODO".into(), false))
-            }
+            GTDescriptor::InlineImport(import) => import.convert(context).into(),
 
-            GTDescriptor::Literal(literal) => PYDescriptor::Literal(literal.convert(context)),
+            GTDescriptor::Literal(literal) => literal.convert(context).into(),
 
             GTDescriptor::Object(object) => {
-                let class = object.convert(context);
-                let reference = PYReference::new(class.name.clone(), true);
-                context.hoist(PYDefinition::Class(class));
-                PYDescriptor::Reference(reference)
+                let identifier =
+                    context.hoist(|context| PYDefinition::Class(object.convert(context)));
+                PYReference::new(identifier, true).into()
             }
 
-            GTDescriptor::Primitive(primitive) => {
-                PYDescriptor::Primitive(primitive.convert(context))
-            }
+            GTDescriptor::Primitive(primitive) => primitive.convert(context).into(),
 
-            GTDescriptor::Reference(name) => PYDescriptor::Reference(name.convert(context)),
+            GTDescriptor::Reference(name) => name.convert(context).into(),
 
-            GTDescriptor::Tuple(tuple) => PYDescriptor::Tuple(tuple.convert(context)),
+            GTDescriptor::Tuple(tuple) => tuple.convert(context).into(),
 
-            GTDescriptor::Union(union) => PYDescriptor::Union(union.convert(context)),
+            GTDescriptor::Union(union) => union.convert(context).into(),
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashSet;
+
     use genotype_lang_py_tree::*;
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
@@ -65,7 +58,7 @@ mod tests {
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }))
             .convert(&mut context),
-            PYReference::new("Name".into(), false).into()
+            PYReference::new("Name".into(), true).into()
         );
         assert_eq!(
             hoisted.lock().unwrap().clone(),
@@ -92,19 +85,19 @@ mod tests {
 
     #[test]
     fn test_convert_inline_import() {
+        let mut context = PYConvertContext::default();
         assert_eq!(
             GTDescriptor::InlineImport(GTInlineImport {
                 span: (0, 0).into(),
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 name: GTIdentifier::new((0, 0).into(), "Name".into())
             })
-            .convert(&mut PYConvertContext::default()),
-            // [TODO]
-            // PYDescriptor::InlineImport(PYInlineImport {
-            //     path: "./path/to/module.ts".into(),
-            //     name: "Name".into()
-            // })
-            PYDescriptor::Reference(PYReference::new("TODO".into(), false))
+            .convert(&mut context),
+            PYDescriptor::Reference(PYReference::new("Name".into(), false))
+        );
+        assert_eq!(
+            context.tree.imports,
+            HashSet::from_iter(vec![(".path.to.module".into(), "Name".into())])
         );
     }
 
@@ -169,12 +162,6 @@ mod tests {
 
     #[test]
     fn test_convert_reference() {
-        assert_eq!(
-            GTDescriptor::Reference(GTIdentifier::new((0, 0).into(), "Name".into()).into())
-                .convert(&mut PYConvertContext::default()),
-            PYReference::new("Name".into(), true).into()
-        );
-        // [TODO] Depending on context, set forward reference
         assert_eq!(
             GTDescriptor::Reference(GTIdentifier::new((0, 0).into(), "Name".into()).into())
                 .convert(&mut PYConvertContext::default()),

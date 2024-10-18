@@ -13,7 +13,9 @@ impl PYConvert<PYPath> for GTPath {
                 .unwrap_or(self)
                 .as_str()
                 .to_owned()
-                + ".ts",
+                .replace("../", "..")
+                .replace("./", ".")
+                .replace("/", "."),
         )
     }
 }
@@ -29,8 +31,28 @@ mod tests {
     #[test]
     fn test_convert_base() {
         assert_eq!(
-            PYPath("./path/to/module.ts".into()),
+            PYPath(".path.to.module".into()),
             GTPath::parse((0, 0).into(), "./path/to/module")
+                .unwrap()
+                .convert(&mut PYConvertContext::default()),
+        );
+    }
+
+    #[test]
+    fn test_convert_absolute() {
+        assert_eq!(
+            PYPath("module.path".into()),
+            GTPath::parse((0, 0).into(), "module/path")
+                .unwrap()
+                .convert(&mut PYConvertContext::default()),
+        );
+    }
+
+    #[test]
+    fn test_convert_up() {
+        assert_eq!(
+            PYPath("..path.to.module".into()),
+            GTPath::parse((0, 0).into(), "../path/to/module")
                 .unwrap()
                 .convert(&mut PYConvertContext::default()),
         );
@@ -41,10 +63,10 @@ mod tests {
         let mut context = PYConvertContext::default();
         context.resolve.paths.insert(
             GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
-            GTPath::parse((0, 0).into(), "./path/to/module/index").unwrap(),
+            GTPath::parse((0, 0).into(), "./path/to/another/module").unwrap(),
         );
         assert_eq!(
-            PYPath("./path/to/module/index.ts".into()),
+            PYPath(".path.to.another.module".into()),
             GTPath::parse((0, 0).into(), "./path/to/module")
                 .unwrap()
                 .convert(&mut context),

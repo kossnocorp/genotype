@@ -55,7 +55,7 @@ mod tests {
             }
             .convert(&mut context),
             PYImport {
-                path: "./path/to/module.ts".into(),
+                path: ".path.to.module".into(),
                 reference: PYImportReference::Glob
             }
         );
@@ -84,7 +84,7 @@ mod tests {
             }
             .convert(&mut PYConvertContext::default()),
             PYImport {
-                path: "./path/to/module.ts".into(),
+                path: ".path.to.module".into(),
                 reference: PYImportReference::Named(vec![
                     PYImportName::Name("Name".into()),
                     PYImportName::Alias("Name".into(), "Alias".into())
@@ -103,7 +103,7 @@ mod tests {
             }
             .convert(&mut PYConvertContext::default()),
             PYImport {
-                path: "./path/to/module.ts".into(),
+                path: ".path.to.module".into(),
                 reference: PYImportReference::Named(vec![PYImportName::Name("Name".into())])
             }
         );

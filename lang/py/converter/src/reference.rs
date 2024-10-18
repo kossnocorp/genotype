@@ -5,8 +5,9 @@ use crate::{context::PYConvertContext, convert::PYConvert};
 
 impl PYConvert<PYReference> for GTReference {
     fn convert(&self, context: &mut PYConvertContext) -> PYReference {
-        // [TODO] Resolve the reference properly
-        PYReference::new(self.1.convert(context), true)
+        let identifier = self.1.convert(context);
+        let forward = context.is_forward(&identifier);
+        PYReference::new(identifier, forward)
     }
 }
 
@@ -20,13 +21,28 @@ mod tests {
 
     #[test]
     fn test_convert() {
+        let mut context = PYConvertContext::default();
+        context.define(&"Name".into());
+        assert_eq!(
+            PYReference::new("Name".into(), false),
+            GTReference(
+                (0, 0).into(),
+                GTIdentifier::new((0, 0).into(), "Name".into())
+            )
+            .convert(&mut context),
+        );
+    }
+
+    #[test]
+    fn test_convert_forward() {
+        let mut context = PYConvertContext::default();
         assert_eq!(
             PYReference::new("Name".into(), true),
             GTReference(
                 (0, 0).into(),
                 GTIdentifier::new((0, 0).into(), "Name".into())
             )
-            .convert(&mut PYConvertContext::default()),
+            .convert(&mut context),
         );
     }
 }

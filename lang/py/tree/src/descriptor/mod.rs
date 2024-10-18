@@ -29,3 +29,21 @@ impl From<PYUnion> for PYDescriptor {
         PYDescriptor::Union(union)
     }
 }
+
+impl From<PYTuple> for PYDescriptor {
+    fn from(tuple: PYTuple) -> Self {
+        PYDescriptor::Tuple(tuple)
+    }
+}
+
+impl From<PYList> for PYDescriptor {
+    fn from(list: PYList) -> Self {
+        PYDescriptor::List(Box::new(list))
+    }
+}
+
+impl From<PYLiteral> for PYDescriptor {
+    fn from(literal: PYLiteral) -> Self {
+        PYDescriptor::Literal(literal)
+    }
+}

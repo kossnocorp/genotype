@@ -8,13 +8,18 @@ impl PYConvert<PYDefinition> for GTAlias {
         match &self.descriptor {
             GTDescriptor::Object(object) => PYDefinition::Class(object.convert(context)),
 
-            _ => PYDefinition::Alias(
-                PYAlias {
-                    name: self.name.convert(context),
-                    descriptor: self.descriptor.convert(context),
-                }
-                .resolve(&mut context.tree, &context.options),
-            ),
+            _ => {
+                let identifier = self.name.convert(context);
+                context.define(&identifier);
+
+                PYDefinition::Alias(
+                    PYAlias {
+                        name: identifier,
+                        descriptor: self.descriptor.convert(context),
+                    }
+                    .resolve(&mut context.tree, &context.options),
+                )
+            }
         }
     }
 }
@@ -176,5 +181,26 @@ mod tests {
             context.tree.imports,
             HashSet::from_iter(vec![("typing".into(), "TypeAlias".into())]),
         );
+    }
+
+    #[test]
+    fn test_forward() {
+        let (_, context) = mock_context();
+        let mut context = context;
+        assert_eq!(
+            GTAlias {
+                span: (0, 0).into(),
+                doc: None,
+                name: GTIdentifier::new((0, 0).into(), "Name".into()),
+                descriptor: GTPrimitive::String((0, 0).into()).into(),
+            }
+            .convert(&mut context),
+            PYDefinition::Alias(PYAlias {
+                name: "Name".into(),
+                descriptor: PYPrimitive::String.into(),
+            })
+        );
+        assert!(context.is_forward(&"Hello".into()));
+        assert!(!context.is_forward(&"Name".into()));
     }
 }
