@@ -1,8 +1,8 @@
 from typing import Optional
-from genotype import GenotypeModel
+from genotype import Model
 
 
-class User(GenotypeModel):
+class User(Model):
     first_name: str
     last_name: Optional[str]
 

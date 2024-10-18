@@ -91,7 +91,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![(PYDependency::Runtime, "GenotypeModel".into())]
+            vec![(PYDependency::Runtime, "Model".into())]
         );
     }
 }

@@ -15,7 +15,7 @@ impl PYRender for PYClass {
             .collect::<Vec<String>>()
             .join("\n");
 
-        let mut extensions = vec!["GenotypeModel".to_string()];
+        let mut extensions = vec!["Model".to_string()];
         extensions.extend(
             self.extensions
                 .iter()
@@ -54,7 +54,7 @@ mod tests {
                 properties: vec![]
             }
             .render(&py_indent(), &PYOptions::default()),
-            r#"class Name(GenotypeModel):"#
+            r#"class Name(Model):"#
         );
     }
 
@@ -78,7 +78,7 @@ mod tests {
                 ]
             }
             .render(&py_indent(), &PYOptions::default()),
-            r#"class Name(GenotypeModel):
+            r#"class Name(Model):
     name: str
     age: Optional[int] = None"#
         );
@@ -104,7 +104,7 @@ mod tests {
                 ]
             }
             .render(&py_indent().increment(), &PYOptions::default()),
-            r#"    class Name(GenotypeModel):
+            r#"    class Name(Model):
         name: str
         age: Optional[int] = None"#
         );
@@ -126,7 +126,7 @@ mod tests {
                 },]
             }
             .render(&py_indent(), &PYOptions::default()),
-            r#"class Name(GenotypeModel, Hello, World):
+            r#"class Name(Model, Hello, World):
     name: str"#
         );
     }

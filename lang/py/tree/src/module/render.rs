@@ -91,7 +91,7 @@ from .path.to.module import Name, Name as Alias
 
 type Name = str
 
-class Name(GenotypeModel):
+class Name(Model):
     name: str
     age: Optional[int] = None
 "#

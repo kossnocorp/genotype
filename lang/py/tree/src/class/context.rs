@@ -7,7 +7,7 @@ impl PYContextResolve for PYClass {
     where
         Context: PYContext,
     {
-        context.import(PYDependency::Runtime, "GenotypeModel".into());
+        context.import(PYDependency::Runtime, "Model".into());
         self
     }
 }
@@ -29,7 +29,7 @@ mod tests {
         alias.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
-            vec![(PYDependency::Runtime, "GenotypeModel".into())]
+            vec![(PYDependency::Runtime, "Model".into())]
         );
     }
 }

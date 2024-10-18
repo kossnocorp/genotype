@@ -3,7 +3,7 @@ from pydantic import BaseModel, ConfigDict
 from humps import camelize
 
 
-class GenotypeModel(BaseModel):
+class Model(BaseModel):
     model_config = ConfigDict(populate_by_name=True, alias_generator=camelize)
 
     def __init__(self, **data: Any) -> None:

@@ -1,4 +1,4 @@
-from .model import GenotypeModel
+from .model import Model
 
 
-__all__ = ["GenotypeModel"]
+__all__ = ["Model"]

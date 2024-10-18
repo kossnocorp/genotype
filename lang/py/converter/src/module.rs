@@ -190,7 +190,7 @@ mod tests {
                     PYImport {
                         path: "genotype".into(),
                         reference: PYImportReference::Named(vec![PYImportName::Name(
-                            "GenotypeModel".into()
+                            "Model".into()
                         ),])
                     }
                 ],
