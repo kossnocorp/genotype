@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "genotype-runtime"
+version = "0.1.0"
+description = "Genotype runtime for Python"
+authors = ["Sasha Koss <koss@nocorp.me>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pydantic = "^2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
