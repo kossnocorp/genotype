@@ -1,5 +1,11 @@
 install:
   poetry install
 
+test:
+  poetry run pytest
+
+test-watch:
+  poetry run ptw --clear
+
 publish:
   poetry publish --build
