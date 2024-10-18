@@ -1,0 +1,3 @@
+Author = {
+  name: string
+}

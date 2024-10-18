@@ -194,7 +194,13 @@ mod tests {
                 descriptor: PYPrimitive::String.into(),
             })
         );
-        assert!(context.is_forward_identifier(&"Hello".into()));
-        assert!(!context.is_forward_identifier(&"Name".into()));
+        assert!(context.is_forward_identifier(
+            &"Hello".into(),
+            &GTIdentifier::new((0, 0).into(), "Hello".into())
+        ));
+        assert!(!context.is_forward_identifier(
+            &"Name".into(),
+            &GTIdentifier::new((0, 0).into(), "Name".into())
+        ));
     }
 }

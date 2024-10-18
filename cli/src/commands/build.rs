@@ -33,7 +33,7 @@ pub fn build_command(args: &GTBuildCommand) -> Result<()> {
     let project = GTProject::load(root.as_os_str().to_str().unwrap(), &args.entry)?;
     let ts = TSProject::generate(&project, out.as_os_str().to_str().unwrap())
         .map_err(|_| GTCliError::Generate)?
-        .render()
+        .render(&())
         .map_err(|_| GTCliError::Render)?;
     GTWriter::new(vec![ts])
         .write()

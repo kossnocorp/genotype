@@ -6,7 +6,7 @@ use crate::{context::PYConvertContext, convert::PYConvert};
 impl PYConvert<PYReference> for GTReference {
     fn convert(&self, context: &mut PYConvertContext) -> PYReference {
         let identifier = self.1.convert(context);
-        let forward = context.is_forward_identifier(&identifier);
+        let forward = context.is_forward_identifier(&identifier, &self.1);
         PYReference::new(identifier, forward)
     }
 }

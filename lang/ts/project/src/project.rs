@@ -16,7 +16,7 @@ pub struct TSProject {
     pub modules: Vec<TSProjectModule>,
 }
 
-impl GTLangProject for TSProject {
+impl GTLangProject<()> for TSProject {
     fn generate(project: &GTProject, out: &str) -> Result<Self, Box<dyn std::error::Error>> {
         let root = project.root.join(out);
 
@@ -29,7 +29,7 @@ impl GTLangProject for TSProject {
         Ok(Self { root, modules })
     }
 
-    fn render(&self) -> Result<GTLangProjectRender, Box<dyn std::error::Error>> {
+    fn render(&self, _options: &()) -> Result<GTLangProjectRender, Box<dyn std::error::Error>> {
         let modules = self
             .modules
             .iter()
@@ -192,7 +192,7 @@ mod tests {
         assert_eq!(
             TSProject::generate(&project, "out")
                 .unwrap()
-                .render()
+                .render(&())
                 .unwrap(),
             GTLangProjectRender {
                 root: root.join("out"),

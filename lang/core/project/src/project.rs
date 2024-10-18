@@ -4,12 +4,12 @@ use genotype_project::project::GTProject;
 
 use crate::module::GTLangProjectModuleRender;
 
-pub trait GTLangProject {
+pub trait GTLangProject<Options> {
     fn generate(project: &GTProject, out: &str) -> Result<Self, Box<dyn std::error::Error>>
     where
         Self: Sized;
 
-    fn render(&self) -> Result<GTLangProjectRender, Box<dyn std::error::Error>>;
+    fn render(&self, options: &Options) -> Result<GTLangProjectRender, Box<dyn std::error::Error>>;
 }
 
 #[derive(Debug, PartialEq, Clone)]
