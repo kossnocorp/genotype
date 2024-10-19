@@ -56,12 +56,12 @@ mod tests {
                     imports: vec![
                         GTImport {
                             span: (0, 0).into(),
-                            path: GTPath::parse((0, 0).into(), ".path.to.module").unwrap(),
+                            path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                             reference: GTImportReference::Glob((0, 0).into())
                         },
                         GTImport {
                             span: (0, 0).into(),
-                            path: GTPath::parse((0, 0).into(), ".path.to.module").unwrap(),
+                            path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                             reference: GTImportReference::Names(
                                 (0, 0).into(),
                                 vec![
@@ -172,7 +172,7 @@ mod tests {
                 imports: vec![
                     PYImport {
                         path: ".path.to.module".into(),
-                        reference: PYImportReference::Glob
+                        reference: PYImportReference::Default(Some("module".into()))
                     },
                     PYImport {
                         path: ".path.to.module".into(),

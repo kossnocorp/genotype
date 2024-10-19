@@ -93,7 +93,12 @@ impl PYConvertContext {
         identifier: &PYIdentifier,
         original: &GTIdentifier,
     ) -> bool {
-        let is_defined = self.resolve.identifiers.contains_key(original)
+        let is_defined = self
+            .resolve
+            .imported
+            .iter()
+            .find(|identifier| identifier.1 == original.1)
+            .is_some()
             || self.defined.contains(identifier)
             || (self.hoisting && self.hoist_defined.contains(identifier));
         !is_defined
@@ -199,6 +204,22 @@ mod tests {
                 &GTIdentifier::new((0, 0).into(), "Name".into())
             ),
             true
+        );
+    }
+
+    #[test]
+    fn test_is_forward_resolve() {
+        let mut resolve = PYConvertResolve::default();
+        resolve
+            .imported
+            .insert(GTIdentifier((0, 0).into(), "Name".into()));
+        let context = PYConvertContext::new(resolve, PYOptions::default());
+        assert_eq!(
+            context.is_forward_identifier(
+                &"Other".into(),
+                &GTIdentifier::new((0, 0).into(), "Name".into())
+            ),
+            false
         );
     }
 }

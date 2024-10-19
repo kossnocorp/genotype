@@ -1,12 +1,12 @@
-use genotype_lang_py_tree::{import::PYImport, PYImportName, PYImportReference};
-use genotype_parser::tree::{import::GTImport, GTImportReference};
+use genotype_lang_py_tree::*;
+use genotype_parser::*;
 
 use crate::{context::PYConvertContext, convert::PYConvert};
 
 impl PYConvert<PYImport> for GTImport {
     fn convert(&self, context: &mut PYConvertContext) -> PYImport {
         let reference = match &self.reference {
-            GTImportReference::Glob(_) => PYImportReference::Glob,
+            GTImportReference::Glob(_) => PYImportReference::Default(Some(module_name(&self.path))),
 
             GTImportReference::Names(_, names) => PYImportReference::Named(
                 names
@@ -25,6 +25,11 @@ impl PYConvert<PYImport> for GTImport {
             reference,
         }
     }
+}
+
+fn module_name(path: &GTPath) -> PYIdentifier {
+    let str = path.as_str();
+    str.split("/").last().unwrap_or(str).into()
 }
 
 #[cfg(test)]
@@ -54,7 +59,7 @@ mod tests {
             .convert(&mut context),
             PYImport {
                 path: ".path.to.module".into(),
-                reference: PYImportReference::Glob
+                reference: PYImportReference::Default(Some("module".into()))
             }
         );
     }

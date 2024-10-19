@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use genotype_parser::tree::{GTIdentifier, GTPath};
 
@@ -7,6 +7,7 @@ pub struct PYConvertResolve {
     pub paths: HashMap<GTPath, GTPath>,
     pub globs: HashMap<GTPath, String>,
     pub identifiers: HashMap<GTIdentifier, GTIdentifier>,
+    pub imported: HashSet<GTIdentifier>,
 }
 
 impl Default for PYConvertResolve {
@@ -15,6 +16,7 @@ impl Default for PYConvertResolve {
             paths: HashMap::new(),
             globs: HashMap::new(),
             identifiers: HashMap::new(),
+            imported: HashSet::new(),
         }
     }
 }
