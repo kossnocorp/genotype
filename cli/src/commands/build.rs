@@ -33,13 +33,14 @@ pub fn build_command(args: &GTBuildCommand) -> Result<()> {
 
     // [TODO] Use PathBuf instead of &str
     let project = GTProject::load(root.as_os_str().to_str().unwrap(), &args.entry)?;
-    let ts = TSProject::generate(&project, out.as_os_str().to_str().unwrap())
+    let ts = TSProject::generate(&project, out.as_os_str().to_str().unwrap(), &())
         .map_err(|_| GTCliError::Generate)?
         .render(&())
         .map_err(|_| GTCliError::Render)?;
-    let py = PYProject::generate(&project, out.as_os_str().to_str().unwrap())
+    let py_options = PYOptions::new(PYVersion::Legacy);
+    let py = PYProject::generate(&project, out.as_os_str().to_str().unwrap(), &py_options)
         .map_err(|_| GTCliError::Generate)?
-        .render(&PYOptions::new(PYVersion::Legacy))
+        .render(&py_options)
         .map_err(|_| GTCliError::Render)?;
     GTWriter::new(vec![ts, py])
         .write()

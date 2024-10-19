@@ -8,7 +8,7 @@ use genotype_lang_core_project::module::GTLangProjectModule;
 use genotype_lang_py_converter::{
     module::PYConvertModule, path::py_parse_module_path, resolve::PYConvertResolve,
 };
-use genotype_lang_py_tree::module::PYModule;
+use genotype_lang_py_tree::{module::PYModule, options, PYOptions};
 use genotype_parser::{tree::GTImportReference, GTIdentifier, GTImportName};
 use genotype_project::{module::GTProjectModule, GTProject, GTProjectModuleReference};
 
@@ -19,11 +19,12 @@ pub struct PYProjectModule {
     pub module: PYModule,
 }
 
-impl GTLangProjectModule for PYProjectModule {
+impl GTLangProjectModule<PYOptions> for PYProjectModule {
     fn generate(
         project: &GTProject,
         module: &GTProjectModule,
         out: &PathBuf,
+        options: &PYOptions,
     ) -> Result<Self, Box<dyn std::error::Error>> {
         let relative_path = module.path.as_path().strip_prefix(project.root.as_path())?;
         let name = py_parse_module_path(
@@ -101,7 +102,7 @@ impl GTLangProjectModule for PYProjectModule {
             }
         }
 
-        let module = PYConvertModule::convert(&module.module, &resolve).0;
+        let module = PYConvertModule::convert(&module.module, &resolve, options).0;
 
         Ok(Self { name, path, module })
     }

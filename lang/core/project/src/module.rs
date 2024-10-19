@@ -2,11 +2,12 @@ use std::path::PathBuf;
 
 use genotype_project::{module::GTProjectModule, GTProject};
 
-pub trait GTLangProjectModule {
+pub trait GTLangProjectModule<Options> {
     fn generate(
         project: &GTProject,
         module: &GTProjectModule,
         out: &PathBuf,
+        options: &Options,
     ) -> Result<Self, Box<dyn std::error::Error>>
     where
         Self: Sized;

@@ -1,9 +1,10 @@
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum PYVersion {
     Legacy,
     V3_12,
 }
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct PYOptions {
     pub version: PYVersion,
 }

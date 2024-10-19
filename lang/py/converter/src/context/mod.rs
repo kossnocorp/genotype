@@ -18,7 +18,7 @@ pub struct PYConvertContext {
 }
 
 impl PYContext for PYConvertContext {
-    fn is_version(&self, version: genotype_lang_py_tree::PYVersion) -> bool {
+    fn is_version(&self, version: PYVersion) -> bool {
         self.options.version == version
     }
 

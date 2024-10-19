@@ -16,13 +16,17 @@ pub struct PYProject {
 }
 
 impl GTLangProject<PYOptions> for PYProject {
-    fn generate(project: &GTProject, out: &str) -> Result<Self, Box<dyn std::error::Error>> {
+    fn generate(
+        project: &GTProject,
+        out: &str,
+        options: &PYOptions,
+    ) -> Result<Self, Box<dyn std::error::Error>> {
         let root = project.root.join(out);
 
         let modules = project
             .modules
             .iter()
-            .map(|module| PYProjectModule::generate(&project, module, &root))
+            .map(|module| PYProjectModule::generate(&project, module, &root, options))
             .collect::<Result<_, _>>()?;
 
         Ok(Self { root, modules })
@@ -51,7 +55,7 @@ impl GTLangProject<PYOptions> for PYProject {
                 acc
             });
         let barell = GTLangProjectModuleRender {
-            path: self.root.join("__lib__.py"),
+            path: self.root.join("__init__.py"),
             code: format!(
                 "{}\n\n\n__all__ = [{}]",
                 imports.join("\n"),
@@ -93,7 +97,7 @@ mod tespy {
         let project = GTProject::load("./examples/basic", "*.type").unwrap();
 
         assert_eq!(
-            PYProject::generate(&project, "out").unwrap(),
+            PYProject::generate(&project, "out", &Default::default()).unwrap(),
             PYProject {
                 root: root.as_path().join("out").into(),
                 modules: vec![
@@ -167,7 +171,7 @@ mod tespy {
         let project = GTProject::load("./examples/glob", "*.type").unwrap();
 
         assert_eq!(
-            PYProject::generate(&project, "out").unwrap(),
+            PYProject::generate(&project, "out", &Default::default()).unwrap(),
             PYProject {
                 root: root.as_path().join("out").into(),
                 modules: vec![
@@ -256,7 +260,7 @@ mod tespy {
         let project = GTProject::load("./examples/basic", "*.type").unwrap();
 
         assert_eq!(
-            PYProject::generate(&project, "out")
+            PYProject::generate(&project, "out", &Default::default())
                 .unwrap()
                 .render(&PYOptions::default())
                 .unwrap(),
@@ -264,7 +268,7 @@ mod tespy {
                 root: root.join("out"),
                 modules: vec![
                     GTLangProjectModuleRender {
-                        path: root.join("out/__lib__.py"),
+                        path: root.join("out/__init__.py"),
                         code: r#"from .author import *
 from .book import *
 

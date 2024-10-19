@@ -16,11 +16,12 @@ pub struct TSProjectModule {
     pub module: TSModule,
 }
 
-impl GTLangProjectModule for TSProjectModule {
+impl GTLangProjectModule<()> for TSProjectModule {
     fn generate(
         project: &GTProject,
         module: &GTProjectModule,
         out: &PathBuf,
+        _options: &(),
     ) -> Result<Self, Box<dyn std::error::Error>> {
         let path = out
             .as_path()

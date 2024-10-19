@@ -5,7 +5,11 @@ use genotype_project::project::GTProject;
 use crate::module::GTLangProjectModuleRender;
 
 pub trait GTLangProject<Options> {
-    fn generate(project: &GTProject, out: &str) -> Result<Self, Box<dyn std::error::Error>>
+    fn generate(
+        project: &GTProject,
+        out: &str,
+        options: &Options,
+    ) -> Result<Self, Box<dyn std::error::Error>>
     where
         Self: Sized;
 

@@ -17,13 +17,17 @@ pub struct TSProject {
 }
 
 impl GTLangProject<()> for TSProject {
-    fn generate(project: &GTProject, out: &str) -> Result<Self, Box<dyn std::error::Error>> {
+    fn generate(
+        project: &GTProject,
+        out: &str,
+        _options: &(),
+    ) -> Result<Self, Box<dyn std::error::Error>> {
         let root = project.root.join(out);
 
         let modules = project
             .modules
             .iter()
-            .map(|module| TSProjectModule::generate(&project, module, &root))
+            .map(|module| TSProjectModule::generate(&project, module, &root, &()))
             .collect::<Result<_, _>>()?;
 
         Ok(Self { root, modules })
@@ -61,7 +65,7 @@ mod tests {
         let project = GTProject::load("./examples/basic", "*.type").unwrap();
 
         assert_eq!(
-            TSProject::generate(&project, "out").unwrap(),
+            TSProject::generate(&project, "out", &()).unwrap(),
             TSProject {
                 root: root.as_path().join("out").into(),
                 modules: vec![
@@ -120,7 +124,7 @@ mod tests {
         let project = GTProject::load("./examples/glob", "*.type").unwrap();
 
         assert_eq!(
-            TSProject::generate(&project, "out").unwrap(),
+            TSProject::generate(&project, "out", &()).unwrap(),
             TSProject {
                 root: root.as_path().join("out").into(),
                 modules: vec![
@@ -190,7 +194,7 @@ mod tests {
         let project = GTProject::load("./examples/basic", "*.type").unwrap();
 
         assert_eq!(
-            TSProject::generate(&project, "out")
+            TSProject::generate(&project, "out", &())
                 .unwrap()
                 .render(&())
                 .unwrap(),
