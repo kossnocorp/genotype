@@ -40,7 +40,6 @@ mod tests {
     use crate::resolve::PYConvertResolve;
 
     use super::*;
-    use genotype_parser::*;
 
     #[test]
     fn test_convert_glob() {

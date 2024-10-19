@@ -3,15 +3,15 @@ use genotype_parser::tree::path::GTPath;
 
 use crate::{context::PYConvertContext, convert::PYConvert};
 
+pub fn py_parse_module_path(path: String) -> String {
+    path.replace("../", "..")
+        .replace("./", ".")
+        .replace("/", ".")
+}
+
 impl PYConvert<PYPath> for GTPath {
     fn convert(&self, context: &mut PYConvertContext) -> PYPath {
-        PYPath(
-            context
-                .resolve_path(self)
-                .replace("../", "..")
-                .replace("./", ".")
-                .replace("/", "."),
-        )
+        PYPath(py_parse_module_path(context.resolve_path(self)))
     }
 }
 

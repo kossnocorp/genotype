@@ -1,4 +1,4 @@
-use genotype_lang_py_tree::{py_indent, PYOptions, PYRender};
+use genotype_lang_py_tree::{py_indent, PYDefinition, PYOptions, PYRender};
 use std::path::PathBuf;
 
 use genotype_lang_core_project::{
@@ -32,7 +32,36 @@ impl GTLangProject<PYOptions> for PYProject {
         &self,
         options: &PYOptions,
     ) -> Result<GTLangProjectRender, Box<dyn std::error::Error>> {
-        let modules = self
+        let (imports, exports) = self
+            .modules
+            .iter()
+            .fold((vec![], vec![]), |mut acc, module| {
+                acc.0
+                    .push(format!("from .{} import *", module.name.clone()));
+
+                for definition in module.module.definitions.iter() {
+                    acc.1.push(format!(
+                        "\"{}\"",
+                        match definition {
+                            PYDefinition::Class(class) => class.name.0.clone(),
+                            PYDefinition::Alias(alias) => alias.name.0.clone(),
+                        }
+                    ));
+                }
+                acc
+            });
+        let barell = GTLangProjectModuleRender {
+            path: self.root.join("__lib__.py"),
+            code: format!(
+                "{}\n\n\n__all__ = [{}]",
+                imports.join("\n"),
+                exports.join(", ")
+            ),
+        };
+
+        let mut modules = vec![barell];
+
+        let project_modules = self
             .modules
             .iter()
             .map(|module| GTLangProjectModuleRender {
@@ -40,6 +69,7 @@ impl GTLangProject<PYOptions> for PYProject {
                 code: module.module.render(&py_indent(), options),
             })
             .collect::<Vec<_>>();
+        modules.extend(project_modules);
 
         Ok(GTLangProjectRender {
             root: self.root.clone(),
@@ -68,6 +98,7 @@ mod tespy {
                 root: root.as_path().join("out").into(),
                 modules: vec![
                     PYProjectModule {
+                        name: "author".into(),
                         path: root.as_path().join("out/author.py").into(),
                         module: PYModule {
                             doc: None,
@@ -89,6 +120,7 @@ mod tespy {
                         },
                     },
                     PYProjectModule {
+                        name: "book".into(),
                         path: root.as_path().join("out/book.py").into(),
                         module: PYModule {
                             doc: None,
@@ -140,6 +172,7 @@ mod tespy {
                 root: root.as_path().join("out").into(),
                 modules: vec![
                     PYProjectModule {
+                        name: "author".into(),
                         path: root.as_path().join("out/author.py").into(),
                         module: PYModule {
                             doc: None,
@@ -168,6 +201,7 @@ mod tespy {
                         },
                     },
                     PYProjectModule {
+                        name: "book".into(),
                         path: root.as_path().join("out/book.py").into(),
                         module: PYModule {
                             doc: None,
@@ -229,6 +263,15 @@ mod tespy {
             GTLangProjectRender {
                 root: root.join("out"),
                 modules: vec![
+                    GTLangProjectModuleRender {
+                        path: root.join("out/__lib__.py"),
+                        code: r#"from .author import *
+from .book import *
+
+
+__all__ = ["Author", "Book"]"#
+                            .into(),
+                    },
                     GTLangProjectModuleRender {
                         path: root.join("out/author.py"),
                         code: r#"from genotype import Model
