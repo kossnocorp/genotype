@@ -74,13 +74,27 @@ mod tests {
         parse_file("./examples/syntax/12-unions.type");
     }
 
+    #[test]
+    fn test_empty() {
+        parse_code("");
+    }
+
+    #[test]
+    fn test_name() {
+        parse_code(r#"HelloV1 = "hello-1""#);
+    }
+
     fn parse_file(file: &str) {
         let code = fs::read_to_string(file).expect("cannot read file");
-        let pairs = parse_gt_code(&code);
+        parse_code(&code);
+    }
+
+    fn parse_code(code: &str) {
+        let pairs = parse_gt_code(code);
 
         if let Err(err) = pairs {
             println!("{}", err);
-            assert!(false, "Failed to parse file");
+            assert!(false, "Failed to parse code");
         }
     }
 }

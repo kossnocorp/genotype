@@ -12,6 +12,8 @@ genotype_project = { version = "0.1.0", path = "../project" }
 genotype_writer = { version = "0.1.0", path = "../writer" }
 genotype_lang_core_project = { version = "0.1.0", path = "../lang/core/project" }
 genotype_lang_ts_project = { version = "0.1.0", path = "../lang/ts/project" }
+genotype_lang_py_project = { version = "0.1.0", path = "../lang/py/project" }
+genotype_lang_py_tree = { version = "0.1.0", path = "../lang/py/tree" }
 clap = { version = "4.5.19", features = ["derive"] }
 miette = { version = "7.2.0", features = ["fancy"] }
 thiserror = "1.0.64"

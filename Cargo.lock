@@ -255,6 +255,8 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "genotype_lang_core_project",
+ "genotype_lang_py_project",
+ "genotype_lang_py_tree",
  "genotype_lang_ts_project",
  "genotype_project",
  "genotype_writer",
