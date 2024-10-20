@@ -1,8 +1,8 @@
 use crate::diagnostic::error::GTCliError;
 use clap::Args;
+use genotype_config::GTConfig;
 use genotype_lang_core_project::project::GTLangProject;
 use genotype_lang_py_project::project::PYProject;
-use genotype_lang_py_tree::{PYOptions, PYVersion};
 use genotype_lang_ts_project::project::TSProject;
 use genotype_project::GTProject;
 use genotype_writer::GTWriter;
@@ -12,41 +12,32 @@ use std::path::PathBuf;
 
 #[derive(Args)]
 pub struct GTBuildCommand {
-    /// The entry points
-    #[arg(short, long, default_value = "**/*.type")]
-    entry: String,
-    /// The root directory
-    #[arg(short, long, default_value = ".")]
-    root: PathBuf,
-    /// The out directory
-    #[arg(short, long, default_value = "./out")]
-    out: PathBuf,
+    /// What to build
+    #[arg(default_value = ".")]
+    path: PathBuf,
 }
 
 pub fn build_command(args: &GTBuildCommand) -> Result<()> {
-    let root = args
-        .root
-        .canonicalize()
-        .map_err(|_| GTCliError::Canonicalize(format!("root directory {:?}", args.root)))?;
+    let config = GTConfig::load(&args.path)?;
 
-    let out = root.join(args.out.clone());
-
-    // [TODO] Use PathBuf instead of &str
-    let project = GTProject::load(root.as_os_str().to_str().unwrap(), &args.entry)?;
-    let ts = TSProject::generate(&project, out.as_os_str().to_str().unwrap(), &())
+    let project = GTProject::load(&config)?;
+    let ts = TSProject::generate(&project, &config)
         .map_err(|_| GTCliError::Generate)?
-        .render(&())
+        .render(&config)
         .map_err(|_| GTCliError::Render)?;
-    let py_options = PYOptions::new(PYVersion::Legacy);
-    let py = PYProject::generate(&project, out.as_os_str().to_str().unwrap(), &py_options)
+    let py = PYProject::generate(&project, &config)
         .map_err(|_| GTCliError::Generate)?
-        .render(&py_options)
+        .render(&config)
         .map_err(|_| GTCliError::Render)?;
     GTWriter::new(vec![ts, py])
         .write()
         .map_err(|_| GTCliError::Write)?;
 
-    println!("{} project to {:?}", "Generated".green().bold(), out);
+    println!(
+        "{} project to {:?}",
+        "Generated".green().bold(),
+        config.out()
+    );
 
     Ok(())
 }

@@ -1,3 +1,4 @@
+use genotype_config::GTConfig;
 use genotype_visitor::traverse::GTTraverse;
 use glob::glob;
 use rayon::Scope;
@@ -19,15 +20,14 @@ pub struct GTProject {
 }
 
 impl GTProject {
-    pub fn load(root: &str, pattern: &str) -> GTProjectResult<Self> {
-        let root = PathBuf::from(root)
-            .canonicalize()
-            .map_err(|_| GTProjectError::Canonicalize(format!("root directory {root}")))?;
+    pub fn load(config: &GTConfig) -> GTProjectResult<Self> {
+        let root = config.root.canonicalize().map_err(|_| {
+            GTProjectError::Canonicalize(format!("root directory {:?}", config.root))
+        })?;
         let root = Arc::new(root);
-        let pattern_path = root.join(pattern);
-        let pattern = pattern_path.to_str().unwrap();
+        let pattern = config.entry_pattern();
 
-        let entry_paths = glob(pattern).map_err(|_| GTProjectError::Unknown)?;
+        let entry_paths = glob(&pattern).map_err(|_| GTProjectError::Unknown)?;
         let entries: Vec<GTProjectModulePath> = entry_paths
             .collect::<Result<Vec<_>, _>>()
             .map_err(|_| GTProjectError::Unknown)?
@@ -37,7 +37,7 @@ impl GTProject {
             .map_err(|_| GTProjectError::Unknown)?;
 
         if entries.is_empty() {
-            return Err(GTProjectError::NoEntries(pattern.into()));
+            return Err(GTProjectError::NoEntries(pattern));
         }
 
         let processed_paths = Arc::new(Mutex::new(HashSet::new()));
@@ -124,13 +124,13 @@ mod tests {
 
     #[test]
     fn test_glob() {
-        let project = GTProject::load("./examples/basic", "*.type");
+        let project = GTProject::load(&GTConfig::from_root("./examples/basic"));
         assert_eq!(project.unwrap(), basic_project());
     }
 
     #[test]
     fn test_entry() {
-        let project = GTProject::load("./examples/basic", "order.type");
+        let project = GTProject::load(&GTConfig::from_entry("./examples/basic", "order.type"));
         assert_eq!(project.unwrap(), basic_project());
     }
 
@@ -142,7 +142,10 @@ mod tests {
             &PathBuf::from("./examples/process/anonymous.type"),
         )
         .unwrap();
-        let project = GTProject::load("./examples/process", "anonymous.type");
+        let project = GTProject::load(&GTConfig::from_entry(
+            "./examples/process",
+            "anonymous.type",
+        ));
         assert_eq!(
             project.unwrap(),
             GTProject {

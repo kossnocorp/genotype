@@ -1,11 +1,12 @@
+use genotype_config::GTConfig;
 use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
 
-use crate::{PYOptions, PYRender};
+use crate::PYRender;
 
 use super::PYModule;
 
 impl PYRender for PYModule {
-    fn render(&self, indent: &GTIndent, options: &PYOptions) -> String {
+    fn render(&self, indent: &GTIndent, config: &GTConfig) -> String {
         let imports = self
             .imports
             .iter()
@@ -17,7 +18,7 @@ impl PYRender for PYModule {
         let definitions = self
             .definitions
             .iter()
-            .map(|definition| definition.render(indent, options))
+            .map(|definition| definition.render(indent, config))
             .collect::<Vec<String>>()
             .join("\n\n");
         let has_definitions = !definitions.is_empty();
@@ -85,7 +86,7 @@ mod tests {
                     }),
                 ]
             }
-            .render(&py_indent(), &PYOptions::default()),
+            .render(&py_indent(), &Default::default()),
             r#"import .path.to.module as name
 from .path.to.module import Name, Name as Alias
 

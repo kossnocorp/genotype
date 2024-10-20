@@ -1,14 +1,15 @@
+use genotype_config::GTConfig;
 use genotype_lang_core_tree::indent::GTIndent;
 
-use crate::{PYOptions, PYRender};
+use crate::PYRender;
 
 use super::PYDefinition;
 
 impl PYRender for PYDefinition {
-    fn render(&self, indent: &GTIndent, options: &PYOptions) -> String {
+    fn render(&self, indent: &GTIndent, config: &GTConfig) -> String {
         match self {
-            PYDefinition::Alias(alias) => alias.render(indent, options),
-            PYDefinition::Class(interface) => interface.render(indent, options),
+            PYDefinition::Alias(alias) => alias.render(indent, config),
+            PYDefinition::Class(interface) => interface.render(indent, config),
         }
     }
 }
@@ -26,7 +27,7 @@ mod tests {
                 name: "Name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
             })
-            .render(&py_indent(), &PYOptions::default()),
+            .render(&py_indent(), &Default::default()),
             "type Name = str"
         );
     }
@@ -50,7 +51,7 @@ mod tests {
                     }
                 ]
             })
-            .render(&py_indent(), &PYOptions::default()),
+            .render(&py_indent(), &Default::default()),
             r#"class Name(Model):
     name: str
     age: Optional[int] = None"#

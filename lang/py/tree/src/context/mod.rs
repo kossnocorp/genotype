@@ -1,4 +1,6 @@
-use crate::{PYDependency, PYIdentifier, PYVersion};
+use genotype_lang_py_config::PYVersion;
+
+use crate::{PYDependency, PYIdentifier};
 
 #[cfg(test)]
 pub mod mock;

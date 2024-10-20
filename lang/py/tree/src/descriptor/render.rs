@@ -1,16 +1,17 @@
+use genotype_config::GTConfig;
 use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
 
-use super::{PYDescriptor, PYOptions, PYRender};
+use super::{PYDescriptor, PYRender};
 
 impl PYRender for PYDescriptor {
-    fn render(&self, indent: &GTIndent, options: &PYOptions) -> String {
+    fn render(&self, indent: &GTIndent, config: &GTConfig) -> String {
         match self {
-            PYDescriptor::List(array) => array.render(indent, options),
+            PYDescriptor::List(array) => array.render(indent, config),
             PYDescriptor::Literal(literal) => literal.render(indent),
             PYDescriptor::Primitive(primitive) => primitive.render(indent),
-            PYDescriptor::Reference(name) => name.render(indent, options),
-            PYDescriptor::Tuple(tuple) => tuple.render(indent, options),
-            PYDescriptor::Union(union) => union.render(indent, options),
+            PYDescriptor::Reference(name) => name.render(indent, config),
+            PYDescriptor::Tuple(tuple) => tuple.render(indent, config),
+            PYDescriptor::Union(union) => union.render(indent, config),
         }
     }
 }
@@ -27,7 +28,7 @@ mod tests {
             PYDescriptor::List(Box::new(PYList {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Int)
             }))
-            .render(&py_indent(), &PYOptions::default()),
+            .render(&py_indent(), &Default::default()),
             "list[int]"
         );
     }
@@ -35,13 +36,11 @@ mod tests {
     #[test]
     fn test_render_primitive() {
         assert_eq!(
-            PYDescriptor::Primitive(PYPrimitive::Boolean)
-                .render(&py_indent(), &PYOptions::default()),
+            PYDescriptor::Primitive(PYPrimitive::Boolean).render(&py_indent(), &Default::default()),
             "bool"
         );
         assert_eq!(
-            PYDescriptor::Primitive(PYPrimitive::String)
-                .render(&py_indent(), &PYOptions::default()),
+            PYDescriptor::Primitive(PYPrimitive::String).render(&py_indent(), &Default::default()),
             "str"
         );
     }
@@ -50,7 +49,7 @@ mod tests {
     fn test_render_reference() {
         assert_eq!(
             PYDescriptor::Reference(PYReference::new("Name".into(), false))
-                .render(&py_indent(), &PYOptions::default()),
+                .render(&py_indent(), &Default::default()),
             "Name"
         );
     }
@@ -64,7 +63,7 @@ mod tests {
                     PYDescriptor::Primitive(PYPrimitive::String)
                 ]
             })
-            .render(&py_indent(), &PYOptions::default()),
+            .render(&py_indent(), &Default::default()),
             "tuple[int, str]"
         );
     }
@@ -78,7 +77,7 @@ mod tests {
                     PYDescriptor::Primitive(PYPrimitive::Int),
                 ]
             })
-            .render(&py_indent(), &PYOptions::default()),
+            .render(&py_indent(), &Default::default()),
             "str | int"
         );
     }

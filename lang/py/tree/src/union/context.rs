@@ -1,3 +1,5 @@
+use genotype_lang_py_config::PYVersion;
+
 use crate::*;
 
 use super::PYUnion;
@@ -17,6 +19,7 @@ impl PYContextResolve for PYUnion {
 #[cfg(test)]
 mod tests {
     use crate::*;
+    use genotype_lang_py_config::PYVersion;
     use mock::PYContextMock;
     use pretty_assertions::assert_eq;
 

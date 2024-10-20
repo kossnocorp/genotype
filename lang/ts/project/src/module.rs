@@ -4,6 +4,7 @@ use std::{
     path::PathBuf,
 };
 
+use genotype_config::GTConfig;
 use genotype_lang_core_project::module::GTLangProjectModule;
 use genotype_lang_ts_converter::{module::TSConvertModule, resolve::TSConvertResolve};
 use genotype_lang_ts_tree::module::TSModule;
@@ -16,14 +17,14 @@ pub struct TSProjectModule {
     pub module: TSModule,
 }
 
-impl GTLangProjectModule<()> for TSProjectModule {
+impl GTLangProjectModule for TSProjectModule {
     fn generate(
         project: &GTProject,
         module: &GTProjectModule,
-        out: &PathBuf,
-        _options: &(),
+        config: &GTConfig,
     ) -> Result<Self, Box<dyn std::error::Error>> {
-        let path = out
+        let path = config
+            .out()
             .as_path()
             .join(
                 module

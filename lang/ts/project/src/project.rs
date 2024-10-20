@@ -1,3 +1,4 @@
+use genotype_config::GTConfig;
 use genotype_lang_core_tree::render::GTRender;
 use genotype_lang_ts_tree::ts_indent;
 use std::path::PathBuf;
@@ -12,28 +13,27 @@ use crate::module::TSProjectModule;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TSProject {
-    pub root: PathBuf,
     pub modules: Vec<TSProjectModule>,
 }
 
-impl GTLangProject<()> for TSProject {
+impl GTLangProject for TSProject {
     fn generate(
         project: &GTProject,
-        out: &str,
-        _options: &(),
+        config: &GTConfig,
     ) -> Result<Self, Box<dyn std::error::Error>> {
-        let root = project.root.join(out);
-
         let modules = project
             .modules
             .iter()
-            .map(|module| TSProjectModule::generate(&project, module, &root, &()))
+            .map(|module| TSProjectModule::generate(&project, module, &config))
             .collect::<Result<_, _>>()?;
 
-        Ok(Self { root, modules })
+        Ok(Self { modules })
     }
 
-    fn render(&self, _options: &()) -> Result<GTLangProjectRender, Box<dyn std::error::Error>> {
+    fn render(
+        &self,
+        _config: &GTConfig,
+    ) -> Result<GTLangProjectRender, Box<dyn std::error::Error>> {
         let modules = self
             .modules
             .iter()
@@ -43,10 +43,7 @@ impl GTLangProject<()> for TSProject {
             })
             .collect::<Vec<_>>();
 
-        Ok(GTLangProjectRender {
-            root: self.root.clone(),
-            modules,
-        })
+        Ok(GTLangProjectRender { modules })
     }
 }
 
@@ -62,12 +59,12 @@ mod tests {
     #[test]
     fn test_convert_base() {
         let root = Arc::new(PathBuf::from("./examples/basic").canonicalize().unwrap());
-        let project = GTProject::load("./examples/basic", "*.type").unwrap();
+        let config = GTConfig::from_root("./examples/basic");
+        let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            TSProject::generate(&project, "out", &()).unwrap(),
+            TSProject::generate(&project, &config).unwrap(),
             TSProject {
-                root: root.as_path().join("out").into(),
                 modules: vec![
                     TSProjectModule {
                         path: root.as_path().join("out/author.ts").into(),
@@ -121,12 +118,12 @@ mod tests {
     #[test]
     fn test_convert_glob() {
         let root = Arc::new(PathBuf::from("./examples/glob").canonicalize().unwrap());
-        let project = GTProject::load("./examples/glob", "*.type").unwrap();
+        let config = GTConfig::from_root("./examples/glob");
+        let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            TSProject::generate(&project, "out", &()).unwrap(),
+            TSProject::generate(&project, &config).unwrap(),
             TSProject {
-                root: root.as_path().join("out").into(),
                 modules: vec![
                     TSProjectModule {
                         path: root.as_path().join("out/author.ts").into(),
@@ -190,19 +187,18 @@ mod tests {
 
     #[test]
     fn test_render() {
-        let root = Arc::new(PathBuf::from("./examples/basic").canonicalize().unwrap());
-        let project = GTProject::load("./examples/basic", "*.type").unwrap();
+        let config = GTConfig::from_root("./examples/basic");
+        let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            TSProject::generate(&project, "out", &())
+            TSProject::generate(&project, &config)
                 .unwrap()
-                .render(&())
+                .render(&config)
                 .unwrap(),
             GTLangProjectRender {
-                root: root.join("out"),
                 modules: vec![
                     GTLangProjectModuleRender {
-                        path: root.join("out/author.ts"),
+                        path: "./out/author.ts".into(),
                         code: r#"export interface Author {
   name: string;
 }
@@ -210,7 +206,7 @@ mod tests {
                         .into()
                     },
                     GTLangProjectModuleRender {
-                        path: root.join("out/book.ts"),
+                        path: "./out/book.ts".into(),
                         code: r#"import { Author } from "./author.ts";
 
 export interface Book {

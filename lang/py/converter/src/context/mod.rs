@@ -1,5 +1,7 @@
 use std::vec;
 
+use genotype_config::GTConfig;
+use genotype_lang_py_config::PYVersion;
 use genotype_lang_py_tree::*;
 use genotype_parser::{GTIdentifier, GTPath};
 
@@ -7,7 +9,7 @@ use crate::resolve::PYConvertResolve;
 
 pub struct PYConvertContext {
     resolve: PYConvertResolve,
-    options: PYOptions,
+    config: GTConfig,
     imports: Vec<PYImport>,
     definitions: Vec<PYDefinition>,
     defined: Vec<PYIdentifier>,
@@ -19,7 +21,7 @@ pub struct PYConvertContext {
 
 impl PYContext for PYConvertContext {
     fn is_version(&self, version: PYVersion) -> bool {
-        self.options.version == version
+        self.config.python_version() == version
     }
 
     fn import(&mut self, dependency: PYDependency, name: PYIdentifier) {
@@ -31,10 +33,10 @@ impl PYContext for PYConvertContext {
 }
 
 impl PYConvertContext {
-    pub fn new(resolve: PYConvertResolve, options: PYOptions) -> Self {
+    pub fn new(resolve: PYConvertResolve, config: GTConfig) -> Self {
         Self {
             resolve,
-            options,
+            config,
             imports: vec![],
             definitions: vec![],
             defined: vec![],
@@ -150,7 +152,7 @@ impl PYConvertContext {
 
 impl Default for PYConvertContext {
     fn default() -> Self {
-        Self::new(PYConvertResolve::default(), PYOptions::default())
+        Self::new(PYConvertResolve::default(), Default::default())
     }
 }
 
@@ -213,7 +215,7 @@ mod tests {
         resolve
             .imported
             .insert(GTIdentifier((0, 0).into(), "Name".into()));
-        let context = PYConvertContext::new(resolve, PYOptions::default());
+        let context = PYConvertContext::new(resolve, Default::default());
         assert_eq!(
             context.is_forward_identifier(
                 &"Other".into(),

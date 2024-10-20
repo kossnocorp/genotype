@@ -1,20 +1,22 @@
+use genotype_config::GTConfig;
 use genotype_lang_core_tree::indent::GTIndent;
+use genotype_lang_py_config::PYVersion;
 
-use crate::{PYOptions, PYRender, PYVersion};
+use crate::PYRender;
 
 use super::PYTuple;
 
 impl PYRender for PYTuple {
-    fn render(&self, indent: &GTIndent, options: &PYOptions) -> String {
+    fn render(&self, indent: &GTIndent, config: &GTConfig) -> String {
         let descriptors = self
             .descriptors
             .iter()
-            .map(|d| d.render(indent, options))
+            .map(|d| d.render(indent, config))
             .collect::<Vec<String>>()
             .join(", ");
         format!(
             "{}{}{}{}",
-            if let PYVersion::Legacy = options.version {
+            if let PYVersion::Legacy = config.python_version() {
                 "Tuple"
             } else {
                 "tuple"
@@ -32,10 +34,11 @@ impl PYRender for PYTuple {
 
 #[cfg(test)]
 mod tests {
+    use genotype_lang_py_config::PYConfig;
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{descriptor::PYDescriptor, indent::py_indent, primitive::PYPrimitive, PYVersion};
+    use crate::*;
 
     #[test]
     fn test_render_tuple() {
@@ -46,7 +49,7 @@ mod tests {
                     PYDescriptor::Primitive(PYPrimitive::Int),
                 ]
             }
-            .render(&py_indent(), &PYOptions::default()),
+            .render(&py_indent(), &Default::default()),
             "tuple[str, int]"
         );
     }
@@ -57,7 +60,7 @@ mod tests {
             PYTuple {
                 descriptors: vec![]
             }
-            .render(&py_indent(), &PYOptions::default()),
+            .render(&py_indent(), &Default::default()),
             "tuple[()]"
         );
     }
@@ -68,7 +71,10 @@ mod tests {
             PYTuple {
                 descriptors: vec![]
             }
-            .render(&py_indent(), &PYOptions::new(PYVersion::Legacy)),
+            .render(
+                &py_indent(),
+                &GTConfig::default().with_python(PYConfig::new(PYVersion::Legacy))
+            ),
             "Tuple[()]"
         );
     }

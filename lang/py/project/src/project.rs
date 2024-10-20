@@ -1,4 +1,5 @@
-use genotype_lang_py_tree::{py_indent, PYDefinition, PYOptions, PYRender};
+use genotype_config::GTConfig;
+use genotype_lang_py_tree::{py_indent, PYDefinition, PYRender};
 use std::path::PathBuf;
 
 use genotype_lang_core_project::{
@@ -11,31 +12,24 @@ use crate::module::PYProjectModule;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct PYProject {
-    pub root: PathBuf,
     pub modules: Vec<PYProjectModule>,
 }
 
-impl GTLangProject<PYOptions> for PYProject {
+impl GTLangProject for PYProject {
     fn generate(
         project: &GTProject,
-        out: &str,
-        options: &PYOptions,
+        config: &GTConfig,
     ) -> Result<Self, Box<dyn std::error::Error>> {
-        let root = project.root.join(out);
-
         let modules = project
             .modules
             .iter()
-            .map(|module| PYProjectModule::generate(&project, module, &root, options))
+            .map(|module| PYProjectModule::generate(&project, module, config))
             .collect::<Result<_, _>>()?;
 
-        Ok(Self { root, modules })
+        Ok(Self { modules })
     }
 
-    fn render(
-        &self,
-        options: &PYOptions,
-    ) -> Result<GTLangProjectRender, Box<dyn std::error::Error>> {
+    fn render(&self, config: &GTConfig) -> Result<GTLangProjectRender, Box<dyn std::error::Error>> {
         let (imports, exports) = self
             .modules
             .iter()
@@ -55,7 +49,7 @@ impl GTLangProject<PYOptions> for PYProject {
                 acc
             });
         let barell = GTLangProjectModuleRender {
-            path: self.root.join("__init__.py"),
+            path: config.root.join("__init__.py"),
             code: format!(
                 "{}\n\n\n__all__ = [{}]",
                 imports.join("\n"),
@@ -70,15 +64,12 @@ impl GTLangProject<PYOptions> for PYProject {
             .iter()
             .map(|module| GTLangProjectModuleRender {
                 path: module.path.clone(),
-                code: module.module.render(&py_indent(), options),
+                code: module.module.render(&py_indent(), config),
             })
             .collect::<Vec<_>>();
         modules.extend(project_modules);
 
-        Ok(GTLangProjectRender {
-            root: self.root.clone(),
-            modules,
-        })
+        Ok(GTLangProjectRender { modules })
     }
 }
 
@@ -93,17 +84,16 @@ mod tespy {
 
     #[test]
     fn test_convert_base() {
-        let root = Arc::new(PathBuf::from("./examples/basic").canonicalize().unwrap());
-        let project = GTProject::load("./examples/basic", "*.type").unwrap();
+        let config = GTConfig::from_root("./examples/basic");
+        let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            PYProject::generate(&project, "out", &Default::default()).unwrap(),
+            PYProject::generate(&project, &config).unwrap(),
             PYProject {
-                root: root.as_path().join("out").into(),
                 modules: vec![
                     PYProjectModule {
                         name: "author".into(),
-                        path: root.as_path().join("out/author.py").into(),
+                        path: "./out/author.py".into(),
                         module: PYModule {
                             doc: None,
                             imports: vec![PYImport {
@@ -125,7 +115,7 @@ mod tespy {
                     },
                     PYProjectModule {
                         name: "book".into(),
-                        path: root.as_path().join("out/book.py").into(),
+                        path: "./out/book.py".into(),
                         module: PYModule {
                             doc: None,
                             imports: vec![
@@ -168,12 +158,12 @@ mod tespy {
     #[test]
     fn test_convert_glob() {
         let root = Arc::new(PathBuf::from("./examples/glob").canonicalize().unwrap());
-        let project = GTProject::load("./examples/glob", "*.type").unwrap();
+        let config = GTConfig::from_root("./examples/glob");
+        let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            PYProject::generate(&project, "out", &Default::default()).unwrap(),
+            PYProject::generate(&project, &config).unwrap(),
             PYProject {
-                root: root.as_path().join("out").into(),
                 modules: vec![
                     PYProjectModule {
                         name: "author".into(),
@@ -256,19 +246,18 @@ mod tespy {
 
     #[test]
     fn test_render() {
-        let root = Arc::new(PathBuf::from("./examples/basic").canonicalize().unwrap());
-        let project = GTProject::load("./examples/basic", "*.type").unwrap();
+        let config = GTConfig::from_root("./examples/basic");
+        let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            PYProject::generate(&project, "out", &Default::default())
+            PYProject::generate(&project, &config)
                 .unwrap()
-                .render(&PYOptions::default())
+                .render(&config)
                 .unwrap(),
             GTLangProjectRender {
-                root: root.join("out"),
                 modules: vec![
                     GTLangProjectModuleRender {
-                        path: root.join("out/__init__.py"),
+                        path: "./out/__init__.py".into(),
                         code: r#"from .author import *
 from .book import *
 
@@ -277,7 +266,7 @@ __all__ = ["Author", "Book"]"#
                             .into(),
                     },
                     GTLangProjectModuleRender {
-                        path: root.join("out/author.py"),
+                        path: "./out/author.py".into(),
                         code: r#"from genotype import Model
 
 class Author(Model):
@@ -286,7 +275,7 @@ class Author(Model):
                         .into()
                     },
                     GTLangProjectModuleRender {
-                        path: root.join("out/book.py"),
+                        path: "./out/book.py".into(),
                         code: r#"from .author import Author
 from genotype import Model
 

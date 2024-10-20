@@ -1,4 +1,6 @@
-use crate::{PYContext, PYContextResolve, PYDependency, PYVersion};
+use genotype_lang_py_config::PYVersion;
+
+use crate::{PYContext, PYContextResolve, PYDependency};
 
 use super::PYAlias;
 
@@ -17,6 +19,7 @@ impl PYContextResolve for PYAlias {
 #[cfg(test)]
 mod tests {
     use crate::*;
+    use genotype_lang_py_config::PYVersion;
     use mock::PYContextMock;
     use pretty_assertions::assert_eq;
 

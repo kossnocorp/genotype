@@ -1,23 +1,17 @@
-use std::path::PathBuf;
-
+use genotype_config::GTConfig;
 use genotype_project::project::GTProject;
 
 use crate::module::GTLangProjectModuleRender;
 
-pub trait GTLangProject<Options> {
-    fn generate(
-        project: &GTProject,
-        out: &str,
-        options: &Options,
-    ) -> Result<Self, Box<dyn std::error::Error>>
+pub trait GTLangProject {
+    fn generate(project: &GTProject, config: &GTConfig) -> Result<Self, Box<dyn std::error::Error>>
     where
         Self: Sized;
 
-    fn render(&self, options: &Options) -> Result<GTLangProjectRender, Box<dyn std::error::Error>>;
+    fn render(&self, config: &GTConfig) -> Result<GTLangProjectRender, Box<dyn std::error::Error>>;
 }
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTLangProjectRender {
-    pub root: PathBuf,
     pub modules: Vec<GTLangProjectModuleRender>,
 }

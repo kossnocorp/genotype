@@ -9,6 +9,7 @@ repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
 genotype_project = { version = "0.1.0", path = "../project" }
+genotype_config = { version = "0.1.0", path = "../config" }
 genotype_writer = { version = "0.1.0", path = "../writer" }
 genotype_lang_core_project = { version = "0.1.0", path = "../lang/core/project" }
 genotype_lang_ts_project = { version = "0.1.0", path = "../lang/ts/project" }

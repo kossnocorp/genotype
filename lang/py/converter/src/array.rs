@@ -14,6 +14,8 @@ impl PYConvert<PYList> for GTArray {
 
 #[cfg(test)]
 mod tests {
+    use genotype_config::GTConfig;
+    use genotype_lang_py_config::{PYConfig, PYVersion};
     use genotype_lang_py_tree::*;
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
@@ -38,8 +40,10 @@ mod tests {
 
     #[test]
     fn test_convert_resolve() {
-        let mut context =
-            PYConvertContext::new(Default::default(), PYOptions::new(PYVersion::Legacy));
+        let mut context = PYConvertContext::new(
+            Default::default(),
+            (*GTConfig::default().with_python(PYConfig::new(PYVersion::Legacy))).clone(),
+        );
         assert_eq!(
             GTArray {
                 span: (0, 0).into(),

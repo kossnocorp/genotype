@@ -1,12 +1,13 @@
+use genotype_config::GTConfig;
 use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
 
-use crate::{PYOptions, PYRender};
+use crate::PYRender;
 
 use super::PYProperty;
 
 impl PYRender for PYProperty {
-    fn render(&self, indent: &GTIndent, options: &PYOptions) -> String {
-        let descriptor = self.descriptor.render(indent, options);
+    fn render(&self, indent: &GTIndent, config: &GTConfig) -> String {
+        let descriptor = self.descriptor.render(indent, config);
 
         let descriptor = if self.required {
             descriptor
@@ -37,7 +38,7 @@ mod tests {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                 required: true
             }
-            .render(&py_indent(), &PYOptions::default()),
+            .render(&py_indent(), &Default::default()),
             "name: str"
         );
         assert_eq!(
@@ -46,7 +47,7 @@ mod tests {
                 descriptor: PYReference::new("Name".into(), false).into(),
                 required: true
             }
-            .render(&py_indent(), &PYOptions::default()),
+            .render(&py_indent(), &Default::default()),
             "name: Name"
         );
     }
@@ -59,7 +60,7 @@ mod tests {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                 required: true
             }
-            .render(&py_indent().increment(), &PYOptions::default()),
+            .render(&py_indent().increment(), &Default::default()),
             "    name: str"
         );
     }
@@ -72,7 +73,7 @@ mod tests {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                 required: false
             }
-            .render(&py_indent(), &PYOptions::default()),
+            .render(&py_indent(), &Default::default()),
             "name: Optional[str] = None"
         );
     }

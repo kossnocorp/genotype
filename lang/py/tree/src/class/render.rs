@@ -1,17 +1,18 @@
+use genotype_config::GTConfig;
 use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
 
-use crate::{PYOptions, PYRender};
+use crate::PYRender;
 
 use super::PYClass;
 
 impl PYRender for PYClass {
-    fn render(&self, indent: &GTIndent, options: &PYOptions) -> String {
+    fn render(&self, indent: &GTIndent, config: &GTConfig) -> String {
         let prop_indent = indent.increment();
 
         let properties = self
             .properties
             .iter()
-            .map(|property| property.render(&prop_indent, options))
+            .map(|property| property.render(&prop_indent, config))
             .collect::<Vec<String>>()
             .join("\n");
 
@@ -19,7 +20,7 @@ impl PYRender for PYClass {
         extensions.extend(
             self.extensions
                 .iter()
-                .map(|extension| extension.render(indent, options))
+                .map(|extension| extension.render(indent, config))
                 .collect::<Vec<_>>(),
         );
         let extensions = extensions.join(", ");
@@ -53,7 +54,7 @@ mod tests {
                 extensions: vec![],
                 properties: vec![]
             }
-            .render(&py_indent(), &PYOptions::default()),
+            .render(&py_indent(), &Default::default()),
             r#"class Name(Model):"#
         );
     }
@@ -77,7 +78,7 @@ mod tests {
                     }
                 ]
             }
-            .render(&py_indent(), &PYOptions::default()),
+            .render(&py_indent(), &Default::default()),
             r#"class Name(Model):
     name: str
     age: Optional[int] = None"#
@@ -103,7 +104,7 @@ mod tests {
                     }
                 ]
             }
-            .render(&py_indent().increment(), &PYOptions::default()),
+            .render(&py_indent().increment(), &Default::default()),
             r#"    class Name(Model):
         name: str
         age: Optional[int] = None"#
@@ -125,7 +126,7 @@ mod tests {
                     required: true
                 },]
             }
-            .render(&py_indent(), &PYOptions::default()),
+            .render(&py_indent(), &Default::default()),
             r#"class Name(Model, Hello, World):
     name: str"#
         );
