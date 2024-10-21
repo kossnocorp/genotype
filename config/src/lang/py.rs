@@ -9,12 +9,12 @@ use crate::{error::GTConfigError, result::GTConfigResult};
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GTConfigPY {
     pub enabled: Option<bool>,
-    /// Python package name. If not provided the project name will be used.
-    pub name: Option<String>,
-    /// Python module name. If not provided the package name will be used.
-    pub module: Option<String>,
     pub out: Option<PathBuf>,
     pub version: Option<PYVersion>,
+    /// Python module name. If not provided the project name will be used.
+    pub module: Option<String>,
+    /// Python package version
+    pub package: Option<toml::Value>,
 }
 
 impl GTConfigPY {
@@ -22,16 +22,10 @@ impl GTConfigPY {
         name: &Option<String>,
         config: &Option<GTConfigPY>,
     ) -> GTConfigResult<String> {
-        match (
-            name,
-            config
-                .as_ref()
-                .and_then(|c| Some((c.name.clone(), c.module.clone()))),
-        ) {
-            (_, Some((_, Some(module)))) => Ok(module),
-            (_, Some((Some(name), None))) => Ok(name.to_snake_case()),
+        match (name, config.as_ref().and_then(|c| c.module.clone())) {
+            (_, Some(module)) => Ok(module),
             (Some(name), _) => Ok(name.to_snake_case()),
-            _ => Err(GTConfigError::PythonMissingName),
+            _ => Err(GTConfigError::PythonMissingModuleName),
         }
     }
 
@@ -51,6 +45,11 @@ impl GTConfigPY {
                     .and_then(|c| c.version.clone())
                     .unwrap_or_default(),
             },
+            package: config.as_ref().and_then(|c| {
+                c.package
+                    .as_ref()
+                    .and_then(|p| toml::to_string_pretty(&p).ok())
+            }),
         })
     }
 }

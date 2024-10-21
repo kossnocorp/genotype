@@ -17,11 +17,15 @@ pub enum GTConfigError {
     #[diagnostic(code(GTCFG301))]
     FailedToConstructEntry,
 
+    #[error("cannot derive Python package name, please set `python.name` or `name`.")]
+    #[diagnostic(code(GTCFG401))]
+    PythonMissingPackageName,
+
     #[error(
         "cannot derive Python module name, please set `python.module`, `python.name` or `name`."
     )]
-    #[diagnostic(code(GTCFG401))]
-    PythonMissingName,
+    #[diagnostic(code(GTCFG402))]
+    PythonMissingModuleName,
 }
 
 impl From<figment::Error> for GTConfigError {

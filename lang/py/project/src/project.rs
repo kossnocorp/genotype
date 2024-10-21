@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use genotype_lang_py_config::PYProjectConfig;
 use genotype_lang_py_tree::{py_indent, PYDefinition, PYRender};
 
@@ -60,7 +62,49 @@ impl GTLangProject<PYProjectConfig> for PYProject {
             ),
         };
 
-        let mut modules = vec![init];
+        let dependencies = self
+            .modules
+            .iter()
+            .flat_map(|module| {
+                module
+                    .module
+                    .imports
+                    .iter()
+                    .map(|import| import.dependency.clone())
+            })
+            .collect::<HashSet<_>>();
+
+        let pyproject = GTLangProjectSource {
+            path: config.package_path("pyproject.toml".into()),
+            code: format!(
+                r#"[tool.poetry]{}
+packages = [{{ include = "{}" }}]
+
+[tool.poetry.dependencies]
+{}{}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+"#,
+                if let Some(package) = &config.package {
+                    format!("\n{}", package)
+                } else {
+                    "".into()
+                },
+                config.module,
+                config.lang.version.as_dependency_str(),
+                dependencies.iter().fold("".into(), |acc, dependency| {
+                    if let Some(str) = dependency.external_str() {
+                        format!("{acc}\n{str}")
+                    } else {
+                        acc
+                    }
+                })
+            ),
+        };
+
+        let mut modules = vec![init, pyproject];
 
         let project_modules = self
             .modules

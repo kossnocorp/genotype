@@ -17,4 +17,12 @@ impl PYDependency {
             Self::Pydantic => "pydantic".into(),
         }
     }
+
+    pub fn external_str(&self) -> Option<String> {
+        match self {
+            Self::Runtime => Some(r#"genotype = "^0.3""#.into()),
+            Self::Pydantic => Some(r#"pydantic = "^2""#.into()),
+            _ => None,
+        }
+    }
 }
