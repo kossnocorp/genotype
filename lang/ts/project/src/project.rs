@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use genotype_lang_core_tree::render::GTRender;
 use genotype_lang_ts_config::TSProjectConfig;
 use genotype_lang_ts_tree::ts_indent;
@@ -9,7 +11,7 @@ use genotype_lang_core_project::{
 };
 use genotype_project::project::GTProject;
 
-use crate::module::TSProjectModule;
+use crate::{module::TSProjectModule, package::TSPackage};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TSProject {
@@ -58,7 +60,30 @@ impl GTLangProject<TSProjectConfig> for TSProject {
             code: exports.join(""),
         };
 
-        let mut modules = vec![barrel];
+        let package = GTLangProjectSource {
+            path: config.package_path("package.json".into()),
+            code: serde_json::to_string_pretty(&TSPackage {
+                types: PathBuf::from(config.src.clone())
+                    .join("index.ts")
+                    .as_os_str()
+                    .to_str()
+                    // [TODO]
+                    .unwrap()
+                    .into(),
+                // [TODO] Merge with package?
+                // files: vec![config
+                //     .src
+                //     .as_os_str()
+                //     .to_str()
+                //     // [TODO]
+                //     .unwrap()
+                //     .into()],
+                package: config.package.clone(),
+            })
+            .unwrap(),
+        };
+
+        let mut modules = vec![package, barrel];
 
         let project_modules = self
             .modules
@@ -223,6 +248,16 @@ mod tests {
                 .unwrap(),
             GTLangProjectRender {
                 files: vec![
+                    GTLangProjectSource {
+                        path: "ts/package.json".into(),
+                        code: r#"{
+  "types": "src/index.ts",
+  "files": [
+    "src"
+  ]
+}"#
+                        .into()
+                    },
                     GTLangProjectSource {
                         path: "ts/src/index.ts".into(),
                         code: r#"export * from "./author.ts";

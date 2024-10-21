@@ -13,7 +13,7 @@ pub struct GTConfigPY {
     pub version: Option<PYVersion>,
     /// Python module name. If not provided the project name will be used.
     pub module: Option<String>,
-    /// Python package version
+    /// Python package data
     pub package: Option<toml::Value>,
 }
 

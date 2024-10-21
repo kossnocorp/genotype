@@ -69,7 +69,7 @@ impl GTConfig {
     }
 
     pub fn as_ts_project(&self) -> TSProjectConfig {
-        self.ts.clone().unwrap_or_default().into()
+        GTConfigTS::derive_project(&self.name, &self.ts)
     }
 
     pub fn python_enabled(&self) -> bool {

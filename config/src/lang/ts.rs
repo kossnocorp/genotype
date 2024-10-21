@@ -8,6 +8,8 @@ pub struct GTConfigTS {
     pub enabled: Option<bool>,
     pub out: Option<PathBuf>,
     pub src: Option<PathBuf>,
+    /// TypeScript package data
+    pub package: Option<toml::Value>,
 }
 
 impl Default for GTConfigTS {
@@ -16,15 +18,23 @@ impl Default for GTConfigTS {
             enabled: None,
             out: None,
             src: None,
+            package: None,
         }
     }
 }
 
-impl Into<TSProjectConfig> for GTConfigTS {
-    fn into(self) -> TSProjectConfig {
+impl GTConfigTS {
+    pub fn derive_project(_name: &Option<String>, config: &Option<GTConfigTS>) -> TSProjectConfig {
         TSProjectConfig {
-            out: self.out.unwrap_or(PathBuf::from("ts")),
-            src: self.src.unwrap_or(PathBuf::from("src")),
+            out: config
+                .as_ref()
+                .and_then(|c| c.out.clone())
+                .unwrap_or_else(|| PathBuf::from("ts")),
+            src: config
+                .as_ref()
+                .and_then(|c| c.src.clone())
+                .unwrap_or("src".into()),
+            package: config.as_ref().and_then(|c| c.package.clone()),
         }
     }
 }

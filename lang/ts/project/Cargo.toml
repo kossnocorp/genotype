@@ -16,6 +16,9 @@ genotype_lang_core_project = { version = "0.1.0", path = "../../core/project" }
 genotype_lang_ts_tree = { version = "0.1.0", path = "../tree" }
 genotype_lang_ts_converter = { version = "0.1.0", path = "../converter" }
 genotype_lang_ts_config = { version = "0.1.0", path = "../config" }
+toml = "0.8.19"
+serde = "1.0.210"
+serde_json = "1.0.132"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
