@@ -1,0 +1,22 @@
+Message = Reply | DM
+
+Reply = {
+  #[tag]
+  type: "reply",
+  message: string
+}
+
+DM = {
+  #[tag]
+  type: "dm",
+  message: string
+}
+
+#[hello = "world"]
+Assignment = 123
+
+#[hello("cruel", "world")]
+FnCall = true
+
+#[hello(which = "cruel", what = "world")]
+FnAssignment = true

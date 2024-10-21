@@ -75,6 +75,11 @@ mod tests {
     }
 
     #[test]
+    fn test_attributes() {
+        parse_file("./examples/syntax/13-attributes.type");
+    }
+
+    #[test]
     fn test_empty() {
         parse_code("");
     }

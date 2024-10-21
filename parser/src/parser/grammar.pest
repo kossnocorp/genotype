@@ -1,6 +1,6 @@
 module = { SOI ~ (module_doc)* ~ (import | alias)* ~ EOI }
 
-alias = { line_doc* ~ name ~ "=" ~ descriptor }
+alias = { line_doc* ~ attribute* ~ name ~ "=" ~ descriptor }
 
 name = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC)* }
 
@@ -48,9 +48,23 @@ any_property = _{ extension_property | optional_property | required_property }
 
 extension_property = { "..." ~ name }
 
-required_property = { line_doc* ~ name ~ ":" ~ descriptor }
+required_property = { line_doc* ~ attribute* ~ name ~ ":" ~ descriptor }
 
 optional_property = { line_doc* ~ name ~ "?:" ~ descriptor }
+
+// Attributes
+
+attribute = { "#[" ~ name ~ (attribute_descriptor | attribute_args | attribute_properties)? ~ "]" }
+
+attribute_descriptor = { "=" ~ attribute_value }
+
+attribute_args = { "(" ~ (attribute_value ~ ("," ~ attribute_value)*)? ~ ")" }
+
+attribute_properties = { "(" ~ attribute_property ~ ("," ~ attribute_property)* ~ ")" }
+
+attribute_property = { name ~ "=" ~ attribute_value }
+
+attribute_value = { literal | name }
 
 // Arrays
 
