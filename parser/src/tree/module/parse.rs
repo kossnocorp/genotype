@@ -1353,6 +1353,15 @@ mod tests {
                                 properties: vec![
                                     GTProperty {
                                         span: (45, 55).into(),
+                                        doc: None,
+                                        attributes: vec![GTAttribute {
+                                            span: (0, 25).into(),
+                                            name: GTAttributeName::new(
+                                                (2, 12).into(),
+                                                "tag".into(),
+                                            ),
+                                            descriptor: None,
+                                        }],
                                         name: GTKey::new((45, 50).into(), "type".into()),
                                         descriptor: GTLiteral::String(
                                             (52, 55).into(),
@@ -1360,16 +1369,14 @@ mod tests {
                                         )
                                         .into(),
                                         required: true,
-                                        doc: None,
-                                        attributes: vec![],
                                     },
                                     GTProperty {
                                         span: (45, 55).into(),
+                                        doc: None,
+                                        attributes: vec![],
                                         name: GTKey::new((45, 50).into(), "message".into()),
                                         descriptor: GTPrimitive::String((52, 55).into()).into(),
                                         required: true,
-                                        doc: None,
-                                        attributes: vec![],
                                     },
                                 ],
                             }
@@ -1391,7 +1398,14 @@ mod tests {
                                     GTProperty {
                                         span: (45, 55).into(),
                                         doc: None,
-                                        attributes: vec![],
+                                        attributes: vec![GTAttribute {
+                                            span: (0, 25).into(),
+                                            name: GTAttributeName::new(
+                                                (2, 12).into(),
+                                                "tag".into(),
+                                            ),
+                                            descriptor: None,
+                                        }],
                                         name: GTKey::new((45, 50).into(), "type".into()),
                                         descriptor: GTLiteral::String((52, 55).into(), "dm".into())
                                             .into(),
@@ -1412,21 +1426,67 @@ mod tests {
                         GTAlias {
                             span: (27, 61).into(),
                             doc: None,
-                            attributes: vec![],
+                            attributes: vec![GTAttribute {
+                                span: (0, 25).into(),
+                                name: GTAttributeName::new((2, 12).into(), "hello".into()),
+                                descriptor: Some(GTAttributeDescriptor::Assigment(
+                                    GTAttributeAssignment::new(
+                                        (0, 0).into(),
+                                        GTAttributeValue::Literal(GTLiteral::String(
+                                            (0, 0).into(),
+                                            "world".into(),
+                                        )),
+                                    ),
+                                )),
+                            }],
                             name: GTIdentifier::new((27, 36).into(), "Assignment".into()),
                             descriptor: GTLiteral::Integer((0, 0).into(), 123).into(),
                         },
                         GTAlias {
                             span: (27, 61).into(),
                             doc: None,
-                            attributes: vec![],
+                            attributes: vec![GTAttribute {
+                                span: (0, 25).into(),
+                                name: GTAttributeName::new((2, 12).into(), "hello".into()),
+                                descriptor: Some(GTAttributeDescriptor::Arguments(vec![
+                                    GTAttributeValue::Literal(GTLiteral::String(
+                                        (0, 0).into(),
+                                        "cruel".into(),
+                                    )),
+                                    GTAttributeValue::Literal(GTLiteral::String(
+                                        (0, 0).into(),
+                                        "world".into(),
+                                    )),
+                                ])),
+                            }],
                             name: GTIdentifier::new((27, 36).into(), "Arguments".into()),
                             descriptor: GTLiteral::Boolean((0, 0).into(), true).into(),
                         },
                         GTAlias {
                             span: (27, 61).into(),
                             doc: None,
-                            attributes: vec![],
+                            attributes: vec![GTAttribute {
+                                span: (0, 25).into(),
+                                name: GTAttributeName::new((2, 12).into(), "hello".into()),
+                                descriptor: Some(GTAttributeDescriptor::Properties(vec![
+                                    GTAttributeProperty::new(
+                                        (0, 0).into(),
+                                        GTAttributeKey::new((0, 5).into(), "which".into()),
+                                        GTAttributeValue::Literal(GTLiteral::String(
+                                            (0, 0).into(),
+                                            "cruel".into(),
+                                        )),
+                                    ),
+                                    GTAttributeProperty::new(
+                                        (0, 0).into(),
+                                        GTAttributeKey::new((0, 5).into(), "what".into()),
+                                        GTAttributeValue::Literal(GTLiteral::String(
+                                            (0, 0).into(),
+                                            "world".into(),
+                                        )),
+                                    ),
+                                ])),
+                            }],
                             name: GTIdentifier::new((27, 36).into(), "Properties".into()),
                             descriptor: GTLiteral::Boolean((0, 0).into(), true).into(),
                         },

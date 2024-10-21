@@ -8,5 +8,11 @@ mod parse;
 pub struct GTAttributeProperty {
     pub span: GTSpan,
     pub name: GTAttributeKey,
-    pub value: Option<GTAttributeValue>,
+    pub value: GTAttributeValue,
+}
+
+impl GTAttributeProperty {
+    pub fn new(span: GTSpan, name: GTAttributeKey, value: GTAttributeValue) -> Self {
+        Self { span, name, value }
+    }
 }
