@@ -30,6 +30,7 @@ mod tests {
             GTProperty {
                 span: (0, 0).into(),
                 doc: None,
+                attributes: vec![],
                 name: GTKey::new((0, 0).into(), "name".into()),
                 descriptor: GTPrimitive::String((0, 0).into()).into(),
                 required: false,

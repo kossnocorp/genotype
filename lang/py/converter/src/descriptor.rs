@@ -44,6 +44,7 @@ mod tests {
             GTDescriptor::Alias(Box::new(GTAlias {
                 span: (0, 0).into(),
                 doc: None,
+                attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }))
@@ -104,6 +105,7 @@ mod tests {
                     GTProperty {
                         span: (0, 0).into(),
                         doc: None,
+                        attributes: vec![],
                         name: GTKey::new((0, 0).into(), "name".into()),
                         descriptor: GTPrimitive::String((0, 0).into()).into(),
                         required: true,
@@ -111,6 +113,7 @@ mod tests {
                     GTProperty {
                         span: (0, 0).into(),
                         doc: None,
+                        attributes: vec![],
                         name: GTKey::new((0, 0).into(), "age".into()),
                         descriptor: GTPrimitive::Int((0, 0).into()).into(),
                         required: false,

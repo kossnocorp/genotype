@@ -16,7 +16,7 @@ DM = {
 Assignment = 123
 
 #[hello("cruel", "world")]
-FnCall = true
+Arguments = true
 
 #[hello(which = "cruel", what = "world")]
-FnAssignment = true
+Properties = true

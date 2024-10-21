@@ -28,6 +28,7 @@ mod tests {
         let mut property = GTProperty {
             span: (0, 0).into(),
             doc: None,
+            attributes: vec![],
             name: GTKey((0, 0).into(), "key".into()),
             descriptor: GTPrimitive::String((0, 0).into()).into(),
             required: true,
@@ -50,6 +51,7 @@ mod tests {
         let mut property = GTProperty {
             span: (0, 0).into(),
             doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
+            attributes: vec![],
             name: GTKey((0, 0).into(), "key".into()),
             descriptor: GTPrimitive::String((0, 0).into()).into(),
             required: true,

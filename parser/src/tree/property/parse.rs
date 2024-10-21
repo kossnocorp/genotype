@@ -88,6 +88,7 @@ fn parse(
             Ok(GTProperty {
                 span,
                 doc,
+                attributes: vec![], // [TODO]
                 name,
                 descriptor,
                 required,
@@ -116,6 +117,7 @@ mod tests {
             GTProperty {
                 span: (0, 13).into(),
                 doc: None,
+                attributes: vec![],
                 name: GTKey::new((0, 5).into(), "world".into()),
                 descriptor: GTPrimitive::String((7, 13).into()).into(),
                 required: true

@@ -37,6 +37,7 @@ mod tests {
         let property = GTProperty {
             span: (0, 0).into(),
             doc: None,
+            attributes: vec![],
             name: GTKey((0, 0).into(), "key".into()),
             descriptor: GTPrimitive::String((0, 0).into()).into(),
             required: true,

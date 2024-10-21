@@ -71,6 +71,7 @@ fn parse(
             Ok(GTAlias {
                 span,
                 doc,
+                attributes: vec![], // [TODO]
                 name,
                 descriptor,
             })
@@ -99,6 +100,7 @@ mod tests {
                 span: (0, 25).into(),
                 name: GTIdentifier::new((0, 5).into(), "Hello".into()),
                 doc: None,
+                attributes: vec![],
                 descriptor: GTObject {
                     span: (8, 25).into(),
                     name: GTIdentifier::new((0, 5).into(), "Hello".into()).into(),
@@ -106,6 +108,7 @@ mod tests {
                     properties: vec![GTProperty {
                         span: (10, 23).into(),
                         doc: None,
+                        attributes: vec![],
                         name: GTKey((10, 15).into(), "world".into()),
                         descriptor: GTPrimitive::String((17, 23).into()).into(),
                         required: true,

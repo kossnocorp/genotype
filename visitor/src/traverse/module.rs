@@ -42,6 +42,7 @@ mod tests {
         let alias = GTAlias {
             span: (0, 0).into(),
             doc: None,
+            attributes: vec![],
             name: GTIdentifier::new((0, 0).into(), "Name".into()),
             descriptor: GTPrimitive::String((0, 0).into()).into(),
         };
@@ -79,6 +80,7 @@ mod tests {
         let alias = GTAlias {
             span: (0, 0).into(),
             doc: None,
+            attributes: vec![],
             name: GTIdentifier::new((0, 0).into(), "Name".into()),
             descriptor: GTPrimitive::String((0, 0).into()).into(),
         };

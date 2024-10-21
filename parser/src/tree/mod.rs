@@ -1,5 +1,12 @@
 pub mod alias;
 pub mod array;
+pub mod attribute;
+pub mod attribute_assigment;
+pub mod attribute_descriptor;
+pub mod attribute_key;
+pub mod attribute_name;
+pub mod attribute_property;
+pub mod attribute_value;
 pub mod context;
 pub mod descriptor;
 pub mod doc;
@@ -24,6 +31,13 @@ pub mod union;
 
 pub use alias::*;
 pub use array::*;
+pub use attribute::*;
+pub use attribute_assigment::*;
+pub use attribute_descriptor::*;
+pub use attribute_key::*;
+pub use attribute_name::*;
+pub use attribute_property::*;
+pub use attribute_value::*;
 pub use context::*;
 pub use descriptor::*;
 pub use doc::*;

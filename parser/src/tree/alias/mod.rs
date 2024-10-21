@@ -8,6 +8,7 @@ mod parse;
 pub struct GTAlias {
     pub span: GTSpan,
     pub doc: Option<GTDoc>,
+    pub attributes: Vec<GTAttribute>,
     pub name: GTIdentifier,
     pub descriptor: GTDescriptor,
 }

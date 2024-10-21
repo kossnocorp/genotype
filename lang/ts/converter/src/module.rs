@@ -89,6 +89,7 @@ mod tests {
                         GTAlias {
                             span: (0, 0).into(),
                             doc: None,
+                            attributes: vec![],
                             name: GTIdentifier::new((0, 0).into(), "User".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 span: (0, 0).into(),
@@ -98,6 +99,7 @@ mod tests {
                                     GTProperty {
                                         span: (0, 0).into(),
                                         doc: None,
+                                        attributes: vec![],
                                         name: GTKey::new((0, 0).into(), "name".into()),
                                         descriptor: GTPrimitive::String((0, 0).into()).into(),
                                         required: true,
@@ -105,6 +107,7 @@ mod tests {
                                     GTProperty {
                                         span: (0, 0).into(),
                                         doc: None,
+                                        attributes: vec![],
                                         name: GTKey::new((0, 0).into(), "age".into()),
                                         descriptor: GTPrimitive::Int((0, 0).into()).into(),
                                         required: false,
@@ -115,6 +118,7 @@ mod tests {
                         GTAlias {
                             span: (0, 0).into(),
                             doc: None,
+                            attributes: vec![],
                             name: GTIdentifier::new((0, 0).into(), "Order".into()),
                             descriptor: GTDescriptor::Object(GTObject {
                                 span: (0, 0).into(),
@@ -123,10 +127,12 @@ mod tests {
                                 properties: vec![GTProperty {
                                     span: (0, 0).into(),
                                     doc: None,
+                                    attributes: vec![],
                                     name: GTKey::new((0, 0).into(), "book".into()),
                                     descriptor: GTDescriptor::Alias(Box::new(GTAlias {
                                         span: (0, 0).into(),
                                         doc: None,
+                                        attributes: vec![],
                                         name: GTIdentifier::new((0, 0).into(), "Book".into()),
                                         descriptor: GTDescriptor::Object(GTObject {
                                             span: (0, 0).into(),
@@ -137,6 +143,7 @@ mod tests {
                                                 GTProperty {
                                                     span: (0, 0).into(),
                                                     doc: None,
+                                                    attributes: vec![],
                                                     name: GTKey::new((0, 0).into(), "title".into()),
                                                     descriptor: GTDescriptor::Primitive(
                                                         GTPrimitive::String((0, 0).into())
@@ -146,6 +153,7 @@ mod tests {
                                                 GTProperty {
                                                     span: (0, 0).into(),
                                                     doc: None,
+                                                    attributes: vec![],
                                                     name: GTKey::new(
                                                         (0, 0).into(),
                                                         "author".into()
@@ -167,6 +175,7 @@ mod tests {
                         GTAlias {
                             span: (0, 0).into(),
                             doc: None,
+                            attributes: vec![],
                             name: GTIdentifier::new((0, 0).into(), "Name".into()),
                             descriptor: GTPrimitive::String((0, 0).into()).into(),
                         },

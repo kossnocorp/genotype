@@ -70,6 +70,7 @@ mod tests {
                 properties: vec![GTProperty {
                     span: (2, 15).into(),
                     doc: None,
+                    attributes: vec![],
                     name: GTKey((2, 7).into(), "hello".into()),
                     descriptor: GTPrimitive::String((9, 15).into()).into(),
                     required: true,
@@ -140,6 +141,7 @@ mod tests {
                 properties: vec![GTProperty {
                     span: (2, 15).into(),
                     doc: None,
+                    attributes: vec![],
                     name: GTKey((2, 7).into(), "hello".into()),
                     descriptor: GTPrimitive::String((9, 15).into()).into(),
                     required: true,
