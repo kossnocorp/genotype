@@ -20,13 +20,13 @@ impl PYRender for PYModule {
             .iter()
             .map(|definition| definition.render(indent, config))
             .collect::<Vec<String>>()
-            .join("\n\n");
+            .join("\n\n\n");
         let has_definitions = !definitions.is_empty();
 
         let mut str = imports;
 
         if has_imports && has_definitions {
-            str.push_str("\n\n");
+            str.push_str("\n\n\n");
         }
 
         str.push_str(&definitions);
@@ -92,7 +92,9 @@ mod tests {
             r#"import .path.to.module as name
 from .path.to.module import Name, Name as Alias
 
+
 type Name = str
+
 
 class Name(Model):
     name: str

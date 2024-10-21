@@ -104,7 +104,7 @@ build-backend = "poetry.core.masonry.api"
             ),
         };
 
-        let mut modules = vec![init, pyproject];
+        let mut modules = vec![pyproject, init];
 
         let project_modules = self
             .modules
@@ -311,6 +311,21 @@ mod tests {
             GTLangProjectRender {
                 files: vec![
                     GTLangProjectSource {
+                        path: "py/pyproject.toml".into(),
+                        code: r#"[tool.poetry]
+packages = [{ include = "module" }]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+genotype = "^0.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+"#
+                        .into(),
+                    },
+                    GTLangProjectSource {
                         path: "py/module/__init__.py".into(),
                         code: r#"from .author import *
 from .book import *
@@ -323,6 +338,7 @@ __all__ = ["Author", "Book"]"#
                         path: "py/module/author.py".into(),
                         code: r#"from genotype import Model
 
+
 class Author(Model):
     name: str
 "#
@@ -332,6 +348,7 @@ class Author(Model):
                         path: "py/module/book.py".into(),
                         code: r#"from .author import Author
 from genotype import Model
+
 
 class Book(Model):
     title: str
