@@ -32,9 +32,35 @@ impl GTLangProject<TSProjectConfig> for TSProject {
 
     fn render(
         &self,
-        _config: &TSProjectConfig,
+        config: &TSProjectConfig,
     ) -> Result<GTLangProjectRender, Box<dyn std::error::Error>> {
-        let modules = self
+        let exports = self
+            .modules
+            .iter()
+            .map(|module| {
+                format!(
+                    r#"export * from "./{}";
+"#,
+                    module
+                        .path
+                        .strip_prefix(config.out.join(config.src.clone()))
+                        // [TODO]
+                        .unwrap()
+                        .as_os_str()
+                        .to_str()
+                        // [TODO]
+                        .unwrap()
+                )
+            })
+            .collect::<Vec<_>>();
+        let barrel = GTLangProjectSource {
+            path: config.source_path("index.ts".into()),
+            code: exports.join(""),
+        };
+
+        let mut modules = vec![barrel];
+
+        let project_modules = self
             .modules
             .iter()
             .map(|module| GTLangProjectSource {
@@ -42,6 +68,7 @@ impl GTLangProject<TSProjectConfig> for TSProject {
                 code: module.module.render(&ts_indent()),
             })
             .collect::<Vec<_>>();
+        modules.extend(project_modules);
 
         Ok(GTLangProjectRender { files: modules })
     }
@@ -196,6 +223,13 @@ mod tests {
                 .unwrap(),
             GTLangProjectRender {
                 files: vec![
+                    GTLangProjectSource {
+                        path: "ts/src/index.ts".into(),
+                        code: r#"export * from "./author.ts";
+export * from "./book.ts";
+"#
+                        .into()
+                    },
                     GTLangProjectSource {
                         path: "ts/src/author.ts".into(),
                         code: r#"export interface Author {
