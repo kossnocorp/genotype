@@ -1,10 +1,10 @@
-use genotype_config::GTConfig;
+use genotype_lang_py_config::PYLangConfig;
 use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
 
 use super::{PYDescriptor, PYRender};
 
 impl PYRender for PYDescriptor {
-    fn render(&self, indent: &GTIndent, config: &GTConfig) -> String {
+    fn render(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
         match self {
             PYDescriptor::List(array) => array.render(indent, config),
             PYDescriptor::Literal(literal) => literal.render(indent),

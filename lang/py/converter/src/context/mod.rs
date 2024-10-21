@@ -1,7 +1,6 @@
 use std::vec;
 
-use genotype_config::GTConfig;
-use genotype_lang_py_config::PYVersion;
+use genotype_lang_py_config::{PYLangConfig, PYVersion};
 use genotype_lang_py_tree::*;
 use genotype_parser::{GTIdentifier, GTPath};
 
@@ -9,7 +8,7 @@ use crate::resolve::PYConvertResolve;
 
 pub struct PYConvertContext {
     resolve: PYConvertResolve,
-    config: GTConfig,
+    config: PYLangConfig,
     imports: Vec<PYImport>,
     definitions: Vec<PYDefinition>,
     defined: Vec<PYIdentifier>,
@@ -21,7 +20,7 @@ pub struct PYConvertContext {
 
 impl PYContext for PYConvertContext {
     fn is_version(&self, version: PYVersion) -> bool {
-        self.config.python_version() == version
+        self.config.version == version
     }
 
     fn import(&mut self, dependency: PYDependency, name: PYIdentifier) {
@@ -33,7 +32,7 @@ impl PYContext for PYConvertContext {
 }
 
 impl PYConvertContext {
-    pub fn new(resolve: PYConvertResolve, config: GTConfig) -> Self {
+    pub fn new(resolve: PYConvertResolve, config: PYLangConfig) -> Self {
         Self {
             resolve,
             config,

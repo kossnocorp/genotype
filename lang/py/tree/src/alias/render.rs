@@ -1,5 +1,5 @@
-use genotype_config::GTConfig;
 use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use genotype_lang_py_config::PYLangConfig;
 use genotype_lang_py_config::PYVersion;
 
 use crate::PYRender;
@@ -7,11 +7,11 @@ use crate::PYRender;
 use super::PYAlias;
 
 impl PYRender for PYAlias {
-    fn render(&self, indent: &GTIndent, config: &GTConfig) -> String {
+    fn render(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
         let name = self.name.render(indent);
         let descriptor = self.descriptor.render(indent, config);
 
-        if let PYVersion::Legacy = config.python_version() {
+        if let PYVersion::Legacy = config.version {
             format!("{} : TypeAlias = {}", name, descriptor)
         } else {
             format!("type {} = {}", name, descriptor)
@@ -21,8 +21,8 @@ impl PYRender for PYAlias {
 
 #[cfg(test)]
 mod tests {
-    use genotype_config::GTConfig;
-    use genotype_lang_py_config::{PYConfig, PYVersion};
+    use genotype_lang_py_config::PYLangConfig;
+    use genotype_lang_py_config::PYVersion;
     use pretty_assertions::assert_eq;
 
     use crate::*;
@@ -46,10 +46,7 @@ mod tests {
                 name: "Name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String)
             }
-            .render(
-                &py_indent(),
-                &GTConfig::default().with_python(PYConfig::new(PYVersion::Legacy))
-            ),
+            .render(&py_indent(), &PYLangConfig::new(PYVersion::Legacy)),
             "Name : TypeAlias = str"
         );
     }

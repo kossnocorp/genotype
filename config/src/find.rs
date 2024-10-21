@@ -1,6 +1,5 @@
 use std::path::PathBuf;
 
-use clap::Parser;
 use figment::{
     providers::{Env, Format, Serialized, Toml},
     Figment,
@@ -14,12 +13,17 @@ impl GTConfig {
     pub fn load(path: &PathBuf) -> GTConfigResult<Self> {
         let file = Self::find(path)?;
 
-        let config: GTConfig = Figment::from(Serialized::defaults(GTConfig::default()))
+        let mut config: GTConfig = Figment::from(Serialized::defaults(GTConfig::default()))
             // [TODO] Integrate with CLI:
             // .merge(Serialized::defaults(GTConfig::parse()))
             .merge(Toml::file(file))
             .merge(Env::prefixed("GT_"))
             .extract()?;
+
+        if let None = config.root {
+            // [TODO] Error here
+            config.root = Some(path.parent().unwrap().to_path_buf());
+        }
 
         Ok(config)
     }

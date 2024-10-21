@@ -19,19 +19,29 @@ pub struct GTBuildCommand {
 
 pub fn build_command(args: &GTBuildCommand) -> Result<()> {
     let config = GTConfig::load(&args.path)?;
-
     let project = GTProject::load(&config)?;
-    let ts = TSProject::generate(&project, &config)
-        .map_err(|_| GTCliError::Generate)?
-        .render(&config)
-        .map_err(|_| GTCliError::Render)?;
-    let py = PYProject::generate(&project, &config)
-        .map_err(|_| GTCliError::Generate)?
-        .render(&config)
-        .map_err(|_| GTCliError::Render)?;
-    GTWriter::new(vec![ts, py])
-        .write()
-        .map_err(|_| GTCliError::Write)?;
+
+    let mut langs = vec![];
+
+    if config.ts_enabled() {
+        let ts_config = config.as_ts_project();
+        let ts = TSProject::generate(&project, &ts_config)
+            .map_err(|_| GTCliError::Generate)?
+            .render(&ts_config)
+            .map_err(|_| GTCliError::Render)?;
+        langs.push(ts);
+    }
+
+    if config.python_enabled() {
+        let py_config = config.as_python_project().unwrap();
+        let py = PYProject::generate(&project, &py_config)
+            .map_err(|_| GTCliError::Generate)?
+            .render(&py_config)
+            .map_err(|_| GTCliError::Render)?;
+        langs.push(py);
+    }
+
+    GTWriter::write(&langs, &config).map_err(|_| GTCliError::Write)?;
 
     println!(
         "{} project to {:?}",

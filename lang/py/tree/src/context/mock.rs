@@ -1,4 +1,4 @@
-use genotype_lang_py_config::{PYConfig, PYVersion};
+use genotype_lang_py_config::{PYLangConfig, PYVersion};
 
 use crate::{PYDependency, PYIdentifier};
 
@@ -7,14 +7,14 @@ use super::PYContext;
 pub struct PYContextMock {
     imports: Vec<(PYDependency, PYIdentifier)>,
 
-    config: PYConfig,
+    config: PYLangConfig,
 }
 
 impl PYContextMock {
     pub fn new(version: PYVersion) -> Self {
         Self {
             imports: Vec::new(),
-            config: PYConfig::new(version),
+            config: PYLangConfig::new(version),
         }
     }
 
@@ -30,7 +30,7 @@ impl PYContextMock {
 
 impl Default for PYContextMock {
     fn default() -> Self {
-        Self::new(PYVersion::V3_12)
+        Self::new(PYVersion::Latest)
     }
 }
 
@@ -40,6 +40,6 @@ impl PYContext for PYContextMock {
     }
 
     fn is_version(&self, version: PYVersion) -> bool {
-        self.config.version.clone().unwrap_or_default() == version
+        self.config.version == version
     }
 }

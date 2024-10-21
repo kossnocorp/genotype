@@ -1,12 +1,12 @@
-use genotype_config::GTConfig;
 use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use genotype_lang_py_config::PYLangConfig;
 
 use crate::PYRender;
 
 use super::PYProperty;
 
 impl PYRender for PYProperty {
-    fn render(&self, indent: &GTIndent, config: &GTConfig) -> String {
+    fn render(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
         let descriptor = self.descriptor.render(indent, config);
 
         let descriptor = if self.required {

@@ -4,8 +4,8 @@ use std::{
     path::PathBuf,
 };
 
-use genotype_config::GTConfig;
 use genotype_lang_core_project::module::GTLangProjectModule;
+use genotype_lang_ts_config::TSProjectConfig;
 use genotype_lang_ts_converter::{module::TSConvertModule, resolve::TSConvertResolve};
 use genotype_lang_ts_tree::module::TSModule;
 use genotype_parser::{tree::GTImportReference, GTIdentifier};
@@ -17,23 +17,19 @@ pub struct TSProjectModule {
     pub module: TSModule,
 }
 
-impl GTLangProjectModule for TSProjectModule {
+impl GTLangProjectModule<TSProjectConfig> for TSProjectModule {
     fn generate(
         project: &GTProject,
         module: &GTProjectModule,
-        config: &GTConfig,
+        config: &TSProjectConfig,
     ) -> Result<Self, Box<dyn std::error::Error>> {
-        let path = config
-            .out()
-            .as_path()
-            .join(
-                module
-                    .path
-                    .as_path()
-                    .strip_prefix(project.root.as_path())?
-                    .with_extension("ts"),
-            )
-            .into();
+        let path = config.source_path(
+            module
+                .path
+                .as_path()
+                .strip_prefix(project.root.as_path())?
+                .with_extension("ts"),
+        );
 
         let mut resolve = TSConvertResolve::new();
         let mut prefixes: HashMap<String, u8> = HashMap::new();

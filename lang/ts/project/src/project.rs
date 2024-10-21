@@ -1,7 +1,6 @@
-use genotype_config::GTConfig;
 use genotype_lang_core_tree::render::GTRender;
+use genotype_lang_ts_config::TSProjectConfig;
 use genotype_lang_ts_tree::ts_indent;
-use std::path::PathBuf;
 
 use genotype_lang_core_project::{
     module::{GTLangProjectModule, GTLangProjectModuleRender},
@@ -16,15 +15,15 @@ pub struct TSProject {
     pub modules: Vec<TSProjectModule>,
 }
 
-impl GTLangProject for TSProject {
+impl GTLangProject<TSProjectConfig> for TSProject {
     fn generate(
         project: &GTProject,
-        config: &GTConfig,
+        config: &TSProjectConfig,
     ) -> Result<Self, Box<dyn std::error::Error>> {
         let modules = project
             .modules
             .iter()
-            .map(|module| TSProjectModule::generate(&project, module, &config))
+            .map(|module| TSProjectModule::generate(&project, module, config))
             .collect::<Result<_, _>>()?;
 
         Ok(Self { modules })
@@ -32,7 +31,7 @@ impl GTLangProject for TSProject {
 
     fn render(
         &self,
-        _config: &GTConfig,
+        _config: &TSProjectConfig,
     ) -> Result<GTLangProjectRender, Box<dyn std::error::Error>> {
         let modules = self
             .modules
@@ -49,8 +48,7 @@ impl GTLangProject for TSProject {
 
 #[cfg(test)]
 mod tests {
-    use std::{path::PathBuf, sync::Arc};
-
+    use genotype_config::GTConfig;
     use genotype_lang_ts_tree::*;
     use pretty_assertions::assert_eq;
 
@@ -58,16 +56,15 @@ mod tests {
 
     #[test]
     fn test_convert_base() {
-        let root = Arc::new(PathBuf::from("./examples/basic").canonicalize().unwrap());
-        let config = GTConfig::from_root("./examples/basic");
+        let config = GTConfig::from_root("module", "./examples/basic");
         let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            TSProject::generate(&project, &config).unwrap(),
+            TSProject::generate(&project, &config.as_ts_project()).unwrap(),
             TSProject {
                 modules: vec![
                     TSProjectModule {
-                        path: root.as_path().join("out/author.ts").into(),
+                        path: "ts/src/author.ts".into(),
                         module: TSModule {
                             doc: None,
                             imports: vec![],
@@ -83,7 +80,7 @@ mod tests {
                         },
                     },
                     TSProjectModule {
-                        path: root.as_path().join("out/book.ts").into(),
+                        path: "ts/src/book.ts".into(),
                         module: TSModule {
                             doc: None,
                             imports: vec![TSImport {
@@ -117,16 +114,16 @@ mod tests {
 
     #[test]
     fn test_convert_glob() {
-        let root = Arc::new(PathBuf::from("./examples/glob").canonicalize().unwrap());
-        let config = GTConfig::from_root("./examples/glob");
+        let config = GTConfig::from_root("module", "./examples/glob");
+        let ts_config = config.as_ts_project();
         let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            TSProject::generate(&project, &config).unwrap(),
+            TSProject::generate(&project, &ts_config).unwrap(),
             TSProject {
                 modules: vec![
                     TSProjectModule {
-                        path: root.as_path().join("out/author.ts").into(),
+                        path: "ts/src/author.ts".into(),
                         module: TSModule {
                             doc: None,
                             imports: vec![],
@@ -148,7 +145,7 @@ mod tests {
                         },
                     },
                     TSProjectModule {
-                        path: root.as_path().join("out/book.ts").into(),
+                        path: "ts/src/book.ts".into(),
                         module: TSModule {
                             doc: None,
                             imports: vec![TSImport {
@@ -187,18 +184,19 @@ mod tests {
 
     #[test]
     fn test_render() {
-        let config = GTConfig::from_root("./examples/basic");
+        let config = GTConfig::from_root("module", "./examples/basic");
+        let ts_config = config.as_ts_project();
         let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            TSProject::generate(&project, &config)
+            TSProject::generate(&project, &ts_config)
                 .unwrap()
-                .render(&config)
+                .render(&ts_config)
                 .unwrap(),
             GTLangProjectRender {
                 modules: vec![
                     GTLangProjectModuleRender {
-                        path: "./out/author.ts".into(),
+                        path: "ts/src/author.ts".into(),
                         code: r#"export interface Author {
   name: string;
 }
@@ -206,7 +204,7 @@ mod tests {
                         .into()
                     },
                     GTLangProjectModuleRender {
-                        path: "./out/book.ts".into(),
+                        path: "ts/src/book.ts".into(),
                         code: r#"import { Author } from "./author.ts";
 
 export interface Book {

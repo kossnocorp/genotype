@@ -1,12 +1,12 @@
-use genotype_config::GTConfig;
 use genotype_lang_core_tree::indent::GTIndent;
+use genotype_lang_py_config::PYLangConfig;
 
 use crate::PYRender;
 
 use super::PYDefinition;
 
 impl PYRender for PYDefinition {
-    fn render(&self, indent: &GTIndent, config: &GTConfig) -> String {
+    fn render(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
         match self {
             PYDefinition::Alias(alias) => alias.render(indent, config),
             PYDefinition::Class(interface) => interface.render(indent, config),

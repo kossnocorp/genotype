@@ -1,5 +1,5 @@
-use genotype_config::GTConfig;
 use genotype_lang_core_tree::indent::GTIndent;
+use genotype_lang_py_config::PYLangConfig;
 use genotype_lang_py_config::PYVersion;
 
 use crate::PYRender;
@@ -7,19 +7,19 @@ use crate::PYRender;
 use super::PYUnion;
 
 impl PYRender for PYUnion {
-    fn render(&self, indent: &GTIndent, config: &GTConfig) -> String {
+    fn render(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
         let content = self
             .descriptors
             .iter()
             .map(|d| d.render(indent, config))
             .collect::<Vec<String>>()
-            .join(if let PYVersion::Legacy = config.python_version() {
+            .join(if let PYVersion::Legacy = config.version {
                 ", "
             } else {
                 " | "
             });
 
-        if let PYVersion::Legacy = config.python_version() {
+        if let PYVersion::Legacy = config.version {
             format!("Union[{}]", content)
         } else {
             content
@@ -29,7 +29,7 @@ impl PYRender for PYUnion {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_py_config::PYConfig;
+    use genotype_lang_py_config::PYLangConfig;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -58,10 +58,7 @@ mod tests {
                     PYDescriptor::Primitive(PYPrimitive::Int),
                 ]
             }
-            .render(
-                &py_indent(),
-                &GTConfig::default().with_python(PYConfig::new(PYVersion::Legacy))
-            ),
+            .render(&py_indent(), &PYLangConfig::new(PYVersion::Legacy)),
             "Union[str, int]"
         );
     }

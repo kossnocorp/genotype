@@ -1,14 +1,13 @@
-use genotype_config::GTConfig;
 use genotype_project::project::GTProject;
 
 use crate::module::GTLangProjectModuleRender;
 
-pub trait GTLangProject {
-    fn generate(project: &GTProject, config: &GTConfig) -> Result<Self, Box<dyn std::error::Error>>
+pub trait GTLangProject<Config> {
+    fn generate(project: &GTProject, config: &Config) -> Result<Self, Box<dyn std::error::Error>>
     where
         Self: Sized;
 
-    fn render(&self, config: &GTConfig) -> Result<GTLangProjectRender, Box<dyn std::error::Error>>;
+    fn render(&self, config: &Config) -> Result<GTLangProjectRender, Box<dyn std::error::Error>>;
 }
 
 #[derive(Debug, PartialEq, Clone)]

@@ -15,6 +15,7 @@ genotype_lang_core_tree = { version = "0.1.0", path = "../../core/tree" }
 genotype_lang_core_project = { version = "0.1.0", path = "../../core/project" }
 genotype_lang_ts_tree = { version = "0.1.0", path = "../tree" }
 genotype_lang_ts_converter = { version = "0.1.0", path = "../converter" }
+genotype_lang_ts_config = { version = "0.1.0", path = "../config" }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

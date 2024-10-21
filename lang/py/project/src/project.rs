@@ -1,6 +1,5 @@
-use genotype_config::GTConfig;
+use genotype_lang_py_config::PYProjectConfig;
 use genotype_lang_py_tree::{py_indent, PYDefinition, PYRender};
-use std::path::PathBuf;
 
 use genotype_lang_core_project::{
     module::{GTLangProjectModule, GTLangProjectModuleRender},
@@ -15,10 +14,10 @@ pub struct PYProject {
     pub modules: Vec<PYProjectModule>,
 }
 
-impl GTLangProject for PYProject {
+impl GTLangProject<PYProjectConfig> for PYProject {
     fn generate(
         project: &GTProject,
-        config: &GTConfig,
+        config: &PYProjectConfig,
     ) -> Result<Self, Box<dyn std::error::Error>> {
         let modules = project
             .modules
@@ -29,7 +28,10 @@ impl GTLangProject for PYProject {
         Ok(Self { modules })
     }
 
-    fn render(&self, config: &GTConfig) -> Result<GTLangProjectRender, Box<dyn std::error::Error>> {
+    fn render(
+        &self,
+        config: &PYProjectConfig,
+    ) -> Result<GTLangProjectRender, Box<dyn std::error::Error>> {
         let (imports, exports) = self
             .modules
             .iter()
@@ -48,8 +50,8 @@ impl GTLangProject for PYProject {
                 }
                 acc
             });
-        let barell = GTLangProjectModuleRender {
-            path: config.root.join("__init__.py"),
+        let init = GTLangProjectModuleRender {
+            path: config.source_path("__init__.py".into()),
             code: format!(
                 "{}\n\n\n__all__ = [{}]",
                 imports.join("\n"),
@@ -57,14 +59,14 @@ impl GTLangProject for PYProject {
             ),
         };
 
-        let mut modules = vec![barell];
+        let mut modules = vec![init];
 
         let project_modules = self
             .modules
             .iter()
             .map(|module| GTLangProjectModuleRender {
                 path: module.path.clone(),
-                code: module.module.render(&py_indent(), config),
+                code: module.module.render(&py_indent(), &config.lang),
             })
             .collect::<Vec<_>>();
         modules.extend(project_modules);
@@ -74,9 +76,8 @@ impl GTLangProject for PYProject {
 }
 
 #[cfg(test)]
-mod tespy {
-    use std::{path::PathBuf, sync::Arc};
-
+mod tests {
+    use genotype_config::GTConfig;
     use genotype_lang_py_tree::*;
     use pretty_assertions::assert_eq;
 
@@ -84,16 +85,17 @@ mod tespy {
 
     #[test]
     fn test_convert_base() {
-        let config = GTConfig::from_root("./examples/basic");
+        let config = GTConfig::from_root("module", "./examples/basic");
+        let py_config = config.as_python_project().unwrap();
         let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            PYProject::generate(&project, &config).unwrap(),
+            PYProject::generate(&project, &py_config).unwrap(),
             PYProject {
                 modules: vec![
                     PYProjectModule {
                         name: "author".into(),
-                        path: "./out/author.py".into(),
+                        path: "py/module/author.py".into(),
                         module: PYModule {
                             doc: None,
                             imports: vec![PYImport {
@@ -115,7 +117,7 @@ mod tespy {
                     },
                     PYProjectModule {
                         name: "book".into(),
-                        path: "./out/book.py".into(),
+                        path: "py/module/book.py".into(),
                         module: PYModule {
                             doc: None,
                             imports: vec![
@@ -157,17 +159,17 @@ mod tespy {
 
     #[test]
     fn test_convert_glob() {
-        let root = Arc::new(PathBuf::from("./examples/glob").canonicalize().unwrap());
-        let config = GTConfig::from_root("./examples/glob");
+        let config = GTConfig::from_root("module", "./examples/glob");
+        let py_config = config.as_python_project().unwrap();
         let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            PYProject::generate(&project, &config).unwrap(),
+            PYProject::generate(&project, &py_config).unwrap(),
             PYProject {
                 modules: vec![
                     PYProjectModule {
                         name: "author".into(),
-                        path: root.as_path().join("out/author.py").into(),
+                        path: "py/module/author.py".into(),
                         module: PYModule {
                             doc: None,
                             imports: vec![PYImport {
@@ -196,7 +198,7 @@ mod tespy {
                     },
                     PYProjectModule {
                         name: "book".into(),
-                        path: root.as_path().join("out/book.py").into(),
+                        path: "py/module/book.py".into(),
                         module: PYModule {
                             doc: None,
                             imports: vec![
@@ -246,18 +248,19 @@ mod tespy {
 
     #[test]
     fn test_render() {
-        let config = GTConfig::from_root("./examples/basic");
+        let config = GTConfig::from_root("module", "./examples/basic");
+        let py_config = config.as_python_project().unwrap();
         let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            PYProject::generate(&project, &config)
+            PYProject::generate(&project, &py_config)
                 .unwrap()
-                .render(&config)
+                .render(&py_config)
                 .unwrap(),
             GTLangProjectRender {
                 modules: vec![
                     GTLangProjectModuleRender {
-                        path: "./out/__init__.py".into(),
+                        path: "py/module/__init__.py".into(),
                         code: r#"from .author import *
 from .book import *
 
@@ -266,7 +269,7 @@ __all__ = ["Author", "Book"]"#
                             .into(),
                     },
                     GTLangProjectModuleRender {
-                        path: "./out/author.py".into(),
+                        path: "py/module/author.py".into(),
                         code: r#"from genotype import Model
 
 class Author(Model):
@@ -275,7 +278,7 @@ class Author(Model):
                         .into()
                     },
                     GTLangProjectModuleRender {
-                        path: "./out/book.py".into(),
+                        path: "py/module/book.py".into(),
                         code: r#"from .author import Author
 from genotype import Model
 

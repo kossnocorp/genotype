@@ -9,20 +9,19 @@ pub enum GTConfigError {
     #[diagnostic(code(GTCFG101))]
     MissingConfig(PathBuf),
 
-    // #[error(r#"cannot find the config file in root directory "{0}""#)]
-    // #[diagnostic(code(GTCFG102))]
-    // MissingInRoot(PathBuf),
-
-    // #[error(r#"cannot find the config file in any of the parent directories  "{0}""#)]
-    // #[diagnostic(code(GTCFG103))]
-    // MissingInParents(PathBuf),
-
-    // #[error("cannot find the config file in current directory")]
-    // #[diagnostic(code(GTCFG104))]
-    // MissingInCurrent,
     #[error("failed to collect configuration")]
     #[diagnostic(code(GTCFG200))]
     FailedToCollect,
+
+    #[error("failed to construct entry pattern")]
+    #[diagnostic(code(GTCFG301))]
+    FailedToConstructEntry,
+
+    #[error(
+        "cannot derive Python module name, please set `python.module`, `python.name` or `name`."
+    )]
+    #[diagnostic(code(GTCFG401))]
+    PythonMissingName,
 }
 
 impl From<figment::Error> for GTConfigError {

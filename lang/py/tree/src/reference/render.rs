@@ -1,5 +1,5 @@
-use genotype_config::GTConfig;
 use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use genotype_lang_py_config::PYLangConfig;
 use genotype_lang_py_config::PYVersion;
 
 use crate::PYRender;
@@ -7,9 +7,9 @@ use crate::PYRender;
 use super::PYReference;
 
 impl PYRender for PYReference {
-    fn render(&self, indent: &GTIndent, config: &GTConfig) -> String {
+    fn render(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
         let str = self.identifier.render(indent);
-        if let PYVersion::Legacy = config.python_version() {
+        if let PYVersion::Legacy = config.version {
             if self.forward {
                 return format!("\"{}\"", str);
             }
@@ -20,7 +20,7 @@ impl PYRender for PYReference {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_py_config::PYConfig;
+    use genotype_lang_py_config::PYLangConfig;
 
     use super::*;
     use crate::indent::py_indent;
@@ -40,10 +40,8 @@ mod tests {
             "Foo"
         );
         assert_eq!(
-            PYReference::new("Foo".into(), true).render(
-                &py_indent(),
-                &GTConfig::default().with_python(PYConfig::new(PYVersion::Legacy))
-            ),
+            PYReference::new("Foo".into(), true)
+                .render(&py_indent(), &PYLangConfig::new(PYVersion::Legacy)),
             "\"Foo\""
         );
     }

@@ -1,6 +1,7 @@
 use genotype_config::GTConfig;
 use genotype_visitor::traverse::GTTraverse;
 use glob::glob;
+use miette::Result;
 use rayon::Scope;
 use std::{
     collections::HashSet,
@@ -9,8 +10,8 @@ use std::{
 };
 
 use crate::{
-    error::GTProjectError, result::GTProjectResult, GTProjectModule, GTProjectModuleParse,
-    GTProjectModulePath, GTProjectVistor,
+    error::GTProjectError, GTProjectModule, GTProjectModuleParse, GTProjectModulePath,
+    GTProjectVistor,
 };
 
 #[derive(Debug, PartialEq, Clone)]
@@ -20,24 +21,28 @@ pub struct GTProject {
 }
 
 impl GTProject {
-    pub fn load(config: &GTConfig) -> GTProjectResult<Self> {
-        let root = config.root.canonicalize().map_err(|_| {
-            GTProjectError::Canonicalize(format!("root directory {:?}", config.root))
-        })?;
-        let root = Arc::new(root);
-        let pattern = config.entry_pattern();
+    pub fn load(config: &GTConfig) -> Result<Self> {
+        let src = config
+            .root()
+            .join(config.src())
+            .canonicalize()
+            .map_err(|_| {
+                GTProjectError::Canonicalize(format!("root directory {:?}", config.root))
+            })?;
+        let src = Arc::new(src);
+        let pattern = config.entry_pattern()?;
 
         let entry_paths = glob(&pattern).map_err(|_| GTProjectError::Unknown)?;
         let entries: Vec<GTProjectModulePath> = entry_paths
             .collect::<Result<Vec<_>, _>>()
             .map_err(|_| GTProjectError::Unknown)?
             .iter()
-            .map(|entry| GTProjectModulePath::try_new(Arc::clone(&root), entry))
+            .map(|entry| GTProjectModulePath::try_new(Arc::clone(&src), entry))
             .collect::<Result<Vec<_>, _>>()
             .map_err(|_| GTProjectError::Unknown)?;
 
         if entries.is_empty() {
-            return Err(GTProjectError::NoEntries(pattern));
+            return Err(GTProjectError::NoEntries(pattern).into());
         }
 
         let processed_paths = Arc::new(Mutex::new(HashSet::new()));
@@ -45,7 +50,7 @@ impl GTProject {
 
         rayon::scope(|scope| {
             for entry in entries {
-                let root = Arc::clone(&root);
+                let root = Arc::clone(&src);
                 let processed_paths = Arc::clone(&processed_paths);
                 let modules = Arc::clone(&modules);
 
@@ -75,7 +80,7 @@ impl GTProject {
         modules.sort_by(|a, b| a.path.as_path().cmp(&b.path.as_path()));
 
         Ok(GTProject {
-            root: root.clone(),
+            root: src.clone(),
             modules,
         })
     }
@@ -124,13 +129,17 @@ mod tests {
 
     #[test]
     fn test_glob() {
-        let project = GTProject::load(&GTConfig::from_root("./examples/basic"));
+        let project = GTProject::load(&GTConfig::from_root("module", "./examples/basic"));
         assert_eq!(project.unwrap(), basic_project());
     }
 
     #[test]
     fn test_entry() {
-        let project = GTProject::load(&GTConfig::from_entry("./examples/basic", "order.type"));
+        let project = GTProject::load(&GTConfig::from_entry(
+            "module",
+            "./examples/basic",
+            "order.type",
+        ));
         assert_eq!(project.unwrap(), basic_project());
     }
 
@@ -143,6 +152,7 @@ mod tests {
         )
         .unwrap();
         let project = GTProject::load(&GTConfig::from_entry(
+            "module",
             "./examples/process",
             "anonymous.type",
         ));

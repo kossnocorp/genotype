@@ -309,6 +309,8 @@ dependencies = [
  "clap",
  "figment",
  "genotype_lang_py_config",
+ "genotype_lang_ts_config",
+ "heck",
  "miette",
  "pretty_assertions",
  "serde",
@@ -327,7 +329,6 @@ dependencies = [
 name = "genotype_lang_core_project"
 version = "0.1.0"
 dependencies = [
- "genotype_config",
  "genotype_project",
  "pretty_assertions",
 ]
@@ -353,7 +354,6 @@ dependencies = [
 name = "genotype_lang_py_converter"
 version = "0.1.0"
 dependencies = [
- "genotype_config",
  "genotype_lang_core_converter",
  "genotype_lang_py_config",
  "genotype_lang_py_tree",
@@ -369,6 +369,7 @@ dependencies = [
  "genotype_config",
  "genotype_lang_core_project",
  "genotype_lang_core_tree",
+ "genotype_lang_py_config",
  "genotype_lang_py_converter",
  "genotype_lang_py_tree",
  "genotype_parser",
@@ -380,10 +381,16 @@ dependencies = [
 name = "genotype_lang_py_tree"
 version = "0.1.0"
 dependencies = [
- "genotype_config",
  "genotype_lang_core_tree",
  "genotype_lang_py_config",
  "genotype_parser",
+ "pretty_assertions",
+]
+
+[[package]]
+name = "genotype_lang_ts_config"
+version = "0.1.0"
+dependencies = [
  "pretty_assertions",
 ]
 
@@ -404,6 +411,7 @@ dependencies = [
  "genotype_config",
  "genotype_lang_core_project",
  "genotype_lang_core_tree",
+ "genotype_lang_ts_config",
  "genotype_lang_ts_converter",
  "genotype_lang_ts_tree",
  "genotype_parser",
@@ -458,6 +466,7 @@ dependencies = [
 name = "genotype_writer"
 version = "0.1.0"
 dependencies = [
+ "genotype_config",
  "genotype_lang_core_project",
  "pretty_assertions",
 ]

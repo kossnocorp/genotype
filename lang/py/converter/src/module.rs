@@ -1,4 +1,4 @@
-use genotype_config::GTConfig;
+use genotype_lang_py_config::PYLangConfig;
 use genotype_lang_py_tree::module::PYModule;
 use genotype_parser::tree::module::GTModule;
 
@@ -8,7 +8,7 @@ use crate::{context::PYConvertContext, convert::PYConvert, resolve::PYConvertRes
 pub struct PYConvertModule(pub PYModule);
 
 impl PYConvertModule {
-    pub fn convert(module: &GTModule, resolve: &PYConvertResolve, config: &GTConfig) -> Self {
+    pub fn convert(module: &GTModule, resolve: &PYConvertResolve, config: &PYLangConfig) -> Self {
         // [TODO] Get rid of unnecessary clone
         let mut context = PYConvertContext::new(resolve.clone(), config.clone());
 

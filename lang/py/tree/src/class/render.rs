@@ -1,4 +1,4 @@
-use genotype_config::GTConfig;
+use genotype_lang_py_config::PYLangConfig;
 use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
 
 use crate::PYRender;
@@ -6,7 +6,7 @@ use crate::PYRender;
 use super::PYClass;
 
 impl PYRender for PYClass {
-    fn render(&self, indent: &GTIndent, config: &GTConfig) -> String {
+    fn render(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
         let prop_indent = indent.increment();
 
         let properties = self

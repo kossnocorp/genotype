@@ -1,5 +1,5 @@
-use genotype_config::GTConfig;
 use genotype_lang_core_tree::indent::GTIndent;
+use genotype_lang_py_config::PYLangConfig;
 use genotype_lang_py_config::PYVersion;
 
 use crate::PYRender;
@@ -7,7 +7,7 @@ use crate::PYRender;
 use super::PYTuple;
 
 impl PYRender for PYTuple {
-    fn render(&self, indent: &GTIndent, config: &GTConfig) -> String {
+    fn render(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
         let descriptors = self
             .descriptors
             .iter()
@@ -16,7 +16,7 @@ impl PYRender for PYTuple {
             .join(", ");
         format!(
             "{}{}{}{}",
-            if let PYVersion::Legacy = config.python_version() {
+            if let PYVersion::Legacy = config.version {
                 "Tuple"
             } else {
                 "tuple"
@@ -34,7 +34,7 @@ impl PYRender for PYTuple {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_py_config::PYConfig;
+    use genotype_lang_py_config::PYLangConfig;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -71,10 +71,7 @@ mod tests {
             PYTuple {
                 descriptors: vec![]
             }
-            .render(
-                &py_indent(),
-                &GTConfig::default().with_python(PYConfig::new(PYVersion::Legacy))
-            ),
+            .render(&py_indent(), &PYLangConfig::new(PYVersion::Legacy)),
             "Tuple[()]"
         );
     }
