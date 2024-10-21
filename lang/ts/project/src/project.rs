@@ -3,8 +3,9 @@ use genotype_lang_ts_config::TSProjectConfig;
 use genotype_lang_ts_tree::ts_indent;
 
 use genotype_lang_core_project::{
-    module::{GTLangProjectModule, GTLangProjectModuleRender},
+    module::GTLangProjectModule,
     project::{GTLangProject, GTLangProjectRender},
+    source::GTLangProjectSource,
 };
 use genotype_project::project::GTProject;
 
@@ -36,13 +37,13 @@ impl GTLangProject<TSProjectConfig> for TSProject {
         let modules = self
             .modules
             .iter()
-            .map(|module| GTLangProjectModuleRender {
+            .map(|module| GTLangProjectSource {
                 path: module.path.clone(),
                 code: module.module.render(&ts_indent()),
             })
             .collect::<Vec<_>>();
 
-        Ok(GTLangProjectRender { modules })
+        Ok(GTLangProjectRender { files: modules })
     }
 }
 
@@ -194,8 +195,8 @@ mod tests {
                 .render(&ts_config)
                 .unwrap(),
             GTLangProjectRender {
-                modules: vec![
-                    GTLangProjectModuleRender {
+                files: vec![
+                    GTLangProjectSource {
                         path: "ts/src/author.ts".into(),
                         code: r#"export interface Author {
   name: string;
@@ -203,7 +204,7 @@ mod tests {
 "#
                         .into()
                     },
-                    GTLangProjectModuleRender {
+                    GTLangProjectSource {
                         path: "ts/src/book.ts".into(),
                         code: r#"import { Author } from "./author.ts";
 

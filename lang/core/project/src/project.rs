@@ -1,6 +1,6 @@
 use genotype_project::project::GTProject;
 
-use crate::module::GTLangProjectModuleRender;
+use crate::source::GTLangProjectSource;
 
 pub trait GTLangProject<Config> {
     fn generate(project: &GTProject, config: &Config) -> Result<Self, Box<dyn std::error::Error>>
@@ -12,5 +12,5 @@ pub trait GTLangProject<Config> {
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTLangProjectRender {
-    pub modules: Vec<GTLangProjectModuleRender>,
+    pub files: Vec<GTLangProjectSource>,
 }

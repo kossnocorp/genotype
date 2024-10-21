@@ -2,8 +2,9 @@ use genotype_lang_py_config::PYProjectConfig;
 use genotype_lang_py_tree::{py_indent, PYDefinition, PYRender};
 
 use genotype_lang_core_project::{
-    module::{GTLangProjectModule, GTLangProjectModuleRender},
+    module::GTLangProjectModule,
     project::{GTLangProject, GTLangProjectRender},
+    source::GTLangProjectSource,
 };
 use genotype_project::project::GTProject;
 
@@ -50,7 +51,7 @@ impl GTLangProject<PYProjectConfig> for PYProject {
                 }
                 acc
             });
-        let init = GTLangProjectModuleRender {
+        let init = GTLangProjectSource {
             path: config.source_path("__init__.py".into()),
             code: format!(
                 "{}\n\n\n__all__ = [{}]",
@@ -64,14 +65,14 @@ impl GTLangProject<PYProjectConfig> for PYProject {
         let project_modules = self
             .modules
             .iter()
-            .map(|module| GTLangProjectModuleRender {
+            .map(|module| GTLangProjectSource {
                 path: module.path.clone(),
                 code: module.module.render(&py_indent(), &config.lang),
             })
             .collect::<Vec<_>>();
         modules.extend(project_modules);
 
-        Ok(GTLangProjectRender { modules })
+        Ok(GTLangProjectRender { files: modules })
     }
 }
 
@@ -264,8 +265,8 @@ mod tests {
                 .render(&py_config)
                 .unwrap(),
             GTLangProjectRender {
-                modules: vec![
-                    GTLangProjectModuleRender {
+                files: vec![
+                    GTLangProjectSource {
                         path: "py/module/__init__.py".into(),
                         code: r#"from .author import *
 from .book import *
@@ -274,7 +275,7 @@ from .book import *
 __all__ = ["Author", "Book"]"#
                             .into(),
                     },
-                    GTLangProjectModuleRender {
+                    GTLangProjectSource {
                         path: "py/module/author.py".into(),
                         code: r#"from genotype import Model
 
@@ -283,7 +284,7 @@ class Author(Model):
 "#
                         .into()
                     },
-                    GTLangProjectModuleRender {
+                    GTLangProjectSource {
                         path: "py/module/book.py".into(),
                         code: r#"from .author import Author
 from genotype import Model

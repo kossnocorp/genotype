@@ -12,7 +12,7 @@ impl GTWriter {
     ) -> Result<(), Box<dyn std::error::Error>> {
         for project in projects {
             project
-                .modules
+                .files
                 .iter()
                 .map(|module| {
                     // [TODO]
