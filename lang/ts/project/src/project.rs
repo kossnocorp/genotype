@@ -251,10 +251,7 @@ mod tests {
                     GTLangProjectSource {
                         path: "ts/package.json".into(),
                         code: r#"{
-  "types": "src/index.ts",
-  "files": [
-    "src"
-  ]
+  "types": "src/index.ts"
 }"#
                         .into()
                     },
