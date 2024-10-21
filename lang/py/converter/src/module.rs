@@ -174,26 +174,30 @@ mod tests {
                 imports: vec![
                     PYImport {
                         path: ".path.to.module".into(),
-                        reference: PYImportReference::Default(Some("module".into()))
+                        reference: PYImportReference::Default(Some("module".into())),
+                        dependency: PYDependency::Local(".path.to.module".into()),
                     },
                     PYImport {
                         path: ".path.to.module".into(),
                         reference: PYImportReference::Named(vec![
                             PYImportName::Name("Name".into()),
                             PYImportName::Alias("Name".into(), "Alias".into())
-                        ])
+                        ]),
+                        dependency: PYDependency::Local(".path.to.module".into()),
                     },
                     PYImport {
                         path: "typing".into(),
                         reference: PYImportReference::Named(vec![PYImportName::Name(
                             "Optional".into()
-                        ),])
+                        )]),
+                        dependency: PYDependency::Typing,
                     },
                     PYImport {
                         path: "genotype".into(),
                         reference: PYImportReference::Named(vec![PYImportName::Name(
                             "Model".into()
-                        ),])
+                        )]),
+                        dependency: PYDependency::Runtime,
                     }
                 ],
                 definitions: vec![

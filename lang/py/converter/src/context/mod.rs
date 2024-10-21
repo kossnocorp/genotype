@@ -127,6 +127,7 @@ impl PYConvertContext {
             imports.push(PYImport {
                 path: dependency.as_path(),
                 reference: PYImportReference::Named(vec![name.into()]),
+                dependency,
             });
         }
 

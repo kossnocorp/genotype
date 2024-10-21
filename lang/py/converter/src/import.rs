@@ -20,9 +20,12 @@ impl PYConvert<PYImport> for GTImport {
             }
         };
 
+        let path = self.path.convert(context);
+
         PYImport {
-            path: self.path.convert(context),
+            path: path.clone(),
             reference,
+            dependency: PYDependency::Local(path),
         }
     }
 }
@@ -58,7 +61,8 @@ mod tests {
             .convert(&mut context),
             PYImport {
                 path: ".path.to.module".into(),
-                reference: PYImportReference::Default(Some("module".into()))
+                reference: PYImportReference::Default(Some("module".into())),
+                dependency: PYDependency::Local(".path.to.module".into())
             }
         );
     }
@@ -90,7 +94,8 @@ mod tests {
                 reference: PYImportReference::Named(vec![
                     PYImportName::Name("Name".into()),
                     PYImportName::Alias("Name".into(), "Alias".into())
-                ])
+                ]),
+                dependency: PYDependency::Local(".path.to.module".into())
             }
         );
     }
@@ -106,7 +111,8 @@ mod tests {
             .convert(&mut PYConvertContext::default()),
             PYImport {
                 path: ".path.to.module".into(),
-                reference: PYImportReference::Named(vec![PYImportName::Name("Name".into())])
+                reference: PYImportReference::Named(vec![PYImportName::Name("Name".into())]),
+                dependency: PYDependency::Local(".path.to.module".into())
             }
         );
     }

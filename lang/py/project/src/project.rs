@@ -103,6 +103,7 @@ mod tests {
                                 reference: PYImportReference::Named(vec![PYImportName::Name(
                                     "Model".into()
                                 )]),
+                                dependency: PYDependency::Runtime,
                             }],
                             definitions: vec![PYDefinition::Class(PYClass {
                                 name: "Author".into(),
@@ -126,12 +127,14 @@ mod tests {
                                     reference: PYImportReference::Named(vec![PYImportName::Name(
                                         "Author".into()
                                     )]),
+                                    dependency: PYDependency::Local(".author".into()),
                                 },
                                 PYImport {
                                     path: "genotype".into(),
                                     reference: PYImportReference::Named(vec![PYImportName::Name(
                                         "Model".into()
                                     )]),
+                                    dependency: PYDependency::Runtime,
                                 }
                             ],
                             definitions: vec![PYDefinition::Class(PYClass {
@@ -177,6 +180,7 @@ mod tests {
                                 reference: PYImportReference::Named(vec![PYImportName::Name(
                                     "Model".into()
                                 )]),
+                                dependency: PYDependency::Runtime,
                             }],
                             definitions: vec![
                                 PYDefinition::Class(PYClass {
@@ -205,12 +209,14 @@ mod tests {
                                 PYImport {
                                     path: ".author".into(),
                                     reference: PYImportReference::Default(Some("author".into())),
+                                    dependency: PYDependency::Local(".author".into()),
                                 },
                                 PYImport {
                                     path: "genotype".into(),
                                     reference: PYImportReference::Named(vec![PYImportName::Name(
                                         "Model".into()
                                     )]),
+                                    dependency: PYDependency::Runtime,
                                 }
                             ],
                             definitions: vec![PYDefinition::Class(PYClass {

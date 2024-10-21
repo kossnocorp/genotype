@@ -38,6 +38,7 @@ mod tests {
             PYImport {
                 path: ".path.to.module".into(),
                 reference: PYImportReference::Default(Some("name".into())),
+                dependency: PYDependency::Local(".path.to.module".into())
             }
             .render(&py_indent()),
             r#"import .path.to.module as name"#
@@ -46,6 +47,7 @@ mod tests {
             PYImport {
                 path: ".path.to.module".into(),
                 reference: PYImportReference::Default(None),
+                dependency: PYDependency::Local(".path.to.module".into())
             }
             .render(&py_indent()),
             r#"import .path.to.module"#
@@ -58,6 +60,7 @@ mod tests {
             PYImport {
                 path: ".path.to.module".into(),
                 reference: PYImportReference::Glob,
+                dependency: PYDependency::Local(".path.to.module".into())
             }
             .render(&py_indent()),
             r#"from .path.to.module import *"#
@@ -72,7 +75,8 @@ mod tests {
                 reference: PYImportReference::Named(vec![
                     PYImportName::Name("Name".into()),
                     PYImportName::Alias("Name".into(), "Alias".into()),
-                ])
+                ]),
+                dependency: PYDependency::Local(".path.to.module".into())
             }
             .render(&py_indent()),
             r#"from .path.to.module import Name, Name as Alias"#

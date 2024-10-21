@@ -54,13 +54,15 @@ mod tests {
                     PYImport {
                         path: ".path.to.module".into(),
                         reference: PYImportReference::Default(Some("name".into())),
+                        dependency: PYDependency::Local(".path.to.module".into())
                     },
                     PYImport {
                         path: ".path.to.module".into(),
                         reference: PYImportReference::Named(vec![
                             PYImportName::Name("Name".into()),
                             PYImportName::Alias("Name".into(), "Alias".into()),
-                        ])
+                        ]),
+                        dependency: PYDependency::Local(".path.to.module".into())
                     }
                 ],
                 definitions: vec![
