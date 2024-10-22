@@ -6,6 +6,13 @@ use crate::visitor::GTVisitor;
 pub enum GTMockVisited {
     Alias(GTAlias),
     Array(GTArray),
+    Attribute(GTAttribute),
+    AttributeAssignment(GTAttributeAssignment),
+    AttributeDescriptor(GTAttributeDescriptor),
+    AttributeKey(GTAttributeKey),
+    AttributeName(GTAttributeName),
+    AttributeProperty(GTAttributeProperty),
+    AttributeValue(GTAttributeValue),
     Descriptor(GTDescriptor),
     Doc(GTDoc),
     Extension(GTExtension),
@@ -46,6 +53,40 @@ impl GTVisitor for GTMockVisitor {
 
     fn visit_array(&mut self, array: &mut GTArray) {
         self.visited.push(GTMockVisited::Array(array.clone()));
+    }
+
+    fn visit_attribute(&mut self, attribute: &mut GTAttribute) {
+        self.visited
+            .push(GTMockVisited::Attribute(attribute.clone()));
+    }
+
+    fn visit_attribute_assignment(&mut self, assignment: &mut GTAttributeAssignment) {
+        self.visited
+            .push(GTMockVisited::AttributeAssignment(assignment.clone()));
+    }
+
+    fn visit_attribute_descriptor(&mut self, descriptor: &mut GTAttributeDescriptor) {
+        self.visited
+            .push(GTMockVisited::AttributeDescriptor(descriptor.clone()));
+    }
+
+    fn visit_attribute_key(&mut self, key: &mut GTAttributeKey) {
+        self.visited.push(GTMockVisited::AttributeKey(key.clone()));
+    }
+
+    fn visit_attribute_name(&mut self, name: &mut GTAttributeName) {
+        self.visited
+            .push(GTMockVisited::AttributeName(name.clone()));
+    }
+
+    fn visit_attribute_property(&mut self, property: &mut GTAttributeProperty) {
+        self.visited
+            .push(GTMockVisited::AttributeProperty(property.clone()));
+    }
+
+    fn visit_attribute_value(&mut self, value: &mut GTAttributeValue) {
+        self.visited
+            .push(GTMockVisited::AttributeValue(value.clone()));
     }
 
     fn visit_descriptor(&mut self, descriptor: &mut GTDescriptor) {

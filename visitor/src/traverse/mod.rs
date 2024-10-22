@@ -2,6 +2,13 @@ use crate::visitor::GTVisitor;
 
 mod alias;
 mod array;
+mod attribute;
+mod attribute_assignment;
+mod attribute_descriptor;
+mod attribute_key;
+mod attribute_name;
+mod attribute_property;
+mod attribute_value;
 mod descriptor;
 mod doc;
 mod extension;

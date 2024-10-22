@@ -8,6 +8,20 @@ pub trait GTVisitor {
 
     fn visit_array(&mut self, _array: &mut GTArray) {}
 
+    fn visit_attribute(&mut self, _attribute: &mut GTAttribute) {}
+
+    fn visit_attribute_assignment(&mut self, _assignment: &mut GTAttributeAssignment) {}
+
+    fn visit_attribute_descriptor(&mut self, _descriptor: &mut GTAttributeDescriptor) {}
+
+    fn visit_attribute_key(&mut self, _key: &mut GTAttributeKey) {}
+
+    fn visit_attribute_name(&mut self, _name: &mut GTAttributeName) {}
+
+    fn visit_attribute_property(&mut self, _property: &mut GTAttributeProperty) {}
+
+    fn visit_attribute_value(&mut self, _value: &mut GTAttributeValue) {}
+
     fn visit_descriptor(&mut self, _descriptor: &mut GTDescriptor) {}
 
     fn visit_doc(&mut self, _doc: &mut GTDoc) {}
