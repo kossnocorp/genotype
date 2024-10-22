@@ -5,6 +5,7 @@ pub enum PYDependency {
     Local(PYPath),
     Runtime,
     Typing,
+    TypingExtensions,
     Pydantic,
 }
 
@@ -14,6 +15,7 @@ impl PYDependency {
             Self::Local(path) => path.clone(),
             Self::Runtime => "genotype".into(),
             Self::Typing => "typing".into(),
+            Self::TypingExtensions => "typing_extensions".into(),
             Self::Pydantic => "pydantic".into(),
         }
     }
@@ -21,6 +23,7 @@ impl PYDependency {
     pub fn external_str(&self) -> Option<String> {
         match self {
             Self::Runtime => Some(r#"genotype = "^0.3""#.into()),
+            Self::TypingExtensions => Some(r#"typing-extensions = "^4""#.into()),
             Self::Pydantic => Some(r#"pydantic = "^2""#.into()),
             _ => None,
         }

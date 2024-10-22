@@ -12,6 +12,17 @@ impl PYContextResolve for PYUnion {
         if context.is_version(PYVersion::Legacy) {
             context.import(PYDependency::Typing, "Union".into());
         }
+
+        if self.discriminator.is_some() {
+            if context.is_version(PYVersion::Legacy) {
+                context.import(PYDependency::TypingExtensions, "Annotated".into());
+            } else {
+                context.import(PYDependency::Typing, "Annotated".into());
+            }
+
+            context.import(PYDependency::Pydantic, "Field".into());
+        }
+
         self
     }
 }
@@ -45,6 +56,41 @@ mod tests {
         assert_eq!(
             context.as_imports(),
             vec![(PYDependency::Typing, "Union".into())]
+        );
+    }
+
+    #[test]
+    fn test_resolve_discriminator() {
+        let mut context = PYContextMock::default();
+        let union = PYUnion {
+            descriptors: vec![PYPrimitive::String.into()],
+            discriminator: Some("type".into()),
+        };
+        union.resolve(&mut context);
+        assert_eq!(
+            context.as_imports(),
+            vec![
+                (PYDependency::Typing, "Annotated".into()),
+                (PYDependency::Pydantic, "Field".into())
+            ]
+        );
+    }
+
+    #[test]
+    fn test_resolve_discriminator_legacy() {
+        let mut context = PYContextMock::new(PYVersion::Legacy);
+        let union = PYUnion {
+            descriptors: vec![PYPrimitive::String.into()],
+            discriminator: Some("type".into()),
+        };
+        union.resolve(&mut context);
+        assert_eq!(
+            context.as_imports(),
+            vec![
+                (PYDependency::Typing, "Union".into()),
+                (PYDependency::TypingExtensions, "Annotated".into()),
+                (PYDependency::Pydantic, "Field".into())
+            ]
         );
     }
 }
