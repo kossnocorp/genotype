@@ -4,6 +4,9 @@ use genotype_parser::{
     tree::{GTModule, GTModuleParse},
     GTSourceCode,
 };
+use miette::Result;
+
+use crate::error::GTProjectError;
 
 use super::GTProjectModulePath;
 
@@ -11,8 +14,11 @@ use super::GTProjectModulePath;
 pub struct GTProjectModuleParse(pub GTProjectModulePath, pub GTModuleParse);
 
 impl<'a> GTProjectModuleParse {
-    pub fn try_new(path: GTProjectModulePath) -> Result<Self, Box<dyn std::error::Error>> {
-        let code = read_to_string(&path)?;
+    pub fn try_new(path: GTProjectModulePath) -> Result<Self> {
+        let code = read_to_string(&path).map_err(|_| {
+            GTProjectError::NotFound(path.as_path().as_os_str().to_str().unwrap().to_owned())
+        })?;
+
         let source_code = GTSourceCode {
             name: path.as_name(),
             content: code.clone(),
@@ -21,7 +27,7 @@ impl<'a> GTProjectModuleParse {
         Ok(Self(path, parse))
     }
 
-    pub fn deps(&self) -> Result<Vec<GTProjectModulePath>, Box<dyn std::error::Error>> {
+    pub fn deps(&self) -> Result<Vec<GTProjectModulePath>> {
         self.1
             .resolve
             .deps

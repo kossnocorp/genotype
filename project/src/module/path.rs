@@ -5,6 +5,9 @@ use std::{
 };
 
 use genotype_parser::tree::GTPath;
+use miette::Result;
+
+use crate::error::GTProjectError;
 
 #[derive(Debug, Clone)]
 pub struct GTProjectModulePath {
@@ -26,7 +29,7 @@ impl GTProjectModulePath {
         self.id.as_str().into()
     }
 
-    pub fn resolve(&self, path: &GTPath) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn resolve(&self, path: &GTPath) -> Result<Self> {
         let path = format!("{}.type", path.as_str());
         Self::try_new(
             Arc::clone(&self.root),
@@ -34,17 +37,20 @@ impl GTProjectModulePath {
         )
     }
 
-    pub fn try_new(root: Arc<PathBuf>, path: &PathBuf) -> Result<Self, Box<dyn std::error::Error>> {
-        let path = path.canonicalize()?;
+    pub fn try_new(root: Arc<PathBuf>, path: &PathBuf) -> Result<Self> {
+        let path = path.canonicalize().map_err(|_| {
+            GTProjectError::CannotResolve(path.as_os_str().to_str().unwrap().to_owned())
+        })?;
         let id = Self::id(&root, &path)?;
         Ok(Self { root, id, path })
     }
 
-    pub fn id(root: &PathBuf, path: &PathBuf) -> Result<GTPath, Box<dyn std::error::Error>> {
+    pub fn id(root: &PathBuf, path: &PathBuf) -> Result<GTPath> {
         Ok(GTPath::parse(
             (0, 0).into(),
             path.as_path()
-                .strip_prefix(root.as_path())?
+                .strip_prefix(root.as_path())
+                .map_err(|_| GTProjectError::Unknown)?
                 .with_extension("")
                 .to_str()
                 .unwrap(),

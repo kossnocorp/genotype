@@ -1,3 +1,4 @@
+use error::GTProjectError;
 use genotype_config::GTConfig;
 use genotype_visitor::traverse::GTTraverse;
 use glob::glob;
@@ -9,10 +10,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use crate::{
-    error::GTProjectError, GTProjectModule, GTProjectModuleParse, GTProjectModulePath,
-    GTProjectVistor,
-};
+use crate::*;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTProject {
@@ -46,7 +44,8 @@ impl GTProject {
         }
 
         let processed_paths = Arc::new(Mutex::new(HashSet::new()));
-        let modules = Arc::new(Mutex::new(Vec::new()));
+        let modules: Arc<Mutex<Vec<Result<GTProjectModuleParse>>>> =
+            Arc::new(Mutex::new(Vec::new()));
 
         rayon::scope(|scope| {
             for entry in entries {
@@ -54,13 +53,18 @@ impl GTProject {
                 let processed_paths = Arc::clone(&processed_paths);
                 let modules = Arc::clone(&modules);
 
-                scope.spawn(|scope| {
-                    Self::load_module(root, entry, scope, processed_paths, modules);
-                });
+                scope
+                    .spawn(|scope| Self::load_module(root, entry, scope, processed_paths, modules));
             }
         });
 
-        let mut modules = modules.lock().unwrap().clone();
+        // [TODO] Simplify and turn into errors
+        let mut modules = Arc::try_unwrap(modules)
+            .expect("Mutex cannot be unwrapped")
+            .into_inner()
+            .expect("Mutex cannot be locked")
+            .into_iter()
+            .collect::<Result<Vec<_>>>()?;
 
         for module in &mut modules {
             let mut visitor = GTProjectVistor::new();
@@ -90,30 +94,39 @@ impl GTProject {
         path: GTProjectModulePath,
         scope: &Scope<'_>,
         processed_paths: Arc<Mutex<HashSet<GTProjectModulePath>>>,
-        modules: Arc<Mutex<Vec<GTProjectModuleParse>>>,
+        modules: Arc<Mutex<Vec<Result<GTProjectModuleParse>>>>,
     ) {
         {
-            let mut processed = processed_paths.lock().unwrap();
+            let mut processed = processed_paths.lock().expect("Failed to lock modules");
             if processed.contains(&path) {
                 return;
             }
             processed.insert(path.clone());
         }
 
-        let parse = GTProjectModuleParse::try_new(path).unwrap();
+        let result = GTProjectModuleParse::try_new(path).and_then(|parse| {
+            parse.deps().and_then(|deps| {
+                for dep in deps {
+                    let root = Arc::clone(&root);
+                    let processed_paths = Arc::clone(&processed_paths);
+                    let modules = Arc::clone(&modules);
 
-        for path in parse.deps().unwrap() {
-            let root = Arc::clone(&root);
-            let processed_paths = Arc::clone(&processed_paths);
-            let modules = Arc::clone(&modules);
+                    scope.spawn(|scope| {
+                        Self::load_module(root, dep, scope, processed_paths, modules);
+                    });
+                }
 
-            scope.spawn(|scope| {
-                Self::load_module(root, path, scope, processed_paths, modules);
-            });
+                let mut modules = modules.lock().expect("Failed to lock modules");
+                modules.push(Ok(parse));
+
+                Ok(())
+            })
+        });
+
+        if let Err(err) = result {
+            let mut modules = modules.lock().expect("Failed to lock modules");
+            modules.push(Err(err));
         }
-
-        let mut modules = modules.lock().unwrap();
-        modules.push(parse);
     }
 }
 

@@ -1,7 +1,7 @@
 use miette::Diagnostic;
 use thiserror::Error;
 
-#[derive(Error, Diagnostic, Debug, PartialEq)]
+#[derive(Error, Diagnostic, Debug, PartialEq, Clone)]
 pub enum GTProjectError {
     #[error("`{0}` not found")]
     #[diagnostic(code(GTP101))]
@@ -10,6 +10,14 @@ pub enum GTProjectError {
     #[error("no entries found for pattern \"{0}\"")]
     #[diagnostic(code(GTP102))]
     NoEntries(String),
+
+    #[error("failed to read `{0}`")]
+    #[diagnostic(code(GTP103))]
+    NotFound(String),
+
+    #[error("failed to resolve `{0}`")]
+    #[diagnostic(code(GTP104))]
+    CannotResolve(String),
 
     #[error("unknown error")]
     #[diagnostic(code(GTP999))]
