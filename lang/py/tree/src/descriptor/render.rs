@@ -1,5 +1,5 @@
-use genotype_lang_py_config::PYLangConfig;
 use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use genotype_lang_py_config::PYLangConfig;
 
 use super::{PYDescriptor, PYRender};
 
@@ -75,7 +75,8 @@ mod tests {
                 descriptors: vec![
                     PYDescriptor::Primitive(PYPrimitive::String),
                     PYDescriptor::Primitive(PYPrimitive::Int),
-                ]
+                ],
+                discriminator: None
             })
             .render(&py_indent(), &Default::default()),
             "str | int"

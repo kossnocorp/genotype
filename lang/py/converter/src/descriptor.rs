@@ -198,7 +198,8 @@ mod tests {
                 descriptors: vec![
                     PYDescriptor::Primitive(PYPrimitive::Boolean),
                     PYDescriptor::Primitive(PYPrimitive::String),
-                ]
+                ],
+                discriminator: None
             })
         );
     }

@@ -28,6 +28,7 @@ mod tests {
         let mut context = PYContextMock::default();
         let union = PYUnion {
             descriptors: vec![PYPrimitive::String.into()],
+            discriminator: None,
         };
         union.resolve(&mut context);
         assert_eq!(context.as_imports(), vec![]);
@@ -38,6 +39,7 @@ mod tests {
         let mut context = PYContextMock::new(PYVersion::Legacy);
         let union = PYUnion {
             descriptors: vec![PYPrimitive::String.into()],
+            discriminator: None,
         };
         union.resolve(&mut context);
         assert_eq!(

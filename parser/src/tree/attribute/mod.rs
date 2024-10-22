@@ -1,6 +1,6 @@
 use crate::GTSpan;
 
-use super::{GTAttributeDescriptor, GTAttributeName};
+use super::{GTAttributeAssignment, GTAttributeDescriptor, GTAttributeName};
 
 mod parse;
 
@@ -22,5 +22,18 @@ impl GTAttribute {
             name,
             descriptor,
         }
+    }
+
+    pub fn is_it(&self, name: &str) -> bool {
+        self.name.name == name
+    }
+
+    pub fn get_assigned(&self, name: &str) -> Option<&GTAttributeAssignment> {
+        if self.is_it(name) {
+            if let Some(GTAttributeDescriptor::Assigment(assignment)) = &self.descriptor {
+                return Some(&assignment);
+            }
+        }
+        None
     }
 }

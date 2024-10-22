@@ -42,7 +42,8 @@ mod tests {
                 descriptors: vec![
                     PYDescriptor::Primitive(PYPrimitive::String),
                     PYDescriptor::Primitive(PYPrimitive::Int),
-                ]
+                ],
+                discriminator: None
             }
             .render(&py_indent(), &Default::default()),
             "str | int"
@@ -56,7 +57,8 @@ mod tests {
                 descriptors: vec![
                     PYDescriptor::Primitive(PYPrimitive::String),
                     PYDescriptor::Primitive(PYPrimitive::Int),
-                ]
+                ],
+                discriminator: None
             }
             .render(&py_indent(), &PYLangConfig::new(PYVersion::Legacy)),
             "Union[str, int]"

@@ -11,6 +11,7 @@ impl PYConvert<PYUnion> for GTUnion {
                 .iter()
                 .map(|descriptor| descriptor.convert(context))
                 .collect(),
+            discriminator: None,
         }
         .resolve(context)
     }
@@ -42,7 +43,8 @@ mod tests {
                 descriptors: vec![
                     PYDescriptor::Primitive(PYPrimitive::Boolean),
                     PYDescriptor::Primitive(PYPrimitive::String),
-                ]
+                ],
+                discriminator: None
             }
         );
     }
@@ -61,6 +63,7 @@ mod tests {
             .convert(&mut context),
             PYUnion {
                 descriptors: vec![PYPrimitive::String.into()],
+                discriminator: None
             }
         );
         assert_eq!(

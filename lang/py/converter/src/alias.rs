@@ -9,16 +9,24 @@ impl PYConvert<PYDefinition> for GTAlias {
             GTDescriptor::Object(object) => PYDefinition::Class(object.convert(context)),
 
             _ => {
-                let identifier = self.name.convert(context);
-                context.push_defined(&identifier);
+                let name = self.name.convert(context);
+                context.push_defined(&name);
 
-                PYDefinition::Alias(
-                    PYAlias {
-                        name: identifier,
-                        descriptor: self.descriptor.convert(context),
+                let mut descriptor = self.descriptor.convert(context);
+
+                for attribute in self.attributes.iter() {
+                    if let PYDescriptor::Union(union) = &mut descriptor {
+                        if let Some(assignment) = attribute.get_assigned("discriminator") {
+                            if let GTAttributeValue::Literal(GTLiteral::String(_, value)) =
+                                &assignment.value
+                            {
+                                union.discriminator = value.clone().into();
+                            }
+                        }
                     }
-                    .resolve(context),
-                )
+                }
+
+                PYDefinition::Alias(PYAlias { name, descriptor }.resolve(context))
             }
         }
     }
@@ -142,7 +150,8 @@ mod tests {
                     descriptors: vec![
                         PYReference::new("BookObj".into(), true).into(),
                         PYPrimitive::String.into(),
-                    ]
+                    ],
+                    discriminator: None
                 }
                 .into(),
             })
@@ -211,5 +220,48 @@ mod tests {
             &"Name".into(),
             &GTIdentifier::new((0, 0).into(), "Name".into())
         ));
+    }
+
+    #[test]
+    fn test_convert_discriminator() {
+        assert_eq!(
+            GTAlias {
+                span: (0, 0).into(),
+                doc: None,
+                attributes: vec![GTAttribute {
+                    span: (0, 0).into(),
+                    name: GTAttributeName::new((0, 0).into(), "discriminator".into()),
+                    descriptor: Some(GTAttributeDescriptor::Assigment(
+                        GTAttributeAssignment::new(
+                            (0, 0).into(),
+                            GTAttributeValue::Literal(GTLiteral::String(
+                                (0, 0).into(),
+                                "type".into()
+                            ))
+                        )
+                    ))
+                }],
+                name: GTIdentifier::new((0, 0).into(), "Message".into()),
+                descriptor: GTDescriptor::Union(GTUnion {
+                    span: (0, 0).into(),
+                    descriptors: vec![
+                        GTIdentifier((0, 0).into(), "Reply".into()).into(),
+                        GTIdentifier((0, 0).into(), "DM".into()).into(),
+                    ]
+                })
+            }
+            .convert(&mut PYConvertContext::default()),
+            PYDefinition::Alias(PYAlias {
+                name: "Message".into(),
+                descriptor: PYUnion {
+                    descriptors: vec![
+                        PYReference::new("Reply".into(), true).into(),
+                        PYReference::new("DM".into(), true).into(),
+                    ],
+                    discriminator: Some("type".into())
+                }
+                .into()
+            }),
+        );
     }
 }
