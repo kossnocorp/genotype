@@ -10,7 +10,7 @@ impl GTArray {
         let pair = pair
             .into_inner()
             .next()
-            .ok_or_else(|| GTNodeParseError::Internal(span.clone(), GTNode::Array))?;
+            .ok_or_else(|| GTParseError::Internal(span.clone(), GTNode::Array))?;
         let descriptor = GTDescriptor::parse(pair, context)?;
         Ok(GTArray { span, descriptor })
     }
@@ -40,7 +40,7 @@ mod tests {
         let mut pairs = GenotypeParser::parse(Rule::literal_boolean, "false").unwrap();
         assert_eq!(
             GTArray::parse(pairs.next().unwrap(), &mut GTContext::new()).unwrap_err(),
-            GTNodeParseError::Internal((0, 5).into(), GTNode::Array)
+            GTParseError::Internal((0, 5).into(), GTNode::Array)
         );
     }
 }

@@ -1,4 +1,4 @@
-use crate::diagnostic::error::GTNodeParseError;
+use crate::diagnostic::error::GTParseError;
 use parser::Rule;
 use pest::iterators::Pair;
 use tree::GTDescriptor;
@@ -8,7 +8,7 @@ use crate::*;
 use super::GTTuple;
 
 impl GTTuple {
-    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> Result<Self, GTNodeParseError> {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> Result<Self, GTParseError> {
         let span = pair.as_span().into();
         let mut tuple = GTTuple {
             span,

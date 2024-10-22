@@ -1,7 +1,7 @@
 use pest::iterators::Pair;
 
 use crate::{
-    diagnostic::error::GTNodeParseError,
+    diagnostic::error::GTParseError,
     parser::Rule,
     tree::{identifier::GTIdentifier, path::GTPath},
     GTContext,
@@ -10,7 +10,7 @@ use crate::{
 use super::GTInlineImport;
 
 impl GTInlineImport {
-    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> Result<Self, GTNodeParseError> {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> Result<Self, GTParseError> {
         let span = pair.as_span().into();
         let (path, (name_span, name)) = GTPath::split_parse(pair)?;
 

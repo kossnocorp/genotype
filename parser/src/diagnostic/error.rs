@@ -1,25 +1,51 @@
 use crate::Rule;
 
 use super::{span::GTSpan, GTNode, GTSourceCode};
-use miette::{Diagnostic, LabeledSpan, SourceCode};
+use miette::{Diagnostic, Error, LabeledSpan, SourceCode};
 use pest::error::InputLocation;
 use thiserror::Error;
 
-#[derive(Debug, PartialEq)]
-pub enum GTNodeParseError {
-    Internal(GTSpan, GTNode),
+#[derive(Error, Diagnostic, Debug, PartialEq)]
+pub enum GTParseError {
+    #[error("Failed to parse {1} node")]
+    #[diagnostic(code("GTP002"))]
+    Internal(#[label("internal error")] GTSpan, GTNode),
+
+    #[error("Failed to parse {1} node")]
+    #[diagnostic(code("GTP002"))]
+    InternalMessage(#[label("{2}")] GTSpan, GTNode, &'static str),
+
+    #[error("Failed to parse {1} node")]
+    #[diagnostic(code("GTP003"))]
+    UnknownRule(#[label("unknown rule")] GTSpan, GTNode),
+
+    #[error("Failed to parse {1} node")]
+    #[diagnostic(code("GTP004"))]
+    UnexpectedEnd(#[label("unexpected end")] GTSpan, GTNode),
 }
 
-impl GTNodeParseError {
+impl GTParseError {
     pub fn span(&self) -> GTSpan {
         match self {
             Self::Internal(span, _) => span.clone(),
+            Self::InternalMessage(span, _, _) => span.clone(),
+            Self::UnknownRule(span, _) => span.clone(),
+            Self::UnexpectedEnd(span, _) => span.clone(),
         }
     }
 
     pub fn message(&self) -> String {
         match self {
             Self::Internal(_, node) => format!("failed to parse {:?} node", node.name()),
+            Self::InternalMessage(_, node, message) => {
+                format!("failed to parse {:?} node: {}", node.name(), message)
+            }
+            Self::UnknownRule(_, node) => {
+                format!("failed to parse {:?} node: unknown rule", node.name())
+            }
+            Self::UnexpectedEnd(_, node) => {
+                format!("failed to parse {:?} node: unexpected end", node.name())
+            }
         }
     }
 }
@@ -51,7 +77,7 @@ impl GTModuleParseError {
         }
     }
 
-    pub fn from_node_error(source_code: GTSourceCode, error: GTNodeParseError) -> Self {
+    pub fn from_node_error(source_code: GTSourceCode, error: GTParseError) -> Self {
         Self {
             code: "GTP002",
             source_code,

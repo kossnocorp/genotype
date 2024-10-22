@@ -1,6 +1,6 @@
 use pest::iterators::Pair;
 
-use crate::{parser::Rule, GTNode, GTNodeParseError, GTNodeParseResult, GTSpan};
+use crate::{parser::Rule, GTNode, GTNodeParseResult, GTParseError, GTSpan};
 
 use super::*;
 
@@ -39,7 +39,7 @@ impl GTDescriptor {
 
                 Rule::literal => GTDescriptor::Literal(pair.try_into()?),
 
-                _ => return Err(GTNodeParseError::Internal(span.clone(), GTNode::Descriptor)),
+                _ => return Err(GTParseError::UnknownRule(span.clone(), GTNode::Descriptor)),
             };
 
             descriptors.push(descriptor);
@@ -50,7 +50,11 @@ impl GTDescriptor {
         }
 
         match descriptors.as_slice() {
-            [] => Err(GTNodeParseError::Internal(span, GTNode::Descriptor)),
+            [] => Err(GTParseError::InternalMessage(
+                span,
+                GTNode::Descriptor,
+                "no descriptors found",
+            )),
 
             [descriptor] => Ok(descriptor.to_owned()),
 

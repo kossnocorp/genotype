@@ -1,4 +1,4 @@
-use crate::{GTNode, GTNodeParseError, GTNodeParseResult, GTSpan};
+use crate::{GTNode, GTParseError, GTNodeParseResult, GTSpan};
 
 use super::{GTIdentifier, GTKey, GTObjectName, GTObjectNameParent, GTResolve};
 
@@ -26,7 +26,7 @@ impl GTContext {
     pub fn pop_parent(&mut self, span: GTSpan, node: GTNode) -> GTNodeParseResult<()> {
         self.parents
             .pop()
-            .ok_or_else(|| GTNodeParseError::Internal(span.clone(), node))?;
+            .ok_or_else(|| GTParseError::Internal(span.clone(), node))?;
         Ok(())
     }
 
@@ -59,7 +59,7 @@ impl GTContext {
             }
         }
 
-        Err(GTNodeParseError::Internal(span.clone(), GTNode::ObjectName))
+        Err(GTParseError::Internal(span.clone(), GTNode::ObjectName))
     }
 }
 

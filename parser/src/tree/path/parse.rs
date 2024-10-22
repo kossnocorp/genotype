@@ -4,7 +4,7 @@ use std::{
     path::{Component, Path, PathBuf},
 };
 
-use crate::{parser::Rule, GTNode, GTNodeParseError, GTNodeParseResult, GTSpan};
+use crate::{parser::Rule, GTNode, GTParseError, GTNodeParseResult, GTSpan};
 
 use super::GTPath;
 
@@ -13,7 +13,7 @@ impl GTPath {
         let span = pair.as_span();
         let span_start = span.start();
         let str = pair.as_str().to_string();
-        let else_err = || GTNodeParseError::Internal(span.into(), GTNode::Path);
+        let else_err = || GTParseError::Internal(span.into(), GTNode::Path);
 
         let name_index = str.rfind("/").ok_or_else(else_err)?;
 
@@ -30,7 +30,7 @@ impl GTPath {
     pub fn parse(span: GTSpan, path: &str) -> GTNodeParseResult<Self> {
         match Self::normalize_path(path) {
             Ok(path) => Ok(GTPath(span, path)),
-            Err(_) => Err(GTNodeParseError::Internal(span, GTNode::Path)),
+            Err(_) => Err(GTParseError::Internal(span, GTNode::Path)),
         }
     }
 
@@ -81,7 +81,7 @@ impl GTPath {
 }
 
 impl TryFrom<Pair<'_, Rule>> for GTPath {
-    type Error = GTNodeParseError;
+    type Error = GTParseError;
 
     fn try_from(pair: Pair<'_, Rule>) -> Result<Self, Self::Error> {
         GTPath::parse(pair.as_span().into(), pair.as_str())

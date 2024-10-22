@@ -31,7 +31,7 @@ impl GTObject {
                     object.extensions.push(GTExtension::parse(pair, context)?);
                 }
 
-                _ => return Err(GTNodeParseError::Internal(object.span, GTNode::Object)),
+                _ => return Err(GTParseError::Internal(object.span, GTNode::Object)),
             }
         }
 

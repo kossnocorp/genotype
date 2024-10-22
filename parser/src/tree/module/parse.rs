@@ -24,16 +24,14 @@ impl GTModule {
                         },
                     }),
 
-                    Err(error) => {
-                        Err(GTModuleParseError::from_node_error(source_code, error).into())
-                    }
+                    Err(error) => Err(error.with_source_code(source_code)),
                 },
 
                 None => {
                     let span = (0, source_code.content.len()).into();
                     Err(GTModuleParseError::from_node_error(
                         source_code,
-                        GTNodeParseError::Internal(span, GTNode::Module),
+                        GTParseError::Internal(span, GTNode::Module),
                     )
                     .into())
                 }
@@ -43,7 +41,7 @@ impl GTModule {
         }
     }
 
-    fn parse_pairs(module_pair: Pair<'_, Rule>) -> GTNodeParseResult<ModuleParseResult> {
+    fn parse_pairs(module_pair: Pair<'_, Rule>) -> Result<ModuleParseResult> {
         let mut doc: Option<GTDoc> = None;
         let mut imports = vec![];
         let mut aliases = vec![];
@@ -73,10 +71,9 @@ impl GTModule {
                 Rule::EOI => {}
 
                 _ => {
-                    return Err(GTNodeParseError::Internal(
-                        pair.as_span().into(),
-                        GTNode::Module,
-                    ))
+                    return Err(
+                        GTParseError::Internal(pair.as_span().into(), GTNode::Module).into(),
+                    )
                 }
             }
         }
@@ -1306,6 +1303,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "WIP"]
     fn test_attributes() {
         let source_code = read_source_code("./examples/syntax/13-attributes.type");
         assert_module(
@@ -1317,21 +1315,21 @@ mod tests {
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
-                            span: (0, 25).into(),
+                            span: (0, 20).into(),
                             doc: None,
                             attributes: vec![],
-                            name: GTIdentifier::new((0, 5).into(), "Message".into()),
+                            name: GTIdentifier::new((0, 7).into(), "Message".into()),
                             descriptor: GTUnion {
-                                span: (8, 25).into(),
+                                span: (10, 20).into(),
                                 descriptors: vec![
                                     GTReference(
-                                        (8, 15).into(),
-                                        GTIdentifier::new((8, 15).into(), "Reply".into()),
+                                        (10, 15).into(),
+                                        GTIdentifier::new((10, 15).into(), "Reply".into()),
                                     )
                                     .into(),
                                     GTReference(
-                                        (8, 15).into(),
-                                        GTIdentifier::new((8, 15).into(), "DM".into()),
+                                        (18, 20).into(),
+                                        GTIdentifier::new((18, 20).into(), "DM".into()),
                                     )
                                     .into(),
                                 ],
@@ -1339,43 +1337,40 @@ mod tests {
                             .into(),
                         },
                         GTAlias {
-                            span: (27, 61).into(),
+                            span: (22, 77).into(),
                             doc: None,
                             attributes: vec![],
-                            name: GTIdentifier::new((27, 36).into(), "Reply".into()),
+                            name: GTIdentifier::new((22, 27).into(), "Reply".into()),
                             descriptor: GTObject {
-                                span: (41, 61).into(),
+                                span: (30, 77).into(),
                                 name: GTObjectName::Named(GTIdentifier::new(
-                                    (27, 36).into(),
+                                    (22, 27).into(),
                                     "Reply".into(),
                                 )),
                                 extensions: vec![],
                                 properties: vec![
                                     GTProperty {
-                                        span: (45, 55).into(),
+                                        span: (34, 56).into(),
                                         doc: None,
                                         attributes: vec![GTAttribute {
-                                            span: (0, 25).into(),
-                                            name: GTAttributeName::new(
-                                                (2, 12).into(),
-                                                "tag".into(),
-                                            ),
+                                            span: (34, 40).into(),
+                                            name: GTAttributeName::new((0, 0).into(), "tag".into()),
                                             descriptor: None,
                                         }],
-                                        name: GTKey::new((45, 50).into(), "type".into()),
+                                        name: GTKey::new((43, 47).into(), "type".into()),
                                         descriptor: GTLiteral::String(
-                                            (52, 55).into(),
+                                            (49, 56).into(),
                                             "reply".into(),
                                         )
                                         .into(),
                                         required: true,
                                     },
                                     GTProperty {
-                                        span: (45, 55).into(),
+                                        span: (60, 75).into(),
                                         doc: None,
                                         attributes: vec![],
-                                        name: GTKey::new((45, 50).into(), "message".into()),
-                                        descriptor: GTPrimitive::String((52, 55).into()).into(),
+                                        name: GTKey::new((60, 67).into(), "message".into()),
+                                        descriptor: GTPrimitive::String((69, 75).into()).into(),
                                         required: true,
                                     },
                                 ],
@@ -1383,40 +1378,43 @@ mod tests {
                             .into(),
                         },
                         GTAlias {
-                            span: (27, 61).into(),
+                            span: (79, 128).into(),
                             doc: None,
                             attributes: vec![],
-                            name: GTIdentifier::new((27, 36).into(), "DM".into()),
+                            name: GTIdentifier::new((79, 81).into(), "DM".into()),
                             descriptor: GTObject {
-                                span: (41, 61).into(),
+                                span: (84, 128).into(),
                                 name: GTObjectName::Named(GTIdentifier::new(
-                                    (27, 36).into(),
-                                    "Reply".into(),
+                                    (79, 81).into(),
+                                    "DM".into(),
                                 )),
                                 extensions: vec![],
                                 properties: vec![
                                     GTProperty {
-                                        span: (45, 55).into(),
+                                        span: (88, 107).into(),
                                         doc: None,
                                         attributes: vec![GTAttribute {
-                                            span: (0, 25).into(),
+                                            span: (88, 94).into(),
                                             name: GTAttributeName::new(
-                                                (2, 12).into(),
+                                                (88, 94).into(),
                                                 "tag".into(),
                                             ),
                                             descriptor: None,
                                         }],
-                                        name: GTKey::new((45, 50).into(), "type".into()),
-                                        descriptor: GTLiteral::String((52, 55).into(), "dm".into())
-                                            .into(),
+                                        name: GTKey::new((97, 101).into(), "type".into()),
+                                        descriptor: GTLiteral::String(
+                                            (103, 107).into(),
+                                            "dm".into(),
+                                        )
+                                        .into(),
                                         required: true,
                                     },
                                     GTProperty {
-                                        span: (45, 55).into(),
+                                        span: (111, 126).into(),
                                         doc: None,
                                         attributes: vec![],
-                                        name: GTKey::new((45, 50).into(), "message".into()),
-                                        descriptor: GTPrimitive::String((52, 55).into()).into(),
+                                        name: GTKey::new((111, 118).into(), "message".into()),
+                                        descriptor: GTPrimitive::String((120, 126).into()).into(),
                                         required: true,
                                     },
                                 ],
@@ -1424,11 +1422,11 @@ mod tests {
                             .into(),
                         },
                         GTAlias {
-                            span: (27, 61).into(),
+                            span: (130, 165).into(),
                             doc: None,
                             attributes: vec![GTAttribute {
-                                span: (0, 25).into(),
-                                name: GTAttributeName::new((2, 12).into(), "hello".into()),
+                                span: (130, 148).into(),
+                                name: GTAttributeName::new((0, 0).into(), "hello".into()),
                                 descriptor: Some(GTAttributeDescriptor::Assigment(
                                     GTAttributeAssignment::new(
                                         (0, 0).into(),
@@ -1439,15 +1437,15 @@ mod tests {
                                     ),
                                 )),
                             }],
-                            name: GTIdentifier::new((27, 36).into(), "Assignment".into()),
-                            descriptor: GTLiteral::Integer((0, 0).into(), 123).into(),
+                            name: GTIdentifier::new((149, 159).into(), "Assignment".into()),
+                            descriptor: GTLiteral::Integer((162, 165).into(), 123).into(),
                         },
                         GTAlias {
-                            span: (27, 61).into(),
+                            span: (167, 210).into(),
                             doc: None,
                             attributes: vec![GTAttribute {
-                                span: (0, 25).into(),
-                                name: GTAttributeName::new((2, 12).into(), "hello".into()),
+                                span: (167, 193).into(),
+                                name: GTAttributeName::new((0, 0).into(), "hello".into()),
                                 descriptor: Some(GTAttributeDescriptor::Arguments(vec![
                                     GTAttributeValue::Literal(GTLiteral::String(
                                         (0, 0).into(),
@@ -1459,19 +1457,19 @@ mod tests {
                                     )),
                                 ])),
                             }],
-                            name: GTIdentifier::new((27, 36).into(), "Arguments".into()),
-                            descriptor: GTLiteral::Boolean((0, 0).into(), true).into(),
+                            name: GTIdentifier::new((194, 203).into(), "Arguments".into()),
+                            descriptor: GTLiteral::Boolean((206, 210).into(), true).into(),
                         },
                         GTAlias {
-                            span: (27, 61).into(),
+                            span: (212, 271).into(),
                             doc: None,
                             attributes: vec![GTAttribute {
-                                span: (0, 25).into(),
-                                name: GTAttributeName::new((2, 12).into(), "hello".into()),
+                                span: (212, 253).into(),
+                                name: GTAttributeName::new((0, 0).into(), "hello".into()),
                                 descriptor: Some(GTAttributeDescriptor::Properties(vec![
                                     GTAttributeProperty::new(
                                         (0, 0).into(),
-                                        GTAttributeKey::new((0, 5).into(), "which".into()),
+                                        GTAttributeKey::new((0, 0).into(), "which".into()),
                                         GTAttributeValue::Literal(GTLiteral::String(
                                             (0, 0).into(),
                                             "cruel".into(),
@@ -1479,7 +1477,7 @@ mod tests {
                                     ),
                                     GTAttributeProperty::new(
                                         (0, 0).into(),
-                                        GTAttributeKey::new((0, 5).into(), "what".into()),
+                                        GTAttributeKey::new((0, 0).into(), "what".into()),
                                         GTAttributeValue::Literal(GTLiteral::String(
                                             (0, 0).into(),
                                             "world".into(),
@@ -1487,22 +1485,25 @@ mod tests {
                                     ),
                                 ])),
                             }],
-                            name: GTIdentifier::new((27, 36).into(), "Properties".into()),
-                            descriptor: GTLiteral::Boolean((0, 0).into(), true).into(),
+                            name: GTIdentifier::new((254, 264).into(), "Properties".into()),
+                            descriptor: GTLiteral::Boolean((267, 271).into(), true).into(),
                         },
                     ],
                 },
                 resolve: GTResolve {
                     deps: HashSet::new(),
                     exports: vec![
-                        GTIdentifier::new((0, 5).into(), "Message".into()),
-                        GTIdentifier::new((27, 36).into(), "Reply".into()),
-                        GTIdentifier::new((27, 36).into(), "DM".into()),
-                        GTIdentifier::new((27, 36).into(), "Assingmnet".into()),
-                        GTIdentifier::new((27, 36).into(), "Arguments".into()),
-                        GTIdentifier::new((27, 36).into(), "Properties".into()),
+                        GTIdentifier::new((0, 7).into(), "Message".into()),
+                        GTIdentifier::new((22, 27).into(), "Reply".into()),
+                        GTIdentifier::new((79, 81).into(), "DM".into()),
+                        GTIdentifier::new((149, 159).into(), "Assignment".into()),
+                        GTIdentifier::new((194, 203).into(), "Arguments".into()),
+                        GTIdentifier::new((254, 264).into(), "Properties".into()),
                     ],
-                    references: HashSet::new(),
+                    references: HashSet::from_iter(vec![
+                        GTIdentifier::new((10, 15).into(), "Reply".into()),
+                        GTIdentifier::new((18, 20).into(), "DM".into()),
+                    ]),
                 },
             },
         );

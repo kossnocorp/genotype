@@ -54,11 +54,13 @@ optional_property = { line_doc* ~ name ~ "?:" ~ descriptor }
 
 // Attributes
 
-attribute = { "#[" ~ name ~ (attribute_descriptor | attribute_args | attribute_properties)? ~ "]" }
+attribute = { "#[" ~ name ~ attribute_descriptor? ~ "]" }
 
-attribute_descriptor = { "=" ~ attribute_value }
+attribute_descriptor = { attribute_assignment | attribute_arguments | attribute_properties }
 
-attribute_args = { "(" ~ (attribute_value ~ ("," ~ attribute_value)*)? ~ ")" }
+attribute_assignment = { "=" ~ attribute_value }
+
+attribute_arguments = { "(" ~ (attribute_value ~ ("," ~ attribute_value)*)? ~ ")" }
 
 attribute_properties = { "(" ~ attribute_property ~ ("," ~ attribute_property)* ~ ")" }
 

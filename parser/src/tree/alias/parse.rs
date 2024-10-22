@@ -11,7 +11,7 @@ impl GTAlias {
 
         let pair = inner
             .next()
-            .ok_or_else(|| GTNodeParseError::Internal(span.clone(), GTNode::Alias))?;
+            .ok_or_else(|| GTParseError::Internal(span.clone(), GTNode::Alias))?;
         let alias = parse(inner, pair, context, ParseState::Doc(span.clone(), None))?;
 
         context.pop_parent(span, GTNode::Alias)?;
@@ -42,14 +42,44 @@ fn parse(
 
                 match inner.next() {
                     Some(pair) => parse(inner, pair, context, ParseState::Doc(span, doc_acc)),
-                    None => Err(GTNodeParseError::Internal(span, GTNode::Alias)),
+                    None => Err(GTParseError::Internal(span, GTNode::Alias)),
                 }
             }
 
-            _ => parse(inner, pair, context, ParseState::Name(span, doc_acc)),
+            _ => parse(
+                inner,
+                pair,
+                context,
+                ParseState::Attributes(span, doc_acc, vec![]),
+            ),
         },
 
-        ParseState::Name(span, doc) => {
+        ParseState::Attributes(span, doc, attributes) => match pair.as_rule() {
+            Rule::attribute => {
+                let attribute = GTAttribute::parse(pair)?;
+                let mut attributes = attributes;
+                attributes.push(attribute);
+
+                match inner.next() {
+                    Some(pair) => parse(
+                        inner,
+                        pair,
+                        context,
+                        ParseState::Attributes(span, doc, attributes),
+                    ),
+                    None => Err(GTParseError::Internal(span, GTNode::Alias)),
+                }
+            }
+
+            _ => parse(
+                inner,
+                pair,
+                context,
+                ParseState::Name(span, doc, attributes),
+            ),
+        },
+
+        ParseState::Name(span, doc, attributes) => {
             let name: GTIdentifier = pair.into();
 
             context.resolve.exports.push(name.clone());
@@ -60,18 +90,18 @@ fn parse(
                     inner,
                     pair,
                     context,
-                    ParseState::Descriptor(span, doc, name),
+                    ParseState::Descriptor(span, doc, attributes, name),
                 ),
-                None => Err(GTNodeParseError::Internal(span, GTNode::Alias)),
+                None => Err(GTParseError::Internal(span, GTNode::Alias)),
             }
         }
 
-        ParseState::Descriptor(span, doc, name) => {
+        ParseState::Descriptor(span, doc, attributes, name) => {
             let descriptor = GTDescriptor::parse(pair, context)?;
             Ok(GTAlias {
                 span,
                 doc,
-                attributes: vec![], // [TODO]
+                attributes,
                 name,
                 descriptor,
             })
@@ -81,8 +111,9 @@ fn parse(
 
 enum ParseState {
     Doc(GTSpan, Option<GTDoc>),
-    Name(GTSpan, Option<GTDoc>),
-    Descriptor(GTSpan, Option<GTDoc>, GTIdentifier),
+    Attributes(GTSpan, Option<GTDoc>, Vec<GTAttribute>),
+    Name(GTSpan, Option<GTDoc>, Vec<GTAttribute>),
+    Descriptor(GTSpan, Option<GTDoc>, Vec<GTAttribute>, GTIdentifier),
 }
 
 #[cfg(test)]

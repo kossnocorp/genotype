@@ -12,7 +12,7 @@ impl GTProperty {
 
         let pair = inner
             .next()
-            .ok_or_else(|| GTNodeParseError::Internal(span.clone(), GTNode::Property))?;
+            .ok_or_else(|| GTParseError::Internal(span.clone(), GTNode::Property))?;
         let property = parse(
             inner,
             pair,
@@ -53,7 +53,7 @@ fn parse(
                         context,
                         ParseState::Doc(span, required, doc_acc),
                     ),
-                    None => Err(GTNodeParseError::Internal(span, GTNode::Property)),
+                    None => Err(GTParseError::Internal(span, GTNode::Property)),
                 }
             }
 
@@ -61,11 +61,35 @@ fn parse(
                 inner,
                 pair,
                 context,
-                ParseState::Name(span, required, doc_acc),
+                ParseState::Attributes(span, required, doc_acc, vec![]),
             ),
         },
 
-        ParseState::Name(span, required, doc) => {
+        ParseState::Attributes(span, required, doc, mut attributes) => match pair.as_rule() {
+            Rule::attribute => {
+                let attribute = GTAttribute::parse(pair)?;
+                attributes.push(attribute);
+
+                match inner.next() {
+                    Some(pair) => parse(
+                        inner,
+                        pair,
+                        context,
+                        ParseState::Attributes(span, required, doc, attributes),
+                    ),
+                    None => Err(GTParseError::Internal(span, GTNode::Property)),
+                }
+            }
+
+            _ => parse(
+                inner,
+                pair,
+                context,
+                ParseState::Name(span, required, doc, attributes),
+            ),
+        },
+
+        ParseState::Name(span, required, doc, attributes) => {
             let name = GTKey::parse(pair);
 
             context
@@ -77,18 +101,18 @@ fn parse(
                     inner,
                     pair,
                     context,
-                    ParseState::Descriptor(span, required, doc, name),
+                    ParseState::Descriptor(span, required, doc, attributes, name),
                 ),
-                None => Err(GTNodeParseError::Internal(span, GTNode::Property)),
+                None => Err(GTParseError::Internal(span, GTNode::Property)),
             }
         }
 
-        ParseState::Descriptor(span, required, doc, name) => {
+        ParseState::Descriptor(span, required, doc, attributes, name) => {
             let descriptor = GTDescriptor::parse(pair, context)?;
             Ok(GTProperty {
                 span,
                 doc,
-                attributes: vec![], // [TODO]
+                attributes,
                 name,
                 descriptor,
                 required,
@@ -99,8 +123,9 @@ fn parse(
 
 enum ParseState {
     Doc(GTSpan, bool, Option<GTDoc>),
-    Name(GTSpan, bool, Option<GTDoc>),
-    Descriptor(GTSpan, bool, Option<GTDoc>, GTKey),
+    Attributes(GTSpan, bool, Option<GTDoc>, Vec<GTAttribute>),
+    Name(GTSpan, bool, Option<GTDoc>, Vec<GTAttribute>),
+    Descriptor(GTSpan, bool, Option<GTDoc>, Vec<GTAttribute>, GTKey),
 }
 
 #[cfg(test)]

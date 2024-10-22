@@ -1,15 +1,15 @@
 use pest::iterators::Pair;
 
-use crate::{diagnostic::error::GTNodeParseError, parser::Rule, GTNode, GTSpan};
+use crate::{diagnostic::error::GTParseError, parser::Rule, GTNode, GTSpan};
 
 use super::GTLiteral;
 
 impl TryFrom<Pair<'_, Rule>> for GTLiteral {
-    type Error = GTNodeParseError;
+    type Error = GTParseError;
 
     fn try_from(pair: Pair<'_, Rule>) -> Result<Self, Self::Error> {
         let span: GTSpan = pair.as_span().into();
-        let else_err = || GTNodeParseError::Internal(span.clone(), GTNode::Literal);
+        let else_err = || GTParseError::Internal(span.clone(), GTNode::Literal);
         let pair = pair.into_inner().next().ok_or_else(else_err)?;
 
         match pair.as_rule() {
@@ -65,7 +65,7 @@ mod tests {
     fn test_error() {
         let mut pairs = GenotypeParser::parse(Rule::object, "{}").unwrap();
         assert_eq!(
-            GTNodeParseError::Internal((0, 2).into(), GTNode::Literal),
+            GTParseError::Internal((0, 2).into(), GTNode::Literal),
             TryInto::<GTLiteral>::try_into(pairs.next().unwrap()).unwrap_err(),
         );
     }

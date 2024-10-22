@@ -14,7 +14,7 @@ impl GTExtension {
                 reference: GTReference::parse(pair, context),
             }),
 
-            None => Err(GTNodeParseError::Internal(span, GTNode::Extension)),
+            None => Err(GTParseError::Internal(span, GTNode::Extension)),
         }
     }
 }
@@ -44,7 +44,7 @@ mod tests {
         let mut context = GTContext::new();
         assert_eq!(
             GTExtension::parse(pairs.next().unwrap(), &mut context).unwrap_err(),
-            GTNodeParseError::Internal((0, 5).into(), GTNode::Extension)
+            GTParseError::Internal((0, 5).into(), GTNode::Extension)
         );
     }
 }

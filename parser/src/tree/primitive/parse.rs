@@ -1,11 +1,11 @@
 use pest::iterators::Pair;
 
-use crate::{diagnostic::error::GTNodeParseError, parser::Rule, GTNode};
+use crate::{diagnostic::error::GTParseError, parser::Rule, GTNode};
 
 use super::GTPrimitive;
 
 impl TryFrom<Pair<'_, Rule>> for GTPrimitive {
-    type Error = GTNodeParseError;
+    type Error = GTParseError;
 
     fn try_from(pair: Pair<'_, Rule>) -> Result<Self, Self::Error> {
         let span = pair.as_span().into();
@@ -21,7 +21,7 @@ impl TryFrom<Pair<'_, Rule>> for GTPrimitive {
 
             "null" => Ok(GTPrimitive::Null(span)),
 
-            _ => Err(GTNodeParseError::Internal(span, GTNode::Primitive)),
+            _ => Err(GTParseError::Internal(span, GTNode::Primitive)),
         }
     }
 }
@@ -45,7 +45,7 @@ mod tests {
         let mut pairs = GenotypeParser::parse(Rule::literal_boolean, "false").unwrap();
         assert_eq!(
             GTPrimitive::try_from(pairs.next().unwrap()).unwrap_err(),
-            GTNodeParseError::Internal((0, 5).into(), GTNode::Primitive)
+            GTParseError::Internal((0, 5).into(), GTNode::Primitive)
         );
     }
 }

@@ -5,7 +5,7 @@ use crate::*;
 impl GTImport {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
         let span: GTSpan = pair.as_span().into();
-        let else_err = || GTNodeParseError::Internal(span.clone(), GTNode::Import);
+        let else_err = || GTParseError::Internal(span.clone(), GTNode::Import);
 
         let mut inner = pair.into_inner();
         let pair = inner.next().ok_or_else(else_err)?;
@@ -32,7 +32,7 @@ fn parse(
 
             match inner.next() {
                 Some(pair) => parse(inner, pair, context, ParseState::Names(span, path)),
-                None => Err(GTNodeParseError::Internal(span.clone(), GTNode::Import)),
+                None => Err(GTParseError::Internal(span.clone(), GTNode::Import)),
             }
         }
 
@@ -55,9 +55,7 @@ fn parse(
 
                         let name = inner
                             .next()
-                            .ok_or_else(|| {
-                                GTNodeParseError::Internal(span.clone(), GTNode::Import)
-                            })?
+                            .ok_or_else(|| GTParseError::Internal(span.clone(), GTNode::Import))?
                             .into();
 
                         if let Some(alias) = inner.next() {
@@ -80,7 +78,7 @@ fn parse(
                     reference: GTImportReference::Name(ref_span, pair.into()),
                 }),
 
-                _ => Err(GTNodeParseError::Internal(span, GTNode::Import)),
+                _ => Err(GTParseError::Internal(span, GTNode::Import)),
             }
         }
     }
