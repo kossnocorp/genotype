@@ -36,6 +36,11 @@ impl GTLangProject<TSProjectConfig> for TSProject {
         &self,
         config: &TSProjectConfig,
     ) -> Result<GTLangProjectRender, Box<dyn std::error::Error>> {
+        let gitignore = GTLangProjectSource {
+            path: config.package_path(".gitignore".into()),
+            code: r#"node_modules"#.into(),
+        };
+
         let exports = self
             .modules
             .iter()
@@ -55,6 +60,7 @@ impl GTLangProject<TSProjectConfig> for TSProject {
                 )
             })
             .collect::<Vec<_>>();
+
         let barrel = GTLangProjectSource {
             path: config.source_path("index.ts".into()),
             code: exports.join(""),
@@ -82,9 +88,6 @@ impl GTLangProject<TSProjectConfig> for TSProject {
             })
             .unwrap(),
         };
-
-        let mut modules = vec![package, barrel];
-
         let project_modules = self
             .modules
             .iter()
@@ -93,6 +96,8 @@ impl GTLangProject<TSProjectConfig> for TSProject {
                 code: module.module.render(&ts_indent()),
             })
             .collect::<Vec<_>>();
+
+        let mut modules = vec![gitignore, package, barrel];
         modules.extend(project_modules);
 
         Ok(GTLangProjectRender { files: modules })
@@ -248,6 +253,10 @@ mod tests {
                 .unwrap(),
             GTLangProjectRender {
                 files: vec![
+                    GTLangProjectSource {
+                        path: "ts/.gitignore".into(),
+                        code: "node_modules".into(),
+                    },
                     GTLangProjectSource {
                         path: "ts/package.json".into(),
                         code: r#"{

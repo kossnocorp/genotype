@@ -39,6 +39,7 @@ impl GTLangProject<PYProjectConfig> for PYProject {
             path: config.package_path(".gitignore".into()),
             code: r#"__pycache__"#.into(),
         };
+
         let dependencies = self
             .modules
             .iter()
