@@ -1,5 +1,7 @@
 use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
 
+use crate::TSDoc;
+
 use super::TSModule;
 
 impl GTRender for TSModule {
@@ -32,7 +34,7 @@ impl GTRender for TSModule {
             str.push_str("\n");
         }
 
-        str
+        TSDoc::with_doc(&self.doc, indent, str, true)
     }
 }
 
@@ -63,19 +65,23 @@ mod tests {
                 ],
                 definitions: vec![
                     TSDefinition::Alias(TSAlias {
+                        doc: None,
                         name: "Name".into(),
                         descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                     }),
                     TSDefinition::Interface(TSInterface {
+                        doc: None,
                         name: "Name".into(),
                         extensions: vec![],
                         properties: vec![
                             TSProperty {
+                                doc: None,
                                 name: "name".into(),
                                 descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                                 required: true
                             },
                             TSProperty {
+                                doc: None,
                                 name: "age".into(),
                                 descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
                                 required: false
@@ -94,6 +100,31 @@ export interface Name {
   name: string;
   age?: number;
 }
+"#
+        );
+    }
+
+    #[test]
+    fn test_render_doc() {
+        assert_eq!(
+            TSModule {
+                doc: Some(TSDoc("Hello, world!".into())),
+                imports: vec![TSImport {
+                    path: "../path/to/module.ts".into(),
+                    reference: TSImportReference::Default("Name".into()),
+                },],
+                definitions: vec![TSDefinition::Alias(TSAlias {
+                    doc: None,
+                    name: "Name".into(),
+                    descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                }),]
+            }
+            .render(&ts_indent()),
+            r#"/** Hello, world! */
+
+import Name from "../path/to/module.ts";
+
+export type Name = string;
 "#
         );
     }

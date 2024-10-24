@@ -1,15 +1,22 @@
 use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
 
+use crate::TSDoc;
+
 use super::TSProperty;
 
 impl GTRender for TSProperty {
     fn render(&self, indent: &GTIndent) -> String {
-        format!(
-            "{}{}{}: {}",
-            indent.string,
-            self.name.render(indent),
-            if self.required { "" } else { "?" },
-            self.descriptor.render(indent)
+        TSDoc::with_doc(
+            &self.doc,
+            indent,
+            format!(
+                "{}{}{}: {}",
+                indent.string,
+                self.name.render(indent),
+                if self.required { "" } else { "?" },
+                self.descriptor.render(indent)
+            ),
+            false,
         )
     }
 }
@@ -23,6 +30,7 @@ mod tests {
     fn test_render_primitive() {
         assert_eq!(
             TSProperty {
+                doc: None,
                 name: "name".into(),
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                 required: true
@@ -32,6 +40,7 @@ mod tests {
         );
         assert_eq!(
             TSProperty {
+                doc: None,
                 name: "name".into(),
                 descriptor: TSDescriptor::Reference("Name".into()),
                 required: true
@@ -45,6 +54,7 @@ mod tests {
     fn test_render_indent() {
         assert_eq!(
             TSProperty {
+                doc: None,
                 name: "name".into(),
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                 required: true
@@ -58,12 +68,28 @@ mod tests {
     fn test_render_required() {
         assert_eq!(
             TSProperty {
+                doc: None,
                 name: "name".into(),
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                 required: false
             }
             .render(&ts_indent()),
             "name?: string"
+        );
+    }
+
+    #[test]
+    fn test_render_doc() {
+        assert_eq!(
+            TSProperty {
+                doc: Some(TSDoc("Hello, world!".into())),
+                name: "name".into(),
+                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                required: true
+            }
+            .render(&ts_indent()),
+            r#"/** Hello, world! */
+name: string"#
         );
     }
 }

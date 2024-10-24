@@ -1,5 +1,7 @@
 use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
 
+use crate::TSDoc;
+
 use super::TSInterface;
 
 impl GTRender for TSInterface {
@@ -20,19 +22,24 @@ impl GTRender for TSInterface {
             .collect::<Vec<String>>()
             .join(", ");
 
-        format!(
-            "{}interface {}{} {}\n{}{}{}",
-            indent.string,
-            self.name.render(indent),
-            if extensions.len() > 0 {
-                format!(" extends {}", extensions)
-            } else {
-                "".into()
-            },
-            "{",
-            properties,
-            if properties.len() > 0 { "\n" } else { "" },
-            indent.format("}")
+        TSDoc::with_doc(
+            &self.doc,
+            indent,
+            format!(
+                "{}interface {}{} {}\n{}{}{}",
+                indent.string,
+                self.name.render(indent),
+                if extensions.len() > 0 {
+                    format!(" extends {}", extensions)
+                } else {
+                    "".into()
+                },
+                "{",
+                properties,
+                if properties.len() > 0 { "\n" } else { "" },
+                indent.format("}")
+            ),
+            false,
         )
     }
 }
@@ -49,6 +56,7 @@ mod tests {
     fn test_render_empty() {
         assert_eq!(
             TSInterface {
+                doc: None,
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![]
@@ -62,15 +70,18 @@ mod tests {
     fn test_render_properties() {
         assert_eq!(
             TSInterface {
+                doc: None,
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![
                     TSProperty {
+                        doc: None,
                         name: "name".into(),
                         descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                         required: true
                     },
                     TSProperty {
+                        doc: None,
                         name: "age".into(),
                         descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
                         required: false
@@ -89,15 +100,18 @@ mod tests {
     fn test_render_indent() {
         assert_eq!(
             TSInterface {
+                doc: None,
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![
                     TSProperty {
+                        doc: None,
                         name: "name".into(),
                         descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                         required: true
                     },
                     TSProperty {
+                        doc: None,
                         name: "age".into(),
                         descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
                         required: false
@@ -116,9 +130,11 @@ mod tests {
     fn test_render_extensions() {
         assert_eq!(
             TSInterface {
+                doc: None,
                 name: "Name".into(),
                 extensions: vec!["Hello".into(), "World".into()],
                 properties: vec![TSProperty {
+                    doc: None,
                     name: "name".into(),
                     descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                     required: true
@@ -127,6 +143,22 @@ mod tests {
             .render(&ts_indent()),
             r#"interface Name extends Hello, World {
   name: string;
+}"#
+        );
+    }
+
+    #[test]
+    fn test_render_doc() {
+        assert_eq!(
+            TSInterface {
+                doc: Some(TSDoc("Hello, world!".into())),
+                name: "Name".into(),
+                extensions: vec![],
+                properties: vec![]
+            }
+            .render(&ts_indent()),
+            r#"/** Hello, world! */
+interface Name {
 }"#
         );
     }

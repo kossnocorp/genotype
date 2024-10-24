@@ -127,9 +127,12 @@ mod tests {
                             doc: None,
                             imports: vec![],
                             definitions: vec![TSDefinition::Interface(TSInterface {
+                                doc: None,
+
                                 name: "Author".into(),
                                 extensions: vec![],
                                 properties: vec![TSProperty {
+                                    doc: None,
                                     name: "name".into(),
                                     descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                                     required: true,
@@ -148,15 +151,18 @@ mod tests {
                                 )]),
                             }],
                             definitions: vec![TSDefinition::Interface(TSInterface {
+                                doc: None,
                                 name: "Book".into(),
                                 extensions: vec![],
                                 properties: vec![
                                     TSProperty {
+                                        doc: None,
                                         name: "title".into(),
                                         descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                                         required: true,
                                     },
                                     TSProperty {
+                                        doc: None,
                                         name: "author".into(),
                                         descriptor: TSDescriptor::Reference("Author".into()),
                                         required: true,
@@ -187,15 +193,18 @@ mod tests {
                             imports: vec![],
                             definitions: vec![
                                 TSDefinition::Interface(TSInterface {
+                                    doc: None,
                                     name: "Author".into(),
                                     extensions: vec![],
                                     properties: vec![TSProperty {
+                                        doc: None,
                                         name: "name".into(),
                                         descriptor: TSDescriptor::Reference("AuthorName".into()),
                                         required: true,
                                     }],
                                 }),
                                 TSDefinition::Alias(TSAlias {
+                                    doc: None,
                                     name: "AuthorName".into(),
                                     descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                                 })
@@ -211,20 +220,24 @@ mod tests {
                                 reference: TSImportReference::Glob("author".into()),
                             }],
                             definitions: vec![TSDefinition::Interface(TSInterface {
+                                doc: None,
                                 name: "Book".into(),
                                 extensions: vec![],
                                 properties: vec![
                                     TSProperty {
+                                        doc: None,
                                         name: "title".into(),
                                         descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                                         required: true,
                                     },
                                     TSProperty {
+                                        doc: None,
                                         name: "author".into(),
                                         descriptor: TSDescriptor::Reference("author.Author".into()),
                                         required: true,
                                     },
                                     TSProperty {
+                                        doc: None,
                                         name: "authorName".into(),
                                         descriptor: TSDescriptor::Reference(
                                             "author.AuthorName".into()

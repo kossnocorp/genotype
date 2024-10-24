@@ -22,6 +22,7 @@ mod tests {
     fn test_render_alias() {
         assert_eq!(
             TSDefinition::Alias(TSAlias {
+                doc: None,
                 name: "Name".into(),
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String),
             })
@@ -34,15 +35,18 @@ mod tests {
     fn test_render_interface() {
         assert_eq!(
             TSDefinition::Interface(TSInterface {
+                doc: None,
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![
                     TSProperty {
+                        doc: None,
                         name: "name".into(),
                         descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                         required: true
                     },
                     TSProperty {
+                        doc: None,
                         name: "age".into(),
                         descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
                         required: false

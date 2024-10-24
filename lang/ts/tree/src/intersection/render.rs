@@ -26,6 +26,7 @@ mod tests {
                 descriptors: vec![
                     TSObject {
                         properties: vec![TSProperty {
+                            doc: None,
                             name: "hello".into(),
                             descriptor: TSPrimitive::String.into(),
                             required: true,

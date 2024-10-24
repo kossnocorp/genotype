@@ -32,7 +32,11 @@ impl TSConvertModule {
         }
 
         TSConvertModule(TSModule {
-            doc: None,
+            doc: module.doc.as_ref().map(|doc| {
+                let mut doc = doc.convert(resolve, &|_| {});
+                doc.0 = "@file ".to_string() + &doc.0;
+                doc
+            }),
             imports,
             definitions: definitions.into_inner().unwrap(),
         })
@@ -200,15 +204,19 @@ mod tests {
                 ],
                 definitions: vec![
                     TSDefinition::Interface(TSInterface {
+                        doc: None,
                         name: "User".into(),
                         extensions: vec![],
                         properties: vec![
                             TSProperty {
+                                doc: None,
+
                                 name: "name".into(),
                                 descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                                 required: true,
                             },
                             TSProperty {
+                                doc: None,
                                 name: "age".into(),
                                 descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
                                 required: false,
@@ -216,24 +224,29 @@ mod tests {
                         ]
                     }),
                     TSDefinition::Interface(TSInterface {
+                        doc: None,
                         name: "Order".into(),
                         extensions: vec![],
                         properties: vec![TSProperty {
+                            doc: None,
                             name: "book".into(),
                             descriptor: TSDescriptor::Reference("Book".into()),
                             required: true,
                         }]
                     }),
                     TSDefinition::Interface(TSInterface {
+                        doc: None,
                         name: "Book".into(),
                         extensions: vec![],
                         properties: vec![
                             TSProperty {
+                                doc: None,
                                 name: "title".into(),
                                 descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                                 required: true,
                             },
                             TSProperty {
+                                doc: None,
                                 name: "author".into(),
                                 descriptor: TSDescriptor::Reference("Author".into()),
                                 required: true,
@@ -241,10 +254,31 @@ mod tests {
                         ]
                     }),
                     TSDefinition::Alias(TSAlias {
+                        doc: None,
                         name: "Name".into(),
                         descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                     }),
                 ]
+            })
+        );
+    }
+
+    #[test]
+    fn test_convert_doc() {
+        assert_eq!(
+            TSConvertModule::convert(
+                &GTModule {
+                    source_code: GTSourceCode::new("module.type".into(), "".into()),
+                    doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
+                    imports: vec![],
+                    aliases: vec![],
+                },
+                &TSConvertResolve::new()
+            ),
+            TSConvertModule(TSModule {
+                doc: Some(TSDoc("@file Hello, world!".into())),
+                imports: vec![],
+                definitions: vec![]
             })
         );
     }

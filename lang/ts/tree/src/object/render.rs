@@ -40,11 +40,13 @@ mod tests {
             TSObject {
                 properties: vec![
                     TSProperty {
+                        doc: None,
                         name: "name".into(),
                         descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                         required: true
                     },
                     TSProperty {
+                        doc: None,
                         name: "age".into(),
                         descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
                         required: false
@@ -62,11 +64,13 @@ mod tests {
             TSObject {
                 properties: vec![
                     TSProperty {
+                        doc: None,
                         name: "name".into(),
                         descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                         required: true
                     },
                     TSProperty {
+                        doc: None,
                         name: "age".into(),
                         descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
                         required: false

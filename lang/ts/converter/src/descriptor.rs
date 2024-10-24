@@ -90,6 +90,7 @@ mod tests {
         assert_eq!(
             hoisted.lock().unwrap().clone(),
             vec![TSDefinition::Alias(TSAlias {
+                doc: None,
                 name: "Name".into(),
                 descriptor: TSDescriptor::Primitive(TSPrimitive::Boolean),
             }),]
@@ -156,11 +157,13 @@ mod tests {
             TSDescriptor::Object(TSObject {
                 properties: vec![
                     TSProperty {
+                        doc: None,
                         name: "name".into(),
                         descriptor: TSPrimitive::String.into(),
                         required: true,
                     },
                     TSProperty {
+                        doc: None,
                         name: "age".into(),
                         descriptor: TSPrimitive::Number.into(),
                         required: false,
@@ -191,6 +194,7 @@ mod tests {
                 descriptors: vec![
                     TSObject {
                         properties: vec![TSProperty {
+                            doc: None,
                             name: "title".into(),
                             descriptor: TSPrimitive::String.into(),
                             required: true,

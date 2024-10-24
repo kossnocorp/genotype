@@ -8,9 +8,13 @@ impl TSConvert<TSDefinition> for GTAlias {
     where
         HoistFn: Fn(TSDefinition),
     {
+        let doc = self.doc.as_ref().map(|d| d.convert(resolve, hoist));
+        let name = self.name.convert(resolve, hoist);
+
         match &self.descriptor {
             GTDescriptor::Object(object) => TSDefinition::Interface(TSInterface {
-                name: self.name.convert(resolve, hoist),
+                doc,
+                name,
                 extensions: object
                     .extensions
                     .iter()
@@ -24,7 +28,8 @@ impl TSConvert<TSDefinition> for GTAlias {
             }),
 
             _ => TSDefinition::Alias(TSAlias {
-                name: self.name.convert(resolve, hoist),
+                doc,
+                name,
                 descriptor: self.descriptor.convert(resolve, hoist),
             }),
         }
@@ -53,6 +58,7 @@ mod tests {
             }
             .convert(&TSConvertResolve::new(), &|_| {}),
             TSDefinition::Alias(TSAlias {
+                doc: None,
                 name: "Name".into(),
                 descriptor: TSDescriptor::Primitive(TSPrimitive::Boolean),
             }),
@@ -93,15 +99,18 @@ mod tests {
             }
             .convert(&TSConvertResolve::new(), &|_| {}),
             TSDefinition::Interface(TSInterface {
+                doc: None,
                 name: "Book".into(),
                 extensions: vec![],
                 properties: vec![
                     TSProperty {
+                        doc: None,
                         name: "title".into(),
                         descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                         required: true,
                     },
                     TSProperty {
+                        doc: None,
                         name: "author".into(),
                         descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                         required: true,
@@ -138,9 +147,11 @@ mod tests {
             }
             .convert(&TSConvertResolve::new(), &|_| {}),
             TSDefinition::Interface(TSInterface {
+                doc: None,
                 name: "Book".into(),
                 extensions: vec!["Good".into()],
                 properties: vec![TSProperty {
+                    doc: None,
                     name: "author".into(),
                     descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                     required: true,
@@ -186,6 +197,7 @@ mod tests {
             }
             .convert(&TSConvertResolve::new(), &|_| {}),
             TSDefinition::Alias(TSAlias {
+                doc: None,
                 name: "Book".into(),
                 descriptor: TSUnion {
                     descriptors: vec![
@@ -193,6 +205,7 @@ mod tests {
                             descriptors: vec![
                                 TSObject {
                                     properties: vec![TSProperty {
+                                        doc: None,
                                         name: "author".into(),
                                         descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                                         required: true,
@@ -207,6 +220,50 @@ mod tests {
                     ]
                 }
                 .into(),
+            }),
+        );
+    }
+
+    #[test]
+    fn test_convert_doc_interface() {
+        assert_eq!(
+            GTAlias {
+                span: (0, 0).into(),
+                doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
+                attributes: vec![],
+                name: GTIdentifier::new((0, 0).into(), "Book".into()),
+                descriptor: GTDescriptor::Object(GTObject {
+                    span: (0, 0).into(),
+                    name: GTIdentifier::new((0, 0).into(), "Book".into()).into(),
+                    extensions: vec![],
+                    properties: vec![]
+                })
+            }
+            .convert(&TSConvertResolve::new(), &|_| {}),
+            TSDefinition::Interface(TSInterface {
+                doc: Some(TSDoc("Hello, world!".into())),
+                name: "Book".into(),
+                extensions: vec![],
+                properties: vec![]
+            }),
+        );
+    }
+
+    #[test]
+    fn test_convert_doc_alias() {
+        assert_eq!(
+            GTAlias {
+                span: (0, 0).into(),
+                doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
+                attributes: vec![],
+                name: GTIdentifier::new((0, 0).into(), "Name".into()),
+                descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
+            }
+            .convert(&TSConvertResolve::new(), &|_| {}),
+            TSDefinition::Alias(TSAlias {
+                doc: Some(TSDoc("Hello, world!".into())),
+                name: "Name".into(),
+                descriptor: TSDescriptor::Primitive(TSPrimitive::Boolean),
             }),
         );
     }
