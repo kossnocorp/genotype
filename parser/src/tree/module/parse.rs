@@ -1303,7 +1303,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "WIP"]
     fn test_attributes() {
         let source_code = read_source_code("./examples/syntax/13-attributes.type");
         assert_module(
@@ -1354,7 +1353,10 @@ mod tests {
                                         doc: None,
                                         attributes: vec![GTAttribute {
                                             span: (34, 40).into(),
-                                            name: GTAttributeName::new((0, 0).into(), "tag".into()),
+                                            name: GTAttributeName::new(
+                                                (36, 39).into(),
+                                                "tag".into(),
+                                            ),
                                             descriptor: None,
                                         }],
                                         name: GTKey::new((43, 47).into(), "type".into()),
@@ -1396,7 +1398,7 @@ mod tests {
                                         attributes: vec![GTAttribute {
                                             span: (88, 94).into(),
                                             name: GTAttributeName::new(
-                                                (88, 94).into(),
+                                                (90, 93).into(),
                                                 "tag".into(),
                                             ),
                                             descriptor: None,
@@ -1426,12 +1428,12 @@ mod tests {
                             doc: None,
                             attributes: vec![GTAttribute {
                                 span: (130, 148).into(),
-                                name: GTAttributeName::new((0, 0).into(), "hello".into()),
+                                name: GTAttributeName::new((132, 137).into(), "hello".into()),
                                 descriptor: Some(GTAttributeDescriptor::Assigment(
                                     GTAttributeAssignment::new(
-                                        (0, 0).into(),
+                                        (138, 147).into(),
                                         GTAttributeValue::Literal(GTLiteral::String(
-                                            (0, 0).into(),
+                                            (140, 147).into(),
                                             "world".into(),
                                         )),
                                     ),
@@ -1445,14 +1447,14 @@ mod tests {
                             doc: None,
                             attributes: vec![GTAttribute {
                                 span: (167, 193).into(),
-                                name: GTAttributeName::new((0, 0).into(), "hello".into()),
+                                name: GTAttributeName::new((169, 174).into(), "hello".into()),
                                 descriptor: Some(GTAttributeDescriptor::Arguments(vec![
                                     GTAttributeValue::Literal(GTLiteral::String(
-                                        (0, 0).into(),
+                                        (175, 182).into(),
                                         "cruel".into(),
                                     )),
                                     GTAttributeValue::Literal(GTLiteral::String(
-                                        (0, 0).into(),
+                                        (184, 191).into(),
                                         "world".into(),
                                     )),
                                 ])),
@@ -1465,21 +1467,21 @@ mod tests {
                             doc: None,
                             attributes: vec![GTAttribute {
                                 span: (212, 253).into(),
-                                name: GTAttributeName::new((0, 0).into(), "hello".into()),
+                                name: GTAttributeName::new((214, 219).into(), "hello".into()),
                                 descriptor: Some(GTAttributeDescriptor::Properties(vec![
                                     GTAttributeProperty::new(
-                                        (0, 0).into(),
-                                        GTAttributeKey::new((0, 0).into(), "which".into()),
+                                        (220, 235).into(),
+                                        GTAttributeKey::new((220, 225).into(), "which".into()),
                                         GTAttributeValue::Literal(GTLiteral::String(
-                                            (0, 0).into(),
+                                            (228, 235).into(),
                                             "cruel".into(),
                                         )),
                                     ),
                                     GTAttributeProperty::new(
-                                        (0, 0).into(),
-                                        GTAttributeKey::new((0, 0).into(), "what".into()),
+                                        (237, 251).into(),
+                                        GTAttributeKey::new((237, 241).into(), "what".into()),
                                         GTAttributeValue::Literal(GTLiteral::String(
-                                            (0, 0).into(),
+                                            (244, 251).into(),
                                             "world".into(),
                                         )),
                                     ),
