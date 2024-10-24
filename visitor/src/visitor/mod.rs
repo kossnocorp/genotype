@@ -56,6 +56,10 @@ pub trait GTVisitor {
 
     fn visit_reference(&mut self, _reference: &mut GTReference) {}
 
+    fn visit_record(&mut self, _record: &mut GTRecord) {}
+
+    fn visit_record_key(&mut self, _key: &mut GTRecordKey) {}
+
     fn visit_tuple(&mut self, _tuple: &mut GTTuple) {}
 
     fn visit_union(&mut self, _union: &mut GTUnion) {}

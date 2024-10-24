@@ -80,6 +80,11 @@ mod tests {
     }
 
     #[test]
+    fn test_records() {
+        parse_file("./examples/syntax/14-records.type");
+    }
+
+    #[test]
     fn test_empty() {
         parse_code("");
     }

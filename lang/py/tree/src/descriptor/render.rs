@@ -12,6 +12,7 @@ impl PYRender for PYDescriptor {
             PYDescriptor::Reference(name) => name.render(indent, config),
             PYDescriptor::Tuple(tuple) => tuple.render(indent, config),
             PYDescriptor::Union(union) => union.render(indent, config),
+            PYDescriptor::Dict(dict) => dict.render(indent, config),
         }
     }
 }
@@ -80,6 +81,18 @@ mod tests {
             })
             .render(&py_indent(), &Default::default()),
             "str | int"
+        );
+    }
+
+    #[test]
+    fn test_render_dict() {
+        assert_eq!(
+            PYDescriptor::Dict(Box::new(PYDict {
+                key: PYDictKey::String,
+                descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
+            }))
+            .render(&py_indent(), &Default::default()),
+            "dict[str, int]"
         );
     }
 }

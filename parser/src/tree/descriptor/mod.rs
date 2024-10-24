@@ -13,6 +13,7 @@ pub enum GTDescriptor {
     Reference(GTReference),
     Tuple(GTTuple),
     Union(GTUnion),
+    Record(Box<GTRecord>),
 }
 
 impl From<GTObject> for GTDescriptor {

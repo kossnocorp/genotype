@@ -15,6 +15,8 @@ pub mod object;
 pub mod path;
 pub mod primitive;
 pub mod property;
+pub mod record;
+pub mod record_key;
 pub mod reference;
 pub mod resolve;
 pub mod tuple;

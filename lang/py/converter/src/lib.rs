@@ -3,6 +3,8 @@ pub mod array;
 pub mod context;
 pub mod convert;
 pub mod descriptor;
+pub mod dict;
+pub mod dict_key;
 pub mod doc;
 pub mod extension;
 pub mod identifier;

@@ -10,6 +10,7 @@ pub enum PYDescriptor {
     Reference(PYReference),
     Tuple(PYTuple),
     Union(PYUnion),
+    Dict(Box<PYDict>),
 }
 
 impl From<PYPrimitive> for PYDescriptor {
@@ -39,6 +40,12 @@ impl From<PYTuple> for PYDescriptor {
 impl From<PYList> for PYDescriptor {
     fn from(list: PYList) -> Self {
         PYDescriptor::List(Box::new(list))
+    }
+}
+
+impl From<PYDict> for PYDescriptor {
+    fn from(dict: PYDict) -> Self {
+        PYDescriptor::Dict(Box::new(dict))
     }
 }
 

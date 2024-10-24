@@ -26,6 +26,8 @@ impl GTTraverse for GTDescriptor {
             GTDescriptor::Tuple(tuple) => tuple.traverse(visitor),
 
             GTDescriptor::Union(union) => union.traverse(visitor),
+
+            GTDescriptor::Record(record) => record.traverse(visitor),
         }
     }
 }
@@ -207,6 +209,31 @@ mod tests {
                 GTMockVisited::Union(union.clone()),
                 GTMockVisited::Descriptor(primitive),
                 GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
+            ]
+        );
+    }
+
+    #[test]
+    fn test_traverse() {
+        let mut visitor = GTMockVisitor::new();
+        let key = GTRecordKey::String((0, 0).into());
+        let primitive = GTPrimitive::String((0, 0).into());
+        let primitive_descriptor = GTDescriptor::Primitive(primitive.clone());
+        let record = GTRecord {
+            span: (0, 0).into(),
+            key: key.clone(),
+            descriptor: primitive_descriptor.clone(),
+        };
+        let mut descriptor = GTDescriptor::Record(Box::new(record.clone()));
+        descriptor.traverse(&mut visitor);
+        assert_eq!(
+            visitor.visited,
+            vec![
+                GTMockVisited::Descriptor(descriptor.clone()),
+                GTMockVisited::Record(record.clone()),
+                GTMockVisited::RecordKey(key.clone()),
+                GTMockVisited::Descriptor(primitive_descriptor.clone()),
+                GTMockVisited::Primitive(primitive.clone()),
             ]
         );
     }

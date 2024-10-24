@@ -13,6 +13,7 @@ pub enum TSDescriptor {
     Reference(TSReference),
     Tuple(TSTuple),
     Union(TSUnion),
+    Record(Box<TSRecord>),
 }
 
 impl From<&str> for TSDescriptor {

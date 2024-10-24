@@ -14,6 +14,7 @@ impl GTRender for TSDescriptor {
             TSDescriptor::Object(object) => object.render(indent),
             TSDescriptor::Tuple(tuple) => tuple.render(indent),
             TSDescriptor::Union(union) => union.render(indent),
+            TSDescriptor::Record(record) => record.render(indent),
         }
     }
 }

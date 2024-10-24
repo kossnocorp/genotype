@@ -32,6 +32,8 @@ pub enum GTMockVisited {
     Reference(GTReference),
     Tuple(GTTuple),
     Union(GTUnion),
+    Record(GTRecord),
+    RecordKey(GTRecordKey),
 }
 
 pub struct GTMockVisitor {
@@ -171,5 +173,14 @@ impl GTVisitor for GTMockVisitor {
 
     fn visit_union(&mut self, union: &mut GTUnion) {
         self.visited.push(GTMockVisited::Union(union.clone()));
+    }
+
+    fn visit_record(&mut self, record: &mut GTRecord) {
+        self.visited.push(GTMockVisited::Record(record.clone()));
+    }
+
+    fn visit_record_key(&mut self, record_key: &mut GTRecordKey) {
+        self.visited
+            .push(GTMockVisited::RecordKey(record_key.clone()));
     }
 }

@@ -53,6 +53,10 @@ impl TSConvert<TSDescriptor> for GTDescriptor {
             GTDescriptor::Tuple(tuple) => TSDescriptor::Tuple(tuple.convert(resolve, hoist)),
 
             GTDescriptor::Union(union) => TSDescriptor::Union(union.convert(resolve, hoist)),
+
+            GTDescriptor::Record(record) => {
+                TSDescriptor::Record(Box::new(record.convert(resolve, hoist)))
+            }
         }
     }
 }

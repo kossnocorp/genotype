@@ -25,6 +25,8 @@ mod object_name;
 mod path;
 mod primitive;
 mod property;
+mod record;
+mod record_key;
 mod reference;
 mod tuple;
 mod union;

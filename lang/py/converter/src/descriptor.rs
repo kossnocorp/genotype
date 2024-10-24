@@ -20,6 +20,8 @@ impl PYConvert<PYDescriptor> for GTDescriptor {
 
             GTDescriptor::Primitive(primitive) => primitive.convert(context).into(),
 
+            GTDescriptor::Record(record) => record.convert(context).into(),
+
             GTDescriptor::Reference(name) => name.convert(context).into(),
 
             GTDescriptor::Tuple(tuple) => tuple.convert(context).into(),
