@@ -21,6 +21,10 @@ impl PYConvert<PYDefinition> for GTAlias {
                                 &assignment.value
                             {
                                 union.discriminator = value.clone().into();
+                                // [TODO] Resolve right now is a mess, instead of resolving in
+                                // cconver functions, it should be resolved in the end or by
+                                // the parent.
+                                union.clone().resolve(context);
                             }
                         }
                     }

@@ -14,7 +14,11 @@ impl PYProjectConfig {
         self.out.join(path)
     }
 
+    pub fn module_root_path(&self) -> PathBuf {
+        self.package_path(PathBuf::from(self.module.clone()))
+    }
+
     pub fn source_path(&self, path: PathBuf) -> PathBuf {
-        self.package_path(PathBuf::from(self.module.clone()).join(path))
+        self.module_root_path().join(path)
     }
 }
