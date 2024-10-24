@@ -30,7 +30,14 @@ impl PYConvert<PYDefinition> for GTAlias {
                     }
                 }
 
-                PYDefinition::Alias(PYAlias { name, descriptor }.resolve(context))
+                PYDefinition::Alias(
+                    PYAlias {
+                        doc: self.doc.as_ref().map(|doc| doc.convert(context)),
+                        name,
+                        descriptor,
+                    }
+                    .resolve(context),
+                )
             }
         }
     }
@@ -56,6 +63,7 @@ mod tests {
             }
             .convert(&mut PYConvertContext::default()),
             PYDefinition::Alias(PYAlias {
+                doc: None,
                 name: "Name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
             }),
@@ -96,6 +104,7 @@ mod tests {
             }
             .convert(&mut PYConvertContext::default()),
             PYDefinition::Class(PYClass {
+                doc: None,
                 name: "Book".into(),
                 extensions: vec![],
                 properties: vec![
@@ -149,6 +158,7 @@ mod tests {
             }
             .convert(&mut context),
             PYDefinition::Alias(PYAlias {
+                doc: None,
                 name: "Book".into(),
                 descriptor: PYUnion {
                     descriptors: vec![
@@ -164,6 +174,7 @@ mod tests {
         assert_eq!(
             hoisted,
             vec![PYDefinition::Class(PYClass {
+                doc: None,
                 name: "BookObj".into(),
                 extensions: vec![],
                 properties: vec![PYProperty {
@@ -189,6 +200,7 @@ mod tests {
             }
             .convert(&mut context),
             PYDefinition::Alias(PYAlias {
+                doc: None,
                 name: "Name".into(),
                 descriptor: PYPrimitive::String.into(),
             })
@@ -212,6 +224,7 @@ mod tests {
             }
             .convert(&mut context),
             PYDefinition::Alias(PYAlias {
+                doc: None,
                 name: "Name".into(),
                 descriptor: PYPrimitive::String.into(),
             })
@@ -256,6 +269,7 @@ mod tests {
             }
             .convert(&mut PYConvertContext::default()),
             PYDefinition::Alias(PYAlias {
+                doc: None,
                 name: "Message".into(),
                 descriptor: PYUnion {
                     descriptors: vec![
@@ -265,6 +279,25 @@ mod tests {
                     discriminator: Some("type".into())
                 }
                 .into()
+            }),
+        );
+    }
+
+    #[test]
+    fn test_convert_doc() {
+        assert_eq!(
+            GTAlias {
+                span: (0, 0).into(),
+                doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
+                attributes: vec![],
+                name: GTIdentifier::new((0, 0).into(), "Name".into()),
+                descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
+            }
+            .convert(&mut PYConvertContext::default()),
+            PYDefinition::Alias(PYAlias {
+                doc: Some(PYDoc("Hello, world!".into())),
+                name: "Name".into(),
+                descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
             }),
         );
     }

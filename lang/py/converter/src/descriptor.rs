@@ -55,6 +55,7 @@ mod tests {
         assert_eq!(
             hoisted,
             vec![PYDefinition::Alias(PYAlias {
+                doc: None,
                 name: "Name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
             }),]
@@ -127,6 +128,7 @@ mod tests {
         assert_eq!(
             hoisted,
             vec![PYDefinition::Class(PYClass {
+                doc: None,
                 name: "Person".into(),
                 extensions: vec![],
                 properties: vec![

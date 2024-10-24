@@ -12,6 +12,8 @@ impl PYConvertModule {
         // [TODO] Get rid of unnecessary clone
         let mut context = PYConvertContext::new(resolve.clone(), config.clone());
 
+        let doc = module.doc.as_ref().map(|doc| doc.convert(&mut context));
+
         for import in &module.imports {
             let import = import.convert(&mut context);
             context.push_import(import);
@@ -26,7 +28,7 @@ impl PYConvertModule {
         let definitions = context.drain_definitions();
 
         PYConvertModule(PYModule {
-            doc: None,
+            doc,
             imports,
             definitions,
         })
@@ -211,6 +213,7 @@ mod tests {
                 ],
                 definitions: vec![
                     PYDefinition::Class(PYClass {
+                        doc: None,
                         name: "User".into(),
                         extensions: vec![],
                         properties: vec![
@@ -227,6 +230,7 @@ mod tests {
                         ]
                     }),
                     PYDefinition::Class(PYClass {
+                        doc: None,
                         name: "Order".into(),
                         extensions: vec![],
                         properties: vec![PYProperty {
@@ -236,6 +240,7 @@ mod tests {
                         }]
                     }),
                     PYDefinition::Class(PYClass {
+                        doc: None,
                         name: "Book".into(),
                         extensions: vec![],
                         properties: vec![
@@ -252,10 +257,32 @@ mod tests {
                         ]
                     }),
                     PYDefinition::Alias(PYAlias {
+                        doc: None,
                         name: "Name".into(),
                         descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                     }),
                 ]
+            })
+        );
+    }
+
+    #[test]
+    fn test_convert_doc() {
+        assert_eq!(
+            PYConvertModule::convert(
+                &GTModule {
+                    source_code: GTSourceCode::new("module.type".into(), "".into()),
+                    doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
+                    imports: vec![],
+                    aliases: vec![],
+                },
+                &Default::default(),
+                &Default::default()
+            ),
+            PYConvertModule(PYModule {
+                doc: Some(PYDoc("Hello, world!".into())),
+                imports: vec![],
+                definitions: vec![]
             })
         );
     }

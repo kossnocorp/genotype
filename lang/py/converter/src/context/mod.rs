@@ -168,6 +168,7 @@ mod tests {
         let mut context = PYConvertContext::default();
         context.hoist(|_| {
             PYDefinition::Alias(PYAlias {
+                doc: None,
                 name: "Name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
             })
@@ -176,6 +177,7 @@ mod tests {
         assert_eq!(
             hoisted,
             vec![PYDefinition::Alias(PYAlias {
+                doc: None,
                 name: "Name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
             })],

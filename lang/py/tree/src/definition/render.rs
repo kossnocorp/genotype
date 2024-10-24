@@ -24,6 +24,7 @@ mod tests {
     fn test_render_alias() {
         assert_eq!(
             PYDefinition::Alias(PYAlias {
+                doc: None,
                 name: "Name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
             })
@@ -36,6 +37,7 @@ mod tests {
     fn test_render_class() {
         assert_eq!(
             PYDefinition::Class(PYClass {
+                doc: None,
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![

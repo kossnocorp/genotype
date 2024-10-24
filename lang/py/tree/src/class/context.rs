@@ -22,6 +22,7 @@ mod tests {
     fn test_resolve() {
         let mut context = PYContextMock::default();
         let alias = PYClass {
+            doc: None,
             name: "Foo".into(),
             extensions: vec![],
             properties: vec![],

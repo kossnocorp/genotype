@@ -12,6 +12,8 @@ impl PYConvert<PYClass> for GTObject {
         };
 
         PYClass {
+            // [TODO] Consider using the parent property's doc for that
+            doc: None,
             name,
             extensions: self.extensions.iter().map(|e| e.convert(context)).collect(),
             properties: self.properties.iter().map(|p| p.convert(context)).collect(),
@@ -56,6 +58,7 @@ mod tests {
             }
             .convert(&mut PYConvertContext::default()),
             PYClass {
+                doc: None,
                 name: "Person".into(),
                 extensions: vec![],
                 properties: vec![
@@ -86,6 +89,7 @@ mod tests {
             }
             .convert(&mut context),
             PYClass {
+                doc: None,
                 name: "Person".into(),
                 extensions: vec![],
                 properties: vec![]

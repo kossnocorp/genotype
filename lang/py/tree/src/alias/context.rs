@@ -27,6 +27,7 @@ mod tests {
     fn test_resolve() {
         let mut context = PYContextMock::default();
         let alias = PYAlias {
+            doc: None,
             name: "Foo".into(),
             descriptor: PYPrimitive::String.into(),
         };
@@ -38,6 +39,7 @@ mod tests {
     fn test_resolve_legacy() {
         let mut context = PYContextMock::new(PYVersion::Legacy);
         let alias = PYAlias {
+            doc: None,
             name: "Foo".into(),
             descriptor: PYPrimitive::String.into(),
         };

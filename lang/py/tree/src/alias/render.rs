@@ -11,10 +11,16 @@ impl PYRender for PYAlias {
         let name = self.name.render(indent);
         let descriptor = self.descriptor.render(indent, config);
 
-        if let PYVersion::Legacy = config.version {
+        let alias = if let PYVersion::Legacy = config.version {
             format!("{} : TypeAlias = {}", name, descriptor)
         } else {
             format!("type {} = {}", name, descriptor)
+        };
+
+        if let Some(doc) = &self.doc {
+            format!("{}\n{}", alias, doc.render(&indent))
+        } else {
+            alias
         }
     }
 }
@@ -31,6 +37,7 @@ mod tests {
     fn test_render() {
         assert_eq!(
             PYAlias {
+                doc: None,
                 name: "Name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String)
             }
@@ -43,11 +50,26 @@ mod tests {
     fn test_render_legacy() {
         assert_eq!(
             PYAlias {
+                doc: None,
                 name: "Name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String)
             }
             .render(&py_indent(), &PYLangConfig::new(PYVersion::Legacy)),
             "Name : TypeAlias = str"
+        );
+    }
+
+    #[test]
+    fn test_render_doc() {
+        assert_eq!(
+            PYAlias {
+                doc: Some(PYDoc("Hello, world!".into())),
+                name: "Name".into(),
+                descriptor: PYDescriptor::Primitive(PYPrimitive::String)
+            }
+            .render(&py_indent(), &Default::default()),
+            r#"type Name = str
+"""Hello, world!""""#
         );
     }
 }

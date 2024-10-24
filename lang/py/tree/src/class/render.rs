@@ -1,5 +1,5 @@
-use genotype_lang_py_config::PYLangConfig;
 use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use genotype_lang_py_config::PYLangConfig;
 
 use crate::PYRender;
 
@@ -26,7 +26,7 @@ impl PYRender for PYClass {
         let extensions = extensions.join(", ");
 
         format!(
-            "{}class {}{}:{}{}",
+            "{}class {}{}:{}{}{}",
             indent.string,
             self.name.render(indent),
             if extensions.len() > 0 {
@@ -34,7 +34,16 @@ impl PYRender for PYClass {
             } else {
                 "".into()
             },
-            if properties.len() > 0 { "\n" } else { "" },
+            self.doc
+                .as_ref()
+                .map_or(Default::default(), |doc| "\n".to_string()
+                    + &doc.render(&indent.increment())
+                    + if properties.len() > 0 { "\n\n\n" } else { "" }),
+            if self.doc.is_none() && properties.len() > 0 {
+                "\n"
+            } else {
+                ""
+            },
             properties,
         )
     }
@@ -50,6 +59,7 @@ mod tests {
     fn test_render_empty() {
         assert_eq!(
             PYClass {
+                doc: None,
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![]
@@ -63,6 +73,7 @@ mod tests {
     fn test_render_properties() {
         assert_eq!(
             PYClass {
+                doc: None,
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![
@@ -89,6 +100,7 @@ mod tests {
     fn test_render_indent() {
         assert_eq!(
             PYClass {
+                doc: None,
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![
@@ -115,6 +127,7 @@ mod tests {
     fn test_render_extensions() {
         assert_eq!(
             PYClass {
+                doc: None,
                 name: "Name".into(),
                 extensions: vec![
                     PYReference::new("Hello".into(), false).into(),
@@ -128,6 +141,43 @@ mod tests {
             }
             .render(&py_indent(), &Default::default()),
             r#"class Name(Model, Hello, World):
+    name: str"#
+        );
+    }
+
+    #[test]
+    fn test_render_doc_empty() {
+        assert_eq!(
+            PYClass {
+                doc: Some(PYDoc("Hello, world!".into())),
+                name: "Name".into(),
+                extensions: vec![],
+                properties: vec![]
+            }
+            .render(&py_indent(), &Default::default()),
+            r#"class Name(Model):
+    """Hello, world!""""#
+        );
+    }
+
+    #[test]
+    fn test_render_doc_properties() {
+        assert_eq!(
+            PYClass {
+                doc: Some(PYDoc("Hello, world!".into())),
+                name: "Name".into(),
+                extensions: vec![],
+                properties: vec![PYProperty {
+                    name: "name".into(),
+                    descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                    required: true
+                },]
+            }
+            .render(&py_indent(), &Default::default()),
+            r#"class Name(Model):
+    """Hello, world!"""
+
+
     name: str"#
         );
     }

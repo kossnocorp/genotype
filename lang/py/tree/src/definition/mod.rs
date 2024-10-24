@@ -1,4 +1,4 @@
-use crate::{alias::PYAlias, class::PYClass, PYIdentifier};
+use crate::{alias::PYAlias, class::PYClass, PYDoc, PYIdentifier};
 
 mod render;
 
@@ -15,6 +15,13 @@ impl PYDefinition {
             Self::Class(class) => &class.name,
         }
     }
+
+    pub fn doc(&self) -> &Option<PYDoc> {
+        match self {
+            Self::Alias(alias) => &alias.doc,
+            Self::Class(class) => &class.doc,
+        }
+    }
 }
 
 #[cfg(test)]
@@ -26,6 +33,7 @@ mod tests {
     fn test_name() {
         assert_eq!(
             *PYDefinition::Alias(PYAlias {
+                doc: None,
                 name: "Name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
             })
@@ -35,12 +43,37 @@ mod tests {
 
         assert_eq!(
             *PYDefinition::Class(PYClass {
+                doc: None,
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![],
             })
             .name(),
             "Name".into(),
+        );
+    }
+
+    #[test]
+    fn test_doc() {
+        assert_eq!(
+            *PYDefinition::Alias(PYAlias {
+                doc: Some(PYDoc("Hello, world!".into())),
+                name: "Name".into(),
+                descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
+            })
+            .doc(),
+            Some(PYDoc("Hello, world!".into())),
+        );
+
+        assert_eq!(
+            *PYDefinition::Class(PYClass {
+                doc: Some(PYDoc("Hello, world!".into())),
+                name: "Name".into(),
+                extensions: vec![],
+                properties: vec![],
+            })
+            .doc(),
+            Some(PYDoc("Hello, world!".into())),
         );
     }
 }

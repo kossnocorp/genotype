@@ -7,13 +7,28 @@ use super::PYModule;
 
 impl PYRender for PYModule {
     fn render(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
+        let mut blocks = vec![];
+
+        let doc = self
+            .doc
+            .as_ref()
+            .map(|doc| doc.render(indent))
+            .unwrap_or_default();
+
+        if !doc.is_empty() {
+            blocks.push(doc);
+        }
+
         let imports = self
             .imports
             .iter()
             .map(|import| import.render(indent))
             .collect::<Vec<String>>()
             .join("\n");
-        let has_imports = !imports.is_empty();
+
+        if !imports.is_empty() {
+            blocks.push(imports);
+        }
 
         let definitions = self
             .definitions
@@ -21,21 +36,12 @@ impl PYRender for PYModule {
             .map(|definition| definition.render(indent, config))
             .collect::<Vec<String>>()
             .join("\n\n\n");
-        let has_definitions = !definitions.is_empty();
 
-        let mut str = imports;
-
-        if has_imports && has_definitions {
-            str.push_str("\n\n\n");
+        if !definitions.is_empty() {
+            blocks.push(definitions);
         }
 
-        str.push_str(&definitions);
-
-        if has_imports || has_definitions {
-            str.push_str("\n");
-        }
-
-        str
+        blocks.join("\n\n\n") + "\n"
     }
 }
 
@@ -67,10 +73,12 @@ mod tests {
                 ],
                 definitions: vec![
                     PYDefinition::Alias(PYAlias {
+                        doc: None,
                         name: "Name".into(),
                         descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                     }),
                     PYDefinition::Class(PYClass {
+                        doc: None,
                         name: "Name".into(),
                         extensions: vec![],
                         properties: vec![
@@ -99,6 +107,34 @@ type Name = str
 class Name(Model):
     name: str
     age: Optional[int] = None
+"#
+        );
+    }
+
+    #[test]
+    fn test_render_doc() {
+        assert_eq!(
+            PYModule {
+                doc: Some(PYDoc("Hello, world!".into())),
+                imports: vec![PYImport {
+                    path: ".path.to.module".into(),
+                    reference: PYImportReference::Default(Some("name".into())),
+                    dependency: PYDependency::Local(".path.to.module".into())
+                },],
+                definitions: vec![PYDefinition::Alias(PYAlias {
+                    doc: None,
+                    name: "Name".into(),
+                    descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                }),]
+            }
+            .render(&py_indent(), &Default::default()),
+            r#""""Hello, world!"""
+
+
+import .path.to.module as name
+
+
+type Name = str
 "#
         );
     }

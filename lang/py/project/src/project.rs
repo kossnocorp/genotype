@@ -175,6 +175,7 @@ mod tests {
                                 dependency: PYDependency::Runtime,
                             }],
                             definitions: vec![PYDefinition::Class(PYClass {
+                                doc: None,
                                 name: "Author".into(),
                                 extensions: vec![],
                                 properties: vec![PYProperty {
@@ -207,6 +208,7 @@ mod tests {
                                 }
                             ],
                             definitions: vec![PYDefinition::Class(PYClass {
+                                doc: None,
                                 name: "Book".into(),
                                 extensions: vec![],
                                 properties: vec![
@@ -253,6 +255,7 @@ mod tests {
                             }],
                             definitions: vec![
                                 PYDefinition::Class(PYClass {
+                                    doc: None,
                                     name: "Author".into(),
                                     extensions: vec![],
                                     properties: vec![PYProperty {
@@ -263,6 +266,7 @@ mod tests {
                                     }],
                                 }),
                                 PYDefinition::Alias(PYAlias {
+                                    doc: None,
                                     name: "AuthorName".into(),
                                     descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                                 })
@@ -289,6 +293,7 @@ mod tests {
                                 }
                             ],
                             definitions: vec![PYDefinition::Class(PYClass {
+                                doc: None,
                                 name: "Book".into(),
                                 extensions: vec![],
                                 properties: vec![
