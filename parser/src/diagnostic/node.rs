@@ -19,6 +19,8 @@ pub enum GTNode {
     Path,
     Primitive,
     Property,
+    Record,
+    RecordKey,
 }
 
 impl GTNode {
@@ -41,6 +43,8 @@ impl GTNode {
             Self::Path => "path",
             Self::Primitive => "primitive",
             Self::Property => "property",
+            Self::Record => "record",
+            Self::RecordKey => "record key",
         }
     }
 }

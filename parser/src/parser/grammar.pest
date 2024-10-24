@@ -78,9 +78,11 @@ tuple = { "(" ~ descriptor ~ ("," ~ descriptor)* ~ ")" }
 
 // Records
 
-record = { "{" ~ "[" ~ record_key? ~ "]" ~ ":" ~ descriptor ~ "}" }
+record = { "{" ~ record_key ~ ":" ~ descriptor ~ "}" }
 
-record_key = { "string" | "int" | "float" | "boolean" }
+record_key = { "[" ~ record_key_type? ~ "]" }
+
+record_key_type = { "string" | "int" | "float" | "boolean" }
 
 // Modules
 

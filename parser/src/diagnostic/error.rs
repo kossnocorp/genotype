@@ -22,6 +22,10 @@ pub enum GTParseError {
     #[error("Failed to parse {1} node")]
     #[diagnostic(code("GTP004"))]
     UnexpectedEnd(#[label("unexpected end")] GTSpan, GTNode),
+
+    #[error("Failed to parse {1} node")]
+    #[diagnostic(code("GTP005"))]
+    UnknownValue(#[label("unknown value")] GTSpan, GTNode),
 }
 
 impl GTParseError {
@@ -31,6 +35,7 @@ impl GTParseError {
             Self::InternalMessage(span, _, _) => span.clone(),
             Self::UnknownRule(span, _) => span.clone(),
             Self::UnexpectedEnd(span, _) => span.clone(),
+            Self::UnknownValue(span, _) => span.clone(),
         }
     }
 
@@ -45,6 +50,9 @@ impl GTParseError {
             }
             Self::UnexpectedEnd(_, node) => {
                 format!("failed to parse {:?} node: unexpected end", node.name())
+            }
+            Self::UnknownValue(_, node) => {
+                format!("failed to parse {:?} node: unknown value", node.name())
             }
         }
     }
