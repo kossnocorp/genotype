@@ -27,6 +27,8 @@ impl PYConvert<PYDescriptor> for GTDescriptor {
             GTDescriptor::Tuple(tuple) => tuple.convert(context).into(),
 
             GTDescriptor::Union(union) => union.convert(context).into(),
+
+            GTDescriptor::Any(any) => any.convert(context).into(),
         }
     }
 }

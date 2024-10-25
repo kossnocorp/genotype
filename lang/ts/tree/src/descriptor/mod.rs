@@ -14,6 +14,7 @@ pub enum TSDescriptor {
     Tuple(TSTuple),
     Union(TSUnion),
     Record(Box<TSRecord>),
+    Any(TSAny),
 }
 
 impl From<&str> for TSDescriptor {

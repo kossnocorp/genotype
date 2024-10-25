@@ -14,6 +14,7 @@ pub enum GTDescriptor {
     Tuple(GTTuple),
     Union(GTUnion),
     Record(Box<GTRecord>),
+    Any(GTAny),
 }
 
 impl From<GTObject> for GTDescriptor {
@@ -43,5 +44,17 @@ impl From<GTIdentifier> for GTDescriptor {
 impl From<GTUnion> for GTDescriptor {
     fn from(union: GTUnion) -> Self {
         GTDescriptor::Union(union)
+    }
+}
+
+impl From<GTRecord> for GTDescriptor {
+    fn from(record: GTRecord) -> Self {
+        GTDescriptor::Record(Box::new(record))
+    }
+}
+
+impl From<GTAny> for GTDescriptor {
+    fn from(any: GTAny) -> Self {
+        GTDescriptor::Any(any)
     }
 }

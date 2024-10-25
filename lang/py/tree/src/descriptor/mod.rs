@@ -11,6 +11,7 @@ pub enum PYDescriptor {
     Tuple(PYTuple),
     Union(PYUnion),
     Dict(Box<PYDict>),
+    Any(PYAny),
 }
 
 impl From<PYPrimitive> for PYDescriptor {
@@ -52,5 +53,11 @@ impl From<PYDict> for PYDescriptor {
 impl From<PYLiteral> for PYDescriptor {
     fn from(literal: PYLiteral) -> Self {
         PYDescriptor::Literal(literal)
+    }
+}
+
+impl From<PYAny> for PYDescriptor {
+    fn from(any: PYAny) -> Self {
+        PYDescriptor::Any(any)
     }
 }

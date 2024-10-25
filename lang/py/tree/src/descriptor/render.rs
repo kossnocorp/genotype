@@ -13,6 +13,7 @@ impl PYRender for PYDescriptor {
             PYDescriptor::Tuple(tuple) => tuple.render(indent, config),
             PYDescriptor::Union(union) => union.render(indent, config),
             PYDescriptor::Dict(dict) => dict.render(indent, config),
+            PYDescriptor::Any(any) => any.render(indent),
         }
     }
 }
@@ -93,6 +94,14 @@ mod tests {
             }))
             .render(&py_indent(), &Default::default()),
             "dict[str, int]"
+        );
+    }
+
+    #[test]
+    fn test_render_any() {
+        assert_eq!(
+            PYDescriptor::Any(PYAny).render(&py_indent(), &Default::default()),
+            "Any"
         );
     }
 }

@@ -1512,6 +1512,82 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_records() {
+        let source_code = read_source_code("./examples/syntax/14-records.type");
+        assert_module(
+            source_code.clone(),
+            GTModuleParse {
+                module: GTModule {
+                    source_code,
+                    doc: None,
+                    imports: vec![],
+                    aliases: vec![
+                        GTAlias {
+                            span: (0, 21).into(),
+                            doc: None,
+                            attributes: vec![],
+                            name: GTIdentifier::new((0, 4).into(), "Dict".into()),
+                            descriptor: GTRecord {
+                                span: (7, 21).into(),
+                                key: GTRecordKey::String((9, 11).into()),
+                                descriptor: GTPrimitive::String((13, 19).into()).into(),
+                            }
+                            .into(),
+                        },
+                        GTAlias {
+                            span: (23, 46).into(),
+                            doc: None,
+                            attributes: vec![],
+                            name: GTIdentifier::new((23, 26).into(), "Map".into()),
+                            descriptor: GTRecord {
+                                span: (29, 46).into(),
+                                key: GTRecordKey::Int((31, 36).into()),
+                                descriptor: GTPrimitive::String((38, 44).into()).into(),
+                            }
+                            .into(),
+                        },
+                    ],
+                },
+                resolve: GTResolve {
+                    deps: HashSet::new(),
+                    exports: vec![
+                        GTIdentifier::new((0, 4).into(), "Dict".into()),
+                        GTIdentifier::new((23, 26).into(), "Map".into()),
+                    ],
+                    references: HashSet::new(),
+                },
+            },
+        );
+    }
+
+    #[test]
+    fn test_any() {
+        let source_code = read_source_code("./examples/syntax/15-any.type");
+        assert_module(
+            source_code.clone(),
+            GTModuleParse {
+                module: GTModule {
+                    source_code,
+                    doc: None,
+                    imports: vec![],
+                    aliases: vec![GTAlias {
+                        span: (0, 14).into(),
+                        doc: None,
+                        attributes: vec![],
+                        name: GTIdentifier::new((0, 8).into(), "Anything".into()),
+                        descriptor: GTAny((11, 14).into()).into(),
+                    }],
+                },
+                resolve: GTResolve {
+                    deps: HashSet::new(),
+                    exports: vec![GTIdentifier::new((0, 8).into(), "Anything".into())],
+                    references: HashSet::new(),
+                },
+            },
+        );
+    }
+
     fn read_source_code(path: &str) -> NamedSource<String> {
         let content = fs::read_to_string(path).expect("cannot read file");
         NamedSource::new(path, content)

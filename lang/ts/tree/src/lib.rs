@@ -1,4 +1,5 @@
 pub mod alias;
+pub mod any;
 pub mod array;
 pub mod definition;
 pub mod descriptor;
@@ -26,6 +27,7 @@ pub mod tuple;
 pub mod union;
 
 pub use alias::*;
+pub use any::*;
 pub use array::*;
 pub use definition::*;
 pub use descriptor::*;

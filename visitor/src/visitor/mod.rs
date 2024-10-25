@@ -63,4 +63,6 @@ pub trait GTVisitor {
     fn visit_tuple(&mut self, _tuple: &mut GTTuple) {}
 
     fn visit_union(&mut self, _union: &mut GTUnion) {}
+
+    fn visit_any(&mut self, _any: &mut GTAny) {}
 }

@@ -85,6 +85,11 @@ mod tests {
     }
 
     #[test]
+    fn test_any() {
+        parse_file("./examples/syntax/15-any.type");
+    }
+
+    #[test]
     fn test_empty() {
         parse_code("");
     }

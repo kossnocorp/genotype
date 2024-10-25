@@ -41,6 +41,8 @@ impl GTDescriptor {
 
                 Rule::record => GTDescriptor::Record(Box::new(GTRecord::parse(pair, context)?)),
 
+                Rule::any => GTDescriptor::Any(pair.into()),
+
                 _ => return Err(GTParseError::UnknownRule(span.clone(), GTNode::Descriptor)),
             };
 

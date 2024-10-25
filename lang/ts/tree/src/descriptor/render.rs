@@ -15,12 +15,15 @@ impl GTRender for TSDescriptor {
             TSDescriptor::Tuple(tuple) => tuple.render(indent),
             TSDescriptor::Union(union) => union.render(indent),
             TSDescriptor::Record(record) => record.render(indent),
+            TSDescriptor::Any(any) => any.render(indent),
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use pretty_assertions::assert_eq;
+
     use super::*;
     use crate::*;
 
@@ -144,5 +147,22 @@ mod tests {
             .render(&ts_indent()),
             "string | number"
         );
+    }
+
+    #[test]
+    fn test_render_record() {
+        assert_eq!(
+            TSDescriptor::Record(Box::new(TSRecord {
+                key: TSRecordKey::String,
+                descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
+            }))
+            .render(&ts_indent()),
+            "Record<string, number>"
+        );
+    }
+
+    #[test]
+    fn test_render_any() {
+        assert_eq!(TSDescriptor::Any(TSAny).render(&ts_indent()), "any");
     }
 }

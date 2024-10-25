@@ -57,6 +57,8 @@ impl TSConvert<TSDescriptor> for GTDescriptor {
             GTDescriptor::Record(record) => {
                 TSDescriptor::Record(Box::new(record.convert(resolve, hoist)))
             }
+
+            GTDescriptor::Any(any) => TSDescriptor::Any(any.convert(resolve, hoist)),
         }
     }
 }
@@ -266,6 +268,30 @@ mod tests {
                     TSDescriptor::Primitive(TSPrimitive::String),
                 ]
             })
+        );
+    }
+
+    #[test]
+    fn test_convert_record() {
+        assert_eq!(
+            GTDescriptor::Record(Box::new(GTRecord {
+                span: (0, 0).into(),
+                key: GTRecordKey::String((0, 0).into()),
+                descriptor: GTPrimitive::String((0, 0).into()).into(),
+            }))
+            .convert(&TSConvertResolve::new(), &|_| {}),
+            TSDescriptor::Record(Box::new(TSRecord {
+                key: TSRecordKey::String,
+                descriptor: TSDescriptor::Primitive(TSPrimitive::String)
+            }))
+        );
+    }
+
+    #[test]
+    fn test_convert_any() {
+        assert_eq!(
+            GTDescriptor::Any(GTAny((0, 0).into())).convert(&TSConvertResolve::new(), &|_| {}),
+            TSDescriptor::Any(TSAny)
         );
     }
 }
