@@ -26,7 +26,7 @@ impl GTRender for TSInterface {
             &self.doc,
             indent,
             format!(
-                "{}interface {}{} {}\n{}{}{}",
+                "{}export interface {}{} {}\n{}{}{}",
                 indent.string,
                 self.name.render(indent),
                 if extensions.len() > 0 {
@@ -62,7 +62,7 @@ mod tests {
                 properties: vec![]
             }
             .render(&ts_indent()),
-            "interface Name {\n}"
+            "export interface Name {\n}"
         );
     }
 
@@ -89,7 +89,7 @@ mod tests {
                 ]
             }
             .render(&ts_indent()),
-            r#"interface Name {
+            r#"export interface Name {
   name: string;
   age?: number;
 }"#
@@ -119,7 +119,7 @@ mod tests {
                 ]
             }
             .render(&ts_indent().increment()),
-            r#"  interface Name {
+            r#"  export interface Name {
     name: string;
     age?: number;
   }"#
@@ -141,7 +141,7 @@ mod tests {
                 },]
             }
             .render(&ts_indent()),
-            r#"interface Name extends Hello, World {
+            r#"export interface Name extends Hello, World {
   name: string;
 }"#
         );
@@ -158,7 +158,7 @@ mod tests {
             }
             .render(&ts_indent()),
             r#"/** Hello, world! */
-interface Name {
+export interface Name {
 }"#
         );
     }

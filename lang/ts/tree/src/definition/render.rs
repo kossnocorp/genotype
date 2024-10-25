@@ -4,12 +4,10 @@ use super::TSDefinition;
 
 impl GTRender for TSDefinition {
     fn render(&self, indent: &GTIndent) -> String {
-        let definition = match self {
+        match self {
             TSDefinition::Alias(alias) => alias.render(indent),
             TSDefinition::Interface(interface) => interface.render(indent),
-        };
-
-        format!("export {}", definition)
+        }
     }
 }
 

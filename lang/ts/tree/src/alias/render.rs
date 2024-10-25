@@ -10,7 +10,7 @@ impl GTRender for TSAlias {
             &self.doc,
             indent,
             format!(
-                "type {} = {};",
+                "export type {} = {};",
                 self.name.render(indent),
                 self.descriptor.render(indent)
             ),
@@ -36,7 +36,7 @@ mod tests {
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String)
             }
             .render(&ts_indent()),
-            "type Name = string;"
+            "export type Name = string;"
         );
     }
 
@@ -50,7 +50,7 @@ mod tests {
             }
             .render(&ts_indent()),
             r#"/** Hello, world! */
-type Name = string;"#
+export type Name = string;"#
         );
     }
 }
