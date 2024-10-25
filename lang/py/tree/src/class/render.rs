@@ -183,7 +183,6 @@ mod tests {
             r#"class Name(Model):
     """Hello, world!"""
 
-
     name: str"#
         );
     }
