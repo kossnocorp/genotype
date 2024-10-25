@@ -45,6 +45,7 @@ impl GTObject {
 
 #[cfg(test)]
 mod tests {
+    use miette::NamedSource;
     use pest::Parser;
     use pretty_assertions::assert_eq;
     use std::collections::HashSet;
@@ -81,8 +82,8 @@ mod tests {
 
     #[test]
     fn test_parse_deps_base() {
-        let source_code = crate::GTSourceCode::new(
-            "module.type".into(),
+        let source_code = NamedSource::new(
+            "module.type",
             r#"Order = {
                 book: book/Book
                 user: ./misc/user/User
@@ -101,8 +102,8 @@ mod tests {
 
     #[test]
     fn test_parse_deps_normalize() {
-        let source_code = crate::GTSourceCode::new(
-            "module.type".into(),
+        let source_code = NamedSource::new(
+            "module.type",
             r#"Order = {
                 book: book/Book
                 user: ./misc/../misc/./user/User

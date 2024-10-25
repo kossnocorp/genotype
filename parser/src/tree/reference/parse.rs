@@ -17,14 +17,15 @@ impl GTReference {
 mod tests {
     use std::collections::HashSet;
 
+    use miette::NamedSource;
     use pretty_assertions::assert_eq;
 
-    use crate::{tree::GTModule, GTIdentifier, GTSourceCode};
+    use crate::{tree::GTModule, GTIdentifier};
 
     #[test]
     fn test_parse_references() {
-        let parse = GTModule::parse(GTSourceCode::new(
-            "module.type".into(),
+        let parse = GTModule::parse(NamedSource::new(
+            "module.type",
             r#"use user/User
 
             Author = {

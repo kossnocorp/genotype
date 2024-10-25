@@ -4,7 +4,7 @@ use std::{
     path::{Component, Path, PathBuf},
 };
 
-use crate::{parser::Rule, GTNode, GTParseError, GTNodeParseResult, GTSpan};
+use crate::{parser::Rule, GTNode, GTNodeParseResult, GTParseError, GTSpan};
 
 use super::GTPath;
 
@@ -91,6 +91,7 @@ impl TryFrom<Pair<'_, Rule>> for GTPath {
 #[cfg(test)]
 mod tests {
     use crate::*;
+    use miette::NamedSource;
     use pest::Parser;
     use pretty_assertions::assert_eq;
 
@@ -152,8 +153,8 @@ mod tests {
 
     #[test]
     fn test_normalize_source() {
-        let source_code = GTSourceCode::new(
-            "module.type".into(),
+        let source_code = NamedSource::new(
+            "module.type",
             r#"use author/./*
             use ../user/../user/User
             use ./././misc/order/{Order, SomethingElse}

@@ -3,6 +3,7 @@ mod path;
 mod resolve;
 
 use genotype_parser::tree::GTModule;
+use miette::Result;
 pub use parse::*;
 pub use path::*;
 pub use resolve::*;
@@ -18,8 +19,12 @@ impl GTProjectModule {
     pub fn try_new(
         modules: &Vec<GTProjectModuleParse>,
         parse: GTProjectModuleParse,
-    ) -> Result<Self, Box<dyn std::error::Error>> {
-        let resolve = GTProjectModuleResolve::try_new(modules, &parse)?;
+    ) -> Result<Self> {
+        let resolve = GTProjectModuleResolve::try_new(modules, &parse).map_err(|err| {
+            println!("---- source code {:?}", parse.1.module.source_code);
+
+            err.with_source_code(parse.1.module.source_code.clone())
+        })?;
 
         Ok(GTProjectModule {
             path: parse.0,

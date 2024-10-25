@@ -1,3 +1,4 @@
+use genotype_parser::GTSpan;
 use miette::Diagnostic;
 use thiserror::Error;
 
@@ -18,6 +19,14 @@ pub enum GTProjectError {
     #[error("failed to resolve `{0}`")]
     #[diagnostic(code(GTP104))]
     CannotResolve(String),
+
+    #[error("undefined type `{identifier}`")]
+    #[diagnostic(code(GTP201))]
+    UndefinedType {
+        #[label("referenced here")]
+        span: GTSpan,
+        identifier: String,
+    },
 
     #[error("unknown error")]
     #[diagnostic(code(GTP999))]

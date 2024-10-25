@@ -360,6 +360,7 @@ dependencies = [
  "genotype_lang_py_tree",
  "genotype_parser",
  "heck",
+ "miette",
  "pretty_assertions",
 ]
 
@@ -403,6 +404,7 @@ dependencies = [
  "genotype_lang_core_converter",
  "genotype_lang_ts_tree",
  "genotype_parser",
+ "miette",
  "pretty_assertions",
 ]
 
@@ -464,6 +466,7 @@ name = "genotype_visitor"
 version = "0.1.0"
 dependencies = [
  "genotype_parser",
+ "miette",
  "pretty_assertions",
 ]
 

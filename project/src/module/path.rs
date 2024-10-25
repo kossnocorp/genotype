@@ -29,6 +29,10 @@ impl GTProjectModulePath {
         self.id.as_str().into()
     }
 
+    pub fn as_path_str(&self) -> String {
+        format!("{}.type", self.id.as_str())
+    }
+
     pub fn resolve(&self, path: &GTPath) -> Result<Self> {
         let path = format!("{}.type", path.as_str());
         Self::try_new(

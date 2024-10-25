@@ -1,6 +1,9 @@
 use std::{collections::HashMap, sync::Arc};
 
 use genotype_parser::tree::{GTIdentifier, GTImportName, GTImportReference, GTPath};
+use miette::Result;
+
+use crate::{error::GTProjectError, result::GTProjectResult};
 
 use super::{GTProjectModuleParse, GTProjectModulePath};
 
@@ -14,7 +17,7 @@ impl GTProjectModuleResolve {
     pub fn try_new(
         modules: &Vec<GTProjectModuleParse>,
         parse: &GTProjectModuleParse,
-    ) -> Result<Self, Box<dyn std::error::Error>> {
+    ) -> Result<Self> {
         // Resolve module dependencies by mapping local paths to project module paths
         let mut deps = HashMap::new();
         for local_path in parse.1.resolve.deps.iter() {
@@ -24,7 +27,12 @@ impl GTProjectModuleResolve {
             }
 
             // Get the project module path from the local path
-            let path = Arc::new(parse.0.resolve(local_path)?);
+            let path = Arc::new(
+                parse
+                    .0
+                    .resolve(local_path)
+                    .map_err(|_| GTProjectError::CannotResolve(local_path.as_str().to_owned()))?,
+            );
             deps.insert(local_path.clone(), path);
         }
 
@@ -82,7 +90,10 @@ impl GTProjectModuleResolve {
                     });
                     !import.is_none()
                 })
-                .unwrap();
+                .ok_or_else(|| GTProjectError::UndefinedType {
+                    span: reference.as_span(),
+                    identifier: reference.as_string(),
+                })?;
 
             references.insert(
                 reference.clone(),

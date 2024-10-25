@@ -26,7 +26,8 @@ impl GTTraverse for GTModule {
 mod tests {
     use super::*;
     use crate::visitor::mock::*;
-    use genotype_parser::{tree::*, GTSourceCode};
+    use genotype_parser::tree::*;
+    use miette::NamedSource;
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -47,7 +48,7 @@ mod tests {
             descriptor: GTPrimitive::String((0, 0).into()).into(),
         };
         let mut module = GTModule {
-            source_code: GTSourceCode::new("module.type".into(), "".into()),
+            source_code: NamedSource::new("module.type", "".into()),
             doc: None,
             imports: vec![import.clone()],
             aliases: vec![alias.clone()],
@@ -85,7 +86,7 @@ mod tests {
             descriptor: GTPrimitive::String((0, 0).into()).into(),
         };
         let mut module = GTModule {
-            source_code: GTSourceCode::new("module.type".into(), "".into()),
+            source_code: NamedSource::new("module.type", "".into()),
             doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
             imports: vec![import.clone()],
             aliases: vec![alias.clone()],

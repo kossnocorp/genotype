@@ -76,8 +76,7 @@ impl GTProject {
         let mut modules = modules
             .iter()
             .map(|parse| GTProjectModule::try_new(&modules, parse.clone()))
-            .collect::<Result<Vec<_>, _>>()
-            .map_err(|_| GTProjectError::Unknown)?;
+            .collect::<Result<Vec<_>, _>>()?;
 
         // [TODO] It's needed for tests, hide behind cfg(test), keep or replace with something like
         // set? Using HashSet will require Eq which will consequently break tests.
@@ -137,7 +136,8 @@ mod tests {
     use crate::{GTProjectModuleReference, GTProjectModuleResolve};
 
     use super::*;
-    use genotype_parser::{tree::*, GTSourceCode};
+    use genotype_parser::tree::*;
+    use miette::NamedSource;
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -176,8 +176,8 @@ mod tests {
                 modules: vec![GTProjectModule {
                     path: module_path.clone(),
                     module: GTModule {
-                        source_code: GTSourceCode::new(
-                            module_path.as_name(),
+                        source_code: NamedSource::new(
+                            "anonymous.type",
                             read_to_string(&module_path).unwrap(),
                         ),
                         doc: None,
@@ -385,8 +385,8 @@ mod tests {
                 GTProjectModule {
                     path: author_path.clone(),
                     module: GTModule {
-                        source_code: GTSourceCode::new(
-                            author_path.as_name(),
+                        source_code: NamedSource::new(
+                            "author.type",
                             read_to_string(&author_path).unwrap(),
                         ),
                         doc: None,
@@ -419,8 +419,8 @@ mod tests {
                 GTProjectModule {
                     path: book_path.clone(),
                     module: GTModule {
-                        source_code: GTSourceCode::new(
-                            book_path.as_name(),
+                        source_code: NamedSource::new(
+                            "book.type",
                             read_to_string(&book_path).unwrap(),
                         ),
                         doc: None,
@@ -481,8 +481,8 @@ mod tests {
                 GTProjectModule {
                     path: order_path.clone(),
                     module: GTModule {
-                        source_code: GTSourceCode::new(
-                            order_path.as_name(),
+                        source_code: NamedSource::new(
+                            "order.type",
                             read_to_string(&order_path).unwrap(),
                         ),
                         doc: None,
@@ -556,8 +556,8 @@ mod tests {
                 GTProjectModule {
                     path: user_path.clone(),
                     module: GTModule {
-                        source_code: GTSourceCode::new(
-                            user_path.as_name(),
+                        source_code: NamedSource::new(
+                            "user.type",
                             read_to_string(&user_path).unwrap(),
                         ),
                         doc: None,

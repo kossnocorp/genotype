@@ -38,7 +38,8 @@ impl PYConvertModule {
 #[cfg(test)]
 mod tests {
     use genotype_lang_py_tree::*;
-    use genotype_parser::{tree::*, GTSourceCode};
+    use genotype_parser::tree::*;
+    use miette::NamedSource;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -54,7 +55,7 @@ mod tests {
         assert_eq!(
             PYConvertModule::convert(
                 &GTModule {
-                    source_code: GTSourceCode::new("module.type".into(), "".into()),
+                    source_code: NamedSource::new("module.type", "".into()),
                     doc: None,
                     imports: vec![
                         GTImport {
@@ -271,7 +272,7 @@ mod tests {
         assert_eq!(
             PYConvertModule::convert(
                 &GTModule {
-                    source_code: GTSourceCode::new("module.type".into(), "".into()),
+                    source_code: NamedSource::new("module.type", "".into()),
                     doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
                     imports: vec![],
                     aliases: vec![],

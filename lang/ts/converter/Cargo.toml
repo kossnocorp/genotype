@@ -13,4 +13,5 @@ genotype_lang_core_converter = { version = "0.1.0", path = "../../core/converter
 genotype_lang_ts_tree = { version = "0.1.0", path = "../tree" }
 
 [dev-dependencies]
+miette = "7.2.0"
 pretty_assertions = "1.4.1"

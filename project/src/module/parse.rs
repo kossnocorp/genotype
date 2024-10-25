@@ -1,10 +1,7 @@
 use std::fs::read_to_string;
 
-use genotype_parser::{
-    tree::{GTModule, GTModuleParse},
-    GTSourceCode,
-};
-use miette::Result;
+use genotype_parser::tree::{GTModule, GTModuleParse};
+use miette::{NamedSource, Result};
 
 use crate::error::GTProjectError;
 
@@ -19,10 +16,7 @@ impl<'a> GTProjectModuleParse {
             GTProjectError::NotFound(path.as_path().as_os_str().to_str().unwrap().to_owned())
         })?;
 
-        let source_code = GTSourceCode {
-            name: path.as_name(),
-            content: code.clone(),
-        };
+        let source_code = NamedSource::new(path.as_path_str(), code.clone());
         let parse = GTModule::parse(source_code)?;
         Ok(Self(path, parse))
     }

@@ -93,6 +93,7 @@ enum ParseState {
 mod tests {
     use std::collections::HashSet;
 
+    use miette::NamedSource;
     use pest::Parser;
     use pretty_assertions::assert_eq;
 
@@ -116,8 +117,8 @@ mod tests {
 
     #[test]
     fn test_parse_deps_base() {
-        let source_code = GTSourceCode::new(
-            "module.type".into(),
+        let source_code = NamedSource::new(
+            "module.type",
             r#"use author/*
             use ../user/User
             use ./misc/order/{Order, SomethingElse}"#
@@ -136,8 +137,8 @@ mod tests {
 
     #[test]
     fn test_parse_deps_normalize() {
-        let source_code = GTSourceCode::new(
-            "module.type".into(),
+        let source_code = NamedSource::new(
+            "module.type",
             r#"use author/./*
             use ../user/../user/User
             use ./././misc/order/{Order, SomethingElse}"#

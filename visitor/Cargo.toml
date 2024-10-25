@@ -11,4 +11,5 @@ repository = "https://github.com/kossnocorp/genotype"
 genotype_parser = { version = "0.1.1", path = "../parser" }
 
 [dev-dependencies]
+miette = "7.2.0"
 pretty_assertions = "1.4.1"

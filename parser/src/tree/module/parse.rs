@@ -1,4 +1,4 @@
-use miette::Result;
+use miette::{NamedSource, Result};
 use pest::iterators::Pair;
 
 use crate::*;
@@ -10,8 +10,8 @@ pub struct GTModuleParse {
 }
 
 impl GTModule {
-    pub fn parse<'a>(source_code: GTSourceCode) -> Result<GTModuleParse> {
-        match parse_gt_code(&source_code.content) {
+    pub fn parse<'a>(source_code: NamedSource<String>) -> Result<GTModuleParse> {
+        match parse_gt_code(source_code.inner()) {
             Ok(mut pairs) => match pairs.next() {
                 Some(pair) => match Self::parse_pairs(pair) {
                     Ok(result) => Ok(GTModuleParse {
@@ -28,7 +28,7 @@ impl GTModule {
                 },
 
                 None => {
-                    let span = (0, source_code.content.len()).into();
+                    let span = (0, source_code.inner().len()).into();
                     Err(GTModuleParseError::from_node_error(
                         source_code,
                         GTParseError::Internal(span, GTNode::Module),
@@ -97,6 +97,7 @@ struct ModuleParseResult {
 #[cfg(test)]
 mod tests {
     use crate::tree::*;
+    use miette::NamedSource;
     use pretty_assertions::assert_eq;
     use std::{collections::HashSet, fs};
 
@@ -1511,15 +1512,12 @@ mod tests {
         );
     }
 
-    fn read_source_code(path: &str) -> GTSourceCode {
+    fn read_source_code(path: &str) -> NamedSource<String> {
         let content = fs::read_to_string(path).expect("cannot read file");
-        GTSourceCode {
-            name: path.into(),
-            content,
-        }
+        NamedSource::new(path, content)
     }
 
-    fn assert_module(source_code: GTSourceCode, expected: GTModuleParse) {
+    fn assert_module(source_code: NamedSource<String>, expected: GTModuleParse) {
         let parse = GTModule::parse(source_code).unwrap();
         assert_eq!(parse, expected);
     }

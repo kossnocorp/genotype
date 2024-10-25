@@ -119,6 +119,7 @@ enum ParseState {
 #[cfg(test)]
 mod tests {
     use crate::*;
+    use miette::NamedSource;
     use pest::Parser;
     use pretty_assertions::assert_eq;
 
@@ -152,7 +153,7 @@ mod tests {
 
     #[test]
     fn test_parse_exports() {
-        let source_code = crate::GTSourceCode::new("module.type".into(), "Hello = string".into());
+        let source_code = NamedSource::new("module.type", "Hello = string".into());
         let parse = GTModule::parse(source_code).unwrap();
         assert_eq!(
             parse.resolve.exports,

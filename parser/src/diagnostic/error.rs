@@ -1,7 +1,7 @@
 use crate::Rule;
 
-use super::{span::GTSpan, GTNode, GTSourceCode};
-use miette::{Diagnostic, Error, LabeledSpan, SourceCode};
+use super::{span::GTSpan, GTNode};
+use miette::{Diagnostic, Error, LabeledSpan, NamedSource, SourceCode};
 use pest::error::InputLocation;
 use thiserror::Error;
 
@@ -62,13 +62,16 @@ impl GTParseError {
 #[error("Failed to parse module")]
 pub struct GTModuleParseError {
     code: &'static str,
-    source_code: GTSourceCode,
+    source_code: NamedSource<String>,
     message: String,
     span: GTSpan,
 }
 
 impl GTModuleParseError {
-    pub fn from_pest_error(source_code: GTSourceCode, error: pest::error::Error<Rule>) -> Self {
+    pub fn from_pest_error(
+        source_code: NamedSource<String>,
+        error: pest::error::Error<Rule>,
+    ) -> Self {
         let message = error.variant.message().to_string();
 
         let span = match error.location {
@@ -85,7 +88,7 @@ impl GTModuleParseError {
         }
     }
 
-    pub fn from_node_error(source_code: GTSourceCode, error: GTParseError) -> Self {
+    pub fn from_node_error(source_code: NamedSource<String>, error: GTParseError) -> Self {
         Self {
             code: "GTP002",
             source_code,
