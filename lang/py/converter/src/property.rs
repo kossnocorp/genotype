@@ -6,6 +6,7 @@ use crate::{context::PYConvertContext, convert::PYConvert};
 impl PYConvert<PYProperty> for GTProperty {
     fn convert(&self, context: &mut PYConvertContext) -> PYProperty {
         PYProperty {
+            doc: self.doc.as_ref().and_then(|doc| Some(doc.convert(context))),
             name: self.name.convert(context),
             descriptor: self.descriptor.convert(context),
             required: self.required,
@@ -36,6 +37,7 @@ mod tests {
             }
             .convert(&mut PYConvertContext::default()),
             PYProperty {
+                doc: None,
                 name: "name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                 required: false,
@@ -58,6 +60,7 @@ mod tests {
             }
             .convert(&mut context),
             PYProperty {
+                doc: None,
                 name: "name".into(),
                 descriptor: PYPrimitive::String.into(),
                 required: false,

@@ -137,11 +137,13 @@ mod tests {
                 extensions: vec![],
                 properties: vec![
                     PYProperty {
+                        doc: None,
                         name: "name".into(),
                         descriptor: PYPrimitive::String.into(),
                         required: true,
                     },
                     PYProperty {
+                        doc: None,
                         name: "age".into(),
                         descriptor: PYPrimitive::Int.into(),
                         required: false,

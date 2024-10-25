@@ -11,9 +11,10 @@ impl PYConvert<PYClass> for GTObject {
             _ => panic!("Invalid object name"),
         };
 
+        let doc = context.consume_doc();
+
         PYClass {
-            // [TODO] Consider using the parent property's doc for that
-            doc: None,
+            doc,
             name,
             extensions: self.extensions.iter().map(|e| e.convert(context)).collect(),
             properties: self.properties.iter().map(|p| p.convert(context)).collect(),
@@ -63,11 +64,13 @@ mod tests {
                 extensions: vec![],
                 properties: vec![
                     PYProperty {
+                        doc: None,
                         name: "name".into(),
                         descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                         required: true,
                     },
                     PYProperty {
+                        doc: None,
                         name: "age".into(),
                         descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
                         required: false,
@@ -98,6 +101,27 @@ mod tests {
         assert_eq!(
             context.as_dependencies(),
             vec![(PYDependency::Runtime, "Model".into())]
+        );
+    }
+
+    #[test]
+    fn test_convert_doc() {
+        let mut context = PYConvertContext::default();
+        context.provide_doc(Some(PYDoc("Hello, world!".into())));
+        assert_eq!(
+            GTObject {
+                span: (0, 0).into(),
+                name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
+                extensions: vec![],
+                properties: vec![]
+            }
+            .convert(&mut context),
+            PYClass {
+                doc: Some(PYDoc("Hello, world!".into())),
+                name: "Person".into(),
+                extensions: vec![],
+                properties: vec![]
+            }
         );
     }
 }

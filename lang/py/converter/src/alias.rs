@@ -5,8 +5,13 @@ use crate::{context::PYConvertContext, convert::PYConvert};
 
 impl PYConvert<PYDefinition> for GTAlias {
     fn convert(&self, context: &mut PYConvertContext) -> PYDefinition {
+        let doc = self.doc.as_ref().map(|doc| doc.convert(context));
+
         match &self.descriptor {
-            GTDescriptor::Object(object) => PYDefinition::Class(object.convert(context)),
+            GTDescriptor::Object(object) => {
+                context.provide_doc(doc);
+                PYDefinition::Class(object.convert(context))
+            }
 
             _ => {
                 let name = self.name.convert(context);
@@ -32,7 +37,7 @@ impl PYConvert<PYDefinition> for GTAlias {
 
                 PYDefinition::Alias(
                     PYAlias {
-                        doc: self.doc.as_ref().map(|doc| doc.convert(context)),
+                        doc,
                         name,
                         descriptor,
                     }
@@ -109,11 +114,13 @@ mod tests {
                 extensions: vec![],
                 properties: vec![
                     PYProperty {
+                        doc: None,
                         name: "title".into(),
                         descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                         required: true,
                     },
                     PYProperty {
+                        doc: None,
                         name: "author".into(),
                         descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                         required: true,
@@ -178,6 +185,7 @@ mod tests {
                 name: "BookObj".into(),
                 extensions: vec![],
                 properties: vec![PYProperty {
+                    doc: None,
                     name: "author".into(),
                     descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                     required: true,
@@ -284,7 +292,7 @@ mod tests {
     }
 
     #[test]
-    fn test_convert_doc() {
+    fn test_convert_doc_alias() {
         assert_eq!(
             GTAlias {
                 span: (0, 0).into(),

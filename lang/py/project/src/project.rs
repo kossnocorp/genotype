@@ -179,6 +179,7 @@ mod tests {
                                 name: "Author".into(),
                                 extensions: vec![],
                                 properties: vec![PYProperty {
+                                    doc: None,
                                     name: "name".into(),
                                     descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                                     required: true,
@@ -213,11 +214,13 @@ mod tests {
                                 extensions: vec![],
                                 properties: vec![
                                     PYProperty {
+                                        doc: None,
                                         name: "title".into(),
                                         descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                                         required: true,
                                     },
                                     PYProperty {
+                                        doc: None,
                                         name: "author".into(),
                                         descriptor: PYReference::new("Author".into(), false).into(),
                                         required: true,
@@ -259,6 +262,7 @@ mod tests {
                                     name: "Author".into(),
                                     extensions: vec![],
                                     properties: vec![PYProperty {
+                                        doc: None,
                                         name: "name".into(),
                                         descriptor: PYReference::new("AuthorName".into(), true)
                                             .into(),
@@ -298,17 +302,20 @@ mod tests {
                                 extensions: vec![],
                                 properties: vec![
                                     PYProperty {
+                                        doc: None,
                                         name: "title".into(),
                                         descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                                         required: true,
                                     },
                                     PYProperty {
+                                        doc: None,
                                         name: "author".into(),
                                         descriptor: PYReference::new("author.Author".into(), false)
                                             .into(),
                                         required: true,
                                     },
                                     PYProperty {
+                                        doc: None,
                                         name: "author_name".into(),
                                         descriptor: PYReference::new(
                                             "author.AuthorName".into(),

@@ -16,6 +16,7 @@ pub struct PYConvertContext {
     hoist_defined: Vec<PYIdentifier>,
     hoisted: Vec<PYDefinition>,
     dependencies: Vec<(PYDependency, PYIdentifier)>,
+    doc: Option<PYDoc>,
 }
 
 impl PYContext for PYConvertContext {
@@ -43,7 +44,16 @@ impl PYConvertContext {
             hoist_defined: vec![],
             hoisted: vec![],
             dependencies: vec![],
+            doc: None,
         }
+    }
+
+    pub fn provide_doc(&mut self, doc: Option<PYDoc>) {
+        self.doc = doc;
+    }
+
+    pub fn consume_doc(&mut self) -> Option<PYDoc> {
+        self.doc.take()
     }
 
     pub fn resolve_identifier(&self, identifier: &GTIdentifier) -> String {

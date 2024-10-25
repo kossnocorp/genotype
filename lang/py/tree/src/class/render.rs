@@ -38,7 +38,7 @@ impl PYRender for PYClass {
                 .as_ref()
                 .map_or(Default::default(), |doc| "\n".to_string()
                     + &doc.render(&indent.increment())
-                    + if properties.len() > 0 { "\n\n\n" } else { "" }),
+                    + if properties.len() > 0 { "\n\n" } else { "" }),
             if self.doc.is_none() && properties.len() > 0 {
                 "\n"
             } else {
@@ -78,11 +78,13 @@ mod tests {
                 extensions: vec![],
                 properties: vec![
                     PYProperty {
+                        doc: None,
                         name: "name".into(),
                         descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                         required: true
                     },
                     PYProperty {
+                        doc: None,
                         name: "age".into(),
                         descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
                         required: false
@@ -105,11 +107,13 @@ mod tests {
                 extensions: vec![],
                 properties: vec![
                     PYProperty {
+                        doc: None,
                         name: "name".into(),
                         descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                         required: true
                     },
                     PYProperty {
+                        doc: None,
                         name: "age".into(),
                         descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
                         required: false
@@ -134,6 +138,7 @@ mod tests {
                     PYReference::new("World".into(), false).into()
                 ],
                 properties: vec![PYProperty {
+                    doc: None,
                     name: "name".into(),
                     descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                     required: true
@@ -168,6 +173,7 @@ mod tests {
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![PYProperty {
+                    doc: None,
                     name: "name".into(),
                     descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                     required: true

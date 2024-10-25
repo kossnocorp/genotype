@@ -24,6 +24,7 @@ mod tests {
     fn test_resolve() {
         let mut context = PYContextMock::default();
         let alias = PYProperty {
+            doc: None,
             name: "foo".into(),
             descriptor: PYPrimitive::String.into(),
             required: true,
@@ -36,6 +37,7 @@ mod tests {
     fn test_resolve_optional() {
         let mut context = PYContextMock::default();
         let alias = PYProperty {
+            doc: None,
             name: "foo".into(),
             descriptor: PYPrimitive::String.into(),
             required: false,

@@ -219,11 +219,13 @@ mod tests {
                         extensions: vec![],
                         properties: vec![
                             PYProperty {
+                                doc: None,
                                 name: "name".into(),
                                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                                 required: true,
                             },
                             PYProperty {
+                                doc: None,
                                 name: "age".into(),
                                 descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
                                 required: false,
@@ -235,6 +237,7 @@ mod tests {
                         name: "Order".into(),
                         extensions: vec![],
                         properties: vec![PYProperty {
+                            doc: None,
                             name: "book".into(),
                             descriptor: PYReference::new("Book".into(), true).into(),
                             required: true,
@@ -246,11 +249,13 @@ mod tests {
                         extensions: vec![],
                         properties: vec![
                             PYProperty {
+                                doc: None,
                                 name: "title".into(),
                                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                                 required: true,
                             },
                             PYProperty {
+                                doc: None,
                                 name: "author".into(),
                                 descriptor: PYReference::new("Author".into(), true).into(),
                                 required: true,

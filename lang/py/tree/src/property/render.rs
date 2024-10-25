@@ -16,10 +16,15 @@ impl PYRender for PYProperty {
         };
 
         format!(
-            "{}{}: {}",
+            "{}{}: {}{}",
             indent.string,
             self.name.render(indent),
-            descriptor
+            descriptor,
+            if let Some(doc) = &self.doc {
+                format!("\n{}", doc.render(indent))
+            } else {
+                "".into()
+            }
         )
     }
 }
@@ -34,6 +39,7 @@ mod tests {
     fn test_render_primitive() {
         assert_eq!(
             PYProperty {
+                doc: None,
                 name: "name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                 required: true
@@ -43,6 +49,7 @@ mod tests {
         );
         assert_eq!(
             PYProperty {
+                doc: None,
                 name: "name".into(),
                 descriptor: PYReference::new("Name".into(), false).into(),
                 required: true
@@ -56,6 +63,7 @@ mod tests {
     fn test_render_indent() {
         assert_eq!(
             PYProperty {
+                doc: None,
                 name: "name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                 required: true
@@ -69,12 +77,28 @@ mod tests {
     fn test_render_required() {
         assert_eq!(
             PYProperty {
+                doc: None,
                 name: "name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                 required: false
             }
             .render(&py_indent(), &Default::default()),
             "name: Optional[str] = None"
+        );
+    }
+
+    #[test]
+    fn test_render_doc() {
+        assert_eq!(
+            PYProperty {
+                doc: Some(PYDoc("Hello, world!".into())),
+                name: "name".into(),
+                descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                required: false
+            }
+            .render(&py_indent(), &Default::default()),
+            r#"name: Optional[str] = None
+"""Hello, world!""""#
         );
     }
 }
