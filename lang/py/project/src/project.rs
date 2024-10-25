@@ -37,7 +37,9 @@ impl GTLangProject<PYProjectConfig> for PYProject {
     ) -> Result<GTLangProjectRender, Box<dyn std::error::Error>> {
         let gitignore = GTLangProjectSource {
             path: config.package_path(".gitignore".into()),
-            code: r#"__pycache__"#.into(),
+            code: r#"__pycache__
+dist"#
+                .into(),
         };
 
         let dependencies = self
@@ -348,7 +350,9 @@ mod tests {
                 files: vec![
                     GTLangProjectSource {
                         path: "py/.gitignore".into(),
-                        code: "__pycache__".into(),
+                        code: r#"__pycache__
+dist"#
+                            .into(),
                     },
                     GTLangProjectSource {
                         path: "py/pyproject.toml".into(),
@@ -416,7 +420,9 @@ class Book(Model):
                 files: vec![
                     GTLangProjectSource {
                         path: "py/.gitignore".into(),
-                        code: "__pycache__".into(),
+                        code: r#"__pycache__
+dist"#
+                            .into(),
                     },
                     GTLangProjectSource {
                         path: "py/pyproject.toml".into(),
