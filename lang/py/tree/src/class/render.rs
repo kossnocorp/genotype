@@ -7,44 +7,55 @@ use super::PYClass;
 
 impl PYRender for PYClass {
     fn render(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
-        let prop_indent = indent.increment();
+        let name = self.name.render(indent);
+        let extensions = self.render_extensions(indent, config);
+        let body = self.render_body(indent, config);
 
-        let properties = self
-            .properties
-            .iter()
-            .map(|property| property.render(&prop_indent, config))
-            .collect::<Vec<String>>()
-            .join("\n");
+        format!("{}class {name}{extensions}:\n{body}", indent.string)
+    }
+}
 
+impl PYClass {
+    fn render_extensions(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
         let mut extensions = self
             .extensions
             .iter()
             .map(|extension| extension.render(indent, config))
             .collect::<Vec<_>>();
         extensions.push("Model".into());
+
         let extensions = extensions.join(", ");
 
-        format!(
-            "{}class {}{}:{}{}{}",
-            indent.string,
-            self.name.render(indent),
-            if extensions.len() > 0 {
-                format!("({})", extensions)
-            } else {
-                "".into()
-            },
-            self.doc
-                .as_ref()
-                .map_or(Default::default(), |doc| "\n".to_string()
-                    + &doc.render(&indent.increment())
-                    + if properties.len() > 0 { "\n\n" } else { "" }),
-            if self.doc.is_none() && properties.len() > 0 {
-                "\n"
-            } else {
-                ""
-            },
-            properties,
-        )
+        if extensions.len() > 0 {
+            format!("({extensions})")
+        } else {
+            "".into()
+        }
+    }
+
+    fn render_body(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
+        let mut body = vec![];
+
+        if let Some(doc) = &self.doc {
+            body.push(doc.render(&indent.increment()));
+        }
+
+        if self.properties.len() > 0 {
+            body.push(self.render_properties(indent, config));
+        } else {
+            body.push(indent.increment().format("pass"));
+        }
+
+        body.join("\n\n")
+    }
+
+    fn render_properties(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
+        let indent = indent.increment();
+        self.properties
+            .iter()
+            .map(|property| property.render(&indent, config))
+            .collect::<Vec<String>>()
+            .join("\n")
     }
 }
 
@@ -64,7 +75,8 @@ mod tests {
                 properties: vec![]
             }
             .render(&py_indent(), &Default::default()),
-            r#"class Name(Model):"#
+            r#"class Name(Model):
+    pass"#
         );
     }
 
@@ -160,7 +172,9 @@ mod tests {
             }
             .render(&py_indent(), &Default::default()),
             r#"class Name(Model):
-    """Hello, world!""""#
+    """Hello, world!"""
+
+    pass"#
         );
     }
 
