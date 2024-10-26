@@ -16,13 +16,12 @@ impl PYRender for PYClass {
             .collect::<Vec<String>>()
             .join("\n");
 
-        let mut extensions = vec!["Model".to_string()];
-        extensions.extend(
-            self.extensions
-                .iter()
-                .map(|extension| extension.render(indent, config))
-                .collect::<Vec<_>>(),
-        );
+        let mut extensions = self
+            .extensions
+            .iter()
+            .map(|extension| extension.render(indent, config))
+            .collect::<Vec<_>>();
+        extensions.push("Model".into());
         let extensions = extensions.join(", ");
 
         format!(
@@ -145,7 +144,7 @@ mod tests {
                 },]
             }
             .render(&py_indent(), &Default::default()),
-            r#"class Name(Model, Hello, World):
+            r#"class Name(Hello, World, Model):
     name: str"#
         );
     }
