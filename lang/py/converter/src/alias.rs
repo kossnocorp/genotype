@@ -7,6 +7,9 @@ impl PYConvert<PYDefinition> for GTAlias {
     fn convert(&self, context: &mut PYConvertContext) -> PYDefinition {
         let doc = self.doc.as_ref().map(|doc| doc.convert(context));
 
+        let name = self.name.convert(context);
+        context.push_defined(&name);
+
         match &self.descriptor {
             GTDescriptor::Object(object) => {
                 context.provide_doc(doc);
@@ -14,9 +17,6 @@ impl PYConvert<PYDefinition> for GTAlias {
             }
 
             _ => {
-                let name = self.name.convert(context);
-                context.push_defined(&name);
-
                 let mut descriptor = self.descriptor.convert(context);
 
                 for attribute in self.attributes.iter() {
@@ -220,7 +220,7 @@ mod tests {
     }
 
     #[test]
-    fn test_forward() {
+    fn test_forward_alias() {
         let mut context = PYConvertContext::default();
         assert_eq!(
             GTAlias {
@@ -236,6 +236,44 @@ mod tests {
                 name: "Name".into(),
                 descriptor: PYPrimitive::String.into(),
             })
+        );
+        assert!(context.is_forward_identifier(
+            &"Hello".into(),
+            &GTIdentifier::new((0, 0).into(), "Hello".into())
+        ));
+        assert!(!context.is_forward_identifier(
+            &"Name".into(),
+            &GTIdentifier::new((0, 0).into(), "Name".into())
+        ));
+    }
+
+    #[test]
+    fn test_forward_class() {
+        let mut context = PYConvertContext::default();
+        assert_eq!(
+            GTAlias {
+                span: (0, 0).into(),
+                doc: None,
+                attributes: vec![],
+                name: GTIdentifier::new((0, 0).into(), "Name".into()),
+                descriptor: GTObject {
+                    name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Name".into())),
+                    span: (0, 0).into(),
+                    extensions: vec![],
+                    properties: vec![],
+                }
+                .into(),
+            }
+            .convert(&mut context),
+            PYDefinition::Class(
+                PYClass {
+                    doc: None,
+                    name: "Name".into(),
+                    extensions: vec![],
+                    properties: vec![],
+                }
+                .into()
+            )
         );
         assert!(context.is_forward_identifier(
             &"Hello".into(),
