@@ -111,6 +111,11 @@ build-backend = "poetry.core.masonry.api"
             ),
         };
 
+        let py_typed = GTLangProjectSource {
+            path: config.source_path("py.typed".into()),
+            code: "".into(),
+        };
+
         let module_root = config.module_root_path();
         let mut module_paths: HashSet<PathBuf> = HashSet::new();
 
@@ -138,7 +143,7 @@ build-backend = "poetry.core.masonry.api"
             })
             .collect::<Vec<_>>();
 
-        let mut modules = vec![gitignore, pyproject, init];
+        let mut modules = vec![gitignore, pyproject, py_typed, init];
         modules.extend(module_inits);
         modules.extend(project_modules);
 
@@ -370,6 +375,10 @@ build-backend = "poetry.core.masonry.api"
                         .into(),
                     },
                     GTLangProjectSource {
+                        path: "py/module/py.typed".into(),
+                        code: "".into(),
+                    },
+                    GTLangProjectSource {
                         path: "py/module/__init__.py".into(),
                         code: r#"from .author import *
 from .book import *
@@ -438,6 +447,10 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 "#
                         .into(),
+                    },
+                    GTLangProjectSource {
+                        path: "py/module/py.typed".into(),
+                        code: "".into(),
                     },
                     GTLangProjectSource {
                         path: "py/module/__init__.py".into(),
