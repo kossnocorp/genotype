@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "genotype-runtime"
-version = "0.3.0"
+version = "0.4.0"
 description = "Genotype runtime for Python"
 authors = ["Sasha Koss <koss@nocorp.me>"]
 license = "MIT"

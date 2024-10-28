@@ -22,7 +22,7 @@ impl PYDependency {
 
     pub fn external_str(&self) -> Option<String> {
         match self {
-            Self::Runtime => Some(r#"genotype-runtime = "^0.3""#.into()),
+            Self::Runtime => Some(r#"genotype-runtime = "^0.4""#.into()),
             Self::TypingExtensions => Some(r#"typing-extensions = "^4""#.into()),
             Self::Pydantic => Some(r#"pydantic = "^2.9""#.into()),
             _ => None,
