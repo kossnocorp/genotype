@@ -1,7 +1,7 @@
 use std::{collections::HashSet, path::PathBuf};
 
 use genotype_lang_py_config::PYProjectConfig;
-use genotype_lang_py_tree::{py_indent, PYDefinition, PYRender};
+use genotype_lang_py_tree::{py_indent, PYRender};
 
 use genotype_lang_core_project::{
     module::GTLangProjectModule,
@@ -84,24 +84,23 @@ build-backend = "poetry.core.masonry.api"
             ),
         };
 
-        let (imports, exports) = self
-            .modules
-            .iter()
-            .fold((vec![], vec![]), |mut acc, module| {
-                acc.0
-                    .push(format!("from .{} import *", module.name.clone()));
+        let mut imports = vec![];
+        let mut exports = vec![];
+        for module in self.modules.iter() {
+            let mut definitions = vec![];
+            for definition in module.module.definitions.iter() {
+                let name = definition.name();
+                definitions.push(name.0.clone());
+                exports.push(format!("\"{}\"", name.0.clone()));
+            }
 
-                for definition in module.module.definitions.iter() {
-                    acc.1.push(format!(
-                        "\"{}\"",
-                        match definition {
-                            PYDefinition::Class(class) => class.name.0.clone(),
-                            PYDefinition::Alias(alias) => alias.name.0.clone(),
-                        }
-                    ));
-                }
-                acc
-            });
+            imports.push(format!(
+                "from .{} import {}",
+                module.name.clone(),
+                definitions.join(", ")
+            ));
+        }
+
         let init = GTLangProjectSource {
             path: config.source_path("__init__.py".into()),
             code: format!(
@@ -380,8 +379,8 @@ build-backend = "poetry.core.masonry.api"
                     },
                     GTLangProjectSource {
                         path: "py/module/__init__.py".into(),
-                        code: r#"from .author import *
-from .book import *
+                        code: r#"from .author import Author
+from .book import Book
 
 
 __all__ = ["Author", "Book"]"#
@@ -454,8 +453,8 @@ build-backend = "poetry.core.masonry.api"
                     },
                     GTLangProjectSource {
                         path: "py/module/__init__.py".into(),
-                        code: r#"from .inventory import *
-from .shop.goods.book import *
+                        code: r#"from .inventory import Inventory
+from .shop.goods.book import Book
 
 
 __all__ = ["Inventory", "Book"]"#
