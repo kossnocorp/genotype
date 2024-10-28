@@ -365,7 +365,7 @@ packages = [{ include = "module" }]
 
 [tool.poetry.dependencies]
 python = "^3.12"
-genotype-runtime = "^0.3"
+genotype-runtime = "^0.4"
 
 [build-system]
 requires = ["poetry-core"]
@@ -439,7 +439,7 @@ packages = [{ include = "module" }]
 
 [tool.poetry.dependencies]
 python = "^3.12"
-genotype-runtime = "^0.3"
+genotype-runtime = "^0.4"
 
 [build-system]
 requires = ["poetry-core"]
