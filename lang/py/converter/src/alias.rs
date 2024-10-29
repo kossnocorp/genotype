@@ -17,6 +17,8 @@ impl PYConvert<PYDefinition> for GTAlias {
             }
 
             _ => {
+                context.create_references_scope();
+
                 let mut descriptor = self.descriptor.convert(context);
 
                 for attribute in self.attributes.iter() {
@@ -27,7 +29,7 @@ impl PYConvert<PYDefinition> for GTAlias {
                             {
                                 union.discriminator = value.clone().into();
                                 // [TODO] Resolve right now is a mess, instead of resolving in
-                                // cconver functions, it should be resolved in the end or by
+                                // convert functions, it should be resolved in the end or by
                                 // the parent.
                                 union.clone().resolve(context);
                             }
@@ -35,11 +37,14 @@ impl PYConvert<PYDefinition> for GTAlias {
                     }
                 }
 
+                let references = context.pop_references_scope();
+
                 PYDefinition::Alias(
                     PYAlias {
                         doc,
                         name,
                         descriptor,
+                        references,
                     }
                     .resolve(context),
                 )
@@ -71,6 +76,7 @@ mod tests {
                 doc: None,
                 name: "Name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
+                references: vec![],
             }),
         );
     }
@@ -125,7 +131,8 @@ mod tests {
                         descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                         required: true,
                     }
-                ]
+                ],
+                references: vec![],
             }),
         );
     }
@@ -175,6 +182,7 @@ mod tests {
                     discriminator: None
                 }
                 .into(),
+                references: vec![PYIdentifier("BookObj".into()),],
             })
         );
         let hoisted = context.drain_hoisted();
@@ -189,7 +197,8 @@ mod tests {
                     name: "author".into(),
                     descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                     required: true,
-                }]
+                }],
+                references: vec![],
             })]
         );
     }
@@ -211,6 +220,7 @@ mod tests {
                 doc: None,
                 name: "Name".into(),
                 descriptor: PYPrimitive::String.into(),
+                references: vec![],
             })
         );
         assert_eq!(
@@ -235,6 +245,7 @@ mod tests {
                 doc: None,
                 name: "Name".into(),
                 descriptor: PYPrimitive::String.into(),
+                references: vec![],
             })
         );
         assert!(context.is_forward_identifier(
@@ -271,6 +282,7 @@ mod tests {
                     name: "Name".into(),
                     extensions: vec![],
                     properties: vec![],
+                    references: vec![],
                 }
                 .into()
             )
@@ -324,7 +336,8 @@ mod tests {
                     ],
                     discriminator: Some("type".into())
                 }
-                .into()
+                .into(),
+                references: vec![PYIdentifier("Reply".into()), PYIdentifier("DM".into()),],
             }),
         );
     }
@@ -344,6 +357,7 @@ mod tests {
                 doc: Some(PYDoc("Hello, world!".into())),
                 name: "Name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
+                references: vec![],
             }),
         );
     }

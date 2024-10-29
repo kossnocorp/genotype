@@ -230,7 +230,8 @@ mod tests {
                                 descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
                                 required: false,
                             }
-                        ]
+                        ],
+                        references: vec![],
                     }),
                     PYDefinition::Class(PYClass {
                         doc: None,
@@ -241,7 +242,8 @@ mod tests {
                             name: "book".into(),
                             descriptor: PYReference::new("Book".into(), true).into(),
                             required: true,
-                        }]
+                        }],
+                        references: vec![PYIdentifier("Book".into()),],
                     }),
                     PYDefinition::Class(PYClass {
                         doc: None,
@@ -260,12 +262,14 @@ mod tests {
                                 descriptor: PYReference::new("Author".into(), true).into(),
                                 required: true,
                             }
-                        ]
+                        ],
+                        references: vec![PYIdentifier("Author".into()),],
                     }),
                     PYDefinition::Alias(PYAlias {
                         doc: None,
                         name: "Name".into(),
                         descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                        references: vec![],
                     }),
                 ]
             })

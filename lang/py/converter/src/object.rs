@@ -5,6 +5,8 @@ use crate::{context::PYConvertContext, convert::PYConvert};
 
 impl PYConvert<PYClass> for GTObject {
     fn convert(&self, context: &mut PYConvertContext) -> PYClass {
+        context.create_references_scope();
+
         let name = match &self.name {
             GTObjectName::Named(identifier) => identifier.convert(context),
             GTObjectName::Alias(identifier, _) => identifier.convert(context),
@@ -12,12 +14,17 @@ impl PYConvert<PYClass> for GTObject {
         };
 
         let doc = context.consume_doc();
+        let extensions = self.extensions.iter().map(|e| e.convert(context)).collect();
+        let properties = self.properties.iter().map(|p| p.convert(context)).collect();
+
+        let references = context.pop_references_scope();
 
         PYClass {
             doc,
             name,
-            extensions: self.extensions.iter().map(|e| e.convert(context)).collect(),
-            properties: self.properties.iter().map(|p| p.convert(context)).collect(),
+            extensions,
+            properties,
+            references,
         }
         .resolve(context)
     }
@@ -75,7 +82,8 @@ mod tests {
                         descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
                         required: false,
                     }
-                ]
+                ],
+                references: vec![],
             }
         );
     }
@@ -95,7 +103,8 @@ mod tests {
                 doc: None,
                 name: "Person".into(),
                 extensions: vec![],
-                properties: vec![]
+                properties: vec![],
+                references: vec![],
             }
         );
         assert_eq!(
@@ -113,14 +122,15 @@ mod tests {
                 span: (0, 0).into(),
                 name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
                 extensions: vec![],
-                properties: vec![]
+                properties: vec![],
             }
             .convert(&mut context),
             PYClass {
                 doc: Some(PYDoc("Hello, world!".into())),
                 name: "Person".into(),
                 extensions: vec![],
-                properties: vec![]
+                properties: vec![],
+                references: vec![],
             }
         );
     }

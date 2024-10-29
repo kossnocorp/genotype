@@ -8,4 +8,5 @@ pub struct PYAlias {
     pub doc: Option<PYDoc>,
     pub name: PYIdentifier,
     pub descriptor: PYDescriptor,
+    pub references: Vec<PYIdentifier>,
 }

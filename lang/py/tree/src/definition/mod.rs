@@ -24,6 +24,12 @@ impl PYDefinition {
     }
 }
 
+impl From<PYClass> for PYDefinition {
+    fn from(class: PYClass) -> Self {
+        PYDefinition::Class(class)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::*;
@@ -36,6 +42,7 @@ mod tests {
                 doc: None,
                 name: "Name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
+                references: vec![],
             })
             .name(),
             "Name".into(),
@@ -47,6 +54,7 @@ mod tests {
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![],
+                references: vec![],
             })
             .name(),
             "Name".into(),
@@ -60,6 +68,7 @@ mod tests {
                 doc: Some(PYDoc("Hello, world!".into())),
                 name: "Name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
+                references: vec![],
             })
             .doc(),
             Some(PYDoc("Hello, world!".into())),
@@ -71,6 +80,7 @@ mod tests {
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![],
+                references: vec![],
             })
             .doc(),
             Some(PYDoc("Hello, world!".into())),

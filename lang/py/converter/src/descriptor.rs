@@ -10,19 +10,27 @@ impl PYConvert<PYDescriptor> for GTDescriptor {
 
             GTDescriptor::Array(array) => array.convert(context).into(),
 
-            GTDescriptor::InlineImport(import) => import.convert(context).into(),
+            GTDescriptor::InlineImport(import) => {
+                let reference = import.convert(context);
+                context.track_reference(&reference);
+                reference.into()
+            }
 
             GTDescriptor::Literal(literal) => literal.convert(context).into(),
 
             GTDescriptor::Object(object) => context
-                .hoist(|context| PYDefinition::Class(object.convert(context)))
+                .hoist(|context| object.convert(context).into())
                 .into(),
 
             GTDescriptor::Primitive(primitive) => primitive.convert(context).into(),
 
             GTDescriptor::Record(record) => record.convert(context).into(),
 
-            GTDescriptor::Reference(name) => name.convert(context).into(),
+            GTDescriptor::Reference(name) => {
+                let reference = name.convert(context);
+                context.track_reference(&reference);
+                reference.into()
+            }
 
             GTDescriptor::Tuple(tuple) => tuple.convert(context).into(),
 
@@ -62,7 +70,8 @@ mod tests {
                 doc: None,
                 name: "Name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
-            }),]
+                references: vec![],
+            })]
         );
     }
 
@@ -123,7 +132,7 @@ mod tests {
                         descriptor: GTPrimitive::Int((0, 0).into()).into(),
                         required: false,
                     }
-                ]
+                ],
             })
             .convert(&mut context),
             PYDescriptor::Reference(PYReference::new("Person".into(), true))
@@ -148,7 +157,8 @@ mod tests {
                         descriptor: PYPrimitive::Int.into(),
                         required: false,
                     }
-                ]
+                ],
+                references: vec![],
             })]
         );
     }

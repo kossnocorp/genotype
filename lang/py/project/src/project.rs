@@ -190,6 +190,7 @@ mod tests {
                                     descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                                     required: true,
                                 }],
+                                references: vec![],
                             })]
                         },
                     },
@@ -232,6 +233,7 @@ mod tests {
                                         required: true,
                                     },
                                 ],
+                                references: vec![PYIdentifier("Author".into()),],
                             })],
                         },
                     },
@@ -274,11 +276,13 @@ mod tests {
                                             .into(),
                                         required: true,
                                     }],
+                                    references: vec![PYIdentifier("AuthorName".into()),],
                                 }),
                                 PYDefinition::Alias(PYAlias {
                                     doc: None,
                                     name: "AuthorName".into(),
                                     descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                                    references: vec![],
                                 })
                             ]
                         },
@@ -330,6 +334,10 @@ mod tests {
                                         .into(),
                                         required: true,
                                     },
+                                ],
+                                references: vec![
+                                    PYIdentifier("author.Author".into()),
+                                    PYIdentifier("author.AuthorName".into()),
                                 ],
                             })],
                         },

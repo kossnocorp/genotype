@@ -27,6 +27,7 @@ mod tests {
                 doc: None,
                 name: "Name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                references: vec![],
             })
             .render(&py_indent(), &Default::default()),
             "type Name = str"
@@ -53,7 +54,8 @@ mod tests {
                         descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
                         required: false
                     }
-                ]
+                ],
+                references: vec![],
             })
             .render(&py_indent(), &Default::default()),
             r#"class Name(Model):

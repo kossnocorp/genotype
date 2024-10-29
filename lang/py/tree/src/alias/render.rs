@@ -39,7 +39,8 @@ mod tests {
             PYAlias {
                 doc: None,
                 name: "Name".into(),
-                descriptor: PYDescriptor::Primitive(PYPrimitive::String)
+                descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                references: vec![],
             }
             .render(&py_indent(), &Default::default()),
             "type Name = str"
@@ -52,7 +53,8 @@ mod tests {
             PYAlias {
                 doc: None,
                 name: "Name".into(),
-                descriptor: PYDescriptor::Primitive(PYPrimitive::String)
+                descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                references: vec![],
             }
             .render(&py_indent(), &PYLangConfig::new(PYVersion::Legacy)),
             "Name : TypeAlias = str"
@@ -65,7 +67,8 @@ mod tests {
             PYAlias {
                 doc: Some(PYDoc("Hello, world!".into())),
                 name: "Name".into(),
-                descriptor: PYDescriptor::Primitive(PYPrimitive::String)
+                descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                references: vec![],
             }
             .render(&py_indent(), &Default::default()),
             r#"type Name = str

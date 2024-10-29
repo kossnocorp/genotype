@@ -76,6 +76,7 @@ mod tests {
                         doc: None,
                         name: "Name".into(),
                         descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                        references: vec![],
                     }),
                     PYDefinition::Class(PYClass {
                         doc: None,
@@ -94,7 +95,8 @@ mod tests {
                                 descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
                                 required: false
                             }
-                        ]
+                        ],
+                        references: vec![],
                     }),
                 ]
             }
@@ -127,7 +129,8 @@ class Name(Model):
                     doc: None,
                     name: "Name".into(),
                     descriptor: PYDescriptor::Primitive(PYPrimitive::String),
-                }),]
+                    references: vec![],
+                })]
             }
             .render(&py_indent(), &Default::default()),
             r#""""Hello, world!"""

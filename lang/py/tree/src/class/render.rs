@@ -72,7 +72,8 @@ mod tests {
                 doc: None,
                 name: "Name".into(),
                 extensions: vec![],
-                properties: vec![]
+                properties: vec![],
+                references: vec![],
             }
             .render(&py_indent(), &Default::default()),
             r#"class Name(Model):
@@ -100,7 +101,8 @@ mod tests {
                         descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
                         required: false
                     }
-                ]
+                ],
+                references: vec![],
             }
             .render(&py_indent(), &Default::default()),
             r#"class Name(Model):
@@ -129,7 +131,8 @@ mod tests {
                         descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
                         required: false
                     }
-                ]
+                ],
+                references: vec![],
             }
             .render(&py_indent().increment(), &Default::default()),
             r#"    class Name(Model):
@@ -153,7 +156,8 @@ mod tests {
                     name: "name".into(),
                     descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                     required: true
-                },]
+                }],
+                references: vec![],
             }
             .render(&py_indent(), &Default::default()),
             r#"class Name(Hello, World, Model):
@@ -168,7 +172,8 @@ mod tests {
                 doc: Some(PYDoc("Hello, world!".into())),
                 name: "Name".into(),
                 extensions: vec![],
-                properties: vec![]
+                properties: vec![],
+                references: vec![],
             }
             .render(&py_indent(), &Default::default()),
             r#"class Name(Model):
@@ -190,7 +195,8 @@ mod tests {
                     name: "name".into(),
                     descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                     required: true
-                },]
+                }],
+                references: vec![],
             }
             .render(&py_indent(), &Default::default()),
             r#"class Name(Model):

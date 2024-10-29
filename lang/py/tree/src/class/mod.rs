@@ -9,4 +9,5 @@ pub struct PYClass {
     pub name: PYIdentifier,
     pub extensions: Vec<PYExtension>,
     pub properties: Vec<PYProperty>,
+    pub references: Vec<PYIdentifier>,
 }

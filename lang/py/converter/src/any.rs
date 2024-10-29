@@ -1,5 +1,5 @@
 use genotype_lang_py_tree::{PYAny, PYContextResolve};
-use genotype_parser::{tree::primitive::GTPrimitive, GTAny};
+use genotype_parser::GTAny;
 
 use crate::{context::PYConvertContext, convert::PYConvert};
 
@@ -15,7 +15,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use genotype_parser::{tree::primitive::GTPrimitive, GTAny};
+    use genotype_parser::GTAny;
 
     #[test]
     fn test_convert() {

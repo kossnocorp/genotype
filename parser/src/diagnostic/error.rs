@@ -1,7 +1,7 @@
 use crate::Rule;
 
 use super::{span::GTSpan, GTNode};
-use miette::{Diagnostic, Error, LabeledSpan, NamedSource, SourceCode};
+use miette::{Diagnostic, LabeledSpan, NamedSource, SourceCode};
 use pest::error::InputLocation;
 use thiserror::Error;
 

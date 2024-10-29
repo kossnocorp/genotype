@@ -1,10 +1,12 @@
-use std::vec;
-
 use genotype_lang_py_config::{PYLangConfig, PYVersion};
 use genotype_lang_py_tree::*;
 use genotype_parser::{GTIdentifier, GTPath};
+use indexmap::IndexSet;
 
 use crate::resolve::PYConvertResolve;
+
+mod hoisting;
+mod references;
 
 pub struct PYConvertContext {
     resolve: PYConvertResolve,
@@ -17,6 +19,7 @@ pub struct PYConvertContext {
     hoisted: Vec<PYDefinition>,
     dependencies: Vec<(PYDependency, PYIdentifier)>,
     doc: Option<PYDoc>,
+    references: Vec<IndexSet<PYIdentifier>>,
 }
 
 impl PYContext for PYConvertContext {
@@ -45,6 +48,7 @@ impl PYConvertContext {
             hoisted: vec![],
             dependencies: vec![],
             doc: None,
+            references: vec![],
         }
     }
 
@@ -77,18 +81,6 @@ impl PYConvertContext {
     #[cfg(test)]
     pub fn as_dependencies(&self) -> Vec<(PYDependency, PYIdentifier)> {
         self.dependencies.clone().into_iter().collect()
-    }
-
-    pub fn hoist<HoistFn>(&mut self, mut hoist_fn: HoistFn) -> PYReference
-    where
-        HoistFn: FnMut(&mut PYConvertContext) -> PYDefinition,
-    {
-        self.hoisting = true;
-        let definition = hoist_fn(self);
-        let reference = PYReference::new(definition.name().clone(), true);
-        self.hoisted.push(definition);
-        self.hoisting = false;
-        reference
     }
 
     pub fn push_defined(&mut self, identifier: &PYIdentifier) {
@@ -153,11 +145,6 @@ impl PYConvertContext {
     pub fn drain_definitions(&mut self) -> Vec<PYDefinition> {
         self.definitions.drain(..).collect()
     }
-
-    pub fn drain_hoisted(&mut self) -> Vec<PYDefinition> {
-        self.defined.extend(self.hoist_defined.drain(..));
-        self.hoisted.drain(..).collect()
-    }
 }
 
 impl Default for PYConvertContext {
@@ -181,6 +168,7 @@ mod tests {
                 doc: None,
                 name: "Name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
+                references: vec![],
             })
         });
         let hoisted = context.drain_hoisted();
@@ -190,6 +178,7 @@ mod tests {
                 doc: None,
                 name: "Name".into(),
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
+                references: vec![],
             })],
         );
     }

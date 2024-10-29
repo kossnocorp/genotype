@@ -360,6 +360,7 @@ dependencies = [
  "genotype_lang_py_tree",
  "genotype_parser",
  "heck",
+ "indexmap",
  "miette",
  "pretty_assertions",
 ]

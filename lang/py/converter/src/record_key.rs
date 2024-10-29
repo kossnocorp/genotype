@@ -1,6 +1,5 @@
 use genotype_lang_py_tree::PYDictKey;
-use genotype_parser::{tree::key::GTKey, GTRecordKey};
-use heck::ToSnakeCase;
+use genotype_parser::GTRecordKey;
 
 use crate::{context::PYConvertContext, convert::PYConvert};
 
