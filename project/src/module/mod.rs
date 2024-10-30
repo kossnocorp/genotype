@@ -20,11 +20,8 @@ impl GTProjectModule {
         modules: &Vec<GTProjectModuleParse>,
         parse: GTProjectModuleParse,
     ) -> Result<Self> {
-        let resolve = GTProjectModuleResolve::try_new(modules, &parse).map_err(|err| {
-            println!("---- source code {:?}", parse.1.module.source_code);
-
-            err.with_source_code(parse.1.module.source_code.clone())
-        })?;
+        let resolve = GTProjectModuleResolve::try_new(modules, &parse)
+            .map_err(|err| err.with_source_code(parse.1.module.source_code.clone()))?;
 
         Ok(GTProjectModule {
             path: parse.0,
