@@ -1,4 +1,4 @@
-use genotype_parser::{tree::key::GTKey, GTAny};
+use genotype_parser::GTAny;
 
 use crate::visitor::GTVisitor;
 
@@ -19,8 +19,8 @@ mod tests {
     #[test]
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
-        let mut key = GTKey((0, 0).into(), "name".into());
-        key.traverse(&mut visitor);
-        assert_eq!(visitor.visited, vec![GTMockVisited::Key(key.clone()),]);
+        let mut any = GTAny((0, 0).into());
+        any.traverse(&mut visitor);
+        assert_eq!(visitor.visited, vec![GTMockVisited::Any(any),]);
     }
 }
