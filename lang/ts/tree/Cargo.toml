@@ -1,6 +1,6 @@
 [package]
 name = "genotype_lang_ts_tree"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 description = "Genotype language TypeScript target AST crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
@@ -9,7 +9,7 @@ repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
 genotype_lang_core_tree = { version = "0.1.0", path = "../../core/tree" }
-genotype_parser = { version = "0.1.1", path = "../../../parser" }
+genotype_parser = { version = "0.2.0", path = "../../../parser" }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
