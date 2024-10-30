@@ -4,6 +4,8 @@ use genotype_parser::tree::module::GTModule;
 
 use crate::{context::PYConvertContext, convert::PYConvert, resolve::PYConvertResolve};
 
+mod ordering;
+
 #[derive(Debug, PartialEq, Clone)]
 pub struct PYConvertModule(pub PYModule);
 
@@ -25,7 +27,8 @@ impl PYConvertModule {
         }
 
         let imports = context.drain_imports();
-        let definitions = context.drain_definitions();
+
+        let definitions = Self::sort_definitions(context.drain_definitions());
 
         PYConvertModule(PYModule {
             doc,
@@ -235,18 +238,6 @@ mod tests {
                     }),
                     PYDefinition::Class(PYClass {
                         doc: None,
-                        name: "Order".into(),
-                        extensions: vec![],
-                        properties: vec![PYProperty {
-                            doc: None,
-                            name: "book".into(),
-                            descriptor: PYReference::new("Book".into(), true).into(),
-                            required: true,
-                        }],
-                        references: vec![PYIdentifier("Book".into()),],
-                    }),
-                    PYDefinition::Class(PYClass {
-                        doc: None,
                         name: "Book".into(),
                         extensions: vec![],
                         properties: vec![
@@ -264,6 +255,18 @@ mod tests {
                             }
                         ],
                         references: vec![PYIdentifier("Author".into()),],
+                    }),
+                    PYDefinition::Class(PYClass {
+                        doc: None,
+                        name: "Order".into(),
+                        extensions: vec![],
+                        properties: vec![PYProperty {
+                            doc: None,
+                            name: "book".into(),
+                            descriptor: PYReference::new("Book".into(), true).into(),
+                            required: true,
+                        }],
+                        references: vec![PYIdentifier("Book".into()),],
                     }),
                     PYDefinition::Alias(PYAlias {
                         doc: None,
@@ -293,6 +296,132 @@ mod tests {
                 doc: Some(PYDoc("Hello, world!".into())),
                 imports: vec![],
                 definitions: vec![]
+            })
+        );
+    }
+
+    #[test]
+    fn test_convert_reorder() {
+        assert_eq!(
+            PYConvertModule::convert(
+                &GTModule {
+                    source_code: NamedSource::new("module.type", "".into()),
+                    doc: None,
+                    imports: vec![],
+                    aliases: vec![
+                        GTAlias {
+                            span: (0, 0).into(),
+                            doc: None,
+                            attributes: vec![],
+                            name: GTIdentifier::new((0, 0).into(), "Message".into()),
+                            descriptor: GTUnion {
+                                span: (0, 0).into(),
+                                descriptors: vec![
+                                    GTReference(
+                                        (0, 0).into(),
+                                        GTIdentifier((0, 0).into(), "DM".into())
+                                    )
+                                    .into(),
+                                    GTReference(
+                                        (0, 0).into(),
+                                        GTIdentifier((0, 0).into(), "Comment".into())
+                                    )
+                                    .into(),
+                                ],
+                            }
+                            .into(),
+                        },
+                        GTAlias {
+                            span: (0, 0).into(),
+                            doc: None,
+                            attributes: vec![],
+                            name: GTIdentifier::new((0, 0).into(), "DM".into()),
+                            descriptor: GTObject {
+                                span: (0, 0).into(),
+                                name: GTIdentifier::new((0, 0).into(), "DM".into()).into(),
+                                extensions: vec![],
+                                properties: vec![GTProperty {
+                                    span: (0, 0).into(),
+                                    doc: None,
+                                    attributes: vec![],
+                                    name: GTKey::new((0, 0).into(), "message".into()),
+                                    descriptor: GTPrimitive::String((0, 0).into()).into(),
+                                    required: true,
+                                }],
+                            }
+                            .into(),
+                        },
+                        GTAlias {
+                            span: (0, 0).into(),
+                            doc: None,
+                            attributes: vec![],
+                            name: GTIdentifier::new((0, 0).into(), "Comment".into()),
+                            descriptor: GTObject {
+                                span: (0, 0).into(),
+                                name: GTIdentifier::new((0, 0).into(), "Comment".into()).into(),
+                                extensions: vec![],
+                                properties: vec![GTProperty {
+                                    span: (0, 0).into(),
+                                    doc: None,
+                                    attributes: vec![],
+                                    name: GTKey::new((0, 0).into(), "message".into()),
+                                    descriptor: GTPrimitive::String((0, 0).into()).into(),
+                                    required: true,
+                                }],
+                            }
+                            .into(),
+                        }
+                    ],
+                },
+                &Default::default(),
+                &Default::default()
+            ),
+            PYConvertModule(PYModule {
+                doc: None,
+                imports: vec![PYImport {
+                    path: "genotype".into(),
+                    reference: PYImportReference::Named(vec![PYImportName::Name("Model".into())]),
+                    dependency: PYDependency::Runtime,
+                }],
+                definitions: vec![
+                    PYDefinition::Class(PYClass {
+                        doc: None,
+                        name: "DM".into(),
+                        extensions: vec![],
+                        properties: vec![PYProperty {
+                            doc: None,
+                            name: "message".into(),
+                            descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                            required: true,
+                        }],
+                        references: vec![],
+                    }),
+                    PYDefinition::Class(PYClass {
+                        doc: None,
+                        name: "Comment".into(),
+                        extensions: vec![],
+                        properties: vec![PYProperty {
+                            doc: None,
+                            name: "message".into(),
+                            descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                            required: true,
+                        }],
+                        references: vec![],
+                    }),
+                    PYDefinition::Alias(PYAlias {
+                        doc: None,
+                        name: "Message".into(),
+                        descriptor: PYUnion {
+                            descriptors: vec![
+                                PYReference::new("DM".into(), false).into(),
+                                PYReference::new("Comment".into(), false).into()
+                            ],
+                            discriminator: None,
+                        }
+                        .into(),
+                        references: vec![PYIdentifier("DM".into()), PYIdentifier("Comment".into()),],
+                    }),
+                ]
             })
         );
     }

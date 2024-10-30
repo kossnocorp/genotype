@@ -1,6 +1,6 @@
 mod render;
 
-#[derive(Debug, Eq, PartialEq, Hash, Clone)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, PartialOrd, Ord)]
 pub struct PYIdentifier(pub String);
 
 impl From<&str> for PYIdentifier {

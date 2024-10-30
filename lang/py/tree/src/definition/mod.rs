@@ -22,6 +22,13 @@ impl PYDefinition {
             Self::Class(class) => &class.doc,
         }
     }
+
+    pub fn references(&self) -> Vec<&PYIdentifier> {
+        match self {
+            Self::Alias(alias) => alias.references.iter().collect(),
+            Self::Class(class) => class.references.iter().collect(),
+        }
+    }
 }
 
 impl From<PYClass> for PYDefinition {
