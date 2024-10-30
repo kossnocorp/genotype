@@ -1,10 +1,13 @@
 use genotype_lang_py_config::PYLangConfig;
 use genotype_lang_py_tree::module::PYModule;
+use genotype_lang_py_visitor::traverse::PYTraverse;
 use genotype_parser::tree::module::GTModule;
+use visitor::PYModuleVisitor;
 
 use crate::{context::PYConvertContext, convert::PYConvert, resolve::PYConvertResolve};
 
 mod ordering;
+mod visitor;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct PYConvertModule(pub PYModule);
@@ -30,11 +33,16 @@ impl PYConvertModule {
 
         let definitions = Self::sort_definitions(context.drain_definitions());
 
-        PYConvertModule(PYModule {
+        let mut module = PYModule {
             doc,
             imports,
             definitions,
-        })
+        };
+
+        let mut visitor = PYModuleVisitor::new(&module);
+        module.traverse(&mut visitor);
+
+        PYConvertModule(module)
     }
 }
 
@@ -263,7 +271,7 @@ mod tests {
                         properties: vec![PYProperty {
                             doc: None,
                             name: "book".into(),
-                            descriptor: PYReference::new("Book".into(), true).into(),
+                            descriptor: PYReference::new("Book".into(), false).into(),
                             required: true,
                         }],
                         references: vec![PYIdentifier("Book".into()),],

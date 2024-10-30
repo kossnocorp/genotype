@@ -3,7 +3,7 @@ use std::{collections::HashMap, sync::Arc};
 use genotype_parser::tree::{GTIdentifier, GTImportName, GTImportReference, GTPath};
 use miette::Result;
 
-use crate::{error::GTProjectError, result::GTProjectResult};
+use crate::error::GTProjectError;
 
 use super::{GTProjectModuleParse, GTProjectModulePath};
 

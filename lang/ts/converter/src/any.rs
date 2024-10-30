@@ -1,5 +1,5 @@
 use genotype_lang_ts_tree::*;
-use genotype_parser::{tree::primitive::GTPrimitive, GTAny};
+use genotype_parser::GTAny;
 
 use crate::{convert::TSConvert, resolve::TSConvertResolve};
 

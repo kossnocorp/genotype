@@ -32,12 +32,13 @@ mod tests {
     #[test]
     fn test_traverse_base() {
         let mut visitor = PYMockVisitor::new();
-        let import_path = PYPath("./path/to/module".into());
+        let path = PYPath("./path/to/module".into());
         let reference = PYImportReference::Glob;
+        let dependency = PYDependency::Local(path.clone());
         let import = PYImport {
-            path: import_path.clone(),
+            path: path.clone(),
             reference: reference.clone(),
-            dependency: PYDependency::Local(import_path.clone()),
+            dependency: dependency.clone(),
         };
         let ref_identifier = PYIdentifier("Reference".into());
         let alias = PYAlias {
@@ -58,8 +59,11 @@ mod tests {
             vec![
                 PYMockVisited::Module(module.clone()),
                 PYMockVisited::Import(import.clone()),
-                PYMockVisited::Path(import_path.clone()),
-                PYMockVisited::ImportReference(reference.clone()),
+                PYMockVisited::Path(path.clone()),
+                PYMockVisited::ImportReference(reference),
+                PYMockVisited::Dependency(dependency),
+                PYMockVisited::Path(path),
+                PYMockVisited::Definition(definition.clone()),
                 PYMockVisited::Alias(alias.clone()),
                 PYMockVisited::Descriptor(alias.descriptor.clone()),
                 PYMockVisited::Primitive(PYPrimitive::String),
@@ -71,23 +75,24 @@ mod tests {
     #[test]
     fn test_traverse_doc() {
         let mut visitor = PYMockVisitor::new();
-        let import_path = PYPath("./path/to/module".into());
+        let path = PYPath("./path/to/module".into());
         let reference = PYImportReference::Glob;
+        let dependency = PYDependency::Local(path.clone());
         let import = PYImport {
-            path: import_path.clone(),
+            path: path.clone(),
             reference: reference.clone(),
-            dependency: PYDependency::Local(import_path.clone()),
+            dependency: dependency.clone(),
         };
         let ref_identifier = PYIdentifier("Reference".into());
         let alias = PYAlias {
-            doc: Some(PYDoc("Hello, world!".into())),
+            doc: None,
             name: PYIdentifier("Name".into()),
             descriptor: PYPrimitive::String.into(),
             references: vec![ref_identifier.clone()],
         };
         let definition = PYDefinition::Alias(alias.clone());
         let mut module = PYModule {
-            doc: None,
+            doc: Some(PYDoc("Hello, world!".into())),
             imports: vec![import.clone()],
             definitions: vec![definition.clone()],
         };
@@ -98,8 +103,11 @@ mod tests {
                 PYMockVisited::Module(module.clone()),
                 PYMockVisited::Doc(module.doc.clone().unwrap()),
                 PYMockVisited::Import(import.clone()),
-                PYMockVisited::Path(import_path.clone()),
+                PYMockVisited::Path(path.clone()),
                 PYMockVisited::ImportReference(reference.clone()),
+                PYMockVisited::Dependency(dependency),
+                PYMockVisited::Path(path),
+                PYMockVisited::Definition(definition.clone()),
                 PYMockVisited::Alias(alias.clone()),
                 PYMockVisited::Descriptor(alias.descriptor.clone()),
                 PYMockVisited::Primitive(PYPrimitive::String),

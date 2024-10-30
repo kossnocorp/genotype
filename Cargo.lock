@@ -358,6 +358,7 @@ dependencies = [
  "genotype_lang_core_converter",
  "genotype_lang_py_config",
  "genotype_lang_py_tree",
+ "genotype_lang_py_visitor",
  "genotype_parser",
  "heck",
  "indexmap",

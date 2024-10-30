@@ -265,6 +265,12 @@ mod tests {
                                 dependency: PYDependency::Runtime,
                             }],
                             definitions: vec![
+                                PYDefinition::Alias(PYAlias {
+                                    doc: None,
+                                    name: "AuthorName".into(),
+                                    descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                                    references: vec![],
+                                }),
                                 PYDefinition::Class(PYClass {
                                     doc: None,
                                     name: "Author".into(),
@@ -272,18 +278,12 @@ mod tests {
                                     properties: vec![PYProperty {
                                         doc: None,
                                         name: "name".into(),
-                                        descriptor: PYReference::new("AuthorName".into(), true)
+                                        descriptor: PYReference::new("AuthorName".into(), false)
                                             .into(),
                                         required: true,
                                     }],
                                     references: vec![PYIdentifier("AuthorName".into()),],
                                 }),
-                                PYDefinition::Alias(PYAlias {
-                                    doc: None,
-                                    name: "AuthorName".into(),
-                                    descriptor: PYDescriptor::Primitive(PYPrimitive::String),
-                                    references: vec![],
-                                })
                             ]
                         },
                     },

@@ -1,4 +1,4 @@
-use genotype_lang_py_tree::{identifier, import_reference::PYImportReference};
+use genotype_lang_py_tree::import_reference::PYImportReference;
 
 use crate::visitor::PYVisitor;
 

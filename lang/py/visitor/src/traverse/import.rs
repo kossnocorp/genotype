@@ -27,10 +27,11 @@ mod tests {
         let mut visitor = PYMockVisitor::new();
         let path = PYPath("./path/to/module".into());
         let reference = PYImportReference::Glob;
+        let dependency = PYDependency::Local(path.clone());
         let mut import = PYImport {
             path: path.clone(),
             reference: reference.clone(),
-            dependency: PYDependency::Local(path.clone()),
+            dependency: dependency.clone(),
         };
         import.traverse(&mut visitor);
         assert_eq!(
@@ -38,7 +39,9 @@ mod tests {
             vec![
                 PYMockVisited::Import(import.clone()),
                 PYMockVisited::Path(path.clone()),
-                PYMockVisited::ImportReference(reference.clone()),
+                PYMockVisited::ImportReference(reference),
+                PYMockVisited::Dependency(dependency),
+                PYMockVisited::Path(path),
             ]
         );
     }
@@ -48,10 +51,11 @@ mod tests {
         let mut visitor = PYMockVisitor::new();
         let path = PYPath("./path/to/module".into());
         let reference = PYImportReference::Glob;
+        let dependency = PYDependency::Local(path.clone());
         let mut import = PYImport {
             path: path.clone(),
             reference: reference.clone(),
-            dependency: PYDependency::Local(path.clone()),
+            dependency: dependency.clone(),
         };
         import.traverse(&mut visitor);
         assert_eq!(
@@ -60,6 +64,8 @@ mod tests {
                 PYMockVisited::Import(import.clone()),
                 PYMockVisited::Path(path.clone()),
                 PYMockVisited::ImportReference(reference.clone()),
+                PYMockVisited::Dependency(dependency.clone()),
+                PYMockVisited::Path(path.clone()),
             ]
         );
     }

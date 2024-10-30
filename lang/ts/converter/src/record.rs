@@ -1,5 +1,5 @@
 use genotype_lang_ts_tree::{definition::TSDefinition, TSRecord};
-use genotype_parser::{tree::tuple::GTTuple, GTRecord};
+use genotype_parser::GTRecord;
 
 use crate::{convert::TSConvert, resolve::TSConvertResolve};
 
