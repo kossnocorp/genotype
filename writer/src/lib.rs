@@ -21,7 +21,7 @@ impl GTWriter {
                     create_dir_all(dir)?;
                     write(path, &module.code)
                 })
-                .collect::<Result<_, _>>()?;
+                .collect::<Result<(), _>>()?;
         }
         Ok(())
     }
