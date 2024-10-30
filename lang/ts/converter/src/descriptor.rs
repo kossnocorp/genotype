@@ -171,7 +171,13 @@ mod tests {
                     TSProperty {
                         doc: None,
                         name: "age".into(),
-                        descriptor: TSPrimitive::Number.into(),
+                        descriptor: TSUnion {
+                            descriptors: vec![
+                                TSPrimitive::Number.into(),
+                                TSPrimitive::Undefined.into()
+                            ]
+                        }
+                        .into(),
                         required: false,
                     }
                 ]
