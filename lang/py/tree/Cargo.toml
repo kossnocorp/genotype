@@ -10,7 +10,6 @@ repository = "https://github.com/kossnocorp/genotype"
 [dependencies]
 genotype_lang_core_tree = { version = "0.1.0", path = "../../core/tree" }
 genotype_lang_py_config = { version = "0.1.1", path = "../config" }
-genotype_parser = { version = "0.2.0", path = "../../../parser" }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

@@ -22,6 +22,7 @@ impl PYClass {
             .iter()
             .map(|extension| extension.render(indent, config))
             .collect::<Vec<_>>();
+        // [TODO] Push model when converting instead
         extensions.push("Model".into());
 
         let extensions = extensions.join(", ");

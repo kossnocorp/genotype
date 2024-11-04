@@ -345,8 +345,6 @@ dependencies = [
 name = "genotype_lang_py_config"
 version = "0.1.1"
 dependencies = [
- "genotype_lang_core_tree",
- "genotype_parser",
  "pretty_assertions",
  "serde",
 ]
@@ -386,7 +384,6 @@ version = "0.1.0"
 dependencies = [
  "genotype_lang_core_tree",
  "genotype_lang_py_config",
- "genotype_parser",
  "pretty_assertions",
 ]
 
@@ -439,7 +436,6 @@ name = "genotype_lang_ts_tree"
 version = "0.2.0"
 dependencies = [
  "genotype_lang_core_tree",
- "genotype_parser",
  "pretty_assertions",
 ]
 
