@@ -1,0 +1,14 @@
+[package]
+name = "genotype_lang_rs_config"
+version = "0.1.0"
+edition = "2021"
+description = "Genotype language Rust target config crate"
+authors = ["Sasha Koss <koss@nocorp.me>"]
+license = "MIT"
+repository = "https://github.com/kossnocorp/genotype"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+
+[dependencies]
+toml = "0.8.19"

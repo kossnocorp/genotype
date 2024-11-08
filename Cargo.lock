@@ -396,6 +396,51 @@ dependencies = [
 ]
 
 [[package]]
+name = "genotype_lang_rs_config"
+version = "0.1.0"
+dependencies = [
+ "pretty_assertions",
+ "toml",
+]
+
+[[package]]
+name = "genotype_lang_rs_converter"
+version = "0.1.0"
+dependencies = [
+ "genotype_lang_rs_config",
+ "genotype_lang_rs_tree",
+ "genotype_parser",
+ "heck",
+ "indexmap",
+ "miette",
+ "pretty_assertions",
+]
+
+[[package]]
+name = "genotype_lang_rs_project"
+version = "0.1.0"
+dependencies = [
+ "genotype_config",
+ "genotype_lang_core_project",
+ "genotype_lang_core_tree",
+ "genotype_lang_rs_config",
+ "genotype_lang_rs_converter",
+ "genotype_lang_rs_tree",
+ "genotype_parser",
+ "genotype_project",
+ "pretty_assertions",
+]
+
+[[package]]
+name = "genotype_lang_rs_tree"
+version = "0.1.0"
+dependencies = [
+ "genotype_lang_core_tree",
+ "genotype_lang_rs_config",
+ "pretty_assertions",
+]
+
+[[package]]
 name = "genotype_lang_ts_config"
 version = "0.1.0"
 dependencies = [
