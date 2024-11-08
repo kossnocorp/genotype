@@ -9,12 +9,6 @@ impl RSRender for RSProperty {
     fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> String {
         let descriptor = self.descriptor.render(indent, config);
 
-        let descriptor = if self.required {
-            descriptor
-        } else {
-            format!("Optional[{descriptor}] = None")
-        };
-
         format!(
             "{}{}: {}{}",
             indent.string,
@@ -42,7 +36,6 @@ mod tests {
                 doc: None,
                 name: "name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                required: true
             }
             .render(&rs_indent(), &Default::default()),
             "name: str"
@@ -52,7 +45,6 @@ mod tests {
                 doc: None,
                 name: "name".into(),
                 descriptor: RSReference::new("Name".into()).into(),
-                required: true
             }
             .render(&rs_indent(), &Default::default()),
             "name: Name"
@@ -66,7 +58,6 @@ mod tests {
                 doc: None,
                 name: "name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                required: true
             }
             .render(&rs_indent().increment(), &Default::default()),
             "    name: str"
@@ -80,10 +71,9 @@ mod tests {
                 doc: None,
                 name: "name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                required: false
             }
             .render(&rs_indent(), &Default::default()),
-            "name: Optional[str] = None"
+            "name: str"
         );
     }
 
@@ -94,10 +84,9 @@ mod tests {
                 doc: Some(RSDoc("Hello, world!".into())),
                 name: "name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                required: false
             }
             .render(&rs_indent(), &Default::default()),
-            r#"name: Optional[str] = None
+            r#"name: str
 """Hello, world!""""#
         );
     }

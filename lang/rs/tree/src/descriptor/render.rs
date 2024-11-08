@@ -14,6 +14,7 @@ impl RSRender for RSDescriptor {
             RSDescriptor::Union(union) => union.render(indent, config),
             RSDescriptor::Dict(dict) => dict.render(indent, config),
             RSDescriptor::Any(any) => any.render(indent),
+            RSDescriptor::Option(option) => option.render(indent, config),
         }
     }
 }
@@ -102,6 +103,17 @@ mod tests {
         assert_eq!(
             RSDescriptor::Any(RSAny).render(&rs_indent(), &Default::default()),
             "Any"
+        );
+    }
+
+    #[test]
+    fn test_render_option() {
+        assert_eq!(
+            RSDescriptor::Option(Box::new(RSOption::new(RSDescriptor::Primitive(
+                RSPrimitive::String
+            ))))
+            .render(&rs_indent(), &Default::default()),
+            "Option<str>"
         );
     }
 }

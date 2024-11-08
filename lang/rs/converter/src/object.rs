@@ -73,14 +73,12 @@ mod tests {
                     RSProperty {
                         doc: None,
                         name: "name".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                        required: true,
+                        descriptor: RSDescriptor::Primitive(RSPrimitive::String).into(),
                     },
                     RSProperty {
                         doc: None,
                         name: "age".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::Int),
-                        required: false,
+                        descriptor: RSOption::new(RSDescriptor::Primitive(RSPrimitive::Int)).into(),
                     }
                 ],
                 references: vec![],

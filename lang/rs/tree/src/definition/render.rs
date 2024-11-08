@@ -46,13 +46,11 @@ mod tests {
                         doc: None,
                         name: "name".into(),
                         descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                        required: true
                     },
                     RSProperty {
                         doc: None,
                         name: "age".into(),
                         descriptor: RSDescriptor::Primitive(RSPrimitive::Int),
-                        required: false
                     }
                 ],
                 references: vec![],
@@ -60,7 +58,7 @@ mod tests {
             .render(&rs_indent(), &Default::default()),
             r#"class Name(Model):
     name: str
-    age: Optional[int] = None"#
+    age: int"#
         );
     }
 }

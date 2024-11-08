@@ -206,13 +206,6 @@ mod tests {
                         dependency: RSDependency::Local(".path.to.module".into()),
                     },
                     RSImport {
-                        path: "typing".into(),
-                        reference: RSImportReference::Named(vec![RSImportName::Name(
-                            "Optional".into()
-                        )]),
-                        dependency: RSDependency::Typing,
-                    },
-                    RSImport {
                         path: "genotype".into(),
                         reference: RSImportReference::Named(vec![RSImportName::Name(
                             "Model".into()
@@ -230,13 +223,11 @@ mod tests {
                                 doc: None,
                                 name: "name".into(),
                                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                                required: true,
                             },
                             RSProperty {
                                 doc: None,
                                 name: "age".into(),
-                                descriptor: RSDescriptor::Primitive(RSPrimitive::Int),
-                                required: false,
+                                descriptor: RSOption::new(RSPrimitive::Int.into()).into(),
                             }
                         ],
                         references: vec![],
@@ -250,13 +241,11 @@ mod tests {
                                 doc: None,
                                 name: "title".into(),
                                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                                required: true,
                             },
                             RSProperty {
                                 doc: None,
                                 name: "author".into(),
                                 descriptor: RSReference::new("Author".into()).into(),
-                                required: true,
                             }
                         ],
                         references: vec![RSIdentifier("Author".into()),],
@@ -269,7 +258,6 @@ mod tests {
                             doc: None,
                             name: "book".into(),
                             descriptor: RSReference::new("Book".into()).into(),
-                            required: true,
                         }],
                         references: vec![RSIdentifier("Book".into()),],
                     }),
@@ -397,7 +385,6 @@ mod tests {
                             doc: None,
                             name: "message".into(),
                             descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                            required: true,
                         }],
                         references: vec![],
                     }),
@@ -409,7 +396,6 @@ mod tests {
                             doc: None,
                             name: "message".into(),
                             descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                            required: true,
                         }],
                         references: vec![],
                     }),

@@ -31,11 +31,11 @@ mod tests {
         let mut resolve = RSConvertResolve::default();
         resolve.identifiers.insert(
             GTIdentifier::new((0, 0).into(), "Foo".into()),
-            GTIdentifier::new((0, 0).into(), "foo.Bar".into()),
+            GTIdentifier::new((0, 0).into(), "foo::Bar".into()),
         );
         let mut context = RSConvertContext::new(resolve.clone(), Default::default());
         assert_eq!(
-            RSIdentifier("foo.Bar".into()),
+            RSIdentifier("foo::Bar".into()),
             GTIdentifier::new((0, 0).into(), "Foo".into()).convert(&mut context),
         );
     }

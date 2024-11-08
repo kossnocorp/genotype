@@ -7,9 +7,6 @@ impl RSContextResolve for RSProperty {
     where
         Context: RSContext,
     {
-        if !self.required {
-            context.import(RSDependency::Typing, "Optional".into());
-        }
         self
     }
 }
@@ -27,25 +24,8 @@ mod tests {
             doc: None,
             name: "foo".into(),
             descriptor: RSPrimitive::String.into(),
-            required: true,
         };
         alias.resolve(&mut context);
         assert_eq!(context.as_imports(), vec![]);
-    }
-
-    #[test]
-    fn test_resolve_optional() {
-        let mut context = RSContextMock::default();
-        let alias = RSProperty {
-            doc: None,
-            name: "foo".into(),
-            descriptor: RSPrimitive::String.into(),
-            required: false,
-        };
-        alias.resolve(&mut context);
-        assert_eq!(
-            context.as_imports(),
-            vec![(RSDependency::Typing, "Optional".into())]
-        );
     }
 }

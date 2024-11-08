@@ -12,6 +12,7 @@ pub enum RSDescriptor {
     Union(RSUnion),
     Dict(Box<RSDict>),
     Any(RSAny),
+    Option(Box<RSOption>),
 }
 
 impl From<RSPrimitive> for RSDescriptor {
@@ -59,5 +60,11 @@ impl From<RSLiteral> for RSDescriptor {
 impl From<RSAny> for RSDescriptor {
     fn from(any: RSAny) -> Self {
         RSDescriptor::Any(any)
+    }
+}
+
+impl From<RSOption> for RSDescriptor {
+    fn from(option: RSOption) -> Self {
+        RSDescriptor::Option(Box::new(option))
     }
 }

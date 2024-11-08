@@ -123,13 +123,11 @@ mod tests {
                         doc: None,
                         name: "title".into(),
                         descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                        required: true,
                     },
                     RSProperty {
                         doc: None,
                         name: "author".into(),
                         descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                        required: true,
                     }
                 ],
                 references: vec![],
@@ -196,7 +194,6 @@ mod tests {
                     doc: None,
                     name: "author".into(),
                     descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                    required: true,
                 }],
                 references: vec![],
             })]
