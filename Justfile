@@ -1,5 +1,5 @@
 test:
-  cargo test
+  cargo nextest run
 
 test-watch:
-  cargo watch -x test
+  cargo watch -s 'cargo nextest run'
