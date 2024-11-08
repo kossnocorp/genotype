@@ -400,6 +400,7 @@ name = "genotype_lang_rs_config"
 version = "0.1.0"
 dependencies = [
  "pretty_assertions",
+ "serde",
  "toml",
 ]
 

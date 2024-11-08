@@ -7,8 +7,9 @@ authors = ["Sasha Koss <koss@nocorp.me>"]
 license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
+[dependencies]
+serde = { version = "1.0.210", features = ["derive"] }
+toml = "0.8.19"
+
 [dev-dependencies]
 pretty_assertions = "1.4.1"
-
-[dependencies]
-toml = "0.8.19"
