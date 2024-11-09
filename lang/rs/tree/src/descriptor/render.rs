@@ -10,6 +10,7 @@ impl RSRender for RSDescriptor {
             RSDescriptor::Literal(literal) => literal.render(indent),
             RSDescriptor::Primitive(primitive) => primitive.render(indent),
             RSDescriptor::Reference(name) => name.render(indent, config),
+            RSDescriptor::InlineUse(inline_use) => inline_use.render(indent),
             RSDescriptor::Tuple(tuple) => tuple.render(indent, config),
             RSDescriptor::Union(union) => union.render(indent, config),
             RSDescriptor::Dict(dict) => dict.render(indent, config),
@@ -54,6 +55,18 @@ mod tests {
             RSDescriptor::Reference(RSReference::new("Name".into()))
                 .render(&rs_indent(), &Default::default()),
             "Name"
+        );
+    }
+
+    #[test]
+    fn test_render_inline_use() {
+        assert_eq!(
+            RSDescriptor::InlineUse(RSInlineUse {
+                path: "self::path::to::module".into(),
+                name: "Name".into()
+            })
+            .render(&rs_indent(), &Default::default()),
+            "self::path::to::module::Name"
         );
     }
 

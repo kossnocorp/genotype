@@ -8,6 +8,7 @@ pub enum RSDescriptor {
     Literal(RSLiteral),
     Primitive(RSPrimitive),
     Reference(RSReference),
+    InlineUse(RSInlineUse),
     Tuple(RSTuple),
     Union(RSUnion),
     Dict(Box<RSDict>),
@@ -24,6 +25,12 @@ impl From<RSPrimitive> for RSDescriptor {
 impl From<RSReference> for RSDescriptor {
     fn from(reference: RSReference) -> Self {
         RSDescriptor::Reference(reference)
+    }
+}
+
+impl From<RSInlineUse> for RSDescriptor {
+    fn from(inline_use: RSInlineUse) -> Self {
+        RSDescriptor::InlineUse(inline_use)
     }
 }
 

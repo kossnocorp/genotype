@@ -10,10 +10,7 @@ impl RSConvert<RSDescriptor> for GTDescriptor {
 
             GTDescriptor::Array(array) => array.convert(context).into(),
 
-            GTDescriptor::InlineImport(import) => {
-                let reference = import.convert(context);
-                reference.into()
-            }
+            GTDescriptor::InlineImport(import) => import.convert(context).into(),
 
             GTDescriptor::Literal(literal) => literal.convert(context).into(),
 
@@ -25,10 +22,7 @@ impl RSConvert<RSDescriptor> for GTDescriptor {
 
             GTDescriptor::Record(record) => record.convert(context).into(),
 
-            GTDescriptor::Reference(name) => {
-                let reference = name.convert(context);
-                reference.into()
-            }
+            GTDescriptor::Reference(name) => name.convert(context).into(),
 
             GTDescriptor::Tuple(tuple) => tuple.convert(context).into(),
 
@@ -96,14 +90,10 @@ mod tests {
                 name: GTIdentifier::new((0, 0).into(), "Name".into())
             })
             .convert(&mut context),
-            RSDescriptor::Reference(RSReference::new("Name".into()))
-        );
-        assert_eq!(
-            context.as_dependencies(),
-            vec![(
-                RSDependency::Local("self::path::to::module".into()),
-                "Name".into()
-            ),]
+            RSDescriptor::InlineUse(RSInlineUse {
+                path: "self::path::to::module".into(),
+                name: "Name".into()
+            })
         );
     }
 
