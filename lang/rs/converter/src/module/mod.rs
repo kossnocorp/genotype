@@ -221,11 +221,13 @@ mod tests {
                         properties: vec![
                             RSProperty {
                                 doc: None,
+                                attributes: vec![],
                                 name: "name".into(),
                                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                             },
                             RSProperty {
                                 doc: None,
+                                attributes: vec![],
                                 name: "age".into(),
                                 descriptor: RSOption::new(RSPrimitive::Int.into()).into(),
                             }
@@ -239,11 +241,13 @@ mod tests {
                         properties: vec![
                             RSProperty {
                                 doc: None,
+                                attributes: vec![],
                                 name: "title".into(),
                                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                             },
                             RSProperty {
                                 doc: None,
+                                attributes: vec![],
                                 name: "author".into(),
                                 descriptor: RSReference::new("Author".into()).into(),
                             }
@@ -256,6 +260,7 @@ mod tests {
                         extensions: vec![],
                         properties: vec![RSProperty {
                             doc: None,
+                            attributes: vec![],
                             name: "book".into(),
                             descriptor: RSReference::new("Book".into()).into(),
                         }],
@@ -383,6 +388,7 @@ mod tests {
                         extensions: vec![],
                         properties: vec![RSProperty {
                             doc: None,
+                            attributes: vec![],
                             name: "message".into(),
                             descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                         }],
@@ -394,6 +400,7 @@ mod tests {
                         extensions: vec![],
                         properties: vec![RSProperty {
                             doc: None,
+                            attributes: vec![],
                             name: "message".into(),
                             descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                         }],

@@ -22,6 +22,7 @@ mod tests {
         let mut context = RSContextMock::default();
         let alias = RSProperty {
             doc: None,
+            attributes: vec![],
             name: "foo".into(),
             descriptor: RSPrimitive::String.into(),
         };

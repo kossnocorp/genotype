@@ -46,7 +46,7 @@ mod tests {
         let literal = GTLiteral::String((0, 0).into(), "answer".into());
         let value = GTAttributeValue::Literal(literal.clone());
         let assignment = GTAttributeAssignment::new((0, 0).into(), value.clone());
-        let descriptor = GTAttributeDescriptor::Assigment(assignment.clone());
+        let descriptor = GTAttributeDescriptor::Assignment(assignment.clone());
         let mut attribute = GTAttribute::new(
             (0, 0).into(),
             GTAttributeName::new((0, 0).into(), "answer".into()).into(),

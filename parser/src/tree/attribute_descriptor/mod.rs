@@ -4,7 +4,7 @@ mod parse;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum GTAttributeDescriptor {
-    Assigment(GTAttributeAssignment),
+    Assignment(GTAttributeAssignment),
     Arguments(Vec<GTAttributeValue>),
     Properties(Vec<GTAttributeProperty>),
 }

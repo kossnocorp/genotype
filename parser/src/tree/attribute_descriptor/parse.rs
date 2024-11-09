@@ -14,7 +14,7 @@ impl GTAttributeDescriptor {
         })?;
 
         match pair.as_rule() {
-            Rule::attribute_assignment => Ok(GTAttributeDescriptor::Assigment(
+            Rule::attribute_assignment => Ok(GTAttributeDescriptor::Assignment(
                 GTAttributeAssignment::parse(pair)?,
             )),
 
@@ -49,7 +49,7 @@ mod tests {
     fn test_parse_assignment() {
         let mut pairs = GenotypeParser::parse(Rule::attribute_descriptor, "= 42").unwrap();
         assert_eq!(
-            GTAttributeDescriptor::Assigment(GTAttributeAssignment::new(
+            GTAttributeDescriptor::Assignment(GTAttributeAssignment::new(
                 (0, 4).into(),
                 GTLiteral::Integer((2, 4).into(), 42).into()
             )),

@@ -9,7 +9,7 @@ impl GTTraverse for GTAttributeDescriptor {
         visitor.visit_attribute_descriptor(self);
 
         match self {
-            GTAttributeDescriptor::Assigment(assignment) => {
+            GTAttributeDescriptor::Assignment(assignment) => {
                 assignment.traverse(visitor);
             }
 
@@ -40,7 +40,7 @@ mod tests {
         let literal = GTLiteral::String((0, 0).into(), "answer".into());
         let value = GTAttributeValue::Literal(literal.clone());
         let assignment = GTAttributeAssignment::new((0, 0).into(), value.clone());
-        let mut descriptor = GTAttributeDescriptor::Assigment(assignment.clone());
+        let mut descriptor = GTAttributeDescriptor::Assignment(assignment.clone());
         descriptor.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,

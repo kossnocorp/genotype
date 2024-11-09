@@ -84,7 +84,7 @@ mod tests {
             GTAttribute::new(
                 (0, 14).into(),
                 GTAttributeName::new((2, 8).into(), "answer".into()).into(),
-                Some(GTAttributeDescriptor::Assigment(
+                Some(GTAttributeDescriptor::Assignment(
                     GTAttributeAssignment::new(
                         (9, 13).into(),
                         GTLiteral::Integer((11, 13).into(), 42).into()

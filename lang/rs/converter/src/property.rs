@@ -15,6 +15,7 @@ impl RSConvert<RSProperty> for GTProperty {
 
         RSProperty {
             doc: self.doc.as_ref().and_then(|doc| Some(doc.convert(context))),
+            attributes: vec![],
             name: self.name.convert(context),
             descriptor,
         }
@@ -45,6 +46,7 @@ mod tests {
             .convert(&mut RSConvertContext::default()),
             RSProperty {
                 doc: None,
+                attributes: vec![],
                 name: "name".into(),
                 descriptor: RSOption::new(RSPrimitive::String.into()).into(),
             }
@@ -68,6 +70,7 @@ mod tests {
             .convert(&mut context),
             RSProperty {
                 doc: None,
+                attributes: vec![],
                 name: "name".into(),
                 descriptor: RSOption::new(RSPrimitive::String.into()).into(),
             }

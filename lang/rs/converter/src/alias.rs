@@ -121,11 +121,13 @@ mod tests {
                 properties: vec![
                     RSProperty {
                         doc: None,
+                        attributes: vec![],
                         name: "title".into(),
                         descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                     },
                     RSProperty {
                         doc: None,
+                        attributes: vec![],
                         name: "author".into(),
                         descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                     }
@@ -192,6 +194,7 @@ mod tests {
                 extensions: vec![],
                 properties: vec![RSProperty {
                     doc: None,
+                    attributes: vec![],
                     name: "author".into(),
                     descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                 }],
@@ -303,7 +306,7 @@ mod tests {
                 attributes: vec![GTAttribute {
                     span: (0, 0).into(),
                     name: GTAttributeName::new((0, 0).into(), "discriminator".into()),
-                    descriptor: Some(GTAttributeDescriptor::Assigment(
+                    descriptor: Some(GTAttributeDescriptor::Assignment(
                         GTAttributeAssignment::new(
                             (0, 0).into(),
                             GTAttributeValue::Literal(GTLiteral::String(

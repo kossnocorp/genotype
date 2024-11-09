@@ -1430,7 +1430,7 @@ mod tests {
                             attributes: vec![GTAttribute {
                                 span: (130, 148).into(),
                                 name: GTAttributeName::new((132, 137).into(), "hello".into()),
-                                descriptor: Some(GTAttributeDescriptor::Assigment(
+                                descriptor: Some(GTAttributeDescriptor::Assignment(
                                     GTAttributeAssignment::new(
                                         (138, 147).into(),
                                         GTAttributeValue::Literal(GTLiteral::String(

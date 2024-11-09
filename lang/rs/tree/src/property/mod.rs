@@ -1,4 +1,4 @@
-use crate::{descriptor::RSDescriptor, key::RSKey, RSDoc};
+use crate::{descriptor::RSDescriptor, key::RSKey, RSAttribute, RSDoc};
 
 mod context;
 mod render;
@@ -6,7 +6,7 @@ mod render;
 #[derive(Debug, PartialEq, Clone)]
 pub struct RSProperty {
     pub doc: Option<RSDoc>,
-    // [TODO] Attributes
+    pub attributes: Vec<RSAttribute>,
     pub name: RSKey,
     pub descriptor: RSDescriptor,
 }
