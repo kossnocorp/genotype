@@ -17,8 +17,6 @@ impl RSConvert<RSDefinition> for GTAlias {
             }
 
             _ => {
-                context.create_references_scope();
-
                 let mut descriptor = self.descriptor.convert(context);
 
                 for attribute in self.attributes.iter() {
@@ -37,14 +35,11 @@ impl RSConvert<RSDefinition> for GTAlias {
                     }
                 }
 
-                let references = context.pop_references_scope();
-
                 RSDefinition::Alias(
                     RSAlias {
                         doc,
                         name,
                         descriptor,
-                        references,
                     }
                     .resolve(context),
                 )
@@ -76,7 +71,6 @@ mod tests {
                 doc: None,
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
-                references: vec![],
             }),
         );
     }
@@ -132,7 +126,6 @@ mod tests {
                         descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                     }
                 ],
-                references: vec![],
             }),
         );
     }
@@ -182,7 +175,6 @@ mod tests {
                     discriminator: None
                 }
                 .into(),
-                references: vec![RSIdentifier("BookObj".into()),],
             })
         );
         let hoisted = context.drain_hoisted();
@@ -198,7 +190,6 @@ mod tests {
                     name: "author".into(),
                     descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                 }],
-                references: vec![],
             })]
         );
     }
@@ -220,81 +211,12 @@ mod tests {
                 doc: None,
                 name: "Name".into(),
                 descriptor: RSPrimitive::String.into(),
-                references: vec![],
             })
         );
         assert_eq!(
             context.as_dependencies(),
             vec![(RSDependency::Typing, "TypeAlias".into()),]
         );
-    }
-
-    #[test]
-    fn test_forward_alias() {
-        let mut context = RSConvertContext::default();
-        assert_eq!(
-            GTAlias {
-                span: (0, 0).into(),
-                doc: None,
-                attributes: vec![],
-                name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GTPrimitive::String((0, 0).into()).into(),
-            }
-            .convert(&mut context),
-            RSDefinition::Alias(RSAlias {
-                doc: None,
-                name: "Name".into(),
-                descriptor: RSPrimitive::String.into(),
-                references: vec![],
-            })
-        );
-        assert!(context.is_forward_identifier(
-            &"Hello".into(),
-            &GTIdentifier::new((0, 0).into(), "Hello".into())
-        ));
-        assert!(!context.is_forward_identifier(
-            &"Name".into(),
-            &GTIdentifier::new((0, 0).into(), "Name".into())
-        ));
-    }
-
-    #[test]
-    fn test_forward_class() {
-        let mut context = RSConvertContext::default();
-        assert_eq!(
-            GTAlias {
-                span: (0, 0).into(),
-                doc: None,
-                attributes: vec![],
-                name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GTObject {
-                    name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Name".into())),
-                    span: (0, 0).into(),
-                    extensions: vec![],
-                    properties: vec![],
-                }
-                .into(),
-            }
-            .convert(&mut context),
-            RSDefinition::Class(
-                RSClass {
-                    doc: None,
-                    name: "Name".into(),
-                    extensions: vec![],
-                    properties: vec![],
-                    references: vec![],
-                }
-                .into()
-            )
-        );
-        assert!(context.is_forward_identifier(
-            &"Hello".into(),
-            &GTIdentifier::new((0, 0).into(), "Hello".into())
-        ));
-        assert!(!context.is_forward_identifier(
-            &"Name".into(),
-            &GTIdentifier::new((0, 0).into(), "Name".into())
-        ));
     }
 
     #[test]
@@ -337,7 +259,6 @@ mod tests {
                     discriminator: Some("type".into())
                 }
                 .into(),
-                references: vec![RSIdentifier("Reply".into()), RSIdentifier("DM".into()),],
             }),
         );
     }
@@ -357,7 +278,6 @@ mod tests {
                 doc: Some("Hello, world!".into()),
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
-                references: vec![],
             }),
         );
     }

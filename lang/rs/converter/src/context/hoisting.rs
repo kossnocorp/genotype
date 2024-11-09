@@ -12,7 +12,6 @@ impl RSConvertContext {
         let reference = RSReference::new(definition.name().clone());
         self.hoisted.push(definition);
         self.hoisting = false;
-        self.track_reference(&reference);
         reference
     }
 

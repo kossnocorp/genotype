@@ -5,8 +5,6 @@ use crate::{context::RSConvertContext, convert::RSConvert};
 
 impl RSConvert<RSClass> for GTObject {
     fn convert(&self, context: &mut RSConvertContext) -> RSClass {
-        context.create_references_scope();
-
         let name = match &self.name {
             GTObjectName::Named(identifier) => identifier.convert(context),
             GTObjectName::Alias(identifier, _) => identifier.convert(context),
@@ -17,14 +15,11 @@ impl RSConvert<RSClass> for GTObject {
         let extensions = self.extensions.iter().map(|e| e.convert(context)).collect();
         let properties = self.properties.iter().map(|p| p.convert(context)).collect();
 
-        let references = context.pop_references_scope();
-
         RSClass {
             doc,
             name,
             extensions,
             properties,
-            references,
         }
         .resolve(context)
     }
@@ -83,7 +78,6 @@ mod tests {
                         descriptor: RSOption::new(RSDescriptor::Primitive(RSPrimitive::Int)).into(),
                     }
                 ],
-                references: vec![],
             }
         );
     }
@@ -104,7 +98,6 @@ mod tests {
                 name: "Person".into(),
                 extensions: vec![],
                 properties: vec![],
-                references: vec![],
             }
         );
         assert_eq!(
@@ -130,7 +123,6 @@ mod tests {
                 name: "Person".into(),
                 extensions: vec![],
                 properties: vec![],
-                references: vec![],
             }
         );
     }

@@ -74,7 +74,6 @@ mod tests {
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![],
-                references: vec![],
             }
             .render(&rs_indent(), &Default::default()),
             r#"class Name(Model):
@@ -103,7 +102,6 @@ mod tests {
                         descriptor: RSDescriptor::Primitive(RSPrimitive::Int),
                     }
                 ],
-                references: vec![],
             }
             .render(&rs_indent(), &Default::default()),
             r#"class Name(Model):
@@ -133,7 +131,6 @@ mod tests {
                         descriptor: RSDescriptor::Primitive(RSPrimitive::Int),
                     }
                 ],
-                references: vec![],
             }
             .render(&rs_indent().increment(), &Default::default()),
             r#"    class Name(Model):
@@ -158,7 +155,6 @@ mod tests {
                     name: "name".into(),
                     descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                 }],
-                references: vec![],
             }
             .render(&rs_indent(), &Default::default()),
             r#"class Name(Hello, World, Model):
@@ -174,7 +170,6 @@ mod tests {
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![],
-                references: vec![],
             }
             .render(&rs_indent(), &Default::default()),
             r#"class Name(Model):
@@ -197,7 +192,6 @@ mod tests {
                     name: "name".into(),
                     descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                 }],
-                references: vec![],
             }
             .render(&rs_indent(), &Default::default()),
             r#"class Name(Model):

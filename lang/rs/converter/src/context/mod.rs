@@ -1,12 +1,10 @@
 use genotype_lang_rs_config::{RSLangConfig, RSVersion};
 use genotype_lang_rs_tree::*;
 use genotype_parser::{GTIdentifier, GTPath};
-use indexmap::IndexSet;
 
 use crate::resolve::RSConvertResolve;
 
 mod hoisting;
-mod references;
 
 pub struct RSConvertContext {
     resolve: RSConvertResolve,
@@ -19,7 +17,6 @@ pub struct RSConvertContext {
     hoisted: Vec<RSDefinition>,
     dependencies: Vec<(RSDependency, RSIdentifier)>,
     doc: Option<RSDoc>,
-    references: Vec<IndexSet<RSIdentifier>>,
 }
 
 impl RSContext for RSConvertContext {
@@ -48,7 +45,6 @@ impl RSConvertContext {
             hoisted: vec![],
             dependencies: vec![],
             doc: None,
-            references: vec![],
         }
     }
 
@@ -89,22 +85,6 @@ impl RSConvertContext {
         } else {
             self.defined.push(identifier.clone());
         }
-    }
-
-    pub fn is_forward_identifier(
-        &self,
-        identifier: &RSIdentifier,
-        original: &GTIdentifier,
-    ) -> bool {
-        let is_defined = self
-            .resolve
-            .imported
-            .iter()
-            .find(|identifier| identifier.1 == original.1)
-            .is_some()
-            || self.defined.contains(identifier)
-            || (self.hoisting && self.hoist_defined.contains(identifier));
-        !is_defined
     }
 
     pub fn push_import(&mut self, import: RSImport) {
@@ -168,7 +148,6 @@ mod tests {
                 doc: None,
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
-                references: vec![],
             })
         });
         let hoisted = context.drain_hoisted();
@@ -178,7 +157,6 @@ mod tests {
                 doc: None,
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
-                references: vec![],
             })],
         );
     }
@@ -188,41 +166,5 @@ mod tests {
         let mut context = RSConvertContext::default();
         context.push_defined(&"Name".into());
         assert_eq!(context.defined, vec!["Name".into()]);
-    }
-
-    #[test]
-    fn test_is_forward() {
-        let mut context = RSConvertContext::default();
-        context.push_defined(&"Name".into());
-        assert_eq!(
-            context.is_forward_identifier(
-                &"Name".into(),
-                &GTIdentifier::new((0, 0).into(), "Name".into())
-            ),
-            false
-        );
-        assert_eq!(
-            context.is_forward_identifier(
-                &"Other".into(),
-                &GTIdentifier::new((0, 0).into(), "Name".into())
-            ),
-            true
-        );
-    }
-
-    #[test]
-    fn test_is_forward_resolve() {
-        let mut resolve = RSConvertResolve::default();
-        resolve
-            .imported
-            .insert(GTIdentifier((0, 0).into(), "Name".into()));
-        let context = RSConvertContext::new(resolve, Default::default());
-        assert_eq!(
-            context.is_forward_identifier(
-                &"Other".into(),
-                &GTIdentifier::new((0, 0).into(), "Name".into())
-            ),
-            false
-        );
     }
 }

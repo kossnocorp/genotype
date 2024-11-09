@@ -412,7 +412,6 @@ dependencies = [
  "genotype_lang_rs_tree",
  "genotype_parser",
  "heck",
- "indexmap",
  "miette",
  "pretty_assertions",
 ]

@@ -22,13 +22,6 @@ impl RSDefinition {
             Self::Class(class) => &class.doc,
         }
     }
-
-    pub fn references(&self) -> Vec<&RSIdentifier> {
-        match self {
-            Self::Alias(alias) => alias.references.iter().collect(),
-            Self::Class(class) => class.references.iter().collect(),
-        }
-    }
 }
 
 impl From<RSClass> for RSDefinition {
@@ -49,7 +42,6 @@ mod tests {
                 doc: None,
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
-                references: vec![],
             })
             .name(),
             "Name".into(),
@@ -61,7 +53,6 @@ mod tests {
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![],
-                references: vec![],
             })
             .name(),
             "Name".into(),
@@ -75,7 +66,6 @@ mod tests {
                 doc: Some("Hello, world!".into()),
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
-                references: vec![],
             })
             .doc(),
             Some("Hello, world!".into()),
@@ -87,7 +77,6 @@ mod tests {
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![],
-                references: vec![],
             })
             .doc(),
             Some("Hello, world!".into()),

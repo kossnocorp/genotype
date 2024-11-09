@@ -76,7 +76,6 @@ mod tests {
                         doc: None,
                         name: "Name".into(),
                         descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                        references: vec![],
                     }),
                     RSDefinition::Class(RSClass {
                         doc: None,
@@ -96,7 +95,6 @@ mod tests {
                                 descriptor: RSDescriptor::Primitive(RSPrimitive::Int),
                             }
                         ],
-                        references: vec![],
                     }),
                 ]
             }
@@ -129,7 +127,6 @@ class Name(Model):
                     doc: None,
                     name: "Name".into(),
                     descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                    references: vec![],
                 })]
             }
             .render(&rs_indent(), &Default::default()),

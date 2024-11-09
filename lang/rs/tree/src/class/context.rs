@@ -26,7 +26,6 @@ mod tests {
             name: "Foo".into(),
             extensions: vec![],
             properties: vec![],
-            references: vec![],
         };
         alias.resolve(&mut context);
         assert_eq!(

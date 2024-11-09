@@ -8,5 +8,4 @@ pub struct RSAlias {
     pub doc: Option<RSDoc>,
     pub name: RSIdentifier,
     pub descriptor: RSDescriptor,
-    pub references: Vec<RSIdentifier>,
 }

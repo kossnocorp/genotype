@@ -40,7 +40,6 @@ mod tests {
                 doc: None,
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                references: vec![],
             }
             .render(&rs_indent(), &Default::default()),
             "type Name = String"
@@ -54,7 +53,6 @@ mod tests {
                 doc: None,
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                references: vec![],
             }
             .render(&rs_indent(), &RSLangConfig::new(RSVersion::Legacy)),
             "Name : TypeAlias = String"
@@ -68,7 +66,6 @@ mod tests {
                 doc: Some("Hello, world!".into()),
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                references: vec![],
             }
             .render(&rs_indent(), &Default::default()),
             r#"type Name = String

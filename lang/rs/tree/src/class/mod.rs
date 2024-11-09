@@ -9,5 +9,4 @@ pub struct RSClass {
     pub name: RSIdentifier,
     pub extensions: Vec<RSExtension>,
     pub properties: Vec<RSProperty>,
-    pub references: Vec<RSIdentifier>,
 }

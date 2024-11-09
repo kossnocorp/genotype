@@ -30,7 +30,6 @@ mod tests {
             doc: None,
             name: "Foo".into(),
             descriptor: RSPrimitive::String.into(),
-            references: vec![],
         };
         alias.resolve(&mut context);
         assert_eq!(context.as_imports(), vec![]);
@@ -43,7 +42,6 @@ mod tests {
             doc: None,
             name: "Foo".into(),
             descriptor: RSPrimitive::String.into(),
-            references: vec![],
         };
         alias.resolve(&mut context);
         assert_eq!(

@@ -12,7 +12,6 @@ impl RSConvert<RSDescriptor> for GTDescriptor {
 
             GTDescriptor::InlineImport(import) => {
                 let reference = import.convert(context);
-                context.track_reference(&reference);
                 reference.into()
             }
 
@@ -28,7 +27,6 @@ impl RSConvert<RSDescriptor> for GTDescriptor {
 
             GTDescriptor::Reference(name) => {
                 let reference = name.convert(context);
-                context.track_reference(&reference);
                 reference.into()
             }
 
@@ -70,7 +68,6 @@ mod tests {
                 doc: None,
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
-                references: vec![],
             })]
         );
     }
@@ -161,7 +158,6 @@ mod tests {
                         descriptor: RSOption::new(RSPrimitive::Int.into()).into(),
                     }
                 ],
-                references: vec![],
             })]
         );
     }

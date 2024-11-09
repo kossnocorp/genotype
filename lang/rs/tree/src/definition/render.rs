@@ -27,7 +27,6 @@ mod tests {
                 doc: None,
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                references: vec![],
             })
             .render(&rs_indent(), &Default::default()),
             "type Name = String"
@@ -55,7 +54,6 @@ mod tests {
                         descriptor: RSDescriptor::Primitive(RSPrimitive::Int),
                     }
                 ],
-                references: vec![],
             })
             .render(&rs_indent(), &Default::default()),
             r#"class Name(Model):

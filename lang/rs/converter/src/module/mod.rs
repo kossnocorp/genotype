@@ -4,8 +4,6 @@ use genotype_parser::tree::module::GTModule;
 
 use crate::{context::RSConvertContext, convert::RSConvert, resolve::RSConvertResolve};
 
-mod ordering;
-
 #[derive(Debug, PartialEq, Clone)]
 pub struct RSConvertModule(pub RSModule);
 
@@ -32,7 +30,7 @@ impl RSConvertModule {
 
         let imports = context.drain_imports();
 
-        let definitions = Self::sort_definitions(context.drain_definitions());
+        let definitions = context.drain_definitions();
 
         let module = RSModule {
             doc,
@@ -236,7 +234,17 @@ mod tests {
                                 descriptor: RSOption::new(RSPrimitive::Int.into()).into(),
                             }
                         ],
-                        references: vec![],
+                    }),
+                    RSDefinition::Class(RSClass {
+                        doc: None,
+                        name: "Order".into(),
+                        extensions: vec![],
+                        properties: vec![RSProperty {
+                            doc: None,
+                            attributes: vec![],
+                            name: "book".into(),
+                            descriptor: RSReference::new("Book".into()).into(),
+                        }],
                     }),
                     RSDefinition::Class(RSClass {
                         doc: None,
@@ -256,25 +264,11 @@ mod tests {
                                 descriptor: RSReference::new("Author".into()).into(),
                             }
                         ],
-                        references: vec![RSIdentifier("Author".into()),],
-                    }),
-                    RSDefinition::Class(RSClass {
-                        doc: None,
-                        name: "Order".into(),
-                        extensions: vec![],
-                        properties: vec![RSProperty {
-                            doc: None,
-                            attributes: vec![],
-                            name: "book".into(),
-                            descriptor: RSReference::new("Book".into()).into(),
-                        }],
-                        references: vec![RSIdentifier("Book".into()),],
                     }),
                     RSDefinition::Alias(RSAlias {
                         doc: None,
                         name: "Name".into(),
                         descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                        references: vec![],
                     }),
                 ]
             })
@@ -298,132 +292,6 @@ mod tests {
                 doc: Some(RSDoc::new("Hello, world!", true)),
                 imports: vec![],
                 definitions: vec![]
-            })
-        );
-    }
-
-    #[test]
-    fn test_convert_reorder() {
-        assert_eq!(
-            RSConvertModule::convert(
-                &GTModule {
-                    source_code: NamedSource::new("module.type", "".into()),
-                    doc: None,
-                    imports: vec![],
-                    aliases: vec![
-                        GTAlias {
-                            span: (0, 0).into(),
-                            doc: None,
-                            attributes: vec![],
-                            name: GTIdentifier::new((0, 0).into(), "Message".into()),
-                            descriptor: GTUnion {
-                                span: (0, 0).into(),
-                                descriptors: vec![
-                                    GTReference(
-                                        (0, 0).into(),
-                                        GTIdentifier((0, 0).into(), "DM".into())
-                                    )
-                                    .into(),
-                                    GTReference(
-                                        (0, 0).into(),
-                                        GTIdentifier((0, 0).into(), "Comment".into())
-                                    )
-                                    .into(),
-                                ],
-                            }
-                            .into(),
-                        },
-                        GTAlias {
-                            span: (0, 0).into(),
-                            doc: None,
-                            attributes: vec![],
-                            name: GTIdentifier::new((0, 0).into(), "DM".into()),
-                            descriptor: GTObject {
-                                span: (0, 0).into(),
-                                name: GTIdentifier::new((0, 0).into(), "DM".into()).into(),
-                                extensions: vec![],
-                                properties: vec![GTProperty {
-                                    span: (0, 0).into(),
-                                    doc: None,
-                                    attributes: vec![],
-                                    name: GTKey::new((0, 0).into(), "message".into()),
-                                    descriptor: GTPrimitive::String((0, 0).into()).into(),
-                                    required: true,
-                                }],
-                            }
-                            .into(),
-                        },
-                        GTAlias {
-                            span: (0, 0).into(),
-                            doc: None,
-                            attributes: vec![],
-                            name: GTIdentifier::new((0, 0).into(), "Comment".into()),
-                            descriptor: GTObject {
-                                span: (0, 0).into(),
-                                name: GTIdentifier::new((0, 0).into(), "Comment".into()).into(),
-                                extensions: vec![],
-                                properties: vec![GTProperty {
-                                    span: (0, 0).into(),
-                                    doc: None,
-                                    attributes: vec![],
-                                    name: GTKey::new((0, 0).into(), "message".into()),
-                                    descriptor: GTPrimitive::String((0, 0).into()).into(),
-                                    required: true,
-                                }],
-                            }
-                            .into(),
-                        }
-                    ],
-                },
-                &Default::default(),
-                &Default::default()
-            ),
-            RSConvertModule(RSModule {
-                doc: None,
-                imports: vec![RSImport {
-                    path: "genotype".into(),
-                    reference: RSImportReference::Named(vec![RSImportName::Name("Model".into())]),
-                    dependency: RSDependency::Runtime,
-                }],
-                definitions: vec![
-                    RSDefinition::Class(RSClass {
-                        doc: None,
-                        name: "DM".into(),
-                        extensions: vec![],
-                        properties: vec![RSProperty {
-                            doc: None,
-                            attributes: vec![],
-                            name: "message".into(),
-                            descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                        }],
-                        references: vec![],
-                    }),
-                    RSDefinition::Class(RSClass {
-                        doc: None,
-                        name: "Comment".into(),
-                        extensions: vec![],
-                        properties: vec![RSProperty {
-                            doc: None,
-                            attributes: vec![],
-                            name: "message".into(),
-                            descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                        }],
-                        references: vec![],
-                    }),
-                    RSDefinition::Alias(RSAlias {
-                        doc: None,
-                        name: "Message".into(),
-                        descriptor: RSUnion {
-                            descriptors: vec![
-                                RSReference::new("DM".into()).into(),
-                                RSReference::new("Comment".into()).into()
-                            ],
-                            discriminator: None,
-                        }
-                        .into(),
-                        references: vec![RSIdentifier("DM".into()), RSIdentifier("Comment".into()),],
-                    }),
-                ]
             })
         );
     }
