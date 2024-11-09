@@ -103,7 +103,10 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![(RSDependency::Local(".path.to.module".into()), "Name".into()),]
+            vec![(
+                RSDependency::Local("self::path::to::module".into()),
+                "Name".into()
+            ),]
         );
     }
 

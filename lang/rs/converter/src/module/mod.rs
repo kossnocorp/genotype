@@ -197,17 +197,17 @@ mod tests {
                 doc: None,
                 imports: vec![
                     RSImport {
-                        path: ".path.to.module".into(),
+                        path: "self::path::to::module".into(),
                         reference: RSImportReference::Default(Some("module".into())),
-                        dependency: RSDependency::Local(".path.to.module".into()),
+                        dependency: RSDependency::Local("self::path::to::module".into()),
                     },
                     RSImport {
-                        path: ".path.to.module".into(),
+                        path: "self::path::to::module".into(),
                         reference: RSImportReference::Named(vec![
                             RSImportName::Name("Name".into()),
                             RSImportName::Alias("Name".into(), "Alias".into())
                         ]),
-                        dependency: RSDependency::Local(".path.to.module".into()),
+                        dependency: RSDependency::Local("self::path::to::module".into()),
                     },
                     RSImport {
                         path: "genotype".into(),

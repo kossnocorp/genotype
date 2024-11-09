@@ -4,9 +4,9 @@ use genotype_parser::tree::path::GTPath;
 use crate::{context::RSConvertContext, convert::RSConvert};
 
 pub fn rs_parse_module_path(path: String) -> String {
-    path.replace("../", "..")
-        .replace("./", ".")
-        .replace("/", ".")
+    path.replace("../", "super::")
+        .replace("./", "self::")
+        .replace("/", "::")
 }
 
 impl RSConvert<RSPath> for GTPath {
@@ -26,7 +26,7 @@ mod tests {
     #[test]
     fn test_convert_base() {
         assert_eq!(
-            RSPath(".path.to.module".into()),
+            RSPath("self::path::to::module".into()),
             GTPath::parse((0, 0).into(), "./path/to/module")
                 .unwrap()
                 .convert(&mut RSConvertContext::default()),
@@ -36,7 +36,7 @@ mod tests {
     #[test]
     fn test_convert_absolute() {
         assert_eq!(
-            RSPath("module.path".into()),
+            RSPath("module::path".into()),
             GTPath::parse((0, 0).into(), "module/path")
                 .unwrap()
                 .convert(&mut RSConvertContext::default()),
@@ -46,7 +46,7 @@ mod tests {
     #[test]
     fn test_convert_up() {
         assert_eq!(
-            RSPath("..path.to.module".into()),
+            RSPath("super::path::to::module".into()),
             GTPath::parse((0, 0).into(), "../path/to/module")
                 .unwrap()
                 .convert(&mut RSConvertContext::default()),
@@ -62,7 +62,7 @@ mod tests {
         );
         let mut context = RSConvertContext::new(resolve, Default::default());
         assert_eq!(
-            RSPath(".path.to.another.module".into()),
+            RSPath("self::path::to::another::module".into()),
             GTPath::parse((0, 0).into(), "./path/to/module")
                 .unwrap()
                 .convert(&mut context),

@@ -60,9 +60,9 @@ mod tests {
             }
             .convert(&mut context),
             RSImport {
-                path: ".path.to.module".into(),
+                path: "self::path::to::module".into(),
                 reference: RSImportReference::Default(Some("module".into())),
-                dependency: RSDependency::Local(".path.to.module".into())
+                dependency: RSDependency::Local("self::path::to::module".into())
             }
         );
     }
@@ -90,12 +90,12 @@ mod tests {
             }
             .convert(&mut RSConvertContext::default()),
             RSImport {
-                path: ".path.to.module".into(),
+                path: "self::path::to::module".into(),
                 reference: RSImportReference::Named(vec![
                     RSImportName::Name("Name".into()),
                     RSImportName::Alias("Name".into(), "Alias".into())
                 ]),
-                dependency: RSDependency::Local(".path.to.module".into())
+                dependency: RSDependency::Local("self::path::to::module".into())
             }
         );
     }
@@ -110,9 +110,9 @@ mod tests {
             }
             .convert(&mut RSConvertContext::default()),
             RSImport {
-                path: ".path.to.module".into(),
+                path: "self::path::to::module".into(),
                 reference: RSImportReference::Named(vec![RSImportName::Name("Name".into())]),
-                dependency: RSDependency::Local(".path.to.module".into())
+                dependency: RSDependency::Local("self::path::to::module".into())
             }
         );
     }
