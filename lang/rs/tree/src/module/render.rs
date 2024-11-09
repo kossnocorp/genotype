@@ -119,7 +119,7 @@ class Name(Model):
     fn test_render_doc() {
         assert_eq!(
             RSModule {
-                doc: Some(RSDoc("Hello, world!".into())),
+                doc: Some(RSDoc::new("Hello, world!", true)),
                 imports: vec![RSImport {
                     path: ".path.to.module".into(),
                     reference: RSImportReference::Default(Some("name".into())),
@@ -133,7 +133,7 @@ class Name(Model):
                 })]
             }
             .render(&rs_indent(), &Default::default()),
-            r#""""Hello, world!"""
+            r#"//! Hello, world!
 
 
 import .path.to.module as name

@@ -116,7 +116,7 @@ mod tests {
     #[test]
     fn test_convert_doc() {
         let mut context = RSConvertContext::default();
-        context.provide_doc(Some(RSDoc("Hello, world!".into())));
+        context.provide_doc(Some("Hello, world!".into()));
         assert_eq!(
             GTObject {
                 span: (0, 0).into(),
@@ -126,7 +126,7 @@ mod tests {
             }
             .convert(&mut context),
             RSClass {
-                doc: Some(RSDoc("Hello, world!".into())),
+                doc: Some("Hello, world!".into()),
                 name: "Person".into(),
                 extensions: vec![],
                 properties: vec![],

@@ -10,7 +10,12 @@ impl RSRender for RSProperty {
         let descriptor = self.descriptor.render(indent, config);
 
         format!(
-            "{}{}{}: {}{}",
+            "{}{}{}{}: {}",
+            if let Some(doc) = &self.doc {
+                format!("{}\n", doc.render(indent))
+            } else {
+                "".into()
+            },
             if self.attributes.len() > 0 {
                 let attributes = self
                     .attributes
@@ -25,11 +30,6 @@ impl RSRender for RSProperty {
             indent.string,
             self.name.render(indent),
             descriptor,
-            if let Some(doc) = &self.doc {
-                format!("\n{}", doc.render(indent))
-            } else {
-                "".into()
-            }
         )
     }
 }
@@ -96,14 +96,25 @@ mod tests {
     fn test_render_doc() {
         assert_eq!(
             RSProperty {
-                doc: Some(RSDoc("Hello, world!".into())),
+                doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
             .render(&rs_indent(), &Default::default()),
-            r#"name: str
-"""Hello, world!""""#
+            r#"/// Hello, world!
+name: str"#
+        );
+        assert_eq!(
+            RSProperty {
+                doc: Some("Hello, world!".into()),
+                attributes: vec![],
+                name: "name".into(),
+                descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+            }
+            .render(&rs_indent().increment(), &Default::default()),
+            r#"    /// Hello, world!
+    name: str"#
         );
     }
 
@@ -129,6 +140,18 @@ name: str"
             }
             .render(&rs_indent().increment(), &Default::default()),
             "    #[derive(Clone)]
+    name: str"
+        );
+        assert_eq!(
+            RSProperty {
+                doc: Some("Hello, world!".into()),
+                attributes: vec![RSAttribute("derive(Clone)".into())],
+                name: "name".into(),
+                descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+            }
+            .render(&rs_indent().increment(), &Default::default()),
+            "    /// Hello, world!
+    #[derive(Clone)]
     name: str"
         );
     }

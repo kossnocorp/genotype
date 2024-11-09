@@ -14,7 +14,11 @@ impl RSConvertModule {
         // [TODO] Get rid of unnecessary clone
         let mut context = RSConvertContext::new(resolve.clone(), config.clone());
 
-        let doc = module.doc.as_ref().map(|doc| doc.convert(&mut context));
+        let doc = module.doc.as_ref().map(|doc| {
+            let mut doc = doc.convert(&mut context);
+            doc.1 = true;
+            doc
+        });
 
         for import in &module.imports {
             let import = import.convert(&mut context);
@@ -291,7 +295,7 @@ mod tests {
                 &Default::default()
             ),
             RSConvertModule(RSModule {
-                doc: Some(RSDoc("Hello, world!".into())),
+                doc: Some(RSDoc::new("Hello, world!", true)),
                 imports: vec![],
                 definitions: vec![]
             })

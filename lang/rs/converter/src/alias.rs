@@ -354,7 +354,7 @@ mod tests {
             }
             .convert(&mut RSConvertContext::default()),
             RSDefinition::Alias(RSAlias {
-                doc: Some(RSDoc("Hello, world!".into())),
+                doc: Some("Hello, world!".into()),
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
                 references: vec![],

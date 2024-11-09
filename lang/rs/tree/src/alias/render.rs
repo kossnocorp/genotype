@@ -65,14 +65,14 @@ mod tests {
     fn test_render_doc() {
         assert_eq!(
             RSAlias {
-                doc: Some(RSDoc("Hello, world!".into())),
+                doc: Some("Hello, world!".into()),
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                 references: vec![],
             }
             .render(&rs_indent(), &Default::default()),
             r#"type Name = str
-"""Hello, world!""""#
+/// Hello, world!"#
         );
     }
 }

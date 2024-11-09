@@ -5,7 +5,10 @@ use crate::{context::RSConvertContext, convert::RSConvert};
 
 impl RSConvert<RSDoc> for GTDoc {
     fn convert(&self, _context: &mut RSConvertContext) -> RSDoc {
-        RSDoc(self.1.clone())
+        RSDoc(
+            self.1.clone(),
+            false, // It is assigned by module converter
+        )
     }
 }
 
@@ -18,7 +21,7 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_eq!(
-            RSDoc("Hello, world!".into()),
+            RSDoc::new("Hello, world!", false),
             GTDoc((0, 0).into(), "Hello, world!".into()).convert(&mut RSConvertContext::default()),
         );
     }

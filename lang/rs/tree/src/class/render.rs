@@ -170,7 +170,7 @@ mod tests {
     fn test_render_doc_empty() {
         assert_eq!(
             RSClass {
-                doc: Some(RSDoc("Hello, world!".into())),
+                doc: Some("Hello, world!".into()),
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![],
@@ -178,7 +178,7 @@ mod tests {
             }
             .render(&rs_indent(), &Default::default()),
             r#"class Name(Model):
-    """Hello, world!"""
+    /// Hello, world!
 
     pass"#
         );
@@ -188,7 +188,7 @@ mod tests {
     fn test_render_doc_properties() {
         assert_eq!(
             RSClass {
-                doc: Some(RSDoc("Hello, world!".into())),
+                doc: Some("Hello, world!".into()),
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![RSProperty {
@@ -201,7 +201,7 @@ mod tests {
             }
             .render(&rs_indent(), &Default::default()),
             r#"class Name(Model):
-    """Hello, world!"""
+    /// Hello, world!
 
     name: str"#
         );

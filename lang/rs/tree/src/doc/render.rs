@@ -4,19 +4,18 @@ use super::RSDoc;
 
 impl GTRender for RSDoc {
     fn render(&self, indent: &GTIndent) -> String {
-        let lines = self.0.split("\n").enumerate();
-        lines
-            .map(|(index, line)| {
+        self.0
+            .split("\n")
+            .map(|line| {
                 format!(
-                    "{}{}{}",
+                    r#"{}{} {}"#,
                     indent.string,
-                    if index == 0 { r#"""""# } else { "" },
+                    if self.1 { "//!" } else { "///" },
                     line
                 )
             })
             .collect::<Vec<_>>()
             .join("\n")
-            + r#"""""#
     }
 }
 
@@ -30,40 +29,48 @@ mod tests {
     #[test]
     fn test_render_simple() {
         assert_eq!(
-            RSDoc("Hello, world!".into()).render(&rs_indent()),
-            r#""""Hello, world!""""#
+            RSDoc::new("Hello, world!", false).render(&rs_indent()),
+            r#"/// Hello, world!"#
+        );
+    }
+
+    #[test]
+    fn test_render_module() {
+        assert_eq!(
+            RSDoc::new("Hello, world!", true).render(&rs_indent()),
+            r#"//! Hello, world!"#
         );
     }
 
     #[test]
     fn test_render_multiline() {
         assert_eq!(
-            RSDoc(
+            RSDoc::new(
                 r#"Hello,
 cruel
-world!"#
-                    .into()
+world!"#,
+                false
             )
             .render(&rs_indent()),
-            r#""""Hello,
-cruel
-world!""""#
+            r#"/// Hello,
+/// cruel
+/// world!"#
         );
     }
 
     #[test]
     fn test_render_indent() {
         assert_eq!(
-            RSDoc(
+            RSDoc::new(
                 r#"Hello,
 cruel
-world!"#
-                    .into()
+world!"#,
+                false
             )
             .render(&rs_indent().increment()),
-            r#"    """Hello,
-    cruel
-    world!""""#
+            r#"    /// Hello,
+    /// cruel
+    /// world!"#
         );
     }
 }

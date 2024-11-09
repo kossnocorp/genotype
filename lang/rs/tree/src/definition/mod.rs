@@ -72,25 +72,25 @@ mod tests {
     fn test_doc() {
         assert_eq!(
             *RSDefinition::Alias(RSAlias {
-                doc: Some(RSDoc("Hello, world!".into())),
+                doc: Some("Hello, world!".into()),
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
                 references: vec![],
             })
             .doc(),
-            Some(RSDoc("Hello, world!".into())),
+            Some("Hello, world!".into()),
         );
 
         assert_eq!(
             *RSDefinition::Class(RSClass {
-                doc: Some(RSDoc("Hello, world!".into())),
+                doc: Some("Hello, world!".into()),
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![],
                 references: vec![],
             })
             .doc(),
-            Some(RSDoc("Hello, world!".into())),
+            Some("Hello, world!".into()),
         );
     }
 }
