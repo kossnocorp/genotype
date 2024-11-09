@@ -196,7 +196,7 @@ mod tests {
                 imports: vec![
                     RSImport {
                         path: "self::path::to::module".into(),
-                        reference: RSImportReference::Default(Some("module".into())),
+                        reference: RSImportReference::Module,
                         dependency: RSDependency::Local("self::path::to::module".into()),
                     },
                     RSImport {

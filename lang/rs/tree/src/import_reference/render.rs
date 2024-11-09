@@ -5,21 +5,18 @@ use super::RSImportReference;
 impl GTRender for RSImportReference {
     fn render(&self, indent: &GTIndent) -> String {
         match self {
-            RSImportReference::Default(name) => {
-                if let Some(name) = name {
-                    name.render(indent)
-                } else {
-                    "".into()
-                }
-            }
+            RSImportReference::Module => "".into(),
 
             RSImportReference::Glob => "*".into(),
 
-            RSImportReference::Named(names) => names
-                .iter()
-                .map(|name| name.render(indent))
-                .collect::<Vec<String>>()
-                .join(", "),
+            RSImportReference::Named(names) => {
+                let names = names
+                    .iter()
+                    .map(|name| name.render(indent))
+                    .collect::<Vec<String>>()
+                    .join(", ");
+                format!("{{{}}}", names)
+            }
         }
     }
 }
@@ -30,12 +27,8 @@ mod tests {
     use crate::*;
 
     #[test]
-    fn test_render_default() {
-        assert_eq!(
-            RSImportReference::Default(Some("Name".into())).render(&rs_indent()),
-            "Name"
-        );
-        assert_eq!(RSImportReference::Default(None).render(&rs_indent()), "");
+    fn test_render_module() {
+        assert_eq!(RSImportReference::Module.render(&rs_indent()), "");
     }
 
     #[test]
@@ -51,7 +44,7 @@ mod tests {
                 RSImportName::Alias("Name".into(), "Alias".into()),
             ])
             .render(&rs_indent()),
-            "Name, Name as Alias"
+            "{Name, Name as Alias}"
         );
     }
 }

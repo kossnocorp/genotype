@@ -6,7 +6,7 @@ use crate::{context::RSConvertContext, convert::RSConvert};
 impl RSConvert<RSImport> for GTImport {
     fn convert(&self, context: &mut RSConvertContext) -> RSImport {
         let reference = match &self.reference {
-            GTImportReference::Glob(_) => RSImportReference::Default(Some(module_name(&self.path))),
+            GTImportReference::Glob(_) => RSImportReference::Module,
 
             GTImportReference::Names(_, names) => RSImportReference::Named(
                 names
@@ -28,11 +28,6 @@ impl RSConvert<RSImport> for GTImport {
             dependency: RSDependency::Local(path),
         }
     }
-}
-
-fn module_name(path: &GTPath) -> RSIdentifier {
-    let str = path.as_str();
-    str.split("/").last().unwrap_or(str).into()
 }
 
 #[cfg(test)]
@@ -61,7 +56,7 @@ mod tests {
             .convert(&mut context),
             RSImport {
                 path: "self::path::to::module".into(),
-                reference: RSImportReference::Default(Some("module".into())),
+                reference: RSImportReference::Module,
                 dependency: RSDependency::Local("self::path::to::module".into())
             }
         );

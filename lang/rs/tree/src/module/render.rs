@@ -58,17 +58,17 @@ mod tests {
                 doc: None,
                 imports: vec![
                     RSImport {
-                        path: ".path.to.module".into(),
-                        reference: RSImportReference::Default(Some("name".into())),
-                        dependency: RSDependency::Local(".path.to.module".into())
+                        path: "self::path::to::module".into(),
+                        reference: RSImportReference::Module,
+                        dependency: RSDependency::Local("self::path::to::module".into())
                     },
                     RSImport {
-                        path: ".path.to.module".into(),
+                        path: "self::path::to::module".into(),
                         reference: RSImportReference::Named(vec![
                             RSImportName::Name("Name".into()),
                             RSImportName::Alias("Name".into(), "Alias".into()),
                         ]),
-                        dependency: RSDependency::Local(".path.to.module".into())
+                        dependency: RSDependency::Local("self::path::to::module".into())
                     }
                 ],
                 definitions: vec![
@@ -99,8 +99,8 @@ mod tests {
                 ]
             }
             .render(&rs_indent(), &Default::default()),
-            r#"import .path.to.module as name
-from .path.to.module import Name, Name as Alias
+            r#"use self::path::to::module;
+use self::path::to::module::{Name, Name as Alias};
 
 
 type Name = String;
@@ -120,9 +120,9 @@ struct Name {
             RSModule {
                 doc: Some(RSDoc::new("Hello, world!", true)),
                 imports: vec![RSImport {
-                    path: ".path.to.module".into(),
-                    reference: RSImportReference::Default(Some("name".into())),
-                    dependency: RSDependency::Local(".path.to.module".into())
+                    path: "self::path::to::module".into(),
+                    reference: RSImportReference::Module,
+                    dependency: RSDependency::Local("self::path::to::module".into())
                 },],
                 definitions: vec![RSDefinition::Alias(RSAlias {
                     doc: None,
@@ -134,7 +134,7 @@ struct Name {
             r#"//! Hello, world!
 
 
-import .path.to.module as name
+use self::path::to::module;
 
 
 type Name = String;

@@ -10,17 +10,8 @@ impl GTRender for RSImport {
         let reference = self.reference.render(indent);
 
         match self.reference {
-            RSImportReference::Default(_) => {
-                if reference.is_empty() {
-                    format!(r#"import {}"#, path)
-                } else {
-                    format!(r#"import {} as {}"#, path, reference)
-                }
-            }
-
-            _ => {
-                format!(r#"from {} import {}"#, path, reference)
-            }
+            RSImportReference::Module => format!(r#"use {};"#, path),
+            _ => format!(r#"use {}::{};"#, path, reference),
         }
     }
 }
@@ -33,24 +24,15 @@ mod tests {
     use crate::*;
 
     #[test]
-    fn test_render_default() {
+    fn test_render_module() {
         assert_eq!(
             RSImport {
-                path: ".path.to.module".into(),
-                reference: RSImportReference::Default(Some("name".into())),
-                dependency: RSDependency::Local(".path.to.module".into())
+                path: "self::path::to::module".into(),
+                reference: RSImportReference::Module,
+                dependency: RSDependency::Local("self::path::to::module".into())
             }
             .render(&rs_indent()),
-            r#"import .path.to.module as name"#
-        );
-        assert_eq!(
-            RSImport {
-                path: ".path.to.module".into(),
-                reference: RSImportReference::Default(None),
-                dependency: RSDependency::Local(".path.to.module".into())
-            }
-            .render(&rs_indent()),
-            r#"import .path.to.module"#
+            r#"use self::path::to::module;"#
         );
     }
 
@@ -58,12 +40,12 @@ mod tests {
     fn test_render_glob() {
         assert_eq!(
             RSImport {
-                path: ".path.to.module".into(),
+                path: "self::path::to::module".into(),
                 reference: RSImportReference::Glob,
-                dependency: RSDependency::Local(".path.to.module".into())
+                dependency: RSDependency::Local("self::path::to::module".into())
             }
             .render(&rs_indent()),
-            r#"from .path.to.module import *"#
+            r#"use self::path::to::module::*;"#
         );
     }
 
@@ -71,15 +53,15 @@ mod tests {
     fn test_render_named() {
         assert_eq!(
             RSImport {
-                path: ".path.to.module".into(),
+                path: "self::path::to::module".into(),
                 reference: RSImportReference::Named(vec![
                     RSImportName::Name("Name".into()),
                     RSImportName::Alias("Name".into(), "Alias".into()),
                 ]),
-                dependency: RSDependency::Local(".path.to.module".into())
+                dependency: RSDependency::Local("self::path::to::module".into())
             }
             .render(&rs_indent()),
-            r#"from .path.to.module import Name, Name as Alias"#
+            r#"use self::path::to::module::{Name, Name as Alias};"#
         );
     }
 }
