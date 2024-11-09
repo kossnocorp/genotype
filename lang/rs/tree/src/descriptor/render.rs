@@ -32,7 +32,7 @@ mod tests {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Int)
             }))
             .render(&rs_indent(), &Default::default()),
-            "list[int]"
+            "list[isize]"
         );
     }
 
@@ -44,7 +44,7 @@ mod tests {
         );
         assert_eq!(
             RSDescriptor::Primitive(RSPrimitive::String).render(&rs_indent(), &Default::default()),
-            "str"
+            "String"
         );
     }
 
@@ -67,7 +67,7 @@ mod tests {
                 ]
             })
             .render(&rs_indent(), &Default::default()),
-            "tuple[int, str]"
+            "tuple[isize, String]"
         );
     }
 
@@ -82,7 +82,7 @@ mod tests {
                 discriminator: None
             })
             .render(&rs_indent(), &Default::default()),
-            "str | int"
+            "String | isize"
         );
     }
 
@@ -94,7 +94,7 @@ mod tests {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Int),
             }))
             .render(&rs_indent(), &Default::default()),
-            "dict[str, int]"
+            "dict[str, isize]"
         );
     }
 
@@ -113,7 +113,7 @@ mod tests {
                 RSPrimitive::String
             ))))
             .render(&rs_indent(), &Default::default()),
-            "Option<str>"
+            "Option<String>"
         );
     }
 }

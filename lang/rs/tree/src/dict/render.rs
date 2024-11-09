@@ -40,7 +40,7 @@ mod tests {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Int),
             }
             .render(&rs_indent(), &Default::default()),
-            "dict[str, int]"
+            "dict[str, isize]"
         );
     }
 
@@ -52,7 +52,7 @@ mod tests {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Int),
             }
             .render(&rs_indent(), &RSLangConfig::new(RSVersion::Legacy)),
-            "Dict[str, int]"
+            "Dict[str, isize]"
         );
     }
 }

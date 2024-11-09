@@ -43,7 +43,7 @@ mod tests {
                 references: vec![],
             }
             .render(&rs_indent(), &Default::default()),
-            "type Name = str"
+            "type Name = String"
         );
     }
 
@@ -57,7 +57,7 @@ mod tests {
                 references: vec![],
             }
             .render(&rs_indent(), &RSLangConfig::new(RSVersion::Legacy)),
-            "Name : TypeAlias = str"
+            "Name : TypeAlias = String"
         );
     }
 
@@ -71,7 +71,7 @@ mod tests {
                 references: vec![],
             }
             .render(&rs_indent(), &Default::default()),
-            r#"type Name = str
+            r#"type Name = String
 /// Hello, world!"#
         );
     }

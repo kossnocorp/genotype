@@ -30,7 +30,7 @@ mod tests {
                 references: vec![],
             })
             .render(&rs_indent(), &Default::default()),
-            "type Name = str"
+            "type Name = String"
         );
     }
 
@@ -59,8 +59,8 @@ mod tests {
             })
             .render(&rs_indent(), &Default::default()),
             r#"class Name(Model):
-    name: str
-    age: int"#
+    name: String
+    age: isize"#
         );
     }
 }

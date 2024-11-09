@@ -55,7 +55,7 @@ mod tests {
                 discriminator: None
             }
             .render(&rs_indent(), &Default::default()),
-            "str | int"
+            "String | isize"
         );
     }
 
@@ -70,7 +70,7 @@ mod tests {
                 discriminator: None
             }
             .render(&rs_indent(), &RSLangConfig::new(RSVersion::Legacy)),
-            "Union[str, int]"
+            "Union[String, isize]"
         );
     }
 
@@ -85,7 +85,7 @@ mod tests {
                 discriminator: Some("type".into())
             }
             .render(&rs_indent(), &Default::default()),
-            r#"Annotated[str | int, Field(json_schema_extra={'descriminator': 'type'})]"#
+            r#"Annotated[String | isize, Field(json_schema_extra={'descriminator': 'type'})]"#
         );
     }
 
@@ -100,7 +100,7 @@ mod tests {
                 discriminator: Some("type".into())
             }
             .render(&rs_indent(), &RSLangConfig::new(RSVersion::Legacy)),
-            r#"Annotated[Union[str, int], Field(json_schema_extra={'descriminator': 'type'})]"#
+            r#"Annotated[Union[String, isize], Field(json_schema_extra={'descriminator': 'type'})]"#
         );
     }
 }

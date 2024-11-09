@@ -50,7 +50,7 @@ mod tests {
                 ]
             }
             .render(&rs_indent(), &Default::default()),
-            "tuple[str, int]"
+            "tuple[String, isize]"
         );
     }
 

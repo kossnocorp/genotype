@@ -50,7 +50,7 @@ mod tests {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
             .render(&rs_indent(), &Default::default()),
-            "name: str"
+            "name: String"
         );
         assert_eq!(
             RSProperty {
@@ -74,7 +74,7 @@ mod tests {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
             .render(&rs_indent().increment(), &Default::default()),
-            "    name: str"
+            "    name: String"
         );
     }
 
@@ -88,7 +88,7 @@ mod tests {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
             .render(&rs_indent(), &Default::default()),
-            "name: str"
+            "name: String"
         );
     }
 
@@ -103,7 +103,7 @@ mod tests {
             }
             .render(&rs_indent(), &Default::default()),
             r#"/// Hello, world!
-name: str"#
+name: String"#
         );
         assert_eq!(
             RSProperty {
@@ -114,7 +114,7 @@ name: str"#
             }
             .render(&rs_indent().increment(), &Default::default()),
             r#"    /// Hello, world!
-    name: str"#
+    name: String"#
         );
     }
 
@@ -129,7 +129,7 @@ name: str"#
             }
             .render(&rs_indent(), &Default::default()),
             "#[derive(Clone)]
-name: str"
+name: String"
         );
         assert_eq!(
             RSProperty {
@@ -140,7 +140,7 @@ name: str"
             }
             .render(&rs_indent().increment(), &Default::default()),
             "    #[derive(Clone)]
-    name: str"
+    name: String"
         );
         assert_eq!(
             RSProperty {
@@ -152,7 +152,7 @@ name: str"
             .render(&rs_indent().increment(), &Default::default()),
             "    /// Hello, world!
     #[derive(Clone)]
-    name: str"
+    name: String"
         );
     }
 }

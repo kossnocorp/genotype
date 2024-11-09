@@ -105,12 +105,12 @@ mod tests {
 from .path.to.module import Name, Name as Alias
 
 
-type Name = str
+type Name = String
 
 
 class Name(Model):
-    name: str
-    age: int
+    name: String
+    age: isize
 "#
         );
     }
@@ -139,7 +139,7 @@ class Name(Model):
 import .path.to.module as name
 
 
-type Name = str
+type Name = String
 "#
         );
     }

@@ -9,8 +9,9 @@ impl RSConvert<RSPrimitive> for GTPrimitive {
             GTPrimitive::Boolean(_) => RSPrimitive::Boolean,
             GTPrimitive::String(_) => RSPrimitive::String,
             GTPrimitive::Int(_) => RSPrimitive::Int,
-            GTPrimitive::Float(_) => RSPrimitive::Float,
-            GTPrimitive::Null(_) => RSPrimitive::None,
+            GTPrimitive::Float(_) => RSPrimitive::Float32,
+            // [TODO] Resolve context and add a dependency.
+            GTPrimitive::Null(_) => RSPrimitive::Null,
         }
     }
 }
@@ -38,11 +39,11 @@ mod tests {
         );
         assert_eq!(
             GTPrimitive::Float((0, 0).into()).convert(&mut RSConvertContext::default()),
-            RSPrimitive::Float
+            RSPrimitive::Float32
         );
         assert_eq!(
             GTPrimitive::Null((0, 0).into()).convert(&mut RSConvertContext::default()),
-            RSPrimitive::None
+            RSPrimitive::Null
         );
     }
 }

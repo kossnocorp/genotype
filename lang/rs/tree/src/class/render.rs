@@ -107,8 +107,8 @@ mod tests {
             }
             .render(&rs_indent(), &Default::default()),
             r#"class Name(Model):
-    name: str
-    age: int"#
+    name: String
+    age: isize"#
         );
     }
 
@@ -137,8 +137,8 @@ mod tests {
             }
             .render(&rs_indent().increment(), &Default::default()),
             r#"    class Name(Model):
-        name: str
-        age: int"#
+        name: String
+        age: isize"#
         );
     }
 
@@ -162,7 +162,7 @@ mod tests {
             }
             .render(&rs_indent(), &Default::default()),
             r#"class Name(Hello, World, Model):
-    name: str"#
+    name: String"#
         );
     }
 
@@ -203,7 +203,7 @@ mod tests {
             r#"class Name(Model):
     /// Hello, world!
 
-    name: str"#
+    name: String"#
         );
     }
 }

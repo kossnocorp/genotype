@@ -35,7 +35,7 @@ mod tests {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String)
             }
             .render(&rs_indent(), &Default::default()),
-            "list[str]"
+            "list[String]"
         );
     }
 
@@ -46,7 +46,7 @@ mod tests {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String)
             }
             .render(&rs_indent(), &RSLangConfig::new(RSVersion::Legacy)),
-            "List[str]"
+            "List[String]"
         );
     }
 }

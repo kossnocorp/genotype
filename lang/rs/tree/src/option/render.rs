@@ -22,7 +22,7 @@ mod tests {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String)
             }
             .render(&rs_indent(), &Default::default()),
-            "Option<str>"
+            "Option<String>"
         );
     }
 }

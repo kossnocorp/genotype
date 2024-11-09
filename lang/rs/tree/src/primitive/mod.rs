@@ -2,9 +2,23 @@ mod render;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum RSPrimitive {
+    Unit,
     Boolean,
     String,
+    Int8,
+    Int16,
+    Int32,
+    Int64,
+    Int128,
     Int,
-    Float,
-    None,
+    UInt8,
+    UInt16,
+    UInt32,
+    UInt64,
+    UInt128,
+    UInt,
+    Float32,
+    Float64,
+    // [TODO] Figure out how to handle this, maybe use a runtime crate?
+    Null,
 }
