@@ -1,6 +1,5 @@
 use genotype_lang_core_tree::indent::GTIndent;
 use genotype_lang_rs_config::RSLangConfig;
-use genotype_lang_rs_config::RSVersion;
 
 use crate::RSRender;
 
@@ -14,30 +13,14 @@ impl RSRender for RSTuple {
             .map(|d| d.render(indent, config))
             .collect::<Vec<String>>()
             .join(", ");
-        format!(
-            "{}{}{}{}",
-            if let RSVersion::Legacy = config.version {
-                "Tuple"
-            } else {
-                "tuple"
-            },
-            "[",
-            if descriptors.len() > 0 {
-                descriptors
-            } else {
-                "()".into()
-            },
-            "]"
-        )
+        format!("({descriptors})")
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_rs_config::RSLangConfig;
     use pretty_assertions::assert_eq;
 
-    use super::*;
     use crate::*;
 
     #[test]
@@ -50,7 +33,7 @@ mod tests {
                 ]
             }
             .render(&rs_indent(), &Default::default()),
-            "tuple[String, isize]"
+            "(String, isize)"
         );
     }
 
@@ -61,18 +44,7 @@ mod tests {
                 descriptors: vec![]
             }
             .render(&rs_indent(), &Default::default()),
-            "tuple[()]"
-        );
-    }
-
-    #[test]
-    fn test_render_legacy() {
-        assert_eq!(
-            RSTuple {
-                descriptors: vec![]
-            }
-            .render(&rs_indent(), &RSLangConfig::new(RSVersion::Legacy)),
-            "Tuple[()]"
+            "()"
         );
     }
 }

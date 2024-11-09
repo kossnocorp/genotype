@@ -80,7 +80,7 @@ mod tests {
                 ]
             })
             .render(&rs_indent(), &Default::default()),
-            "tuple[isize, String]"
+            "(isize, String)"
         );
     }
 
