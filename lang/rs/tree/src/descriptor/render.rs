@@ -29,11 +29,11 @@ mod tests {
     #[test]
     fn test_render_array() {
         assert_eq!(
-            RSDescriptor::List(Box::new(RSList {
+            RSDescriptor::List(Box::new(RSVec {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Int)
             }))
             .render(&rs_indent(), &Default::default()),
-            "list[isize]"
+            "Vec<isize>"
         );
     }
 

@@ -74,7 +74,7 @@ mod tests {
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }))
             .convert(&mut RSConvertContext::default()),
-            RSDescriptor::List(Box::new(RSList {
+            RSDescriptor::List(Box::new(RSVec {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean)
             }))
         );

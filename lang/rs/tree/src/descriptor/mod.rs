@@ -4,7 +4,7 @@ mod render;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum RSDescriptor {
-    List(Box<RSList>),
+    List(Box<RSVec>),
     Literal(RSLiteral),
     Primitive(RSPrimitive),
     Reference(RSReference),
@@ -46,8 +46,8 @@ impl From<RSTuple> for RSDescriptor {
     }
 }
 
-impl From<RSList> for RSDescriptor {
-    fn from(list: RSList) -> Self {
+impl From<RSVec> for RSDescriptor {
+    fn from(list: RSVec) -> Self {
         RSDescriptor::List(Box::new(list))
     }
 }

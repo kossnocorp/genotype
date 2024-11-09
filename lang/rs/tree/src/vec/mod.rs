@@ -4,6 +4,6 @@ mod context;
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct RSList {
+pub struct RSVec {
     pub descriptor: RSDescriptor,
 }
