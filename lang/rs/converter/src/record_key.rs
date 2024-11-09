@@ -1,15 +1,15 @@
-use genotype_lang_rs_tree::RSDictKey;
+use genotype_lang_rs_tree::{RSDescriptor, RSPrimitive};
 use genotype_parser::GTRecordKey;
 
 use crate::{context::RSConvertContext, convert::RSConvert};
 
-impl RSConvert<RSDictKey> for GTRecordKey {
-    fn convert(&self, _context: &mut RSConvertContext) -> RSDictKey {
+impl RSConvert<RSDescriptor> for GTRecordKey {
+    fn convert(&self, _context: &mut RSConvertContext) -> RSDescriptor {
         match self {
-            GTRecordKey::String(_) => RSDictKey::String,
-            GTRecordKey::Int(_) => RSDictKey::Int,
-            GTRecordKey::Float(_) => RSDictKey::Float,
-            GTRecordKey::Boolean(_) => RSDictKey::Boolean,
+            GTRecordKey::String(_) => RSPrimitive::String.into(),
+            GTRecordKey::Int(_) => RSPrimitive::Int.into(),
+            GTRecordKey::Float(_) => RSPrimitive::Float32.into(),
+            GTRecordKey::Boolean(_) => RSPrimitive::Boolean.into(),
         }
     }
 }
@@ -25,19 +25,19 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_eq!(
-            RSDictKey::String,
+            RSDescriptor::Primitive(RSPrimitive::String),
             GTRecordKey::String((0, 0).into()).convert(&mut RSConvertContext::default()),
         );
         assert_eq!(
-            RSDictKey::Int,
+            RSDescriptor::Primitive(RSPrimitive::Int),
             GTRecordKey::Int((0, 0).into()).convert(&mut RSConvertContext::default()),
         );
         assert_eq!(
-            RSDictKey::Float,
+            RSDescriptor::Primitive(RSPrimitive::Float32),
             GTRecordKey::Float((0, 0).into()).convert(&mut RSConvertContext::default()),
         );
         assert_eq!(
-            RSDictKey::Boolean,
+            RSDescriptor::Primitive(RSPrimitive::Boolean),
             GTRecordKey::Boolean((0, 0).into()).convert(&mut RSConvertContext::default()),
         );
     }

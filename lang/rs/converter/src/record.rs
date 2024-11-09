@@ -1,11 +1,11 @@
-use genotype_lang_rs_tree::{RSContextResolve, RSDict};
+use genotype_lang_rs_tree::{RSContextResolve, RSHashMap};
 use genotype_parser::GTRecord;
 
 use crate::{context::RSConvertContext, convert::RSConvert};
 
-impl RSConvert<RSDict> for GTRecord {
-    fn convert(&self, context: &mut RSConvertContext) -> RSDict {
-        RSDict {
+impl RSConvert<RSHashMap> for GTRecord {
+    fn convert(&self, context: &mut RSConvertContext) -> RSHashMap {
+        RSHashMap {
             key: self.key.convert(context),
             descriptor: self.descriptor.convert(context),
         }
@@ -30,9 +30,9 @@ mod tests {
                 descriptor: GTPrimitive::String((0, 0).into()).into(),
             }
             .convert(&mut RSConvertContext::default()),
-            RSDict {
-                key: RSDictKey::String,
-                descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+            RSHashMap {
+                key: RSPrimitive::String.into(),
+                descriptor: RSPrimitive::String.into(),
             }
         );
     }

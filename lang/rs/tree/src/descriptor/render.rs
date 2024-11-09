@@ -13,7 +13,7 @@ impl RSRender for RSDescriptor {
             RSDescriptor::InlineUse(inline_use) => inline_use.render(indent),
             RSDescriptor::Tuple(tuple) => tuple.render(indent, config),
             RSDescriptor::Union(union) => union.render(indent, config),
-            RSDescriptor::Dict(dict) => dict.render(indent, config),
+            RSDescriptor::HashMap(dict) => dict.render(indent, config),
             RSDescriptor::Any(any) => any.render(indent),
             RSDescriptor::Option(option) => option.render(indent, config),
         }
@@ -100,14 +100,14 @@ mod tests {
     }
 
     #[test]
-    fn test_render_dict() {
+    fn test_render_hash_map() {
         assert_eq!(
-            RSDescriptor::Dict(Box::new(RSDict {
-                key: RSDictKey::String,
-                descriptor: RSDescriptor::Primitive(RSPrimitive::Int),
+            RSDescriptor::HashMap(Box::new(RSHashMap {
+                key: RSPrimitive::String.into(),
+                descriptor: RSPrimitive::Int.into(),
             }))
             .render(&rs_indent(), &Default::default()),
-            "dict[str, isize]"
+            "HashMap<String, isize>"
         );
     }
 

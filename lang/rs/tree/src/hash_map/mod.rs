@@ -1,10 +1,10 @@
-use crate::{descriptor::RSDescriptor, RSDictKey};
+use crate::descriptor::RSDescriptor;
 
 mod context;
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct RSDict {
-    pub key: RSDictKey,
+pub struct RSHashMap {
+    pub key: RSDescriptor,
     pub descriptor: RSDescriptor,
 }

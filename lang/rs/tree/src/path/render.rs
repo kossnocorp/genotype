@@ -16,8 +16,8 @@ mod tests {
     #[test]
     fn test_render() {
         assert_eq!(
-            RSPath(".path.to.module".into()).render(&rs_indent()),
-            ".path.to.module"
+            RSPath("self::path::to::module".into()).render(&rs_indent()),
+            "self::path::to::module"
         );
     }
 }

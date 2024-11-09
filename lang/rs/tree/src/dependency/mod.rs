@@ -7,6 +7,7 @@ pub enum RSDependency {
     Typing,
     TypingExtensions,
     Rsdantic,
+    Std(RSPath),
 }
 
 impl RSDependency {
@@ -17,6 +18,7 @@ impl RSDependency {
             Self::Typing => "typing".into(),
             Self::TypingExtensions => "typing_extensions".into(),
             Self::Rsdantic => "rsdantic".into(),
+            Self::Std(path) => RSPath::from("std").join(&path),
         }
     }
 
@@ -27,5 +29,29 @@ impl RSDependency {
             Self::Rsdantic => Some(r#"rsdantic = "^2.9""#.into()),
             _ => None,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_as_path() {
+        assert_eq!(
+            RSDependency::Local("foo".into()).as_path(),
+            RSPath::from("foo")
+        );
+        assert_eq!(RSDependency::Runtime.as_path(), RSPath::from("genotype"));
+        assert_eq!(RSDependency::Typing.as_path(), RSPath::from("typing"));
+        assert_eq!(
+            RSDependency::TypingExtensions.as_path(),
+            RSPath::from("typing_extensions")
+        );
+        assert_eq!(RSDependency::Rsdantic.as_path(), RSPath::from("rsdantic"));
+        assert_eq!(
+            RSDependency::Std("collections".into()).as_path(),
+            RSPath::from("std::collections")
+        );
     }
 }

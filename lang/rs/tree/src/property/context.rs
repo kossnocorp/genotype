@@ -3,7 +3,7 @@ use crate::*;
 use super::RSProperty;
 
 impl RSContextResolve for RSProperty {
-    fn resolve<Context>(self, context: &mut Context) -> Self
+    fn resolve<Context>(self, _context: &mut Context) -> Self
     where
         Context: RSContext,
     {
