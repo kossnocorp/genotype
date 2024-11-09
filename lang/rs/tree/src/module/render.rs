@@ -103,7 +103,7 @@ mod tests {
 from .path.to.module import Name, Name as Alias
 
 
-type Name = String
+type Name = String;
 
 
 struct Name {
@@ -137,7 +137,7 @@ struct Name {
 import .path.to.module as name
 
 
-type Name = String
+type Name = String;
 "#
         );
     }

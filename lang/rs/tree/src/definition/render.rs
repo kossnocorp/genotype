@@ -29,7 +29,7 @@ mod tests {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             })
             .render(&rs_indent(), &Default::default()),
-            "type Name = String"
+            "type Name = String;"
         );
     }
 

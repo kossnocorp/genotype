@@ -35,14 +35,11 @@ impl RSConvert<RSDefinition> for GTAlias {
                     }
                 }
 
-                RSDefinition::Alias(
-                    RSAlias {
-                        doc,
-                        name,
-                        descriptor,
-                    }
-                    .resolve(context),
-                )
+                RSDefinition::Alias(RSAlias {
+                    doc,
+                    name,
+                    descriptor,
+                })
             }
         }
     }
@@ -50,7 +47,6 @@ impl RSConvert<RSDefinition> for GTAlias {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_rs_config::{RSLangConfig, RSVersion};
     use genotype_lang_rs_tree::*;
     use pretty_assertions::assert_eq;
 
@@ -191,31 +187,6 @@ mod tests {
                     descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                 }],
             })]
-        );
-    }
-
-    #[test]
-    fn test_convert_resolve() {
-        let mut context =
-            RSConvertContext::new(Default::default(), RSLangConfig::new(RSVersion::Legacy));
-        assert_eq!(
-            GTAlias {
-                span: (0, 0).into(),
-                doc: None,
-                attributes: vec![],
-                name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GTPrimitive::String((0, 0).into()).into(),
-            }
-            .convert(&mut context),
-            RSDefinition::Alias(RSAlias {
-                doc: None,
-                name: "Name".into(),
-                descriptor: RSPrimitive::String.into(),
-            })
-        );
-        assert_eq!(
-            context.as_dependencies(),
-            vec![(RSDependency::Typing, "TypeAlias".into()),]
         );
     }
 
