@@ -17,6 +17,7 @@ members = [
   "lang/rs/converter",
   "lang/rs/project",
   "lang/rs/config",
+  "lang/rs/runtime",
   "parser",
   "project",
   "visitor",
