@@ -130,7 +130,7 @@ mod tests {
         let hoisted = context.drain_hoisted();
         assert_eq!(
             hoisted,
-            vec![RSDefinition::Class(RSClass {
+            vec![RSDefinition::Struct(RSStruct {
                 doc: None,
                 name: "Person".into(),
                 extensions: vec![],

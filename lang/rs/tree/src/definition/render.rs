@@ -9,7 +9,7 @@ impl RSRender for RSDefinition {
     fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> String {
         match self {
             RSDefinition::Alias(alias) => alias.render(indent, config),
-            RSDefinition::Class(interface) => interface.render(indent, config),
+            RSDefinition::Struct(interface) => interface.render(indent, config),
         }
     }
 }
@@ -36,7 +36,7 @@ mod tests {
     #[test]
     fn test_render_class() {
         assert_eq!(
-            RSDefinition::Class(RSClass {
+            RSDefinition::Struct(RSStruct {
                 doc: None,
                 name: "Name".into(),
                 extensions: vec![],
@@ -56,9 +56,10 @@ mod tests {
                 ],
             })
             .render(&rs_indent(), &Default::default()),
-            r#"class Name(Model):
-    name: String
-    age: isize"#
+            r#"struct Name {
+    name: String,
+    age: isize,
+}"#
         );
     }
 }

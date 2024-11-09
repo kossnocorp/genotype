@@ -3,19 +3,28 @@ use genotype_lang_rs_config::RSLangConfig;
 
 use crate::RSRender;
 
-use super::RSClass;
+use super::RSStruct;
 
-impl RSRender for RSClass {
+impl RSRender for RSStruct {
     fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> String {
-        let name = self.name.render(indent);
-        let extensions = self.render_extensions(indent, config);
-        let body = self.render_body(indent, config);
+        let mut blocks = vec![];
 
-        format!("{}class {name}{extensions}:\n{body}", indent.string)
+        if let Some(doc) = &self.doc {
+            blocks.push(doc.render(&indent));
+        }
+
+        let name = self.name.render(indent);
+        let body = self.render_body(indent, config);
+        // [TODO] Replace extensions with fields enum (resolved/unresolved)
+        // let extensions = self.render_extensions(indent, config);
+
+        blocks.push(format!("{}struct {name}{body}", indent.string));
+
+        blocks.join("\n")
     }
 }
 
-impl RSClass {
+impl RSStruct {
     fn render_extensions(&self, indent: &GTIndent, config: &RSLangConfig) -> String {
         let mut extensions = self
             .extensions
@@ -35,26 +44,19 @@ impl RSClass {
     }
 
     fn render_body(&self, indent: &GTIndent, config: &RSLangConfig) -> String {
-        let mut body = vec![];
-
-        if let Some(doc) = &self.doc {
-            body.push(doc.render(&indent.increment()));
+        if self.properties.len() == 0 {
+            return ";".into();
         }
 
-        if self.properties.len() > 0 {
-            body.push(self.render_properties(indent, config));
-        } else {
-            body.push(indent.increment().format("pass"));
-        }
-
-        body.join("\n\n")
+        let fields = self.render_fields(indent, config);
+        format!(" {{\n{fields}\n{}}}", indent.string)
     }
 
-    fn render_properties(&self, indent: &GTIndent, config: &RSLangConfig) -> String {
+    fn render_fields(&self, indent: &GTIndent, config: &RSLangConfig) -> String {
         let indent = indent.increment();
         self.properties
             .iter()
-            .map(|property| property.render(&indent, config))
+            .map(|property| property.render(&indent, config) + ",")
             .collect::<Vec<String>>()
             .join("\n")
     }
@@ -69,22 +71,21 @@ mod tests {
     #[test]
     fn test_render_empty() {
         assert_eq!(
-            RSClass {
+            RSStruct {
                 doc: None,
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![],
             }
             .render(&rs_indent(), &Default::default()),
-            r#"class Name(Model):
-    pass"#
+            "struct Name;"
         );
     }
 
     #[test]
     fn test_render_properties() {
         assert_eq!(
-            RSClass {
+            RSStruct {
                 doc: None,
                 name: "Name".into(),
                 extensions: vec![],
@@ -104,16 +105,17 @@ mod tests {
                 ],
             }
             .render(&rs_indent(), &Default::default()),
-            r#"class Name(Model):
-    name: String
-    age: isize"#
+            r#"struct Name {
+    name: String,
+    age: isize,
+}"#
         );
     }
 
     #[test]
     fn test_render_indent() {
         assert_eq!(
-            RSClass {
+            RSStruct {
                 doc: None,
                 name: "Name".into(),
                 extensions: vec![],
@@ -133,16 +135,18 @@ mod tests {
                 ],
             }
             .render(&rs_indent().increment(), &Default::default()),
-            r#"    class Name(Model):
-        name: String
-        age: isize"#
+            r#"    struct Name {
+        name: String,
+        age: isize,
+    }"#
         );
     }
 
     #[test]
+    #[ignore = "Extensions will be replaced by resolved/unresolved fields"]
     fn test_render_extensions() {
         assert_eq!(
-            RSClass {
+            RSStruct {
                 doc: None,
                 name: "Name".into(),
                 extensions: vec![
@@ -165,24 +169,22 @@ mod tests {
     #[test]
     fn test_render_doc_empty() {
         assert_eq!(
-            RSClass {
+            RSStruct {
                 doc: Some("Hello, world!".into()),
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![],
             }
             .render(&rs_indent(), &Default::default()),
-            r#"class Name(Model):
-    /// Hello, world!
-
-    pass"#
+            r#"/// Hello, world!
+struct Name;"#
         );
     }
 
     #[test]
-    fn test_render_doc_properties() {
+    fn test_render_doc_fields() {
         assert_eq!(
-            RSClass {
+            RSStruct {
                 doc: Some("Hello, world!".into()),
                 name: "Name".into(),
                 extensions: vec![],
@@ -194,10 +196,10 @@ mod tests {
                 }],
             }
             .render(&rs_indent(), &Default::default()),
-            r#"class Name(Model):
-    /// Hello, world!
-
-    name: String"#
+            r#"/// Hello, world!
+struct Name {
+    name: String,
+}"#
         );
     }
 }

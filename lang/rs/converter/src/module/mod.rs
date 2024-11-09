@@ -216,7 +216,7 @@ mod tests {
                     }
                 ],
                 definitions: vec![
-                    RSDefinition::Class(RSClass {
+                    RSDefinition::Struct(RSStruct {
                         doc: None,
                         name: "User".into(),
                         extensions: vec![],
@@ -235,7 +235,7 @@ mod tests {
                             }
                         ],
                     }),
-                    RSDefinition::Class(RSClass {
+                    RSDefinition::Struct(RSStruct {
                         doc: None,
                         name: "Order".into(),
                         extensions: vec![],
@@ -246,7 +246,7 @@ mod tests {
                             descriptor: RSReference::new("Book".into()).into(),
                         }],
                     }),
-                    RSDefinition::Class(RSClass {
+                    RSDefinition::Struct(RSStruct {
                         doc: None,
                         name: "Book".into(),
                         extensions: vec![],

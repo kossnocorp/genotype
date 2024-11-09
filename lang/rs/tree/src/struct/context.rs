@@ -1,8 +1,8 @@
 use crate::{RSContext, RSContextResolve, RSDependency};
 
-use super::RSClass;
+use super::RSStruct;
 
-impl RSContextResolve for RSClass {
+impl RSContextResolve for RSStruct {
     fn resolve<Context>(self, context: &mut Context) -> Self
     where
         Context: RSContext,
@@ -21,7 +21,7 @@ mod tests {
     #[test]
     fn test_resolve() {
         let mut context = RSContextMock::default();
-        let alias = RSClass {
+        let alias = RSStruct {
             doc: None,
             name: "Foo".into(),
             extensions: vec![],

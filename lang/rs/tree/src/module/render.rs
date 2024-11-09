@@ -77,7 +77,7 @@ mod tests {
                         name: "Name".into(),
                         descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                     }),
-                    RSDefinition::Class(RSClass {
+                    RSDefinition::Struct(RSStruct {
                         doc: None,
                         name: "Name".into(),
                         extensions: vec![],
@@ -106,9 +106,10 @@ from .path.to.module import Name, Name as Alias
 type Name = String
 
 
-class Name(Model):
-    name: String
-    age: isize
+struct Name {
+    name: String,
+    age: isize,
+}
 "#
         );
     }

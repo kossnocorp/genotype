@@ -3,8 +3,8 @@ use genotype_parser::*;
 
 use crate::{context::RSConvertContext, convert::RSConvert};
 
-impl RSConvert<RSClass> for GTObject {
-    fn convert(&self, context: &mut RSConvertContext) -> RSClass {
+impl RSConvert<RSStruct> for GTObject {
+    fn convert(&self, context: &mut RSConvertContext) -> RSStruct {
         let name = match &self.name {
             GTObjectName::Named(identifier) => identifier.convert(context),
             GTObjectName::Alias(identifier, _) => identifier.convert(context),
@@ -15,7 +15,7 @@ impl RSConvert<RSClass> for GTObject {
         let extensions = self.extensions.iter().map(|e| e.convert(context)).collect();
         let properties = self.properties.iter().map(|p| p.convert(context)).collect();
 
-        RSClass {
+        RSStruct {
             doc,
             name,
             extensions,
@@ -60,7 +60,7 @@ mod tests {
                 ]
             }
             .convert(&mut RSConvertContext::default()),
-            RSClass {
+            RSStruct {
                 doc: None,
                 name: "Person".into(),
                 extensions: vec![],
@@ -93,7 +93,7 @@ mod tests {
                 properties: vec![]
             }
             .convert(&mut context),
-            RSClass {
+            RSStruct {
                 doc: None,
                 name: "Person".into(),
                 extensions: vec![],
@@ -118,7 +118,7 @@ mod tests {
                 properties: vec![],
             }
             .convert(&mut context),
-            RSClass {
+            RSStruct {
                 doc: Some("Hello, world!".into()),
                 name: "Person".into(),
                 extensions: vec![],

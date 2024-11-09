@@ -13,7 +13,7 @@ impl RSConvert<RSDefinition> for GTAlias {
         match &self.descriptor {
             GTDescriptor::Object(object) => {
                 context.provide_doc(doc);
-                RSDefinition::Class(object.convert(context))
+                RSDefinition::Struct(object.convert(context))
             }
 
             _ => {
@@ -108,7 +108,7 @@ mod tests {
                 })
             }
             .convert(&mut RSConvertContext::default()),
-            RSDefinition::Class(RSClass {
+            RSDefinition::Struct(RSStruct {
                 doc: None,
                 name: "Book".into(),
                 extensions: vec![],
@@ -180,7 +180,7 @@ mod tests {
         let hoisted = context.drain_hoisted();
         assert_eq!(
             hoisted,
-            vec![RSDefinition::Class(RSClass {
+            vec![RSDefinition::Struct(RSStruct {
                 doc: None,
                 name: "BookObj".into(),
                 extensions: vec![],
