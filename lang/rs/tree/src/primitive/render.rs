@@ -22,8 +22,6 @@ impl GTRender for RSPrimitive {
             RSPrimitive::UInt => "usize",
             RSPrimitive::Float32 => "f32",
             RSPrimitive::Float64 => "f64",
-            // [TODO] Figure out how to handle this, likely a runtime crate.
-            RSPrimitive::Null => "Null",
         }
         .to_string()
     }
@@ -53,6 +51,5 @@ mod tests {
         assert_eq!(RSPrimitive::UInt.render(&rs_indent()), "usize");
         assert_eq!(RSPrimitive::Float32.render(&rs_indent()), "f32");
         assert_eq!(RSPrimitive::Float64.render(&rs_indent()), "f64");
-        assert_eq!(RSPrimitive::Null.render(&rs_indent()), "Null");
     }
 }

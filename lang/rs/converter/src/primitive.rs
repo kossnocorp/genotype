@@ -10,8 +10,7 @@ impl RSConvert<RSPrimitive> for GTPrimitive {
             GTPrimitive::String(_) => RSPrimitive::String,
             GTPrimitive::Int(_) => RSPrimitive::Int,
             GTPrimitive::Float(_) => RSPrimitive::Float32,
-            // [TODO] Resolve context and add a dependency.
-            GTPrimitive::Null(_) => RSPrimitive::Null,
+            GTPrimitive::Null(_) => RSPrimitive::Unit,
         }
     }
 }
@@ -43,7 +42,7 @@ mod tests {
         );
         assert_eq!(
             GTPrimitive::Null((0, 0).into()).convert(&mut RSConvertContext::default()),
-            RSPrimitive::Null
+            RSPrimitive::Unit
         );
     }
 }

@@ -19,6 +19,4 @@ pub enum RSPrimitive {
     UInt,
     Float32,
     Float64,
-    // [TODO] Figure out how to handle this, maybe use a runtime crate?
-    Null,
 }
