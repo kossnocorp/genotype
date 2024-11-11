@@ -28,6 +28,16 @@ fn test_bool() {
 }
 
 #[test]
+fn test_int() {
+    #[derive(PartialEq, Debug)]
+    #[literal(1)]
+    pub struct V1;
+
+    assert_eq!(serde_json::to_string_pretty(&V1).unwrap(), "1");
+    assert_eq!(serde_json::from_str::<V1>("1").unwrap(), V1);
+}
+
+#[test]
 fn test_enum() {
     #[literal]
     pub enum ABC {
