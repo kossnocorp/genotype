@@ -1,5 +1,6 @@
 use genotype_runtime::literal;
 use pretty_assertions::assert_eq;
+use serde::{Deserialize, Serialize};
 
 #[test]
 fn test_str() {
@@ -39,10 +40,26 @@ fn test_int() {
 
 #[test]
 fn test_enum() {
-    #[literal]
+    #[derive(PartialEq, Debug, Serialize, Deserialize)]
+    #[serde(untagged)]
     pub enum ABC {
-        A,
-        B,
-        C,
+        A(A),
+        B(B),
+        C(C),
     }
+
+    #[derive(PartialEq, Debug)]
+    #[literal("a")]
+    pub struct A;
+
+    #[derive(PartialEq, Debug)]
+    #[literal("b")]
+    pub struct B;
+
+    #[derive(PartialEq, Debug)]
+    #[literal("c")]
+    pub struct C;
+
+    assert_eq!(serde_json::to_string_pretty(&ABC::B(B)).unwrap(), r#""b""#);
+    assert_eq!(serde_json::from_str::<ABC>(r#""b""#).unwrap(), ABC::B(B));
 }

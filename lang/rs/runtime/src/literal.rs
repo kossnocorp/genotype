@@ -1,11 +1,12 @@
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
-use syn::{parse_macro_input, Lit};
+use syn::{parse_macro_input, DeriveInput, Item, Lit};
 
 pub fn macro_attribute(attr: TokenStream, item: TokenStream) -> TokenStream {
-    let input = parse_macro_input!(item);
+    let input = parse_macro_input!(item as DeriveInput);
+    let item: Item = input.into();
 
-    let expanded = match input {
+    let expanded = match item {
         syn::Item::Struct(input) => {
             let literal = parse_macro_input!(attr as Lit);
 
@@ -16,7 +17,7 @@ pub fn macro_attribute(attr: TokenStream, item: TokenStream) -> TokenStream {
 
                 Lit::Int(lit_int) => int_serde_code(lit_int.base10_digits(), input.ident.clone()),
 
-                _ => panic!("The #[literal] attribute only supports string or bool literals"),
+                _ => panic!("The #[literal] attribute only supports string, bool or int literals"),
             };
 
             quote! {
@@ -26,14 +27,7 @@ pub fn macro_attribute(attr: TokenStream, item: TokenStream) -> TokenStream {
             }
         }
 
-        syn::Item::Enum(input) => {
-            // [TODO]
-            quote! {
-                #input
-            }
-        }
-
-        _ => panic!("The #[literal] attribute can only be used with structs or enums"),
+        _ => panic!("The #[literal] attribute can only be used with structs"),
     };
 
     TokenStream::from(expanded)
@@ -122,10 +116,7 @@ where
     L: ToTokens,
 {
     let serialize = syn::Ident::new(&consts.serialize, target.span());
-    let deserialize = syn::Ident::new(&consts.deserialize, target.span());
-    let (visitor, visitor_ident) = serde_visitor_code(&target, literal, consts.visit_fns);
-
-    quote! {
+    let serialize_code = quote! {
         impl serde::Serialize for #target {
             fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
             where
@@ -134,7 +125,11 @@ where
                 serializer.#serialize(#literal)
             }
         }
+    };
 
+    let deserialize = syn::Ident::new(&consts.deserialize, target.span());
+    let (visitor, visitor_ident) = serde_visitor_code(&target, literal, consts.visit_fns);
+    let deserialize_code = quote! {
         impl<'de> serde::Deserialize<'de> for #target {
             fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
             where
@@ -145,6 +140,12 @@ where
         }
 
         #visitor
+    };
+
+    quote! {
+        #serialize_code
+
+        #deserialize_code
     }
 }
 
