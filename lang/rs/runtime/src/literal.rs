@@ -1,27 +1,26 @@
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
-use syn::{parse_macro_input, DeriveInput, Item, Lit};
+use syn::{parse_macro_input, Lit};
 
-pub fn macro_attribute(attr: TokenStream, item: TokenStream) -> TokenStream {
-    let input = parse_macro_input!(item as DeriveInput);
-    let item: Item = input.into();
+pub fn macro_attribute(attr: TokenStream, input: TokenStream) -> TokenStream {
+    let item = parse_macro_input!(input);
 
     let expanded = match item {
-        syn::Item::Struct(input) => {
+        syn::Item::Struct(item) => {
             let literal = parse_macro_input!(attr as Lit);
 
             let serde_code = match literal {
-                Lit::Str(lit_str) => str_serde_code(lit_str.value(), input.ident.clone()),
+                Lit::Str(lit_str) => str_serde_code(lit_str.value(), item.ident.clone()),
 
-                Lit::Bool(lit_bool) => bool_serde_code(lit_bool.value(), input.ident.clone()),
+                Lit::Bool(lit_bool) => bool_serde_code(lit_bool.value(), item.ident.clone()),
 
-                Lit::Int(lit_int) => int_serde_code(lit_int.base10_digits(), input.ident.clone()),
+                Lit::Int(lit_int) => int_serde_code(lit_int.base10_digits(), item.ident.clone()),
 
                 _ => panic!("The #[literal] attribute only supports string, bool or int literals"),
             };
 
             quote! {
-                #input
+                #item
 
                 #serde_code
             }
