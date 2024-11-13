@@ -4,16 +4,21 @@ mod render;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum RSDescriptor {
+    Enum(Box<RSEnum>),
     List(Box<RSVec>),
-    Literal(RSLiteral),
     Primitive(RSPrimitive),
     Reference(RSReference),
     InlineUse(RSInlineUse),
     Tuple(RSTuple),
-    Union(RSUnion),
     HashMap(Box<RSHashMap>),
     Any(RSAny),
     Option(Box<RSOption>),
+}
+
+impl From<RSEnum> for RSDescriptor {
+    fn from(r#enum: RSEnum) -> Self {
+        RSDescriptor::Enum(Box::new(r#enum))
+    }
 }
 
 impl From<RSPrimitive> for RSDescriptor {
@@ -34,12 +39,6 @@ impl From<RSInlineUse> for RSDescriptor {
     }
 }
 
-impl From<RSUnion> for RSDescriptor {
-    fn from(union: RSUnion) -> Self {
-        RSDescriptor::Union(union)
-    }
-}
-
 impl From<RSTuple> for RSDescriptor {
     fn from(tuple: RSTuple) -> Self {
         RSDescriptor::Tuple(tuple)
@@ -55,12 +54,6 @@ impl From<RSVec> for RSDescriptor {
 impl From<RSHashMap> for RSDescriptor {
     fn from(hash_map: RSHashMap) -> Self {
         RSDescriptor::HashMap(Box::new(hash_map))
-    }
-}
-
-impl From<RSLiteral> for RSDescriptor {
-    fn from(literal: RSLiteral) -> Self {
-        RSDescriptor::Literal(literal)
     }
 }
 

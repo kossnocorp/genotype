@@ -1,7 +1,10 @@
 use genotype_lang_rs_tree::*;
 use genotype_parser::*;
 
-use crate::{context::RSConvertContext, convert::RSConvert};
+use crate::{
+    context::{naming::RSContextParent, RSConvertContext},
+    convert::RSConvert,
+};
 
 impl RSConvert<RSStruct> for GTObject {
     fn convert(&self, context: &mut RSConvertContext) -> RSStruct {
@@ -10,18 +13,24 @@ impl RSConvert<RSStruct> for GTObject {
             GTObjectName::Alias(identifier, _) => identifier.convert(context),
             _ => panic!("Invalid object name"),
         };
+        context.enter_parent(RSContextParent::Definition(name.clone()));
 
         let doc = context.consume_doc();
         let extensions = self.extensions.iter().map(|e| e.convert(context)).collect();
         let properties = self.properties.iter().map(|p| p.convert(context)).collect();
 
-        RSStruct {
+        let r#struct = RSStruct {
             doc,
+            // [TODO]
+            attributes: vec![],
             name,
             extensions,
             properties,
         }
-        .resolve(context)
+        .resolve(context);
+
+        context.exit_parent();
+        r#struct
     }
 }
 
@@ -62,6 +71,7 @@ mod tests {
             .convert(&mut RSConvertContext::default()),
             RSStruct {
                 doc: None,
+                attributes: vec![],
                 name: "Person".into(),
                 extensions: vec![],
                 properties: vec![
@@ -95,6 +105,7 @@ mod tests {
             .convert(&mut context),
             RSStruct {
                 doc: None,
+                attributes: vec![],
                 name: "Person".into(),
                 extensions: vec![],
                 properties: vec![],
@@ -120,6 +131,7 @@ mod tests {
             .convert(&mut context),
             RSStruct {
                 doc: Some("Hello, world!".into()),
+                attributes: vec![],
                 name: "Person".into(),
                 extensions: vec![],
                 properties: vec![],

@@ -4,6 +4,7 @@ use crate::RSPath;
 pub enum RSDependency {
     Local(RSPath),
     Runtime,
+    Serde,
     Typing,
     TypingExtensions,
     Rsdantic,
@@ -15,6 +16,7 @@ impl RSDependency {
         match self {
             Self::Local(path) => path.clone(),
             Self::Runtime => "genotype".into(),
+            Self::Serde => "serde".into(),
             Self::Typing => "typing".into(),
             Self::TypingExtensions => "typing_extensions".into(),
             Self::Rsdantic => "rsdantic".into(),

@@ -1,10 +1,12 @@
 use genotype_lang_rs_config::{RSLangConfig, RSVersion};
 use genotype_lang_rs_tree::*;
 use genotype_parser::{GTIdentifier, GTPath};
+use naming::RSContextParent;
 
 use crate::resolve::RSConvertResolve;
 
 mod hoisting;
+pub mod naming;
 
 pub struct RSConvertContext {
     resolve: RSConvertResolve,
@@ -17,6 +19,7 @@ pub struct RSConvertContext {
     hoisted: Vec<RSDefinition>,
     dependencies: Vec<(RSDependency, RSIdentifier)>,
     doc: Option<RSDoc>,
+    parents: Vec<RSContextParent>,
 }
 
 impl RSContext for RSConvertContext {
@@ -45,6 +48,7 @@ impl RSConvertContext {
             hoisted: vec![],
             dependencies: vec![],
             doc: None,
+            parents: vec![],
         }
     }
 

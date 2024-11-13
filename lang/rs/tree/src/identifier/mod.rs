@@ -8,3 +8,9 @@ impl From<&str> for RSIdentifier {
         RSIdentifier(str.into())
     }
 }
+
+impl From<String> for RSIdentifier {
+    fn from(str: String) -> Self {
+        RSIdentifier(str)
+    }
+}

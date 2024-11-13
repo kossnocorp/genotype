@@ -6,13 +6,12 @@ use super::{RSDescriptor, RSRender};
 impl RSRender for RSDescriptor {
     fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> String {
         match self {
+            RSDescriptor::Enum(r#enum) => r#enum.render(indent, config),
             RSDescriptor::List(array) => array.render(indent, config),
-            RSDescriptor::Literal(literal) => literal.render(indent),
             RSDescriptor::Primitive(primitive) => primitive.render(indent),
             RSDescriptor::Reference(name) => name.render(indent, config),
             RSDescriptor::InlineUse(inline_use) => inline_use.render(indent),
             RSDescriptor::Tuple(tuple) => tuple.render(indent, config),
-            RSDescriptor::Union(union) => union.render(indent, config),
             RSDescriptor::HashMap(dict) => dict.render(indent, config),
             RSDescriptor::Any(any) => any.render(indent),
             RSDescriptor::Option(option) => option.render(indent, config),
@@ -81,21 +80,6 @@ mod tests {
             })
             .render(&rs_indent(), &Default::default()),
             "(isize, String)"
-        );
-    }
-
-    #[test]
-    fn test_render_union() {
-        assert_eq!(
-            RSDescriptor::Union(RSUnion {
-                descriptors: vec![
-                    RSDescriptor::Primitive(RSPrimitive::String),
-                    RSDescriptor::Primitive(RSPrimitive::Int),
-                ],
-                discriminator: None
-            })
-            .render(&rs_indent(), &Default::default()),
-            "String | isize"
         );
     }
 

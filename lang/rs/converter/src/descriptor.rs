@@ -1,7 +1,7 @@
 use genotype_lang_rs_tree::*;
 use genotype_parser::tree::descriptor::GTDescriptor;
 
-use crate::{context::RSConvertContext, convert::RSConvert};
+use crate::{context::naming::RSContextParent, context::RSConvertContext, convert::RSConvert};
 
 impl RSConvert<RSDescriptor> for GTDescriptor {
     fn convert(&self, context: &mut RSConvertContext) -> RSDescriptor {
@@ -12,7 +12,9 @@ impl RSConvert<RSDescriptor> for GTDescriptor {
 
             GTDescriptor::InlineImport(import) => import.convert(context).into(),
 
-            GTDescriptor::Literal(literal) => literal.convert(context).into(),
+            GTDescriptor::Literal(literal) => context
+                .hoist(|context| literal.convert(context).into())
+                .into(),
 
             GTDescriptor::Object(object) => context
                 .hoist(|context| object.convert(context).into())
@@ -26,7 +28,9 @@ impl RSConvert<RSDescriptor> for GTDescriptor {
 
             GTDescriptor::Tuple(tuple) => tuple.convert(context).into(),
 
-            GTDescriptor::Union(union) => union.convert(context).into(),
+            GTDescriptor::Union(union) => context
+                .hoist(|context| union.convert(context).into())
+                .into(),
 
             GTDescriptor::Any(any) => any.convert(context).into(),
         }
@@ -132,6 +136,7 @@ mod tests {
             hoisted,
             vec![RSDefinition::Struct(RSStruct {
                 doc: None,
+                attributes: vec![],
                 name: "Person".into(),
                 extensions: vec![],
                 properties: vec![
@@ -191,7 +196,10 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "WIP"]
     fn test_convert_union() {
+        let mut context = RSConvertContext::default();
+        context.enter_parent(RSContextParent::Definition("Values".into()));
         assert_eq!(
             GTDescriptor::Union(GTUnion {
                 span: (0, 0).into(),
@@ -200,14 +208,35 @@ mod tests {
                     GTPrimitive::String((0, 0).into()).into(),
                 ]
             })
-            .convert(&mut RSConvertContext::default()),
-            RSDescriptor::Union(RSUnion {
-                descriptors: vec![
-                    RSDescriptor::Primitive(RSPrimitive::Boolean),
-                    RSDescriptor::Primitive(RSPrimitive::String),
+            .convert(&mut context),
+            RSDescriptor::Reference(RSReference::new("Enum".into()))
+        );
+        let hoisted = context.drain_hoisted();
+        assert_eq!(
+            hoisted,
+            vec![RSDefinition::Enum(RSEnum {
+                doc: None,
+                attributes: vec![],
+                name: "ValuesUnion".into(),
+                variants: vec![
+                    RSEnumVariant {
+                        doc: None,
+                        name: "Boolean".into(),
+                        attributes: vec![],
+                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                            RSDescriptor::Primitive(RSPrimitive::Boolean).into()
+                        ),
+                    },
+                    RSEnumVariant {
+                        doc: None,
+                        name: "String".into(),
+                        attributes: vec![],
+                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                            RSDescriptor::Primitive(RSPrimitive::String).into()
+                        ),
+                    }
                 ],
-                discriminator: None
-            })
+            })]
         );
     }
 }

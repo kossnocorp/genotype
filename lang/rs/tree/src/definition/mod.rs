@@ -1,4 +1,4 @@
-use crate::{alias::RSAlias, r#struct::RSStruct, RSDoc, RSIdentifier};
+use crate::{alias::RSAlias, r#struct::RSStruct, RSDoc, RSEnum, RSIdentifier};
 
 mod render;
 
@@ -6,6 +6,7 @@ mod render;
 pub enum RSDefinition {
     Alias(RSAlias),
     Struct(RSStruct),
+    Enum(RSEnum),
 }
 
 impl RSDefinition {
@@ -13,6 +14,7 @@ impl RSDefinition {
         match self {
             Self::Alias(alias) => &alias.name,
             Self::Struct(class) => &class.name,
+            Self::Enum(r#enum) => &r#enum.name,
         }
     }
 
@@ -20,6 +22,7 @@ impl RSDefinition {
         match self {
             Self::Alias(alias) => &alias.doc,
             Self::Struct(class) => &class.doc,
+            Self::Enum(r#enum) => &r#enum.doc,
         }
     }
 }
@@ -27,6 +30,12 @@ impl RSDefinition {
 impl From<RSStruct> for RSDefinition {
     fn from(class: RSStruct) -> Self {
         RSDefinition::Struct(class)
+    }
+}
+
+impl From<RSEnum> for RSDefinition {
+    fn from(r#enum: RSEnum) -> Self {
+        RSDefinition::Enum(r#enum)
     }
 }
 
@@ -50,6 +59,7 @@ mod tests {
         assert_eq!(
             *RSDefinition::Struct(RSStruct {
                 doc: None,
+                attributes: vec![],
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![],
@@ -74,6 +84,7 @@ mod tests {
         assert_eq!(
             *RSDefinition::Struct(RSStruct {
                 doc: Some("Hello, world!".into()),
+                attributes: vec![],
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![],

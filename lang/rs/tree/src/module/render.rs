@@ -79,6 +79,7 @@ mod tests {
                     }),
                     RSDefinition::Struct(RSStruct {
                         doc: None,
+                        attributes: vec![],
                         name: "Name".into(),
                         extensions: vec![],
                         properties: vec![

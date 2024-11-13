@@ -10,6 +10,7 @@ impl RSRender for RSDefinition {
         match self {
             RSDefinition::Alias(alias) => alias.render(indent, config),
             RSDefinition::Struct(interface) => interface.render(indent, config),
+            RSDefinition::Enum(r#enum) => r#enum.render(indent, config),
         }
     }
 }
@@ -38,6 +39,7 @@ mod tests {
         assert_eq!(
             RSDefinition::Struct(RSStruct {
                 doc: None,
+                attributes: vec![],
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![
@@ -59,6 +61,41 @@ mod tests {
             r#"struct Name {
     name: String,
     age: isize,
+}"#
+        );
+    }
+
+    #[test]
+    #[ignore = "WIP"]
+    fn test_render_enum() {
+        assert_eq!(
+            RSDefinition::Enum(RSEnum {
+                doc: None,
+                attributes: vec![],
+                name: "ValuesUnion".into(),
+                variants: vec![
+                    RSEnumVariant {
+                        doc: None,
+                        name: "Boolean".into(),
+                        attributes: vec![],
+                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                            RSDescriptor::Primitive(RSPrimitive::Boolean).into()
+                        ),
+                    },
+                    RSEnumVariant {
+                        doc: None,
+                        name: "String".into(),
+                        attributes: vec![],
+                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                            RSDescriptor::Primitive(RSPrimitive::String).into()
+                        ),
+                    }
+                ],
+            })
+            .render(&rs_indent(), &Default::default()),
+            r#"enum ValuesUnion {
+    Boolean(bool),
+    String(String),
 }"#
         );
     }

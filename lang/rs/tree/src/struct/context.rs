@@ -23,6 +23,7 @@ mod tests {
         let mut context = RSContextMock::default();
         let alias = RSStruct {
             doc: None,
+            attributes: vec![],
             name: "Foo".into(),
             extensions: vec![],
             properties: vec![],

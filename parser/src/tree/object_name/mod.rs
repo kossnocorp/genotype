@@ -7,8 +7,6 @@ pub enum GTObjectName {
     Alias(GTIdentifier, GTObjectNameParent),
 }
 
-impl GTObjectName {}
-
 impl From<GTIdentifier> for GTObjectName {
     fn from(value: GTIdentifier) -> Self {
         GTObjectName::Named(value)

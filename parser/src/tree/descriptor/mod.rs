@@ -41,6 +41,11 @@ impl From<GTIdentifier> for GTDescriptor {
     }
 }
 
+impl From<GTTuple> for GTDescriptor {
+    fn from(tuple: GTTuple) -> Self {
+        GTDescriptor::Tuple(tuple)
+    }
+}
 impl From<GTUnion> for GTDescriptor {
     fn from(union: GTUnion) -> Self {
         GTDescriptor::Union(union)

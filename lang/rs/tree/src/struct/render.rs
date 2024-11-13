@@ -73,6 +73,7 @@ mod tests {
         assert_eq!(
             RSStruct {
                 doc: None,
+                attributes: vec![],
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![],
@@ -87,6 +88,7 @@ mod tests {
         assert_eq!(
             RSStruct {
                 doc: None,
+                attributes: vec![],
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![
@@ -117,6 +119,7 @@ mod tests {
         assert_eq!(
             RSStruct {
                 doc: None,
+                attributes: vec![],
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![
@@ -148,6 +151,7 @@ mod tests {
         assert_eq!(
             RSStruct {
                 doc: None,
+                attributes: vec![],
                 name: "Name".into(),
                 extensions: vec![
                     RSReference::new("Hello".into()).into(),
@@ -171,6 +175,7 @@ mod tests {
         assert_eq!(
             RSStruct {
                 doc: Some("Hello, world!".into()),
+                attributes: vec![],
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![],
@@ -186,6 +191,7 @@ struct Name;"#
         assert_eq!(
             RSStruct {
                 doc: Some("Hello, world!".into()),
+                attributes: vec![],
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![RSProperty {

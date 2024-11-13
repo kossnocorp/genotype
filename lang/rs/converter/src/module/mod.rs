@@ -218,6 +218,7 @@ mod tests {
                 definitions: vec![
                     RSDefinition::Struct(RSStruct {
                         doc: None,
+                        attributes: vec![],
                         name: "User".into(),
                         extensions: vec![],
                         properties: vec![
@@ -237,6 +238,7 @@ mod tests {
                     }),
                     RSDefinition::Struct(RSStruct {
                         doc: None,
+                        attributes: vec![],
                         name: "Order".into(),
                         extensions: vec![],
                         properties: vec![RSProperty {
@@ -248,6 +250,7 @@ mod tests {
                     }),
                     RSDefinition::Struct(RSStruct {
                         doc: None,
+                        attributes: vec![],
                         name: "Book".into(),
                         extensions: vec![],
                         properties: vec![
