@@ -1,9 +1,9 @@
-use std::{collections::HashSet, hash::Hash};
+use std::collections::HashSet;
 
 use genotype_lang_rs_tree::{
-    enum_variant, RSContextResolve, RSEnum, RSEnumVariant, RSEnumVariantDescriptor, RSIdentifier,
+    RSContextResolve, RSEnum, RSEnumVariant, RSEnumVariantDescriptor, RSIdentifier,
 };
-use genotype_parser::{literal, tree::union::GTUnion, GTDescriptor, GTIdentifier, GTPrimitive};
+use genotype_parser::{tree::union::GTUnion, GTDescriptor, GTPrimitive};
 
 use crate::{
     context::{naming::RSContextParent, RSConvertContext},
@@ -93,12 +93,10 @@ fn enumerated_name(name: &RSIdentifier, variant_names: &HashSet<RSIdentifier>) -
 fn name_descriptor(descriptor: &GTDescriptor, context: &mut RSConvertContext) -> RSIdentifier {
     match descriptor {
         GTDescriptor::Alias(alias) => alias.name.convert(context),
-        GTDescriptor::Array(_) => "Vec".into(),
+        GTDescriptor::Reference(reference) => reference.1.convert(context),
         GTDescriptor::InlineImport(import) => import.name.convert(context),
+        GTDescriptor::Object(object) => object.name.to_identifier().convert(context),
         GTDescriptor::Literal(literal) => literal.to_string().into(),
-        // [TODO] It is possible to get the name of the object, but it will require quite some work
-        // GTDescriptor::Object(object) => object.name...
-        GTDescriptor::Object(_) => "Struct".into(),
         GTDescriptor::Primitive(primitive) => match primitive {
             GTPrimitive::Boolean(_) => "Boolean".into(),
             GTPrimitive::Float(_) => "Float".into(),
@@ -106,9 +104,7 @@ fn name_descriptor(descriptor: &GTDescriptor, context: &mut RSConvertContext) ->
             GTPrimitive::String(_) => "String".into(),
             GTPrimitive::Null(_) => "Null".into(),
         },
-        GTDescriptor::Reference(reference) => reference.1.convert(context),
-        // [TODO] It can be named, but its name depends on the variant being named first
-        // it is definetely a logic error
+        GTDescriptor::Array(_) => "Vec".into(),
         GTDescriptor::Union(_) => "Union".into(),
         GTDescriptor::Record(_) => "Map".into(),
         GTDescriptor::Tuple(_) => "Tuple".into(),
@@ -225,7 +221,7 @@ mod tests {
     }
 
     #[test]
-    fn test_test_unique_name() {
+    fn test_unique_name() {
         assert_eq!(
             GTUnion {
                 span: (0, 0).into(),
