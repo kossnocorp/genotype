@@ -208,7 +208,7 @@ mod tests {
                         dependency: RSDependency::Local("self::path::to::module".into()),
                     },
                     RSImport {
-                        path: "genotype".into(),
+                        path: "genotype_runtime".into(),
                         reference: RSImportReference::Named(vec![RSImportName::Name(
                             "Model".into()
                         )]),

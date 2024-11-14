@@ -1,6 +1,5 @@
-use crate::{descriptor::RSDescriptor, RSAttribute, RSDoc, RSEnumVariantDescriptor, RSIdentifier};
+use crate::{RSAttribute, RSDoc, RSEnumVariantDescriptor, RSIdentifier};
 
-mod context;
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]

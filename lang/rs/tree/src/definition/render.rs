@@ -66,7 +66,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "WIP"]
     fn test_render_enum() {
         assert_eq!(
             RSDefinition::Enum(RSEnum {
