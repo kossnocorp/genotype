@@ -525,8 +525,8 @@ mod tests {
                                     name: GTKey::new((12, 16).into(), "name".into()),
                                     descriptor: GTDescriptor::Object(GTObject {
                                         span: (18, 58).into(),
-                                        name: GTObjectName::Anonymous(
-                                            (18, 58).into(),
+                                        name: GTObjectName::Alias(
+                                            GTIdentifier::new((18, 58).into(), "HelloName".into()),
                                             GTObjectNameParent::Property(
                                                 GTIdentifier::new((0, 5).into(), "Hello".into()),
                                                 vec![GTKey::new((12, 16).into(), "name".into())],

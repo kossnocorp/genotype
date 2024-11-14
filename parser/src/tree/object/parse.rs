@@ -8,9 +8,12 @@ impl GTObject {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
         let span: GTSpan = pair.as_span().into();
 
-        let name = context.object_parent(span.clone())?;
-        let anonymous = matches!(name, GTObjectName::Named(_));
-        if anonymous {
+        let name = context.resolve_name(span.clone())?;
+
+        // It is an explicitely named object, so we need to add an anonymous parent so following
+        // children don't get the object name.
+        let named = matches!(name, GTObjectName::Named(_));
+        if named {
             context.parents.push(GTContextParent::Anonymous);
         }
 
@@ -35,7 +38,7 @@ impl GTObject {
             }
         }
 
-        if anonymous {
+        if named {
             context.pop_parent(span, GTNode::Object)?;
         }
 
@@ -134,8 +137,8 @@ mod tests {
             GTObject::parse(pairs.next().unwrap(), &mut context).unwrap(),
             GTObject {
                 span: (0, 17).into(),
-                name: GTObjectName::Anonymous(
-                    (0, 17).into(),
+                name: GTObjectName::Alias(
+                    GTIdentifier::new((0, 17).into(), "HelloObj".into()),
                     GTObjectNameParent::Alias(GTIdentifier::new((0, 5).into(), "Hello".into()))
                 ),
                 extensions: vec![],

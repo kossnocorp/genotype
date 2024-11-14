@@ -11,8 +11,6 @@ impl GTTraverse for GTObjectName {
         match self {
             GTObjectName::Named(name) => name.traverse(visitor),
 
-            GTObjectName::Anonymous(_, parent) => visit_parent(visitor, parent),
-
             GTObjectName::Alias(identifier, parent) => {
                 identifier.traverse(visitor);
                 visit_parent(visitor, parent);
@@ -51,44 +49,6 @@ mod tests {
             vec![
                 GTMockVisited::ObjectName(name),
                 GTMockVisited::Identifier(identifier)
-            ]
-        );
-    }
-
-    #[test]
-    fn test_traverse_anonymous_alias() {
-        let mut visitor = GTMockVisitor::new();
-        let identifier = GTIdentifier::new((0, 0).into(), "Name".into());
-        let mut name =
-            GTObjectName::Anonymous((0, 0).into(), GTObjectNameParent::Alias(identifier.clone()));
-        name.traverse(&mut visitor);
-        assert_eq!(
-            visitor.visited,
-            vec![
-                GTMockVisited::ObjectName(name),
-                GTMockVisited::Identifier(identifier)
-            ]
-        );
-    }
-
-    #[test]
-    fn test_traverse_anonymous_property() {
-        let mut visitor = GTMockVisitor::new();
-        let identifier = GTIdentifier::new((0, 0).into(), "Name".into());
-        let key1 = GTKey::new((0, 0).into(), "key1".into());
-        let key2 = GTKey::new((0, 0).into(), "key2".into());
-        let mut name = GTObjectName::Anonymous(
-            (0, 0).into(),
-            GTObjectNameParent::Property(identifier.clone(), vec![key1.clone(), key2.clone()]),
-        );
-        name.traverse(&mut visitor);
-        assert_eq!(
-            visitor.visited,
-            vec![
-                GTMockVisited::ObjectName(name),
-                GTMockVisited::Identifier(identifier),
-                GTMockVisited::Key(key1),
-                GTMockVisited::Key(key2)
             ]
         );
     }

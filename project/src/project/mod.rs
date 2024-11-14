@@ -1,6 +1,5 @@
 use error::GTProjectError;
 use genotype_config::GTConfig;
-use genotype_visitor::traverse::GTTraverse;
 use glob::glob;
 use miette::Result;
 use rayon::Scope;
@@ -65,13 +64,6 @@ impl GTProject {
             .expect("Mutex cannot be locked")
             .into_iter()
             .collect::<Result<Vec<_>>>()?;
-
-        for module in &mut modules {
-            let mut visitor = GTProjectVistor::new();
-            let parse = &mut module.1;
-            parse.module.traverse(&mut visitor);
-            parse.resolve.exports.extend(visitor.object_aliases);
-        }
 
         let mut modules = modules
             .iter()

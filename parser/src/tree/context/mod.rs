@@ -1,4 +1,4 @@
-use crate::{GTNode, GTParseError, GTNodeParseResult, GTSpan};
+use crate::{GTNode, GTNodeParseResult, GTParseError, GTSpan};
 
 use super::{GTIdentifier, GTKey, GTObjectName, GTObjectNameParent, GTResolve};
 
@@ -8,10 +8,15 @@ pub struct GTContext {
     pub parents: Vec<GTContextParent>,
 }
 
+/// The parent context enum that defines the kind of a parent an object has.
+/// It allows building object names from the parents.
 #[derive(Debug, PartialEq, Clone)]
 pub enum GTContextParent {
+    /// An explicitely named alias parent.
     Alias(GTIdentifier),
+    /// An anonymous parent, i.e. an union or a nested object.
     Anonymous,
+    /// A property parent.
     Property(GTKey),
 }
 
@@ -30,35 +35,49 @@ impl GTContext {
         Ok(())
     }
 
-    pub fn object_parent(&self, span: GTSpan) -> GTNodeParseResult<GTObjectName> {
+    pub fn resolve_name(&self, span: GTSpan) -> GTNodeParseResult<GTObjectName> {
         let mut keys = vec![];
         let mut anonymous = false;
 
+        // Go through the parents in reverse order to build the object parent name
         for parent in self.parents.iter().rev() {
             match parent {
+                // If there's an property parent, we start building the keys path
                 GTContextParent::Property(key) => keys.insert(0, key.clone()),
 
+                // If there's an anonymous parent, we mark the object as anonymous
+                // which means we'll end up with an anonymous object name.
                 GTContextParent::Anonymous => {
                     anonymous = true;
                 }
 
+                // If we finally found an alias parent, we can stop building the object name
+                // and resolve it.
                 GTContextParent::Alias(identifier) => {
+                    // There was an anonymous parent of the path, so we need to build the name from
+                    // the context.
                     if anonymous {
-                        return Ok(GTObjectName::Anonymous(
-                            span.clone(),
-                            if keys.len() == 0 {
-                                GTObjectNameParent::Alias(identifier.clone())
-                            } else {
-                                GTObjectNameParent::Property(identifier.clone(), keys)
-                            },
-                        ));
+                        let parent = if keys.len() == 0 {
+                            // If there was no keys on the path, then the parent is an alias.
+                            GTObjectNameParent::Alias(identifier.clone())
+                        } else {
+                            // Otherwise the parent is a property.
+                            GTObjectNameParent::Property(identifier.clone(), keys)
+                        };
+                        let identifier = parent.to_identifier(span.clone());
+                        return Ok(GTObjectName::Alias(identifier, parent));
+                        // return Ok(GTObjectName::Anonymous(span.clone(), parent));
                     } else {
+                        // There was no anonymous parent of the path, so it means this name belongs
+                        // to the object. We get here, for example, with AliasName = { ... },
+                        // where { ... } finds the AliasName parent.
                         return Ok(GTObjectName::Named(identifier.clone()));
                     }
                 }
             }
         }
 
+        // Parents are in an invalid state, we can't resolve the object name.
         Err(GTParseError::Internal(span.clone(), GTNode::ObjectName))
     }
 }
@@ -78,7 +97,7 @@ mod tests {
             ],
         };
         assert_eq!(
-            context.object_parent((50, 55).into()).unwrap(),
+            context.resolve_name((50, 55).into()).unwrap(),
             GTObjectName::Named(GTIdentifier::new((5, 10).into(), "Hello".into()))
         );
     }
@@ -94,9 +113,9 @@ mod tests {
             ],
         };
         assert_eq!(
-            context.object_parent((50, 55).into()).unwrap(),
-            GTObjectName::Anonymous(
-                (50, 55).into(),
+            context.resolve_name((50, 55).into()).unwrap(),
+            GTObjectName::Alias(
+                GTIdentifier::new((50, 55).into(), "HelloObj".into()),
                 GTObjectNameParent::Alias(GTIdentifier::new((5, 10).into(), "Hello".into()))
             )
         );
@@ -115,9 +134,9 @@ mod tests {
             ],
         };
         assert_eq!(
-            context.object_parent((50, 55).into()).unwrap(),
-            GTObjectName::Anonymous(
-                (50, 55).into(),
+            context.resolve_name((50, 55).into()).unwrap(),
+            GTObjectName::Alias(
+                GTIdentifier::new((50, 55).into(), "HelloCruelWorld".into()),
                 GTObjectNameParent::Property(
                     GTIdentifier::new((5, 10).into(), "Hello".into()),
                     vec![

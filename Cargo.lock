@@ -501,7 +501,6 @@ version = "0.2.0"
 dependencies = [
  "genotype_config",
  "genotype_parser",
- "genotype_visitor",
  "glob",
  "miette",
  "num_cpus",

@@ -170,8 +170,8 @@ mod tests {
                     descriptors: vec![
                         GTObject {
                             span: (0, 0).into(),
-                            name: GTObjectName::Anonymous(
-                                (0, 0).into(),
+                            name: GTObjectName::Alias(
+                                GTIdentifier::new((0, 0).into(), "BookAuthorObj".into()),
                                 GTObjectNameParent::Alias(GTIdentifier::new(
                                     (0, 0).into(),
                                     "BookAuthor".into()

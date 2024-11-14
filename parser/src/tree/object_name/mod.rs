@@ -1,10 +1,22 @@
 use crate::*;
 
+/// A name assigned to an object. It can be explicitely named,
 #[derive(Debug, PartialEq, Clone)]
 pub enum GTObjectName {
+    /// Explicately given name.
     Named(GTIdentifier),
-    Anonymous(GTSpan, GTObjectNameParent),
+    /// Name given to an anonymous object. It includes the name parent that helped
+    /// to build the object name.
     Alias(GTIdentifier, GTObjectNameParent),
+}
+
+impl GTObjectName {
+    pub fn to_identifier(&self) -> GTIdentifier {
+        match self {
+            GTObjectName::Named(identifier) => identifier.clone(),
+            GTObjectName::Alias(identifier, _) => identifier.clone(),
+        }
+    }
 }
 
 impl From<GTIdentifier> for GTObjectName {
@@ -13,9 +25,12 @@ impl From<GTIdentifier> for GTObjectName {
     }
 }
 
+/// The kind of parent that builds the object name.
 #[derive(Debug, PartialEq, Clone)]
 pub enum GTObjectNameParent {
+    /// An alias parent.
     Alias(GTIdentifier),
+    /// A property parent that starts with the root alias name and the keys path.
     Property(GTIdentifier, Vec<GTKey>),
 }
 
