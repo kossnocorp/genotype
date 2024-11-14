@@ -220,8 +220,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: "User".into(),
-                        extensions: vec![],
-                        properties: vec![
+                        fields: vec![
                             RSProperty {
                                 doc: None,
                                 attributes: vec![],
@@ -234,26 +233,26 @@ mod tests {
                                 name: "age".into(),
                                 descriptor: RSOption::new(RSPrimitive::Int.into()).into(),
                             }
-                        ],
+                        ]
+                        .into(),
                     }),
                     RSDefinition::Struct(RSStruct {
                         doc: None,
                         attributes: vec![],
                         name: "Order".into(),
-                        extensions: vec![],
-                        properties: vec![RSProperty {
+                        fields: vec![RSProperty {
                             doc: None,
                             attributes: vec![],
                             name: "book".into(),
                             descriptor: RSReference::new("Book".into()).into(),
-                        }],
+                        }]
+                        .into(),
                     }),
                     RSDefinition::Struct(RSStruct {
                         doc: None,
                         attributes: vec![],
                         name: "Book".into(),
-                        extensions: vec![],
-                        properties: vec![
+                        fields: vec![
                             RSProperty {
                                 doc: None,
                                 attributes: vec![],
@@ -266,7 +265,8 @@ mod tests {
                                 name: "author".into(),
                                 descriptor: RSReference::new("Author".into()).into(),
                             }
-                        ],
+                        ]
+                        .into(),
                     }),
                     RSDefinition::Alias(RSAlias {
                         doc: None,

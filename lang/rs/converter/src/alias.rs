@@ -122,8 +122,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: "Book".into(),
-                extensions: vec![],
-                properties: vec![
+                fields: vec![
                     RSProperty {
                         doc: None,
                         attributes: vec![],
@@ -136,7 +135,8 @@ mod tests {
                         name: "author".into(),
                         descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                     }
-                ],
+                ]
+                .into(),
             }),
         );
     }
@@ -190,13 +190,13 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: "BookObj".into(),
-                extensions: vec![],
-                properties: vec![RSProperty {
+                fields: vec![RSProperty {
                     doc: None,
                     attributes: vec![],
                     name: "author".into(),
                     descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                }],
+                }]
+                .into(),
             })]
         );
     }

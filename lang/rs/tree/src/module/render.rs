@@ -81,8 +81,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: "Name".into(),
-                        extensions: vec![],
-                        properties: vec![
+                        fields: vec![
                             RSProperty {
                                 doc: None,
                                 attributes: vec![],
@@ -95,7 +94,8 @@ mod tests {
                                 name: "age".into(),
                                 descriptor: RSDescriptor::Primitive(RSPrimitive::Int),
                             }
-                        ],
+                        ]
+                        .into(),
                     }),
                 ]
             }

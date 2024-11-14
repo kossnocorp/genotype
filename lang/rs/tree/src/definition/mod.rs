@@ -61,8 +61,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: "Name".into(),
-                extensions: vec![],
-                properties: vec![],
+                fields: vec![].into(),
             })
             .name(),
             "Name".into(),
@@ -86,8 +85,7 @@ mod tests {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "Name".into(),
-                extensions: vec![],
-                properties: vec![],
+                fields: vec![].into(),
             })
             .doc(),
             Some("Hello, world!".into()),

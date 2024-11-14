@@ -16,16 +16,25 @@ impl RSConvert<RSStruct> for GTObject {
         context.enter_parent(RSContextParent::Definition(name.clone()));
 
         let doc = context.consume_doc();
-        let extensions = self.extensions.iter().map(|e| e.convert(context)).collect();
-        let properties = self.properties.iter().map(|p| p.convert(context)).collect();
+        let fields = self.properties.iter().map(|p| p.convert(context)).collect();
+
+        let fields = if self.extensions.len() > 0 {
+            let references = self
+                .extensions
+                .iter()
+                .map(|e| e.reference.convert(context))
+                .collect();
+            RSStructFields::Unresolved(self.span.clone(), references, fields)
+        } else {
+            RSStructFields::Resolved(fields)
+        };
 
         let r#struct = RSStruct {
             doc,
             // [TODO]
             attributes: vec![],
             name,
-            extensions,
-            properties,
+            fields,
         }
         .resolve(context);
 
@@ -73,8 +82,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: "Person".into(),
-                extensions: vec![],
-                properties: vec![
+                fields: vec![
                     RSProperty {
                         doc: None,
                         attributes: vec![],
@@ -87,7 +95,8 @@ mod tests {
                         name: "age".into(),
                         descriptor: RSOption::new(RSDescriptor::Primitive(RSPrimitive::Int)).into(),
                     }
-                ],
+                ]
+                .into(),
             }
         );
     }
@@ -107,8 +116,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: "Person".into(),
-                extensions: vec![],
-                properties: vec![],
+                fields: vec![].into(),
             }
         );
         assert_eq!(
@@ -133,8 +141,65 @@ mod tests {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "Person".into(),
-                extensions: vec![],
-                properties: vec![],
+                fields: vec![].into(),
+            }
+        );
+    }
+
+    #[test]
+    fn test_convert_unresolved() {
+        let mut context = RSConvertContext::default();
+        assert_eq!(
+            GTObject {
+                span: (1, 8).into(),
+                name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
+                extensions: vec![GTExtension {
+                    span: (0, 0).into(),
+                    reference: GTIdentifier::new((0, 0).into(), "Model".into()).into(),
+                }],
+                properties: vec![
+                    GTProperty {
+                        span: (0, 0).into(),
+                        doc: None,
+                        attributes: vec![],
+                        name: GTKey::new((0, 0).into(), "name".into()),
+                        descriptor: GTPrimitive::String((0, 0).into()).into(),
+                        required: true,
+                    },
+                    GTProperty {
+                        span: (0, 0).into(),
+                        doc: None,
+                        attributes: vec![],
+                        name: GTKey::new((0, 0).into(), "age".into()),
+                        descriptor: GTPrimitive::Int((0, 0).into()).into(),
+                        required: false,
+                    }
+                ]
+            }
+            .convert(&mut context),
+            RSStruct {
+                doc: None,
+                attributes: vec![],
+                name: "Person".into(),
+                fields: RSStructFields::Unresolved(
+                    (1, 8).into(),
+                    vec![RSReference::new("Model".into())],
+                    vec![
+                        RSProperty {
+                            doc: None,
+                            attributes: vec![],
+                            name: "name".into(),
+                            descriptor: RSDescriptor::Primitive(RSPrimitive::String).into(),
+                        },
+                        RSProperty {
+                            doc: None,
+                            attributes: vec![],
+                            name: "age".into(),
+                            descriptor: RSOption::new(RSDescriptor::Primitive(RSPrimitive::Int))
+                                .into(),
+                        }
+                    ]
+                )
             }
         );
     }

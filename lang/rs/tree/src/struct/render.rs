@@ -14,51 +14,11 @@ impl RSRender for RSStruct {
         }
 
         let name = self.name.render(indent);
-        let body = self.render_body(indent, config);
-        // [TODO] Replace extensions with fields enum (resolved/unresolved)
-        // let extensions = self.render_extensions(indent, config);
+        let fields = self.fields.render(indent, config);
 
-        blocks.push(format!("{}struct {name}{body}", indent.string));
+        blocks.push(format!("{}struct {name}{fields}", indent.string));
 
         blocks.join("\n")
-    }
-}
-
-impl RSStruct {
-    fn render_extensions(&self, indent: &GTIndent, config: &RSLangConfig) -> String {
-        let mut extensions = self
-            .extensions
-            .iter()
-            .map(|extension| extension.render(indent, config))
-            .collect::<Vec<_>>();
-        // [TODO] Push model when converting instead
-        extensions.push("Model".into());
-
-        let extensions = extensions.join(", ");
-
-        if extensions.len() > 0 {
-            format!("({extensions})")
-        } else {
-            "".into()
-        }
-    }
-
-    fn render_body(&self, indent: &GTIndent, config: &RSLangConfig) -> String {
-        if self.properties.len() == 0 {
-            return ";".into();
-        }
-
-        let fields = self.render_fields(indent, config);
-        format!(" {{\n{fields}\n{}}}", indent.string)
-    }
-
-    fn render_fields(&self, indent: &GTIndent, config: &RSLangConfig) -> String {
-        let indent = indent.increment();
-        self.properties
-            .iter()
-            .map(|property| property.render(&indent, config) + ",")
-            .collect::<Vec<String>>()
-            .join("\n")
     }
 }
 
@@ -75,8 +35,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: "Name".into(),
-                extensions: vec![],
-                properties: vec![],
+                fields: vec![].into(),
             }
             .render(&rs_indent(), &Default::default()),
             "struct Name;"
@@ -90,8 +49,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: "Name".into(),
-                extensions: vec![],
-                properties: vec![
+                fields: vec![
                     RSProperty {
                         doc: None,
                         attributes: vec![],
@@ -104,7 +62,8 @@ mod tests {
                         name: "age".into(),
                         descriptor: RSDescriptor::Primitive(RSPrimitive::Int),
                     }
-                ],
+                ]
+                .into(),
             }
             .render(&rs_indent(), &Default::default()),
             r#"struct Name {
@@ -121,8 +80,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: "Name".into(),
-                extensions: vec![],
-                properties: vec![
+                fields: vec![
                     RSProperty {
                         doc: None,
                         attributes: vec![],
@@ -135,7 +93,8 @@ mod tests {
                         name: "age".into(),
                         descriptor: RSDescriptor::Primitive(RSPrimitive::Int),
                     }
-                ],
+                ]
+                .into(),
             }
             .render(&rs_indent().increment(), &Default::default()),
             r#"    struct Name {
@@ -146,39 +105,13 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "Extensions will be replaced by resolved/unresolved fields"]
-    fn test_render_extensions() {
-        assert_eq!(
-            RSStruct {
-                doc: None,
-                attributes: vec![],
-                name: "Name".into(),
-                extensions: vec![
-                    RSReference::new("Hello".into()).into(),
-                    RSReference::new("World".into()).into()
-                ],
-                properties: vec![RSProperty {
-                    doc: None,
-                    attributes: vec![],
-                    name: "name".into(),
-                    descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                }],
-            }
-            .render(&rs_indent(), &Default::default()),
-            r#"class Name(Hello, World, Model):
-    name: String"#
-        );
-    }
-
-    #[test]
     fn test_render_doc_empty() {
         assert_eq!(
             RSStruct {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "Name".into(),
-                extensions: vec![],
-                properties: vec![],
+                fields: vec![].into(),
             }
             .render(&rs_indent(), &Default::default()),
             r#"/// Hello, world!
@@ -193,13 +126,13 @@ struct Name;"#
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "Name".into(),
-                extensions: vec![],
-                properties: vec![RSProperty {
+                fields: vec![RSProperty {
                     doc: None,
                     attributes: vec![],
                     name: "name".into(),
                     descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                }],
+                }]
+                .into(),
             }
             .render(&rs_indent(), &Default::default()),
             r#"/// Hello, world!

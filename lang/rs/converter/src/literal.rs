@@ -20,10 +20,9 @@ impl RSConvert<RSStruct> for GTLiteral {
             // [TODO]
             doc: None,
             attributes: vec![RSAttribute(format!("literal({value})"))],
-            extensions: vec![],
             // [TODO] Generate name
             name: "Literal".into(),
-            properties: vec![],
+            fields: vec![].into(),
         }
         // .resolve(context)
     }
