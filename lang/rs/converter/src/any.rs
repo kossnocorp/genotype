@@ -31,7 +31,7 @@ mod tests {
         assert_eq!(GTAny((0, 0).into(),).convert(&mut context), RSAny);
         assert_eq!(
             context.as_dependencies(),
-            vec![(RSDependency::Typing, "Any".into())]
+            vec![(RSDependency::SerdeJson, "Value".into())]
         );
     }
 }

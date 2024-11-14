@@ -99,7 +99,7 @@ mod tests {
     fn test_render_any() {
         assert_eq!(
             RSDescriptor::Any(RSAny).render(&rs_indent(), &Default::default()),
-            "Any"
+            "Value"
         );
     }
 

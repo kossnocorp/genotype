@@ -7,7 +7,7 @@ impl RSContextResolve for RSAny {
     where
         Context: RSContext,
     {
-        context.import(RSDependency::Typing, "Any".into());
+        context.import(RSDependency::SerdeJson, "Value".into());
         self
     }
 }
@@ -25,7 +25,7 @@ mod tests {
         alias.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
-            vec![(RSDependency::Typing, "Any".into())]
+            vec![(RSDependency::SerdeJson, "Value".into())]
         );
     }
 }

@@ -4,7 +4,7 @@ use super::RSAny;
 
 impl GTRender for RSAny {
     fn render(&self, _indent: &GTIndent) -> String {
-        "Any".to_string()
+        "Value".to_string()
     }
 }
 
@@ -15,6 +15,6 @@ mod tests {
 
     #[test]
     fn test_render_primitive() {
-        assert_eq!(RSAny.render(&rs_indent()), "Any");
+        assert_eq!(RSAny.render(&rs_indent()), "Value");
     }
 }

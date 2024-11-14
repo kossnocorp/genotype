@@ -5,6 +5,7 @@ pub enum RSDependency {
     Local(RSPath),
     Runtime,
     Serde,
+    SerdeJson,
     Typing,
     TypingExtensions,
     Rsdantic,
@@ -17,6 +18,7 @@ impl RSDependency {
             Self::Local(path) => path.clone(),
             Self::Runtime => "genotype".into(),
             Self::Serde => "serde".into(),
+            Self::SerdeJson => "serde_json".into(),
             Self::Typing => "typing".into(),
             Self::TypingExtensions => "typing_extensions".into(),
             Self::Rsdantic => "rsdantic".into(),
@@ -27,6 +29,8 @@ impl RSDependency {
     pub fn external_str(&self) -> Option<String> {
         match self {
             Self::Runtime => Some(r#"genotype-runtime = "^0.4""#.into()),
+            Self::Serde => Some(r#"serde = { version = "1", features = ["derive"] }"#.into()),
+            Self::SerdeJson => Some(r#"serde_json = "1""#.into()),
             Self::TypingExtensions => Some(r#"typing-extensions = "^4""#.into()),
             Self::Rsdantic => Some(r#"rsdantic = "^2.9""#.into()),
             _ => None,
