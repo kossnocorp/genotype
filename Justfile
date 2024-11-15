@@ -1,3 +1,7 @@
+install:
+  cargo install cargo-watch
+  cargo install cargo-nextest --locked
+
 test:
   cargo nextest run
 
