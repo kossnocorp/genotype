@@ -1,5 +1,4 @@
 use genotype_lang_rs_tree::{RSIdentifier, RSKey};
-use genotype_parser::GTIdentifier;
 use heck::ToPascalCase;
 
 use super::RSConvertContext;

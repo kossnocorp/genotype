@@ -1,22 +1,22 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use genotype_lang_core_tree::indent::GTIndent;
 use genotype_lang_rs_config::RSLangConfig;
-use genotype_lang_rs_config::RSVersion;
+use miette::Result;
 
 use crate::RSRender;
 
 use super::RSAlias;
 
 impl RSRender for RSAlias {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> String {
-        let name = self.name.render(indent);
-        let descriptor = self.descriptor.render(indent, config);
-        let r#type = format!("type {} = {};", name, descriptor);
+    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
+        let name = self.name.render(indent, config)?;
+        let descriptor = self.descriptor.render(indent, config)?;
+        let r#type = format!("type {name} = {descriptor};");
 
-        if let Some(doc) = &self.doc {
-            format!("{}\n{}", doc.render(&indent), r#type)
+        Ok(if let Some(doc) = &self.doc {
+            format!("{}\n{}", doc.render(indent, config)?, r#type)
         } else {
             r#type
-        }
+        })
     }
 }
 
@@ -34,7 +34,8 @@ mod tests {
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             "type Name = String;"
         );
     }
@@ -47,7 +48,8 @@ mod tests {
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             r#"/// Hello, world!
 type Name = String;"#
         );

@@ -1,29 +1,27 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use genotype_lang_core_tree::indent::GTIndent;
 use genotype_lang_rs_config::RSLangConfig;
+use miette::Result;
 
 use crate::RSRender;
 
 use super::RSModule;
 
 impl RSRender for RSModule {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> String {
+    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
         let mut blocks = vec![];
 
-        let doc = self
-            .doc
-            .as_ref()
-            .map(|doc| doc.render(indent))
-            .unwrap_or_default();
-
-        if !doc.is_empty() {
-            blocks.push(doc);
+        if let Some(doc) = &self.doc {
+            let doc = doc.render(indent, config)?;
+            if !doc.is_empty() {
+                blocks.push(doc);
+            }
         }
 
         let imports = self
             .imports
             .iter()
-            .map(|import| import.render(indent))
-            .collect::<Vec<String>>()
+            .map(|import| import.render(indent, config))
+            .collect::<Result<Vec<String>>>()?
             .join("\n");
 
         if !imports.is_empty() {
@@ -34,14 +32,14 @@ impl RSRender for RSModule {
             .definitions
             .iter()
             .map(|definition| definition.render(indent, config))
-            .collect::<Vec<String>>()
+            .collect::<Result<Vec<String>>>()?
             .join("\n\n\n");
 
         if !definitions.is_empty() {
             blocks.push(definitions);
         }
 
-        blocks.join("\n\n\n") + "\n"
+        Ok(blocks.join("\n\n\n") + "\n")
     }
 }
 
@@ -99,7 +97,8 @@ mod tests {
                     }),
                 ]
             }
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             r#"use self::path::to::module;
 use self::path::to::module::{Name, Name as Alias};
 
@@ -131,7 +130,8 @@ struct Name {
                     descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                 })]
             }
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             r#"//! Hello, world!
 
 

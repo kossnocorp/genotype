@@ -1,13 +1,15 @@
 use genotype_lang_core_tree::indent::GTIndent;
 use genotype_lang_rs_config::RSLangConfig;
+use miette::Result;
 
 use crate::RSRender;
 
 use super::RSVec;
 
 impl RSRender for RSVec {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> String {
-        format!("Vec<{}>", self.descriptor.render(indent, config))
+    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
+        let descriptor = self.descriptor.render(indent, config)?;
+        Ok(format!("Vec<{descriptor}>"))
     }
 }
 
@@ -23,7 +25,8 @@ mod tests {
             RSVec {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String)
             }
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             "Vec<String>"
         );
     }

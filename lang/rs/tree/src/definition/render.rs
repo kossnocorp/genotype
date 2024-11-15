@@ -1,17 +1,18 @@
 use genotype_lang_core_tree::indent::GTIndent;
 use genotype_lang_rs_config::RSLangConfig;
+use miette::Result;
 
 use crate::RSRender;
 
 use super::RSDefinition;
 
 impl RSRender for RSDefinition {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> String {
-        match self {
-            RSDefinition::Alias(alias) => alias.render(indent, config),
-            RSDefinition::Struct(interface) => interface.render(indent, config),
-            RSDefinition::Enum(r#enum) => r#enum.render(indent, config),
-        }
+    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
+        Ok(match self {
+            RSDefinition::Alias(alias) => alias.render(indent, config)?,
+            RSDefinition::Struct(interface) => interface.render(indent, config)?,
+            RSDefinition::Enum(r#enum) => r#enum.render(indent, config)?,
+        })
     }
 }
 
@@ -29,7 +30,8 @@ mod tests {
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             })
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             "type Name = String;"
         );
     }
@@ -57,7 +59,8 @@ mod tests {
                 ]
                 .into(),
             })
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             r#"struct Name {
     name: String,
     age: isize,
@@ -91,7 +94,8 @@ mod tests {
                     }
                 ],
             })
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             r#"enum ValuesUnion {
     Boolean(bool),
     String(String),

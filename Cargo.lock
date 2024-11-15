@@ -438,7 +438,9 @@ dependencies = [
  "genotype_lang_core_tree",
  "genotype_lang_rs_config",
  "genotype_parser",
+ "miette",
  "pretty_assertions",
+ "thiserror",
 ]
 
 [[package]]

@@ -1,21 +1,22 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use genotype_lang_core_tree::indent::GTIndent;
 use genotype_lang_rs_config::RSLangConfig;
+use miette::Result;
 
 use super::{RSDescriptor, RSRender};
 
 impl RSRender for RSDescriptor {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> String {
-        match self {
-            RSDescriptor::Enum(r#enum) => r#enum.render(indent, config),
-            RSDescriptor::List(array) => array.render(indent, config),
-            RSDescriptor::Primitive(primitive) => primitive.render(indent),
-            RSDescriptor::Reference(name) => name.render(indent, config),
-            RSDescriptor::InlineUse(inline_use) => inline_use.render(indent),
-            RSDescriptor::Tuple(tuple) => tuple.render(indent, config),
-            RSDescriptor::HashMap(dict) => dict.render(indent, config),
-            RSDescriptor::Any(any) => any.render(indent),
-            RSDescriptor::Option(option) => option.render(indent, config),
-        }
+    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
+        Ok(match self {
+            RSDescriptor::Enum(r#enum) => r#enum.render(indent, config)?,
+            RSDescriptor::List(array) => array.render(indent, config)?,
+            RSDescriptor::Primitive(primitive) => primitive.render(indent, config)?,
+            RSDescriptor::Reference(name) => name.render(indent, config)?,
+            RSDescriptor::InlineUse(inline_use) => inline_use.render(indent, config)?,
+            RSDescriptor::Tuple(tuple) => tuple.render(indent, config)?,
+            RSDescriptor::HashMap(dict) => dict.render(indent, config)?,
+            RSDescriptor::Any(any) => any.render(indent, config)?,
+            RSDescriptor::Option(option) => option.render(indent, config)?,
+        })
     }
 }
 
@@ -31,7 +32,8 @@ mod tests {
             RSDescriptor::List(Box::new(RSVec {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Int)
             }))
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             "Vec<isize>"
         );
     }
@@ -39,11 +41,15 @@ mod tests {
     #[test]
     fn test_render_primitive() {
         assert_eq!(
-            RSDescriptor::Primitive(RSPrimitive::Boolean).render(&rs_indent(), &Default::default()),
+            RSDescriptor::Primitive(RSPrimitive::Boolean)
+                .render(&rs_indent(), &Default::default())
+                .unwrap(),
             "bool"
         );
         assert_eq!(
-            RSDescriptor::Primitive(RSPrimitive::String).render(&rs_indent(), &Default::default()),
+            RSDescriptor::Primitive(RSPrimitive::String)
+                .render(&rs_indent(), &Default::default())
+                .unwrap(),
             "String"
         );
     }
@@ -52,7 +58,8 @@ mod tests {
     fn test_render_reference() {
         assert_eq!(
             RSDescriptor::Reference(RSReference::new("Name".into()))
-                .render(&rs_indent(), &Default::default()),
+                .render(&rs_indent(), &Default::default())
+                .unwrap(),
             "Name"
         );
     }
@@ -64,7 +71,8 @@ mod tests {
                 path: "self::path::to::module".into(),
                 name: "Name".into()
             })
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             "self::path::to::module::Name"
         );
     }
@@ -78,7 +86,8 @@ mod tests {
                     RSDescriptor::Primitive(RSPrimitive::String)
                 ]
             })
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             "(isize, String)"
         );
     }
@@ -90,7 +99,8 @@ mod tests {
                 key: RSPrimitive::String.into(),
                 descriptor: RSPrimitive::Int.into(),
             }))
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             "HashMap<String, isize>"
         );
     }
@@ -98,7 +108,9 @@ mod tests {
     #[test]
     fn test_render_any() {
         assert_eq!(
-            RSDescriptor::Any(RSAny).render(&rs_indent(), &Default::default()),
+            RSDescriptor::Any(RSAny)
+                .render(&rs_indent(), &Default::default())
+                .unwrap(),
             "Value"
         );
     }
@@ -109,7 +121,8 @@ mod tests {
             RSDescriptor::Option(Box::new(RSOption::new(RSDescriptor::Primitive(
                 RSPrimitive::String
             ))))
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             "Option<String>"
         );
     }

@@ -1,10 +1,16 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use genotype_lang_core_tree::indent::GTIndent;
+use genotype_lang_rs_config::RSLangConfig;
+use miette::Result;
+
+use crate::RSRender;
 
 use super::RSInlineUse;
 
-impl GTRender for RSInlineUse {
-    fn render(&self, indent: &GTIndent) -> String {
-        format!("{}::{}", self.path.render(indent), self.name.render(indent))
+impl RSRender for RSInlineUse {
+    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
+        let module = self.path.render(indent, config)?;
+        let name = self.name.render(indent, config)?;
+        Ok(format!("{module}::{name}"))
     }
 }
 
@@ -12,7 +18,6 @@ impl GTRender for RSInlineUse {
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use super::*;
     use crate::*;
 
     #[test]
@@ -22,7 +27,8 @@ mod tests {
                 path: "self::path::to::module".into(),
                 name: "Name".into(),
             }
-            .render(&rs_indent()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             "self::path::to::module::Name"
         );
     }

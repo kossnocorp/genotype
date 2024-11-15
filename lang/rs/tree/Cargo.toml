@@ -11,6 +11,8 @@ repository = "https://github.com/kossnocorp/genotype"
 genotype_lang_core_tree = { version = "0.1.0", path = "../../core/tree" }
 genotype_lang_rs_config = { version = "0.1.0", path = "../config" }
 genotype_parser = { version = "0.2.0", path = "../../../parser" }
+miette = { version = "7.2.0", features = ["fancy"] }
+thiserror = "1.0.64"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

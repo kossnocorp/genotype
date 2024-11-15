@@ -1,13 +1,15 @@
 use genotype_lang_core_tree::indent::GTIndent;
 use genotype_lang_rs_config::RSLangConfig;
+use miette::Result;
 
 use crate::RSRender;
 
 use super::RSOption;
 
 impl RSRender for RSOption {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> String {
-        format!("Option<{}>", self.descriptor.render(indent, config))
+    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
+        let descriptor = self.descriptor.render(indent, config)?;
+        Ok(format!("Option<{descriptor}>"))
     }
 }
 
@@ -21,7 +23,8 @@ mod tests {
             RSOption {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String)
             }
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             "Option<String>"
         );
     }

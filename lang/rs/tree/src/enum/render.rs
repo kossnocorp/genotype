@@ -1,37 +1,34 @@
 use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_core_tree::render::GTRender;
 use genotype_lang_rs_config::RSLangConfig;
+use miette::Result;
 
 use crate::RSRender;
 
 use super::RSEnum;
 
 impl RSRender for RSEnum {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> String {
+    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
         let mut blocks = vec![];
 
         if let Some(doc) = &self.doc {
-            blocks.push(doc.render(indent));
+            blocks.push(doc.render(indent, config)?);
         }
 
         for attribute in &self.attributes {
-            blocks.push(attribute.render(indent));
+            blocks.push(attribute.render(indent, config)?);
         }
 
-        blocks.push(format!(
-            "{}enum {} {{",
-            indent.string,
-            self.name.render(indent)
-        ));
+        let name = self.name.render(indent, config)?;
+        blocks.push(format!("{indent}enum {name} {{", indent = indent.string,));
 
         let variants_indent = indent.increment();
         for variant in &self.variants {
-            blocks.push(variant.render(&variants_indent, config));
+            blocks.push(variant.render(&variants_indent, config)?);
         }
 
         blocks.push(indent.format("}"));
 
-        blocks.join("\n")
+        Ok(blocks.join("\n"))
     }
 }
 
@@ -63,7 +60,8 @@ mod tests {
                     },
                 ],
             }
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             r#"enum Union {
     String(String),
     Int(isize),
@@ -93,7 +91,8 @@ mod tests {
                     },
                 ],
             }
-            .render(&rs_indent().increment(), &Default::default()),
+            .render(&rs_indent().increment(), &Default::default())
+            .unwrap(),
             r#"    enum Union {
         String(String),
         Int(isize),
@@ -123,7 +122,8 @@ mod tests {
                     },
                 ],
             }
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             r#"#[derive(Deserialize, Serialize)]
 enum Union {
     String(String),
@@ -154,7 +154,8 @@ enum Union {
                     },
                 ],
             }
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             r#"/// Hello, world!
 enum Union {
     String(String),
@@ -185,7 +186,8 @@ enum Union {
                     },
                 ],
             }
-            .render(&rs_indent().increment(), &Default::default()),
+            .render(&rs_indent().increment(), &Default::default())
+            .unwrap(),
             r#"    /// Hello, world!
     #[derive(Deserialize, Serialize)]
     enum Union {

@@ -1,18 +1,20 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use genotype_lang_core_tree::indent::GTIndent;
+use genotype_lang_rs_config::RSLangConfig;
+use miette::Result;
 
-use crate::RSImportReference;
+use crate::{RSImportReference, RSRender};
 
 use super::RSImport;
 
-impl GTRender for RSImport {
-    fn render(&self, indent: &GTIndent) -> String {
-        let path = self.path.render(indent);
-        let reference = self.reference.render(indent);
+impl RSRender for RSImport {
+    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
+        let path = self.path.render(indent, config)?;
+        let reference = self.reference.render(indent, config)?;
 
-        match self.reference {
-            RSImportReference::Module => format!(r#"use {};"#, path),
-            _ => format!(r#"use {}::{};"#, path, reference),
-        }
+        Ok(match self.reference {
+            RSImportReference::Module => format!(r#"use {path};"#),
+            _ => format!(r#"use {path}::{reference};"#),
+        })
     }
 }
 
@@ -31,7 +33,8 @@ mod tests {
                 reference: RSImportReference::Module,
                 dependency: RSDependency::Local("self::path::to::module".into())
             }
-            .render(&rs_indent()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             r#"use self::path::to::module;"#
         );
     }
@@ -44,7 +47,8 @@ mod tests {
                 reference: RSImportReference::Glob,
                 dependency: RSDependency::Local("self::path::to::module".into())
             }
-            .render(&rs_indent()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             r#"use self::path::to::module::*;"#
         );
     }
@@ -60,7 +64,8 @@ mod tests {
                 ]),
                 dependency: RSDependency::Local("self::path::to::module".into())
             }
-            .render(&rs_indent()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             r#"use self::path::to::module::{Name, Name as Alias};"#
         );
     }

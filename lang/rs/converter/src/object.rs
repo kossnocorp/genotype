@@ -11,7 +11,6 @@ impl RSConvert<RSStruct> for GTObject {
         let name = match &self.name {
             GTObjectName::Named(identifier) => identifier.convert(context),
             GTObjectName::Alias(identifier, _) => identifier.convert(context),
-            _ => panic!("Invalid object name"),
         };
         context.enter_parent(RSContextParent::Definition(name.clone()));
 

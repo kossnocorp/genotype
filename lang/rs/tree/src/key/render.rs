@@ -1,10 +1,14 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use genotype_lang_core_tree::indent::GTIndent;
+use genotype_lang_rs_config::RSLangConfig;
+use miette::Result;
+
+use crate::RSRender;
 
 use super::RSKey;
 
-impl GTRender for RSKey {
-    fn render(&self, _indent: &GTIndent) -> String {
-        self.0.clone()
+impl RSRender for RSKey {
+    fn render(&self, _indent: &GTIndent, _config: &RSLangConfig) -> Result<String> {
+        Ok(self.0.clone())
     }
 }
 
@@ -15,6 +19,11 @@ mod tests {
 
     #[test]
     fn test_render() {
-        assert_eq!(RSKey("foo".into()).render(&rs_indent()), "foo");
+        assert_eq!(
+            RSKey("foo".into())
+                .render(&rs_indent(), &Default::default())
+                .unwrap(),
+            "foo"
+        );
     }
 }

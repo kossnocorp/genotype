@@ -1,36 +1,33 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use genotype_lang_core_tree::indent::GTIndent;
 use genotype_lang_rs_config::RSLangConfig;
+use miette::Result;
 
 use crate::RSRender;
 
 use super::RSProperty;
 
 impl RSRender for RSProperty {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> String {
-        let descriptor = self.descriptor.render(indent, config);
+    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
+        let mut blocks = vec![];
 
-        format!(
-            "{}{}{}{}: {}",
-            if let Some(doc) = &self.doc {
-                format!("{}\n", doc.render(indent))
-            } else {
-                "".into()
-            },
-            if self.attributes.len() > 0 {
-                let attributes = self
-                    .attributes
-                    .iter()
-                    .map(|attr| attr.render(indent))
-                    .collect::<Vec<String>>()
-                    .join("\n");
-                format!("{attributes}\n")
-            } else {
-                "".into()
-            },
-            indent.string,
-            self.name.render(indent),
-            descriptor,
-        )
+        if let Some(doc) = &self.doc {
+            blocks.push(doc.render(indent, config)?);
+        }
+
+        if self.attributes.len() > 0 {
+            for attribute in &self.attributes {
+                blocks.push(attribute.render(indent, config)?);
+            }
+        }
+
+        let name = self.name.render(indent, config)?;
+        let descriptor = self.descriptor.render(indent, config)?;
+        blocks.push(format!(
+            "{indent}{name}: {descriptor}",
+            indent = indent.string
+        ));
+
+        Ok(blocks.join("\n"))
     }
 }
 
@@ -49,7 +46,8 @@ mod tests {
                 name: "name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             "name: String"
         );
         assert_eq!(
@@ -59,7 +57,8 @@ mod tests {
                 name: "name".into(),
                 descriptor: RSReference::new("Name".into()).into(),
             }
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             "name: Name"
         );
     }
@@ -73,7 +72,8 @@ mod tests {
                 name: "name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
-            .render(&rs_indent().increment(), &Default::default()),
+            .render(&rs_indent().increment(), &Default::default())
+            .unwrap(),
             "    name: String"
         );
     }
@@ -87,7 +87,8 @@ mod tests {
                 name: "name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             "name: String"
         );
     }
@@ -101,7 +102,8 @@ mod tests {
                 name: "name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             r#"/// Hello, world!
 name: String"#
         );
@@ -112,7 +114,8 @@ name: String"#
                 name: "name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
-            .render(&rs_indent().increment(), &Default::default()),
+            .render(&rs_indent().increment(), &Default::default())
+            .unwrap(),
             r#"    /// Hello, world!
     name: String"#
         );
@@ -127,7 +130,8 @@ name: String"#
                 name: "name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             "#[derive(Clone)]
 name: String"
         );
@@ -138,7 +142,8 @@ name: String"
                 name: "name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
-            .render(&rs_indent().increment(), &Default::default()),
+            .render(&rs_indent().increment(), &Default::default())
+            .unwrap(),
             "    #[derive(Clone)]
     name: String"
         );
@@ -149,7 +154,8 @@ name: String"
                 name: "name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
-            .render(&rs_indent().increment(), &Default::default()),
+            .render(&rs_indent().increment(), &Default::default())
+            .unwrap(),
             "    /// Hello, world!
     #[derive(Clone)]
     name: String"

@@ -1,28 +1,35 @@
 use genotype_lang_core_tree::indent::GTIndent;
 use genotype_lang_rs_config::RSLangConfig;
+use miette::Result;
+
+use crate::error::RSError;
 
 use super::{RSRender, RSStructFields};
 
 impl RSRender for RSStructFields {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> String {
+    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
         match self {
             RSStructFields::Resolved(fields) => {
                 if fields.len() == 0 {
-                    return ";".into();
+                    return Ok(";".into());
                 }
 
                 let fields_indent = indent.increment();
                 let fields = fields
                     .iter()
-                    .map(|property| property.render(&fields_indent, config) + ",")
-                    .collect::<Vec<String>>()
+                    .map(|property| {
+                        property
+                            .render(&fields_indent, config)
+                            .map(|result| result + ",")
+                    })
+                    .collect::<Result<Vec<String>>>()?
                     .join("\n");
 
-                format!(" {{\n{fields}\n{indent}}}", indent = indent.string)
+                Ok(format!(" {{\n{fields}\n{indent}}}", indent = indent.string))
             }
 
-            RSStructFields::Unresolved(_span, _, _) => {
-                panic!("Attempted to render unresolved struct fields")
+            RSStructFields::Unresolved(span, _, _) => {
+                Err(RSError::UnresolvedStructFields(span.clone()).into())
             }
         }
     }
@@ -51,7 +58,8 @@ mod tests {
                     descriptor: RSDescriptor::Primitive(RSPrimitive::Int),
                 }
             ])
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             r#" {
     name: String,
     age: isize,
@@ -62,7 +70,9 @@ mod tests {
     #[test]
     fn test_render_empty() {
         assert_eq!(
-            RSStructFields::Resolved(vec![]).render(&rs_indent(), &Default::default()),
+            RSStructFields::Resolved(vec![])
+                .render(&rs_indent(), &Default::default())
+                .unwrap(),
             ";"
         );
     }
@@ -84,7 +94,8 @@ mod tests {
                     descriptor: RSDescriptor::Primitive(RSPrimitive::Int),
                 }
             ])
-            .render(&rs_indent().increment(), &Default::default()),
+            .render(&rs_indent().increment(), &Default::default())
+            .unwrap(),
             r#" {
         name: String,
         age: isize,

@@ -1,10 +1,14 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use genotype_lang_core_tree::indent::GTIndent;
+use genotype_lang_rs_config::RSLangConfig;
+use miette::Result;
+
+use crate::RSRender;
 
 use super::RSAny;
 
-impl GTRender for RSAny {
-    fn render(&self, _indent: &GTIndent) -> String {
-        "Value".to_string()
+impl RSRender for RSAny {
+    fn render(&self, _indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
+        Ok("Value".to_string())
     }
 }
 
@@ -15,6 +19,9 @@ mod tests {
 
     #[test]
     fn test_render_primitive() {
-        assert_eq!(RSAny.render(&rs_indent()), "Value");
+        assert_eq!(
+            RSAny.render(&rs_indent(), &Default::default()).unwrap(),
+            "Value"
+        );
     }
 }

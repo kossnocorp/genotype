@@ -1,15 +1,23 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use genotype_lang_core_tree::indent::GTIndent;
+use genotype_lang_rs_config::RSLangConfig;
+use miette::Result;
+
+use crate::RSRender;
 
 use super::RSImportName;
 
-impl GTRender for RSImportName {
-    fn render(&self, indent: &GTIndent) -> String {
-        match self {
-            RSImportName::Name(name) => name.render(indent),
+impl RSRender for RSImportName {
+    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
+        Ok(match self {
+            RSImportName::Name(name) => name.render(indent, config)?,
             RSImportName::Alias(name, alias) => {
-                format!("{} as {}", name.render(indent), alias.render(indent))
+                format!(
+                    "{name} as {alias}",
+                    name = name.render(indent, config)?,
+                    alias = alias.render(indent, config)?
+                )
             }
-        }
+        })
     }
 }
 
@@ -21,7 +29,9 @@ mod tests {
     #[test]
     fn test_render_name() {
         assert_eq!(
-            RSImportName::Name("Name".into()).render(&rs_indent()),
+            RSImportName::Name("Name".into())
+                .render(&rs_indent(), &Default::default())
+                .unwrap(),
             "Name"
         );
     }
@@ -29,7 +39,9 @@ mod tests {
     #[test]
     fn test_render_alias() {
         assert_eq!(
-            RSImportName::Alias("Name".into(), "Alias".into()).render(&rs_indent()),
+            RSImportName::Alias("Name".into(), "Alias".into())
+                .render(&rs_indent(), &Default::default())
+                .unwrap(),
             "Name as Alias"
         );
     }

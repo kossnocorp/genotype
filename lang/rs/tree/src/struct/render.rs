@@ -1,24 +1,28 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use genotype_lang_core_tree::indent::GTIndent;
 use genotype_lang_rs_config::RSLangConfig;
+use miette::Result;
 
 use crate::RSRender;
 
 use super::RSStruct;
 
 impl RSRender for RSStruct {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> String {
+    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
         let mut blocks = vec![];
 
         if let Some(doc) = &self.doc {
-            blocks.push(doc.render(&indent));
+            blocks.push(doc.render(indent, config)?);
         }
 
-        let name = self.name.render(indent);
-        let fields = self.fields.render(indent, config);
+        let name = self.name.render(indent, config)?;
+        let fields = self.fields.render(indent, config)?;
 
-        blocks.push(format!("{}struct {name}{fields}", indent.string));
+        blocks.push(format!(
+            "{indent}struct {name}{fields}",
+            indent = indent.string
+        ));
 
-        blocks.join("\n")
+        Ok(blocks.join("\n"))
     }
 }
 
@@ -37,7 +41,8 @@ mod tests {
                 name: "Name".into(),
                 fields: vec![].into(),
             }
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             "struct Name;"
         );
     }
@@ -65,7 +70,8 @@ mod tests {
                 ]
                 .into(),
             }
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             r#"struct Name {
     name: String,
     age: isize,
@@ -96,7 +102,8 @@ mod tests {
                 ]
                 .into(),
             }
-            .render(&rs_indent().increment(), &Default::default()),
+            .render(&rs_indent().increment(), &Default::default())
+            .unwrap(),
             r#"    struct Name {
         name: String,
         age: isize,
@@ -113,7 +120,8 @@ mod tests {
                 name: "Name".into(),
                 fields: vec![].into(),
             }
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             r#"/// Hello, world!
 struct Name;"#
         );
@@ -134,7 +142,8 @@ struct Name;"#
                 }]
                 .into(),
             }
-            .render(&rs_indent(), &Default::default()),
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             r#"/// Hello, world!
 struct Name {
     name: String,
