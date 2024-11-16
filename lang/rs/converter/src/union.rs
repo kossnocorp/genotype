@@ -1,8 +1,7 @@
 use std::collections::HashSet;
 
 use genotype_lang_rs_tree::{
-    RSContext, RSContextResolve, RSDependency, RSEnum, RSEnumVariant, RSEnumVariantDescriptor,
-    RSIdentifier,
+    RSContext, RSDependency, RSEnum, RSEnumVariant, RSEnumVariantDescriptor, RSIdentifier,
 };
 use genotype_parser::{tree::union::GTUnion, GTDescriptor, GTPrimitive};
 

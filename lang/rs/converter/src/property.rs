@@ -1,4 +1,4 @@
-use genotype_lang_rs_tree::{field::RSField, RSContextResolve, RSOption};
+use genotype_lang_rs_tree::{field::RSField, RSOption};
 use genotype_parser::tree::property::GTProperty;
 
 use crate::{context::RSConvertContext, convert::RSConvert};
@@ -19,7 +19,6 @@ impl RSConvert<RSField> for GTProperty {
             name: self.name.convert(context),
             descriptor,
         }
-        .resolve(context)
     }
 }
 

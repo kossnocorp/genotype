@@ -1,6 +1,6 @@
 use std::path::Display;
 
-use genotype_lang_rs_tree::{RSAttribute, RSContextResolve, RSStruct};
+use genotype_lang_rs_tree::{RSAttribute, RSStruct};
 use genotype_parser::tree::GTLiteral;
 
 use crate::{context::RSConvertContext, convert::RSConvert};

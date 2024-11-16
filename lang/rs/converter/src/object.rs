@@ -105,7 +105,7 @@ mod tests {
     }
 
     #[test]
-    fn test_convert_resolve() {
+    fn test_convert_import() {
         let mut context = RSConvertContext::default();
         assert_eq!(
             GTObject {

@@ -1,6 +1,5 @@
 use genotype_lang_core_tree::indent::GTIndent;
 use genotype_lang_rs_config::RSLangConfig;
-use genotype_parser::descriptor;
 use miette::Result;
 
 use crate::RSRender;

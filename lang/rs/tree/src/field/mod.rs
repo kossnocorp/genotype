@@ -1,6 +1,5 @@
 use crate::{descriptor::RSDescriptor, field_name::RSFieldName, RSAttribute, RSDoc};
 
-mod context;
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]

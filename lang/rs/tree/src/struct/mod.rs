@@ -1,6 +1,5 @@
 use crate::{identifier::RSIdentifier, RSAttribute, RSDoc, RSStructFields};
 
-mod context;
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]

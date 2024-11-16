@@ -1,15 +1,15 @@
-use genotype_lang_rs_tree::{RSContextResolve, RSHashMap};
+use genotype_lang_rs_tree::{RSContext, RSDependency, RSHashMap};
 use genotype_parser::GTRecord;
 
 use crate::{context::RSConvertContext, convert::RSConvert};
 
 impl RSConvert<RSHashMap> for GTRecord {
     fn convert(&self, context: &mut RSConvertContext) -> RSHashMap {
+        context.import(RSDependency::Std("collections".into()), "HashMap".into());
         RSHashMap {
             key: self.key.convert(context),
             descriptor: self.descriptor.convert(context),
         }
-        .resolve(context)
     }
 }
 
@@ -34,6 +34,27 @@ mod tests {
                 key: RSPrimitive::String.into(),
                 descriptor: RSPrimitive::String.into(),
             }
+        );
+    }
+
+    #[test]
+    fn test_convert_import() {
+        let mut context = RSConvertContext::default();
+        assert_eq!(
+            GTRecord {
+                span: (0, 0).into(),
+                key: GTRecordKey::String((0, 0).into()),
+                descriptor: GTPrimitive::String((0, 0).into()).into(),
+            }
+            .convert(&mut context),
+            RSHashMap {
+                key: RSPrimitive::String.into(),
+                descriptor: RSPrimitive::String.into(),
+            }
+        );
+        assert_eq!(
+            context.as_dependencies(),
+            vec![(RSDependency::Std("collections".into()), "HashMap".into()),]
         );
     }
 }
