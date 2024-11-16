@@ -38,9 +38,6 @@ impl RSConvertModule {
             definitions,
         };
 
-        // let mut visitor = RSModuleVisitor::new(&module);
-        // module.traverse(&mut visitor);
-
         RSConvertModule(module)
     }
 }

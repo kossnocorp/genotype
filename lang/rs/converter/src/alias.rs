@@ -26,24 +26,8 @@ impl RSConvert<RSDefinition> for GTAlias {
 
             _ => {
                 context.enter_parent(RSContextParent::Alias(name.clone()));
-                let mut descriptor = self.descriptor.convert(context);
 
-                // for attribute in self.attributes.iter() {
-                //     if let RSDescriptor::Union(union) = &mut descriptor {
-                //         if let Some(assignment) = attribute.get_assigned("discriminator") {
-                //             if let GTAttributeValue::Literal(GTLiteral::String(_, value)) =
-                //                 &assignment.value
-                //             {
-                //                 union.discriminator = value.clone().into();
-                //                 // [TODO] Resolve right now is a mess, instead of resolving in
-                //                 // convert functions, it should be resolved in the end or by
-                //                 // the parent.
-                //                 union.clone().resolve(context);
-                //             }
-                //         }
-                //     }
-                // }
-
+                let descriptor = self.descriptor.convert(context);
                 let alias = RSDefinition::Alias(RSAlias {
                     doc,
                     name,

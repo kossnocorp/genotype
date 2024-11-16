@@ -1,8 +1,6 @@
 use genotype_lang_rs_tree::{RSFieldName, RSIdentifier};
 use heck::ToPascalCase;
 
-use crate::identifier;
-
 use super::RSConvertContext;
 
 #[derive(Debug, PartialEq, Clone)]
