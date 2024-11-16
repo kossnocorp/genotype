@@ -19,4 +19,16 @@ impl GTLiteral {
             GTLiteral::Boolean(_, value) => value.to_string(),
         }
     }
+
+    pub fn render_float(value: &f64) -> String {
+        if value.fract() == 0.0 {
+            format!("{:.1}", value)
+        } else {
+            value.to_string()
+        }
+    }
+
+    pub fn render_string(value: &String) -> String {
+        format!("\"{}\"", value.escape_default())
+    }
 }
