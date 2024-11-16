@@ -9,4 +9,8 @@ pub trait RSContext {
     fn import(&mut self, dependency: RSDependency, name: RSIdentifier);
 
     fn is_version(&self, version: RSVersion) -> bool;
+
+    fn render_derive(&self) -> String {
+        String::new()
+    }
 }

@@ -1,4 +1,4 @@
-use genotype_lang_rs_tree::{RSIdentifier, RSKey};
+use genotype_lang_rs_tree::{RSFieldName, RSIdentifier};
 use heck::ToPascalCase;
 
 use super::RSConvertContext;
@@ -7,7 +7,7 @@ use super::RSConvertContext;
 pub enum RSContextParent {
     Alias(RSIdentifier),
     Definition(RSIdentifier),
-    Property(RSKey),
+    Property(RSFieldName),
     EnumVariant(RSIdentifier),
     Hoist,
 }
@@ -24,8 +24,8 @@ impl RSContextParent {
     }
 }
 
-impl From<RSKey> for RSContextParent {
-    fn from(key: RSKey) -> Self {
+impl From<RSFieldName> for RSContextParent {
+    fn from(key: RSFieldName) -> Self {
         RSContextParent::Property(key)
     }
 }

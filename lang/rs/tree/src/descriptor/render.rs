@@ -8,13 +8,12 @@ impl RSRender for RSDescriptor {
     fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
         Ok(match self {
             RSDescriptor::Enum(r#enum) => r#enum.render(indent, config)?,
-            RSDescriptor::List(array) => array.render(indent, config)?,
+            RSDescriptor::Vec(array) => array.render(indent, config)?,
             RSDescriptor::Primitive(primitive) => primitive.render(indent, config)?,
             RSDescriptor::Reference(name) => name.render(indent, config)?,
             RSDescriptor::InlineUse(inline_use) => inline_use.render(indent, config)?,
             RSDescriptor::Tuple(tuple) => tuple.render(indent, config)?,
             RSDescriptor::HashMap(dict) => dict.render(indent, config)?,
-            RSDescriptor::Any(any) => any.render(indent, config)?,
             RSDescriptor::Option(option) => option.render(indent, config)?,
         })
     }
@@ -29,7 +28,7 @@ mod tests {
     #[test]
     fn test_render_array() {
         assert_eq!(
-            RSDescriptor::List(Box::new(RSVec {
+            RSDescriptor::Vec(Box::new(RSVec {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Int)
             }))
             .render(&rs_indent(), &Default::default())
@@ -102,16 +101,6 @@ mod tests {
             .render(&rs_indent(), &Default::default())
             .unwrap(),
             "HashMap<String, isize>"
-        );
-    }
-
-    #[test]
-    fn test_render_any() {
-        assert_eq!(
-            RSDescriptor::Any(RSAny)
-                .render(&rs_indent(), &Default::default())
-                .unwrap(),
-            "Value"
         );
     }
 

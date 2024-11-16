@@ -1,5 +1,6 @@
 use genotype_lang_core_tree::indent::GTIndent;
 use genotype_lang_rs_config::RSLangConfig;
+use genotype_parser::descriptor;
 use miette::Result;
 
 use crate::RSRender;
@@ -8,11 +9,9 @@ use super::RSHashMap;
 
 impl RSRender for RSHashMap {
     fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
-        Ok(format!(
-            "HashMap<{}, {}>",
-            self.key.render(indent, config).unwrap(),
-            self.descriptor.render(indent, config).unwrap(),
-        ))
+        let key = self.key.render(indent, config)?;
+        let descriptor = self.descriptor.render(indent, config)?;
+        Ok(format!("HashMap<{key}, {descriptor}>"))
     }
 }
 

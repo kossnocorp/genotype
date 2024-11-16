@@ -30,12 +30,13 @@ impl RSConvert<RSStruct> for GTObject {
 
         let r#struct = RSStruct {
             doc,
-            // [TODO]
-            attributes: vec![],
+            attributes: vec![context.render_derive().into()],
             name,
             fields,
-        }
-        .resolve(context);
+        };
+
+        context.import(RSDependency::Serde, "Deserialize".into());
+        context.import(RSDependency::Serde, "Serialize".into());
 
         context.exit_parent();
         r#struct
@@ -79,16 +80,19 @@ mod tests {
             .convert(&mut RSConvertContext::default()),
             RSStruct {
                 doc: None,
-                attributes: vec![],
+                attributes: vec![
+                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                        .into()
+                ],
                 name: "Person".into(),
                 fields: vec![
-                    RSProperty {
+                    RSField {
                         doc: None,
                         attributes: vec![],
                         name: "name".into(),
                         descriptor: RSDescriptor::Primitive(RSPrimitive::String).into(),
                     },
-                    RSProperty {
+                    RSField {
                         doc: None,
                         attributes: vec![],
                         name: "age".into(),
@@ -113,14 +117,20 @@ mod tests {
             .convert(&mut context),
             RSStruct {
                 doc: None,
-                attributes: vec![],
+                attributes: vec![
+                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                        .into()
+                ],
                 name: "Person".into(),
                 fields: vec![].into(),
             }
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![(RSDependency::Runtime, "Model".into())]
+            vec![
+                (RSDependency::Serde, "Deserialize".into()),
+                (RSDependency::Serde, "Serialize".into())
+            ]
         );
     }
 
@@ -138,7 +148,10 @@ mod tests {
             .convert(&mut context),
             RSStruct {
                 doc: Some("Hello, world!".into()),
-                attributes: vec![],
+                attributes: vec![
+                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                        .into()
+                ],
                 name: "Person".into(),
                 fields: vec![].into(),
             }
@@ -178,19 +191,22 @@ mod tests {
             .convert(&mut context),
             RSStruct {
                 doc: None,
-                attributes: vec![],
+                attributes: vec![
+                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                        .into()
+                ],
                 name: "Person".into(),
                 fields: RSStructFields::Unresolved(
                     (1, 8).into(),
                     vec![RSReference::new("Model".into())],
                     vec![
-                        RSProperty {
+                        RSField {
                             doc: None,
                             attributes: vec![],
                             name: "name".into(),
                             descriptor: RSDescriptor::Primitive(RSPrimitive::String).into(),
                         },
-                        RSProperty {
+                        RSField {
                             doc: None,
                             attributes: vec![],
                             name: "age".into(),

@@ -1,7 +1,8 @@
 use std::collections::HashSet;
 
 use genotype_lang_rs_tree::{
-    RSContextResolve, RSEnum, RSEnumVariant, RSEnumVariantDescriptor, RSIdentifier,
+    RSContext, RSContextResolve, RSDependency, RSEnum, RSEnumVariant, RSEnumVariantDescriptor,
+    RSIdentifier,
 };
 use genotype_parser::{tree::union::GTUnion, GTDescriptor, GTPrimitive};
 
@@ -33,8 +34,10 @@ impl RSConvert<RSEnum> for GTUnion {
                 r#"serde(untagged)"#.into(),
             ],
             variants,
-        }
-        .resolve(context);
+        };
+
+        context.import(RSDependency::Serde, "Deserialize".into());
+        context.import(RSDependency::Serde, "Serialize".into());
 
         context.exit_parent();
         r#enum
@@ -161,7 +164,7 @@ mod tests {
     }
 
     #[test]
-    fn test_convert_resolve() {
+    fn test_convert_import() {
         let mut context = RSConvertContext::default();
         assert_eq!(
             GTUnion {

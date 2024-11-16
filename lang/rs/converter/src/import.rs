@@ -3,12 +3,12 @@ use genotype_parser::*;
 
 use crate::{context::RSConvertContext, convert::RSConvert};
 
-impl RSConvert<RSImport> for GTImport {
-    fn convert(&self, context: &mut RSConvertContext) -> RSImport {
+impl RSConvert<RSUse> for GTImport {
+    fn convert(&self, context: &mut RSConvertContext) -> RSUse {
         let reference = match &self.reference {
-            GTImportReference::Glob(_) => RSImportReference::Module,
+            GTImportReference::Glob(_) => RSUseReference::Module,
 
-            GTImportReference::Names(_, names) => RSImportReference::Named(
+            GTImportReference::Names(_, names) => RSUseReference::Named(
                 names
                     .iter()
                     .map(|name| name.convert(context))
@@ -16,13 +16,13 @@ impl RSConvert<RSImport> for GTImport {
             ),
 
             GTImportReference::Name(_, name) => {
-                RSImportReference::Named(vec![RSImportName::Name(name.convert(context))])
+                RSUseReference::Named(vec![RSUseName::Name(name.convert(context))])
             }
         };
 
         let path = self.path.convert(context);
 
-        RSImport {
+        RSUse {
             path: path.clone(),
             reference,
             dependency: RSDependency::Local(path),
@@ -54,9 +54,9 @@ mod tests {
                 reference: GTImportReference::Glob((0, 0).into())
             }
             .convert(&mut context),
-            RSImport {
+            RSUse {
                 path: "self::path::to::module".into(),
-                reference: RSImportReference::Module,
+                reference: RSUseReference::Module,
                 dependency: RSDependency::Local("self::path::to::module".into())
             }
         );
@@ -84,11 +84,11 @@ mod tests {
                 )
             }
             .convert(&mut RSConvertContext::default()),
-            RSImport {
+            RSUse {
                 path: "self::path::to::module".into(),
-                reference: RSImportReference::Named(vec![
-                    RSImportName::Name("Name".into()),
-                    RSImportName::Alias("Name".into(), "Alias".into())
+                reference: RSUseReference::Named(vec![
+                    RSUseName::Name("Name".into()),
+                    RSUseName::Alias("Name".into(), "Alias".into())
                 ]),
                 dependency: RSDependency::Local("self::path::to::module".into())
             }
@@ -104,9 +104,9 @@ mod tests {
                 reference: GTIdentifier::new((0, 0).into(), "Name".into()).into()
             }
             .convert(&mut RSConvertContext::default()),
-            RSImport {
+            RSUse {
                 path: "self::path::to::module".into(),
-                reference: RSImportReference::Named(vec![RSImportName::Name("Name".into())]),
+                reference: RSUseReference::Named(vec![RSUseName::Name("Name".into())]),
                 dependency: RSDependency::Local("self::path::to::module".into())
             }
         );

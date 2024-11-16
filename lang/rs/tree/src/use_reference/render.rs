@@ -4,16 +4,16 @@ use miette::Result;
 
 use crate::RSRender;
 
-use super::RSImportReference;
+use super::RSUseReference;
 
-impl RSRender for RSImportReference {
+impl RSRender for RSUseReference {
     fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
         Ok(match self {
-            RSImportReference::Module => "".into(),
+            RSUseReference::Module => "".into(),
 
-            RSImportReference::Glob => "*".into(),
+            RSUseReference::Glob => "*".into(),
 
-            RSImportReference::Named(names) => {
+            RSUseReference::Named(names) => {
                 let names = names
                     .iter()
                     .map(|name| name.render(indent, config))
@@ -27,13 +27,12 @@ impl RSRender for RSImportReference {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use crate::*;
 
     #[test]
     fn test_render_module() {
         assert_eq!(
-            RSImportReference::Module
+            RSUseReference::Module
                 .render(&rs_indent(), &Default::default())
                 .unwrap(),
             ""
@@ -43,7 +42,7 @@ mod tests {
     #[test]
     fn test_render_glob() {
         assert_eq!(
-            RSImportReference::Glob
+            RSUseReference::Glob
                 .render(&rs_indent(), &Default::default())
                 .unwrap(),
             "*"
@@ -53,9 +52,9 @@ mod tests {
     #[test]
     fn test_render_named() {
         assert_eq!(
-            RSImportReference::Named(vec![
-                RSImportName::Name("Name".into()),
-                RSImportName::Alias("Name".into(), "Alias".into()),
+            RSUseReference::Named(vec![
+                RSUseName::Name("Name".into()),
+                RSUseName::Alias("Name".into(), "Alias".into()),
             ])
             .render(&rs_indent(), &Default::default())
             .unwrap(),

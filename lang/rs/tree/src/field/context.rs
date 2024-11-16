@@ -1,8 +1,8 @@
 use crate::*;
 
-use super::RSProperty;
+use super::RSField;
 
-impl RSContextResolve for RSProperty {
+impl RSContextResolve for RSField {
     fn resolve<Context>(self, _context: &mut Context) -> Self
     where
         Context: RSContext,
@@ -20,7 +20,7 @@ mod tests {
     #[test]
     fn test_resolve() {
         let mut context = RSContextMock::default();
-        let alias = RSProperty {
+        let alias = RSField {
             doc: None,
             attributes: vec![],
             name: "foo".into(),

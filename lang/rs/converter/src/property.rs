@@ -1,10 +1,10 @@
-use genotype_lang_rs_tree::{property::RSProperty, RSContextResolve, RSOption};
+use genotype_lang_rs_tree::{field::RSField, RSContextResolve, RSOption};
 use genotype_parser::tree::property::GTProperty;
 
 use crate::{context::RSConvertContext, convert::RSConvert};
 
-impl RSConvert<RSProperty> for GTProperty {
-    fn convert(&self, context: &mut RSConvertContext) -> RSProperty {
+impl RSConvert<RSField> for GTProperty {
+    fn convert(&self, context: &mut RSConvertContext) -> RSField {
         let descriptor = self.descriptor.convert(context);
 
         let descriptor = if self.required {
@@ -13,7 +13,7 @@ impl RSConvert<RSProperty> for GTProperty {
             RSOption::new(descriptor).into()
         };
 
-        RSProperty {
+        RSField {
             doc: self.doc.as_ref().and_then(|doc| Some(doc.convert(context))),
             attributes: vec![],
             name: self.name.convert(context),
@@ -44,7 +44,7 @@ mod tests {
                 required: false,
             }
             .convert(&mut RSConvertContext::default()),
-            RSProperty {
+            RSField {
                 doc: None,
                 attributes: vec![],
                 name: "name".into(),
@@ -68,7 +68,7 @@ mod tests {
                 required: false,
             }
             .convert(&mut context),
-            RSProperty {
+            RSField {
                 doc: None,
                 attributes: vec![],
                 name: "name".into(),

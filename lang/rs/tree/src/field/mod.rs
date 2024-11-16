@@ -1,12 +1,12 @@
-use crate::{descriptor::RSDescriptor, key::RSKey, RSAttribute, RSDoc};
+use crate::{descriptor::RSDescriptor, field_name::RSFieldName, RSAttribute, RSDoc};
 
 mod context;
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct RSProperty {
+pub struct RSField {
     pub doc: Option<RSDoc>,
     pub attributes: Vec<RSAttribute>,
-    pub name: RSKey,
+    pub name: RSFieldName,
     pub descriptor: RSDescriptor,
 }

@@ -4,9 +4,9 @@ use miette::Result;
 
 use crate::RSRender;
 
-use super::RSKey;
+use super::RSFieldName;
 
-impl RSRender for RSKey {
+impl RSRender for RSFieldName {
     fn render(&self, _indent: &GTIndent, _config: &RSLangConfig) -> Result<String> {
         Ok(self.0.clone())
     }
@@ -20,7 +20,7 @@ mod tests {
     #[test]
     fn test_render() {
         assert_eq!(
-            RSKey("foo".into())
+            RSFieldName("foo".into())
                 .render(&rs_indent(), &Default::default())
                 .unwrap(),
             "foo"

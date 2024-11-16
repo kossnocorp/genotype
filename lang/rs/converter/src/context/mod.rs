@@ -11,7 +11,7 @@ pub mod naming;
 pub struct RSConvertContext {
     resolve: RSConvertResolve,
     config: RSLangConfig,
-    imports: Vec<RSImport>,
+    imports: Vec<RSUse>,
     definitions: Vec<RSDefinition>,
     defined: Vec<RSIdentifier>,
     hoisting: bool,
@@ -32,6 +32,17 @@ impl RSContext for RSConvertContext {
         if !self.dependencies.contains(&dependency) {
             self.dependencies.push(dependency);
         }
+    }
+
+    fn render_derive(&self) -> String {
+        let traits = self
+            .config
+            .derive
+            .iter()
+            .map(|derive| derive.to_string())
+            .collect::<Vec<String>>()
+            .join(", ");
+        format!("derive({traits})")
     }
 }
 
@@ -91,11 +102,11 @@ impl RSConvertContext {
         }
     }
 
-    pub fn push_import(&mut self, import: RSImport) {
+    pub fn push_import(&mut self, import: RSUse) {
         self.imports.push(import);
     }
 
-    pub fn drain_imports(&mut self) -> Vec<RSImport> {
+    pub fn drain_imports(&mut self) -> Vec<RSUse> {
         let mut imports: Vec<_> = self.imports.drain(..).collect();
 
         let dependencies = self.dependencies.drain(..);
@@ -105,14 +116,14 @@ impl RSConvertContext {
                 .find(|import| import.path == dependency.as_path());
 
             if let Some(import) = import {
-                if let RSImportReference::Named(names) = &mut import.reference {
+                if let RSUseReference::Named(names) = &mut import.reference {
                     names.push(name.into());
                     continue;
                 }
             }
-            imports.push(RSImport {
+            imports.push(RSUse {
                 path: dependency.as_path(),
-                reference: RSImportReference::Named(vec![name.into()]),
+                reference: RSUseReference::Named(vec![name.into()]),
                 dependency,
             });
         }

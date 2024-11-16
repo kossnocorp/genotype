@@ -3,19 +3,19 @@ use crate::identifier::RSIdentifier;
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]
-pub enum RSImportName {
+pub enum RSUseName {
     Name(RSIdentifier),
     Alias(RSIdentifier, RSIdentifier),
 }
 
-impl From<&str> for RSImportName {
+impl From<&str> for RSUseName {
     fn from(str: &str) -> Self {
-        RSImportName::Name(str.into())
+        RSUseName::Name(str.into())
     }
 }
 
-impl From<RSIdentifier> for RSImportName {
+impl From<RSIdentifier> for RSUseName {
     fn from(identifier: RSIdentifier) -> Self {
-        RSImportName::Name(identifier)
+        RSUseName::Name(identifier)
     }
 }

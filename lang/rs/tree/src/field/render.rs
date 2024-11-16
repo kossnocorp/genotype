@@ -4,9 +4,9 @@ use miette::Result;
 
 use crate::RSRender;
 
-use super::RSProperty;
+use super::RSField;
 
-impl RSRender for RSProperty {
+impl RSRender for RSField {
     fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
         let mut blocks = vec![];
 
@@ -40,7 +40,7 @@ mod tests {
     #[test]
     fn test_render_primitive() {
         assert_eq!(
-            RSProperty {
+            RSField {
                 doc: None,
                 attributes: vec![],
                 name: "name".into(),
@@ -51,7 +51,7 @@ mod tests {
             "name: String"
         );
         assert_eq!(
-            RSProperty {
+            RSField {
                 doc: None,
                 attributes: vec![],
                 name: "name".into(),
@@ -66,7 +66,7 @@ mod tests {
     #[test]
     fn test_render_indent() {
         assert_eq!(
-            RSProperty {
+            RSField {
                 doc: None,
                 attributes: vec![],
                 name: "name".into(),
@@ -79,24 +79,9 @@ mod tests {
     }
 
     #[test]
-    fn test_render_required() {
-        assert_eq!(
-            RSProperty {
-                doc: None,
-                attributes: vec![],
-                name: "name".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-            }
-            .render(&rs_indent(), &Default::default())
-            .unwrap(),
-            "name: String"
-        );
-    }
-
-    #[test]
     fn test_render_doc() {
         assert_eq!(
-            RSProperty {
+            RSField {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "name".into(),
@@ -108,7 +93,7 @@ mod tests {
 name: String"#
         );
         assert_eq!(
-            RSProperty {
+            RSField {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "name".into(),
@@ -124,7 +109,7 @@ name: String"#
     #[test]
     fn test_render_attributes() {
         assert_eq!(
-            RSProperty {
+            RSField {
                 doc: None,
                 attributes: vec![RSAttribute("derive(Clone)".into())],
                 name: "name".into(),
@@ -136,7 +121,7 @@ name: String"#
 name: String"
         );
         assert_eq!(
-            RSProperty {
+            RSField {
                 doc: None,
                 attributes: vec![RSAttribute("derive(Clone)".into())],
                 name: "name".into(),
@@ -148,7 +133,7 @@ name: String"
     name: String"
         );
         assert_eq!(
-            RSProperty {
+            RSField {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![RSAttribute("derive(Clone)".into())],
                 name: "name".into(),

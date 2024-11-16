@@ -1,7 +1,8 @@
 use genotype_lang_rs_tree::*;
+
 use genotype_parser::tree::descriptor::GTDescriptor;
 
-use crate::{context::naming::RSContextParent, context::RSConvertContext, convert::RSConvert};
+use crate::{context::RSConvertContext, convert::RSConvert};
 
 impl RSConvert<RSDescriptor> for GTDescriptor {
     fn convert(&self, context: &mut RSConvertContext) -> RSDescriptor {
@@ -43,6 +44,8 @@ mod tests {
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
 
+    use crate::context::naming::RSContextParent;
+
     use super::*;
 
     #[test]
@@ -78,7 +81,7 @@ mod tests {
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }))
             .convert(&mut RSConvertContext::default()),
-            RSDescriptor::List(Box::new(RSVec {
+            RSDescriptor::Vec(Box::new(RSVec {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean)
             }))
         );
@@ -136,16 +139,19 @@ mod tests {
             hoisted,
             vec![RSDefinition::Struct(RSStruct {
                 doc: None,
-                attributes: vec![],
+                attributes: vec![
+                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                        .into()
+                ],
                 name: "Person".into(),
                 fields: vec![
-                    RSProperty {
+                    RSField {
                         doc: None,
                         attributes: vec![],
                         name: "name".into(),
                         descriptor: RSPrimitive::String.into(),
                     },
-                    RSProperty {
+                    RSField {
                         doc: None,
                         attributes: vec![],
                         name: "age".into(),

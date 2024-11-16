@@ -86,7 +86,7 @@ mod tests {
     }
 
     #[test]
-    fn test_convert_class() {
+    fn test_convert_struct() {
         assert_eq!(
             GTAlias {
                 span: (0, 0).into(),
@@ -120,16 +120,19 @@ mod tests {
             .convert(&mut RSConvertContext::default()),
             RSDefinition::Struct(RSStruct {
                 doc: None,
-                attributes: vec![],
+                attributes: vec![
+                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                        .into()
+                ],
                 name: "Book".into(),
                 fields: vec![
-                    RSProperty {
+                    RSField {
                         doc: None,
                         attributes: vec![],
                         name: "title".into(),
                         descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                     },
-                    RSProperty {
+                    RSField {
                         doc: None,
                         attributes: vec![],
                         name: "author".into(),
@@ -190,7 +193,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: "BookObj".into(),
-                fields: vec![RSProperty {
+                fields: vec![RSField {
                     doc: None,
                     attributes: vec![],
                     name: "author".into(),

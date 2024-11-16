@@ -1,6 +1,5 @@
 use crate::{RSAttribute, RSDoc, RSEnumVariant, RSIdentifier};
 
-mod context;
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]

@@ -55,16 +55,16 @@ mod tests {
             RSModule {
                 doc: None,
                 imports: vec![
-                    RSImport {
+                    RSUse {
                         path: "self::path::to::module".into(),
-                        reference: RSImportReference::Module,
+                        reference: RSUseReference::Module,
                         dependency: RSDependency::Local("self::path::to::module".into())
                     },
-                    RSImport {
+                    RSUse {
                         path: "self::path::to::module".into(),
-                        reference: RSImportReference::Named(vec![
-                            RSImportName::Name("Name".into()),
-                            RSImportName::Alias("Name".into(), "Alias".into()),
+                        reference: RSUseReference::Named(vec![
+                            RSUseName::Name("Name".into()),
+                            RSUseName::Alias("Name".into(), "Alias".into()),
                         ]),
                         dependency: RSDependency::Local("self::path::to::module".into())
                     }
@@ -80,13 +80,13 @@ mod tests {
                         attributes: vec![],
                         name: "Name".into(),
                         fields: vec![
-                            RSProperty {
+                            RSField {
                                 doc: None,
                                 attributes: vec![],
                                 name: "name".into(),
                                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                             },
-                            RSProperty {
+                            RSField {
                                 doc: None,
                                 attributes: vec![],
                                 name: "age".into(),
@@ -119,9 +119,9 @@ struct Name {
         assert_eq!(
             RSModule {
                 doc: Some(RSDoc::new("Hello, world!", true)),
-                imports: vec![RSImport {
+                imports: vec![RSUse {
                     path: "self::path::to::module".into(),
-                    reference: RSImportReference::Module,
+                    reference: RSUseReference::Module,
                     dependency: RSDependency::Local("self::path::to::module".into())
                 },],
                 definitions: vec![RSDefinition::Alias(RSAlias {

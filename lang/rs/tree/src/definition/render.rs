@@ -44,13 +44,13 @@ mod tests {
                 attributes: vec![],
                 name: "Name".into(),
                 fields: vec![
-                    RSProperty {
+                    RSField {
                         doc: None,
                         attributes: vec![],
                         name: "name".into(),
                         descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                     },
-                    RSProperty {
+                    RSField {
                         doc: None,
                         attributes: vec![],
                         name: "age".into(),

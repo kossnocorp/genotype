@@ -1,15 +1,15 @@
-use genotype_lang_rs_tree::import_name::RSImportName;
+use genotype_lang_rs_tree::use_name::RSUseName;
 use genotype_parser::tree::import_name::GTImportName;
 
 use crate::{context::RSConvertContext, convert::RSConvert};
 
-impl RSConvert<RSImportName> for GTImportName {
-    fn convert(&self, context: &mut RSConvertContext) -> RSImportName {
+impl RSConvert<RSUseName> for GTImportName {
+    fn convert(&self, context: &mut RSConvertContext) -> RSUseName {
         match self {
-            Self::Name(_, name) => RSImportName::Name(name.convert(context)),
+            Self::Name(_, name) => RSUseName::Name(name.convert(context)),
 
             Self::Alias(_, name, alias) => {
-                RSImportName::Alias(name.convert(context), alias.convert(context))
+                RSUseName::Alias(name.convert(context), alias.convert(context))
             }
         }
     }
@@ -17,7 +17,7 @@ impl RSConvert<RSImportName> for GTImportName {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_rs_tree::import_name::RSImportName;
+    use genotype_lang_rs_tree::use_name::RSUseName;
     use pretty_assertions::assert_eq;
 
     use crate::context::RSConvertContext;
@@ -33,7 +33,7 @@ mod tests {
                 GTIdentifier::new((0, 0).into(), "Name".into())
             )
             .convert(&mut RSConvertContext::default()),
-            RSImportName::Name("Name".into()),
+            RSUseName::Name("Name".into()),
         );
     }
 
@@ -46,7 +46,7 @@ mod tests {
                 GTIdentifier::new((0, 0).into(), "Alias".into())
             )
             .convert(&mut RSConvertContext::default()),
-            RSImportName::Alias("Name".into(), "Alias".into()),
+            RSUseName::Alias("Name".into(), "Alias".into()),
         );
     }
 }

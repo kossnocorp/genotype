@@ -194,40 +194,41 @@ mod tests {
             RSConvertModule(RSModule {
                 doc: None,
                 imports: vec![
-                    RSImport {
+                    RSUse {
                         path: "self::path::to::module".into(),
-                        reference: RSImportReference::Module,
+                        reference: RSUseReference::Module,
                         dependency: RSDependency::Local("self::path::to::module".into()),
                     },
-                    RSImport {
+                    RSUse {
                         path: "self::path::to::module".into(),
-                        reference: RSImportReference::Named(vec![
-                            RSImportName::Name("Name".into()),
-                            RSImportName::Alias("Name".into(), "Alias".into())
+                        reference: RSUseReference::Named(vec![
+                            RSUseName::Name("Name".into()),
+                            RSUseName::Alias("Name".into(), "Alias".into())
                         ]),
                         dependency: RSDependency::Local("self::path::to::module".into()),
                     },
-                    RSImport {
-                        path: "genotype_runtime".into(),
-                        reference: RSImportReference::Named(vec![RSImportName::Name(
-                            "Model".into()
-                        )]),
-                        dependency: RSDependency::Runtime,
+                    RSUse {
+                        path: "serde".into(),
+                        reference: RSUseReference::Named(vec![
+                            RSUseName::Name("Deserialize".into(),),
+                            RSUseName::Name("Serialize".into())
+                        ]),
+                        dependency: RSDependency::Serde,
                     }
                 ],
                 definitions: vec![
                     RSDefinition::Struct(RSStruct {
                         doc: None,
-                        attributes: vec![],
+                        attributes: vec!["derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()],
                         name: "User".into(),
                         fields: vec![
-                            RSProperty {
+                            RSField {
                                 doc: None,
                                 attributes: vec![],
                                 name: "name".into(),
                                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                             },
-                            RSProperty {
+                            RSField {
                                 doc: None,
                                 attributes: vec![],
                                 name: "age".into(),
@@ -238,9 +239,9 @@ mod tests {
                     }),
                     RSDefinition::Struct(RSStruct {
                         doc: None,
-                        attributes: vec![],
+                        attributes: vec!["derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()],
                         name: "Order".into(),
-                        fields: vec![RSProperty {
+                        fields: vec![RSField {
                             doc: None,
                             attributes: vec![],
                             name: "book".into(),
@@ -250,16 +251,16 @@ mod tests {
                     }),
                     RSDefinition::Struct(RSStruct {
                         doc: None,
-                        attributes: vec![],
+                        attributes: vec!["derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()],
                         name: "Book".into(),
                         fields: vec![
-                            RSProperty {
+                            RSField {
                                 doc: None,
                                 attributes: vec![],
                                 name: "title".into(),
                                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                             },
-                            RSProperty {
+                            RSField {
                                 doc: None,
                                 attributes: vec![],
                                 name: "author".into(),

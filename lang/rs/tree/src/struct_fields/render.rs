@@ -45,13 +45,13 @@ mod tests {
     fn test_render_fields() {
         assert_eq!(
             RSStructFields::Resolved(vec![
-                RSProperty {
+                RSField {
                     doc: None,
                     attributes: vec![],
                     name: "name".into(),
                     descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                 },
-                RSProperty {
+                RSField {
                     doc: None,
                     attributes: vec![],
                     name: "age".into(),
@@ -81,13 +81,13 @@ mod tests {
     fn test_render_indent() {
         assert_eq!(
             RSStructFields::Resolved(vec![
-                RSProperty {
+                RSField {
                     doc: None,
                     attributes: vec![],
                     name: "name".into(),
                     descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                 },
-                RSProperty {
+                RSField {
                     doc: None,
                     attributes: vec![],
                     name: "age".into(),

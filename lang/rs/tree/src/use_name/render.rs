@@ -4,13 +4,13 @@ use miette::Result;
 
 use crate::RSRender;
 
-use super::RSImportName;
+use super::RSUseName;
 
-impl RSRender for RSImportName {
+impl RSRender for RSUseName {
     fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
         Ok(match self {
-            RSImportName::Name(name) => name.render(indent, config)?,
-            RSImportName::Alias(name, alias) => {
+            RSUseName::Name(name) => name.render(indent, config)?,
+            RSUseName::Alias(name, alias) => {
                 format!(
                     "{name} as {alias}",
                     name = name.render(indent, config)?,
@@ -29,7 +29,7 @@ mod tests {
     #[test]
     fn test_render_name() {
         assert_eq!(
-            RSImportName::Name("Name".into())
+            RSUseName::Name("Name".into())
                 .render(&rs_indent(), &Default::default())
                 .unwrap(),
             "Name"
@@ -39,7 +39,7 @@ mod tests {
     #[test]
     fn test_render_alias() {
         assert_eq!(
-            RSImportName::Alias("Name".into(), "Alias".into())
+            RSUseName::Alias("Name".into(), "Alias".into())
                 .render(&rs_indent(), &Default::default())
                 .unwrap(),
             "Name as Alias"

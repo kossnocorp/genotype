@@ -55,13 +55,13 @@ mod tests {
                 attributes: vec![],
                 name: "Name".into(),
                 fields: vec![
-                    RSProperty {
+                    RSField {
                         doc: None,
                         attributes: vec![],
                         name: "name".into(),
                         descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                     },
-                    RSProperty {
+                    RSField {
                         doc: None,
                         attributes: vec![],
                         name: "age".into(),
@@ -87,13 +87,13 @@ mod tests {
                 attributes: vec![],
                 name: "Name".into(),
                 fields: vec![
-                    RSProperty {
+                    RSField {
                         doc: None,
                         attributes: vec![],
                         name: "name".into(),
                         descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                     },
-                    RSProperty {
+                    RSField {
                         doc: None,
                         attributes: vec![],
                         name: "age".into(),
@@ -134,7 +134,7 @@ struct Name;"#
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "Name".into(),
-                fields: vec![RSProperty {
+                fields: vec![RSField {
                     doc: None,
                     attributes: vec![],
                     name: "name".into(),
