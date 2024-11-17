@@ -14,6 +14,10 @@ impl RSRender for RSStruct {
             blocks.push(doc.render(indent, config)?);
         }
 
+        for attribute in &self.attributes {
+            blocks.push(attribute.render(indent, config)?);
+        }
+
         let name = self.name.render(indent, config)?;
         let fields = self.fields.render(indent, config)?;
 

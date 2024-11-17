@@ -392,6 +392,7 @@ mod tests {
                         path: "rs/src/author.rs".into(),
                         code: r#"use serde::{Deserialize, Serialize};
 
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 struct Author {
     name: String,
 }
@@ -403,6 +404,7 @@ struct Author {
                         code: r#"use self::author::Author;
 use serde::{Deserialize, Serialize};
 
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 struct Book {
     title: String,
     author: Author,
@@ -464,6 +466,7 @@ struct Book {
                         code: r#"use self::shop::goods::book::Book;
 use serde::{Deserialize, Serialize};
 
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 struct Inventory {
     goods: Vec<Book>,
 }
@@ -474,6 +477,7 @@ struct Inventory {
                         path: "rs/src/shop/goods/book.rs".into(),
                         code: r#"use serde::{Deserialize, Serialize};
 
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 struct Book {
     title: String,
 }
