@@ -58,7 +58,7 @@ impl GTProject {
         });
 
         // [TODO] Simplify and turn into errors
-        let mut modules = Arc::try_unwrap(modules)
+        let modules = Arc::try_unwrap(modules)
             .expect("Mutex cannot be unwrapped")
             .into_inner()
             .expect("Mutex cannot be locked")

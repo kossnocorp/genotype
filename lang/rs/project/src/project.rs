@@ -1,4 +1,4 @@
-use std::{collections::HashSet, path::PathBuf};
+use std::path::PathBuf;
 
 use genotype_lang_core_project::{
     module::GTLangProjectModule,
@@ -8,6 +8,7 @@ use genotype_lang_core_project::{
 use genotype_lang_rs_config::RSProjectConfig;
 use genotype_lang_rs_tree::{rs_indent, RSRender};
 use genotype_project::project::GTProject;
+use indexmap::{IndexMap, IndexSet};
 use miette::Result;
 
 use crate::module::RSProjectModule;
@@ -34,96 +35,89 @@ impl GTLangProject<RSProjectConfig> for RSProject {
             code: r#"target"#.into(),
         };
 
-        //         let dependencies = self
-        //             .modules
-        //             .iter()
-        //             .flat_map(|module| {
-        //                 module
-        //                     .module
-        //                     .imports
-        //                     .iter()
-        //                     .map(|import| import.dependency.clone())
-        //             })
-        //             .collect::<HashSet<_>>();
+        let dependencies = self
+            .modules
+            .iter()
+            .flat_map(|module| {
+                module
+                    .module
+                    .imports
+                    .iter()
+                    .map(|import| import.dependency.clone())
+            })
+            .collect::<IndexSet<_>>();
 
-        //         let cargo = GTLangProjectSource {
-        //             path: config.package_path("Cargo.toml".into()),
-        //             code: format!(
-        //                 r#"[tool.poetry]{}
-        // packages = [{{ include = "{}" }}]
+        let dependencies = dependencies
+            .iter()
+            .fold("[dependencies]".into(), |acc, dependency| {
+                if let Some(str) = dependency.external_str() {
+                    format!("{acc}\n{str}")
+                } else {
+                    acc
+                }
+            });
 
-        // [tool.poetry.dependencies]
-        // {}{}
+        let cargo = if let Some(cargo) = &config.package {
+            format!("{cargo}\n")
+        } else {
+            "".into()
+        };
 
-        // [build-system]
-        // requires = ["poetry-core"]
-        // build-backend = "poetry.core.masonry.api"
-        // "#,
-        //                 if let Some(package) = &config.package {
-        //                     format!("\n{}", package)
-        //                 } else {
-        //                     "".into()
-        //                 },
-        //                 config.module,
-        //                 config.lang.version.as_dependency_str(),
-        //                 dependencies.iter().fold("".into(), |acc, dependency| {
-        //                     if let Some(str) = dependency.external_str() {
-        //                         format!("{acc}\n{str}")
-        //                     } else {
-        //                         acc
-        //                     }
-        //                 })
-        //             ),
-        //         };
+        let cargo = GTLangProjectSource {
+            path: config.package_path("Cargo.toml".into()),
+            code: format!(
+                r#"{cargo}
 
-        //         let mut imports = vec![];
-        //         let mut exports = vec![];
-        //         for module in self.modules.iter() {
-        //             let mut definitions = vec![];
-        //             for definition in module.module.definitions.iter() {
-        //                 let name = definition.name();
-        //                 definitions.push(name.0.clone());
-        //                 exports.push(format!("\"{}\"", name.0.clone()));
-        //             }
+{dependencies}
+"#,
+            ),
+        };
 
-        //             imports.push(format!(
-        //                 "from .{} import {}",
-        //                 module.name.clone(),
-        //                 definitions.join(", ")
-        //             ));
-        //         }
+        let src_root = config.src_path();
+        let mut module_paths: IndexMap<PathBuf, IndexSet<String>> = IndexMap::new();
 
-        //         let init = GTLangProjectSource {
-        //             path: config.source_path("__init__.rs".into()),
-        //             code: format!(
-        //                 "{}\n\n\n__all__ = [{}]",
-        //                 imports.join("\n"),
-        //                 exports.join(", ")
-        //             ),
-        //         };
+        for module in self.modules.iter() {
+            let mut module: PathBuf = module.path.clone();
+            loop {
+                let path: PathBuf = module.parent().unwrap().into();
+                let name = module
+                    .with_extension("")
+                    .file_name()
+                    .unwrap()
+                    .to_str()
+                    .unwrap()
+                    .to_owned();
 
-        //         let rs_typed = GTLangProjectSource {
-        //             path: config.source_path("rs.typed".into()),
-        //             code: "".into(),
-        //         };
+                module_paths
+                    .entry(path.clone())
+                    .and_modify(|paths| {
+                        paths.insert(name.clone());
+                    })
+                    .or_insert_with(|| IndexSet::from_iter(vec![name]));
 
-        //         let module_root = config.module_root_path();
-        //         let mut module_paths: HashSet<PathBuf> = HashSet::new();
+                if path == src_root {
+                    break;
+                }
 
-        //         for module in self.modules.iter() {
-        //             // [TODo]
-        //             let module_path = module.path.parent().unwrap();
-        //             if module_root != module_path {
-        //                 module_paths.insert(module_path.into());
-        //             }
-        //         }
+                module = path;
+            }
+        }
 
-        //         let module_inits = module_paths
-        //             .into_iter()
-        //             .map(|module_path| GTLangProjectSource {
-        //                 path: module_path.join("__init__.rs"),
-        //                 code: "".into(),
-        //             });
+        let module_inits = module_paths.into_iter().map(|(module_path, modules)| {
+            let path = module_path.join(if src_root == module_path {
+                "lib.rs"
+            } else {
+                "mod.rs"
+            });
+
+            let code = modules
+                .iter()
+                .map(|module| format!("pub mod {};", module))
+                .collect::<Vec<_>>()
+                .join("\n");
+
+            GTLangProjectSource { path, code }
+        });
 
         let project_modules = self
             .modules
@@ -139,9 +133,8 @@ impl GTLangProject<RSProjectConfig> for RSProject {
             )
             .collect::<Result<Vec<_>>>()?;
 
-        let mut files = vec![gitignore];
-        // let mut files = vec![gitignore, cargo, rs_typed, init];
-        // files.extend(module_inits);
+        let mut files = vec![gitignore, cargo];
+        files.extend(module_inits);
         files.extend(project_modules);
 
         Ok(GTLangProjectRender { files })
@@ -373,21 +366,21 @@ mod tests {
                         path: "rs/.gitignore".into(),
                         code: r#"target"#.into(),
                     },
-                    //                 GTLangProjectSource {
-                    //                     path: "rs/Cargo.toml".into(),
-                    //                     code: r#"[tool.poetry]
-                    // packages = [{ include = "module" }]
+                    GTLangProjectSource {
+                        path: "rs/Cargo.toml".into(),
+                        code: r#"
 
-                    // [tool.poetry.dependencies]
-                    // rsthon = "^3.12"
-                    // genotype-runtime = "^0.4"
-
-                    // [build-system]
-                    // requires = ["poetry-core"]
-                    // build-backend = "poetry.core.masonry.api"
-                    // "#
-                    //                     .into(),
-                    //                 },
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+"#
+                        .into()
+                    },
+                    GTLangProjectSource {
+                        path: "rs/src/lib.rs".into(),
+                        code: r#"pub mod author;
+pub mod book;"#
+                            .into(),
+                    },
                     GTLangProjectSource {
                         path: "rs/src/author.rs".into(),
                         code: r#"use serde::{Deserialize, Serialize};
@@ -434,33 +427,29 @@ struct Book {
                         path: "rs/.gitignore".into(),
                         code: r#"target"#.into(),
                     },
-                    //                 GTLangProjectSource {
-                    //                     path: "rs/rsproject.toml".into(),
-                    //                     code: r#"[tool.poetry]
-                    // packages = [{ include = "module" }]
+                    GTLangProjectSource {
+                        path: "rs/Cargo.toml".into(),
+                        code: r#"
 
-                    // [tool.poetry.dependencies]
-                    // rsthon = "^3.12"
-                    // genotype-runtime = "^0.4"
-
-                    // [build-system]
-                    // requires = ["poetry-core"]
-                    // build-backend = "poetry.core.masonry.api"
-                    // "#
-                    //                     .into(),
-                    //                 },
-                    //                 GTLangProjectSource {
-                    //                     path: "rs/src/__init__.rs".into(),
-                    //                     code: r#"from .inventory import Inventory
-                    // from .shop.goods.book import Book
-
-                    // __all__ = ["Inventory", "Book"]"#
-                    //                         .into(),
-                    //                 },
-                    // GTLangProjectSource {
-                    //     path: "rs/src/shop/goods/__init__.rs".into(),
-                    //     code: "".into(),
-                    // },
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+"#
+                        .into(),
+                    },
+                    GTLangProjectSource {
+                        path: "rs/src/lib.rs".into(),
+                        code: r#"pub mod inventory;
+pub mod shop;"#
+                            .into(),
+                    },
+                    GTLangProjectSource {
+                        path: "rs/src/shop/goods/mod.rs".into(),
+                        code: r#"pub mod book;"#.into(),
+                    },
+                    GTLangProjectSource {
+                        path: "rs/src/shop/mod.rs".into(),
+                        code: r#"pub mod goods;"#.into(),
+                    },
                     GTLangProjectSource {
                         path: "rs/src/inventory.rs".into(),
                         code: r#"use self::shop::goods::book::Book;
