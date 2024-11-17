@@ -10,6 +10,7 @@ repository = "https://github.com/kossnocorp/genotype"
 [dependencies]
 genotype_lang_py_config = { version = "0.1.1", path = "../lang/py/config" }
 genotype_lang_ts_config = { version = "0.1.0", path = "../lang/ts/config" }
+genotype_lang_rs_config = { version = "0.1.0", path = "../lang/rs/config" }
 clap = "4.5.20"
 figment = { version = "0.10.19", features = ["toml", "env"] }
 miette = "7.2.0"

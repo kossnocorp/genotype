@@ -1,0 +1,5 @@
+use ./shop/goods/book/Book
+
+Inventory = {
+  goods: [Book]
+}

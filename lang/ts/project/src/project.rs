@@ -1,15 +1,15 @@
 use std::path::PathBuf;
 
-use genotype_lang_core_tree::render::GTRender;
-use genotype_lang_ts_config::TSProjectConfig;
-use genotype_lang_ts_tree::ts_indent;
-
 use genotype_lang_core_project::{
     module::GTLangProjectModule,
     project::{GTLangProject, GTLangProjectRender},
     source::GTLangProjectSource,
 };
+use genotype_lang_core_tree::render::GTRender;
+use genotype_lang_ts_config::TSProjectConfig;
+use genotype_lang_ts_tree::ts_indent;
 use genotype_project::project::GTProject;
+use miette::Result;
 
 use crate::{module::TSProjectModule, package::TSPackage};
 
@@ -19,10 +19,7 @@ pub struct TSProject {
 }
 
 impl GTLangProject<TSProjectConfig> for TSProject {
-    fn generate(
-        project: &GTProject,
-        config: &TSProjectConfig,
-    ) -> Result<Self, Box<dyn std::error::Error>> {
+    fn generate(project: &GTProject, config: &TSProjectConfig) -> Result<Self> {
         let modules = project
             .modules
             .iter()
@@ -32,10 +29,7 @@ impl GTLangProject<TSProjectConfig> for TSProject {
         Ok(Self { modules })
     }
 
-    fn render(
-        &self,
-        config: &TSProjectConfig,
-    ) -> Result<GTLangProjectRender, Box<dyn std::error::Error>> {
+    fn render(&self, config: &TSProjectConfig) -> Result<GTLangProjectRender> {
         let gitignore = GTLangProjectSource {
             path: config.package_path(".gitignore".into()),
             code: r#"node_modules"#.into(),

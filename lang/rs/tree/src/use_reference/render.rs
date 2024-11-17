@@ -2,7 +2,7 @@ use genotype_lang_core_tree::indent::GTIndent;
 use genotype_lang_rs_config::RSLangConfig;
 use miette::Result;
 
-use crate::RSRender;
+use crate::{RSRender, RSUseName};
 
 use super::RSUseReference;
 
@@ -14,12 +14,18 @@ impl RSRender for RSUseReference {
             RSUseReference::Glob => "*".into(),
 
             RSUseReference::Named(names) => {
-                let names = names
+                let names_str = names
                     .iter()
                     .map(|name| name.render(indent, config))
                     .collect::<Result<Vec<String>>>()?
                     .join(", ");
-                format!("{{{}}}", names)
+                if names.len() == 1 {
+                    if let Some(RSUseName::Name(_)) = names.first() {
+                        return Ok(names_str);
+                    }
+                }
+
+                format!("{{{}}}", names_str)
             }
         })
     }
@@ -59,6 +65,26 @@ mod tests {
             .render(&rs_indent(), &Default::default())
             .unwrap(),
             "{Name, Name as Alias}"
+        );
+    }
+
+    #[test]
+    fn test_render_named_solo() {
+        assert_eq!(
+            RSUseReference::Named(vec![RSUseName::Name("Name".into()),])
+                .render(&rs_indent(), &Default::default())
+                .unwrap(),
+            "Name"
+        );
+    }
+
+    #[test]
+    fn test_render_named_solo_alias() {
+        assert_eq!(
+            RSUseReference::Named(vec![RSUseName::Alias("Name".into(), "Alias".into()),])
+                .render(&rs_indent(), &Default::default())
+                .unwrap(),
+            "{Name as Alias}"
         );
     }
 }

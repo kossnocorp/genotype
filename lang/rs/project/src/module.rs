@@ -5,36 +5,36 @@ use std::{
 };
 
 use genotype_lang_core_project::module::GTLangProjectModule;
-use genotype_lang_py_config::PYProjectConfig;
-use genotype_lang_py_converter::{
-    module::PYConvertModule, path::py_parse_module_path, resolve::PYConvertResolve,
+use genotype_lang_rs_config::RSProjectConfig;
+use genotype_lang_rs_converter::{
+    module::RSConvertModule, path::rs_parse_module_path, resolve::RSConvertResolve,
 };
-use genotype_lang_py_tree::module::PYModule;
+use genotype_lang_rs_tree::module::RSModule;
 use genotype_parser::{tree::GTImportReference, GTIdentifier, GTImportName};
 use genotype_project::{module::GTProjectModule, GTProject, GTProjectModuleReference};
 use miette::Result;
 
-use crate::error::PYProjectError;
+use crate::error::RSProjectError;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct PYProjectModule {
+pub struct RSProjectModule {
     pub name: String,
     pub path: PathBuf,
-    pub module: PYModule,
+    pub module: RSModule,
 }
 
-impl GTLangProjectModule<PYProjectConfig> for PYProjectModule {
+impl GTLangProjectModule<RSProjectConfig> for RSProjectModule {
     fn generate(
         project: &GTProject,
         module: &GTProjectModule,
-        config: &PYProjectConfig,
+        config: &RSProjectConfig,
     ) -> Result<Self> {
         let relative_path = module
             .path
             .as_path()
             .strip_prefix(project.root.as_path())
-            .map_err(|_| PYProjectError::BuildModulePath(module.path.as_name()))?;
-        let name = py_parse_module_path(
+            .map_err(|_| RSProjectError::BuildModulePath(module.path.as_name()))?;
+        let name = rs_parse_module_path(
             relative_path
                 .with_extension("")
                 .as_os_str()
@@ -42,12 +42,12 @@ impl GTLangProjectModule<PYProjectConfig> for PYProjectModule {
                 .unwrap()
                 .to_string(),
         );
-        let path = config.source_path(relative_path.with_extension("py"));
+        let path = config.source_path(relative_path.with_extension("rs"));
 
-        let mut resolve = PYConvertResolve::default();
+        let mut resolve = RSConvertResolve::default();
         let mut prefixes: HashMap<String, u8> = HashMap::new();
 
-        // [TODO] I'm pretty sure I can extract it and share with TypeScript
+        // [TODO] I'm pretty sure I can extract it and share with TypeScript and Python too
         for import in module.module.imports.iter() {
             match &import.reference {
                 GTImportReference::Glob(_) => {
@@ -106,13 +106,13 @@ impl GTLangProjectModule<PYProjectConfig> for PYProjectModule {
             }
         }
 
-        let module = PYConvertModule::convert(&module.module, &resolve, &config.lang).0;
+        let module = RSConvertModule::convert(&module.module, &resolve, &config.lang).0;
 
         Ok(Self { name, path, module })
     }
 }
 
-impl Hash for PYProjectModule {
+impl Hash for RSProjectModule {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.path.hash(state);
     }

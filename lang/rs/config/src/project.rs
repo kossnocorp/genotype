@@ -4,7 +4,6 @@ use crate::lang::RSLangConfig;
 
 pub struct RSProjectConfig {
     pub out: PathBuf,
-    pub module: String,
     pub lang: RSLangConfig,
     pub package: Option<String>,
 }
@@ -14,11 +13,11 @@ impl RSProjectConfig {
         self.out.join(path)
     }
 
-    pub fn module_root_path(&self) -> PathBuf {
-        self.package_path(PathBuf::from(self.module.clone()))
-    }
+    // pub fn module_root_path(&self) -> PathBuf {
+    //     self.package_path(PathBuf::from(self.module.clone()))
+    // }
 
     pub fn source_path(&self, path: PathBuf) -> PathBuf {
-        self.module_root_path().join(path)
+        self.package_path(PathBuf::from("src").join(path))
     }
 }

@@ -11,7 +11,7 @@ pub enum RSStructFields {
 }
 
 impl From<Vec<RSField>> for RSStructFields {
-    fn from(properties: Vec<RSField>) -> Self {
-        RSStructFields::Resolved(properties)
+    fn from(fields: Vec<RSField>) -> Self {
+        RSStructFields::Resolved(fields)
     }
 }

@@ -10,6 +10,9 @@ use genotype_lang_ts_converter::{module::TSConvertModule, resolve::TSConvertReso
 use genotype_lang_ts_tree::module::TSModule;
 use genotype_parser::{tree::GTImportReference, GTIdentifier};
 use genotype_project::{module::GTProjectModule, GTProject, GTProjectModuleReference};
+use miette::Result;
+
+use crate::error::TSProjectError;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TSProjectModule {
@@ -22,12 +25,13 @@ impl GTLangProjectModule<TSProjectConfig> for TSProjectModule {
         project: &GTProject,
         module: &GTProjectModule,
         config: &TSProjectConfig,
-    ) -> Result<Self, Box<dyn std::error::Error>> {
+    ) -> Result<Self> {
         let path = config.source_path(
             module
                 .path
                 .as_path()
-                .strip_prefix(project.root.as_path())?
+                .strip_prefix(project.root.as_path())
+                .map_err(|_| TSProjectError::BuildModulePath(module.path.as_name()))?
                 .with_extension("ts"),
         );
 

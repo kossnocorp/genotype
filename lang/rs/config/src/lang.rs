@@ -1,33 +1,20 @@
-use crate::version::RSVersion;
-
 #[derive(Debug, PartialEq, Clone)]
 pub struct RSLangConfig {
-    pub version: RSVersion,
-    pub derive: Vec<&'static str>,
-}
-
-impl RSLangConfig {
-    pub fn new(version: RSVersion) -> Self {
-        Self {
-            version,
-            ..Default::default()
-        }
-    }
+    pub derive: Vec<String>,
 }
 
 impl Default for RSLangConfig {
     fn default() -> Self {
         Self {
-            version: RSVersion::Latest,
             derive: vec![
-                "Default",
-                "Debug",
-                "Clone",
-                "PartialEq",
-                "Eq",
-                "Hash",
-                "Serialize",
-                "Deserialize",
+                "Default".into(),
+                "Debug".into(),
+                "Clone".into(),
+                "PartialEq".into(),
+                "Eq".into(),
+                "Hash".into(),
+                "Serialize".into(),
+                "Deserialize".into(),
             ],
         }
     }

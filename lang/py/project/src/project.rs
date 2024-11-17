@@ -1,14 +1,14 @@
 use std::{collections::HashSet, path::PathBuf};
 
-use genotype_lang_py_config::PYProjectConfig;
-use genotype_lang_py_tree::{py_indent, PYRender};
-
 use genotype_lang_core_project::{
     module::GTLangProjectModule,
     project::{GTLangProject, GTLangProjectRender},
     source::GTLangProjectSource,
 };
+use genotype_lang_py_config::PYProjectConfig;
+use genotype_lang_py_tree::{py_indent, PYRender};
 use genotype_project::project::GTProject;
+use miette::Result;
 
 use crate::module::PYProjectModule;
 
@@ -18,10 +18,7 @@ pub struct PYProject {
 }
 
 impl GTLangProject<PYProjectConfig> for PYProject {
-    fn generate(
-        project: &GTProject,
-        config: &PYProjectConfig,
-    ) -> Result<Self, Box<dyn std::error::Error>> {
+    fn generate(project: &GTProject, config: &PYProjectConfig) -> Result<Self> {
         let modules = project
             .modules
             .iter()
@@ -31,10 +28,7 @@ impl GTLangProject<PYProjectConfig> for PYProject {
         Ok(Self { modules })
     }
 
-    fn render(
-        &self,
-        config: &PYProjectConfig,
-    ) -> Result<GTLangProjectRender, Box<dyn std::error::Error>> {
+    fn render(&self, config: &PYProjectConfig) -> Result<GTLangProjectRender> {
         let gitignore = GTLangProjectSource {
             path: config.package_path(".gitignore".into()),
             code: r#"__pycache__

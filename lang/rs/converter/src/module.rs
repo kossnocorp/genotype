@@ -173,7 +173,7 @@ mod tests {
                                         })
                                     })),
                                     required: true,
-                                },]
+                                }]
                             }),
                         },
                         GTAlias {

@@ -33,13 +33,13 @@ impl RSRender for RSModule {
             .iter()
             .map(|definition| definition.render(indent, config))
             .collect::<Result<Vec<String>>>()?
-            .join("\n\n\n");
+            .join("\n\n");
 
         if !definitions.is_empty() {
             blocks.push(definitions);
         }
 
-        Ok(blocks.join("\n\n\n") + "\n")
+        Ok(blocks.join("\n\n") + "\n")
     }
 }
 
@@ -102,9 +102,7 @@ mod tests {
             r#"use self::path::to::module;
 use self::path::to::module::{Name, Name as Alias};
 
-
 type Name = String;
-
 
 struct Name {
     name: String,
@@ -134,9 +132,7 @@ struct Name {
             .unwrap(),
             r#"//! Hello, world!
 
-
 use self::path::to::module;
-
 
 type Name = String;
 "#

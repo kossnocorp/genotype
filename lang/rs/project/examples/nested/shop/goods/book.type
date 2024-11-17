@@ -1,0 +1,3 @@
+Book = {
+  title: string
+}

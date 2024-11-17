@@ -1,4 +1,4 @@
-use genotype_lang_rs_config::{RSLangConfig, RSVersion};
+use genotype_lang_rs_config::RSLangConfig;
 use genotype_lang_rs_tree::*;
 use genotype_parser::{GTIdentifier, GTPath};
 use naming::RSContextParent;
@@ -23,10 +23,6 @@ pub struct RSConvertContext {
 }
 
 impl RSContext for RSConvertContext {
-    fn is_version(&self, version: RSVersion) -> bool {
-        self.config.version == version
-    }
-
     fn import(&mut self, dependency: RSDependency, name: RSIdentifier) {
         let dependency = (dependency, name);
         if !self.dependencies.contains(&dependency) {

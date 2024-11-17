@@ -309,6 +309,7 @@ dependencies = [
  "clap",
  "figment",
  "genotype_lang_py_config",
+ "genotype_lang_rs_config",
  "genotype_lang_ts_config",
  "heck",
  "miette",
@@ -331,6 +332,7 @@ name = "genotype_lang_core_project"
 version = "0.2.0"
 dependencies = [
  "genotype_project",
+ "miette",
  "pretty_assertions",
 ]
 
@@ -375,7 +377,9 @@ dependencies = [
  "genotype_lang_py_tree",
  "genotype_parser",
  "genotype_project",
+ "miette",
  "pretty_assertions",
+ "thiserror",
 ]
 
 [[package]]
@@ -428,7 +432,9 @@ dependencies = [
  "genotype_lang_rs_tree",
  "genotype_parser",
  "genotype_project",
+ "miette",
  "pretty_assertions",
+ "thiserror",
 ]
 
 [[package]]
@@ -473,9 +479,11 @@ dependencies = [
  "genotype_lang_ts_tree",
  "genotype_parser",
  "genotype_project",
+ "miette",
  "pretty_assertions",
  "serde",
  "serde_json",
+ "thiserror",
  "toml",
 ]
 

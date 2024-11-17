@@ -37,7 +37,7 @@ mod tests {
     }
 
     #[test]
-    fn test_render_class() {
+    fn test_render_struct() {
         assert_eq!(
             RSDefinition::Struct(RSStruct {
                 doc: None,

@@ -24,7 +24,6 @@ impl RSConvert<RSField> for GTProperty {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_rs_config::{RSLangConfig, RSVersion};
     use genotype_lang_rs_tree::*;
     use pretty_assertions::assert_eq;
 
@@ -55,8 +54,7 @@ mod tests {
     #[test]
     // [TODO] Resolve test
     fn test_convert_resolve() {
-        let mut context =
-            RSConvertContext::new(Default::default(), RSLangConfig::new(RSVersion::Legacy));
+        let mut context = RSConvertContext::new(Default::default(), Default::default());
         assert_eq!(
             GTProperty {
                 doc: None,

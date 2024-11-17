@@ -1,10 +1,11 @@
 use std::path::PathBuf;
 
 use genotype_lang_py_config::PYProjectConfig;
+use genotype_lang_rs_config::RSProjectConfig;
 use genotype_lang_ts_config::TSProjectConfig;
 use serde::{Deserialize, Serialize};
 
-use crate::{error::GTConfigError, result::GTConfigResult, GTConfigPY, GTConfigTS};
+use crate::{error::GTConfigError, result::GTConfigResult, GTConfigPY, GTConfigRS, GTConfigTS};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GTConfig {
@@ -22,6 +23,8 @@ pub struct GTConfig {
     ts: Option<GTConfigTS>,
     /// Python config
     python: Option<GTConfigPY>,
+    /// Rust config
+    rust: Option<GTConfigRS>,
 }
 
 impl GTConfig {
@@ -82,6 +85,16 @@ impl GTConfig {
         GTConfigPY::derive_project(&self.name, &self.python)
     }
 
+    pub fn rust_enabled(&self) -> bool {
+        self.rust
+            .as_ref()
+            .map_or(false, |config| config.enabled.unwrap_or(false))
+    }
+
+    pub fn as_rust_project(&self) -> RSProjectConfig {
+        GTConfigRS::derive_project(&self.name, &self.rust)
+    }
+
     pub fn source_path(&self, path: &PathBuf) -> PathBuf {
         self.out().join(path)
     }
@@ -116,6 +129,7 @@ impl Default for GTConfig {
             out: None,
             ts: None,
             python: None,
+            rust: None,
         }
     }
 }

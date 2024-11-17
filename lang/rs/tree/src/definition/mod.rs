@@ -13,7 +13,7 @@ impl RSDefinition {
     pub fn name(&self) -> &RSIdentifier {
         match self {
             Self::Alias(alias) => &alias.name,
-            Self::Struct(class) => &class.name,
+            Self::Struct(r#struct) => &r#struct.name,
             Self::Enum(r#enum) => &r#enum.name,
         }
     }
@@ -21,15 +21,15 @@ impl RSDefinition {
     pub fn doc(&self) -> &Option<RSDoc> {
         match self {
             Self::Alias(alias) => &alias.doc,
-            Self::Struct(class) => &class.doc,
+            Self::Struct(r#struct) => &r#struct.doc,
             Self::Enum(r#enum) => &r#enum.doc,
         }
     }
 }
 
 impl From<RSStruct> for RSDefinition {
-    fn from(class: RSStruct) -> Self {
-        RSDefinition::Struct(class)
+    fn from(r#struct: RSStruct) -> Self {
+        RSDefinition::Struct(r#struct)
     }
 }
 
