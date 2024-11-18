@@ -5,6 +5,7 @@ pub mod context;
 pub mod convert;
 pub mod descriptor;
 pub mod doc;
+pub mod error;
 pub mod identifier;
 pub mod import;
 pub mod import_name;

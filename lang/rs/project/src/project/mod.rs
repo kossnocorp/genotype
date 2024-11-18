@@ -133,7 +133,7 @@ mod tests {
                                         doc: None,
                                         attributes: vec![],
                                         name: "author".into(),
-                                        descriptor: RSReference::new("Author".into()).into(),
+                                        descriptor: RSReference::new("Author".into(), GTDefinitionId("author".into(), "AuthorName".into())).into(),
                                     },
                                 ]
                                 .into(),
@@ -181,7 +181,7 @@ mod tests {
                                         doc: None,
                                         attributes: vec![],
                                         name: "name".into(),
-                                        descriptor: RSReference::new("AuthorName".into()).into(),
+                                        descriptor: RSReference::new("AuthorName".into(), GTDefinitionId("author".into(), "AuthorName".into())).into(),
                                     }]
                                     .into(),
                                 }),
@@ -236,13 +236,13 @@ mod tests {
                                         doc: None,
                                         attributes: vec![],
                                         name: "author".into(),
-                                        descriptor: RSReference::new("author.Author".into()).into(),
+                                        descriptor: RSReference::new("author.Author".into(),GTDefinitionId("author".into(), "Author".into())).into(),
                                     },
                                     RSField {
                                         doc: None,
                                         attributes: vec![],
                                         name: "author_name".into(),
-                                        descriptor: RSReference::new("author.AuthorName".into(),)
+                                        descriptor: RSReference::new("author.AuthorName".into(),GTDefinitionId("author".into(), "AuthorName".into()))
                                             .into(),
                                     },
                                 ]

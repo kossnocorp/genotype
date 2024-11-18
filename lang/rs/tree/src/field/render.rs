@@ -33,6 +33,7 @@ impl RSRender for RSField {
 
 #[cfg(test)]
 mod tests {
+    use genotype_parser::GTDefinitionId;
     use pretty_assertions::assert_eq;
 
     use crate::*;
@@ -55,7 +56,11 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: "name".into(),
-                descriptor: RSReference::new("Name".into()).into(),
+                descriptor: RSReference::new(
+                    "Name".into(),
+                    GTDefinitionId("module".into(), "Name".into())
+                )
+                .into(),
             }
             .render(&rs_indent(), &Default::default())
             .unwrap(),

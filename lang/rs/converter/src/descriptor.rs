@@ -61,7 +61,11 @@ mod tests {
             }))
             .convert(&mut context)
             .unwrap(),
-            RSReference::new("Name".into()).into()
+            RSReference::new(
+                "Name".into(),
+                GTDefinitionId("module".into(), "Name".into())
+            )
+            .into()
         );
         let hoisted = context.drain_hoisted();
         assert_eq!(
@@ -137,7 +141,13 @@ mod tests {
             })
             .convert(&mut context)
             .unwrap(),
-            RSDescriptor::Reference(RSReference::new("Person".into()))
+            RSDescriptor::Reference(
+                RSReference::new(
+                    "Person".into(),
+                    GTDefinitionId("module".into(), "Person".into())
+                )
+                .into()
+            )
         );
         let hoisted = context.drain_hoisted();
         assert_eq!(
@@ -185,7 +195,11 @@ mod tests {
             GTDescriptor::Reference(GTIdentifier::new((0, 0).into(), "Name".into()).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSReference::new("Name".into()).into()
+            RSReference::new(
+                "Name".into(),
+                GTDefinitionId("module".into(), "Name".into())
+            )
+            .into()
         );
     }
 
@@ -224,7 +238,13 @@ mod tests {
             })
             .convert(&mut context)
             .unwrap(),
-            RSDescriptor::Reference(RSReference::new("Union".into()))
+            RSDescriptor::Reference(
+                RSReference::new(
+                    "Union".into(),
+                    GTDefinitionId("module".into(), "Union".into())
+                )
+                .into()
+            )
         );
         let hoisted = context.drain_hoisted();
         assert_eq!(

@@ -12,7 +12,7 @@ impl RSConvertContext {
         self.hoisting = true;
         self.enter_parent(RSContextParent::Hoist);
         let definition = hoist_fn(self)?.into();
-        let reference = RSReference::new(definition.name().clone());
+        let reference = RSReference::new(definition.name().clone(), definition.id().clone());
         self.hoisted.push(definition);
         self.exit_parent();
         self.hoisting = false;

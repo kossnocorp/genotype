@@ -15,12 +15,14 @@ impl RSRender for RSDescriptor {
             RSDescriptor::Tuple(tuple) => tuple.render(indent, config)?,
             RSDescriptor::HashMap(dict) => dict.render(indent, config)?,
             RSDescriptor::Option(option) => option.render(indent, config)?,
+            RSDescriptor::Any(any) => any.render(indent, config)?,
         })
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use genotype_parser::GTDefinitionId;
     use pretty_assertions::assert_eq;
 
     use crate::*;
@@ -56,9 +58,12 @@ mod tests {
     #[test]
     fn test_render_reference() {
         assert_eq!(
-            RSDescriptor::Reference(RSReference::new("Name".into()))
-                .render(&rs_indent(), &Default::default())
-                .unwrap(),
+            RSDescriptor::Reference(RSReference::new(
+                "Name".into(),
+                GTDefinitionId("module".into(), "Name".into())
+            ))
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             "Name"
         );
     }
@@ -113,6 +118,16 @@ mod tests {
             .render(&rs_indent(), &Default::default())
             .unwrap(),
             "Option<String>"
+        );
+    }
+
+    #[test]
+    fn test_render_any() {
+        assert_eq!(
+            RSDescriptor::Any(RSAny)
+                .render(&rs_indent(), &Default::default())
+                .unwrap(),
+            "Value"
         );
     }
 }

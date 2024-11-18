@@ -215,7 +215,10 @@ mod tests {
                 name: "Person".into(),
                 fields: RSStructFields::Unresolved(
                     (1, 8).into(),
-                    vec![RSReference::new("Model".into())],
+                    vec![RSReference::new(
+                        "Model".into(),
+                        GTDefinitionId("module".into(), "Model".into())
+                    )],
                     vec![
                         RSField {
                             doc: None,

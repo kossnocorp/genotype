@@ -1,13 +1,13 @@
-use genotype_lang_rs_tree::{RSContext, RSDependency, RSReference};
+use genotype_lang_rs_tree::{RSAny, RSContext, RSDependency};
 use genotype_parser::GTAny;
 use miette::Result;
 
 use crate::{context::RSConvertContext, convert::RSConvert};
 
-impl RSConvert<RSReference> for GTAny {
-    fn convert(&self, resolve: &mut RSConvertContext) -> Result<RSReference> {
+impl RSConvert<RSAny> for GTAny {
+    fn convert(&self, resolve: &mut RSConvertContext) -> Result<RSAny> {
         resolve.import(RSDependency::SerdeJson, "Value".into());
-        Ok(RSReference::new("Value".into()))
+        Ok(RSAny)
     }
 }
 
@@ -25,17 +25,14 @@ mod tests {
             GTAny((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSReference::new("Value".into())
+            RSAny
         );
     }
 
     #[test]
     fn test_convert_resolve() {
         let mut context = RSConvertContext::empty("module".into());
-        assert_eq!(
-            GTAny((0, 0).into(),).convert(&mut context).unwrap(),
-            RSReference::new("Value".into())
-        );
+        assert_eq!(GTAny((0, 0).into(),).convert(&mut context).unwrap(), RSAny);
         assert_eq!(
             context.as_dependencies(),
             vec![(RSDependency::SerdeJson, "Value".into())]

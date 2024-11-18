@@ -258,7 +258,7 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: "book".into(),
-                            descriptor: RSReference::new("Book".into()).into(),
+                            descriptor: RSReference::new("Book".into(), GTDefinitionId("module".into(), "Book".into())).into(),
                         }]
                         .into(),
                     }),
@@ -278,7 +278,9 @@ mod tests {
                                 doc: None,
                                 attributes: vec![],
                                 name: "author".into(),
-                                descriptor: RSReference::new("Author".into()).into(),
+                                descriptor: RSReference::new("Author".into(),
+                                    GTDefinitionId("module".into(), "Author".into())
+                                ).into(),
                             }
                         ]
                         .into(),

@@ -12,6 +12,7 @@ pub enum RSDescriptor {
     Tuple(RSTuple),
     HashMap(Box<RSHashMap>),
     Option(Box<RSOption>),
+    Any(RSAny),
 }
 
 impl From<RSEnum> for RSDescriptor {
@@ -59,5 +60,11 @@ impl From<RSHashMap> for RSDescriptor {
 impl From<RSOption> for RSDescriptor {
     fn from(option: RSOption) -> Self {
         RSDescriptor::Option(Box::new(option))
+    }
+}
+
+impl From<RSAny> for RSDescriptor {
+    fn from(any: RSAny) -> Self {
+        RSDescriptor::Any(any)
     }
 }

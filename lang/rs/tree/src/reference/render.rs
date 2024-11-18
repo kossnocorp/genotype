@@ -14,6 +14,8 @@ impl RSRender for RSReference {
 
 #[cfg(test)]
 mod tests {
+    use genotype_parser::GTDefinitionId;
+
     use super::*;
     use crate::indent::rs_indent;
 
@@ -21,7 +23,7 @@ mod tests {
     fn test_render() {
         assert_eq!(
             "Foo",
-            RSReference::new("Foo".into())
+            RSReference::new("Foo".into(), GTDefinitionId("module".into(), "Foo".into()))
                 .render(&rs_indent(), &Default::default())
                 .unwrap(),
         );

@@ -1,3 +1,5 @@
+use genotype_parser::GTDefinitionId;
+
 use crate::{alias::RSAlias, r#struct::RSStruct, RSDoc, RSEnum, RSIdentifier};
 
 mod render;
@@ -23,6 +25,14 @@ impl RSDefinition {
             Self::Alias(alias) => &alias.doc,
             Self::Struct(r#struct) => &r#struct.doc,
             Self::Enum(r#enum) => &r#enum.doc,
+        }
+    }
+
+    pub fn id(&self) -> &GTDefinitionId {
+        match self {
+            Self::Alias(alias) => &alias.id,
+            Self::Struct(r#struct) => &r#struct.id,
+            Self::Enum(r#enum) => &r#enum.id,
         }
     }
 }
