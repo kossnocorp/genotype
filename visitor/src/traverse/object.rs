@@ -58,7 +58,7 @@ mod tests {
                 GTMockVisited::Identifier(name_identifier.clone()),
                 GTMockVisited::Extension(extension.clone()),
                 GTMockVisited::Reference(extension.reference.clone()),
-                GTMockVisited::Identifier(extension.reference.1.clone()),
+                GTMockVisited::Identifier(extension.reference.2.clone()),
                 GTMockVisited::Property(property.clone()),
                 GTMockVisited::Key(property.name.clone()),
                 GTMockVisited::Descriptor(property.descriptor.clone()),

@@ -2,12 +2,12 @@ use std::hash::Hash;
 
 use crate::GTSpan;
 
-use super::GTPathModule;
+use super::GTPathModuleId;
 
 mod parse;
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone)]
-pub struct GTPath(pub GTSpan, pub GTPathModule, String);
+pub struct GTPath(pub GTSpan, pub GTPathModuleId, String);
 
 impl GTPath {
     pub fn as_str(&self) -> &str {

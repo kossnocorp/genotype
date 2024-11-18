@@ -1,6 +1,6 @@
 use pest::iterators::Pair;
 
-use crate::{parser::Rule, tree::GTIdentifier, GTContext};
+use crate::{parser::Rule, tree::GTIdentifier, GTContext, GTReferenceAliasId};
 
 use super::GTReference;
 
@@ -9,7 +9,7 @@ impl GTReference {
         let span = pair.as_span().into();
         let identifier: GTIdentifier = pair.into();
         context.resolve.references.insert(identifier.clone());
-        GTReference(span, identifier)
+        GTReference(span, GTReferenceAliasId::Unresolved, identifier)
     }
 }
 

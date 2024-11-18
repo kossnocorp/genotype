@@ -1017,6 +1017,7 @@ mod tests {
                                     span: (55, 62).into(),
                                     reference: GTReference(
                                         (58, 62).into(),
+                                        GTReferenceAliasId::Unresolved,
                                         GTIdentifier::new((58, 62).into(), "Base".into()),
                                     ),
                                 }],
@@ -1046,6 +1047,7 @@ mod tests {
                                     span: (91, 98).into(),
                                     reference: GTReference(
                                         (94, 98).into(),
+                                        GTReferenceAliasId::Unresolved,
                                         GTIdentifier::new((94, 98).into(), "Base".into()),
                                     ),
                                 }],
@@ -1140,6 +1142,7 @@ mod tests {
                                     span: (59, 73).into(),
                                     reference: GTReference(
                                         (62, 73).into(),
+                                        GTReferenceAliasId::Unresolved,
                                         GTIdentifier::new((62, 73).into(), "CommentBase".into()),
                                     ),
                                 }],
@@ -1397,11 +1400,13 @@ mod tests {
                                 descriptors: vec![
                                     GTReference(
                                         (10, 15).into(),
+                                        GTReferenceAliasId::Unresolved,
                                         GTIdentifier::new((10, 15).into(), "Reply".into()),
                                     )
                                     .into(),
                                     GTReference(
                                         (18, 20).into(),
+                                        GTReferenceAliasId::Unresolved,
                                         GTIdentifier::new((18, 20).into(), "DM".into()),
                                     )
                                     .into(),

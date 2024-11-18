@@ -335,11 +335,19 @@ mod tests {
                                 descriptors: vec![
                                     GTReference(
                                         (0, 0).into(),
+                                        GTReferenceAliasId::Resolved(GTAliasId(
+                                            "module".into(),
+                                            "DM".into()
+                                        )),
                                         GTIdentifier((0, 0).into(), "DM".into())
                                     )
                                     .into(),
                                     GTReference(
                                         (0, 0).into(),
+                                        GTReferenceAliasId::Resolved(GTAliasId(
+                                            "module".into(),
+                                            "Comment".into()
+                                        )),
                                         GTIdentifier((0, 0).into(), "Comment".into())
                                     )
                                     .into(),

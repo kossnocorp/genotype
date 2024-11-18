@@ -94,7 +94,7 @@ fn enumerated_name(name: &RSIdentifier, variant_names: &HashSet<RSIdentifier>) -
 fn name_descriptor(descriptor: &GTDescriptor, context: &mut RSConvertContext) -> RSIdentifier {
     match descriptor {
         GTDescriptor::Alias(alias) => alias.name.convert(context),
-        GTDescriptor::Reference(reference) => reference.1.convert(context),
+        GTDescriptor::Reference(reference) => reference.2.convert(context),
         GTDescriptor::InlineImport(import) => import.name.convert(context),
         GTDescriptor::Object(object) => object.name.to_identifier().convert(context),
         GTDescriptor::Literal(literal) => literal.to_string().into(),

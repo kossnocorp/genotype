@@ -8,14 +8,14 @@ impl TSConvert<TSReference> for GTReference {
     where
         HoistFn: Fn(TSDefinition),
     {
-        TSReference(self.1.convert(resolve, hoist))
+        TSReference(self.2.convert(resolve, hoist))
     }
 }
 
 #[cfg(test)]
 mod tests {
     use genotype_lang_ts_tree::*;
-    use genotype_parser::GTIdentifier;
+    use genotype_parser::{GTAliasId, GTIdentifier, GTReferenceAliasId};
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -26,6 +26,7 @@ mod tests {
             TSReference("Name".into()),
             GTReference(
                 (0, 0).into(),
+                GTReferenceAliasId::Resolved(GTAliasId("module".into(), "Name".into())),
                 GTIdentifier::new((0, 0).into(), "Name".into())
             )
             .convert(&TSConvertResolve::new(), &|_| {}),

@@ -5,8 +5,8 @@ use crate::{context::PYConvertContext, convert::PYConvert};
 
 impl PYConvert<PYReference> for GTReference {
     fn convert(&self, context: &mut PYConvertContext) -> PYReference {
-        let identifier = self.1.convert(context);
-        let forward = context.is_forward_identifier(&identifier, &self.1);
+        let identifier = self.2.convert(context);
+        let forward = context.is_forward_identifier(&identifier, &self.2);
         PYReference::new(identifier, forward)
     }
 }
@@ -14,7 +14,7 @@ impl PYConvert<PYReference> for GTReference {
 #[cfg(test)]
 mod tests {
     use genotype_lang_py_tree::*;
-    use genotype_parser::GTIdentifier;
+    use genotype_parser::{GTAliasId, GTIdentifier, GTReferenceAliasId};
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -27,6 +27,7 @@ mod tests {
             PYReference::new("Name".into(), false),
             GTReference(
                 (0, 0).into(),
+                GTReferenceAliasId::Resolved(GTAliasId("module".into(), "Name".into())),
                 GTIdentifier::new((0, 0).into(), "Name".into())
             )
             .convert(&mut context),
@@ -40,6 +41,7 @@ mod tests {
             PYReference::new("Name".into(), true),
             GTReference(
                 (0, 0).into(),
+                GTReferenceAliasId::Resolved(GTAliasId("module".into(), "Name".into())),
                 GTIdentifier::new((0, 0).into(), "Name".into())
             )
             .convert(&mut context),

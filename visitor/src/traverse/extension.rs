@@ -31,7 +31,7 @@ mod tests {
             vec![
                 GTMockVisited::Extension(extension.clone()),
                 GTMockVisited::Reference(extension.reference.clone()),
-                GTMockVisited::Identifier(extension.reference.1.clone()),
+                GTMockVisited::Identifier(extension.reference.2.clone()),
             ]
         );
     }

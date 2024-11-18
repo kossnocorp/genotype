@@ -5,7 +5,7 @@ use crate::{context::RSConvertContext, convert::RSConvert};
 
 impl RSConvert<RSReference> for GTReference {
     fn convert(&self, context: &mut RSConvertContext) -> RSReference {
-        let identifier = self.1.convert(context);
+        let identifier = self.2.convert(context);
         RSReference::new(identifier)
     }
 }
@@ -13,7 +13,7 @@ impl RSConvert<RSReference> for GTReference {
 #[cfg(test)]
 mod tests {
     use genotype_lang_rs_tree::*;
-    use genotype_parser::GTIdentifier;
+    use genotype_parser::{GTAliasId, GTIdentifier, GTReferenceAliasId};
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -26,6 +26,7 @@ mod tests {
             RSReference::new("Name".into()),
             GTReference(
                 (0, 0).into(),
+                GTReferenceAliasId::Resolved(GTAliasId("module".into(), "Name".into())),
                 GTIdentifier::new((0, 0).into(), "Name".into())
             )
             .convert(&mut context),

@@ -1,9 +1,9 @@
 use std::hash::Hash;
 
-use super::GTModuleId;
+use super::GTAliasId;
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone)]
-pub enum GTPathModule {
+pub enum GTReferenceAliasId {
     Unresolved,
-    Resolved(GTModuleId),
+    Resolved(GTAliasId),
 }
