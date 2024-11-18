@@ -46,7 +46,7 @@ mod tests {
             GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
             "module".into(),
         );
-        let mut context = RSConvertContext::default();
+        let mut context = RSConvertContext::empty("module".into());
         assert_eq!(
             GTImport {
                 span: (0, 0).into(),
@@ -83,7 +83,7 @@ mod tests {
                     ]
                 )
             }
-            .convert(&mut RSConvertContext::default()),
+            .convert(&mut RSConvertContext::empty("module".into())),
             RSUse {
                 path: "self::path::to::module".into(),
                 reference: RSUseReference::Named(vec![
@@ -103,7 +103,7 @@ mod tests {
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 reference: GTIdentifier::new((0, 0).into(), "Name".into()).into()
             }
-            .convert(&mut RSConvertContext::default()),
+            .convert(&mut RSConvertContext::empty("module".into())),
             RSUse {
                 path: "self::path::to::module".into(),
                 reference: RSUseReference::Named(vec![RSUseName::Name("Name".into())]),

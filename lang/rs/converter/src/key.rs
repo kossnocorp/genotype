@@ -22,13 +22,14 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             RSFieldName("foo".into()),
-            GTKey::new((0, 0).into(), "foo".into()).convert(&mut RSConvertContext::default()),
+            GTKey::new((0, 0).into(), "foo".into())
+                .convert(&mut RSConvertContext::empty("module".into())),
         );
     }
 
     #[test]
     fn test_convert_aliased() {
-        let mut context = RSConvertContext::default();
+        let mut context = RSConvertContext::empty("module".into());
         assert_eq!(
             RSFieldName("foo_bar".into()),
             GTKey::new((0, 0).into(), "fooBar".into()).convert(&mut context),

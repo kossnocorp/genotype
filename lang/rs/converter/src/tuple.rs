@@ -8,6 +8,7 @@ use crate::{
 
 impl RSConvert<RSTuple> for GTTuple {
     fn convert(&self, context: &mut RSConvertContext) -> RSTuple {
+        context.drop_alias_id();
         context.enter_parent(RSContextParent::Anonymous);
 
         let descriptors = self
@@ -40,7 +41,7 @@ mod tests {
                     GTPrimitive::String((0, 0).into()).into(),
                 ]
             }
-            .convert(&mut RSConvertContext::default()),
+            .convert(&mut RSConvertContext::empty("module".into())),
             RSTuple {
                 descriptors: vec![
                     RSDescriptor::Primitive(RSPrimitive::Boolean),

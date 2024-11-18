@@ -10,7 +10,7 @@ pub struct RSConvertModule(pub RSModule);
 impl RSConvertModule {
     pub fn convert(module: &GTModule, resolve: &RSConvertResolve, config: &RSLangConfig) -> Self {
         // [TODO] Get rid of unnecessary clone
-        let mut context = RSConvertContext::new(resolve.clone(), config.clone());
+        let mut context = RSConvertContext::new(module.id.clone(), resolve.clone(), config.clone());
 
         let doc = module.doc.as_ref().map(|doc| {
             let mut doc = doc.convert(&mut context);
@@ -222,6 +222,7 @@ mod tests {
                 ],
                 definitions: vec![
                     RSDefinition::Struct(RSStruct {
+                        id: GTAliasId("module".into(), "User".into()),
                         doc: None,
                         attributes: vec!["derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()],
                         name: "User".into(),
@@ -242,6 +243,7 @@ mod tests {
                         .into(),
                     }),
                     RSDefinition::Struct(RSStruct {
+                        id: GTAliasId("module".into(), "Order".into()),
                         doc: None,
                         attributes: vec!["derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()],
                         name: "Order".into(),
@@ -254,6 +256,7 @@ mod tests {
                         .into(),
                     }),
                     RSDefinition::Struct(RSStruct {
+                        id: GTAliasId("module".into(), "Book".into()),
                         doc: None,
                         attributes: vec!["derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()],
                         name: "Book".into(),
@@ -274,6 +277,7 @@ mod tests {
                         .into(),
                     }),
                     RSDefinition::Alias(RSAlias {
+                        id: GTAliasId("module".into(), "Name".into()),
                         doc: None,
                         name: "Name".into(),
                         descriptor: RSDescriptor::Primitive(RSPrimitive::String),

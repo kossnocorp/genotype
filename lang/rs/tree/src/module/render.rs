@@ -45,6 +45,7 @@ impl RSRender for RSModule {
 
 #[cfg(test)]
 mod tests {
+    use genotype_parser::GTAliasId;
     use pretty_assertions::assert_eq;
 
     use crate::*;
@@ -72,11 +73,13 @@ mod tests {
                 ],
                 definitions: vec![
                     RSDefinition::Alias(RSAlias {
+                        id: GTAliasId("module".into(), "Name".into()),
                         doc: None,
                         name: "Name".into(),
                         descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                     }),
                     RSDefinition::Struct(RSStruct {
+                        id: GTAliasId("module".into(), "Name".into()),
                         doc: None,
                         attributes: vec![],
                         name: "Name".into(),
@@ -125,6 +128,7 @@ struct Name {
                     dependency: RSDependency::Local("self::path::to::module".into())
                 },],
                 definitions: vec![RSDefinition::Alias(RSAlias {
+                    id: GTAliasId("module".into(), "Name".into()),
                     doc: None,
                     name: "Name".into(),
                     descriptor: RSDescriptor::Primitive(RSPrimitive::String),

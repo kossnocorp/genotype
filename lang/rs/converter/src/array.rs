@@ -28,7 +28,7 @@ mod tests {
                 span: (0, 0).into(),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }
-            .convert(&mut RSConvertContext::default()),
+            .convert(&mut RSConvertContext::empty("module".into())),
             RSVec {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean)
             }

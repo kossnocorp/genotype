@@ -32,6 +32,7 @@ impl RSRender for RSStruct {
 
 #[cfg(test)]
 mod tests {
+    use genotype_parser::GTAliasId;
     use pretty_assertions::assert_eq;
 
     use crate::*;
@@ -40,6 +41,7 @@ mod tests {
     fn test_render_empty() {
         assert_eq!(
             RSStruct {
+                id: GTAliasId("module".into(), "Name".into()),
                 doc: None,
                 attributes: vec![],
                 name: "Name".into(),
@@ -55,6 +57,7 @@ mod tests {
     fn test_render_properties() {
         assert_eq!(
             RSStruct {
+                id: GTAliasId("module".into(), "Name".into()),
                 doc: None,
                 attributes: vec![],
                 name: "Name".into(),
@@ -87,6 +90,7 @@ mod tests {
     fn test_render_indent() {
         assert_eq!(
             RSStruct {
+                id: GTAliasId("module".into(), "Person".into()),
                 doc: None,
                 attributes: vec![],
                 name: "Name".into(),
@@ -119,6 +123,7 @@ mod tests {
     fn test_render_doc_empty() {
         assert_eq!(
             RSStruct {
+                id: GTAliasId("module".into(), "Name".into()),
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "Name".into(),
@@ -135,6 +140,7 @@ struct Name;"#
     fn test_render_doc_fields() {
         assert_eq!(
             RSStruct {
+                id: GTAliasId("module".into(), "Name".into()),
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "Name".into(),

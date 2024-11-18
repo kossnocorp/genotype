@@ -21,14 +21,14 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_eq!(
-            GTAny((0, 0).into()).convert(&mut RSConvertContext::default()),
+            GTAny((0, 0).into()).convert(&mut RSConvertContext::empty("module".into())),
             RSReference::new("Value".into())
         );
     }
 
     #[test]
     fn test_convert_resolve() {
-        let mut context = RSConvertContext::default();
+        let mut context = RSConvertContext::empty("module".into());
         assert_eq!(
             GTAny((0, 0).into(),).convert(&mut context),
             RSReference::new("Value".into())

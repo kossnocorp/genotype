@@ -29,7 +29,7 @@ mod tests {
                 key: GTRecordKey::String((0, 0).into()),
                 descriptor: GTPrimitive::String((0, 0).into()).into(),
             }
-            .convert(&mut RSConvertContext::default()),
+            .convert(&mut RSConvertContext::empty("module".into())),
             RSHashMap {
                 key: RSPrimitive::String.into(),
                 descriptor: RSPrimitive::String.into(),
@@ -39,7 +39,7 @@ mod tests {
 
     #[test]
     fn test_convert_import() {
-        let mut context = RSConvertContext::default();
+        let mut context = RSConvertContext::empty("module".into());
         assert_eq!(
             GTRecord {
                 span: (0, 0).into(),

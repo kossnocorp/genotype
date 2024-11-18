@@ -13,8 +13,9 @@ use crate::{
 impl RSConvert<RSEnum> for GTUnion {
     fn convert(&self, context: &mut RSConvertContext) -> RSEnum {
         let doc = context.consume_doc();
-
         let name = context.name_child("Union");
+        let id = context.build_alias_id(&name);
+        context.drop_alias_id();
         context.enter_parent(RSContextParent::Definition(name.clone()));
 
         let mut variant_names: HashSet<RSIdentifier> = HashSet::new();
@@ -26,12 +27,10 @@ impl RSConvert<RSEnum> for GTUnion {
             .collect();
 
         let r#enum = RSEnum {
+            id,
             doc,
             name,
-            attributes: vec![
-                "derive(Deserialize, Serialize)".into(),
-                r#"serde(untagged)"#.into(),
-            ],
+            attributes: vec![context.render_derive().into(), r#"serde(untagged)"#.into()],
             variants,
         };
 
@@ -134,11 +133,13 @@ mod tests {
                     GTPrimitive::String((0, 0).into()).into(),
                 ]
             }
-            .convert(&mut RSConvertContext::default()),
+            .convert(&mut RSConvertContext::empty("module".into())),
             RSEnum {
+                id: GTAliasId("module".into(), "Union".into()),
                 doc: None,
                 attributes: vec![
-                    "derive(Deserialize, Serialize)".into(),
+                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                        .into(),
                     r#"serde(untagged)"#.into(),
                 ],
                 name: "Union".into(),
@@ -164,7 +165,7 @@ mod tests {
 
     #[test]
     fn test_convert_import() {
-        let mut context = RSConvertContext::default();
+        let mut context = RSConvertContext::empty("module".into());
         assert_eq!(
             GTUnion {
                 span: (0, 0).into(),
@@ -172,9 +173,11 @@ mod tests {
             }
             .convert(&mut context),
             RSEnum {
+                id: GTAliasId("module".into(), "Union".into()),
                 doc: None,
                 attributes: vec![
-                    "derive(Deserialize, Serialize)".into(),
+                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                        .into(),
                     r#"serde(untagged)"#.into(),
                 ],
                 name: "Union".into(),
@@ -197,7 +200,7 @@ mod tests {
 
     #[test]
     fn test_convert_doc() {
-        let mut context = RSConvertContext::default();
+        let mut context = RSConvertContext::empty("module".into());
         context.provide_doc(Some("Hello, world!".into()));
         assert_eq!(
             GTUnion {
@@ -206,9 +209,11 @@ mod tests {
             }
             .convert(&mut context),
             RSEnum {
+                id: GTAliasId("module".into(), "Union".into()),
                 doc: Some("Hello, world!".into()),
                 attributes: vec![
-                    "derive(Deserialize, Serialize)".into(),
+                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                        .into(),
                     r#"serde(untagged)"#.into(),
                 ],
                 name: "Union".into(),
@@ -247,11 +252,13 @@ mod tests {
                     .into()
                 ],
             }
-            .convert(&mut Default::default()),
+            .convert(&mut RSConvertContext::empty("module".into())),
             RSEnum {
+                id: GTAliasId("module".into(), "Union".into()),
                 doc: None,
                 attributes: vec![
-                    "derive(Deserialize, Serialize)".into(),
+                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                        .into(),
                     r#"serde(untagged)"#.into(),
                 ],
                 name: "Union".into(),

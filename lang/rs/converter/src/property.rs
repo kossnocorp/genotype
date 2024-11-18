@@ -41,7 +41,7 @@ mod tests {
                 descriptor: GTPrimitive::String((0, 0).into()).into(),
                 required: false,
             }
-            .convert(&mut RSConvertContext::default()),
+            .convert(&mut RSConvertContext::empty("module".into())),
             RSField {
                 doc: None,
                 attributes: vec![],
@@ -54,7 +54,7 @@ mod tests {
     #[test]
     // [TODO] Resolve test
     fn test_convert_resolve() {
-        let mut context = RSConvertContext::new(Default::default(), Default::default());
+        let mut context = RSConvertContext::empty("module".into());
         assert_eq!(
             GTProperty {
                 doc: None,

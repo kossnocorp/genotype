@@ -27,7 +27,7 @@ mod tesrs {
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
             }
-            .convert(&mut RSConvertContext::default()),
+            .convert(&mut RSConvertContext::empty("module".into())),
             RSInlineUse {
                 path: "self::path::to::module".into(),
                 name: "Name".into(),

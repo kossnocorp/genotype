@@ -15,11 +15,13 @@ impl RSConvert<RSDefinition> for GTAlias {
 
         let definition = match &self.descriptor {
             GTDescriptor::Object(object) => {
+                context.provide_alias_id(self.id.clone());
                 context.provide_doc(doc);
                 RSDefinition::Struct(object.convert(context))
             }
 
             GTDescriptor::Union(union) => {
+                context.provide_alias_id(self.id.clone());
                 context.provide_doc(doc);
                 RSDefinition::Enum(union.convert(context))
             }
@@ -29,6 +31,7 @@ impl RSConvert<RSDefinition> for GTAlias {
 
                 let descriptor = self.descriptor.convert(context);
                 let alias = RSDefinition::Alias(RSAlias {
+                    id: self.id.clone(),
                     doc,
                     name,
                     descriptor,
@@ -61,8 +64,9 @@ mod tests {
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }
-            .convert(&mut RSConvertContext::default()),
+            .convert(&mut RSConvertContext::empty("module".into())),
             RSDefinition::Alias(RSAlias {
+                id: GTAliasId("module".into(), "Name".into()),
                 doc: None,
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
@@ -103,8 +107,9 @@ mod tests {
                     ]
                 })
             }
-            .convert(&mut RSConvertContext::default()),
+            .convert(&mut RSConvertContext::empty("module".into())),
             RSDefinition::Struct(RSStruct {
+                id: GTAliasId("module".into(), "Book".into()),
                 doc: None,
                 attributes: vec![
                     "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
@@ -131,9 +136,8 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "WIP"]
     fn test_convert_hoisted() {
-        let mut context = RSConvertContext::default();
+        let mut context = RSConvertContext::empty("module".into());
         assert_eq!(
             GTAlias {
                 id: GTAliasId("module".into(), "Book".into()),
@@ -167,18 +171,42 @@ mod tests {
             }
             .convert(&mut context),
             RSDefinition::Enum(RSEnum {
+                id: GTAliasId("module".into(), "Union".into()),
                 doc: None,
-                attributes: vec![],
-                name: "Book".into(),
-                variants: vec![]
+                attributes: vec![
+                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                        .into(),
+                    r#"serde(untagged)"#.into(),
+                ],
+                name: "Union".into(),
+                variants: vec![
+                    RSEnumVariant {
+                        doc: None,
+                        name: "BookObj".into(),
+                        attributes: vec![],
+                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                            RSReference::new("BookObj".into()).into()
+                        ),
+                    },
+                    RSEnumVariant {
+                        doc: None,
+                        name: "String".into(),
+                        attributes: vec![],
+                        descriptor: RSEnumVariantDescriptor::Descriptor(RSPrimitive::String.into()),
+                    }
+                ]
             })
         );
         let hoisted = context.drain_hoisted();
         assert_eq!(
             hoisted,
             vec![RSDefinition::Struct(RSStruct {
+                id: GTAliasId("module".into(), "BookObj".into()),
                 doc: None,
-                attributes: vec![],
+                attributes: vec![
+                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                        .into(),
+                ],
                 name: "BookObj".into(),
                 fields: vec![RSField {
                     doc: None,
@@ -221,8 +249,9 @@ mod tests {
                     ]
                 })
             }
-            .convert(&mut RSConvertContext::default()),
+            .convert(&mut RSConvertContext::empty("module".into())),
             RSDefinition::Enum(RSEnum {
+                id: GTAliasId("module".into(), "Message".into()),
                 doc: None,
                 name: "Message".into(),
                 attributes: vec![],
@@ -242,8 +271,9 @@ mod tests {
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }
-            .convert(&mut RSConvertContext::default()),
+            .convert(&mut RSConvertContext::empty("module".into())),
             RSDefinition::Alias(RSAlias {
+                id: GTAliasId("module".into(), "Name".into()),
                 doc: Some("Hello, world!".into()),
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),

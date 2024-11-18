@@ -22,6 +22,7 @@ impl RSRender for RSAlias {
 
 #[cfg(test)]
 mod tests {
+    use genotype_parser::GTAliasId;
     use pretty_assertions::assert_eq;
 
     use crate::*;
@@ -30,6 +31,7 @@ mod tests {
     fn test_render() {
         assert_eq!(
             RSAlias {
+                id: GTAliasId("module".into(), "Name".into()),
                 doc: None,
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
@@ -44,6 +46,7 @@ mod tests {
     fn test_render_doc() {
         assert_eq!(
             RSAlias {
+                id: GTAliasId("module".into(), "Name".into()),
                 doc: Some("Hello, world!".into()),
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),

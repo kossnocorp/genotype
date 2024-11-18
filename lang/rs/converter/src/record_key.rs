@@ -26,19 +26,22 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             RSDescriptor::Primitive(RSPrimitive::String),
-            GTRecordKey::String((0, 0).into()).convert(&mut RSConvertContext::default()),
+            GTRecordKey::String((0, 0).into())
+                .convert(&mut RSConvertContext::empty("module".into())),
         );
         assert_eq!(
             RSDescriptor::Primitive(RSPrimitive::Int),
-            GTRecordKey::Int((0, 0).into()).convert(&mut RSConvertContext::default()),
+            GTRecordKey::Int((0, 0).into()).convert(&mut RSConvertContext::empty("module".into())),
         );
         assert_eq!(
             RSDescriptor::Primitive(RSPrimitive::Float32),
-            GTRecordKey::Float((0, 0).into()).convert(&mut RSConvertContext::default()),
+            GTRecordKey::Float((0, 0).into())
+                .convert(&mut RSConvertContext::empty("module".into())),
         );
         assert_eq!(
             RSDescriptor::Primitive(RSPrimitive::Boolean),
-            GTRecordKey::Boolean((0, 0).into()).convert(&mut RSConvertContext::default()),
+            GTRecordKey::Boolean((0, 0).into())
+                .convert(&mut RSConvertContext::empty("module".into())),
         );
     }
 }

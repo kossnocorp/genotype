@@ -29,7 +29,7 @@ mod tests {
             RSPath("self::path::to::module".into()),
             GTPath::parse((0, 0).into(), "./path/to/module")
                 .unwrap()
-                .convert(&mut RSConvertContext::default()),
+                .convert(&mut RSConvertContext::empty("module".into())),
         );
     }
 
@@ -39,7 +39,7 @@ mod tests {
             RSPath("module::path".into()),
             GTPath::parse((0, 0).into(), "module/path")
                 .unwrap()
-                .convert(&mut RSConvertContext::default()),
+                .convert(&mut RSConvertContext::empty("module".into())),
         );
     }
 
@@ -49,7 +49,7 @@ mod tests {
             RSPath("super::path::to::module".into()),
             GTPath::parse((0, 0).into(), "../path/to/module")
                 .unwrap()
-                .convert(&mut RSConvertContext::default()),
+                .convert(&mut RSConvertContext::empty("module".into())),
         );
     }
 
@@ -60,7 +60,7 @@ mod tests {
             GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
             GTPath::parse((0, 0).into(), "./path/to/another/module").unwrap(),
         );
-        let mut context = RSConvertContext::new(resolve, Default::default());
+        let mut context = RSConvertContext::new("module".into(), resolve, Default::default());
         assert_eq!(
             RSPath("self::path::to::another::module".into()),
             GTPath::parse((0, 0).into(), "./path/to/module")

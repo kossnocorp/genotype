@@ -50,7 +50,7 @@ mod tests {
 
     #[test]
     fn test_convert_alias() {
-        let mut context = RSConvertContext::default();
+        let mut context = RSConvertContext::empty("module".into());
         assert_eq!(
             GTDescriptor::Alias(Box::new(GTAlias {
                 id: GTAliasId("module".into(), "Name".into()),
@@ -67,6 +67,7 @@ mod tests {
         assert_eq!(
             hoisted,
             vec![RSDefinition::Alias(RSAlias {
+                id: GTAliasId("module".into(), "Name".into()),
                 doc: None,
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
@@ -81,7 +82,7 @@ mod tests {
                 span: (0, 0).into(),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }))
-            .convert(&mut RSConvertContext::default()),
+            .convert(&mut RSConvertContext::empty("module".into())),
             RSDescriptor::Vec(Box::new(RSVec {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean)
             }))
@@ -90,7 +91,7 @@ mod tests {
 
     #[test]
     fn test_convert_inline_import() {
-        let mut context = RSConvertContext::default();
+        let mut context = RSConvertContext::empty("module".into());
         assert_eq!(
             GTDescriptor::InlineImport(GTInlineImport {
                 span: (0, 0).into(),
@@ -107,7 +108,7 @@ mod tests {
 
     #[test]
     fn test_convert_object() {
-        let mut context = RSConvertContext::default();
+        let mut context = RSConvertContext::empty("module".into());
         assert_eq!(
             GTDescriptor::Object(GTObject {
                 span: (0, 0).into(),
@@ -139,6 +140,7 @@ mod tests {
         assert_eq!(
             hoisted,
             vec![RSDefinition::Struct(RSStruct {
+                id: GTAliasId("module".into(), "Person".into()),
                 doc: None,
                 attributes: vec![
                     "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
@@ -168,7 +170,7 @@ mod tests {
     fn test_convert_primitive() {
         assert_eq!(
             GTDescriptor::Primitive(GTPrimitive::Boolean((0, 0).into()))
-                .convert(&mut RSConvertContext::default()),
+                .convert(&mut RSConvertContext::empty("module".into())),
             RSDescriptor::Primitive(RSPrimitive::Boolean)
         );
     }
@@ -177,7 +179,7 @@ mod tests {
     fn test_convert_reference() {
         assert_eq!(
             GTDescriptor::Reference(GTIdentifier::new((0, 0).into(), "Name".into()).into())
-                .convert(&mut RSConvertContext::default()),
+                .convert(&mut RSConvertContext::empty("module".into())),
             RSReference::new("Name".into()).into()
         );
     }
@@ -192,7 +194,7 @@ mod tests {
                     GTPrimitive::String((0, 0).into()).into(),
                 ]
             })
-            .convert(&mut RSConvertContext::default()),
+            .convert(&mut RSConvertContext::empty("module".into())),
             RSDescriptor::Tuple(RSTuple {
                 descriptors: vec![
                     RSDescriptor::Primitive(RSPrimitive::Boolean),
@@ -203,9 +205,8 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "WIP"]
     fn test_convert_union() {
-        let mut context = RSConvertContext::default();
+        let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Definition("Values".into()));
         assert_eq!(
             GTDescriptor::Union(GTUnion {
@@ -216,15 +217,20 @@ mod tests {
                 ]
             })
             .convert(&mut context),
-            RSDescriptor::Reference(RSReference::new("Enum".into()))
+            RSDescriptor::Reference(RSReference::new("Union".into()))
         );
         let hoisted = context.drain_hoisted();
         assert_eq!(
             hoisted,
             vec![RSDefinition::Enum(RSEnum {
+                id: GTAliasId("module".into(), "Union".into()),
                 doc: None,
-                attributes: vec![],
-                name: "ValuesUnion".into(),
+                attributes: vec![
+                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                        .into(),
+                    "serde(untagged)".into(),
+                ],
+                name: "Union".into(),
                 variants: vec![
                     RSEnumVariant {
                         doc: None,

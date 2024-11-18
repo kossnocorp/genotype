@@ -22,7 +22,8 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             RSDoc::new("Hello, world!", false),
-            GTDoc((0, 0).into(), "Hello, world!".into()).convert(&mut RSConvertContext::default()),
+            GTDoc((0, 0).into(), "Hello, world!".into())
+                .convert(&mut RSConvertContext::empty("module".into())),
         );
     }
 }

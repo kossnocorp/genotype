@@ -1,11 +1,12 @@
 use genotype_lang_rs_config::RSLangConfig;
 use genotype_lang_rs_tree::*;
-use genotype_parser::{GTIdentifier, GTPath};
+use genotype_parser::{GTAliasId, GTIdentifier, GTModuleId, GTPath};
 use naming::RSContextParent;
 
 use crate::resolve::RSConvertResolve;
 
-mod hoisting;
+pub mod hoisting;
+pub mod ids;
 pub mod naming;
 
 pub struct RSConvertContext {
@@ -20,6 +21,8 @@ pub struct RSConvertContext {
     dependencies: Vec<(RSDependency, RSIdentifier)>,
     doc: Option<RSDoc>,
     parents: Vec<RSContextParent>,
+    module_id: GTModuleId,
+    alias_id: Option<GTAliasId>,
 }
 
 impl RSContext for RSConvertContext {
@@ -43,8 +46,14 @@ impl RSContext for RSConvertContext {
 }
 
 impl RSConvertContext {
-    pub fn new(resolve: RSConvertResolve, config: RSLangConfig) -> Self {
+    pub fn empty(module_id: GTModuleId) -> Self {
+        Self::new(module_id, Default::default(), Default::default())
+    }
+
+    pub fn new(module_id: GTModuleId, resolve: RSConvertResolve, config: RSLangConfig) -> Self {
         Self {
+            module_id,
+            alias_id: None,
             resolve,
             config,
             imports: vec![],
@@ -138,12 +147,6 @@ impl RSConvertContext {
     }
 }
 
-impl Default for RSConvertContext {
-    fn default() -> Self {
-        Self::new(RSConvertResolve::default(), Default::default())
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use genotype_lang_rs_tree::*;
@@ -153,9 +156,10 @@ mod tests {
 
     #[test]
     fn test_hoist() {
-        let mut context = RSConvertContext::default();
+        let mut context = RSConvertContext::empty("module".into());
         context.hoist(|_| {
             RSDefinition::Alias(RSAlias {
+                id: GTAliasId("module".into(), "Name".into()),
                 doc: None,
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
@@ -165,6 +169,7 @@ mod tests {
         assert_eq!(
             hoisted,
             vec![RSDefinition::Alias(RSAlias {
+                id: GTAliasId("module".into(), "Name".into()),
                 doc: None,
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
@@ -174,7 +179,7 @@ mod tests {
 
     #[test]
     fn test_define() {
-        let mut context = RSConvertContext::default();
+        let mut context = RSConvertContext::empty("module".into());
         context.push_defined(&"Name".into());
         assert_eq!(context.defined, vec!["Name".into()]);
     }

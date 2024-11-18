@@ -25,23 +25,26 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_eq!(
-            GTPrimitive::Boolean((0, 0).into()).convert(&mut RSConvertContext::default()),
+            GTPrimitive::Boolean((0, 0).into())
+                .convert(&mut RSConvertContext::empty("module".into())),
             RSPrimitive::Boolean
         );
         assert_eq!(
-            GTPrimitive::String((0, 0).into()).convert(&mut RSConvertContext::default()),
+            GTPrimitive::String((0, 0).into())
+                .convert(&mut RSConvertContext::empty("module".into())),
             RSPrimitive::String
         );
         assert_eq!(
-            GTPrimitive::Int((0, 0).into()).convert(&mut RSConvertContext::default()),
+            GTPrimitive::Int((0, 0).into()).convert(&mut RSConvertContext::empty("module".into())),
             RSPrimitive::Int
         );
         assert_eq!(
-            GTPrimitive::Float((0, 0).into()).convert(&mut RSConvertContext::default()),
+            GTPrimitive::Float((0, 0).into())
+                .convert(&mut RSConvertContext::empty("module".into())),
             RSPrimitive::Float32
         );
         assert_eq!(
-            GTPrimitive::Null((0, 0).into()).convert(&mut RSConvertContext::default()),
+            GTPrimitive::Null((0, 0).into()).convert(&mut RSConvertContext::empty("module".into())),
             RSPrimitive::Unit
         );
     }

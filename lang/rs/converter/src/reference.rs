@@ -20,7 +20,7 @@ mod tests {
 
     #[test]
     fn test_convert() {
-        let mut context = RSConvertContext::default();
+        let mut context = RSConvertContext::empty("module".into());
         context.push_defined(&"Name".into());
         assert_eq!(
             RSReference::new("Name".into()),

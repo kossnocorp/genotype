@@ -32,7 +32,7 @@ mod tests {
                 (0, 0).into(),
                 GTIdentifier::new((0, 0).into(), "Name".into())
             )
-            .convert(&mut RSConvertContext::default()),
+            .convert(&mut RSConvertContext::empty("module".into())),
             RSUseName::Name("Name".into()),
         );
     }
@@ -45,7 +45,7 @@ mod tests {
                 GTIdentifier::new((0, 0).into(), "Name".into()),
                 GTIdentifier::new((0, 0).into(), "Alias".into())
             )
-            .convert(&mut RSConvertContext::default()),
+            .convert(&mut RSConvertContext::empty("module".into())),
             RSUseName::Alias("Name".into(), "Alias".into()),
         );
     }

@@ -73,7 +73,7 @@ mod tests {
 
     #[test]
     fn test_name_child() {
-        let mut context = RSConvertContext::default();
+        let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Definition("Person".into()));
         context.enter_parent(RSContextParent::Property("name".into()));
 
@@ -82,7 +82,7 @@ mod tests {
 
     #[test]
     fn test_name_hoisted_child() {
-        let mut context = RSConvertContext::default();
+        let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Definition("Person".into()));
         context.enter_parent(RSContextParent::Property("name".into()));
         context.enter_parent(RSContextParent::Hoist);
@@ -93,7 +93,7 @@ mod tests {
 
     #[test]
     fn test_claim_alias() {
-        let mut context = RSConvertContext::default();
+        let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Definition("Person".into()));
         context.enter_parent(RSContextParent::Property("name".into()));
         context.enter_parent(RSContextParent::Hoist);

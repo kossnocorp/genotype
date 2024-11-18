@@ -12,6 +12,9 @@ impl RSConvert<RSStruct> for GTObject {
             GTObjectName::Named(identifier) => identifier.convert(context),
             GTObjectName::Alias(identifier, _) => identifier.convert(context),
         };
+        let id = context
+            .consume_alias_id()
+            .unwrap_or_else(|| context.build_alias_id(&name));
         context.enter_parent(RSContextParent::Definition(name.clone()));
 
         let doc = context.consume_doc();
@@ -29,6 +32,7 @@ impl RSConvert<RSStruct> for GTObject {
         };
 
         let r#struct = RSStruct {
+            id,
             doc,
             attributes: vec![context.render_derive().into()],
             name,
@@ -77,8 +81,9 @@ mod tests {
                     }
                 ]
             }
-            .convert(&mut RSConvertContext::default()),
+            .convert(&mut RSConvertContext::empty("module".into())),
             RSStruct {
+                id: GTAliasId("module".into(), "Person".into()),
                 doc: None,
                 attributes: vec![
                     "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
@@ -106,7 +111,7 @@ mod tests {
 
     #[test]
     fn test_convert_import() {
-        let mut context = RSConvertContext::default();
+        let mut context = RSConvertContext::empty("module".into());
         assert_eq!(
             GTObject {
                 span: (0, 0).into(),
@@ -116,6 +121,7 @@ mod tests {
             }
             .convert(&mut context),
             RSStruct {
+                id: GTAliasId("module".into(), "Person".into()),
                 doc: None,
                 attributes: vec![
                     "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
@@ -136,7 +142,7 @@ mod tests {
 
     #[test]
     fn test_convert_doc() {
-        let mut context = RSConvertContext::default();
+        let mut context = RSConvertContext::empty("module".into());
         context.provide_doc(Some("Hello, world!".into()));
         assert_eq!(
             GTObject {
@@ -147,6 +153,7 @@ mod tests {
             }
             .convert(&mut context),
             RSStruct {
+                id: GTAliasId("module".into(), "Person".into()),
                 doc: Some("Hello, world!".into()),
                 attributes: vec![
                     "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
@@ -160,7 +167,7 @@ mod tests {
 
     #[test]
     fn test_convert_unresolved() {
-        let mut context = RSConvertContext::default();
+        let mut context = RSConvertContext::empty("module".into());
         assert_eq!(
             GTObject {
                 span: (1, 8).into(),
@@ -190,6 +197,7 @@ mod tests {
             }
             .convert(&mut context),
             RSStruct {
+                id: GTAliasId("module".into(), "Person".into()),
                 doc: None,
                 attributes: vec![
                     "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
