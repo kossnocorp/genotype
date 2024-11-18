@@ -33,6 +33,7 @@ impl RSConvertModule {
         let definitions = context.drain_definitions();
 
         let module = RSModule {
+            id: module.id.clone(),
             doc,
             imports,
             definitions,
@@ -190,6 +191,7 @@ mod tests {
                 &Default::default()
             ),
             RSConvertModule(RSModule {
+                id: "module".into(),
                 doc: None,
                 imports: vec![
                     RSUse {
@@ -292,6 +294,7 @@ mod tests {
                 &Default::default()
             ),
             RSConvertModule(RSModule {
+                id: "module".into(),
                 doc: Some(RSDoc::new("Hello, world!", true)),
                 imports: vec![],
                 definitions: vec![]

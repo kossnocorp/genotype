@@ -53,6 +53,7 @@ mod tests {
     fn test_render() {
         assert_eq!(
             RSModule {
+                id: "module".into(),
                 doc: None,
                 imports: vec![
                     RSUse {
@@ -116,6 +117,7 @@ struct Name {
     fn test_render_doc() {
         assert_eq!(
             RSModule {
+                id: "module".into(),
                 doc: Some(RSDoc::new("Hello, world!", true)),
                 imports: vec![RSUse {
                     path: "self::path::to::module".into(),

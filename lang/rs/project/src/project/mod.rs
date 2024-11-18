@@ -61,6 +61,7 @@ mod tests {
                         name: "author".into(),
                         path: "rs/src/author.rs".into(),
                         module: RSModule {
+                            id: "author".into(),
                             doc: None,
                             imports: vec![RSUse {
                                 path: "serde".into(),
@@ -91,6 +92,7 @@ mod tests {
                         name: "book".into(),
                         path: "rs/src/book.rs".into(),
                         module: RSModule {
+                            id: "book".into(),
                             doc: None,
                             imports: vec![
                                 RSUse {
@@ -153,6 +155,7 @@ mod tests {
                         name: "author".into(),
                         path: "rs/src/author.rs".into(),
                         module: RSModule {
+                            id: "author".into(),
                             doc: None,
                             imports: vec![RSUse {
                                 path: "serde".into(),
@@ -191,6 +194,7 @@ mod tests {
                         name: "book".into(),
                         path: "rs/src/book.rs".into(),
                         module: RSModule {
+                            id: "book".into(),
                             doc: None,
                             imports: vec![
                                 RSUse {
