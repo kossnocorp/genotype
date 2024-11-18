@@ -157,7 +157,7 @@ mod tests {
     #[test]
     fn test_hoist() {
         let mut context = RSConvertContext::empty("module".into());
-        context.hoist(|_| {
+        let _ = context.hoist(|_| {
             Ok(RSDefinition::Alias(RSAlias {
                 id: GTDefinitionId("module".into(), "Name".into()),
                 doc: None,

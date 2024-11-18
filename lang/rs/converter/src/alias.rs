@@ -232,7 +232,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "WIP"]
     fn test_convert_discriminator() {
         assert_eq!(
             GTAlias {

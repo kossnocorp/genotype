@@ -1,12 +1,16 @@
+use genotype_parser::tree::GTModule;
+use genotype_visitor::traverse::GTTraverse;
+use miette::Result;
+
 mod parse;
 mod path;
 mod resolve;
 
-use genotype_parser::tree::GTModule;
-use miette::Result;
 pub use parse::*;
 pub use path::*;
 pub use resolve::*;
+
+use crate::{visitor::GTProjectResolveVisitor, GTProjectResolve};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTProjectModule {
@@ -17,11 +21,18 @@ pub struct GTProjectModule {
 
 impl GTProjectModule {
     pub fn try_new(
+        definitions: &GTProjectResolve,
         modules: &Vec<GTProjectModuleParse>,
         parse: GTProjectModuleParse,
     ) -> Result<Self> {
         let resolve = GTProjectModuleResolve::try_new(modules, &parse)
             .map_err(|err| err.with_source_code(parse.1.module.source_code.clone()))?;
+
+        // Combine these two ^v
+
+        let mut visitor = GTProjectResolveVisitor::new(parse.1.module.id.clone(), &definitions);
+        let mut parse = parse;
+        parse.1.module.traverse(&mut visitor);
 
         Ok(GTProjectModule {
             path: parse.0,

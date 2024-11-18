@@ -58,16 +58,18 @@ impl GTProject {
         });
 
         // [TODO] Simplify and turn into errors
-        let modules = Arc::try_unwrap(modules)
+        let modules_parse = Arc::try_unwrap(modules)
             .expect("Mutex cannot be unwrapped")
             .into_inner()
             .expect("Mutex cannot be locked")
             .into_iter()
             .collect::<Result<Vec<_>>>()?;
 
-        let mut modules = modules
+        let definitions: GTProjectResolve = (&modules_parse).try_into()?;
+
+        let mut modules = modules_parse
             .iter()
-            .map(|parse| GTProjectModule::try_new(&modules, parse.clone()))
+            .map(|parse| GTProjectModule::try_new(&definitions, &modules_parse, parse.clone()))
             .collect::<Result<Vec<_>, _>>()?;
 
         // [TODO] It's needed for tests, hide behind cfg(test), keep or replace with something like
