@@ -1,14 +1,14 @@
 use genotype_lang_rs_tree::RSInlineUse;
 use genotype_parser::tree::inline_import::GTInlineImport;
+use miette::Result;
 
 use crate::{context::RSConvertContext, convert::RSConvert};
 
 impl RSConvert<RSInlineUse> for GTInlineImport {
-    fn convert(&self, context: &mut RSConvertContext) -> RSInlineUse {
-        RSInlineUse {
-            path: self.path.convert(context),
-            name: self.name.convert(context),
-        }
+    fn convert(&self, context: &mut RSConvertContext) -> Result<RSInlineUse> {
+        let path = self.path.convert(context)?;
+        let name = self.name.convert(context)?;
+        Ok(RSInlineUse { path, name })
     }
 }
 
@@ -27,7 +27,8 @@ mod tesrs {
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
             }
-            .convert(&mut RSConvertContext::empty("module".into())),
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
             RSInlineUse {
                 path: "self::path::to::module".into(),
                 name: "Name".into(),

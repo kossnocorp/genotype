@@ -1,11 +1,12 @@
 use genotype_lang_rs_tree::identifier::RSIdentifier;
 use genotype_parser::tree::identifier::GTIdentifier;
+use miette::Result;
 
 use crate::{context::RSConvertContext, convert::RSConvert};
 
 impl RSConvert<RSIdentifier> for GTIdentifier {
-    fn convert(&self, context: &mut RSConvertContext) -> RSIdentifier {
-        RSIdentifier(context.resolve_identifier(self))
+    fn convert(&self, context: &mut RSConvertContext) -> Result<RSIdentifier> {
+        Ok(RSIdentifier(context.resolve_identifier(self)))
     }
 }
 
@@ -22,7 +23,8 @@ mod tests {
         assert_eq!(
             RSIdentifier("Foo".into()),
             GTIdentifier::new((0, 0).into(), "Foo".into())
-                .convert(&mut RSConvertContext::empty("module".into())),
+                .convert(&mut RSConvertContext::empty("module".into()))
+                .unwrap(),
         );
     }
 
@@ -37,7 +39,9 @@ mod tests {
             RSConvertContext::new("module".into(), resolve.clone(), Default::default());
         assert_eq!(
             RSIdentifier("foo::Bar".into()),
-            GTIdentifier::new((0, 0).into(), "Foo".into()).convert(&mut context),
+            GTIdentifier::new((0, 0).into(), "Foo".into())
+                .convert(&mut context)
+                .unwrap(),
         );
     }
 }

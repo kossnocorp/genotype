@@ -1,6 +1,7 @@
 use genotype_lang_rs_config::RSLangConfig;
 use genotype_lang_rs_tree::module::RSModule;
 use genotype_parser::tree::module::GTModule;
+use miette::Result;
 
 use crate::{context::RSConvertContext, convert::RSConvert, resolve::RSConvertResolve};
 
@@ -8,23 +9,29 @@ use crate::{context::RSConvertContext, convert::RSConvert, resolve::RSConvertRes
 pub struct RSConvertModule(pub RSModule);
 
 impl RSConvertModule {
-    pub fn convert(module: &GTModule, resolve: &RSConvertResolve, config: &RSLangConfig) -> Self {
+    pub fn convert(
+        module: &GTModule,
+        resolve: &RSConvertResolve,
+        config: &RSLangConfig,
+    ) -> Result<Self> {
         // [TODO] Get rid of unnecessary clone
         let mut context = RSConvertContext::new(module.id.clone(), resolve.clone(), config.clone());
 
-        let doc = module.doc.as_ref().map(|doc| {
-            let mut doc = doc.convert(&mut context);
+        let doc = if let Some(doc) = &module.doc {
+            let mut doc = doc.convert(&mut context)?;
             doc.1 = true;
-            doc
-        });
+            Some(doc)
+        } else {
+            None
+        };
 
         for import in &module.imports {
-            let import = import.convert(&mut context);
+            let import = import.convert(&mut context)?;
             context.push_import(import);
         }
 
         for alias in &module.aliases {
-            let definition = alias.convert(&mut context);
+            let definition = alias.convert(&mut context)?;
             context.push_definition(definition);
         }
 
@@ -39,7 +46,7 @@ impl RSConvertModule {
             definitions,
         };
 
-        RSConvertModule(module)
+        Ok(RSConvertModule(module))
     }
 }
 
@@ -193,7 +200,7 @@ mod tests {
                 },
                 &resolve,
                 &Default::default()
-            ),
+            ).unwrap(),
             RSConvertModule(RSModule {
                 id: "module".into(),
                 doc: None,
@@ -300,7 +307,8 @@ mod tests {
                 },
                 &Default::default(),
                 &Default::default()
-            ),
+            )
+            .unwrap(),
             RSConvertModule(RSModule {
                 id: "module".into(),
                 doc: Some(RSDoc::new("Hello, world!", true)),

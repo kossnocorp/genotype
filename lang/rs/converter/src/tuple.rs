@@ -1,5 +1,6 @@
 use genotype_lang_rs_tree::tuple::RSTuple;
 use genotype_parser::tree::tuple::GTTuple;
+use miette::Result;
 
 use crate::{
     context::{naming::RSContextParent, RSConvertContext},
@@ -7,7 +8,7 @@ use crate::{
 };
 
 impl RSConvert<RSTuple> for GTTuple {
-    fn convert(&self, context: &mut RSConvertContext) -> RSTuple {
+    fn convert(&self, context: &mut RSConvertContext) -> Result<RSTuple> {
         context.drop_alias_id();
         context.enter_parent(RSContextParent::Anonymous);
 
@@ -15,11 +16,11 @@ impl RSConvert<RSTuple> for GTTuple {
             .descriptors
             .iter()
             .map(|descriptor| descriptor.convert(context))
-            .collect();
+            .collect::<Result<Vec<_>>>()?;
         let tuple = RSTuple { descriptors };
 
         context.exit_parent();
-        tuple
+        Ok(tuple)
     }
 }
 
@@ -41,7 +42,8 @@ mod tests {
                     GTPrimitive::String((0, 0).into()).into(),
                 ]
             }
-            .convert(&mut RSConvertContext::empty("module".into())),
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
             RSTuple {
                 descriptors: vec![
                     RSDescriptor::Primitive(RSPrimitive::Boolean),

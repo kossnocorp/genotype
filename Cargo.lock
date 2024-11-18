@@ -418,6 +418,7 @@ dependencies = [
  "heck",
  "miette",
  "pretty_assertions",
+ "thiserror",
 ]
 
 [[package]]

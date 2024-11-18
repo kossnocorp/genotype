@@ -1,10 +1,11 @@
 use genotype_lang_rs_tree::*;
 use genotype_parser::*;
+use miette::Result;
 
 use crate::{context::RSConvertContext, convert::RSConvert};
 
 impl RSConvert<RSUse> for GTImport {
-    fn convert(&self, context: &mut RSConvertContext) -> RSUse {
+    fn convert(&self, context: &mut RSConvertContext) -> Result<RSUse> {
         let reference = match &self.reference {
             GTImportReference::Glob(_) => RSUseReference::Module,
 
@@ -12,21 +13,21 @@ impl RSConvert<RSUse> for GTImport {
                 names
                     .iter()
                     .map(|name| name.convert(context))
-                    .collect::<Vec<_>>(),
+                    .collect::<Result<Vec<_>>>()?,
             ),
 
             GTImportReference::Name(_, name) => {
-                RSUseReference::Named(vec![RSUseName::Name(name.convert(context))])
+                RSUseReference::Named(vec![RSUseName::Name(name.convert(context)?)])
             }
         };
 
-        let path = self.path.convert(context);
+        let path = self.path.convert(context)?;
 
-        RSUse {
+        Ok(RSUse {
             path: path.clone(),
             reference,
             dependency: RSDependency::Local(path),
-        }
+        })
     }
 }
 
@@ -53,7 +54,8 @@ mod tests {
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 reference: GTImportReference::Glob((0, 0).into())
             }
-            .convert(&mut context),
+            .convert(&mut context)
+            .unwrap(),
             RSUse {
                 path: "self::path::to::module".into(),
                 reference: RSUseReference::Module,
@@ -83,7 +85,8 @@ mod tests {
                     ]
                 )
             }
-            .convert(&mut RSConvertContext::empty("module".into())),
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
             RSUse {
                 path: "self::path::to::module".into(),
                 reference: RSUseReference::Named(vec![
@@ -103,7 +106,8 @@ mod tests {
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 reference: GTIdentifier::new((0, 0).into(), "Name".into()).into()
             }
-            .convert(&mut RSConvertContext::empty("module".into())),
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
             RSUse {
                 path: "self::path::to::module".into(),
                 reference: RSUseReference::Named(vec![RSUseName::Name("Name".into())]),

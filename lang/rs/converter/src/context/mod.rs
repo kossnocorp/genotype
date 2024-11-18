@@ -158,12 +158,12 @@ mod tests {
     fn test_hoist() {
         let mut context = RSConvertContext::empty("module".into());
         context.hoist(|_| {
-            RSDefinition::Alias(RSAlias {
+            Ok(RSDefinition::Alias(RSAlias {
                 id: GTAliasId("module".into(), "Name".into()),
                 doc: None,
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
-            })
+            }))
         });
         let hoisted = context.drain_hoisted();
         assert_eq!(

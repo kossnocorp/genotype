@@ -1,11 +1,12 @@
 use genotype_lang_rs_tree::{field::RSField, RSOption};
 use genotype_parser::tree::property::GTProperty;
+use miette::Result;
 
 use crate::{context::RSConvertContext, convert::RSConvert};
 
 impl RSConvert<RSField> for GTProperty {
-    fn convert(&self, context: &mut RSConvertContext) -> RSField {
-        let descriptor = self.descriptor.convert(context);
+    fn convert(&self, context: &mut RSConvertContext) -> Result<RSField> {
+        let descriptor = self.descriptor.convert(context)?;
 
         let descriptor = if self.required {
             descriptor
@@ -13,12 +14,19 @@ impl RSConvert<RSField> for GTProperty {
             RSOption::new(descriptor).into()
         };
 
-        RSField {
-            doc: self.doc.as_ref().and_then(|doc| Some(doc.convert(context))),
+        let doc = if let Some(doc) = &self.doc {
+            Some(doc.convert(context)?)
+        } else {
+            None
+        };
+        let name = self.name.convert(context)?;
+
+        Ok(RSField {
+            doc,
             attributes: vec![],
-            name: self.name.convert(context),
+            name,
             descriptor,
-        }
+        })
     }
 }
 
@@ -41,7 +49,8 @@ mod tests {
                 descriptor: GTPrimitive::String((0, 0).into()).into(),
                 required: false,
             }
-            .convert(&mut RSConvertContext::empty("module".into())),
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
             RSField {
                 doc: None,
                 attributes: vec![],
@@ -52,7 +61,6 @@ mod tests {
     }
 
     #[test]
-    // [TODO] Resolve test
     fn test_convert_resolve() {
         let mut context = RSConvertContext::empty("module".into());
         assert_eq!(
@@ -64,7 +72,8 @@ mod tests {
                 descriptor: GTPrimitive::String((0, 0).into()).into(),
                 required: false,
             }
-            .convert(&mut context),
+            .convert(&mut context)
+            .unwrap(),
             RSField {
                 doc: None,
                 attributes: vec![],

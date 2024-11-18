@@ -106,7 +106,7 @@ impl GTLangProjectModule<RSProjectConfig> for RSProjectModule {
             }
         }
 
-        let module = RSConvertModule::convert(&module.module, &resolve, &config.lang).0;
+        let module = RSConvertModule::convert(&module.module, &resolve, &config.lang)?.0;
 
         Ok(Self { name, path, module })
     }

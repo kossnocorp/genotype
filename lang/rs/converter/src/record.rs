@@ -1,15 +1,16 @@
 use genotype_lang_rs_tree::{RSContext, RSDependency, RSHashMap};
 use genotype_parser::GTRecord;
+use miette::Result;
 
 use crate::{context::RSConvertContext, convert::RSConvert};
 
 impl RSConvert<RSHashMap> for GTRecord {
-    fn convert(&self, context: &mut RSConvertContext) -> RSHashMap {
+    fn convert(&self, context: &mut RSConvertContext) -> Result<RSHashMap> {
         context.import(RSDependency::Std("collections".into()), "HashMap".into());
-        RSHashMap {
-            key: self.key.convert(context),
-            descriptor: self.descriptor.convert(context),
-        }
+        Ok(RSHashMap {
+            key: self.key.convert(context)?,
+            descriptor: self.descriptor.convert(context)?,
+        })
     }
 }
 
@@ -29,7 +30,8 @@ mod tests {
                 key: GTRecordKey::String((0, 0).into()),
                 descriptor: GTPrimitive::String((0, 0).into()).into(),
             }
-            .convert(&mut RSConvertContext::empty("module".into())),
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
             RSHashMap {
                 key: RSPrimitive::String.into(),
                 descriptor: RSPrimitive::String.into(),
@@ -46,7 +48,8 @@ mod tests {
                 key: GTRecordKey::String((0, 0).into()),
                 descriptor: GTPrimitive::String((0, 0).into()).into(),
             }
-            .convert(&mut context),
+            .convert(&mut context)
+            .unwrap(),
             RSHashMap {
                 key: RSPrimitive::String.into(),
                 descriptor: RSPrimitive::String.into(),

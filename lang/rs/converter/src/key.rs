@@ -1,12 +1,13 @@
 use genotype_lang_rs_tree::field_name::RSFieldName;
 use genotype_parser::tree::key::GTKey;
 use heck::ToSnakeCase;
+use miette::Result;
 
 use crate::{context::RSConvertContext, convert::RSConvert};
 
 impl RSConvert<RSFieldName> for GTKey {
-    fn convert(&self, _context: &mut RSConvertContext) -> RSFieldName {
-        RSFieldName(self.1.clone().to_snake_case())
+    fn convert(&self, _context: &mut RSConvertContext) -> Result<RSFieldName> {
+        Ok(RSFieldName(self.1.clone().to_snake_case()))
     }
 }
 
@@ -23,7 +24,8 @@ mod tests {
         assert_eq!(
             RSFieldName("foo".into()),
             GTKey::new((0, 0).into(), "foo".into())
-                .convert(&mut RSConvertContext::empty("module".into())),
+                .convert(&mut RSConvertContext::empty("module".into()))
+                .unwrap(),
         );
     }
 
@@ -32,7 +34,9 @@ mod tests {
         let mut context = RSConvertContext::empty("module".into());
         assert_eq!(
             RSFieldName("foo_bar".into()),
-            GTKey::new((0, 0).into(), "fooBar".into()).convert(&mut context),
+            GTKey::new((0, 0).into(), "fooBar".into())
+                .convert(&mut context)
+                .unwrap(),
         );
     }
 }

@@ -1,17 +1,20 @@
 use genotype_lang_rs_tree::use_name::RSUseName;
 use genotype_parser::tree::import_name::GTImportName;
+use miette::Result;
 
 use crate::{context::RSConvertContext, convert::RSConvert};
 
 impl RSConvert<RSUseName> for GTImportName {
-    fn convert(&self, context: &mut RSConvertContext) -> RSUseName {
-        match self {
-            Self::Name(_, name) => RSUseName::Name(name.convert(context)),
+    fn convert(&self, context: &mut RSConvertContext) -> Result<RSUseName> {
+        Ok(match self {
+            Self::Name(_, name) => RSUseName::Name(name.convert(context)?),
 
             Self::Alias(_, name, alias) => {
-                RSUseName::Alias(name.convert(context), alias.convert(context))
+                let name = name.convert(context)?;
+                let alias = alias.convert(context)?;
+                RSUseName::Alias(name, alias)
             }
-        }
+        })
     }
 }
 
@@ -32,7 +35,8 @@ mod tests {
                 (0, 0).into(),
                 GTIdentifier::new((0, 0).into(), "Name".into())
             )
-            .convert(&mut RSConvertContext::empty("module".into())),
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
             RSUseName::Name("Name".into()),
         );
     }
@@ -45,7 +49,8 @@ mod tests {
                 GTIdentifier::new((0, 0).into(), "Name".into()),
                 GTIdentifier::new((0, 0).into(), "Alias".into())
             )
-            .convert(&mut RSConvertContext::empty("module".into())),
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
             RSUseName::Alias("Name".into(), "Alias".into()),
         );
     }

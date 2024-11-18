@@ -1,5 +1,6 @@
 use genotype_lang_rs_tree::*;
 use genotype_parser::*;
+use miette::Result;
 
 use crate::{
     context::{naming::RSContextParent, RSConvertContext},
@@ -7,25 +8,29 @@ use crate::{
 };
 
 impl RSConvert<RSStruct> for GTObject {
-    fn convert(&self, context: &mut RSConvertContext) -> RSStruct {
+    fn convert(&self, context: &mut RSConvertContext) -> Result<RSStruct> {
         let name = match &self.name {
             GTObjectName::Named(identifier) => identifier.convert(context),
             GTObjectName::Alias(identifier, _) => identifier.convert(context),
-        };
+        }?;
         let id = context
             .consume_alias_id()
             .unwrap_or_else(|| context.build_alias_id(&name));
         context.enter_parent(RSContextParent::Definition(name.clone()));
 
         let doc = context.consume_doc();
-        let fields = self.properties.iter().map(|p| p.convert(context)).collect();
+        let fields = self
+            .properties
+            .iter()
+            .map(|p| p.convert(context))
+            .collect::<Result<Vec<_>>>()?;
 
         let fields = if self.extensions.len() > 0 {
             let references = self
                 .extensions
                 .iter()
                 .map(|e| e.reference.convert(context))
-                .collect();
+                .collect::<Result<Vec<_>>>()?;
             RSStructFields::Unresolved(self.span.clone(), references, fields)
         } else {
             RSStructFields::Resolved(fields)
@@ -43,7 +48,7 @@ impl RSConvert<RSStruct> for GTObject {
         context.import(RSDependency::Serde, "Serialize".into());
 
         context.exit_parent();
-        r#struct
+        Ok(r#struct)
     }
 }
 
@@ -81,7 +86,8 @@ mod tests {
                     }
                 ]
             }
-            .convert(&mut RSConvertContext::empty("module".into())),
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
             RSStruct {
                 id: GTAliasId("module".into(), "Person".into()),
                 doc: None,
@@ -119,7 +125,8 @@ mod tests {
                 extensions: vec![],
                 properties: vec![]
             }
-            .convert(&mut context),
+            .convert(&mut context)
+            .unwrap(),
             RSStruct {
                 id: GTAliasId("module".into(), "Person".into()),
                 doc: None,
@@ -151,7 +158,8 @@ mod tests {
                 extensions: vec![],
                 properties: vec![],
             }
-            .convert(&mut context),
+            .convert(&mut context)
+            .unwrap(),
             RSStruct {
                 id: GTAliasId("module".into(), "Person".into()),
                 doc: Some("Hello, world!".into()),
@@ -195,7 +203,8 @@ mod tests {
                     }
                 ]
             }
-            .convert(&mut context),
+            .convert(&mut context)
+            .unwrap(),
             RSStruct {
                 id: GTAliasId("module".into(), "Person".into()),
                 doc: None,

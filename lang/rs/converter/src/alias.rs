@@ -1,5 +1,6 @@
 use genotype_lang_rs_tree::*;
 use genotype_parser::*;
+use miette::Result;
 
 use crate::{
     context::{naming::RSContextParent, RSConvertContext},
@@ -7,29 +8,33 @@ use crate::{
 };
 
 impl RSConvert<RSDefinition> for GTAlias {
-    fn convert(&self, context: &mut RSConvertContext) -> RSDefinition {
-        let doc = self.doc.as_ref().map(|doc| doc.convert(context));
+    fn convert(&self, context: &mut RSConvertContext) -> Result<RSDefinition> {
+        let doc = if let Some(doc) = &self.doc {
+            Some(doc.convert(context)?)
+        } else {
+            None
+        };
 
-        let name = self.name.convert(context);
+        let name = self.name.convert(context)?;
         context.push_defined(&name);
 
         let definition = match &self.descriptor {
             GTDescriptor::Object(object) => {
                 context.provide_alias_id(self.id.clone());
                 context.provide_doc(doc);
-                RSDefinition::Struct(object.convert(context))
+                RSDefinition::Struct(object.convert(context)?)
             }
 
             GTDescriptor::Union(union) => {
                 context.provide_alias_id(self.id.clone());
                 context.provide_doc(doc);
-                RSDefinition::Enum(union.convert(context))
+                RSDefinition::Enum(union.convert(context)?)
             }
 
             _ => {
                 context.enter_parent(RSContextParent::Alias(name.clone()));
 
-                let descriptor = self.descriptor.convert(context);
+                let descriptor = self.descriptor.convert(context)?;
                 let alias = RSDefinition::Alias(RSAlias {
                     id: self.id.clone(),
                     doc,
@@ -42,7 +47,7 @@ impl RSConvert<RSDefinition> for GTAlias {
             }
         };
 
-        definition
+        Ok(definition)
     }
 }
 
@@ -64,7 +69,8 @@ mod tests {
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }
-            .convert(&mut RSConvertContext::empty("module".into())),
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
             RSDefinition::Alias(RSAlias {
                 id: GTAliasId("module".into(), "Name".into()),
                 doc: None,
@@ -107,7 +113,8 @@ mod tests {
                     ]
                 })
             }
-            .convert(&mut RSConvertContext::empty("module".into())),
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
             RSDefinition::Struct(RSStruct {
                 id: GTAliasId("module".into(), "Book".into()),
                 doc: None,
@@ -169,7 +176,8 @@ mod tests {
                     ]
                 })
             }
-            .convert(&mut context),
+            .convert(&mut context)
+            .unwrap(),
             RSDefinition::Enum(RSEnum {
                 id: GTAliasId("module".into(), "Union".into()),
                 doc: None,
@@ -249,7 +257,8 @@ mod tests {
                     ]
                 })
             }
-            .convert(&mut RSConvertContext::empty("module".into())),
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
             RSDefinition::Enum(RSEnum {
                 id: GTAliasId("module".into(), "Message".into()),
                 doc: None,
@@ -271,7 +280,8 @@ mod tests {
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }
-            .convert(&mut RSConvertContext::empty("module".into())),
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
             RSDefinition::Alias(RSAlias {
                 id: GTAliasId("module".into(), "Name".into()),
                 doc: Some("Hello, world!".into()),

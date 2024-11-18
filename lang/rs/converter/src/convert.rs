@@ -1,5 +1,6 @@
 use crate::context::RSConvertContext;
+use miette::Result;
 
-pub trait RSConvert<RSNode> {
-    fn convert(&self, context: &mut RSConvertContext) -> RSNode;
+pub trait RSConvert<Node> {
+    fn convert(&self, context: &mut RSConvertContext) -> Result<Node>;
 }

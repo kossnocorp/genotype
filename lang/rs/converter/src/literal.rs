@@ -1,10 +1,11 @@
 use genotype_lang_rs_tree::{RSAttribute, RSContext, RSDependency, RSStruct};
 use genotype_parser::tree::GTLiteral;
+use miette::Result;
 
 use crate::{context::RSConvertContext, convert::RSConvert};
 
 impl RSConvert<RSStruct> for GTLiteral {
-    fn convert(&self, context: &mut RSConvertContext) -> RSStruct {
+    fn convert(&self, context: &mut RSConvertContext) -> Result<RSStruct> {
         context.import(RSDependency::Runtime, "literal".into());
 
         let doc = context.consume_doc();
@@ -19,13 +20,13 @@ impl RSConvert<RSStruct> for GTLiteral {
 
         let literal = render_literal(self);
 
-        RSStruct {
+        Ok(RSStruct {
             id,
             doc,
             attributes: vec![RSAttribute(format!("literal({literal})"))],
             name,
             fields: vec![].into(),
-        }
+        })
     }
 }
 
@@ -52,7 +53,8 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             GTLiteral::Boolean((0, 0).into(), true)
-                .convert(&mut RSConvertContext::empty("module".into())),
+                .convert(&mut RSConvertContext::empty("module".into()))
+                .unwrap(),
             RSStruct {
                 id: GTAliasId("module".into(), "True".into()),
                 doc: None,
@@ -68,7 +70,9 @@ mod tests {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Alias("Version".into()));
         assert_eq!(
-            GTLiteral::Integer((0, 0).into(), 1).convert(&mut context),
+            GTLiteral::Integer((0, 0).into(), 1)
+                .convert(&mut context)
+                .unwrap(),
             RSStruct {
                 id: GTAliasId("module".into(), "Version".into()),
                 doc: None,
@@ -85,7 +89,9 @@ mod tests {
         context.enter_parent(RSContextParent::Definition("User".into()));
         context.enter_parent(RSContextParent::Property("v".into()));
         assert_eq!(
-            GTLiteral::Integer((0, 0).into(), 1).convert(&mut context),
+            GTLiteral::Integer((0, 0).into(), 1)
+                .convert(&mut context)
+                .unwrap(),
             RSStruct {
                 id: GTAliasId("module".into(), "UserV1".into()),
                 doc: None,
@@ -100,7 +106,9 @@ mod tests {
     fn test_convert_import() {
         let mut context = RSConvertContext::empty("module".into());
         assert_eq!(
-            GTLiteral::Boolean((0, 0).into(), false).convert(&mut context),
+            GTLiteral::Boolean((0, 0).into(), false)
+                .convert(&mut context)
+                .unwrap(),
             RSStruct {
                 id: GTAliasId("module".into(), "False".into()),
                 doc: None,
@@ -120,7 +128,9 @@ mod tests {
         let mut context = RSConvertContext::empty("module".into());
         context.provide_doc(Some("Hello, world!".into()));
         assert_eq!(
-            GTLiteral::Boolean((0, 0).into(), false).convert(&mut context),
+            GTLiteral::Boolean((0, 0).into(), false)
+                .convert(&mut context)
+                .unwrap(),
             RSStruct {
                 id: GTAliasId("module".into(), "False".into()),
                 doc: Some("Hello, world!".into()),

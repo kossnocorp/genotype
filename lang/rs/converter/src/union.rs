@@ -4,6 +4,7 @@ use genotype_lang_rs_tree::{
     RSContext, RSDependency, RSEnum, RSEnumVariant, RSEnumVariantDescriptor, RSIdentifier,
 };
 use genotype_parser::{tree::union::GTUnion, GTDescriptor, GTPrimitive};
+use miette::Result;
 
 use crate::{
     context::{naming::RSContextParent, RSConvertContext},
@@ -11,7 +12,7 @@ use crate::{
 };
 
 impl RSConvert<RSEnum> for GTUnion {
-    fn convert(&self, context: &mut RSConvertContext) -> RSEnum {
+    fn convert(&self, context: &mut RSConvertContext) -> Result<RSEnum> {
         let doc = context.consume_doc();
         let name = context.name_child("Union");
         let id = context.build_alias_id(&name);
@@ -24,7 +25,7 @@ impl RSConvert<RSEnum> for GTUnion {
             .descriptors
             .iter()
             .map(|descriptor| convert_variant(descriptor, &mut variant_names, context))
-            .collect();
+            .collect::<Result<Vec<_>>>()?;
 
         let r#enum = RSEnum {
             id,
@@ -38,7 +39,7 @@ impl RSConvert<RSEnum> for GTUnion {
         context.import(RSDependency::Serde, "Serialize".into());
 
         context.exit_parent();
-        r#enum
+        Ok(r#enum)
     }
 }
 
@@ -46,13 +47,13 @@ fn convert_variant(
     descriptor: &GTDescriptor,
     variant_names: &mut HashSet<RSIdentifier>,
     context: &mut RSConvertContext,
-) -> RSEnumVariant {
-    let name = name_descriptor(descriptor, context);
+) -> Result<RSEnumVariant> {
+    let name = name_descriptor(descriptor, context)?;
     let name = ensure_unique_name(name, variant_names);
 
     context.enter_parent(RSContextParent::Definition(name.clone()));
 
-    let descriptor = RSEnumVariantDescriptor::Descriptor(descriptor.convert(context));
+    let descriptor = RSEnumVariantDescriptor::Descriptor(descriptor.convert(context)?);
 
     let enum_variant = RSEnumVariant {
         doc: None,
@@ -62,7 +63,7 @@ fn convert_variant(
     };
 
     context.exit_parent();
-    enum_variant
+    Ok(enum_variant)
 }
 
 fn ensure_unique_name(
@@ -91,12 +92,15 @@ fn enumerated_name(name: &RSIdentifier, variant_names: &HashSet<RSIdentifier>) -
     }
 }
 
-fn name_descriptor(descriptor: &GTDescriptor, context: &mut RSConvertContext) -> RSIdentifier {
-    match descriptor {
-        GTDescriptor::Alias(alias) => alias.name.convert(context),
-        GTDescriptor::Reference(reference) => reference.2.convert(context),
-        GTDescriptor::InlineImport(import) => import.name.convert(context),
-        GTDescriptor::Object(object) => object.name.to_identifier().convert(context),
+fn name_descriptor(
+    descriptor: &GTDescriptor,
+    context: &mut RSConvertContext,
+) -> Result<RSIdentifier> {
+    Ok(match descriptor {
+        GTDescriptor::Alias(alias) => alias.name.convert(context)?,
+        GTDescriptor::Reference(reference) => reference.2.convert(context)?,
+        GTDescriptor::InlineImport(import) => import.name.convert(context)?,
+        GTDescriptor::Object(object) => object.name.to_identifier().convert(context)?,
         GTDescriptor::Literal(literal) => literal.to_string().into(),
         GTDescriptor::Primitive(primitive) => match primitive {
             GTPrimitive::Boolean(_) => "Boolean".into(),
@@ -110,7 +114,7 @@ fn name_descriptor(descriptor: &GTDescriptor, context: &mut RSConvertContext) ->
         GTDescriptor::Record(_) => "Map".into(),
         GTDescriptor::Tuple(_) => "Tuple".into(),
         GTDescriptor::Any(_) => "Any".into(),
-    }
+    })
 }
 
 #[cfg(test)]
@@ -133,7 +137,8 @@ mod tests {
                     GTPrimitive::String((0, 0).into()).into(),
                 ]
             }
-            .convert(&mut RSConvertContext::empty("module".into())),
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
             RSEnum {
                 id: GTAliasId("module".into(), "Union".into()),
                 doc: None,
@@ -171,7 +176,8 @@ mod tests {
                 span: (0, 0).into(),
                 descriptors: vec![GTPrimitive::String((0, 0).into()).into()],
             }
-            .convert(&mut context),
+            .convert(&mut context)
+            .unwrap(),
             RSEnum {
                 id: GTAliasId("module".into(), "Union".into()),
                 doc: None,
@@ -207,7 +213,8 @@ mod tests {
                 span: (0, 0).into(),
                 descriptors: vec![GTPrimitive::String((0, 0).into()).into()],
             }
-            .convert(&mut context),
+            .convert(&mut context)
+            .unwrap(),
             RSEnum {
                 id: GTAliasId("module".into(), "Union".into()),
                 doc: Some("Hello, world!".into()),
@@ -252,7 +259,8 @@ mod tests {
                     .into()
                 ],
             }
-            .convert(&mut RSConvertContext::empty("module".into())),
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
             RSEnum {
                 id: GTAliasId("module".into(), "Union".into()),
                 doc: None,

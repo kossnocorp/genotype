@@ -1,40 +1,39 @@
 use genotype_lang_rs_tree::*;
 
 use genotype_parser::tree::descriptor::GTDescriptor;
+use miette::Result;
 
 use crate::{context::RSConvertContext, convert::RSConvert};
 
 impl RSConvert<RSDescriptor> for GTDescriptor {
-    fn convert(&self, context: &mut RSConvertContext) -> RSDescriptor {
-        match self {
-            GTDescriptor::Alias(alias) => context.hoist(|context| alias.convert(context)).into(),
+    fn convert(&self, context: &mut RSConvertContext) -> Result<RSDescriptor> {
+        Ok(match self {
+            GTDescriptor::Alias(alias) => context.hoist(|context| alias.convert(context))?.into(),
 
-            GTDescriptor::Array(array) => array.convert(context).into(),
+            GTDescriptor::Array(array) => array.convert(context)?.into(),
 
-            GTDescriptor::InlineImport(import) => import.convert(context).into(),
+            GTDescriptor::InlineImport(import) => import.convert(context)?.into(),
 
-            GTDescriptor::Literal(literal) => context
-                .hoist(|context| literal.convert(context).into())
-                .into(),
+            GTDescriptor::Literal(literal) => {
+                context.hoist(|context| literal.convert(context))?.into()
+            }
 
-            GTDescriptor::Object(object) => context
-                .hoist(|context| object.convert(context).into())
-                .into(),
+            GTDescriptor::Object(object) => {
+                context.hoist(|context| object.convert(context))?.into()
+            }
 
-            GTDescriptor::Primitive(primitive) => primitive.convert(context).into(),
+            GTDescriptor::Primitive(primitive) => primitive.convert(context)?.into(),
 
-            GTDescriptor::Record(record) => record.convert(context).into(),
+            GTDescriptor::Record(record) => record.convert(context)?.into(),
 
-            GTDescriptor::Reference(name) => name.convert(context).into(),
+            GTDescriptor::Reference(name) => name.convert(context)?.into(),
 
-            GTDescriptor::Tuple(tuple) => tuple.convert(context).into(),
+            GTDescriptor::Tuple(tuple) => tuple.convert(context)?.into(),
 
-            GTDescriptor::Union(union) => context
-                .hoist(|context| union.convert(context).into())
-                .into(),
+            GTDescriptor::Union(union) => context.hoist(|context| union.convert(context))?.into(),
 
-            GTDescriptor::Any(any) => any.convert(context).into(),
-        }
+            GTDescriptor::Any(any) => any.convert(context)?.into(),
+        })
     }
 }
 
@@ -60,7 +59,8 @@ mod tests {
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }))
-            .convert(&mut context),
+            .convert(&mut context)
+            .unwrap(),
             RSReference::new("Name".into()).into()
         );
         let hoisted = context.drain_hoisted();
@@ -82,7 +82,8 @@ mod tests {
                 span: (0, 0).into(),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }))
-            .convert(&mut RSConvertContext::empty("module".into())),
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
             RSDescriptor::Vec(Box::new(RSVec {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean)
             }))
@@ -98,7 +99,8 @@ mod tests {
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 name: GTIdentifier::new((0, 0).into(), "Name".into())
             })
-            .convert(&mut context),
+            .convert(&mut context)
+            .unwrap(),
             RSDescriptor::InlineUse(RSInlineUse {
                 path: "self::path::to::module".into(),
                 name: "Name".into()
@@ -133,7 +135,8 @@ mod tests {
                     }
                 ],
             })
-            .convert(&mut context),
+            .convert(&mut context)
+            .unwrap(),
             RSDescriptor::Reference(RSReference::new("Person".into()))
         );
         let hoisted = context.drain_hoisted();
@@ -170,7 +173,8 @@ mod tests {
     fn test_convert_primitive() {
         assert_eq!(
             GTDescriptor::Primitive(GTPrimitive::Boolean((0, 0).into()))
-                .convert(&mut RSConvertContext::empty("module".into())),
+                .convert(&mut RSConvertContext::empty("module".into()))
+                .unwrap(),
             RSDescriptor::Primitive(RSPrimitive::Boolean)
         );
     }
@@ -179,7 +183,8 @@ mod tests {
     fn test_convert_reference() {
         assert_eq!(
             GTDescriptor::Reference(GTIdentifier::new((0, 0).into(), "Name".into()).into())
-                .convert(&mut RSConvertContext::empty("module".into())),
+                .convert(&mut RSConvertContext::empty("module".into()))
+                .unwrap(),
             RSReference::new("Name".into()).into()
         );
     }
@@ -194,7 +199,8 @@ mod tests {
                     GTPrimitive::String((0, 0).into()).into(),
                 ]
             })
-            .convert(&mut RSConvertContext::empty("module".into())),
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
             RSDescriptor::Tuple(RSTuple {
                 descriptors: vec![
                     RSDescriptor::Primitive(RSPrimitive::Boolean),
@@ -216,7 +222,8 @@ mod tests {
                     GTPrimitive::String((0, 0).into()).into(),
                 ]
             })
-            .convert(&mut context),
+            .convert(&mut context)
+            .unwrap(),
             RSDescriptor::Reference(RSReference::new("Union".into()))
         );
         let hoisted = context.drain_hoisted();

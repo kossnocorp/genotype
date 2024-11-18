@@ -1,12 +1,13 @@
 use genotype_lang_rs_tree::reference::RSReference;
 use genotype_parser::tree::reference::GTReference;
+use miette::Result;
 
 use crate::{context::RSConvertContext, convert::RSConvert};
 
 impl RSConvert<RSReference> for GTReference {
-    fn convert(&self, context: &mut RSConvertContext) -> RSReference {
-        let identifier = self.2.convert(context);
-        RSReference::new(identifier)
+    fn convert(&self, context: &mut RSConvertContext) -> Result<RSReference> {
+        let identifier = self.2.convert(context)?;
+        Ok(RSReference::new(identifier))
     }
 }
 
@@ -29,7 +30,8 @@ mod tests {
                 GTReferenceAliasId::Resolved(GTAliasId("module".into(), "Name".into())),
                 GTIdentifier::new((0, 0).into(), "Name".into())
             )
-            .convert(&mut context),
+            .convert(&mut context)
+            .unwrap(),
         );
     }
 }
