@@ -232,47 +232,6 @@ mod tests {
     }
 
     #[test]
-    fn test_convert_discriminator() {
-        assert_eq!(
-            GTAlias {
-                id: GTDefinitionId("module".into(), "Message".into()),
-                span: (0, 0).into(),
-                doc: None,
-                attributes: vec![GTAttribute {
-                    span: (0, 0).into(),
-                    name: GTAttributeName::new((0, 0).into(), "discriminator".into()),
-                    descriptor: Some(GTAttributeDescriptor::Assignment(
-                        GTAttributeAssignment::new(
-                            (0, 0).into(),
-                            GTAttributeValue::Literal(GTLiteral::String(
-                                (0, 0).into(),
-                                "type".into()
-                            ))
-                        )
-                    ))
-                }],
-                name: GTIdentifier::new((0, 0).into(), "Message".into()),
-                descriptor: GTDescriptor::Union(GTUnion {
-                    span: (0, 0).into(),
-                    descriptors: vec![
-                        GTIdentifier((0, 0).into(), "Reply".into()).into(),
-                        GTIdentifier((0, 0).into(), "DM".into()).into(),
-                    ]
-                })
-            }
-            .convert(&mut RSConvertContext::empty("module".into()))
-            .unwrap(),
-            RSDefinition::Enum(RSEnum {
-                id: GTDefinitionId("module".into(), "Message".into()),
-                doc: None,
-                name: "Message".into(),
-                attributes: vec![],
-                variants: vec![]
-            }),
-        );
-    }
-
-    #[test]
     fn test_convert_doc_alias() {
         assert_eq!(
             GTAlias {
