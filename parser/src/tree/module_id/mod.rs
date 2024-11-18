@@ -1,11 +1,11 @@
-use super::{GTAliasId, GTIdentifier};
+use super::{GTDefinitionId, GTIdentifier};
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone)]
 pub struct GTModuleId(pub String);
 
 impl GTModuleId {
-    pub fn alias_id(&self, name: &GTIdentifier) -> GTAliasId {
-        GTAliasId(self.clone(), name.as_string())
+    pub fn definition_id(&self, name: &GTIdentifier) -> GTDefinitionId {
+        GTDefinitionId(self.clone(), name.as_string())
     }
 }
 

@@ -24,7 +24,7 @@ mod tests {
         let identifier = GTIdentifier::new((0, 0).into(), "Name".into());
         let mut reference = GTReference(
             (0, 0).into(),
-            GTReferenceAliasId::Unresolved,
+            GTReferenceDefinitionId::Unresolved,
             identifier.clone().into(),
         );
         reference.traverse(&mut visitor);

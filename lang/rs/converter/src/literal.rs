@@ -15,8 +15,8 @@ impl RSConvert<RSStruct> for GTLiteral {
             context.name_child(&self.to_string())
         };
         let id = context
-            .consume_alias_id()
-            .unwrap_or_else(|| context.build_alias_id(&name));
+            .consume_definition_id()
+            .unwrap_or_else(|| context.build_definition_id(&name));
 
         let literal = render_literal(self);
 
@@ -42,7 +42,7 @@ fn render_literal(literal: &GTLiteral) -> String {
 #[cfg(test)]
 mod tests {
     use genotype_lang_rs_tree::*;
-    use genotype_parser::GTAliasId;
+    use genotype_parser::GTDefinitionId;
     use pretty_assertions::assert_eq;
 
     use crate::context::{naming::RSContextParent, RSConvertContext};
@@ -56,7 +56,7 @@ mod tests {
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             RSStruct {
-                id: GTAliasId("module".into(), "True".into()),
+                id: GTDefinitionId("module".into(), "True".into()),
                 doc: None,
                 attributes: vec![RSAttribute("literal(true)".into())],
                 name: "True".into(),
@@ -74,7 +74,7 @@ mod tests {
                 .convert(&mut context)
                 .unwrap(),
             RSStruct {
-                id: GTAliasId("module".into(), "Version".into()),
+                id: GTDefinitionId("module".into(), "Version".into()),
                 doc: None,
                 attributes: vec![RSAttribute("literal(1)".into())],
                 name: "Version".into(),
@@ -93,7 +93,7 @@ mod tests {
                 .convert(&mut context)
                 .unwrap(),
             RSStruct {
-                id: GTAliasId("module".into(), "UserV1".into()),
+                id: GTDefinitionId("module".into(), "UserV1".into()),
                 doc: None,
                 attributes: vec![RSAttribute("literal(1)".into())],
                 name: "UserV1".into(),
@@ -110,7 +110,7 @@ mod tests {
                 .convert(&mut context)
                 .unwrap(),
             RSStruct {
-                id: GTAliasId("module".into(), "False".into()),
+                id: GTDefinitionId("module".into(), "False".into()),
                 doc: None,
                 attributes: vec![RSAttribute("literal(false)".into())],
                 name: "False".into(),
@@ -132,7 +132,7 @@ mod tests {
                 .convert(&mut context)
                 .unwrap(),
             RSStruct {
-                id: GTAliasId("module".into(), "False".into()),
+                id: GTDefinitionId("module".into(), "False".into()),
                 doc: Some("Hello, world!".into()),
                 attributes: vec![RSAttribute("literal(false)".into())],
                 name: "False".into(),

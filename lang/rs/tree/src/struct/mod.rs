@@ -1,4 +1,4 @@
-use genotype_parser::GTAliasId;
+use genotype_parser::GTDefinitionId;
 
 use crate::{identifier::RSIdentifier, RSAttribute, RSDoc, RSStructFields};
 
@@ -6,7 +6,7 @@ mod render;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct RSStruct {
-    pub id: GTAliasId,
+    pub id: GTDefinitionId,
     pub doc: Option<RSDoc>,
     pub attributes: Vec<RSAttribute>,
     pub name: RSIdentifier,

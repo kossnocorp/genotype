@@ -100,7 +100,7 @@ mod tests {
                     ],
                     aliases: vec![
                         GTAlias {
-                            id: GTAliasId("module".into(), "User".into()),
+                            id: GTDefinitionId("module".into(), "User".into()),
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
@@ -130,7 +130,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
-                            id: GTAliasId("module".into(), "Order".into()),
+                            id: GTDefinitionId("module".into(), "Order".into()),
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
@@ -145,7 +145,7 @@ mod tests {
                                     attributes: vec![],
                                     name: GTKey::new((0, 0).into(), "book".into()),
                                     descriptor: GTDescriptor::Alias(Box::new(GTAlias {
-                                        id: GTAliasId("module".into(), "Book".into()),
+                                        id: GTDefinitionId("module".into(), "Book".into()),
                                         span: (0, 0).into(),
                                         doc: None,
                                         attributes: vec![],
@@ -189,7 +189,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
-                            id: GTAliasId("module".into(), "Name".into()),
+                            id: GTDefinitionId("module".into(), "Name".into()),
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
@@ -229,7 +229,7 @@ mod tests {
                 ],
                 definitions: vec![
                     RSDefinition::Struct(RSStruct {
-                        id: GTAliasId("module".into(), "User".into()),
+                        id: GTDefinitionId("module".into(), "User".into()),
                         doc: None,
                         attributes: vec!["derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()],
                         name: "User".into(),
@@ -250,7 +250,7 @@ mod tests {
                         .into(),
                     }),
                     RSDefinition::Struct(RSStruct {
-                        id: GTAliasId("module".into(), "Order".into()),
+                        id: GTDefinitionId("module".into(), "Order".into()),
                         doc: None,
                         attributes: vec!["derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()],
                         name: "Order".into(),
@@ -263,7 +263,7 @@ mod tests {
                         .into(),
                     }),
                     RSDefinition::Struct(RSStruct {
-                        id: GTAliasId("module".into(), "Book".into()),
+                        id: GTDefinitionId("module".into(), "Book".into()),
                         doc: None,
                         attributes: vec!["derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()],
                         name: "Book".into(),
@@ -284,7 +284,7 @@ mod tests {
                         .into(),
                     }),
                     RSDefinition::Alias(RSAlias {
-                        id: GTAliasId("module".into(), "Name".into()),
+                        id: GTDefinitionId("module".into(), "Name".into()),
                         doc: None,
                         name: "Name".into(),
                         descriptor: RSDescriptor::Primitive(RSPrimitive::String),

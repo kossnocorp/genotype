@@ -14,8 +14,8 @@ impl RSConvert<RSStruct> for GTObject {
             GTObjectName::Alias(identifier, _) => identifier.convert(context),
         }?;
         let id = context
-            .consume_alias_id()
-            .unwrap_or_else(|| context.build_alias_id(&name));
+            .consume_definition_id()
+            .unwrap_or_else(|| context.build_definition_id(&name));
         context.enter_parent(RSContextParent::Definition(name.clone()));
 
         let doc = context.consume_doc();
@@ -89,7 +89,7 @@ mod tests {
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
             RSStruct {
-                id: GTAliasId("module".into(), "Person".into()),
+                id: GTDefinitionId("module".into(), "Person".into()),
                 doc: None,
                 attributes: vec![
                     "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
@@ -128,7 +128,7 @@ mod tests {
             .convert(&mut context)
             .unwrap(),
             RSStruct {
-                id: GTAliasId("module".into(), "Person".into()),
+                id: GTDefinitionId("module".into(), "Person".into()),
                 doc: None,
                 attributes: vec![
                     "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
@@ -161,7 +161,7 @@ mod tests {
             .convert(&mut context)
             .unwrap(),
             RSStruct {
-                id: GTAliasId("module".into(), "Person".into()),
+                id: GTDefinitionId("module".into(), "Person".into()),
                 doc: Some("Hello, world!".into()),
                 attributes: vec![
                     "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
@@ -206,7 +206,7 @@ mod tests {
             .convert(&mut context)
             .unwrap(),
             RSStruct {
-                id: GTAliasId("module".into(), "Person".into()),
+                id: GTDefinitionId("module".into(), "Person".into()),
                 doc: None,
                 attributes: vec![
                     "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"

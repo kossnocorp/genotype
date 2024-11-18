@@ -52,7 +52,7 @@ mod tests {
         let mut context = RSConvertContext::empty("module".into());
         assert_eq!(
             GTDescriptor::Alias(Box::new(GTAlias {
-                id: GTAliasId("module".into(), "Name".into()),
+                id: GTDefinitionId("module".into(), "Name".into()),
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
@@ -67,7 +67,7 @@ mod tests {
         assert_eq!(
             hoisted,
             vec![RSDefinition::Alias(RSAlias {
-                id: GTAliasId("module".into(), "Name".into()),
+                id: GTDefinitionId("module".into(), "Name".into()),
                 doc: None,
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
@@ -143,7 +143,7 @@ mod tests {
         assert_eq!(
             hoisted,
             vec![RSDefinition::Struct(RSStruct {
-                id: GTAliasId("module".into(), "Person".into()),
+                id: GTDefinitionId("module".into(), "Person".into()),
                 doc: None,
                 attributes: vec![
                     "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
@@ -230,7 +230,7 @@ mod tests {
         assert_eq!(
             hoisted,
             vec![RSDefinition::Enum(RSEnum {
-                id: GTAliasId("module".into(), "Union".into()),
+                id: GTDefinitionId("module".into(), "Union".into()),
                 doc: None,
                 attributes: vec![
                     "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"

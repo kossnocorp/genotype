@@ -65,7 +65,7 @@ mod tests {
     fn test_convert_alias() {
         assert_eq!(
             GTAlias {
-                id: GTAliasId("module".into(), "Name".into()),
+                id: GTDefinitionId("module".into(), "Name".into()),
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
@@ -86,7 +86,7 @@ mod tests {
     fn test_convert_class() {
         assert_eq!(
             GTAlias {
-                id: GTAliasId("module".into(), "Book".into()),
+                id: GTDefinitionId("module".into(), "Book".into()),
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
@@ -144,7 +144,7 @@ mod tests {
         let mut context = PYConvertContext::default();
         assert_eq!(
             GTAlias {
-                id: GTAliasId("module".into(), "Book".into()),
+                id: GTDefinitionId("module".into(), "Book".into()),
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
@@ -212,7 +212,7 @@ mod tests {
             PYConvertContext::new(Default::default(), PYLangConfig::new(PYVersion::Legacy));
         assert_eq!(
             GTAlias {
-                id: GTAliasId("module".into(), "Order".into()),
+                id: GTDefinitionId("module".into(), "Order".into()),
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
@@ -238,7 +238,7 @@ mod tests {
         let mut context = PYConvertContext::default();
         assert_eq!(
             GTAlias {
-                id: GTAliasId("module".into(), "Name".into()),
+                id: GTDefinitionId("module".into(), "Name".into()),
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
@@ -268,7 +268,7 @@ mod tests {
         let mut context = PYConvertContext::default();
         assert_eq!(
             GTAlias {
-                id: GTAliasId("module".into(), "Name".into()),
+                id: GTDefinitionId("module".into(), "Name".into()),
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
@@ -307,7 +307,7 @@ mod tests {
     fn test_convert_discriminator() {
         assert_eq!(
             GTAlias {
-                id: GTAliasId("module".into(), "Message".into()),
+                id: GTDefinitionId("module".into(), "Message".into()),
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![GTAttribute {
@@ -353,7 +353,7 @@ mod tests {
     fn test_convert_doc_alias() {
         assert_eq!(
             GTAlias {
-                id: GTAliasId("module".into(), "Name".into()),
+                id: GTDefinitionId("module".into(), "Name".into()),
                 span: (0, 0).into(),
                 doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
                 attributes: vec![],

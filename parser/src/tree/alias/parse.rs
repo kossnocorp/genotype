@@ -97,7 +97,7 @@ fn parse(
         }
 
         ParseState::Descriptor(span, doc, attributes, name) => {
-            let id = context.module_id.alias_id(&name);
+            let id = context.module_id.definition_id(&name);
             let descriptor = GTDescriptor::parse(pair, context)?;
             Ok(GTAlias {
                 id,
@@ -131,7 +131,7 @@ mod tests {
         assert_eq!(
             GTAlias::parse(pairs.next().unwrap(), &mut GTContext::new("module".into())).unwrap(),
             GTAlias {
-                id: GTAliasId("module".into(), "Hello".into()),
+                id: GTDefinitionId("module".into(), "Hello".into()),
                 span: (0, 25).into(),
                 name: GTIdentifier::new((0, 5).into(), "Hello".into()),
                 doc: None,

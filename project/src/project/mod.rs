@@ -179,7 +179,7 @@ mod tests {
                         imports: vec![],
                         aliases: vec![
                             GTAlias {
-                                id: GTAliasId("anonymous".into(), "Order".into()),
+                                id: GTDefinitionId("anonymous".into(), "Order".into()),
                                 span: (0, 91).into(),
                                 doc: None,
                                 attributes: vec![],
@@ -284,7 +284,7 @@ mod tests {
                                 .into(),
                             },
                             GTAlias {
-                                id: GTAliasId("anonymous".into(), "Email".into()),
+                                id: GTDefinitionId("anonymous".into(), "Email".into()),
                                 span: (93, 146).into(),
                                 doc: None,
                                 attributes: vec![],
@@ -390,7 +390,7 @@ mod tests {
                         doc: None,
                         imports: vec![],
                         aliases: vec![GTAlias {
-                            id: GTAliasId("author".into(), "Author".into()),
+                            id: GTDefinitionId("author".into(), "Author".into()),
                             span: (0, 27).into(),
                             doc: None,
                             attributes: vec![],
@@ -433,7 +433,7 @@ mod tests {
                             ),
                         }],
                         aliases: vec![GTAlias {
-                            id: GTAliasId("book".into(), "Book".into()),
+                            id: GTDefinitionId("book".into(), "Book".into()),
                             span: (21, 64).into(),
                             doc: None,
                             attributes: vec![],
@@ -497,7 +497,7 @@ mod tests {
                             ),
                         }],
                         aliases: vec![GTAlias {
-                            id: GTAliasId("order".into(), "Order".into()),
+                            id: GTDefinitionId("order".into(), "Order".into()),
                             span: (17, 64).into(),
                             doc: None,
                             attributes: vec![],
@@ -567,7 +567,7 @@ mod tests {
                         doc: None,
                         imports: vec![],
                         aliases: vec![GTAlias {
-                            id: GTAliasId("user".into(), "User".into()),
+                            id: GTDefinitionId("user".into(), "User".into()),
                             span: (0, 41).into(),
                             doc: None,
                             attributes: vec![],

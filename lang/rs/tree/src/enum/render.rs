@@ -34,7 +34,7 @@ impl RSRender for RSEnum {
 
 #[cfg(test)]
 mod tests {
-    use genotype_parser::GTAliasId;
+    use genotype_parser::GTDefinitionId;
     use pretty_assertions::assert_eq;
 
     use crate::*;
@@ -43,7 +43,7 @@ mod tests {
     fn test_render() {
         assert_eq!(
             RSEnum {
-                id: GTAliasId("module".into(), "Union".into()),
+                id: GTDefinitionId("module".into(), "Union".into()),
                 doc: None,
                 attributes: vec![],
                 name: "Union".into(),
@@ -75,7 +75,7 @@ mod tests {
     fn test_render_indent() {
         assert_eq!(
             RSEnum {
-                id: GTAliasId("module".into(), "Union".into()),
+                id: GTDefinitionId("module".into(), "Union".into()),
                 doc: None,
                 attributes: vec![],
                 name: "Union".into(),
@@ -107,7 +107,7 @@ mod tests {
     fn test_render_attributes() {
         assert_eq!(
             RSEnum {
-                id: GTAliasId("module".into(), "Union".into()),
+                id: GTDefinitionId("module".into(), "Union".into()),
                 doc: None,
                 attributes: vec![RSAttribute("derive(Deserialize, Serialize)".into())],
                 name: "Union".into(),
@@ -140,7 +140,7 @@ enum Union {
     fn test_render_doc() {
         assert_eq!(
             RSEnum {
-                id: GTAliasId("module".into(), "Union".into()),
+                id: GTDefinitionId("module".into(), "Union".into()),
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "Union".into(),
@@ -173,7 +173,7 @@ enum Union {
     fn test_render_mixed() {
         assert_eq!(
             RSEnum {
-                id: GTAliasId("module".into(), "Union".into()),
+                id: GTDefinitionId("module".into(), "Union".into()),
                 doc: Some("Hello, world!".into()),
                 attributes: vec![RSAttribute("derive(Deserialize, Serialize)".into())],
                 name: "Union".into(),

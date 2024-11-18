@@ -9,7 +9,7 @@ use crate::{
 
 impl RSConvert<RSTuple> for GTTuple {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSTuple> {
-        context.drop_alias_id();
+        context.drop_definition_id();
         context.enter_parent(RSContextParent::Anonymous);
 
         let descriptors = self

@@ -42,14 +42,14 @@ impl From<RSEnum> for RSDefinition {
 #[cfg(test)]
 mod tests {
     use crate::*;
-    use genotype_parser::GTAliasId;
+    use genotype_parser::GTDefinitionId;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_name() {
         assert_eq!(
             *RSDefinition::Alias(RSAlias {
-                id: GTAliasId("module".into(), "Name".into()),
+                id: GTDefinitionId("module".into(), "Name".into()),
                 doc: None,
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
@@ -60,7 +60,7 @@ mod tests {
 
         assert_eq!(
             *RSDefinition::Struct(RSStruct {
-                id: GTAliasId("module".into(), "Name".into()),
+                id: GTDefinitionId("module".into(), "Name".into()),
                 doc: None,
                 attributes: vec![],
                 name: "Name".into(),
@@ -75,7 +75,7 @@ mod tests {
     fn test_doc() {
         assert_eq!(
             *RSDefinition::Alias(RSAlias {
-                id: GTAliasId("module".into(), "Name".into()),
+                id: GTDefinitionId("module".into(), "Name".into()),
                 doc: Some("Hello, world!".into()),
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
@@ -86,7 +86,7 @@ mod tests {
 
         assert_eq!(
             *RSDefinition::Struct(RSStruct {
-                id: GTAliasId("module".into(), "Name".into()),
+                id: GTDefinitionId("module".into(), "Name".into()),
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "Name".into(),

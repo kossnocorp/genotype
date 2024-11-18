@@ -15,8 +15,8 @@ impl RSConvert<RSEnum> for GTUnion {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSEnum> {
         let doc = context.consume_doc();
         let name = context.name_child("Union");
-        let id = context.build_alias_id(&name);
-        context.drop_alias_id();
+        let id = context.build_definition_id(&name);
+        context.drop_definition_id();
         context.enter_parent(RSContextParent::Definition(name.clone()));
 
         let mut variant_names: HashSet<RSIdentifier> = HashSet::new();
@@ -140,7 +140,7 @@ mod tests {
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
             RSEnum {
-                id: GTAliasId("module".into(), "Union".into()),
+                id: GTDefinitionId("module".into(), "Union".into()),
                 doc: None,
                 attributes: vec![
                     "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
@@ -179,7 +179,7 @@ mod tests {
             .convert(&mut context)
             .unwrap(),
             RSEnum {
-                id: GTAliasId("module".into(), "Union".into()),
+                id: GTDefinitionId("module".into(), "Union".into()),
                 doc: None,
                 attributes: vec![
                     "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
@@ -216,7 +216,7 @@ mod tests {
             .convert(&mut context)
             .unwrap(),
             RSEnum {
-                id: GTAliasId("module".into(), "Union".into()),
+                id: GTDefinitionId("module".into(), "Union".into()),
                 doc: Some("Hello, world!".into()),
                 attributes: vec![
                     "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
@@ -262,7 +262,7 @@ mod tests {
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
             RSEnum {
-                id: GTAliasId("module".into(), "Union".into()),
+                id: GTDefinitionId("module".into(), "Union".into()),
                 doc: None,
                 attributes: vec![
                     "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"

@@ -31,7 +31,7 @@ mod tests {
     fn test_traverse_base() {
         let mut visitor = GTMockVisitor::new();
         let mut alias = GTAlias {
-            id: GTAliasId("module".into(), "Name".into()),
+            id: GTDefinitionId("module".into(), "Name".into()),
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
@@ -53,7 +53,7 @@ mod tests {
     fn test_traverse_doc() {
         let mut visitor = GTMockVisitor::new();
         let mut alias = GTAlias {
-            id: GTAliasId("module".into(), "Name".into()),
+            id: GTDefinitionId("module".into(), "Name".into()),
             span: (0, 0).into(),
             doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
             attributes: vec![],
@@ -81,7 +81,7 @@ mod tests {
             None,
         );
         let mut alias = GTAlias {
-            id: GTAliasId("module".into(), "Name".into()),
+            id: GTDefinitionId("module".into(), "Name".into()),
             span: (0, 0).into(),
             doc: None,
             attributes: vec![attribute.clone(), attribute.clone()],

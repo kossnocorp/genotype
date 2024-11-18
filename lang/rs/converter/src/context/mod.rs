@@ -1,6 +1,6 @@
 use genotype_lang_rs_config::RSLangConfig;
 use genotype_lang_rs_tree::*;
-use genotype_parser::{GTAliasId, GTIdentifier, GTModuleId, GTPath};
+use genotype_parser::{GTDefinitionId, GTIdentifier, GTModuleId, GTPath};
 use naming::RSContextParent;
 
 use crate::resolve::RSConvertResolve;
@@ -22,7 +22,7 @@ pub struct RSConvertContext {
     doc: Option<RSDoc>,
     parents: Vec<RSContextParent>,
     module_id: GTModuleId,
-    alias_id: Option<GTAliasId>,
+    definition_id: Option<GTDefinitionId>,
 }
 
 impl RSContext for RSConvertContext {
@@ -53,7 +53,7 @@ impl RSConvertContext {
     pub fn new(module_id: GTModuleId, resolve: RSConvertResolve, config: RSLangConfig) -> Self {
         Self {
             module_id,
-            alias_id: None,
+            definition_id: None,
             resolve,
             config,
             imports: vec![],
@@ -159,7 +159,7 @@ mod tests {
         let mut context = RSConvertContext::empty("module".into());
         context.hoist(|_| {
             Ok(RSDefinition::Alias(RSAlias {
-                id: GTAliasId("module".into(), "Name".into()),
+                id: GTDefinitionId("module".into(), "Name".into()),
                 doc: None,
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
@@ -169,7 +169,7 @@ mod tests {
         assert_eq!(
             hoisted,
             vec![RSDefinition::Alias(RSAlias {
-                id: GTAliasId("module".into(), "Name".into()),
+                id: GTDefinitionId("module".into(), "Name".into()),
                 doc: None,
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),

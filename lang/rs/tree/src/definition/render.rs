@@ -18,7 +18,7 @@ impl RSRender for RSDefinition {
 
 #[cfg(test)]
 mod tests {
-    use genotype_parser::GTAliasId;
+    use genotype_parser::GTDefinitionId;
     use pretty_assertions::assert_eq;
 
     use crate::*;
@@ -27,7 +27,7 @@ mod tests {
     fn test_render_alias() {
         assert_eq!(
             RSDefinition::Alias(RSAlias {
-                id: GTAliasId("module".into(), "Name".into()),
+                id: GTDefinitionId("module".into(), "Name".into()),
                 doc: None,
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
@@ -42,7 +42,7 @@ mod tests {
     fn test_render_struct() {
         assert_eq!(
             RSDefinition::Struct(RSStruct {
-                id: GTAliasId("module".into(), "Name".into()),
+                id: GTDefinitionId("module".into(), "Name".into()),
                 doc: None,
                 attributes: vec![],
                 name: "Name".into(),
@@ -75,7 +75,7 @@ mod tests {
     fn test_render_enum() {
         assert_eq!(
             RSDefinition::Enum(RSEnum {
-                id: GTAliasId("module".into(), "ValuesUnion".into()),
+                id: GTDefinitionId("module".into(), "ValuesUnion".into()),
                 doc: None,
                 attributes: vec![],
                 name: "ValuesUnion".into(),

@@ -44,7 +44,7 @@ mod tests {
     use genotype_config::GTConfig;
     use genotype_lang_core_project::source::GTLangProjectSource;
     use genotype_lang_rs_tree::*;
-    use genotype_parser::GTAliasId;
+    use genotype_parser::GTDefinitionId;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -73,7 +73,7 @@ mod tests {
                                 dependency: RSDependency::Serde,
                             }],
                             definitions: vec![RSDefinition::Struct(RSStruct {
-                                id: GTAliasId("author".into(), "Author".into()),
+                                id: GTDefinitionId("author".into(), "Author".into()),
                                 doc: None,
                                 attributes: vec![
                                     "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
@@ -115,7 +115,7 @@ mod tests {
                                 }
                             ],
                             definitions: vec![RSDefinition::Struct(RSStruct {
-                                id: GTAliasId("book".into(), "Book".into()),
+                                id: GTDefinitionId("book".into(), "Book".into()),
                                 doc: None,
                                 attributes: vec![
                                     "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
@@ -170,7 +170,7 @@ mod tests {
                             }],
                             definitions: vec![
                                 RSDefinition::Struct(RSStruct {
-                                    id: GTAliasId("author".into(), "Author".into()),
+                                    id: GTDefinitionId("author".into(), "Author".into()),
                                     doc: None,
                                     attributes: vec![
                                         "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
@@ -186,7 +186,7 @@ mod tests {
                                     .into(),
                                 }),
                                 RSDefinition::Alias(RSAlias {
-                                    id: GTAliasId("author".into(), "AuthorName".into()),
+                                    id: GTDefinitionId("author".into(), "AuthorName".into()),
                                     doc: None,
                                     name: "AuthorName".into(),
                                     descriptor: RSDescriptor::Primitive(RSPrimitive::String),
@@ -218,7 +218,7 @@ mod tests {
                                 }
                             ],
                             definitions: vec![RSDefinition::Struct(RSStruct {
-                                id: GTAliasId("book".into(), "Book".into()),
+                                id: GTDefinitionId("book".into(), "Book".into()),
                                 doc: None,
                                 attributes: vec![
                                     "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
