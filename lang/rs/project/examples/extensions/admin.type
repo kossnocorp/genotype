@@ -1,0 +1,6 @@
+use ./user/User
+
+Admin = {
+  ...User,
+  role: "superadmin" | "admin" | "moderator",
+}

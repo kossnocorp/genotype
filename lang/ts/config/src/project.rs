@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct TSProjectConfig {
     pub out: PathBuf,
     pub src: PathBuf,

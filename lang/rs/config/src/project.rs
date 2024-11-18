@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 use crate::lang::RSLangConfig;
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct RSProjectConfig {
     pub out: PathBuf,
     pub lang: RSLangConfig,

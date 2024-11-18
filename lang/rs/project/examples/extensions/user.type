@@ -1,0 +1,6 @@
+use ./named/Named
+
+User = {
+  ...Named,
+  email: string,
+}

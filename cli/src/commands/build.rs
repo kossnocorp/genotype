@@ -25,18 +25,18 @@ pub fn build_command(args: &GTBuildCommand) -> Result<()> {
 
     if config.ts_enabled() {
         let ts_config = config.as_ts_project();
-        let ts = TSProject::generate(&project, &ts_config)
+        let ts = TSProject::generate(&project, ts_config)
             .map_err(|_| GTCliError::Generate)?
-            .render(&ts_config)
+            .render()
             .map_err(|_| GTCliError::Render)?;
         langs.push(ts);
     }
 
     if config.python_enabled() {
-        let py_config = config.as_python_project().unwrap();
-        let py = PYProject::generate(&project, &py_config)
+        let py_config = config.as_python_project()?;
+        let py = PYProject::generate(&project, py_config)
             .map_err(|_| GTCliError::Generate)?
-            .render(&py_config)
+            .render()
             .map_err(|_| GTCliError::Render)?;
         langs.push(py);
     }

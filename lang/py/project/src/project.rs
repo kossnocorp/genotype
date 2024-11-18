@@ -15,22 +15,23 @@ use crate::module::PYProjectModule;
 #[derive(Debug, PartialEq, Clone)]
 pub struct PYProject {
     pub modules: Vec<PYProjectModule>,
+    config: PYProjectConfig,
 }
 
 impl GTLangProject<PYProjectConfig> for PYProject {
-    fn generate(project: &GTProject, config: &PYProjectConfig) -> Result<Self> {
+    fn generate(project: &GTProject, config: PYProjectConfig) -> Result<Self> {
         let modules = project
             .modules
             .iter()
-            .map(|module| PYProjectModule::generate(&project, module, config))
+            .map(|module| PYProjectModule::generate(&project, module, &config))
             .collect::<Result<_, _>>()?;
 
-        Ok(Self { modules })
+        Ok(Self { modules, config })
     }
 
-    fn render(&self, config: &PYProjectConfig) -> Result<GTLangProjectRender> {
+    fn render(&self) -> Result<GTLangProjectRender> {
         let gitignore = GTLangProjectSource {
-            path: config.package_path(".gitignore".into()),
+            path: self.config.package_path(".gitignore".into()),
             code: r#"__pycache__
 dist"#
                 .into(),
@@ -49,7 +50,7 @@ dist"#
             .collect::<HashSet<_>>();
 
         let pyproject = GTLangProjectSource {
-            path: config.package_path("pyproject.toml".into()),
+            path: self.config.package_path("pyproject.toml".into()),
             code: format!(
                 r#"[tool.poetry]{}
 packages = [{{ include = "{}" }}]
@@ -61,13 +62,13 @@ packages = [{{ include = "{}" }}]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 "#,
-                if let Some(package) = &config.package {
+                if let Some(package) = &self.config.package {
                     format!("\n{}", package)
                 } else {
                     "".into()
                 },
-                config.module,
-                config.lang.version.as_dependency_str(),
+                self.config.module,
+                self.config.lang.version.as_dependency_str(),
                 dependencies.iter().fold("".into(), |acc, dependency| {
                     if let Some(str) = dependency.external_str() {
                         format!("{acc}\n{str}")
@@ -96,7 +97,7 @@ build-backend = "poetry.core.masonry.api"
         }
 
         let init = GTLangProjectSource {
-            path: config.source_path("__init__.py".into()),
+            path: self.config.source_path("__init__.py".into()),
             code: format!(
                 "{}\n\n\n__all__ = [{}]",
                 imports.join("\n"),
@@ -105,11 +106,11 @@ build-backend = "poetry.core.masonry.api"
         };
 
         let py_typed = GTLangProjectSource {
-            path: config.source_path("py.typed".into()),
+            path: self.config.source_path("py.typed".into()),
             code: "".into(),
         };
 
-        let module_root = config.module_root_path();
+        let module_root = self.config.module_root_path();
         let mut module_paths: HashSet<PathBuf> = HashSet::new();
 
         for module in self.modules.iter() {
@@ -132,7 +133,7 @@ build-backend = "poetry.core.masonry.api"
             .iter()
             .map(|module| GTLangProjectSource {
                 path: module.path.clone(),
-                code: module.module.render(&py_indent(), &config.lang),
+                code: module.module.render(&py_indent(), &self.config.lang),
             })
             .collect::<Vec<_>>();
 
@@ -159,80 +160,78 @@ mod tests {
         let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            PYProject::generate(&project, &py_config).unwrap(),
-            PYProject {
-                modules: vec![
-                    PYProjectModule {
-                        name: "author".into(),
-                        path: "py/module/author.py".into(),
-                        module: PYModule {
+            PYProject::generate(&project, py_config).unwrap().modules,
+            vec![
+                PYProjectModule {
+                    name: "author".into(),
+                    path: "py/module/author.py".into(),
+                    module: PYModule {
+                        doc: None,
+                        imports: vec![PYImport {
+                            path: "genotype".into(),
+                            reference: PYImportReference::Named(vec![PYImportName::Name(
+                                "Model".into()
+                            )]),
+                            dependency: PYDependency::Runtime,
+                        }],
+                        definitions: vec![PYDefinition::Class(PYClass {
                             doc: None,
-                            imports: vec![PYImport {
+                            name: "Author".into(),
+                            extensions: vec![],
+                            properties: vec![PYProperty {
+                                doc: None,
+                                name: "name".into(),
+                                descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                                required: true,
+                            }],
+                            references: vec![],
+                        })]
+                    },
+                },
+                PYProjectModule {
+                    name: "book".into(),
+                    path: "py/module/book.py".into(),
+                    module: PYModule {
+                        doc: None,
+                        imports: vec![
+                            PYImport {
+                                path: ".author".into(),
+                                reference: PYImportReference::Named(vec![PYImportName::Name(
+                                    "Author".into()
+                                )]),
+                                dependency: PYDependency::Local(".author".into()),
+                            },
+                            PYImport {
                                 path: "genotype".into(),
                                 reference: PYImportReference::Named(vec![PYImportName::Name(
                                     "Model".into()
                                 )]),
                                 dependency: PYDependency::Runtime,
-                            }],
-                            definitions: vec![PYDefinition::Class(PYClass {
-                                doc: None,
-                                name: "Author".into(),
-                                extensions: vec![],
-                                properties: vec![PYProperty {
+                            }
+                        ],
+                        definitions: vec![PYDefinition::Class(PYClass {
+                            doc: None,
+                            name: "Book".into(),
+                            extensions: vec![],
+                            properties: vec![
+                                PYProperty {
                                     doc: None,
-                                    name: "name".into(),
+                                    name: "title".into(),
                                     descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                                     required: true,
-                                }],
-                                references: vec![],
-                            })]
-                        },
-                    },
-                    PYProjectModule {
-                        name: "book".into(),
-                        path: "py/module/book.py".into(),
-                        module: PYModule {
-                            doc: None,
-                            imports: vec![
-                                PYImport {
-                                    path: ".author".into(),
-                                    reference: PYImportReference::Named(vec![PYImportName::Name(
-                                        "Author".into()
-                                    )]),
-                                    dependency: PYDependency::Local(".author".into()),
                                 },
-                                PYImport {
-                                    path: "genotype".into(),
-                                    reference: PYImportReference::Named(vec![PYImportName::Name(
-                                        "Model".into()
-                                    )]),
-                                    dependency: PYDependency::Runtime,
-                                }
+                                PYProperty {
+                                    doc: None,
+                                    name: "author".into(),
+                                    descriptor: PYReference::new("Author".into(), false).into(),
+                                    required: true,
+                                },
                             ],
-                            definitions: vec![PYDefinition::Class(PYClass {
-                                doc: None,
-                                name: "Book".into(),
-                                extensions: vec![],
-                                properties: vec![
-                                    PYProperty {
-                                        doc: None,
-                                        name: "title".into(),
-                                        descriptor: PYDescriptor::Primitive(PYPrimitive::String),
-                                        required: true,
-                                    },
-                                    PYProperty {
-                                        doc: None,
-                                        name: "author".into(),
-                                        descriptor: PYReference::new("Author".into(), false).into(),
-                                        required: true,
-                                    },
-                                ],
-                                references: vec![PYIdentifier("Author".into()),],
-                            })],
-                        },
+                            references: vec![PYIdentifier("Author".into()),],
+                        })],
                     },
-                ]
-            },
+                },
+            ]
         )
     }
 
@@ -243,101 +242,95 @@ mod tests {
         let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            PYProject::generate(&project, &py_config).unwrap(),
-            PYProject {
-                modules: vec![
-                    PYProjectModule {
-                        name: "author".into(),
-                        path: "py/module/author.py".into(),
-                        module: PYModule {
-                            doc: None,
-                            imports: vec![PYImport {
+            PYProject::generate(&project, py_config).unwrap().modules,
+            vec![
+                PYProjectModule {
+                    name: "author".into(),
+                    path: "py/module/author.py".into(),
+                    module: PYModule {
+                        doc: None,
+                        imports: vec![PYImport {
+                            path: "genotype".into(),
+                            reference: PYImportReference::Named(vec![PYImportName::Name(
+                                "Model".into()
+                            )]),
+                            dependency: PYDependency::Runtime,
+                        }],
+                        definitions: vec![
+                            PYDefinition::Alias(PYAlias {
+                                doc: None,
+                                name: "AuthorName".into(),
+                                descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                                references: vec![],
+                            }),
+                            PYDefinition::Class(PYClass {
+                                doc: None,
+                                name: "Author".into(),
+                                extensions: vec![],
+                                properties: vec![PYProperty {
+                                    doc: None,
+                                    name: "name".into(),
+                                    descriptor: PYReference::new("AuthorName".into(), false).into(),
+                                    required: true,
+                                }],
+                                references: vec![PYIdentifier("AuthorName".into()),],
+                            }),
+                        ]
+                    },
+                },
+                PYProjectModule {
+                    name: "book".into(),
+                    path: "py/module/book.py".into(),
+                    module: PYModule {
+                        doc: None,
+                        imports: vec![
+                            PYImport {
+                                path: ".author".into(),
+                                reference: PYImportReference::Default(Some("author".into())),
+                                dependency: PYDependency::Local(".author".into()),
+                            },
+                            PYImport {
                                 path: "genotype".into(),
                                 reference: PYImportReference::Named(vec![PYImportName::Name(
                                     "Model".into()
                                 )]),
                                 dependency: PYDependency::Runtime,
-                            }],
-                            definitions: vec![
-                                PYDefinition::Alias(PYAlias {
-                                    doc: None,
-                                    name: "AuthorName".into(),
-                                    descriptor: PYDescriptor::Primitive(PYPrimitive::String),
-                                    references: vec![],
-                                }),
-                                PYDefinition::Class(PYClass {
-                                    doc: None,
-                                    name: "Author".into(),
-                                    extensions: vec![],
-                                    properties: vec![PYProperty {
-                                        doc: None,
-                                        name: "name".into(),
-                                        descriptor: PYReference::new("AuthorName".into(), false)
-                                            .into(),
-                                        required: true,
-                                    }],
-                                    references: vec![PYIdentifier("AuthorName".into()),],
-                                }),
-                            ]
-                        },
-                    },
-                    PYProjectModule {
-                        name: "book".into(),
-                        path: "py/module/book.py".into(),
-                        module: PYModule {
+                            }
+                        ],
+                        definitions: vec![PYDefinition::Class(PYClass {
                             doc: None,
-                            imports: vec![
-                                PYImport {
-                                    path: ".author".into(),
-                                    reference: PYImportReference::Default(Some("author".into())),
-                                    dependency: PYDependency::Local(".author".into()),
+                            name: "Book".into(),
+                            extensions: vec![],
+                            properties: vec![
+                                PYProperty {
+                                    doc: None,
+                                    name: "title".into(),
+                                    descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                                    required: true,
                                 },
-                                PYImport {
-                                    path: "genotype".into(),
-                                    reference: PYImportReference::Named(vec![PYImportName::Name(
-                                        "Model".into()
-                                    )]),
-                                    dependency: PYDependency::Runtime,
-                                }
-                            ],
-                            definitions: vec![PYDefinition::Class(PYClass {
-                                doc: None,
-                                name: "Book".into(),
-                                extensions: vec![],
-                                properties: vec![
-                                    PYProperty {
-                                        doc: None,
-                                        name: "title".into(),
-                                        descriptor: PYDescriptor::Primitive(PYPrimitive::String),
-                                        required: true,
-                                    },
-                                    PYProperty {
-                                        doc: None,
-                                        name: "author".into(),
-                                        descriptor: PYReference::new("author.Author".into(), false)
-                                            .into(),
-                                        required: true,
-                                    },
-                                    PYProperty {
-                                        doc: None,
-                                        name: "author_name".into(),
-                                        descriptor: PYReference::new(
-                                            "author.AuthorName".into(),
-                                            false
-                                        )
+                                PYProperty {
+                                    doc: None,
+                                    name: "author".into(),
+                                    descriptor: PYReference::new("author.Author".into(), false)
                                         .into(),
-                                        required: true,
-                                    },
-                                ],
-                                references: vec![
-                                    PYIdentifier("author.Author".into()),
-                                    PYIdentifier("author.AuthorName".into()),
-                                ],
-                            })],
-                        },
+                                    required: true,
+                                },
+                                PYProperty {
+                                    doc: None,
+                                    name: "author_name".into(),
+                                    descriptor: PYReference::new("author.AuthorName".into(), false)
+                                        .into(),
+                                    required: true,
+                                },
+                            ],
+                            references: vec![
+                                PYIdentifier("author.Author".into()),
+                                PYIdentifier("author.AuthorName".into()),
+                            ],
+                        })],
                     },
-                ]
-            },
+                },
+            ]
         )
     }
 
@@ -348,9 +341,9 @@ mod tests {
         let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            PYProject::generate(&project, &py_config)
+            PYProject::generate(&project, py_config)
                 .unwrap()
-                .render(&py_config)
+                .render()
                 .unwrap(),
             GTLangProjectRender {
                 files: vec![
@@ -422,9 +415,9 @@ class Book(Model):
         let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            PYProject::generate(&project, &py_config)
+            PYProject::generate(&project, py_config)
                 .unwrap()
-                .render(&py_config)
+                .render()
                 .unwrap(),
             GTLangProjectRender {
                 files: vec![

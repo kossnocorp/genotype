@@ -4,11 +4,11 @@ use miette::Result;
 use crate::source::GTLangProjectSource;
 
 pub trait GTLangProject<Config> {
-    fn generate(project: &GTProject, config: &Config) -> Result<Self>
+    fn generate(project: &GTProject, config: Config) -> Result<Self>
     where
         Self: Sized;
 
-    fn render(&self, config: &Config) -> Result<GTLangProjectRender>;
+    fn render(&self) -> Result<GTLangProjectRender>;
 }
 
 #[derive(Debug, PartialEq, Clone)]

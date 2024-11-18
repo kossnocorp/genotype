@@ -1,141 +1,39 @@
-use std::path::PathBuf;
-
 use genotype_lang_core_project::{
     module::GTLangProjectModule,
     project::{GTLangProject, GTLangProjectRender},
-    source::GTLangProjectSource,
 };
 use genotype_lang_rs_config::RSProjectConfig;
-use genotype_lang_rs_tree::{rs_indent, RSRender};
 use genotype_project::project::GTProject;
-use indexmap::{IndexMap, IndexSet};
 use miette::Result;
 
 use crate::module::RSProjectModule;
 
+mod cargo;
+mod indices;
+mod modules;
+mod misc;
+
 #[derive(Debug, PartialEq, Clone)]
 pub struct RSProject {
     pub modules: Vec<RSProjectModule>,
+    pub config: RSProjectConfig,
 }
 
 impl GTLangProject<RSProjectConfig> for RSProject {
-    fn generate(project: &GTProject, config: &RSProjectConfig) -> Result<Self> {
+    fn generate(project: &GTProject, config: RSProjectConfig) -> Result<Self> {
         let modules = project
             .modules
             .iter()
-            .map(|module| RSProjectModule::generate(&project, module, config))
+            .map(|module| RSProjectModule::generate(&project, module, &config))
             .collect::<Result<_, _>>()?;
 
-        Ok(Self { modules })
+        Ok(Self { modules, config })
     }
 
-    fn render(&self, config: &RSProjectConfig) -> Result<GTLangProjectRender> {
-        let gitignore = GTLangProjectSource {
-            path: config.package_path(".gitignore".into()),
-            code: r#"target"#.into(),
-        };
-
-        let dependencies = self
-            .modules
-            .iter()
-            .flat_map(|module| {
-                module
-                    .module
-                    .imports
-                    .iter()
-                    .map(|import| import.dependency.clone())
-            })
-            .collect::<IndexSet<_>>();
-
-        let dependencies = dependencies
-            .iter()
-            .fold("[dependencies]".into(), |acc, dependency| {
-                if let Some(str) = dependency.external_str() {
-                    format!("{acc}\n{str}")
-                } else {
-                    acc
-                }
-            });
-
-        let cargo = if let Some(cargo) = &config.package {
-            format!("{cargo}\n")
-        } else {
-            "".into()
-        };
-
-        let cargo = GTLangProjectSource {
-            path: config.package_path("Cargo.toml".into()),
-            code: format!(
-                r#"{cargo}
-
-{dependencies}
-"#,
-            ),
-        };
-
-        let src_root = config.src_path();
-        let mut module_paths: IndexMap<PathBuf, IndexSet<String>> = IndexMap::new();
-
-        for module in self.modules.iter() {
-            let mut module: PathBuf = module.path.clone();
-            loop {
-                let path: PathBuf = module.parent().unwrap().into();
-                let name = module
-                    .with_extension("")
-                    .file_name()
-                    .unwrap()
-                    .to_str()
-                    .unwrap()
-                    .to_owned();
-
-                module_paths
-                    .entry(path.clone())
-                    .and_modify(|paths| {
-                        paths.insert(name.clone());
-                    })
-                    .or_insert_with(|| IndexSet::from_iter(vec![name]));
-
-                if path == src_root {
-                    break;
-                }
-
-                module = path;
-            }
-        }
-
-        let module_inits = module_paths.into_iter().map(|(module_path, modules)| {
-            let path = module_path.join(if src_root == module_path {
-                "lib.rs"
-            } else {
-                "mod.rs"
-            });
-
-            let code = modules
-                .iter()
-                .map(|module| format!("pub mod {};", module))
-                .collect::<Vec<_>>()
-                .join("\n");
-
-            GTLangProjectSource { path, code }
-        });
-
-        let project_modules = self
-            .modules
-            .iter()
-            .map(
-                |module| match module.module.render(&rs_indent(), &config.lang) {
-                    Ok(code) => Ok(GTLangProjectSource {
-                        path: module.path.clone(),
-                        code,
-                    }),
-                    Err(err) => Err(err),
-                },
-            )
-            .collect::<Result<Vec<_>>>()?;
-
-        let mut files = vec![gitignore, cargo];
-        files.extend(module_inits);
-        files.extend(project_modules);
+    fn render(&self) -> Result<GTLangProjectRender> {
+        let mut files = vec![self.gitignore_source(), self.cargo_source()];
+        files.extend(self.indices_source());
+        files.extend(self.modules_source()?);
 
         Ok(GTLangProjectRender { files })
     }
@@ -144,6 +42,7 @@ impl GTLangProject<RSProjectConfig> for RSProject {
 #[cfg(test)]
 mod tests {
     use genotype_config::GTConfig;
+    use genotype_lang_core_project::source::GTLangProjectSource;
     use genotype_lang_rs_tree::*;
     use pretty_assertions::assert_eq;
 
@@ -156,9 +55,8 @@ mod tests {
         let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            RSProject::generate(&project, &rs_config).unwrap(),
-            RSProject {
-                modules: vec![
+            RSProject::generate(&project, rs_config).unwrap().modules,
+            vec![
                     RSProjectModule {
                         name: "author".into(),
                         path: "rs/src/author.rs".into(),
@@ -239,7 +137,6 @@ mod tests {
                         },
                     },
                 ]
-            },
         )
     }
 
@@ -250,9 +147,8 @@ mod tests {
         let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            RSProject::generate(&project, &rs_config).unwrap(),
-            RSProject {
-                modules: vec![
+            RSProject::generate(&project, rs_config).unwrap().modules,
+             vec![
                     RSProjectModule {
                         name: "author".into(),
                         path: "rs/src/author.rs".into(),
@@ -345,7 +241,7 @@ mod tests {
                         },
                     },
                 ]
-            },
+            
         )
     }
 
@@ -356,9 +252,9 @@ mod tests {
         let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            RSProject::generate(&project, &rs_config)
+            RSProject::generate(&project, rs_config)
                 .unwrap()
-                .render(&rs_config)
+                .render()
                 .unwrap(),
             GTLangProjectRender {
                 files: vec![
@@ -417,9 +313,9 @@ struct Book {
         let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            RSProject::generate(&project, &rs_config)
+            RSProject::generate(&project, rs_config)
                 .unwrap()
-                .render(&rs_config)
+                .render()
                 .unwrap(),
             GTLangProjectRender {
                 files: vec![
@@ -473,6 +369,69 @@ struct Book {
 "#
                         .into()
                     }
+                ]
+            }
+        )
+    }
+
+    #[test]
+    fn test_render_named() {
+        let config = GTConfig::from_root("module", "./examples/extensions");
+        let rs_config = config.as_rust_project();
+        let project = GTProject::load(&config).unwrap();
+
+        assert_eq!(
+            RSProject::generate(&project, rs_config)
+                .unwrap()
+                .render()
+                .unwrap(),
+            GTLangProjectRender {
+                files: vec![
+                    GTLangProjectSource {
+                        path: "rs/.gitignore".into(),
+                        code: r#"target"#.into(),
+                    },
+                    GTLangProjectSource {
+                        path: "rs/Cargo.toml".into(),
+                        code: r#"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+genotype_runtime = "0.1"
+"#
+                        .into(),
+                    },
+                    GTLangProjectSource {
+                        path: "rs/src/admin.rs".into(),
+                        code: r#"use serde::{Deserialize, Serialize};
+use genotype_runtime::literal;
+                        
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+struct Admin {
+    name: String,
+    email: String,
+    role: AdminRole
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(untagged)]
+enum AdminRole {
+    Superadmin,
+    Admin,
+    Moderator,
+}
+
+#[literal("superadmin")]
+struct AdminRoleSuperadmin;
+
+#[literal("admin")]
+struct AdminRoleAdmin;
+
+#[literal("moderator")]
+struct AdminRoleModerator;
+"#
+                        .into()
+                    },
                 ]
             }
         )

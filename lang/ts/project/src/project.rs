@@ -16,22 +16,23 @@ use crate::{module::TSProjectModule, package::TSPackage};
 #[derive(Debug, PartialEq, Clone)]
 pub struct TSProject {
     pub modules: Vec<TSProjectModule>,
+    config: TSProjectConfig,
 }
 
 impl GTLangProject<TSProjectConfig> for TSProject {
-    fn generate(project: &GTProject, config: &TSProjectConfig) -> Result<Self> {
+    fn generate(project: &GTProject, config: TSProjectConfig) -> Result<Self> {
         let modules = project
             .modules
             .iter()
-            .map(|module| TSProjectModule::generate(&project, module, config))
+            .map(|module| TSProjectModule::generate(&project, module, &config))
             .collect::<Result<_, _>>()?;
 
-        Ok(Self { modules })
+        Ok(Self { modules, config })
     }
 
-    fn render(&self, config: &TSProjectConfig) -> Result<GTLangProjectRender> {
+    fn render(&self) -> Result<GTLangProjectRender> {
         let gitignore = GTLangProjectSource {
-            path: config.package_path(".gitignore".into()),
+            path: self.config.package_path(".gitignore".into()),
             code: r#"node_modules"#.into(),
         };
 
@@ -44,7 +45,7 @@ impl GTLangProject<TSProjectConfig> for TSProject {
 "#,
                     module
                         .path
-                        .strip_prefix(config.out.join(config.src.clone()))
+                        .strip_prefix(self.config.out.join(self.config.src.clone()))
                         // [TODO]
                         .unwrap()
                         .as_os_str()
@@ -56,14 +57,14 @@ impl GTLangProject<TSProjectConfig> for TSProject {
             .collect::<Vec<_>>();
 
         let barrel = GTLangProjectSource {
-            path: config.source_path("index.ts".into()),
+            path: self.config.source_path("index.ts".into()),
             code: exports.join(""),
         };
 
         let package = GTLangProjectSource {
-            path: config.package_path("package.json".into()),
+            path: self.config.package_path("package.json".into()),
             code: serde_json::to_string_pretty(&TSPackage {
-                types: PathBuf::from(config.src.clone())
+                types: PathBuf::from(self.config.src.clone())
                     .join("index.ts")
                     .as_os_str()
                     .to_str()
@@ -78,7 +79,7 @@ impl GTLangProject<TSProjectConfig> for TSProject {
                 //     // [TODO]
                 //     .unwrap()
                 //     .into()],
-                package: config.package.clone(),
+                package: self.config.package.clone(),
             })
             .unwrap(),
         };
@@ -112,61 +113,61 @@ mod tests {
         let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            TSProject::generate(&project, &config.as_ts_project()).unwrap(),
-            TSProject {
-                modules: vec![
-                    TSProjectModule {
-                        path: "ts/src/author.ts".into(),
-                        module: TSModule {
+            TSProject::generate(&project, config.as_ts_project())
+                .unwrap()
+                .modules,
+            vec![
+                TSProjectModule {
+                    path: "ts/src/author.ts".into(),
+                    module: TSModule {
+                        doc: None,
+                        imports: vec![],
+                        definitions: vec![TSDefinition::Interface(TSInterface {
                             doc: None,
-                            imports: vec![],
-                            definitions: vec![TSDefinition::Interface(TSInterface {
-                                doc: None,
 
-                                name: "Author".into(),
-                                extensions: vec![],
-                                properties: vec![TSProperty {
+                            name: "Author".into(),
+                            extensions: vec![],
+                            properties: vec![TSProperty {
+                                doc: None,
+                                name: "name".into(),
+                                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                                required: true,
+                            }],
+                        })]
+                    },
+                },
+                TSProjectModule {
+                    path: "ts/src/book.ts".into(),
+                    module: TSModule {
+                        doc: None,
+                        imports: vec![TSImport {
+                            path: "./author.ts".into(),
+                            reference: TSImportReference::Named(vec![TSImportName::Name(
+                                "Author".into()
+                            )]),
+                        }],
+                        definitions: vec![TSDefinition::Interface(TSInterface {
+                            doc: None,
+                            name: "Book".into(),
+                            extensions: vec![],
+                            properties: vec![
+                                TSProperty {
                                     doc: None,
-                                    name: "name".into(),
+                                    name: "title".into(),
                                     descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                                     required: true,
-                                }],
-                            })]
-                        },
+                                },
+                                TSProperty {
+                                    doc: None,
+                                    name: "author".into(),
+                                    descriptor: TSDescriptor::Reference("Author".into()),
+                                    required: true,
+                                },
+                            ],
+                        })],
                     },
-                    TSProjectModule {
-                        path: "ts/src/book.ts".into(),
-                        module: TSModule {
-                            doc: None,
-                            imports: vec![TSImport {
-                                path: "./author.ts".into(),
-                                reference: TSImportReference::Named(vec![TSImportName::Name(
-                                    "Author".into()
-                                )]),
-                            }],
-                            definitions: vec![TSDefinition::Interface(TSInterface {
-                                doc: None,
-                                name: "Book".into(),
-                                extensions: vec![],
-                                properties: vec![
-                                    TSProperty {
-                                        doc: None,
-                                        name: "title".into(),
-                                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
-                                        required: true,
-                                    },
-                                    TSProperty {
-                                        doc: None,
-                                        name: "author".into(),
-                                        descriptor: TSDescriptor::Reference("Author".into()),
-                                        required: true,
-                                    },
-                                ],
-                            })],
-                        },
-                    },
-                ]
-            },
+                },
+            ]
         )
     }
 
@@ -177,73 +178,69 @@ mod tests {
         let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            TSProject::generate(&project, &ts_config).unwrap(),
-            TSProject {
-                modules: vec![
-                    TSProjectModule {
-                        path: "ts/src/author.ts".into(),
-                        module: TSModule {
-                            doc: None,
-                            imports: vec![],
-                            definitions: vec![
-                                TSDefinition::Interface(TSInterface {
-                                    doc: None,
-                                    name: "Author".into(),
-                                    extensions: vec![],
-                                    properties: vec![TSProperty {
-                                        doc: None,
-                                        name: "name".into(),
-                                        descriptor: TSDescriptor::Reference("AuthorName".into()),
-                                        required: true,
-                                    }],
-                                }),
-                                TSDefinition::Alias(TSAlias {
-                                    doc: None,
-                                    name: "AuthorName".into(),
-                                    descriptor: TSDescriptor::Primitive(TSPrimitive::String),
-                                })
-                            ]
-                        },
-                    },
-                    TSProjectModule {
-                        path: "ts/src/book.ts".into(),
-                        module: TSModule {
-                            doc: None,
-                            imports: vec![TSImport {
-                                path: "./author.ts".into(),
-                                reference: TSImportReference::Glob("author".into()),
-                            }],
-                            definitions: vec![TSDefinition::Interface(TSInterface {
+            TSProject::generate(&project, ts_config).unwrap().modules,
+            vec![
+                TSProjectModule {
+                    path: "ts/src/author.ts".into(),
+                    module: TSModule {
+                        doc: None,
+                        imports: vec![],
+                        definitions: vec![
+                            TSDefinition::Interface(TSInterface {
                                 doc: None,
-                                name: "Book".into(),
+                                name: "Author".into(),
                                 extensions: vec![],
-                                properties: vec![
-                                    TSProperty {
-                                        doc: None,
-                                        name: "title".into(),
-                                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
-                                        required: true,
-                                    },
-                                    TSProperty {
-                                        doc: None,
-                                        name: "author".into(),
-                                        descriptor: TSDescriptor::Reference("author.Author".into()),
-                                        required: true,
-                                    },
-                                    TSProperty {
-                                        doc: None,
-                                        name: "authorName".into(),
-                                        descriptor: TSDescriptor::Reference(
-                                            "author.AuthorName".into()
-                                        ),
-                                        required: true,
-                                    },
-                                ],
-                            })],
-                        },
+                                properties: vec![TSProperty {
+                                    doc: None,
+                                    name: "name".into(),
+                                    descriptor: TSDescriptor::Reference("AuthorName".into()),
+                                    required: true,
+                                }],
+                            }),
+                            TSDefinition::Alias(TSAlias {
+                                doc: None,
+                                name: "AuthorName".into(),
+                                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                            })
+                        ]
                     },
-                ]
-            },
+                },
+                TSProjectModule {
+                    path: "ts/src/book.ts".into(),
+                    module: TSModule {
+                        doc: None,
+                        imports: vec![TSImport {
+                            path: "./author.ts".into(),
+                            reference: TSImportReference::Glob("author".into()),
+                        }],
+                        definitions: vec![TSDefinition::Interface(TSInterface {
+                            doc: None,
+                            name: "Book".into(),
+                            extensions: vec![],
+                            properties: vec![
+                                TSProperty {
+                                    doc: None,
+                                    name: "title".into(),
+                                    descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                                    required: true,
+                                },
+                                TSProperty {
+                                    doc: None,
+                                    name: "author".into(),
+                                    descriptor: TSDescriptor::Reference("author.Author".into()),
+                                    required: true,
+                                },
+                                TSProperty {
+                                    doc: None,
+                                    name: "authorName".into(),
+                                    descriptor: TSDescriptor::Reference("author.AuthorName".into()),
+                                    required: true,
+                                },
+                            ],
+                        })],
+                    },
+                },
+            ]
         )
     }
 
@@ -254,9 +251,9 @@ mod tests {
         let project = GTProject::load(&config).unwrap();
 
         assert_eq!(
-            TSProject::generate(&project, &ts_config)
+            TSProject::generate(&project, ts_config)
                 .unwrap()
-                .render(&ts_config)
+                .render()
                 .unwrap(),
             GTLangProjectRender {
                 files: vec![

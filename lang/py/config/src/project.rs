@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 use crate::lang::PYLangConfig;
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct PYProjectConfig {
     pub out: PathBuf,
     pub module: String,
