@@ -23,7 +23,12 @@ mod tests {
         let mut visitor = GTMockVisitor::new();
         let mut extension = GTExtension {
             span: (0, 0).into(),
-            reference: GTIdentifier::new((0, 0).into(), "Name".into()).into(),
+            reference: GTReference(
+                (0, 0).into(),
+                GTReferenceDefinitionId::Resolved(GTDefinitionId("module".into(), "Name".into())),
+                GTIdentifier::new((0, 0).into(), "Name".into()),
+            )
+            .into(),
         };
         extension.traverse(&mut visitor);
         assert_eq!(

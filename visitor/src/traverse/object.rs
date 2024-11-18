@@ -32,7 +32,11 @@ mod tests {
         let mut visitor = GTMockVisitor::new();
         let extension = GTExtension {
             span: (0, 0).into(),
-            reference: GTIdentifier::new((0, 0).into(), "Base".into()).into(),
+            reference: GTReference(
+                (0, 0).into(),
+                GTReferenceDefinitionId::Resolved(GTDefinitionId("module".into(), "Base".into())),
+                GTIdentifier::new((0, 0).into(), "Base".into()),
+            ),
         };
         let property = GTProperty {
             span: (0, 0).into(),

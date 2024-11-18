@@ -182,7 +182,15 @@ mod tests {
                 name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
                 extensions: vec![GTExtension {
                     span: (0, 0).into(),
-                    reference: GTIdentifier::new((0, 0).into(), "Model".into()).into(),
+                    reference: GTReference(
+                        (0, 0).into(),
+                        GTReferenceDefinitionId::Resolved(GTDefinitionId(
+                            "module".into(),
+                            "Model".into()
+                        )),
+                        GTIdentifier::new((0, 0).into(), "Model".into())
+                    )
+                    .into(),
                 }],
                 properties: vec![
                     GTProperty {

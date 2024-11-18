@@ -174,11 +174,15 @@ mod tests {
                                                         (0, 0).into(),
                                                         "author".into()
                                                     ),
-                                                    descriptor: GTIdentifier::new(
-                                                        (0, 0).into(),
-                                                        "Author".into()
-                                                    )
-                                                    .into(),
+                                                    descriptor: GTReference((0, 0).into(),
+                                                        GTReferenceDefinitionId::Resolved(
+                                                            GTDefinitionId("module".into(), "Author".into())
+                                                        ),
+                                                        GTIdentifier::new(
+                                                            (0, 0).into(),
+                                                            "Author".into()
+                                                        )
+                                                    ).into(),
                                                     required: true,
                                                 }
                                             ]

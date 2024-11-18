@@ -135,7 +135,12 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTIdentifier::new((11, 21).into(), "AnotherAge".into()),
-                            descriptor: GTIdentifier::new((24, 27).into(), "Age".into()).into(),
+                            descriptor: GTReference(
+                                (24, 27).into(),
+                                GTReferenceDefinitionId::Unresolved,
+                                GTIdentifier::new((24, 27).into(), "Age".into()),
+                            )
+                            .into(),
                         },
                     ],
                 },
@@ -910,9 +915,10 @@ mod tests {
                                         doc: None,
                                         attributes: vec![],
                                         name: GTKey::new((141, 146).into(), "genre".into()),
-                                        descriptor: GTIdentifier::new(
+                                        descriptor: GTReference(
                                             (148, 153).into(),
-                                            "Genre".into(),
+                                            GTReferenceDefinitionId::Unresolved,
+                                            GTIdentifier::new((148, 153).into(), "Genre".into()),
                                         )
                                         .into(),
                                         required: true,
@@ -1193,11 +1199,11 @@ mod tests {
                                 )),
                                 extensions: vec![GTExtension {
                                     span: (150, 164).into(),
-                                    reference: GTIdentifier::new(
+                                    reference: GTReference(
                                         (153, 164).into(),
-                                        "CommentBase".into(),
-                                    )
-                                    .into(),
+                                        GTReferenceDefinitionId::Unresolved,
+                                        GTIdentifier::new((153, 164).into(), "CommentBase".into()),
+                                    ),
                                 }],
                                 properties: vec![
                                     GTProperty {

@@ -133,7 +133,7 @@ mod tests {
                                         doc: None,
                                         attributes: vec![],
                                         name: "author".into(),
-                                        descriptor: RSReference::new("Author".into(), GTDefinitionId("author".into(), "AuthorName".into())).into(),
+                                        descriptor: RSReference::new("Author".into(), GTDefinitionId("author".into(), "Author".into())).into(),
                                     },
                                 ]
                                 .into(),
@@ -385,7 +385,7 @@ struct Book {
     }
 
     #[test]
-    fn test_render_named() {
+    fn test_render_extensions() {
         let config = GTConfig::from_root("module", "./examples/extensions");
         let rs_config = config.as_rust_project();
         let project = GTProject::load(&config).unwrap();

@@ -176,8 +176,18 @@ mod tests {
     #[test]
     fn test_convert_reference() {
         assert_eq!(
-            GTDescriptor::Reference(GTIdentifier::new((0, 0).into(), "Name".into()).into())
-                .convert(&mut PYConvertContext::default()),
+            GTDescriptor::Reference(
+                GTReference(
+                    (0, 0).into(),
+                    GTReferenceDefinitionId::Resolved(GTDefinitionId(
+                        "module".into(),
+                        "Name".into()
+                    )),
+                    GTIdentifier::new((0, 0).into(), "Name".into())
+                )
+                .into()
+            )
+            .convert(&mut PYConvertContext::default()),
             PYReference::new("Name".into(), true).into()
         );
     }

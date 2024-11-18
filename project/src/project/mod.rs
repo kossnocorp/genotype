@@ -458,10 +458,14 @@ mod tests {
                                         doc: None,
                                         attributes: vec![],
                                         name: GTKey::new((48, 54).into(), "author".into()),
-                                        descriptor: GTDescriptor::Reference(
-                                            GTIdentifier::new((56, 62).into(), "Author".into())
-                                                .into(),
-                                        ),
+                                        descriptor: GTDescriptor::Reference(GTReference(
+                                            (55, 61).into(),
+                                            GTReferenceDefinitionId::Resolved(GTDefinitionId(
+                                                "author".into(),
+                                                "Author".into(),
+                                            )),
+                                            GTIdentifier::new((56, 62).into(), "Author".into()),
+                                        )),
                                         required: true,
                                     },
                                 ],
@@ -528,10 +532,14 @@ mod tests {
                                         name: GTKey::new((49, 54).into(), "books".into()),
                                         descriptor: GTDescriptor::Array(Box::new(GTArray {
                                             span: (56, 62).into(),
-                                            descriptor: GTDescriptor::Reference(
-                                                GTIdentifier::new((57, 61).into(), "Book".into())
-                                                    .into(),
-                                            ),
+                                            descriptor: GTDescriptor::Reference(GTReference(
+                                                (57, 61).into(),
+                                                GTReferenceDefinitionId::Resolved(GTDefinitionId(
+                                                    "book".into(),
+                                                    "Book".into(),
+                                                )),
+                                                GTIdentifier::new((57, 61).into(), "Book".into()),
+                                            )),
                                         })),
                                         required: true,
                                     },

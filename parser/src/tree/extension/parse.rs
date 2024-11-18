@@ -32,8 +32,12 @@ mod tests {
         assert_eq!(
             GTExtension::parse(pairs.next().unwrap(), &mut context).unwrap(),
             GTExtension {
-                span: GTSpan(0, 8),
-                reference: GTIdentifier::new(GTSpan(3, 8), "Hello".into()).into()
+                span: (3, 8).into(),
+                reference: GTReference(
+                    (153, 164).into(),
+                    GTReferenceDefinitionId::Unresolved,
+                    GTIdentifier::new((3, 8).into(), "Hello".into()),
+                ),
             }
         );
     }

@@ -35,12 +35,6 @@ impl From<GTReference> for GTDescriptor {
     }
 }
 
-impl From<GTIdentifier> for GTDescriptor {
-    fn from(identifier: GTIdentifier) -> Self {
-        GTDescriptor::Reference(identifier.into())
-    }
-}
-
 impl From<GTTuple> for GTDescriptor {
     fn from(tuple: GTTuple) -> Self {
         GTDescriptor::Tuple(tuple)

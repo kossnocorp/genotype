@@ -192,9 +192,13 @@ mod tests {
     #[test]
     fn test_convert_reference() {
         assert_eq!(
-            GTDescriptor::Reference(GTIdentifier::new((0, 0).into(), "Name".into()).into())
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
+            GTDescriptor::Reference(GTReference(
+                (0, 0).into(),
+                GTReferenceDefinitionId::Resolved(GTDefinitionId("module".into(), "Name".into())),
+                GTIdentifier::new((0, 0).into(), "Name".into())
+            ))
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
             RSReference::new(
                 "Name".into(),
                 GTDefinitionId("module".into(), "Name".into())

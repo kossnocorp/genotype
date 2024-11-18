@@ -20,7 +20,7 @@ mod tests {
     #[test]
     fn test_render() {
         assert_eq!(
-            "Foo",
+            "Value",
             RSAny.render(&rs_indent(), &Default::default()).unwrap(),
         );
     }
