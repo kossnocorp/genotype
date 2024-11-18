@@ -34,7 +34,7 @@ mod tests {
     #[test]
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::tuple, "(string, int)").unwrap();
-        let mut context = GTContext::new();
+        let mut context = GTContext::new("module".into());
         assert_eq!(
             GTTuple::parse(pairs.next().unwrap(), &mut context).unwrap(),
             GTTuple {

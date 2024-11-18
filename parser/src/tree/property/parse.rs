@@ -138,7 +138,7 @@ mod tests {
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::any_property, "world: string").unwrap();
         assert_eq!(
-            GTProperty::parse(pairs.next().unwrap(), &mut GTContext::new()).unwrap(),
+            GTProperty::parse(pairs.next().unwrap(), &mut GTContext::new("module".into())).unwrap(),
             GTProperty {
                 span: (0, 13).into(),
                 doc: None,
@@ -158,6 +158,7 @@ mod tests {
             "Hello".into(),
         ))];
         let mut context = GTContext {
+            module_id: "module".into(),
             parents: parents.clone(),
             resolve: GTResolve::new(),
         };

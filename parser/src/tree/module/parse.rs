@@ -11,13 +11,14 @@ pub struct GTModuleParse {
 
 impl GTModule {
     pub fn parse<'a>(id: String, source_code: NamedSource<String>) -> Result<GTModuleParse> {
+        let id = GTModuleId(id);
         match parse_gt_code(source_code.inner()) {
             Ok(mut pairs) => match pairs.next() {
-                Some(pair) => match Self::parse_pairs(pair) {
+                Some(pair) => match Self::parse_pairs(id.clone(), pair) {
                     Ok(result) => Ok(GTModuleParse {
                         resolve: result.resolve,
                         module: GTModule {
-                            id: GTModuleId(id),
+                            id,
                             source_code,
                             doc: result.doc,
                             imports: result.imports,
@@ -42,11 +43,14 @@ impl GTModule {
         }
     }
 
-    fn parse_pairs(module_pair: Pair<'_, Rule>) -> Result<ModuleParseResult> {
+    fn parse_pairs(
+        module_id: GTModuleId,
+        module_pair: Pair<'_, Rule>,
+    ) -> Result<ModuleParseResult> {
         let mut doc: Option<GTDoc> = None;
         let mut imports = vec![];
         let mut aliases = vec![];
-        let mut context = GTContext::new();
+        let mut context = GTContext::new(module_id);
 
         for pair in module_pair.into_inner() {
             match pair.as_rule() {
@@ -118,6 +122,7 @@ mod tests {
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
+                            id: GTAliasId("module".into(), "Age".into()),
                             span: (0, 9).into(),
                             doc: None,
                             attributes: vec![],
@@ -125,6 +130,7 @@ mod tests {
                             descriptor: GTPrimitive::Int((6, 9).into()).into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "AnotherAge".into()),
                             span: (11, 27).into(),
                             doc: None,
                             attributes: vec![],
@@ -162,6 +168,7 @@ mod tests {
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
+                            id: GTAliasId("module".into(), "String".into()),
                             span: (0, 15).into(),
                             doc: None,
                             attributes: vec![],
@@ -169,6 +176,7 @@ mod tests {
                             descriptor: GTPrimitive::String((9, 15).into()).into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Int".into()),
                             span: (17, 26).into(),
                             doc: None,
                             attributes: vec![],
@@ -176,6 +184,7 @@ mod tests {
                             descriptor: GTPrimitive::Int((23, 26).into()).into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Float".into()),
                             span: (28, 41).into(),
                             doc: None,
                             attributes: vec![],
@@ -183,6 +192,7 @@ mod tests {
                             descriptor: GTPrimitive::Float((36, 41).into()).into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Boolean".into()),
                             span: (43, 60).into(),
                             doc: None,
                             attributes: vec![],
@@ -190,6 +200,7 @@ mod tests {
                             descriptor: GTPrimitive::Boolean((53, 60).into()).into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Null".into()),
                             span: (62, 73).into(),
                             doc: None,
                             attributes: vec![],
@@ -227,6 +238,7 @@ mod tests {
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
+                            id: GTAliasId("module".into(), "Hello".into()),
                             span: (0, 26).into(),
                             doc: None,
                             attributes: vec![],
@@ -246,6 +258,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Hello".into()),
                             span: (28, 81).into(),
                             doc: None,
                             attributes: vec![],
@@ -285,6 +298,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Empty".into()),
                             span: (83, 93).into(),
                             doc: None,
                             attributes: vec![],
@@ -297,6 +311,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Empty".into()),
                             span: (95, 109).into(),
                             doc: None,
                             attributes: vec![],
@@ -309,6 +324,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Hello".into()),
                             span: (111, 135).into(),
                             doc: None,
                             attributes: vec![],
@@ -328,6 +344,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Hello".into()),
                             span: (137, 171).into(),
                             doc: None,
                             attributes: vec![],
@@ -391,6 +408,7 @@ mod tests {
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
+                            id: GTAliasId("module".into(), "Hello".into()),
                             span: (58, 111).into(),
                             doc: Some(GTDoc::new((62, 75).into(), "Alias comment".into())),
                             attributes: vec![],
@@ -398,6 +416,7 @@ mod tests {
                             descriptor: GTPrimitive::String((105, 111).into()).into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Hello".into()),
                             span: (113, 256).into(),
                             doc: Some(GTDoc::new(
                                 (117, 150).into(),
@@ -436,6 +455,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Hello".into()),
                             span: (258, 272).into(),
                             doc: None,
                             attributes: vec![],
@@ -470,6 +490,7 @@ mod tests {
                     doc: None,
                     imports: vec![],
                     aliases: vec![GTAlias {
+                        id: GTAliasId("module".into(), "Hello".into()),
                         span: (0, 38).into(),
                         doc: None,
                         attributes: vec![],
@@ -523,6 +544,7 @@ mod tests {
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
+                            id: GTAliasId("module".into(), "Hello".into()),
                             span: (0, 60).into(),
                             doc: None,
                             attributes: vec![],
@@ -574,6 +596,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Hello".into()),
                             span: (62, 130).into(),
                             doc: None,
                             attributes: vec![],
@@ -588,6 +611,7 @@ mod tests {
                                     attributes: vec![],
                                     name: GTKey::new((74, 78).into(), "name".into()),
                                     descriptor: GTDescriptor::Alias(Box::new(GTAlias {
+                                        id: GTAliasId("module".into(), "Named".into()),
                                         span: (80, 128).into(),
                                         doc: None,
                                         attributes: vec![],
@@ -661,6 +685,7 @@ mod tests {
                     doc: None,
                     imports: vec![],
                     aliases: vec![GTAlias {
+                        id: GTAliasId("module".into(), "Book".into()),
                         span: (0, 43).into(),
                         doc: None,
                         attributes: vec![],
@@ -719,6 +744,7 @@ mod tests {
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
+                            id: GTAliasId("module".into(), "User".into()),
                             span: (0, 68).into(),
                             doc: None,
                             attributes: vec![],
@@ -764,6 +790,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Address".into()),
                             span: (70, 101).into(),
                             doc: None,
                             attributes: vec![],
@@ -841,6 +868,7 @@ mod tests {
                     ],
                     aliases: vec![
                         GTAlias {
+                            id: GTAliasId("module".into(), "Book".into()),
                             span: (84, 155).into(),
                             doc: None,
                             attributes: vec![],
@@ -893,6 +921,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Author".into()),
                             span: (157, 185).into(),
                             doc: None,
                             attributes: vec![],
@@ -940,6 +969,7 @@ mod tests {
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
+                            id: GTAliasId("module".into(), "Base".into()),
                             span: (0, 37).into(),
                             doc: None,
                             attributes: vec![],
@@ -972,6 +1002,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Processor".into()),
                             span: (39, 78).into(),
                             doc: None,
                             attributes: vec![],
@@ -1000,6 +1031,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "User".into()),
                             span: (80, 117).into(),
                             doc: None,
                             attributes: vec![],
@@ -1059,6 +1091,7 @@ mod tests {
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
+                            id: GTAliasId("module".into(), "CommentBase".into()),
                             span: (0, 39).into(),
                             doc: None,
                             attributes: vec![],
@@ -1092,6 +1125,7 @@ mod tests {
                             .into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "UserComment".into()),
                             span: (41, 128).into(),
                             doc: None,
                             attributes: vec![],
@@ -1143,6 +1177,7 @@ mod tests {
                             .into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "SystemComment".into()),
                             span: (130, 201).into(),
                             doc: None,
                             attributes: vec![],
@@ -1188,6 +1223,7 @@ mod tests {
                             .into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "False".into()),
                             span: (203, 216).into(),
                             doc: None,
                             attributes: vec![],
@@ -1195,6 +1231,7 @@ mod tests {
                             descriptor: GTLiteral::Boolean((211, 216).into(), false).into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Float".into()),
                             span: (218, 235).into(),
                             doc: None,
                             attributes: vec![],
@@ -1202,6 +1239,7 @@ mod tests {
                             descriptor: GTLiteral::Float((226, 235).into(), 1.000_123).into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Number".into()),
                             span: (237, 255).into(),
                             doc: None,
                             attributes: vec![],
@@ -1209,6 +1247,7 @@ mod tests {
                             descriptor: GTLiteral::Integer((246, 255).into(), 1_234_567).into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "String".into()),
                             span: (257, 288).into(),
                             doc: None,
                             attributes: vec![],
@@ -1220,6 +1259,7 @@ mod tests {
                             .into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "NegativeInt".into()),
                             span: (290, 306).into(),
                             doc: None,
                             attributes: vec![],
@@ -1227,6 +1267,7 @@ mod tests {
                             descriptor: GTLiteral::Integer((304, 306).into(), -1).into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "NegativeFloat".into()),
                             span: (308, 328).into(),
                             doc: None,
                             attributes: vec![],
@@ -1234,6 +1275,7 @@ mod tests {
                             descriptor: GTLiteral::Float((324, 328).into(), -1.0).into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "LargeFloat".into()),
                             span: (330, 346).into(),
                             doc: None,
                             attributes: vec![],
@@ -1241,6 +1283,7 @@ mod tests {
                             descriptor: GTLiteral::Float((343, 346).into(), 1e6).into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "SmallFloat".into()),
                             span: (348, 367).into(),
                             doc: None,
                             attributes: vec![],
@@ -1287,6 +1330,7 @@ mod tests {
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
+                            id: GTAliasId("module".into(), "Hello".into()),
                             span: (0, 25).into(),
                             doc: None,
                             attributes: vec![],
@@ -1301,6 +1345,7 @@ mod tests {
                             .into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Multiline".into()),
                             span: (27, 61).into(),
                             doc: None,
                             attributes: vec![],
@@ -1342,6 +1387,7 @@ mod tests {
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
+                            id: GTAliasId("module".into(), "Message".into()),
                             span: (0, 20).into(),
                             doc: None,
                             attributes: vec![],
@@ -1364,6 +1410,7 @@ mod tests {
                             .into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Reply".into()),
                             span: (22, 77).into(),
                             doc: None,
                             attributes: vec![],
@@ -1408,6 +1455,7 @@ mod tests {
                             .into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "DM".into()),
                             span: (79, 128).into(),
                             doc: None,
                             attributes: vec![],
@@ -1452,6 +1500,7 @@ mod tests {
                             .into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Assignment".into()),
                             span: (130, 165).into(),
                             doc: None,
                             attributes: vec![GTAttribute {
@@ -1471,6 +1520,7 @@ mod tests {
                             descriptor: GTLiteral::Integer((162, 165).into(), 123).into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Arguments".into()),
                             span: (167, 210).into(),
                             doc: None,
                             attributes: vec![GTAttribute {
@@ -1491,6 +1541,7 @@ mod tests {
                             descriptor: GTLiteral::Boolean((206, 210).into(), true).into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Properties".into()),
                             span: (212, 271).into(),
                             doc: None,
                             attributes: vec![GTAttribute {
@@ -1553,6 +1604,7 @@ mod tests {
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
+                            id: GTAliasId("module".into(), "Dict".into()),
                             span: (0, 21).into(),
                             doc: None,
                             attributes: vec![],
@@ -1565,6 +1617,7 @@ mod tests {
                             .into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Map".into()),
                             span: (23, 46).into(),
                             doc: None,
                             attributes: vec![],
@@ -1603,6 +1656,7 @@ mod tests {
                     doc: None,
                     imports: vec![],
                     aliases: vec![GTAlias {
+                        id: GTAliasId("module".into(), "Anything".into()),
                         span: (0, 14).into(),
                         doc: None,
                         attributes: vec![],

@@ -103,7 +103,7 @@ mod tests {
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::import, "use ./hello/World").unwrap();
         assert_eq!(
-            GTImport::parse(pairs.next().unwrap(), &mut GTContext::new()).unwrap(),
+            GTImport::parse(pairs.next().unwrap(), &mut GTContext::new("module".into())).unwrap(),
             GTImport {
                 span: (0, 17).into(),
                 path: GTPath::parse((4, 11).into(), "./hello").unwrap(),

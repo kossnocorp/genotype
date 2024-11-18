@@ -27,7 +27,7 @@ mod tests {
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::array, "[string]").unwrap();
         assert_eq!(
-            GTArray::parse(pairs.next().unwrap(), &mut GTContext::new()).unwrap(),
+            GTArray::parse(pairs.next().unwrap(), &mut GTContext::new("module".into())).unwrap(),
             GTArray {
                 span: (0, 8).into(),
                 descriptor: GTDescriptor::Primitive(GTPrimitive::String((1, 7).into())),
@@ -39,7 +39,8 @@ mod tests {
     fn test_error() {
         let mut pairs = GenotypeParser::parse(Rule::literal_boolean, "false").unwrap();
         assert_eq!(
-            GTArray::parse(pairs.next().unwrap(), &mut GTContext::new()).unwrap_err(),
+            GTArray::parse(pairs.next().unwrap(), &mut GTContext::new("module".into()))
+                .unwrap_err(),
             GTParseError::Internal((0, 5).into(), GTNode::Array)
         );
     }

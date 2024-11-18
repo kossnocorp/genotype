@@ -97,8 +97,10 @@ fn parse(
         }
 
         ParseState::Descriptor(span, doc, attributes, name) => {
+            let id = context.module_id.alias_id(&name);
             let descriptor = GTDescriptor::parse(pair, context)?;
             Ok(GTAlias {
+                id,
                 span,
                 doc,
                 attributes,
@@ -127,8 +129,9 @@ mod tests {
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::alias, "Hello = { world: string }").unwrap();
         assert_eq!(
-            GTAlias::parse(pairs.next().unwrap(), &mut GTContext::new()).unwrap(),
+            GTAlias::parse(pairs.next().unwrap(), &mut GTContext::new("module".into())).unwrap(),
             GTAlias {
+                id: GTAliasId("module".into(), "Hello".into()),
                 span: (0, 25).into(),
                 name: GTIdentifier::new((0, 5).into(), "Hello".into()),
                 doc: None,
@@ -169,6 +172,7 @@ mod tests {
             "Hello".into(),
         ))];
         let mut context = GTContext {
+            module_id: "module".into(),
             parents: parents.clone(),
             resolve: GTResolve::new(),
         };

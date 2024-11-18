@@ -66,7 +66,7 @@ mod tests {
     #[test]
     fn test_parse_default() {
         let mut pairs = GenotypeParser::parse(Rule::record, "{ []: string }").unwrap();
-        let mut context = GTContext::new();
+        let mut context = GTContext::new("module".into());
         assert_eq!(
             GTRecord::parse(pairs.next().unwrap(), &mut context).unwrap(),
             GTRecord {
@@ -80,7 +80,7 @@ mod tests {
     #[test]
     fn test_parse_typed() {
         let mut pairs = GenotypeParser::parse(Rule::record, "{ [int]: string }").unwrap();
-        let mut context = GTContext::new();
+        let mut context = GTContext::new("module".into());
         assert_eq!(
             GTRecord::parse(pairs.next().unwrap(), &mut context).unwrap(),
             GTRecord {

@@ -41,6 +41,7 @@ mod tests {
             reference: reference.clone(),
         };
         let alias = GTAlias {
+            id: GTAliasId("module".into(), "Name".into()),
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
@@ -80,6 +81,7 @@ mod tests {
             reference: reference.clone(),
         };
         let alias = GTAlias {
+            id: GTAliasId("module".into(), "Name".into()),
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],

@@ -59,6 +59,7 @@ mod tests {
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::object, "{ hello: string }").unwrap();
         let mut context = GTContext {
+            module_id: "module".into(),
             resolve: GTResolve::new(),
             parents: vec![GTContextParent::Alias(GTIdentifier::new(
                 (0, 5).into(),
@@ -127,6 +128,7 @@ mod tests {
     fn test_parse_name() {
         let mut pairs = GenotypeParser::parse(Rule::object, "{ hello: string }").unwrap();
         let mut context = GTContext {
+            module_id: "module".into(),
             resolve: GTResolve::new(),
             parents: vec![
                 GTContextParent::Alias(GTIdentifier::new((0, 5).into(), "Hello".into())),

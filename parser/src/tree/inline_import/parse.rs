@@ -38,7 +38,8 @@ mod tests {
         let mut pairs =
             GenotypeParser::parse(Rule::inline_import, "./path/to/module/Name").unwrap();
         assert_eq!(
-            GTInlineImport::parse(pairs.next().unwrap(), &mut GTContext::new()).unwrap(),
+            GTInlineImport::parse(pairs.next().unwrap(), &mut GTContext::new("module".into()))
+                .unwrap(),
             GTInlineImport {
                 span: (0, 21).into(),
                 name: GTIdentifier::new((17, 21).into(), "Name".into()),

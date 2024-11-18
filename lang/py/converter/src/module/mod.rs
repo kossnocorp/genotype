@@ -96,6 +96,7 @@ mod tests {
                     ],
                     aliases: vec![
                         GTAlias {
+                            id: GTAliasId("module".into(), "Name".into()),
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
@@ -125,6 +126,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Book".into()),
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
@@ -139,6 +141,7 @@ mod tests {
                                     attributes: vec![],
                                     name: GTKey::new((0, 0).into(), "book".into()),
                                     descriptor: GTDescriptor::Alias(Box::new(GTAlias {
+                                        id: GTAliasId("module".into(), "Book".into()),
                                         span: (0, 0).into(),
                                         doc: None,
                                         attributes: vec![],
@@ -182,6 +185,7 @@ mod tests {
                             }),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Order".into()),
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
@@ -321,6 +325,7 @@ mod tests {
                     imports: vec![],
                     aliases: vec![
                         GTAlias {
+                            id: GTAliasId("module".into(), "Message".into()),
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
@@ -343,6 +348,7 @@ mod tests {
                             .into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "DM".into()),
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
@@ -363,6 +369,7 @@ mod tests {
                             .into(),
                         },
                         GTAlias {
+                            id: GTAliasId("module".into(), "Comment".into()),
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],

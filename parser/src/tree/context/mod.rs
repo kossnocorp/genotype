@@ -1,9 +1,11 @@
 use crate::{GTNode, GTNodeParseResult, GTParseError, GTSpan};
 
-use super::{GTIdentifier, GTKey, GTObjectName, GTObjectNameParent, GTResolve};
+use super::{GTIdentifier, GTKey, GTModuleId, GTObjectName, GTObjectNameParent, GTResolve};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTContext {
+    /// Current module id.
+    pub module_id: GTModuleId,
     pub resolve: GTResolve,
     pub parents: Vec<GTContextParent>,
 }
@@ -21,8 +23,9 @@ pub enum GTContextParent {
 }
 
 impl GTContext {
-    pub fn new() -> Self {
+    pub fn new(module_id: GTModuleId) -> Self {
         GTContext {
+            module_id,
             resolve: GTResolve::new(),
             parents: vec![],
         }
@@ -90,6 +93,7 @@ mod tests {
     #[test]
     fn test_object_name_named() {
         let context = GTContext {
+            module_id: "module".into(),
             resolve: GTResolve::new(),
             parents: vec![
                 GTContextParent::Alias(GTIdentifier::new((0, 5).into(), "Hi".into())),
@@ -105,6 +109,7 @@ mod tests {
     #[test]
     fn test_object_name_alias() {
         let context = GTContext {
+            module_id: "module".into(),
             resolve: GTResolve::new(),
             parents: vec![
                 GTContextParent::Alias(GTIdentifier::new((0, 5).into(), "Hi".into())),
@@ -124,6 +129,7 @@ mod tests {
     #[test]
     fn test_object_name_property() {
         let context = GTContext {
+            module_id: "module".into(),
             resolve: GTResolve::new(),
             parents: vec![
                 GTContextParent::Alias(GTIdentifier::new((0, 5).into(), "Hi".into())),

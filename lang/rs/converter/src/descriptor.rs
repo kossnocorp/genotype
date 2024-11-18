@@ -53,6 +53,7 @@ mod tests {
         let mut context = RSConvertContext::default();
         assert_eq!(
             GTDescriptor::Alias(Box::new(GTAlias {
+                id: GTAliasId("module".into(), "Name".into()),
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],

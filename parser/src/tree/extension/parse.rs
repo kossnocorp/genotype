@@ -28,7 +28,7 @@ mod tests {
     #[test]
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::extension_property, "...Hello").unwrap();
-        let mut context = GTContext::new();
+        let mut context = GTContext::new("module".into());
         assert_eq!(
             GTExtension::parse(pairs.next().unwrap(), &mut context).unwrap(),
             GTExtension {
@@ -41,7 +41,7 @@ mod tests {
     #[test]
     fn test_error() {
         let mut pairs = GenotypeParser::parse(Rule::literal_boolean, "false").unwrap();
-        let mut context = GTContext::new();
+        let mut context = GTContext::new("module".into());
         assert_eq!(
             GTExtension::parse(pairs.next().unwrap(), &mut context).unwrap_err(),
             GTParseError::Internal((0, 5).into(), GTNode::Extension)

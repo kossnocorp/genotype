@@ -205,6 +205,7 @@ mod tests {
                     },
                 ],
                 aliases: vec![GTAlias {
+                    id: GTAliasId("module".into(), "Order".into()),
                     span: (133, 237).into(),
                     doc: None,
                     attributes: vec![],
