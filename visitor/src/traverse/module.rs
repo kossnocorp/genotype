@@ -48,6 +48,7 @@ mod tests {
             descriptor: GTPrimitive::String((0, 0).into()).into(),
         };
         let mut module = GTModule {
+            id: "module".into(),
             source_code: NamedSource::new("module.type", "".into()),
             doc: None,
             imports: vec![import.clone()],
@@ -86,6 +87,7 @@ mod tests {
             descriptor: GTPrimitive::String((0, 0).into()).into(),
         };
         let mut module = GTModule {
+            id: "module".into(),
             source_code: NamedSource::new("module.type", "".into()),
             doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
             imports: vec![import.clone()],

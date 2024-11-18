@@ -24,9 +24,11 @@ mod tests {
 
     #[test]
     fn test_parse_references() {
-        let parse = GTModule::parse(NamedSource::new(
-            "module.type",
-            r#"use user/User
+        let parse = GTModule::parse(
+            "module".into(),
+            NamedSource::new(
+                "module.type",
+                r#"use user/User
 
             Author = {
               name: Name
@@ -34,8 +36,9 @@ mod tests {
             }
             
             Name = string"#
-                .into(),
-        ))
+                    .into(),
+            ),
+        )
         .unwrap();
         assert_eq!(
             parse.resolve.references,

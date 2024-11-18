@@ -124,7 +124,7 @@ mod tests {
             use ./misc/order/{Order, SomethingElse}"#
                 .into(),
         );
-        let parse = GTModule::parse(source_code).unwrap();
+        let parse = GTModule::parse("module".into(), source_code).unwrap();
         assert_eq!(
             parse.resolve.deps,
             HashSet::from_iter(vec![
@@ -144,7 +144,7 @@ mod tests {
             use ./././misc/order/{Order, SomethingElse}"#
                 .into(),
         );
-        let parse = GTModule::parse(source_code).unwrap();
+        let parse = GTModule::parse("module".into(), source_code).unwrap();
         assert_eq!(
             parse.resolve.deps,
             HashSet::from_iter(vec![

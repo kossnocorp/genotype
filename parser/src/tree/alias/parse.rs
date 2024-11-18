@@ -154,7 +154,7 @@ mod tests {
     #[test]
     fn test_parse_exports() {
         let source_code = NamedSource::new("module.type", "Hello = string".into());
-        let parse = GTModule::parse(source_code).unwrap();
+        let parse = GTModule::parse("module".into(), source_code).unwrap();
         assert_eq!(
             parse.resolve.exports,
             vec![GTIdentifier::new((0, 5).into(), "Hello".into())]

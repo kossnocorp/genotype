@@ -57,7 +57,7 @@ mod tests {
             }"#
             .into(),
         );
-        let parse = GTModule::parse(source_code).unwrap();
+        let parse = GTModule::parse("module".into(), source_code).unwrap();
         assert_eq!(
             parse.resolve.deps,
             HashSet::from_iter(vec![
@@ -77,7 +77,7 @@ mod tests {
             }"#
             .into(),
         );
-        let parse = GTModule::parse(source_code).unwrap();
+        let parse = GTModule::parse("module".into(), source_code).unwrap();
         assert_eq!(
             parse.resolve.deps,
             HashSet::from_iter(vec![

@@ -66,6 +66,7 @@ mod tests {
         assert_eq!(
             PYConvertModule::convert(
                 &GTModule {
+                    id: "module".into(),
                     source_code: NamedSource::new("module.type", "".into()),
                     doc: None,
                     imports: vec![
@@ -292,6 +293,7 @@ mod tests {
         assert_eq!(
             PYConvertModule::convert(
                 &GTModule {
+                    id: "module".into(),
                     source_code: NamedSource::new("module.type", "".into()),
                     doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
                     imports: vec![],
@@ -313,6 +315,7 @@ mod tests {
         assert_eq!(
             PYConvertModule::convert(
                 &GTModule {
+                    id: "module".into(),
                     source_code: NamedSource::new("module.type", "".into()),
                     doc: None,
                     imports: vec![],

@@ -95,7 +95,9 @@ impl GTProject {
             processed.insert(path.clone());
         }
 
-        let result = GTProjectModuleParse::try_new(path).and_then(|parse| {
+        // [TODO] Get rid of paths in favor of ids and path -> id resolve?
+        let id = path.as_id().as_str().to_owned();
+        let result = GTProjectModuleParse::try_new(id, path).and_then(|parse| {
             parse.deps().and_then(|deps| {
                 for dep in deps {
                     let root = Arc::clone(&root);
@@ -168,6 +170,7 @@ mod tests {
                 modules: vec![GTProjectModule {
                     path: module_path.clone(),
                     module: GTModule {
+                        id: "anonymous".into(),
                         source_code: NamedSource::new(
                             "anonymous.type",
                             read_to_string(&module_path).unwrap(),
@@ -377,6 +380,7 @@ mod tests {
                 GTProjectModule {
                     path: author_path.clone(),
                     module: GTModule {
+                        id: "author".into(),
                         source_code: NamedSource::new(
                             "author.type",
                             read_to_string(&author_path).unwrap(),
@@ -411,6 +415,7 @@ mod tests {
                 GTProjectModule {
                     path: book_path.clone(),
                     module: GTModule {
+                        id: "book".into(),
                         source_code: NamedSource::new(
                             "book.type",
                             read_to_string(&book_path).unwrap(),
@@ -473,6 +478,7 @@ mod tests {
                 GTProjectModule {
                     path: order_path.clone(),
                     module: GTModule {
+                        id: "order".into(),
                         source_code: NamedSource::new(
                             "order.type",
                             read_to_string(&order_path).unwrap(),
@@ -548,6 +554,7 @@ mod tests {
                 GTProjectModule {
                     path: user_path.clone(),
                     module: GTModule {
+                        id: "user".into(),
                         source_code: NamedSource::new(
                             "user.type",
                             read_to_string(&user_path).unwrap(),

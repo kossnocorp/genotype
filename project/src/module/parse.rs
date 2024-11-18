@@ -11,13 +11,13 @@ use super::GTProjectModulePath;
 pub struct GTProjectModuleParse(pub GTProjectModulePath, pub GTModuleParse);
 
 impl<'a> GTProjectModuleParse {
-    pub fn try_new(path: GTProjectModulePath) -> Result<Self> {
+    pub fn try_new(id: String, path: GTProjectModulePath) -> Result<Self> {
         let code = read_to_string(&path).map_err(|_| {
             GTProjectError::NotFound(path.as_path().as_os_str().to_str().unwrap().to_owned())
         })?;
 
         let source_code = NamedSource::new(path.as_path_str(), code.clone());
-        let parse = GTModule::parse(source_code)?;
+        let parse = GTModule::parse(id, source_code)?;
         Ok(Self(path, parse))
     }
 

@@ -4,7 +4,7 @@ use std::{
     path::{Component, Path, PathBuf},
 };
 
-use crate::{parser::Rule, GTNode, GTNodeParseResult, GTParseError, GTSpan};
+use crate::{parser::Rule, GTNode, GTNodeParseResult, GTParseError, GTPathModule, GTSpan};
 
 use super::GTPath;
 
@@ -29,7 +29,7 @@ impl GTPath {
 
     pub fn parse(span: GTSpan, path: &str) -> GTNodeParseResult<Self> {
         match Self::normalize_path(path) {
-            Ok(path) => Ok(GTPath(span, path)),
+            Ok(path) => Ok(GTPath(span, GTPathModule::Unresolved, path)),
             Err(_) => Err(GTParseError::Internal(span, GTNode::Path)),
         }
     }
@@ -165,10 +165,11 @@ mod tests {
             }"#
             .into(),
         );
-        let parse = GTModule::parse(source_code.clone()).unwrap();
+        let parse = GTModule::parse("module".into(), source_code.clone()).unwrap();
         assert_eq!(
             parse.module,
             GTModule {
+                id: "module".into(),
                 source_code,
                 doc: None,
                 imports: vec![
