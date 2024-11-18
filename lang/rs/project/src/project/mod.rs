@@ -1,7 +1,4 @@
-use genotype_lang_core_project::{
-    module::GTLangProjectModule,
-    project::{GTLangProject, GTLangProjectRender},
-};
+use genotype_lang_core_project::project::{GTLangProject, GTLangProjectRender};
 use genotype_lang_rs_config::RSProjectConfig;
 use genotype_project::project::GTProject;
 use miette::Result;
@@ -21,12 +18,7 @@ pub struct RSProject {
 
 impl GTLangProject<RSProjectConfig> for RSProject {
     fn generate(project: &GTProject, config: RSProjectConfig) -> Result<Self> {
-        let modules = project
-            .modules
-            .iter()
-            .map(|module| RSProjectModule::generate(&project, module, &config))
-            .collect::<Result<_, _>>()?;
-
+        let modules = Self::generate_modules(project, &config)?;
         Ok(Self { modules, config })
     }
 
@@ -406,39 +398,74 @@ struct Book {
                         code: r#"
 
 [dependencies]
-serde = { version = "1", features = ["derive"] }
 genotype_runtime = "0.1"
+serde = { version = "1", features = ["derive"] }
 "#
                         .into(),
                     },
                     GTLangProjectSource {
+                        path: "rs/src/lib.rs".into(),
+                        code: r#"pub mod admin;
+pub mod named;
+pub mod user;"#.into(),
+                    },
+                    GTLangProjectSource {
                         path: "rs/src/admin.rs".into(),
-                        code: r#"use serde::{Deserialize, Serialize};
+                        code: r#"use self::user::User;
 use genotype_runtime::literal;
-                        
-#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-struct Admin {
-    name: String,
-    email: String,
-    role: AdminRole
-}
+use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(untagged)]
-enum AdminRole {
-    Superadmin,
-    Admin,
-    Moderator,
+struct Admin {
+    email: String,
+    name: String,
 }
 
 #[literal("superadmin")]
-struct AdminRoleSuperadmin;
+struct Superadmin;
 
 #[literal("admin")]
-struct AdminRoleAdmin;
+struct Admin;
 
 #[literal("moderator")]
-struct AdminRoleModerator;
+struct Moderator;
+
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(untagged)]
+enum Union {
+    superadmin(Superadmin),
+    admin(Admin),
+    moderator(Moderator),
+}
+"#
+                        .into()
+                    },
+                    GTLangProjectSource {
+                        path: "rs/src/named.rs".into(),
+                        code: r#"use serde::{Deserialize, Serialize};
+
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+struct Named {
+    name: String,
+}
+"#
+                        .into()
+                    },
+                    GTLangProjectSource {
+                        path: "rs/src/user.rs".into(),
+                        code: r#"use self::named::Named;
+use serde::{Deserialize, Serialize};
+
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+struct User {
+    email: String,
+    name: String,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+struct Account {
+    email: String,
+}
 "#
                         .into()
                     },

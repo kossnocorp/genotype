@@ -2,5 +2,10 @@ use ./named/Named
 
 User = {
   ...Named,
-  email: string,
+  ...Account,
+  age?: int,
+}
+
+Account = {
+  email: string 
 }
