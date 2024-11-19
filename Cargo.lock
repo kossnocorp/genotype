@@ -293,6 +293,7 @@ dependencies = [
  "genotype_lang_core_project",
  "genotype_lang_py_project",
  "genotype_lang_py_tree",
+ "genotype_lang_rs_project",
  "genotype_lang_ts_project",
  "genotype_project",
  "genotype_writer",

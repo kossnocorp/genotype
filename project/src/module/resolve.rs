@@ -5,7 +5,7 @@ use std::{
 
 use genotype_parser::{
     tree::{GTIdentifier, GTImportName, GTImportReference, GTPath},
-    GTDefinitionId, GTReferenceId, GTSpan,
+    GTDefinitionId, GTReferenceId,
 };
 use miette::Result;
 
