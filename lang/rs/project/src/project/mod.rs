@@ -417,8 +417,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 struct Admin {
+    name: Name,
     email: String,
-    name: String,
 }
 
 #[literal("superadmin")]
@@ -446,8 +446,10 @@ enum Union {
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 struct Named {
-    name: String,
+    name: Name,
 }
+
+type Name = String;
 "#
                         .into()
                     },
@@ -458,8 +460,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 struct User {
+    name: Name,
     email: String,
-    name: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]

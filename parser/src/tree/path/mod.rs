@@ -10,6 +10,10 @@ mod parse;
 pub struct GTPath(pub GTSpan, pub GTPathModuleId, String);
 
 impl GTPath {
+    pub fn new(span: GTSpan, module_id: GTPathModuleId, path: String) -> Self {
+        Self(span, module_id, path)
+    }
+
     pub fn as_str(&self) -> &str {
         &self.2
     }

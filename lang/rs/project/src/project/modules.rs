@@ -1,10 +1,9 @@
-use std::collections::{HashMap, HashSet};
-
 use genotype_lang_core_project::{module::GTLangProjectModule, source::GTLangProjectSource};
 use genotype_lang_rs_config::RSProjectConfig;
 use genotype_lang_rs_tree::{rs_indent, RSDefinition, RSRender, RSStructFields};
 use genotype_parser::{GTDefinitionId, GTSpan};
 use genotype_project::GTProject;
+use indexmap::{IndexMap, IndexSet};
 use miette::Result;
 
 use crate::{error::RSProjectError, module::RSProjectModule};
@@ -41,8 +40,8 @@ impl RSProject {
         // by copying the fields from the referenced struct as Rust doesn't support inheritance in
         // any acceptable way.
 
-        let mut to_resolve: HashMap<GTDefinitionId, (GTSpan, HashSet<GTDefinitionId>)> =
-            HashMap::new();
+        let mut to_resolve: IndexMap<GTDefinitionId, (GTSpan, IndexSet<GTDefinitionId>)> =
+            Default::default();
 
         // First, we collect all the definitions that need to be resolved with their extensions
         for module in modules.iter() {
@@ -52,7 +51,7 @@ impl RSProject {
                         let reference_ids = references
                             .iter()
                             .map(|reference| reference.definition_id.clone())
-                            .collect::<HashSet<_>>();
+                            .collect::<IndexSet<_>>();
                         to_resolve.insert(r#struct.id.clone(), (span.clone(), reference_ids));
                     }
                 }
@@ -168,7 +167,7 @@ impl RSProject {
             };
 
             // We delay the removal of the definition from the map to avoid borrowing issues
-            to_resolve.remove(&to_remove);
+            to_resolve.shift_remove(&to_remove);
         }
 
         Ok(modules)

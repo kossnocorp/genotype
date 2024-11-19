@@ -428,7 +428,11 @@ mod tests {
                         doc: None,
                         imports: vec![GTImport {
                             span: (0, 19).into(),
-                            path: GTPath::parse((4, 12).into(), "./author").unwrap(),
+                            path: GTPath::new(
+                                (4, 12).into(),
+                                GTPathModuleId::Resolved(GTModuleId("author".into())),
+                                "./author".into(),
+                            ),
                             reference: GTImportReference::Name(
                                 (13, 19).into(),
                                 GTIdentifier::new((13, 19).into(), "Author".into()),
@@ -459,7 +463,7 @@ mod tests {
                                         attributes: vec![],
                                         name: GTKey::new((48, 54).into(), "author".into()),
                                         descriptor: GTDescriptor::Reference(GTReference(
-                                            (55, 61).into(),
+                                            (56, 62).into(),
                                             GTReferenceDefinitionId::Resolved(GTDefinitionId(
                                                 "author".into(),
                                                 "Author".into(),
@@ -496,7 +500,11 @@ mod tests {
                         doc: None,
                         imports: vec![GTImport {
                             span: (0, 15).into(),
-                            path: GTPath::parse((4, 10).into(), "./book").unwrap(),
+                            path: GTPath::new(
+                                (4, 10).into(),
+                                GTPathModuleId::Resolved("book".into()),
+                                "./book".into(),
+                            ),
                             reference: GTImportReference::Name(
                                 (11, 15).into(),
                                 GTIdentifier::new((11, 15).into(), "Book".into()),
