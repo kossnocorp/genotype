@@ -41,6 +41,14 @@ impl GTVisitor for GTProjectResolveVisitor<'_> {
         }
     }
 
+    fn visit_inline_import(&mut self, import: &mut GTInlineImport) {
+        if let GTPathModuleId::Unresolved = &import.path.1 {
+            let module_paths = self.resolve.paths.get(&self.module_id).unwrap();
+            let module_id = module_paths.get(import.path.as_str()).unwrap();
+            import.path.1 = GTPathModuleId::Resolved(module_id.clone());
+        }
+    }
+
     fn visit_reference(&mut self, reference: &mut GTReference) {
         match &reference.definition_id {
             GTReferenceDefinitionId::Unresolved => {
