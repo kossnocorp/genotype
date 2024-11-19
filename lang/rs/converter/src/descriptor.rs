@@ -231,7 +231,7 @@ mod tests {
     #[test]
     fn test_convert_union() {
         let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Definition("Values".into()));
+        context.enter_parent(RSContextParent::Alias("Union".into()));
         assert_eq!(
             GTDescriptor::Union(GTUnion {
                 span: (0, 0).into(),

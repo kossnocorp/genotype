@@ -44,16 +44,26 @@ impl RSConvertContext {
         self.parents.pop().expect("Expected parent to exist");
     }
 
-    pub fn name_child(&self, name: &str) -> RSIdentifier {
+    pub fn name_child(&self, name: Option<&str>) -> RSIdentifier {
         let mut segments = vec![];
+        println!("|||||||||||| parents {:?}", self.parents);
         for parent in self.parents.iter().rev() {
             match parent {
-                RSContextParent::Hoist => break,
-                _ => segments.push(parent.name().to_pascal_case()),
+                // [TODO] Kill variant altogether?
+                RSContextParent::Hoist | RSContextParent::EnumVariant(_) => continue,
+
+                _ => {
+                    segments.push(parent.name().to_pascal_case());
+                    if let RSContextParent::Definition(_) = parent {
+                        break;
+                    }
+                }
             }
         }
         segments.reverse();
-        segments.push(name.to_pascal_case());
+        if let Some(name) = name {
+            segments.push(name.to_pascal_case());
+        }
         segments.join("").into()
     }
 
@@ -77,7 +87,7 @@ mod tests {
         context.enter_parent(RSContextParent::Definition("Person".into()));
         context.enter_parent(RSContextParent::Property("name".into()));
 
-        assert_eq!(context.name_child("value"), "PersonNameValue".into());
+        assert_eq!(context.name_child(Some("value")), "PersonNameValue".into());
     }
 
     #[test]
@@ -88,17 +98,15 @@ mod tests {
         context.enter_parent(RSContextParent::Hoist);
         context.enter_parent(RSContextParent::Definition("Name".into()));
 
-        assert_eq!(context.name_child("union"), "NameUnion".into());
+        assert_eq!(context.name_child(Some("union")), "NameUnion".into());
     }
 
     #[test]
-    fn test_claim_alias() {
+    fn test_claim_alias_deep() {
         let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Definition("Person".into()));
-        context.enter_parent(RSContextParent::Property("name".into()));
-        context.enter_parent(RSContextParent::Hoist);
-        context.enter_parent(RSContextParent::Definition("Name".into()));
-
-        assert_eq!(context.name_child("union"), "NameUnion".into());
+        context.enter_parent(RSContextParent::Alias("Person".into()));
+        assert_eq!(context.claim_alias(), Some("Person".into()));
+        context.enter_parent(RSContextParent::Anonymous);
+        assert_eq!(context.claim_alias(), None);
     }
 }

@@ -4,6 +4,7 @@ use genotype_lang_rs_tree::{
     RSContext, RSDependency, RSEnum, RSEnumVariant, RSEnumVariantDescriptor, RSIdentifier,
 };
 use genotype_parser::{tree::union::GTUnion, GTDescriptor, GTPrimitive};
+use heck::ToPascalCase;
 use miette::Result;
 
 use crate::{
@@ -14,7 +15,11 @@ use crate::{
 impl RSConvert<RSEnum> for GTUnion {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSEnum> {
         let doc = context.consume_doc();
-        let name = context.name_child("Union");
+        let name = if let Some(name) = context.claim_alias() {
+            name
+        } else {
+            context.name_child(None)
+        };
         let id = context.build_definition_id(&name);
         context.drop_definition_id();
         context.enter_parent(RSContextParent::Definition(name.clone()));
@@ -51,7 +56,7 @@ fn convert_variant(
     let name = name_descriptor(descriptor, context)?;
     let name = ensure_unique_name(name, variant_names);
 
-    context.enter_parent(RSContextParent::Definition(name.clone()));
+    context.enter_parent(RSContextParent::EnumVariant(name.clone()));
 
     let descriptor = RSEnumVariantDescriptor::Descriptor(descriptor.convert(context)?);
 
@@ -101,7 +106,7 @@ fn name_descriptor(
         GTDescriptor::Reference(reference) => reference.2.convert(context)?,
         GTDescriptor::InlineImport(import) => import.name.convert(context)?,
         GTDescriptor::Object(object) => object.name.to_identifier().convert(context)?,
-        GTDescriptor::Literal(literal) => literal.to_string().into(),
+        GTDescriptor::Literal(literal) => literal.to_string().to_pascal_case().into(),
         GTDescriptor::Primitive(primitive) => match primitive {
             GTPrimitive::Boolean(_) => "Boolean".into(),
             GTPrimitive::Float(_) => "Float".into(),
@@ -129,6 +134,8 @@ mod tests {
 
     #[test]
     fn test_convert() {
+        let mut context = RSConvertContext::empty("module".into());
+        context.enter_parent(RSContextParent::Alias("Union".into()));
         assert_eq!(
             GTUnion {
                 span: (0, 0).into(),
@@ -137,7 +144,7 @@ mod tests {
                     GTPrimitive::String((0, 0).into()).into(),
                 ]
             }
-            .convert(&mut RSConvertContext::empty("module".into()))
+            .convert(&mut context)
             .unwrap(),
             RSEnum {
                 id: GTDefinitionId("module".into(), "Union".into()),
@@ -171,6 +178,7 @@ mod tests {
     #[test]
     fn test_convert_import() {
         let mut context = RSConvertContext::empty("module".into());
+        context.enter_parent(RSContextParent::Alias("Union".into()));
         assert_eq!(
             GTUnion {
                 span: (0, 0).into(),
@@ -207,6 +215,7 @@ mod tests {
     #[test]
     fn test_convert_doc() {
         let mut context = RSConvertContext::empty("module".into());
+        context.enter_parent(RSContextParent::Alias("Union".into()));
         context.provide_doc(Some("Hello, world!".into()));
         assert_eq!(
             GTUnion {
@@ -235,7 +244,76 @@ mod tests {
     }
 
     #[test]
+    fn test_naming() {
+        let mut context = RSConvertContext::empty("module".into());
+        context.enter_parent(RSContextParent::Definition("Admin".into()));
+        context.enter_parent(RSContextParent::Property("role".into()));
+        assert_eq!(
+            GTUnion {
+                span: (0, 0).into(),
+                descriptors: vec![
+                    GTLiteral::String((0, 0).into(), "superadmin".into()).into(),
+                    GTLiteral::String((0, 0).into(), "admin".into()).into(),
+                    GTLiteral::String((0, 0).into(), "moderator".into()).into(),
+                ],
+            }
+            .convert(&mut context)
+            .unwrap(),
+            RSEnum {
+                id: GTDefinitionId("module".into(), "AdminRole".into()),
+                doc: None,
+                attributes: vec![
+                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                        .into(),
+                    r#"serde(untagged)"#.into(),
+                ],
+                name: "AdminRole".into(),
+                variants: vec![
+                    RSEnumVariant {
+                        doc: None,
+                        attributes: vec![],
+                        name: "Superadmin".into(),
+                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                            RSReference::new(
+                                "AdminRoleSuperadmin".into(),
+                                GTDefinitionId("module".into(), "AdminRoleSuperadmin".into())
+                            )
+                            .into()
+                        ),
+                    },
+                    RSEnumVariant {
+                        doc: None,
+                        attributes: vec![],
+                        name: "Admin".into(),
+                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                            RSReference::new(
+                                "AdminRoleAdmin".into(),
+                                GTDefinitionId("module".into(), "AdminRoleAdmin".into())
+                            )
+                            .into()
+                        ),
+                    },
+                    RSEnumVariant {
+                        doc: None,
+                        attributes: vec![],
+                        name: "Moderator".into(),
+                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                            RSReference::new(
+                                "AdminRoleModerator".into(),
+                                GTDefinitionId("module".into(), "AdminRoleModerator".into())
+                            )
+                            .into()
+                        ),
+                    },
+                ],
+            }
+        );
+    }
+
+    #[test]
     fn test_unique_name() {
+        let mut context = RSConvertContext::empty("module".into());
+        context.enter_parent(RSContextParent::Alias("Union".into()));
         assert_eq!(
             GTUnion {
                 span: (0, 0).into(),
@@ -259,7 +337,7 @@ mod tests {
                     .into()
                 ],
             }
-            .convert(&mut RSConvertContext::empty("module".into()))
+            .convert(&mut context)
             .unwrap(),
             RSEnum {
                 id: GTDefinitionId("module".into(), "Union".into()),

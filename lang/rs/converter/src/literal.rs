@@ -8,12 +8,14 @@ impl RSConvert<RSStruct> for GTLiteral {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSStruct> {
         context.import(RSDependency::Runtime, "literal".into());
 
+        println!("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         let doc = context.consume_doc();
         let name = if let Some(name) = context.claim_alias() {
             name
         } else {
-            context.name_child(&self.to_string())
+            context.name_child(Some(&self.to_string()))
         };
+        println!("----> named child {:?}", name);
         let id = context
             .consume_definition_id()
             .unwrap_or_else(|| context.build_definition_id(&name));

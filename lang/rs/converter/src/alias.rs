@@ -17,6 +17,7 @@ impl RSConvert<RSDefinition> for GTAlias {
 
         let name = self.name.convert(context)?;
         context.push_defined(&name);
+        context.enter_parent(RSContextParent::Alias(name.clone()));
 
         let definition = match &self.descriptor {
             GTDescriptor::Object(object) => {
@@ -32,8 +33,6 @@ impl RSConvert<RSDefinition> for GTAlias {
             }
 
             _ => {
-                context.enter_parent(RSContextParent::Alias(name.clone()));
-
                 let descriptor = self.descriptor.convert(context)?;
                 let alias = RSDefinition::Alias(RSAlias {
                     id: self.id.clone(),
@@ -42,11 +41,11 @@ impl RSConvert<RSDefinition> for GTAlias {
                     descriptor,
                 });
 
-                context.exit_parent();
                 alias
             }
         };
 
+        context.exit_parent();
         Ok(definition)
     }
 }
@@ -179,14 +178,14 @@ mod tests {
             .convert(&mut context)
             .unwrap(),
             RSDefinition::Enum(RSEnum {
-                id: GTDefinitionId("module".into(), "Union".into()),
+                id: GTDefinitionId("module".into(), "Book".into()),
                 doc: None,
                 attributes: vec![
                     "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
                         .into(),
                     r#"serde(untagged)"#.into(),
                 ],
-                name: "Union".into(),
+                name: "Book".into(),
                 variants: vec![
                     RSEnumVariant {
                         doc: None,
