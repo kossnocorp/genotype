@@ -24,7 +24,6 @@ impl RSConvert<RSUse> for GTImport {
         let path = self.path.convert(context)?;
 
         Ok(RSUse {
-            path: path.clone(),
             reference,
             dependency: RSDependency::Local(path),
         })
@@ -51,15 +50,21 @@ mod tests {
         assert_eq!(
             GTImport {
                 span: (0, 0).into(),
-                path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+                path: GTPath::new(
+                    (0, 0).into(),
+                    GTPathModuleId::Resolved("module/path".into()),
+                    "./path/to/module".into()
+                ),
                 reference: GTImportReference::Glob((0, 0).into())
             }
             .convert(&mut context)
             .unwrap(),
             RSUse {
-                path: "self::path::to::module".into(),
                 reference: RSUseReference::Module,
-                dependency: RSDependency::Local("self::path::to::module".into())
+                dependency: RSDependency::Local(RSPath(
+                    "module/path".into(),
+                    "self::path::to::module".into()
+                ))
             }
         );
     }
@@ -69,7 +74,11 @@ mod tests {
         assert_eq!(
             GTImport {
                 span: (0, 0).into(),
-                path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+                path: GTPath::new(
+                    (0, 0).into(),
+                    GTPathModuleId::Resolved("module/path".into()),
+                    "./path/to/module".into()
+                ),
                 reference: GTImportReference::Names(
                     (0, 0).into(),
                     vec![
@@ -88,12 +97,14 @@ mod tests {
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
             RSUse {
-                path: "self::path::to::module".into(),
                 reference: RSUseReference::Named(vec![
                     RSUseName::Name("Name".into()),
                     RSUseName::Alias("Name".into(), "Alias".into())
                 ]),
-                dependency: RSDependency::Local("self::path::to::module".into())
+                dependency: RSDependency::Local(RSPath(
+                    "module/path".into(),
+                    "self::path::to::module".into()
+                ))
             }
         );
     }
@@ -103,15 +114,21 @@ mod tests {
         assert_eq!(
             GTImport {
                 span: (0, 0).into(),
-                path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+                path: GTPath::new(
+                    (0, 0).into(),
+                    GTPathModuleId::Resolved("module/path".into()),
+                    "./path/to/module".into()
+                ),
                 reference: GTIdentifier::new((0, 0).into(), "Name".into()).into()
             }
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
             RSUse {
-                path: "self::path::to::module".into(),
                 reference: RSUseReference::Named(vec![RSUseName::Name("Name".into())]),
-                dependency: RSDependency::Local("self::path::to::module".into())
+                dependency: RSDependency::Local(RSPath(
+                    "module/path".into(),
+                    "self::path::to::module".into()
+                ))
             }
         );
     }

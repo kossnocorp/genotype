@@ -7,7 +7,6 @@ use super::RSTraverse;
 impl RSTraverse for RSUse {
     fn traverse(&mut self, visitor: &mut dyn RSVisitor) {
         visitor.visit_use(self);
-        self.path.traverse(visitor);
         self.reference.traverse(visitor);
         self.dependency.traverse(visitor);
     }

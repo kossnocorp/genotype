@@ -24,7 +24,7 @@ mod tests {
     fn test_render() {
         assert_eq!(
             RSInlineUse {
-                path: "self::path::to::module".into(),
+                path: RSPath("path/to/module".into(), "self::path::to::module".into()),
                 name: "Name".into(),
             }
             .render(&rs_indent(), &Default::default())

@@ -1,5 +1,5 @@
 use genotype_lang_rs_tree::RSIdentifier;
-use genotype_parser::GTDefinitionId;
+use genotype_parser::{GTDefinitionId, GTReferenceId, GTSpan};
 
 use super::RSConvertContext;
 
@@ -18,5 +18,9 @@ impl RSConvertContext {
 
     pub fn build_definition_id(&self, identifier: &RSIdentifier) -> GTDefinitionId {
         GTDefinitionId(self.module_id.clone(), identifier.0.clone())
+    }
+
+    pub fn reference_id(&self, span: GTSpan) -> GTReferenceId {
+        GTReferenceId(self.module_id.clone(), span)
     }
 }

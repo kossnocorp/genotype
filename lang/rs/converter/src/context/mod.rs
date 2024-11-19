@@ -118,7 +118,7 @@ impl RSConvertContext {
         for (dependency, name) in dependencies {
             let import = imports
                 .iter_mut()
-                .find(|import| import.path == dependency.as_path());
+                .find(|import| import.dependency == dependency);
 
             if let Some(import) = import {
                 if let RSUseReference::Named(names) = &mut import.reference {
@@ -127,7 +127,6 @@ impl RSConvertContext {
                 }
             }
             imports.push(RSUse {
-                path: dependency.as_path(),
                 reference: RSUseReference::Named(vec![name.into()]),
                 dependency,
             });
@@ -158,12 +157,15 @@ mod tests {
     fn test_hoist() {
         let mut context = RSConvertContext::empty("module".into());
         let _ = context.hoist(|_| {
-            Ok(RSDefinition::Alias(RSAlias {
-                id: GTDefinitionId("module".into(), "Name".into()),
-                doc: None,
-                name: "Name".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
-            }))
+            Ok((
+                RSDefinition::Alias(RSAlias {
+                    id: GTDefinitionId("module".into(), "Name".into()),
+                    doc: None,
+                    name: "Name".into(),
+                    descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
+                }),
+                (0, 0).into(),
+            ))
         });
         let hoisted = context.drain_hoisted();
         assert_eq!(

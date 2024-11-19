@@ -8,21 +8,26 @@ use super::RSPath;
 
 impl RSRender for RSPath {
     fn render(&self, _indent: &GTIndent, _config: &RSLangConfig) -> Result<String> {
-        Ok(self.0.clone())
+        Ok(self.1.clone())
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use genotype_parser::GTModuleId;
+
     use super::*;
     use crate::indent::rs_indent;
 
     #[test]
     fn test_render() {
         assert_eq!(
-            RSPath("self::path::to::module".into())
-                .render(&rs_indent(), &Default::default())
-                .unwrap(),
+            RSPath(
+                GTModuleId("path/to/module".into()),
+                "self::path::to::module".into()
+            )
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
             "self::path::to::module"
         );
     }

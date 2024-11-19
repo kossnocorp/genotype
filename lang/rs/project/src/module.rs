@@ -7,7 +7,7 @@ use std::{
 use genotype_lang_core_project::module::GTLangProjectModule;
 use genotype_lang_rs_config::RSProjectConfig;
 use genotype_lang_rs_converter::{
-    module::RSConvertModule, path::rs_parse_module_path, reference, resolve::RSConvertResolve,
+    module::RSConvertModule, path::rs_parse_module_path, resolve::RSConvertResolve,
 };
 use genotype_lang_rs_tree::module::RSModule;
 use genotype_parser::{tree::GTImportReference, GTIdentifier, GTImportName};

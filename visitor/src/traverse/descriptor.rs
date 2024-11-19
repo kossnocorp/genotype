@@ -161,11 +161,15 @@ mod tests {
     fn test_traverse_reference() {
         let mut visitor = GTMockVisitor::new();
         let identifier = GTIdentifier::new((0, 0).into(), "Name".into());
-        let reference = GTReference(
-            (0, 0).into(),
-            GTReferenceDefinitionId::Resolved(GTDefinitionId("module".into(), "Name".into())),
-            identifier.clone(),
-        );
+        let reference = GTReference {
+            span: (0, 0).into(),
+            id: GTReferenceId("module".into(), (0, 0).into()),
+            definition_id: GTReferenceDefinitionId::Resolved(GTDefinitionId(
+                "module".into(),
+                "Name".into(),
+            )),
+            identifier: identifier.clone(),
+        };
         let mut descriptor = GTDescriptor::Reference(reference.clone());
         descriptor.traverse(&mut visitor);
         assert_eq!(

@@ -58,17 +58,21 @@ mod tests {
                 doc: None,
                 imports: vec![
                     RSUse {
-                        path: "self::path::to::module".into(),
                         reference: RSUseReference::Module,
-                        dependency: RSDependency::Local("self::path::to::module".into())
+                        dependency: RSDependency::Local(RSPath(
+                            "path/to/module".into(),
+                            "self::path::to::module".into()
+                        ))
                     },
                     RSUse {
-                        path: "self::path::to::module".into(),
                         reference: RSUseReference::Named(vec![
                             RSUseName::Name("Name".into()),
                             RSUseName::Alias("Name".into(), "Alias".into()),
                         ]),
-                        dependency: RSDependency::Local("self::path::to::module".into())
+                        dependency: RSDependency::Local(RSPath(
+                            "path/to/module".into(),
+                            "self::path::to::module".into()
+                        ))
                     }
                 ],
                 definitions: vec![
@@ -123,9 +127,11 @@ struct Name {
                 id: "module".into(),
                 doc: Some(RSDoc::new("Hello, world!", true)),
                 imports: vec![RSUse {
-                    path: "self::path::to::module".into(),
                     reference: RSUseReference::Module,
-                    dependency: RSDependency::Local("self::path::to::module".into())
+                    dependency: RSDependency::Local(RSPath(
+                        "path/to/module".into(),
+                        "self::path::to::module".into()
+                    ))
                 },],
                 definitions: vec![RSDefinition::Alias(RSAlias {
                     id: GTDefinitionId("module".into(), "Name".into()),

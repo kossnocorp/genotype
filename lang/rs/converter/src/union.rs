@@ -103,7 +103,7 @@ fn name_descriptor(
 ) -> Result<RSIdentifier> {
     Ok(match descriptor {
         GTDescriptor::Alias(alias) => alias.name.convert(context)?,
-        GTDescriptor::Reference(reference) => reference.2.convert(context)?,
+        GTDescriptor::Reference(reference) => reference.identifier.convert(context)?,
         GTDescriptor::InlineImport(import) => import.name.convert(context)?,
         GTDescriptor::Object(object) => object.name.to_identifier().convert(context)?,
         GTDescriptor::Literal(literal) => literal.to_string().to_pascal_case().into(),
@@ -252,9 +252,9 @@ mod tests {
             GTUnion {
                 span: (0, 0).into(),
                 descriptors: vec![
-                    GTLiteral::String((0, 0).into(), "superadmin".into()).into(),
-                    GTLiteral::String((0, 0).into(), "admin".into()).into(),
-                    GTLiteral::String((0, 0).into(), "moderator".into()).into(),
+                    GTLiteral::String((0, 1).into(), "superadmin".into()).into(),
+                    GTLiteral::String((0, 2).into(), "admin".into()).into(),
+                    GTLiteral::String((0, 3).into(), "moderator".into()).into(),
                 ],
             }
             .convert(&mut context)
@@ -274,10 +274,14 @@ mod tests {
                         attributes: vec![],
                         name: "Superadmin".into(),
                         descriptor: RSEnumVariantDescriptor::Descriptor(
-                            RSReference::new(
-                                "AdminRoleSuperadmin".into(),
-                                GTDefinitionId("module".into(), "AdminRoleSuperadmin".into())
-                            )
+                            RSReference {
+                                id: GTReferenceId("module".into(), (0, 1).into()),
+                                identifier: "AdminRoleSuperadmin".into(),
+                                definition_id: GTDefinitionId(
+                                    "module".into(),
+                                    "AdminRoleSuperadmin".into()
+                                )
+                            }
                             .into()
                         ),
                     },
@@ -286,10 +290,14 @@ mod tests {
                         attributes: vec![],
                         name: "Admin".into(),
                         descriptor: RSEnumVariantDescriptor::Descriptor(
-                            RSReference::new(
-                                "AdminRoleAdmin".into(),
-                                GTDefinitionId("module".into(), "AdminRoleAdmin".into())
-                            )
+                            RSReference {
+                                id: GTReferenceId("module".into(), (0, 2).into()),
+                                identifier: "AdminRoleAdmin".into(),
+                                definition_id: GTDefinitionId(
+                                    "module".into(),
+                                    "AdminRoleAdmin".into()
+                                )
+                            }
                             .into()
                         ),
                     },
@@ -298,10 +306,14 @@ mod tests {
                         attributes: vec![],
                         name: "Moderator".into(),
                         descriptor: RSEnumVariantDescriptor::Descriptor(
-                            RSReference::new(
-                                "AdminRoleModerator".into(),
-                                GTDefinitionId("module".into(), "AdminRoleModerator".into())
-                            )
+                            RSReference {
+                                id: GTReferenceId("module".into(), (0, 3).into()),
+                                identifier: "AdminRoleModerator".into(),
+                                definition_id: GTDefinitionId(
+                                    "module".into(),
+                                    "AdminRoleModerator".into()
+                                )
+                            }
                             .into()
                         ),
                     },

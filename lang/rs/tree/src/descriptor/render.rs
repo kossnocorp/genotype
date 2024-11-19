@@ -22,7 +22,7 @@ impl RSRender for RSDescriptor {
 
 #[cfg(test)]
 mod tests {
-    use genotype_parser::GTDefinitionId;
+    use genotype_parser::{GTDefinitionId, GTReferenceId};
     use pretty_assertions::assert_eq;
 
     use crate::*;
@@ -58,10 +58,11 @@ mod tests {
     #[test]
     fn test_render_reference() {
         assert_eq!(
-            RSDescriptor::Reference(RSReference::new(
-                "Name".into(),
-                GTDefinitionId("module".into(), "Name".into())
-            ))
+            RSDescriptor::Reference(RSReference {
+                id: GTReferenceId("module".into(), (0, 0).into()),
+                identifier: "Name".into(),
+                definition_id: GTDefinitionId("module".into(), "Name".into())
+            })
             .render(&rs_indent(), &Default::default())
             .unwrap(),
             "Name"
@@ -72,7 +73,7 @@ mod tests {
     fn test_render_inline_use() {
         assert_eq!(
             RSDescriptor::InlineUse(RSInlineUse {
-                path: "self::path::to::module".into(),
+                path: RSPath("path/to/module".into(), "self::path::to::module".into()),
                 name: "Name".into()
             })
             .render(&rs_indent(), &Default::default())

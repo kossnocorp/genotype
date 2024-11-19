@@ -327,23 +327,25 @@ mod tests {
                 descriptor: GTDescriptor::Union(GTUnion {
                     span: (0, 0).into(),
                     descriptors: vec![
-                        GTReference(
-                            (0, 0).into(),
-                            GTReferenceDefinitionId::Resolved(GTDefinitionId(
+                        GTReference {
+                            span: (0, 0).into(),
+                            id: GTReferenceId("module".into(), (0, 0).into()),
+                            definition_id: GTReferenceDefinitionId::Resolved(GTDefinitionId(
                                 "module".into(),
                                 "Reply".into()
                             )),
-                            GTIdentifier((0, 0).into(), "Reply".into())
-                        )
+                            identifier: GTIdentifier((0, 0).into(), "Reply".into())
+                        }
                         .into(),
-                        GTReference(
-                            (0, 0).into(),
-                            GTReferenceDefinitionId::Resolved(GTDefinitionId(
+                        GTReference {
+                            span: (0, 0).into(),
+                            id: GTReferenceId("module".into(), (0, 0).into()),
+                            definition_id: GTReferenceDefinitionId::Resolved(GTDefinitionId(
                                 "module".into(),
                                 "DM".into()
                             ),),
-                            GTIdentifier((0, 0).into(), "DM".into())
-                        )
+                            identifier: GTIdentifier((0, 0).into(), "DM".into())
+                        }
                         .into(),
                     ]
                 })

@@ -191,14 +191,15 @@ mod tests {
                 name: GTIdentifier::new((0, 0).into(), "Book".into()).into(),
                 extensions: vec![GTExtension {
                     span: (0, 0).into(),
-                    reference: GTReference(
-                        (0, 0).into(),
-                        GTReferenceDefinitionId::Resolved(GTDefinitionId(
+                    reference: GTReference {
+                        span: (0, 0).into(),
+                        id: GTReferenceId("module".into(), (0, 0).into()),
+                        definition_id: GTReferenceDefinitionId::Resolved(GTDefinitionId(
                             "module".into(),
                             "Good".into()
                         ),),
-                        GTIdentifier::new((0, 0).into(), "Good".into())
-                    )
+                        identifier: GTIdentifier::new((0, 0).into(), "Good".into())
+                    }
                     .into()
                 }],
                 properties: vec![GTProperty {
@@ -240,11 +241,15 @@ mod tests {
     #[test]
     fn test_convert_reference() {
         assert_eq!(
-            GTDescriptor::Reference(GTReference(
-                (0, 0).into(),
-                GTReferenceDefinitionId::Resolved(GTDefinitionId("module".into(), "Name".into()),),
-                GTIdentifier::new((0, 0).into(), "Name".into())
-            ))
+            GTDescriptor::Reference(GTReference {
+                span: (0, 0).into(),
+                id: GTReferenceId("module".into(), (0, 0).into()),
+                definition_id: GTReferenceDefinitionId::Resolved(GTDefinitionId(
+                    "module".into(),
+                    "Name".into()
+                ),),
+                identifier: GTIdentifier::new((0, 0).into(), "Name".into())
+            })
             .convert(&TSConvertResolve::new(), &|_| {}),
             TSDescriptor::Reference("Name".into())
         );

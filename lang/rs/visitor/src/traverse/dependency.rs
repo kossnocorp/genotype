@@ -13,10 +13,6 @@ impl RSTraverse for RSDependency {
                 path.traverse(visitor);
             }
 
-            RSDependency::Std(path) => {
-                path.traverse(visitor);
-            }
-
             _ => {}
         }
     }

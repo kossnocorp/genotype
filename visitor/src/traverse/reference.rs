@@ -7,7 +7,7 @@ use super::GTTraverse;
 impl GTTraverse for GTReference {
     fn traverse(&mut self, visitor: &mut dyn GTVisitor) {
         visitor.visit_reference(self);
-        self.2.traverse(visitor);
+        self.identifier.traverse(visitor);
     }
 }
 
@@ -22,11 +22,12 @@ mod tests {
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
         let identifier = GTIdentifier::new((0, 0).into(), "Name".into());
-        let mut reference = GTReference(
-            (0, 0).into(),
-            GTReferenceDefinitionId::Unresolved,
-            identifier.clone().into(),
-        );
+        let mut reference = GTReference {
+            span: (0, 0).into(),
+            id: GTReferenceId("module".into(), (0, 0).into()),
+            definition_id: GTReferenceDefinitionId::Unresolved,
+            identifier: identifier.clone().into(),
+        };
         reference.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,

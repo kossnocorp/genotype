@@ -11,6 +11,16 @@ pub enum GTLiteral {
 }
 
 impl GTLiteral {
+    pub fn to_span(&self) -> GTSpan {
+        match self {
+            GTLiteral::String(span, _) => span,
+            GTLiteral::Integer(span, _) => span,
+            GTLiteral::Float(span, _) => span,
+            GTLiteral::Boolean(span, _) => span,
+        }
+        .clone()
+    }
+
     pub fn to_string(&self) -> String {
         match self {
             GTLiteral::String(_, value) => value.clone(),

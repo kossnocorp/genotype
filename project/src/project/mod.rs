@@ -464,14 +464,17 @@ mod tests {
                                         doc: None,
                                         attributes: vec![],
                                         name: GTKey::new((48, 54).into(), "author".into()),
-                                        descriptor: GTDescriptor::Reference(GTReference(
-                                            (56, 62).into(),
-                                            GTReferenceDefinitionId::Resolved(GTDefinitionId(
-                                                "author".into(),
+                                        descriptor: GTDescriptor::Reference(GTReference {
+                                            span: (56, 62).into(),
+                                            id: GTReferenceId("book".into(), (56, 62).into()),
+                                            definition_id: GTReferenceDefinitionId::Resolved(
+                                                GTDefinitionId("author".into(), "Author".into()),
+                                            ),
+                                            identifier: GTIdentifier::new(
+                                                (56, 62).into(),
                                                 "Author".into(),
-                                            )),
-                                            GTIdentifier::new((56, 62).into(), "Author".into()),
-                                        )),
+                                            ),
+                                        }),
                                         required: true,
                                     },
                                 ],
@@ -491,7 +494,7 @@ mod tests {
                         )]),
                         references: HashMap::from_iter([(
                             GTDefinitionId("author".into(), "Author".into()),
-                            HashSet::from_iter([(56, 62).into()]),
+                            HashSet::from_iter([GTReferenceId("book".into(), (56, 62).into())]),
                         )]),
                     },
                 },
@@ -546,14 +549,17 @@ mod tests {
                                         name: GTKey::new((49, 54).into(), "books".into()),
                                         descriptor: GTDescriptor::Array(Box::new(GTArray {
                                             span: (56, 62).into(),
-                                            descriptor: GTDescriptor::Reference(GTReference(
-                                                (57, 61).into(),
-                                                GTReferenceDefinitionId::Resolved(GTDefinitionId(
-                                                    "book".into(),
+                                            descriptor: GTDescriptor::Reference(GTReference {
+                                                span: (57, 61).into(),
+                                                id: GTReferenceId("order".into(), (57, 61).into()),
+                                                definition_id: GTReferenceDefinitionId::Resolved(
+                                                    GTDefinitionId("book".into(), "Book".into()),
+                                                ),
+                                                identifier: GTIdentifier::new(
+                                                    (57, 61).into(),
                                                     "Book".into(),
-                                                )),
-                                                GTIdentifier::new((57, 61).into(), "Book".into()),
-                                            )),
+                                                ),
+                                            }),
                                         })),
                                         required: true,
                                     },
@@ -580,7 +586,7 @@ mod tests {
                         )]),
                         references: HashMap::from_iter([(
                             GTDefinitionId("book".into(), "Book".into()),
-                            HashSet::from_iter([(57, 61).into()]),
+                            HashSet::from_iter([GTReferenceId("order".into(), (57, 61).into())]),
                         )]),
                     },
                 },

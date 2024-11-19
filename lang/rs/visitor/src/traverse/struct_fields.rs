@@ -16,7 +16,7 @@ impl RSTraverse for RSStructFields {
             }
 
             RSStructFields::Unresolved(_, reference_pairs, fields) => {
-                for (_, reference) in reference_pairs {
+                for reference in reference_pairs {
                     reference.traverse(visitor);
                 }
 

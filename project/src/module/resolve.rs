@@ -5,7 +5,7 @@ use std::{
 
 use genotype_parser::{
     tree::{GTIdentifier, GTImportName, GTImportReference, GTPath},
-    GTDefinitionId, GTSpan,
+    GTDefinitionId, GTReferenceId, GTSpan,
 };
 use miette::Result;
 
@@ -17,7 +17,7 @@ use super::{GTProjectModuleParse, GTProjectModulePath};
 pub struct GTProjectModuleResolve {
     pub deps: HashMap<GTPath, Arc<GTProjectModulePath>>,
     pub references_identifiers: HashMap<GTIdentifier, GTProjectModuleReference>,
-    pub references: HashMap<GTDefinitionId, HashSet<GTSpan>>,
+    pub references: HashMap<GTDefinitionId, HashSet<GTReferenceId>>,
 }
 
 impl GTProjectModuleResolve {

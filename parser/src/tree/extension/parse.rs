@@ -33,11 +33,12 @@ mod tests {
             GTExtension::parse(pairs.next().unwrap(), &mut context).unwrap(),
             GTExtension {
                 span: (0, 8).into(),
-                reference: GTReference(
-                    (3, 8).into(),
-                    GTReferenceDefinitionId::Unresolved,
-                    GTIdentifier::new((3, 8).into(), "Hello".into()),
-                ),
+                reference: GTReference {
+                    span: (3, 8).into(),
+                    id: GTReferenceId("module".into(), (3, 8).into()),
+                    definition_id: GTReferenceDefinitionId::Unresolved,
+                    identifier: GTIdentifier::new((3, 8).into(), "Hello".into()),
+                },
             }
         );
     }

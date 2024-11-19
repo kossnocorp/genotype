@@ -167,19 +167,24 @@ mod tests {
                                                         (0, 0).into(),
                                                         "author".into()
                                                     ),
-                                                    descriptor: GTReference(
-                                                        (0, 0).into(),
-                                                        GTReferenceDefinitionId::Resolved(
-                                                            GTDefinitionId(
-                                                                "module".into(),
-                                                                "Author".into()
-                                                            )
+                                                    descriptor: GTReference {
+                                                        span: (0, 0).into(),
+                                                        id: GTReferenceId(
+                                                            "module".into(),
+                                                            (0, 0).into()
                                                         ),
-                                                        GTIdentifier::new(
+                                                        definition_id:
+                                                            GTReferenceDefinitionId::Resolved(
+                                                                GTDefinitionId(
+                                                                    "module".into(),
+                                                                    "Author".into()
+                                                                )
+                                                            ),
+                                                        identifier: GTIdentifier::new(
                                                             (0, 0).into(),
                                                             "Author".into()
                                                         )
-                                                    )
+                                                    }
                                                     .into(),
                                                     required: true,
                                                 }

@@ -192,10 +192,11 @@ mod tests {
                         name: "BookObj".into(),
                         attributes: vec![],
                         descriptor: RSEnumVariantDescriptor::Descriptor(
-                            RSReference::new(
-                                "BookObj".into(),
-                                GTDefinitionId("module".into(), "BookObj".into())
-                            )
+                            RSReference {
+                                id: GTReferenceId("module".into(), (0, 0).into()),
+                                identifier: "BookObj".into(),
+                                definition_id: GTDefinitionId("module".into(), "BookObj".into())
+                            }
                             .into()
                         ),
                     },

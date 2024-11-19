@@ -29,11 +29,7 @@ impl RSConvert<RSStruct> for GTObject {
             let references = self
                 .extensions
                 .iter()
-                .map(|e| {
-                    e.reference
-                        .convert(context)
-                        .and_then(|converted| Ok((e.reference.0.clone(), converted)))
-                })
+                .map(|e| e.reference.convert(context))
                 .collect::<Result<Vec<_>>>()?;
             RSStructFields::Unresolved(self.span.clone(), references, fields)
         } else {
@@ -186,14 +182,15 @@ mod tests {
                 name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
                 extensions: vec![GTExtension {
                     span: (0, 0).into(),
-                    reference: GTReference(
-                        (2, 9).into(),
-                        GTReferenceDefinitionId::Resolved(GTDefinitionId(
+                    reference: GTReference {
+                        span: (2, 9).into(),
+                        id: GTReferenceId("module".into(), (2, 9).into()),
+                        definition_id: GTReferenceDefinitionId::Resolved(GTDefinitionId(
                             "module".into(),
                             "Model".into()
                         )),
-                        GTIdentifier::new((0, 0).into(), "Model".into())
-                    )
+                        identifier: GTIdentifier::new((0, 0).into(), "Model".into())
+                    }
                     .into(),
                 }],
                 properties: vec![
@@ -227,13 +224,11 @@ mod tests {
                 name: "Person".into(),
                 fields: RSStructFields::Unresolved(
                     (1, 8).into(),
-                    vec![(
-                        (2, 9).into(),
-                        RSReference::new(
-                            "Model".into(),
-                            GTDefinitionId("module".into(), "Model".into())
-                        )
-                    )],
+                    vec![RSReference {
+                        id: GTReferenceId("module".into(), (2, 9).into()),
+                        identifier: "Model".into(),
+                        definition_id: GTDefinitionId("module".into(), "Model".into())
+                    }],
                     vec![
                         RSField {
                             doc: None,

@@ -6,15 +6,16 @@ use crate::{context::RSConvertContext, convert::RSConvert, error::RSConverterErr
 
 impl RSConvert<RSReference> for GTReference {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSReference> {
-        let identifier = self.2.convert(context)?;
-        let definition_id = match &self.1 {
+        let identifier = self.identifier.convert(context)?;
+        let definition_id = match &self.definition_id {
             GTReferenceDefinitionId::Resolved(id) => id.clone(),
             GTReferenceDefinitionId::Unresolved => {
-                return Err(RSConverterError::UnresolvedReference(self.0.clone()).into())
+                return Err(RSConverterError::UnresolvedReference(self.span.clone()).into())
             }
         };
 
         Ok(RSReference {
+            id: self.id.clone(),
             identifier,
             definition_id,
         })
@@ -24,7 +25,7 @@ impl RSConvert<RSReference> for GTReference {
 #[cfg(test)]
 mod tests {
     use genotype_lang_rs_tree::*;
-    use genotype_parser::{GTDefinitionId, GTIdentifier, GTReferenceDefinitionId};
+    use genotype_parser::{GTDefinitionId, GTIdentifier, GTReferenceDefinitionId, GTReferenceId};
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -34,15 +35,20 @@ mod tests {
         let mut context = RSConvertContext::empty("module".into());
         context.push_defined(&"Name".into());
         assert_eq!(
-            RSReference::new(
-                "Name".into(),
-                GTDefinitionId("module".into(), "Name".into())
-            ),
-            GTReference(
-                (0, 0).into(),
-                GTReferenceDefinitionId::Resolved(GTDefinitionId("module".into(), "Name".into())),
-                GTIdentifier::new((0, 0).into(), "Name".into())
-            )
+            RSReference {
+                id: GTReferenceId("module".into(), (1, 8).into()),
+                identifier: "Name".into(),
+                definition_id: GTDefinitionId("module".into(), "Name".into())
+            },
+            GTReference {
+                span: (0, 0).into(),
+                id: GTReferenceId("module".into(), (1, 8).into()),
+                definition_id: GTReferenceDefinitionId::Resolved(GTDefinitionId(
+                    "module".into(),
+                    "Name".into()
+                )),
+                identifier: GTIdentifier::new((0, 0).into(), "Name".into())
+            }
             .convert(&mut context)
             .unwrap(),
         );

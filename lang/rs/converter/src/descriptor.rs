@@ -8,19 +8,21 @@ use crate::{context::RSConvertContext, convert::RSConvert};
 impl RSConvert<RSDescriptor> for GTDescriptor {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSDescriptor> {
         Ok(match self {
-            GTDescriptor::Alias(alias) => context.hoist(|context| alias.convert(context))?.into(),
+            GTDescriptor::Alias(alias) => context
+                .hoist(|context| Ok((alias.convert(context)?, alias.span.clone())))?
+                .into(),
 
             GTDescriptor::Array(array) => array.convert(context)?.into(),
 
             GTDescriptor::InlineImport(import) => import.convert(context)?.into(),
 
-            GTDescriptor::Literal(literal) => {
-                context.hoist(|context| literal.convert(context))?.into()
-            }
+            GTDescriptor::Literal(literal) => context
+                .hoist(|context| Ok((literal.convert(context)?, literal.to_span())))?
+                .into(),
 
-            GTDescriptor::Object(object) => {
-                context.hoist(|context| object.convert(context))?.into()
-            }
+            GTDescriptor::Object(object) => context
+                .hoist(|context| Ok((object.convert(context)?, object.span.clone())))?
+                .into(),
 
             GTDescriptor::Primitive(primitive) => primitive.convert(context)?.into(),
 
@@ -30,7 +32,9 @@ impl RSConvert<RSDescriptor> for GTDescriptor {
 
             GTDescriptor::Tuple(tuple) => tuple.convert(context)?.into(),
 
-            GTDescriptor::Union(union) => context.hoist(|context| union.convert(context))?.into(),
+            GTDescriptor::Union(union) => context
+                .hoist(|context| Ok((union.convert(context)?, union.span.clone())))?
+                .into(),
 
             GTDescriptor::Any(any) => any.convert(context)?.into(),
         })
@@ -53,7 +57,7 @@ mod tests {
         assert_eq!(
             GTDescriptor::Alias(Box::new(GTAlias {
                 id: GTDefinitionId("module".into(), "Name".into()),
-                span: (0, 0).into(),
+                span: (0, 1).into(),
                 doc: None,
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
@@ -61,10 +65,11 @@ mod tests {
             }))
             .convert(&mut context)
             .unwrap(),
-            RSReference::new(
-                "Name".into(),
-                GTDefinitionId("module".into(), "Name".into())
-            )
+            RSReference {
+                id: GTReferenceId("module".into(), (0, 1).into()),
+                identifier: "Name".into(),
+                definition_id: GTDefinitionId("module".into(), "Name".into())
+            }
             .into()
         );
         let hoisted = context.drain_hoisted();
@@ -100,13 +105,17 @@ mod tests {
         assert_eq!(
             GTDescriptor::InlineImport(GTInlineImport {
                 span: (0, 0).into(),
-                path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+                path: GTPath::new(
+                    (0, 0).into(),
+                    GTPathModuleId::Resolved("path/to/module".into()),
+                    "./path/to/module".into()
+                ),
                 name: GTIdentifier::new((0, 0).into(), "Name".into())
             })
             .convert(&mut context)
             .unwrap(),
             RSDescriptor::InlineUse(RSInlineUse {
-                path: "self::path::to::module".into(),
+                path: RSPath("path/to/module".into(), "self::path::to::module".into()),
                 name: "Name".into()
             })
         );
@@ -117,7 +126,7 @@ mod tests {
         let mut context = RSConvertContext::empty("module".into());
         assert_eq!(
             GTDescriptor::Object(GTObject {
-                span: (0, 0).into(),
+                span: (0, 1).into(),
                 name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
                 extensions: vec![],
                 properties: vec![
@@ -142,10 +151,11 @@ mod tests {
             .convert(&mut context)
             .unwrap(),
             RSDescriptor::Reference(
-                RSReference::new(
-                    "Person".into(),
-                    GTDefinitionId("module".into(), "Person".into())
-                )
+                RSReference {
+                    id: GTReferenceId("module".into(), (0, 1).into()),
+                    identifier: "Person".into(),
+                    definition_id: GTDefinitionId("module".into(), "Person".into())
+                }
                 .into()
             )
         );
@@ -192,17 +202,22 @@ mod tests {
     #[test]
     fn test_convert_reference() {
         assert_eq!(
-            GTDescriptor::Reference(GTReference(
-                (0, 0).into(),
-                GTReferenceDefinitionId::Resolved(GTDefinitionId("module".into(), "Name".into())),
-                GTIdentifier::new((0, 0).into(), "Name".into())
-            ))
+            GTDescriptor::Reference(GTReference {
+                span: (0, 1).into(),
+                id: GTReferenceId("module".into(), (0, 1).into()),
+                definition_id: GTReferenceDefinitionId::Resolved(GTDefinitionId(
+                    "module".into(),
+                    "Name".into()
+                )),
+                identifier: GTIdentifier::new((0, 0).into(), "Name".into())
+            })
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
-            RSReference::new(
-                "Name".into(),
-                GTDefinitionId("module".into(), "Name".into())
-            )
+            RSReference {
+                id: GTReferenceId("module".into(), (0, 1).into()),
+                identifier: "Name".into(),
+                definition_id: GTDefinitionId("module".into(), "Name".into())
+            }
             .into()
         );
     }
@@ -234,7 +249,7 @@ mod tests {
         context.enter_parent(RSContextParent::Alias("Union".into()));
         assert_eq!(
             GTDescriptor::Union(GTUnion {
-                span: (0, 0).into(),
+                span: (0, 1).into(),
                 descriptors: vec![
                     GTPrimitive::Boolean((0, 0).into()).into(),
                     GTPrimitive::String((0, 0).into()).into(),
@@ -243,10 +258,11 @@ mod tests {
             .convert(&mut context)
             .unwrap(),
             RSDescriptor::Reference(
-                RSReference::new(
-                    "Union".into(),
-                    GTDefinitionId("module".into(), "Union".into())
-                )
+                RSReference {
+                    id: GTReferenceId("module".into(), (0, 1).into()),
+                    identifier: "Union".into(),
+                    definition_id: GTDefinitionId("module".into(), "Union".into())
+                }
                 .into()
             )
         );

@@ -135,11 +135,12 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTIdentifier::new((11, 21).into(), "AnotherAge".into()),
-                            descriptor: GTReference(
-                                (24, 27).into(),
-                                GTReferenceDefinitionId::Unresolved,
-                                GTIdentifier::new((24, 27).into(), "Age".into()),
-                            )
+                            descriptor: GTReference {
+                                span: (24, 27).into(),
+                                id: GTReferenceId("module".into(), (24, 27).into()),
+                                definition_id: GTReferenceDefinitionId::Unresolved,
+                                identifier: GTIdentifier::new((24, 27).into(), "Age".into()),
+                            }
                             .into(),
                         },
                     ],
@@ -915,11 +916,15 @@ mod tests {
                                         doc: None,
                                         attributes: vec![],
                                         name: GTKey::new((141, 146).into(), "genre".into()),
-                                        descriptor: GTReference(
-                                            (148, 153).into(),
-                                            GTReferenceDefinitionId::Unresolved,
-                                            GTIdentifier::new((148, 153).into(), "Genre".into()),
-                                        )
+                                        descriptor: GTReference {
+                                            span: (148, 153).into(),
+                                            id: GTReferenceId("module".into(), (148, 153).into()),
+                                            definition_id: GTReferenceDefinitionId::Unresolved,
+                                            identifier: GTIdentifier::new(
+                                                (148, 153).into(),
+                                                "Genre".into(),
+                                            ),
+                                        }
                                         .into(),
                                         required: true,
                                     },
@@ -1021,11 +1026,15 @@ mod tests {
                                 )),
                                 extensions: vec![GTExtension {
                                     span: (55, 62).into(),
-                                    reference: GTReference(
-                                        (58, 62).into(),
-                                        GTReferenceDefinitionId::Unresolved,
-                                        GTIdentifier::new((58, 62).into(), "Base".into()),
-                                    ),
+                                    reference: GTReference {
+                                        span: (58, 62).into(),
+                                        id: GTReferenceId("module".into(), (58, 62).into()),
+                                        definition_id: GTReferenceDefinitionId::Unresolved,
+                                        identifier: GTIdentifier::new(
+                                            (58, 62).into(),
+                                            "Base".into(),
+                                        ),
+                                    },
                                 }],
                                 properties: vec![GTProperty {
                                     span: (66, 76).into(),
@@ -1051,11 +1060,15 @@ mod tests {
                                 )),
                                 extensions: vec![GTExtension {
                                     span: (91, 98).into(),
-                                    reference: GTReference(
-                                        (94, 98).into(),
-                                        GTReferenceDefinitionId::Unresolved,
-                                        GTIdentifier::new((94, 98).into(), "Base".into()),
-                                    ),
+                                    reference: GTReference {
+                                        span: (94, 98).into(),
+                                        id: GTReferenceId("module".into(), (94, 98).into()),
+                                        definition_id: GTReferenceDefinitionId::Unresolved,
+                                        identifier: GTIdentifier::new(
+                                            (94, 98).into(),
+                                            "Base".into(),
+                                        ),
+                                    },
                                 }],
                                 properties: vec![GTProperty {
                                     span: (102, 115).into(),
@@ -1146,11 +1159,15 @@ mod tests {
                                 )),
                                 extensions: vec![GTExtension {
                                     span: (59, 73).into(),
-                                    reference: GTReference(
-                                        (62, 73).into(),
-                                        GTReferenceDefinitionId::Unresolved,
-                                        GTIdentifier::new((62, 73).into(), "CommentBase".into()),
-                                    ),
+                                    reference: GTReference {
+                                        span: (62, 73).into(),
+                                        id: GTReferenceId("module".into(), (62, 73).into()),
+                                        definition_id: GTReferenceDefinitionId::Unresolved,
+                                        identifier: GTIdentifier::new(
+                                            (62, 73).into(),
+                                            "CommentBase".into(),
+                                        ),
+                                    },
                                 }],
                                 properties: vec![
                                     GTProperty {
@@ -1199,11 +1216,15 @@ mod tests {
                                 )),
                                 extensions: vec![GTExtension {
                                     span: (150, 164).into(),
-                                    reference: GTReference(
-                                        (153, 164).into(),
-                                        GTReferenceDefinitionId::Unresolved,
-                                        GTIdentifier::new((153, 164).into(), "CommentBase".into()),
-                                    ),
+                                    reference: GTReference {
+                                        span: (153, 164).into(),
+                                        id: GTReferenceId("module".into(), (153, 164).into()),
+                                        definition_id: GTReferenceDefinitionId::Unresolved,
+                                        identifier: GTIdentifier::new(
+                                            (153, 164).into(),
+                                            "CommentBase".into(),
+                                        ),
+                                    },
                                 }],
                                 properties: vec![
                                     GTProperty {
@@ -1404,17 +1425,22 @@ mod tests {
                             descriptor: GTUnion {
                                 span: (10, 20).into(),
                                 descriptors: vec![
-                                    GTReference(
-                                        (10, 15).into(),
-                                        GTReferenceDefinitionId::Unresolved,
-                                        GTIdentifier::new((10, 15).into(), "Reply".into()),
-                                    )
+                                    GTReference {
+                                        span: (10, 15).into(),
+                                        id: GTReferenceId("module".into(), (10, 15).into()),
+                                        definition_id: GTReferenceDefinitionId::Unresolved,
+                                        identifier: GTIdentifier::new(
+                                            (10, 15).into(),
+                                            "Reply".into(),
+                                        ),
+                                    }
                                     .into(),
-                                    GTReference(
-                                        (18, 20).into(),
-                                        GTReferenceDefinitionId::Unresolved,
-                                        GTIdentifier::new((18, 20).into(), "DM".into()),
-                                    )
+                                    GTReference {
+                                        span: (18, 20).into(),
+                                        id: GTReferenceId("module".into(), (18, 20).into()),
+                                        definition_id: GTReferenceDefinitionId::Unresolved,
+                                        identifier: GTIdentifier::new((18, 20).into(), "DM".into()),
+                                    }
                                     .into(),
                                 ],
                             }

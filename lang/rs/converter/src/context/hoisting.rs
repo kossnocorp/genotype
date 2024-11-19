@@ -1,19 +1,25 @@
 use genotype_lang_rs_tree::{RSDefinition, RSReference};
+use genotype_parser::GTSpan;
 use miette::Result;
 
 use super::{naming::RSContextParent, RSConvertContext};
 
 impl RSConvertContext {
-    pub fn hoist<HoistFn, HoistFnResult>(&mut self, mut hoist_fn: HoistFn) -> Result<RSReference>
+    pub fn hoist<HoistFn, Definition>(&mut self, mut hoist_fn: HoistFn) -> Result<RSReference>
     where
-        HoistFnResult: Into<RSDefinition>,
-        HoistFn: FnMut(&mut RSConvertContext) -> Result<HoistFnResult>,
+        Definition: Into<RSDefinition>,
+        HoistFn: FnMut(&mut RSConvertContext) -> Result<(Definition, GTSpan)>,
     {
         self.hoisting = true;
         self.enter_parent(RSContextParent::Hoist);
-        let definition = hoist_fn(self)?.into();
-        let reference = RSReference::new(definition.name().clone(), definition.id().clone());
-        self.hoisted.push(definition);
+        let (definition, span) = hoist_fn(self)?.into();
+        let definition = definition.into();
+        let reference = RSReference {
+            id: self.reference_id(span),
+            identifier: definition.name().clone(),
+            definition_id: definition.id().clone(),
+        };
+        self.hoisted.push(definition.into());
         self.exit_parent();
         self.hoisting = false;
         Ok(reference)

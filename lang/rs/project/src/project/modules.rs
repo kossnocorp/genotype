@@ -1,7 +1,11 @@
 use genotype_lang_core_project::{module::GTLangProjectModule, source::GTLangProjectSource};
 use genotype_lang_rs_config::RSProjectConfig;
-use genotype_lang_rs_tree::{rs_indent, RSDefinition, RSRender, RSStructFields};
-use genotype_parser::{GTDefinitionId, GTSpan};
+use genotype_lang_rs_tree::{
+    rs_indent, RSDefinition, RSDependency, RSPath, RSReference, RSRender, RSStructFields, RSUse,
+    RSUseName, RSUseReference,
+};
+use genotype_lang_rs_visitor::{traverse::RSTraverse, visitor::RSVisitor};
+use genotype_parser::{GTDefinitionId, GTReferenceId, GTSpan};
 use genotype_project::GTProject;
 use indexmap::{IndexMap, IndexSet};
 use miette::Result;
@@ -50,7 +54,7 @@ impl RSProject {
                     if let RSStructFields::Unresolved(span, references, _) = &r#struct.fields {
                         let reference_ids = references
                             .iter()
-                            .map(|(_, reference)| reference.definition_id.clone())
+                            .map(|reference| reference.definition_id.clone())
                             .collect::<IndexSet<_>>();
                         to_resolve.insert(r#struct.id.clone(), (span.clone(), reference_ids));
                     }
@@ -114,6 +118,12 @@ impl RSProject {
                         fields.extend(reference_fields);
                     }
 
+                    // Collect the nested extension field references.
+                    let mut visitor = RSProjectExtensionFieldsVisitor::new();
+                    for field in fields.iter_mut() {
+                        field.traverse(&mut visitor);
+                    }
+
                     let module = modules
                         .iter_mut()
                         .find(|module| module.module.id == definition_id.0)
@@ -165,24 +175,101 @@ impl RSProject {
                         })?;
 
                     // Remove the extension references from the map, so we can optimize uses later.
-                    for (span, reference) in cleared_references {
+                    for reference in cleared_references {
                         module
                             .resolve
                             .references
                             .entry(reference.definition_id)
                             .and_modify(|set| {
-                                set.remove(&span);
+                                set.remove(&reference.id);
                             });
                     }
 
                     // Now add references pulled from the extension fields.
-                    // [TODO]
+                    for (reference_id, definition_id) in visitor.references.clone() {
+                        module
+                            .resolve
+                            .references
+                            .entry(definition_id)
+                            .or_insert_with(Default::default)
+                            .insert(reference_id);
+                    }
 
                     // Add missing uses from the extension fields.
-                    // [TODO]
+                    for (_, definition_id) in visitor.references {
+                        let existing_use = module.module.imports.iter_mut().find(|import| {
+                            if let RSDependency::Local(path) = &import.dependency {
+                                return path.0 == definition_id.0;
+                            }
+                            false
+                        });
 
-                    // Optimize uses by removing unnecessary imports.
-                    // [TODO]
+                        match existing_use {
+                            Some(r#use) => match &r#use.reference {
+                                RSUseReference::Module => {
+                                    todo!("Rewrite the copied dependency to module import");
+                                }
+
+                                RSUseReference::Named(names) => {
+                                    let mut names = names.clone();
+                                    // [TODO] Pass through Rust renamer?
+                                    names.push(RSUseName::Name(definition_id.1.clone().into()));
+                                    r#use.reference = RSUseReference::Named(names);
+                                }
+
+                                // Nothing to do, glob import is already there
+                                RSUseReference::Glob => {}
+                            },
+
+                            None => {
+                                // Create new named import
+                                module.module.imports.push(RSUse {
+                                    reference: RSUseReference::Named(vec![RSUseName::Name(
+                                        definition_id.1.clone().into(),
+                                    )]),
+                                    dependency: RSDependency::Local(RSPath(
+                                        definition_id.0.clone(),
+                                        format!("crate::{}", definition_id.0 .0).into(),
+                                    )),
+                                });
+                            }
+                        }
+                    }
+
+                    // Remove all unused imports
+                    module
+                        .module
+                        .imports
+                        .retain(|r#use| match &r#use.dependency {
+                            RSDependency::Local(path) => {
+                                module.resolve.references.values().any(|references| {
+                                    references.iter().any(|reference| reference.0 == path.0)
+                                })
+                            }
+                            _ => true,
+                        });
+
+                    // Clean up references
+                    module.module.imports.iter_mut().for_each(|r#use| {
+                        if let RSDependency::Local(path) = &r#use.dependency {
+                            if let RSUseReference::Named(names) = &r#use.reference {
+                                let mut names = names.clone();
+                                names.retain(|name| {
+                                    let active_references = module.resolve.references.get(
+                                        // [TODO] Avoid creating this in-place
+                                        &GTDefinitionId(path.0.clone(), name.name().clone().0),
+                                    );
+
+                                    if let Some(references) = active_references {
+                                        return references.len() > 0;
+                                    }
+
+                                    false
+                                });
+                                r#use.reference = RSUseReference::Named(names);
+                            }
+                        }
+                    });
 
                     definition_id.clone()
                 }
@@ -203,5 +290,28 @@ impl RSProject {
         }
 
         Ok(modules)
+    }
+}
+
+struct RSProjectExtensionFieldsVisitor {
+    references: IndexSet<(GTReferenceId, GTDefinitionId)>,
+}
+
+impl RSProjectExtensionFieldsVisitor {
+    fn new() -> Self {
+        Self {
+            references: Default::default(),
+        }
+    }
+}
+
+impl RSVisitor for RSProjectExtensionFieldsVisitor {
+    fn visit_reference(&mut self, reference: &mut RSReference) {
+        self.references
+            .insert((reference.id.clone(), reference.definition_id.clone()));
+
+        // Restore the identifier in case it was renamed to include the module name.
+        // [TODO] Pass through Rust renamer?
+        reference.identifier = reference.definition_id.1.clone().into();
     }
 }

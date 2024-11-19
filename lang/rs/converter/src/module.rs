@@ -76,12 +76,12 @@ mod tests {
                     imports: vec![
                         GTImport {
                             span: (0, 0).into(),
-                            path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+                            path: GTPath::new((0, 0).into(), GTPathModuleId::Resolved("module/path".into()), "./path/to/module".into()),
                             reference: GTImportReference::Glob((0, 0).into())
                         },
                         GTImport {
                             span: (0, 0).into(),
-                            path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+                            path: GTPath::new((0, 0).into(), GTPathModuleId::Resolved("module/path".into()), "./path/to/module".into()),
                             reference: GTImportReference::Names(
                                 (0, 0).into(),
                                 vec![
@@ -174,15 +174,17 @@ mod tests {
                                                         (0, 0).into(),
                                                         "author".into()
                                                     ),
-                                                    descriptor: GTReference((0, 0).into(),
-                                                        GTReferenceDefinitionId::Resolved(
+                                                    descriptor: GTReference {
+                                                        span: (0, 0).into(),
+                                                        id: GTReferenceId("module".into(), (0, 1).into()),
+                                                        definition_id: GTReferenceDefinitionId::Resolved(
                                                             GTDefinitionId("module".into(), "Author".into())
                                                         ),
-                                                        GTIdentifier::new(
+                                                        identifier: GTIdentifier::new(
                                                             (0, 0).into(),
                                                             "Author".into()
                                                         )
-                                                    ).into(),
+                                                     }.into(),
                                                     required: true,
                                                 }
                                             ]
@@ -210,20 +212,27 @@ mod tests {
                 doc: None,
                 imports: vec![
                     RSUse {
-                        path: "self::path::to::module".into(),
                         reference: RSUseReference::Module,
-                        dependency: RSDependency::Local("self::path::to::module".into()),
+                        dependency: RSDependency::Local(
+                            RSPath(
+                                GTModuleId("module/path".into()),
+                                "self::path::to::module".into()
+                            )
+                        )
                     },
                     RSUse {
-                        path: "self::path::to::module".into(),
                         reference: RSUseReference::Named(vec![
                             RSUseName::Name("Name".into()),
                             RSUseName::Alias("Name".into(), "Alias".into())
                         ]),
-                        dependency: RSDependency::Local("self::path::to::module".into()),
+                        dependency: RSDependency::Local(
+                            RSPath(
+                                GTModuleId("module/path".into()),
+                                "self::path::to::module".into()
+                            )
+                        )
                     },
                     RSUse {
-                        path: "serde".into(),
                         reference: RSUseReference::Named(vec![
                             RSUseName::Name("Deserialize".into(),),
                             RSUseName::Name("Serialize".into())
@@ -262,7 +271,11 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: "book".into(),
-                            descriptor: RSReference::new("Book".into(), GTDefinitionId("module".into(), "Book".into())).into(),
+                            descriptor: RSReference {
+                                id: GTReferenceId("module".into(), (0, 0).into()),
+                                identifier: "Book".into(),
+                                definition_id: GTDefinitionId("module".into(), "Book".into())
+                            }.into(),
                         }]
                         .into(),
                     }),
@@ -282,9 +295,11 @@ mod tests {
                                 doc: None,
                                 attributes: vec![],
                                 name: "author".into(),
-                                descriptor: RSReference::new("Author".into(),
-                                    GTDefinitionId("module".into(), "Author".into())
-                                ).into(),
+                                descriptor: RSReference {
+                                    id: GTReferenceId("module".into(), (0, 1).into()),
+                                    identifier: "Author".into(),
+                                    definition_id: GTDefinitionId("module".into(), "Author".into())
+                                }.into(),
                             }
                         ]
                         .into(),

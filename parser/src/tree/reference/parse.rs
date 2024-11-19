@@ -1,15 +1,22 @@
 use pest::iterators::Pair;
 
-use crate::{parser::Rule, tree::GTIdentifier, GTContext, GTReferenceDefinitionId};
+use crate::{
+    parser::Rule, tree::GTIdentifier, GTContext, GTReferenceDefinitionId, GTReferenceId, GTSpan,
+};
 
 use super::GTReference;
 
 impl GTReference {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> Self {
-        let span = pair.as_span().into();
+        let span: GTSpan = pair.as_span().into();
         let identifier: GTIdentifier = pair.into();
         context.resolve.references.insert(identifier.clone());
-        GTReference(span, GTReferenceDefinitionId::Unresolved, identifier)
+        GTReference {
+            span: span.clone(),
+            id: GTReferenceId(context.module_id.clone(), span),
+            definition_id: GTReferenceDefinitionId::Unresolved,
+            identifier,
+        }
     }
 }
 

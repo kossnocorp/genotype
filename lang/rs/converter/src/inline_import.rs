@@ -14,6 +14,7 @@ impl RSConvert<RSInlineUse> for GTInlineImport {
 
 #[cfg(test)]
 mod tesrs {
+    use genotype_lang_rs_tree::RSPath;
     use genotype_parser::*;
     use pretty_assertions::assert_eq;
 
@@ -24,13 +25,17 @@ mod tesrs {
         assert_eq!(
             GTInlineImport {
                 span: (0, 0).into(),
-                path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+                path: GTPath::new(
+                    (0, 0).into(),
+                    GTPathModuleId::Resolved("module/path".into()),
+                    "./path/to/module".into()
+                ),
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
             }
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
             RSInlineUse {
-                path: "self::path::to::module".into(),
+                path: RSPath("module/path".into(), "self::path::to::module".into()),
                 name: "Name".into(),
             }
         );

@@ -7,7 +7,7 @@ mod render;
 #[derive(Debug, PartialEq, Clone)]
 pub enum RSStructFields {
     Resolved(Vec<RSField>),
-    Unresolved(GTSpan, Vec<(GTSpan, RSReference)>, Vec<RSField>),
+    Unresolved(GTSpan, Vec<RSReference>, Vec<RSField>),
 }
 
 impl From<Vec<RSField>> for RSStructFields {

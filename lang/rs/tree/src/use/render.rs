@@ -8,7 +8,7 @@ use super::RSUse;
 
 impl RSRender for RSUse {
     fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
-        let path = self.path.render(indent, config)?;
+        let path = self.dependency.as_path();
         let reference = self.reference.render(indent, config)?;
 
         Ok(match self.reference {
@@ -20,6 +20,7 @@ impl RSRender for RSUse {
 
 #[cfg(test)]
 mod tests {
+    use genotype_parser::GTModuleId;
     use pretty_assertions::assert_eq;
 
     use crate::*;
@@ -28,9 +29,11 @@ mod tests {
     fn test_render_module() {
         assert_eq!(
             RSUse {
-                path: "self::path::to::module".into(),
                 reference: RSUseReference::Module,
-                dependency: RSDependency::Local("self::path::to::module".into())
+                dependency: RSDependency::Local(RSPath(
+                    GTModuleId("path/to/module".into()),
+                    "self::path::to::module".into()
+                ))
             }
             .render(&rs_indent(), &Default::default())
             .unwrap(),
@@ -42,9 +45,11 @@ mod tests {
     fn test_render_glob() {
         assert_eq!(
             RSUse {
-                path: "self::path::to::module".into(),
                 reference: RSUseReference::Glob,
-                dependency: RSDependency::Local("self::path::to::module".into())
+                dependency: RSDependency::Local(RSPath(
+                    GTModuleId("path/to/module".into()),
+                    "self::path::to::module".into()
+                ))
             }
             .render(&rs_indent(), &Default::default())
             .unwrap(),
@@ -56,12 +61,14 @@ mod tests {
     fn test_render_named() {
         assert_eq!(
             RSUse {
-                path: "self::path::to::module".into(),
                 reference: RSUseReference::Named(vec![
                     RSUseName::Name("Name".into()),
                     RSUseName::Alias("Name".into(), "Alias".into()),
                 ]),
-                dependency: RSDependency::Local("self::path::to::module".into())
+                dependency: RSDependency::Local(RSPath(
+                    GTModuleId("path/to/module".into()),
+                    "self::path::to::module".into()
+                ))
             }
             .render(&rs_indent(), &Default::default())
             .unwrap(),

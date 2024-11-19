@@ -1,8 +1,8 @@
 use genotype_lang_rs_tree::path::RSPath;
-use genotype_parser::tree::path::GTPath;
+use genotype_parser::{tree::path::GTPath, GTPathModuleId};
 use miette::Result;
 
-use crate::{context::RSConvertContext, convert::RSConvert};
+use crate::{context::RSConvertContext, convert::RSConvert, error::RSConverterError};
 
 pub fn rs_parse_module_path(path: String) -> String {
     path.replace("../", "super::")
@@ -12,12 +12,22 @@ pub fn rs_parse_module_path(path: String) -> String {
 
 impl RSConvert<RSPath> for GTPath {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSPath> {
-        Ok(RSPath(rs_parse_module_path(context.resolve_path(self))))
+        match &self.1 {
+            GTPathModuleId::Resolved(module_id) => Ok(RSPath(
+                module_id.clone(),
+                rs_parse_module_path(context.resolve_path(self)),
+            )),
+
+            GTPathModuleId::Unresolved => {
+                Err(RSConverterError::UnresolvedPath(self.0.clone()).into())
+            }
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use genotype_parser::GTModuleId;
     use pretty_assertions::assert_eq;
 
     use crate::{context::RSConvertContext, resolve::RSConvertResolve};
@@ -27,33 +37,48 @@ mod tests {
     #[test]
     fn test_convert_base() {
         assert_eq!(
-            RSPath("self::path::to::module".into()),
-            GTPath::parse((0, 0).into(), "./path/to/module")
-                .unwrap()
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
+            RSPath(
+                GTModuleId("module/path".into()),
+                "self::path::to::module".into()
+            ),
+            GTPath::new(
+                (0, 0).into(),
+                GTPathModuleId::Resolved("module/path".into()),
+                "./path/to/module".into()
+            )
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
         );
     }
 
     #[test]
     fn test_convert_absolute() {
         assert_eq!(
-            RSPath("module::path".into()),
-            GTPath::parse((0, 0).into(), "module/path")
-                .unwrap()
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
+            RSPath(GTModuleId("module/path".into()), "path::to::module".into()),
+            GTPath::new(
+                (0, 0).into(),
+                GTPathModuleId::Resolved("module/path".into()),
+                "path/to/module".into()
+            )
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
         );
     }
 
     #[test]
     fn test_convert_up() {
         assert_eq!(
-            RSPath("super::path::to::module".into()),
-            GTPath::parse((0, 0).into(), "../path/to/module")
-                .unwrap()
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
+            RSPath(
+                GTModuleId("module/path".into()),
+                "super::path::to::module".into()
+            ),
+            GTPath::new(
+                (0, 0).into(),
+                GTPathModuleId::Resolved("module/path".into()),
+                "../path/to/module".into(),
+            )
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
         );
     }
 
@@ -61,16 +86,30 @@ mod tests {
     fn test_convert_resolve() {
         let mut resolve = RSConvertResolve::default();
         resolve.paths.insert(
-            GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
-            GTPath::parse((0, 0).into(), "./path/to/another/module").unwrap(),
+            GTPath::new(
+                (0, 0).into(),
+                GTPathModuleId::Resolved("module/path".into()),
+                "./path/to/module".into(),
+            ),
+            GTPath::new(
+                (0, 0).into(),
+                GTPathModuleId::Resolved("module/path".into()),
+                "./path/to/another/module".into(),
+            ),
         );
         let mut context = RSConvertContext::new("module".into(), resolve, Default::default());
         assert_eq!(
-            RSPath("self::path::to::another::module".into()),
-            GTPath::parse((0, 0).into(), "./path/to/module")
-                .unwrap()
-                .convert(&mut context)
-                .unwrap(),
+            RSPath(
+                GTModuleId("module/path".into()),
+                "self::path::to::another::module".into()
+            ),
+            GTPath::new(
+                (0, 0).into(),
+                GTPathModuleId::Resolved("module/path".into()),
+                "./path/to/module".into()
+            )
+            .convert(&mut context)
+            .unwrap(),
         );
     }
 }

@@ -14,7 +14,9 @@ impl PYConvert<PYExtension> for GTExtension {
 #[cfg(test)]
 mod tests {
     use genotype_lang_py_tree::*;
-    use genotype_parser::{GTDefinitionId, GTIdentifier, GTReference, GTReferenceDefinitionId};
+    use genotype_parser::{
+        GTDefinitionId, GTIdentifier, GTReference, GTReferenceDefinitionId, GTReferenceId,
+    };
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -27,14 +29,15 @@ mod tests {
             },
             GTExtension {
                 span: (0, 0).into(),
-                reference: GTReference(
-                    (0, 0).into(),
-                    GTReferenceDefinitionId::Resolved(GTDefinitionId(
+                reference: GTReference {
+                    span: (0, 0).into(),
+                    id: GTReferenceId("module".into(), (0, 0).into()),
+                    definition_id: GTReferenceDefinitionId::Resolved(GTDefinitionId(
                         "module".into(),
                         "Name".into()
                     )),
-                    GTIdentifier::new((0, 0).into(), "Name".into()),
-                )
+                    identifier: GTIdentifier::new((0, 0).into(), "Name".into()),
+                }
                 .into()
             }
             .convert(&mut PYConvertContext::default()),

@@ -38,7 +38,7 @@ mod tests {
     use genotype_config::GTConfig;
     use genotype_lang_core_project::source::GTLangProjectSource;
     use genotype_lang_rs_tree::*;
-    use genotype_parser::GTDefinitionId;
+    use genotype_parser::{GTDefinitionId, GTReferenceId};
     use pretty_assertions::assert_eq;
 
     use crate::resolve::RSProjectModuleResolve;
@@ -61,7 +61,6 @@ mod tests {
                             id: "author".into(),
                             doc: None,
                             imports: vec![RSUse {
-                                path: "serde".into(),
                                 reference: RSUseReference::Named(vec![
                                     RSUseName::Name("Deserialize".into()),
                                     RSUseName::Name("Serialize".into())
@@ -97,14 +96,12 @@ mod tests {
                             doc: None,
                             imports: vec![
                                 RSUse {
-                                    path: "self::author".into(),
                                     reference: RSUseReference::Named(vec![RSUseName::Name(
                                         "Author".into()
                                     )]),
-                                    dependency: RSDependency::Local("self::author".into()),
+                                    dependency: RSDependency::Local(RSPath("author".into(), "self::author".into())),
                                 },
                                 RSUse {
-                                    path: "serde".into(),
                                     reference: RSUseReference::Named(vec![RSUseName::Name(
                                         "Deserialize".into()
                                     ), RSUseName::Name(
@@ -132,7 +129,11 @@ mod tests {
                                         doc: None,
                                         attributes: vec![],
                                         name: "author".into(),
-                                        descriptor: RSReference::new("Author".into(), GTDefinitionId("author".into(), "Author".into())).into(),
+                                        descriptor: RSReference {
+                                            id: GTReferenceId("book".into(), (56, 62).into()),
+                                            identifier: "Author".into(),
+                                            definition_id: GTDefinitionId("author".into(), "Author".into())
+                                        }.into(),
                                     },
                                 ]
                                 .into(),
@@ -143,7 +144,7 @@ mod tests {
                             references: HashMap::from_iter(vec![
                                 (
                                     GTDefinitionId("author".into(), "Author".into()),
-                                    HashSet::from_iter(vec![(56, 62).into()])
+                                    HashSet::from_iter(vec![GTReferenceId("book".into(), (56, 62).into())])
                                 )
                             ])
                         },
@@ -168,7 +169,6 @@ mod tests {
                             id: "author".into(),
                             doc: None,
                             imports: vec![RSUse {
-                                path: "serde".into(),
                                 reference: RSUseReference::Named(vec![
                                     RSUseName::Name("Deserialize".into()),
                                     RSUseName::Name("Serialize".into())
@@ -188,7 +188,11 @@ mod tests {
                                         doc: None,
                                         attributes: vec![],
                                         name: "name".into(),
-                                        descriptor: RSReference::new("AuthorName".into(), GTDefinitionId("author".into(), "AuthorName".into())).into(),
+                                        descriptor: RSReference {
+                                            id: GTReferenceId("author".into(), (19, 29).into()),
+                                            identifier: "AuthorName".into(),
+                                            definition_id: GTDefinitionId("author".into(), "AuthorName".into())
+                                        }.into(),
                                     }]
                                     .into(),
                                 }),
@@ -205,7 +209,7 @@ mod tests {
                             references: HashMap::from_iter(vec![
                                 (
                                     GTDefinitionId("author".into(), "AuthorName".into()),
-                                    HashSet::from_iter(vec![(19, 29).into()])
+                                    HashSet::from_iter(vec![GTReferenceId("author".into(), (19, 29).into())])
                                 )
                             ])
                         },
@@ -218,12 +222,12 @@ mod tests {
                             doc: None,
                             imports: vec![
                                 RSUse {
-                                    path: "self::author".into(),
                                     reference: RSUseReference::Module,
-                                    dependency: RSDependency::Local("self::author".into()),
+                                    dependency: RSDependency::Local(
+                                        RSPath("author".into(), "self::author".into())
+                                    ),
                                 },
                                 RSUse {
-                                    path: "serde".into(),
                                     reference: RSUseReference::Named(vec![RSUseName::Name(
                                         "Deserialize".into()
                                     ), RSUseName::Name(
@@ -251,14 +255,21 @@ mod tests {
                                         doc: None,
                                         attributes: vec![],
                                         name: "author".into(),
-                                        descriptor: RSReference::new("author.Author".into(),GTDefinitionId("author".into(), "Author".into())).into(),
+                                        descriptor: RSReference {
+                                            id: GTReferenceId("book".into(), (51, 57).into()),
+                                            identifier: "author.Author".into(),
+                                            definition_id: GTDefinitionId("author".into(), "Author".into())
+                                        }.into(),
                                     },
                                     RSField {
                                         doc: None,
                                         attributes: vec![],
                                         name: "author_name".into(),
-                                        descriptor: RSReference::new("author.AuthorName".into(),GTDefinitionId("author".into(), "AuthorName".into()))
-                                            .into(),
+                                        descriptor: RSReference {
+                                            id: GTReferenceId("book".into(), (72, 82).into()),
+                                            identifier: "author.AuthorName".into(),
+                                            definition_id: GTDefinitionId("author".into(), "AuthorName".into())
+                                        }.into(),
                                     },
                                 ]
                                 .into(),
@@ -268,11 +279,11 @@ mod tests {
                             references: HashMap::from_iter(vec![
                                 (
                                     GTDefinitionId("author".into(), "AuthorName".into()),
-                                    HashSet::from_iter(vec![(72, 82).into()])
+                                    HashSet::from_iter(vec![GTReferenceId("book".into(), (72, 82).into())])
                                 ),
                                 (
                                     GTDefinitionId("author".into(), "Author".into()),
-                                    HashSet::from_iter(vec![(51, 57).into()])
+                                    HashSet::from_iter(vec![GTReferenceId("book".into(), (51, 57).into())])
                                 )
                             ])
                         },
@@ -446,9 +457,9 @@ pub mod user;"#.into(),
                     },
                     GTLangProjectSource {
                         path: "rs/src/admin.rs".into(),
-                        code: r#"use self::user::User;
-use genotype_runtime::literal;
+                        code: r#"use genotype_runtime::literal;
 use serde::{Deserialize, Serialize};
+use crate::named::Name;
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 struct Admin {
@@ -492,7 +503,7 @@ type Name = String;
                     },
                     GTLangProjectSource {
                         path: "rs/src/user.rs".into(),
-                        code: r#"use self::named::Named;
+                        code: r#"use self::named::Name;
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]

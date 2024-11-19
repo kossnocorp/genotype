@@ -8,6 +8,22 @@ pub enum RSUseName {
     Alias(RSIdentifier, RSIdentifier),
 }
 
+impl RSUseName {
+    pub fn name(&self) -> &RSIdentifier {
+        match self {
+            RSUseName::Name(name) => name,
+            RSUseName::Alias(_, name) => name,
+        }
+    }
+
+    pub fn original_name(&self) -> &RSIdentifier {
+        match self {
+            RSUseName::Name(name) => name,
+            RSUseName::Alias(name, _) => name,
+        }
+    }
+}
+
 impl From<&str> for RSUseName {
     fn from(str: &str) -> Self {
         RSUseName::Name(str.into())

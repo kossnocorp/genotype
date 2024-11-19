@@ -32,11 +32,15 @@ mod tests {
         let mut visitor = GTMockVisitor::new();
         let extension = GTExtension {
             span: (0, 0).into(),
-            reference: GTReference(
-                (0, 0).into(),
-                GTReferenceDefinitionId::Resolved(GTDefinitionId("module".into(), "Base".into())),
-                GTIdentifier::new((0, 0).into(), "Base".into()),
-            ),
+            reference: GTReference {
+                span: (0, 0).into(),
+                id: GTReferenceId("module".into(), (0, 0).into()),
+                definition_id: GTReferenceDefinitionId::Resolved(GTDefinitionId(
+                    "module".into(),
+                    "Base".into(),
+                )),
+                identifier: GTIdentifier::new((0, 0).into(), "Base".into()),
+            },
         };
         let property = GTProperty {
             span: (0, 0).into(),
@@ -62,7 +66,7 @@ mod tests {
                 GTMockVisited::Identifier(name_identifier.clone()),
                 GTMockVisited::Extension(extension.clone()),
                 GTMockVisited::Reference(extension.reference.clone()),
-                GTMockVisited::Identifier(extension.reference.2.clone()),
+                GTMockVisited::Identifier(extension.reference.identifier.clone()),
                 GTMockVisited::Property(property.clone()),
                 GTMockVisited::Key(property.name.clone()),
                 GTMockVisited::Descriptor(property.descriptor.clone()),

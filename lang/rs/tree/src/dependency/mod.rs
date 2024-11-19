@@ -6,17 +6,17 @@ pub enum RSDependency {
     Runtime,
     Serde,
     SerdeJson,
-    Std(RSPath),
+    Std(String),
 }
 
 impl RSDependency {
-    pub fn as_path(&self) -> RSPath {
+    pub fn as_path(&self) -> String {
         match self {
-            Self::Local(path) => path.clone(),
+            Self::Local(path) => path.1.clone(),
             Self::Runtime => "genotype_runtime".into(),
             Self::Serde => "serde".into(),
             Self::SerdeJson => "serde_json".into(),
-            Self::Std(path) => RSPath::from("std").join(&path),
+            Self::Std(path) => format!("std::{path}"),
         }
     }
 
