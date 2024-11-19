@@ -419,6 +419,8 @@ use serde::{Deserialize, Serialize};
 struct Admin {
     name: Name,
     email: String,
+    age: Option<isize>,
+    role: AdminRole,
 }
 
 #[literal("superadmin")]
@@ -462,6 +464,7 @@ use serde::{Deserialize, Serialize};
 struct User {
     name: Name,
     email: String,
+    age: Option<isize>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]

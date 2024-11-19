@@ -142,8 +142,20 @@ impl RSProject {
                         })
                         .and_then(|definition| {
                             if let RSDefinition::Struct(r#struct) = definition {
-                                r#struct.fields = RSStructFields::Resolved(fields);
-                                Ok(())
+                                match &r#struct.fields {
+                                    RSStructFields::Unresolved(_, _, own_fields) => {
+                                        fields.extend(own_fields.clone());
+                                        r#struct.fields = RSStructFields::Resolved(fields);
+                                        Ok(())
+                                    }
+
+                                    RSStructFields::Resolved(_) => {
+                                        Err(RSProjectError::FailedExtensionsResolve(
+                                            span.clone(),
+                                            "Definition is already resolved".into(),
+                                        ))
+                                    }
+                                }
                             } else {
                                 Err(RSProjectError::FailedExtensionsResolve(
                                     span.clone(),

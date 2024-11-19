@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use genotype_parser::*;
 use miette::Result;
@@ -8,17 +8,22 @@ use crate::{error::GTProjectError, GTProjectModuleParse};
 pub mod visitor;
 
 pub struct GTProjectResolve {
+    /// Map of definitions for each module. The definitions can be either root, nested or synthetic
+    /// (where the name is derived from the parents). It defines what is exported from the module.
     pub definitions: HashMap<GTModuleId, Vec<GTDefinitionId>>,
+    /// Map of imports for each module. It defines what is imported from the other modules.
     pub imports: HashMap<GTModuleId, Vec<GTDefinitionId>>,
+    /// Map of local path to module id for each module. It allows to quickly resolve the module id
+    /// from any local path.
     pub paths: HashMap<GTModuleId, HashMap<String, GTModuleId>>,
 }
 
 impl GTProjectResolve {
     pub fn new() -> GTProjectResolve {
         GTProjectResolve {
-            definitions: HashMap::new(),
-            imports: HashMap::new(),
-            paths: HashMap::new(),
+            definitions: Default::default(),
+            imports: Default::default(),
+            paths: Default::default(),
         }
     }
 }
