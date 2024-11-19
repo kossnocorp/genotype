@@ -48,7 +48,6 @@ impl RSConvertContext {
 
     pub fn name_child(&self, name: Option<&str>) -> RSIdentifier {
         let mut segments = vec![];
-        println!("|||||||||||| parents {:?}", self.parents);
         for parent in self.parents.iter().rev() {
             match parent {
                 // [TODO] Kill hoist and variant altogether?
