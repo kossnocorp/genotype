@@ -22,7 +22,7 @@ impl RSRender for RSStruct {
         let fields = self.fields.render(indent, config)?;
 
         blocks.push(format!(
-            "{indent}struct {name}{fields}",
+            "{indent}pub struct {name}{fields}",
             indent = indent.string
         ));
 
@@ -49,7 +49,7 @@ mod tests {
             }
             .render(&rs_indent(), &Default::default())
             .unwrap(),
-            "struct Name;"
+            "pub struct Name;"
         );
     }
 
@@ -79,7 +79,7 @@ mod tests {
             }
             .render(&rs_indent(), &Default::default())
             .unwrap(),
-            r#"struct Name {
+            r#"pub struct Name {
     name: String,
     age: isize,
 }"#
@@ -112,7 +112,7 @@ mod tests {
             }
             .render(&rs_indent().increment(), &Default::default())
             .unwrap(),
-            r#"    struct Name {
+            r#"    pub struct Name {
         name: String,
         age: isize,
     }"#
@@ -132,7 +132,7 @@ mod tests {
             .render(&rs_indent(), &Default::default())
             .unwrap(),
             r#"/// Hello, world!
-struct Name;"#
+pub struct Name;"#
         );
     }
 
@@ -155,7 +155,7 @@ struct Name;"#
             .render(&rs_indent(), &Default::default())
             .unwrap(),
             r#"/// Hello, world!
-struct Name {
+pub struct Name {
     name: String,
 }"#
         );

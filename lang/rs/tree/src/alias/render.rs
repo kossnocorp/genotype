@@ -10,7 +10,7 @@ impl RSRender for RSAlias {
     fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
         let name = self.name.render(indent, config)?;
         let descriptor = self.descriptor.render(indent, config)?;
-        let r#type = format!("type {name} = {descriptor};");
+        let r#type = format!("pub type {name} = {descriptor};");
 
         Ok(if let Some(doc) = &self.doc {
             format!("{}\n{}", doc.render(indent, config)?, r#type)
@@ -38,7 +38,7 @@ mod tests {
             }
             .render(&rs_indent(), &Default::default())
             .unwrap(),
-            "type Name = String;"
+            "pub type Name = String;"
         );
     }
 
@@ -54,7 +54,7 @@ mod tests {
             .render(&rs_indent(), &Default::default())
             .unwrap(),
             r#"/// Hello, world!
-type Name = String;"#
+pub type Name = String;"#
         );
     }
 }

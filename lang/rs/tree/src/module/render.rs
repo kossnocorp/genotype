@@ -110,9 +110,9 @@ mod tests {
             r#"use self::path::to::module;
 use self::path::to::module::{Name, Name as Alias};
 
-type Name = String;
+pub type Name = String;
 
-struct Name {
+pub struct Name {
     name: String,
     age: isize,
 }
@@ -146,7 +146,7 @@ struct Name {
 
 use self::path::to::module;
 
-type Name = String;
+pub type Name = String;
 "#
         );
     }

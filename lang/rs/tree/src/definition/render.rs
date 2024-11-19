@@ -34,7 +34,7 @@ mod tests {
             })
             .render(&rs_indent(), &Default::default())
             .unwrap(),
-            "type Name = String;"
+            "pub type Name = String;"
         );
     }
 
@@ -64,7 +64,7 @@ mod tests {
             })
             .render(&rs_indent(), &Default::default())
             .unwrap(),
-            r#"struct Name {
+            r#"pub struct Name {
     name: String,
     age: isize,
 }"#
@@ -100,7 +100,7 @@ mod tests {
             })
             .render(&rs_indent(), &Default::default())
             .unwrap(),
-            r#"enum ValuesUnion {
+            r#"pub enum ValuesUnion {
     Boolean(bool),
     String(String),
 }"#

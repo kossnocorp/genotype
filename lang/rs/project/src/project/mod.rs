@@ -330,7 +330,7 @@ pub mod book;"#
                         code: r#"use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-struct Author {
+pub struct Author {
     name: String,
 }
 "#
@@ -342,7 +342,7 @@ struct Author {
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-struct Book {
+pub struct Book {
     title: String,
     author: Author,
 }
@@ -400,7 +400,7 @@ pub mod shop;"#
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-struct Inventory {
+pub struct Inventory {
     goods: Vec<Book>,
 }
 "#
@@ -411,7 +411,7 @@ struct Inventory {
                         code: r#"use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-struct Book {
+pub struct Book {
     title: String,
 }
 "#
@@ -462,7 +462,7 @@ use serde::{Deserialize, Serialize};
 use crate::named::Name;
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-struct Admin {
+pub struct Admin {
     name: Name,
     email: String,
     age: Option<isize>,
@@ -470,17 +470,17 @@ struct Admin {
 }
 
 #[literal("superadmin")]
-struct AdminRoleSuperadmin;
+pub struct AdminRoleSuperadmin;
 
 #[literal("admin")]
-struct AdminRoleAdmin;
+pub struct AdminRoleAdmin;
 
 #[literal("moderator")]
-struct AdminRoleModerator;
+pub struct AdminRoleModerator;
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(untagged)]
-enum AdminRole {
+pub enum AdminRole {
     Superadmin(AdminRoleSuperadmin),
     Admin(AdminRoleAdmin),
     Moderator(AdminRoleModerator),
@@ -493,11 +493,11 @@ enum AdminRole {
                         code: r#"use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-struct Named {
+pub struct Named {
     name: Name,
 }
 
-type Name = String;
+pub type Name = String;
 "#
                         .into()
                     },
@@ -507,14 +507,14 @@ type Name = String;
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-struct User {
+pub struct User {
     name: Name,
     email: String,
     age: Option<isize>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-struct Account {
+pub struct Account {
     email: String,
 }
 "#

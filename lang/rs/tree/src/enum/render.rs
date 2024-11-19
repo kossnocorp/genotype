@@ -19,7 +19,10 @@ impl RSRender for RSEnum {
         }
 
         let name = self.name.render(indent, config)?;
-        blocks.push(format!("{indent}enum {name} {{", indent = indent.string,));
+        blocks.push(format!(
+            "{indent}pub enum {name} {{",
+            indent = indent.string,
+        ));
 
         let variants_indent = indent.increment();
         for variant in &self.variants {
@@ -64,7 +67,7 @@ mod tests {
             }
             .render(&rs_indent(), &Default::default())
             .unwrap(),
-            r#"enum Union {
+            r#"pub enum Union {
     String(String),
     Int(isize),
 }"#
@@ -96,7 +99,7 @@ mod tests {
             }
             .render(&rs_indent().increment(), &Default::default())
             .unwrap(),
-            r#"    enum Union {
+            r#"    pub enum Union {
         String(String),
         Int(isize),
     }"#
@@ -129,7 +132,7 @@ mod tests {
             .render(&rs_indent(), &Default::default())
             .unwrap(),
             r#"#[derive(Deserialize, Serialize)]
-enum Union {
+pub enum Union {
     String(String),
     Int(isize),
 }"#
@@ -162,7 +165,7 @@ enum Union {
             .render(&rs_indent(), &Default::default())
             .unwrap(),
             r#"/// Hello, world!
-enum Union {
+pub enum Union {
     String(String),
     Int(isize),
 }"#
@@ -196,7 +199,7 @@ enum Union {
             .unwrap(),
             r#"    /// Hello, world!
     #[derive(Deserialize, Serialize)]
-    enum Union {
+    pub enum Union {
         String(String),
         Int(isize),
     }"#
