@@ -26,28 +26,19 @@ pub fn build_command(args: &GTBuildCommand) -> Result<()> {
 
     if config.ts_enabled() {
         let ts_config = config.as_ts_project();
-        let ts = TSProject::generate(&project, ts_config)
-            .map_err(|_| GTCliError::Generate)?
-            .render()
-            .map_err(|_| GTCliError::Render)?;
+        let ts = TSProject::generate(&project, ts_config)?.render()?;
         langs.push(ts);
     }
 
     if config.python_enabled() {
         let py_config = config.as_python_project()?;
-        let py = PYProject::generate(&project, py_config)
-            .map_err(|_| GTCliError::Generate)?
-            .render()
-            .map_err(|_| GTCliError::Render)?;
+        let py = PYProject::generate(&project, py_config)?.render()?;
         langs.push(py);
     }
 
     if config.rust_enabled() {
         let rs_config = config.as_rust_project();
-        let rs = RSProject::generate(&project, rs_config)
-            .map_err(|_| GTCliError::Generate)?
-            .render()
-            .map_err(|_| GTCliError::Render)?;
+        let rs = RSProject::generate(&project, rs_config)?.render()?;
         langs.push(rs);
     }
 
