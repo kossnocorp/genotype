@@ -1,6 +1,12 @@
-use std::{collections::HashMap, sync::Arc};
+use std::{
+    collections::{HashMap, HashSet},
+    sync::Arc,
+};
 
-use genotype_parser::tree::{GTIdentifier, GTImportName, GTImportReference, GTPath};
+use genotype_parser::{
+    tree::{GTIdentifier, GTImportName, GTImportReference, GTPath},
+    GTDefinitionId, GTSpan,
+};
 use miette::Result;
 
 use crate::error::GTProjectError;
@@ -10,7 +16,8 @@ use super::{GTProjectModuleParse, GTProjectModulePath};
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTProjectModuleResolve {
     pub deps: HashMap<GTPath, Arc<GTProjectModulePath>>,
-    pub references: HashMap<GTIdentifier, GTProjectModuleReference>,
+    pub references_identifiers: HashMap<GTIdentifier, GTProjectModuleReference>,
+    pub references: HashMap<GTDefinitionId, HashSet<GTSpan>>,
 }
 
 impl GTProjectModuleResolve {
@@ -37,10 +44,10 @@ impl GTProjectModuleResolve {
         }
 
         // Resolve module references mapping identifiers to dependencies
-        let mut references = HashMap::new();
+        let mut references_identifiers = HashMap::new();
         for reference in parse.1.resolve.references.iter() {
             // Continue if the reference is already resolved
-            if references.contains_key(reference) {
+            if references_identifiers.contains_key(reference) {
                 continue;
             };
 
@@ -52,7 +59,7 @@ impl GTProjectModuleResolve {
                 .iter()
                 .any(|export| export.1 == reference.1)
             {
-                references.insert(reference.clone(), GTProjectModuleReference::Local);
+                references_identifiers.insert(reference.clone(), GTProjectModuleReference::Local);
                 continue;
             }
 
@@ -95,13 +102,17 @@ impl GTProjectModuleResolve {
                     identifier: reference.as_string(),
                 })?;
 
-            references.insert(
+            references_identifiers.insert(
                 reference.clone(),
                 GTProjectModuleReference::External(local_path.clone()),
             );
         }
 
-        Ok(GTProjectModuleResolve { deps, references })
+        Ok(GTProjectModuleResolve {
+            deps,
+            references_identifiers,
+            references: Default::default(),
+        })
     }
 }
 

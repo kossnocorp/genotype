@@ -50,7 +50,7 @@ impl RSProject {
                     if let RSStructFields::Unresolved(span, references, _) = &r#struct.fields {
                         let reference_ids = references
                             .iter()
-                            .map(|reference| reference.definition_id.clone())
+                            .map(|(_, reference)| reference.definition_id.clone())
                             .collect::<IndexSet<_>>();
                         to_resolve.insert(r#struct.id.clone(), (span.clone(), reference_ids));
                     }
@@ -114,7 +114,7 @@ impl RSProject {
                         fields.extend(reference_fields);
                     }
 
-                    modules
+                    let module = modules
                         .iter_mut()
                         .find(|module| module.module.id == definition_id.0)
                         .ok_or_else(|| {
@@ -122,31 +122,31 @@ impl RSProject {
                                 span.clone(),
                                 format!("Can't find module with id {id}", id = definition_id.0 .0),
                             )
-                        })
-                        .and_then(|module| {
-                            module
-                                .module
-                                .definitions
-                                .iter_mut()
-                                .find(|definition| definition.id() == definition_id)
-                                .ok_or_else(|| {
-                                    RSProjectError::FailedExtensionsResolve(
-                                        span.clone(),
-                                        format!(
-                                            "Can't find definition {module_id}/{id}",
-                                            module_id = definition_id.0 .0,
-                                            id = definition_id.1
-                                        ),
-                                    )
-                                })
+                        })?;
+
+                    let cleared_references = module
+                        .module
+                        .definitions
+                        .iter_mut()
+                        .find(|definition| definition.id() == definition_id)
+                        .ok_or_else(|| {
+                            RSProjectError::FailedExtensionsResolve(
+                                span.clone(),
+                                format!(
+                                    "Can't find definition {module_id}/{id}",
+                                    module_id = definition_id.0 .0,
+                                    id = definition_id.1
+                                ),
+                            )
                         })
                         .and_then(|definition| {
                             if let RSDefinition::Struct(r#struct) = definition {
                                 match &r#struct.fields {
-                                    RSStructFields::Unresolved(_, _, own_fields) => {
+                                    RSStructFields::Unresolved(_, references, own_fields) => {
+                                        let references = references.clone();
                                         fields.extend(own_fields.clone());
                                         r#struct.fields = RSStructFields::Resolved(fields);
-                                        Ok(())
+                                        Ok(references)
                                     }
 
                                     RSStructFields::Resolved(_) => {
@@ -163,6 +163,26 @@ impl RSProject {
                                 ))
                             }
                         })?;
+
+                    // Remove the extension references from the map, so we can optimize uses later.
+                    for (span, reference) in cleared_references {
+                        module
+                            .resolve
+                            .references
+                            .entry(reference.definition_id)
+                            .and_modify(|set| {
+                                set.remove(&span);
+                            });
+                    }
+
+                    // Now add references pulled from the extension fields.
+                    // [TODO]
+
+                    // Add missing uses from the extension fields.
+                    // [TODO]
+
+                    // Optimize uses by removing unnecessary imports.
+                    // [TODO]
 
                     definition_id.clone()
                 }

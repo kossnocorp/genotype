@@ -23,6 +23,13 @@ impl<'a> GTProjectResolveVisitor<'a> {
             references: Default::default(),
         }
     }
+
+    pub fn drain_references(self) -> HashMap<GTDefinitionId, HashSet<GTSpan>> {
+        self.references
+            .get(&self.module_id)
+            .and_then(|references| Some(references.clone()))
+            .unwrap_or_default()
+    }
 }
 
 impl GTVisitor for GTProjectResolveVisitor<'_> {

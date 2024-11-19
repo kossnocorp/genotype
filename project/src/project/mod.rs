@@ -347,8 +347,9 @@ mod tests {
                         ],
                     },
                     resolve: GTProjectModuleResolve {
-                        deps: HashMap::new(),
-                        references: HashMap::new(),
+                        deps: Default::default(),
+                        references_identifiers: Default::default(),
+                        references: Default::default(),
                     },
                 },],
             }
@@ -413,8 +414,9 @@ mod tests {
                         }],
                     },
                     resolve: GTProjectModuleResolve {
-                        deps: HashMap::new(),
-                        references: HashMap::new(),
+                        deps: Default::default(),
+                        references_identifiers: Default::default(),
+                        references: HashMap::from_iter([]),
                     },
                 },
                 GTProjectModule {
@@ -481,11 +483,15 @@ mod tests {
                             GTPath::parse((4, 12).into(), "./author").unwrap(),
                             Arc::new(author_path.clone()),
                         )]),
-                        references: HashMap::from_iter([(
+                        references_identifiers: HashMap::from_iter([(
                             GTIdentifier::new((56, 62).into(), "Author".into()),
                             GTProjectModuleReference::External(
                                 GTPath::parse((4, 12).into(), "./author").unwrap(),
                             ),
+                        )]),
+                        references: HashMap::from_iter([(
+                            GTDefinitionId("author".into(), "Author".into()),
+                            HashSet::from_iter([(56, 62).into()]),
                         )]),
                     },
                 },
@@ -566,11 +572,15 @@ mod tests {
                                 Arc::new(user_path.clone()),
                             ),
                         ]),
-                        references: HashMap::from_iter([(
+                        references_identifiers: HashMap::from_iter([(
                             GTIdentifier::new((57, 61).into(), "Book".into()),
                             GTProjectModuleReference::External(
                                 GTPath::parse((4, 10).into(), "./book").unwrap(),
                             ),
+                        )]),
+                        references: HashMap::from_iter([(
+                            GTDefinitionId("book".into(), "Book".into()),
+                            HashSet::from_iter([(57, 61).into()]),
                         )]),
                     },
                 },
@@ -616,8 +626,9 @@ mod tests {
                         }],
                     },
                     resolve: GTProjectModuleResolve {
-                        deps: HashMap::new(),
-                        references: HashMap::new(),
+                        deps: Default::default(),
+                        references_identifiers: Default::default(),
+                        references: Default::default(),
                     },
                 },
             ],

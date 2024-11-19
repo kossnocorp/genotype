@@ -25,7 +25,7 @@ impl GTProjectModule {
         modules: &Vec<GTProjectModuleParse>,
         parse: GTProjectModuleParse,
     ) -> Result<Self> {
-        let resolve = GTProjectModuleResolve::try_new(modules, &parse)
+        let mut resolve = GTProjectModuleResolve::try_new(modules, &parse)
             .map_err(|err| err.with_source_code(parse.1.module.source_code.clone()))?;
 
         // Combine these two ^v
@@ -33,6 +33,8 @@ impl GTProjectModule {
         let mut visitor = GTProjectResolveVisitor::new(parse.1.module.id.clone(), &definitions);
         let mut parse = parse;
         parse.1.module.traverse(&mut visitor);
+
+        resolve.references = visitor.drain_references();
 
         Ok(GTProjectModule {
             path: parse.0,

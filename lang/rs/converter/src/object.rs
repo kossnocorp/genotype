@@ -29,7 +29,11 @@ impl RSConvert<RSStruct> for GTObject {
             let references = self
                 .extensions
                 .iter()
-                .map(|e| e.reference.convert(context))
+                .map(|e| {
+                    e.reference
+                        .convert(context)
+                        .and_then(|converted| Ok((e.reference.0.clone(), converted)))
+                })
                 .collect::<Result<Vec<_>>>()?;
             RSStructFields::Unresolved(self.span.clone(), references, fields)
         } else {
@@ -183,7 +187,7 @@ mod tests {
                 extensions: vec![GTExtension {
                     span: (0, 0).into(),
                     reference: GTReference(
-                        (0, 0).into(),
+                        (2, 9).into(),
                         GTReferenceDefinitionId::Resolved(GTDefinitionId(
                             "module".into(),
                             "Model".into()
@@ -223,9 +227,12 @@ mod tests {
                 name: "Person".into(),
                 fields: RSStructFields::Unresolved(
                     (1, 8).into(),
-                    vec![RSReference::new(
-                        "Model".into(),
-                        GTDefinitionId("module".into(), "Model".into())
+                    vec![(
+                        (2, 9).into(),
+                        RSReference::new(
+                            "Model".into(),
+                            GTDefinitionId("module".into(), "Model".into())
+                        )
                     )],
                     vec![
                         RSField {

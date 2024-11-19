@@ -42,7 +42,7 @@ impl GTLangProjectModule<TSProjectConfig> for TSProjectModule {
             if let GTImportReference::Glob(_) = import.reference {
                 let references = module
                     .resolve
-                    .references
+                    .references_identifiers
                     .iter()
                     .filter(|(_, reference)| {
                         if let GTProjectModuleReference::External(path) = reference {

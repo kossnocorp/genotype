@@ -33,11 +33,15 @@ impl GTLangProject<RSProjectConfig> for RSProject {
 
 #[cfg(test)]
 mod tests {
+    use std::collections::{HashMap, HashSet};
+
     use genotype_config::GTConfig;
     use genotype_lang_core_project::source::GTLangProjectSource;
     use genotype_lang_rs_tree::*;
     use genotype_parser::GTDefinitionId;
     use pretty_assertions::assert_eq;
+
+    use crate::resolve::RSProjectModuleResolve;
 
     use super::*;
 
@@ -80,6 +84,9 @@ mod tests {
                                 }]
                                 .into(),
                             })]
+                        },
+                        resolve: RSProjectModuleResolve {
+                            references: HashMap::from_iter(vec![])
                         },
                     },
                     RSProjectModule {
@@ -131,6 +138,14 @@ mod tests {
                                 .into(),
                             })]
                             .into(),
+                        },
+                        resolve: RSProjectModuleResolve {
+                            references: HashMap::from_iter(vec![
+                                (
+                                    GTDefinitionId("author".into(), "Author".into()),
+                                    HashSet::from_iter(vec![(56, 62).into()])
+                                )
+                            ])
                         },
                     },
                 ]
@@ -186,6 +201,14 @@ mod tests {
                             ]
                             .into()
                         },
+                        resolve: RSProjectModuleResolve {
+                            references: HashMap::from_iter(vec![
+                                (
+                                    GTDefinitionId("author".into(), "AuthorName".into()),
+                                    HashSet::from_iter(vec![(19, 29).into()])
+                                )
+                            ])
+                        },
                     },
                     RSProjectModule {
                         name: "book".into(),
@@ -240,6 +263,18 @@ mod tests {
                                 ]
                                 .into(),
                             })],
+                        },
+                        resolve: RSProjectModuleResolve {
+                            references: HashMap::from_iter(vec![
+                                (
+                                    GTDefinitionId("author".into(), "AuthorName".into()),
+                                    HashSet::from_iter(vec![(72, 82).into()])
+                                ),
+                                (
+                                    GTDefinitionId("author".into(), "Author".into()),
+                                    HashSet::from_iter(vec![(51, 57).into()])
+                                )
+                            ])
                         },
                     },
                 ]
