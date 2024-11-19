@@ -89,7 +89,7 @@ mod tests {
     fn test_convert_name_from_parents() {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Definition("User".into()));
-        context.enter_parent(RSContextParent::Property("v".into()));
+        context.enter_parent(RSContextParent::Field("v".into()));
         assert_eq!(
             GTLiteral::Integer((0, 0).into(), 1)
                 .convert(&mut context)

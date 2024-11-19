@@ -2,31 +2,38 @@ use genotype_lang_rs_tree::{field::RSField, RSOption};
 use genotype_parser::tree::property::GTProperty;
 use miette::Result;
 
-use crate::{context::RSConvertContext, convert::RSConvert};
+use crate::{
+    context::{naming::RSContextParent, RSConvertContext},
+    convert::RSConvert,
+};
 
 impl RSConvert<RSField> for GTProperty {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSField> {
-        let descriptor = self.descriptor.convert(context)?;
+        let doc = if let Some(doc) = &self.doc {
+            Some(doc.convert(context)?)
+        } else {
+            None
+        };
 
+        let name = self.name.convert(context)?;
+        context.enter_parent(RSContextParent::Field(name.clone()));
+
+        let descriptor = self.descriptor.convert(context)?;
         let descriptor = if self.required {
             descriptor
         } else {
             RSOption::new(descriptor).into()
         };
 
-        let doc = if let Some(doc) = &self.doc {
-            Some(doc.convert(context)?)
-        } else {
-            None
-        };
-        let name = self.name.convert(context)?;
-
-        Ok(RSField {
+        let field = RSField {
             doc,
             attributes: vec![],
             name,
             descriptor,
-        })
+        };
+
+        context.exit_parent();
+        Ok(field)
     }
 }
 

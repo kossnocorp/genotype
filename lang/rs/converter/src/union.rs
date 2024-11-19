@@ -247,7 +247,7 @@ mod tests {
     fn test_naming() {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Definition("Admin".into()));
-        context.enter_parent(RSContextParent::Property("role".into()));
+        context.enter_parent(RSContextParent::Field("role".into()));
         assert_eq!(
             GTUnion {
                 span: (0, 0).into(),

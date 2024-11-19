@@ -422,20 +422,20 @@ struct Admin {
 }
 
 #[literal("superadmin")]
-struct Superadmin;
+struct AdminRoleSuperadmin;
 
 #[literal("admin")]
-struct Admin;
+struct AdminRoleAdmin;
 
 #[literal("moderator")]
-struct Moderator;
+struct AdminRoleModerator;
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(untagged)]
-enum Union {
-    superadmin(Superadmin),
-    admin(Admin),
-    moderator(Moderator),
+enum AdminRole {
+    Superadmin(AdminRoleSuperadmin),
+    Admin(AdminRoleAdmin),
+    Moderator(AdminRoleModerator),
 }
 "#
                         .into()

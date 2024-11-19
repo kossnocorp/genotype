@@ -5,12 +5,14 @@ use super::RSConvertContext;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum RSContextParent {
+    /// Alias parent. Defines the name that children can claim unless there is an anonymous parent
+    /// between them.
     Alias(RSIdentifier),
-    /// Anonymous parent that prevents children from taking the alias name, when
-    /// they for example are part of a tuple.
+    /// Anonymous parent that prevents children from taking the alias name, when they for example
+    /// are part of a tuple.
     Anonymous,
     Definition(RSIdentifier),
-    Property(RSFieldName),
+    Field(RSFieldName),
     EnumVariant(RSIdentifier),
     Hoist,
 }
@@ -20,7 +22,7 @@ impl RSContextParent {
         match self {
             Self::Alias(identifier) => identifier.0.clone(),
             Self::Definition(identifier) => identifier.0.clone(),
-            Self::Property(key) => key.0.clone(),
+            Self::Field(key) => key.0.clone(),
             Self::EnumVariant(identifier) => identifier.0.clone(),
             Self::Anonymous => panic!("Cannot get name of anonymous parent"),
             Self::Hoist => panic!("Cannot get name of hoist parent"),
@@ -30,7 +32,7 @@ impl RSContextParent {
 
 impl From<RSFieldName> for RSContextParent {
     fn from(key: RSFieldName) -> Self {
-        RSContextParent::Property(key)
+        RSContextParent::Field(key)
     }
 }
 
@@ -49,7 +51,7 @@ impl RSConvertContext {
         println!("|||||||||||| parents {:?}", self.parents);
         for parent in self.parents.iter().rev() {
             match parent {
-                // [TODO] Kill variant altogether?
+                // [TODO] Kill hoist and variant altogether?
                 RSContextParent::Hoist | RSContextParent::EnumVariant(_) => continue,
 
                 _ => {
@@ -85,7 +87,7 @@ mod tests {
     fn test_name_child() {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Definition("Person".into()));
-        context.enter_parent(RSContextParent::Property("name".into()));
+        context.enter_parent(RSContextParent::Field("name".into()));
 
         assert_eq!(context.name_child(Some("value")), "PersonNameValue".into());
     }
@@ -94,7 +96,7 @@ mod tests {
     fn test_name_hoisted_child() {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Definition("Person".into()));
-        context.enter_parent(RSContextParent::Property("name".into()));
+        context.enter_parent(RSContextParent::Field("name".into()));
         context.enter_parent(RSContextParent::Hoist);
         context.enter_parent(RSContextParent::Definition("Name".into()));
 
