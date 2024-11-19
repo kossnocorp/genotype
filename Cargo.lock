@@ -452,6 +452,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "genotype_lang_rs_visitor"
+version = "0.1.0"
+dependencies = [
+ "genotype_lang_rs_tree",
+ "pretty_assertions",
+]
+
+[[package]]
 name = "genotype_lang_ts_config"
 version = "0.1.0"
 dependencies = [

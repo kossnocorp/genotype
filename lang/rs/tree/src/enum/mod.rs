@@ -8,7 +8,7 @@ mod render;
 pub struct RSEnum {
     pub id: GTDefinitionId,
     pub doc: Option<RSDoc>,
-    pub name: RSIdentifier,
     pub attributes: Vec<RSAttribute>,
+    pub name: RSIdentifier,
     pub variants: Vec<RSEnumVariant>,
 }
