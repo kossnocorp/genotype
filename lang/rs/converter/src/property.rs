@@ -16,6 +16,10 @@ impl RSConvert<RSField> for GTProperty {
         };
 
         let name = self.name.convert(context)?;
+
+        // Allows for renaming fields
+        let attributes = context.drain_field_attributes();
+
         context.enter_parent(RSContextParent::Field(name.clone()));
 
         let descriptor = self.descriptor.convert(context)?;
@@ -27,7 +31,7 @@ impl RSConvert<RSField> for GTProperty {
 
         let field = RSField {
             doc,
-            attributes: vec![],
+            attributes,
             name,
             descriptor,
         };
@@ -47,33 +51,11 @@ mod tests {
 
     #[test]
     fn test_convert() {
-        assert_eq!(
-            GTProperty {
-                span: (0, 0).into(),
-                doc: None,
-                attributes: vec![],
-                name: GTKey::new((0, 0).into(), "name".into()),
-                descriptor: GTPrimitive::String((0, 0).into()).into(),
-                required: false,
-            }
-            .convert(&mut RSConvertContext::empty("module".into()))
-            .unwrap(),
-            RSField {
-                doc: None,
-                attributes: vec![],
-                name: "name".into(),
-                descriptor: RSOption::new(RSPrimitive::String.into()).into(),
-            }
-        );
-    }
-
-    #[test]
-    fn test_convert_resolve() {
         let mut context = RSConvertContext::empty("module".into());
         assert_eq!(
             GTProperty {
-                doc: None,
                 span: (0, 0).into(),
+                doc: None,
                 attributes: vec![],
                 name: GTKey::new((0, 0).into(), "name".into()),
                 descriptor: GTPrimitive::String((0, 0).into()).into(),
@@ -88,6 +70,28 @@ mod tests {
                 descriptor: RSOption::new(RSPrimitive::String.into()).into(),
             }
         );
-        assert_eq!(context.as_dependencies(), vec![]);
+    }
+
+    #[test]
+    fn test_convert_rename_attribute() {
+        let mut context = RSConvertContext::empty("module".into());
+        assert_eq!(
+            GTProperty {
+                doc: None,
+                span: (0, 0).into(),
+                attributes: vec![],
+                name: GTKey::new((0, 0).into(), "helloWorld".into()),
+                descriptor: GTPrimitive::String((0, 0).into()).into(),
+                required: false,
+            }
+            .convert(&mut context)
+            .unwrap(),
+            RSField {
+                doc: None,
+                attributes: vec![RSAttribute(r#"serde(rename = "helloWorld")"#.into())],
+                name: "hello_world".into(),
+                descriptor: RSOption::new(RSPrimitive::String.into()).into(),
+            }
+        );
     }
 }

@@ -5,6 +5,7 @@ use naming::RSContextParent;
 
 use crate::resolve::RSConvertResolve;
 
+pub mod attributing;
 pub mod hoisting;
 pub mod ids;
 pub mod naming;
@@ -23,6 +24,7 @@ pub struct RSConvertContext {
     parents: Vec<RSContextParent>,
     module_id: GTModuleId,
     definition_id: Option<GTDefinitionId>,
+    field_attributes: Vec<RSAttribute>,
 }
 
 impl RSContext for RSConvertContext {
@@ -65,6 +67,7 @@ impl RSConvertContext {
             dependencies: vec![],
             doc: None,
             parents: vec![],
+            field_attributes: vec![],
         }
     }
 

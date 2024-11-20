@@ -263,7 +263,7 @@ mod tests {
                                     },
                                     RSField {
                                         doc: None,
-                                        attributes: vec![],
+                                        attributes: vec![RSAttribute(r#"serde(rename = "authorName")"#.into())],
                                         name: "author_name".into(),
                                         descriptor: RSReference {
                                             id: GTReferenceId("book".into(), (72, 82).into()),
