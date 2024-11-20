@@ -7,8 +7,8 @@ use crate::module::RSProjectModule;
 
 mod cargo;
 mod indices;
-mod modules;
 mod misc;
+mod modules;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct RSProject {
@@ -162,134 +162,133 @@ mod tests {
         assert_eq!(
             RSProject::generate(&project, rs_config).unwrap().modules,
              vec![
-                    RSProjectModule {
-                        name: "author".into(),
-                        path: "rs/src/author.rs".into(),
-                        module: RSModule {
-                            id: "author".into(),
-                            doc: None,
-                            imports: vec![RSUse {
-                                reference: RSUseReference::Named(vec![
-                                    RSUseName::Name("Deserialize".into()),
-                                    RSUseName::Name("Serialize".into())
-                                ]),
-                                dependency: RSDependency::Serde,
-                            }],
-                            definitions: vec![
-                                RSDefinition::Struct(RSStruct {
-                                    id: GTDefinitionId("author".into(), "Author".into()),
-                                    doc: None,
-                                    attributes: vec![
-                                        "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
-                                            .into()
-                                    ],
-                                    name: "Author".into(),
-                                    fields: vec![RSField {
-                                        doc: None,
-                                        attributes: vec![],
-                                        name: "name".into(),
-                                        descriptor: RSReference {
-                                            id: GTReferenceId("author".into(), (19, 29).into()),
-                                            identifier: "AuthorName".into(),
-                                            definition_id: GTDefinitionId("author".into(), "AuthorName".into())
-                                        }.into(),
-                                    }]
-                                    .into(),
-                                }),
-                                RSDefinition::Alias(RSAlias {
-                                    id: GTDefinitionId("author".into(), "AuthorName".into()),
-                                    doc: None,
-                                    name: "AuthorName".into(),
-                                    descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                                }),
-                            ]
-                            .into()
-                        },
-                        resolve: RSProjectModuleResolve {
-                            references: HashMap::from_iter(vec![
-                                (
-                                    GTDefinitionId("author".into(), "AuthorName".into()),
-                                    HashSet::from_iter(vec![GTReferenceId("author".into(), (19, 29).into())])
-                                )
-                            ])
-                        },
-                    },
-                    RSProjectModule {
-                        name: "book".into(),
-                        path: "rs/src/book.rs".into(),
-                        module: RSModule {
-                            id: "book".into(),
-                            doc: None,
-                            imports: vec![
-                                RSUse {
-                                    reference: RSUseReference::Module,
-                                    dependency: RSDependency::Local(
-                                        RSPath("author".into(), "super::author".into())
-                                    ),
-                                },
-                                RSUse {
-                                    reference: RSUseReference::Named(vec![RSUseName::Name(
-                                        "Deserialize".into()
-                                    ), RSUseName::Name(
-                                        "Serialize".into()
-                                    )]),
-                                    dependency: RSDependency::Serde,
-                                }
-                            ],
-                            definitions: vec![RSDefinition::Struct(RSStruct {
-                                id: GTDefinitionId("book".into(), "Book".into()),
+                RSProjectModule {
+                    name: "author".into(),
+                    path: "rs/src/author.rs".into(),
+                    module: RSModule {
+                        id: "author".into(),
+                        doc: None,
+                        imports: vec![RSUse {
+                            reference: RSUseReference::Named(vec![
+                                RSUseName::Name("Deserialize".into()),
+                                RSUseName::Name("Serialize".into())
+                            ]),
+                            dependency: RSDependency::Serde,
+                        }],
+                        definitions: vec![
+                            RSDefinition::Struct(RSStruct {
+                                id: GTDefinitionId("author".into(), "Author".into()),
                                 doc: None,
                                 attributes: vec![
                                     "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
                                         .into()
                                 ],
-                                name: "Book".into(),
-                                fields: vec![
-                                    RSField {
-                                        doc: None,
-                                        attributes: vec![],
-                                        name: "title".into(),
-                                        descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                                    },
-                                    RSField {
-                                        doc: None,
-                                        attributes: vec![],
-                                        name: "author".into(),
-                                        descriptor: RSReference {
-                                            id: GTReferenceId("book".into(), (51, 57).into()),
-                                            identifier: "author.Author".into(),
-                                            definition_id: GTDefinitionId("author".into(), "Author".into())
-                                        }.into(),
-                                    },
-                                    RSField {
-                                        doc: None,
-                                        attributes: vec![RSAttribute(r#"serde(rename = "authorName")"#.into())],
-                                        name: "author_name".into(),
-                                        descriptor: RSReference {
-                                            id: GTReferenceId("book".into(), (72, 82).into()),
-                                            identifier: "author.AuthorName".into(),
-                                            definition_id: GTDefinitionId("author".into(), "AuthorName".into())
-                                        }.into(),
-                                    },
-                                ]
+                                name: "Author".into(),
+                                fields: vec![RSField {
+                                    doc: None,
+                                    attributes: vec![],
+                                    name: "name".into(),
+                                    descriptor: RSReference {
+                                        id: GTReferenceId("author".into(), (19, 29).into()),
+                                        identifier: "AuthorName".into(),
+                                        definition_id: GTDefinitionId("author".into(), "AuthorName".into())
+                                    }.into(),
+                                }]
                                 .into(),
-                            })],
-                        },
-                        resolve: RSProjectModuleResolve {
-                            references: HashMap::from_iter(vec![
-                                (
-                                    GTDefinitionId("author".into(), "AuthorName".into()),
-                                    HashSet::from_iter(vec![GTReferenceId("book".into(), (72, 82).into())])
-                                ),
-                                (
-                                    GTDefinitionId("author".into(), "Author".into()),
-                                    HashSet::from_iter(vec![GTReferenceId("book".into(), (51, 57).into())])
-                                )
-                            ])
-                        },
+                            }),
+                            RSDefinition::Alias(RSAlias {
+                                id: GTDefinitionId("author".into(), "AuthorName".into()),
+                                doc: None,
+                                name: "AuthorName".into(),
+                                descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                            }),
+                        ]
+                        .into()
                     },
-                ]
-            
+                    resolve: RSProjectModuleResolve {
+                        references: HashMap::from_iter(vec![
+                            (
+                                GTDefinitionId("author".into(), "AuthorName".into()),
+                                HashSet::from_iter(vec![GTReferenceId("author".into(), (19, 29).into())])
+                            )
+                        ])
+                    },
+                },
+                RSProjectModule {
+                    name: "book".into(),
+                    path: "rs/src/book.rs".into(),
+                    module: RSModule {
+                        id: "book".into(),
+                        doc: None,
+                        imports: vec![
+                            RSUse {
+                                reference: RSUseReference::Module,
+                                dependency: RSDependency::Local(
+                                    RSPath("author".into(), "super::author".into())
+                                ),
+                            },
+                            RSUse {
+                                reference: RSUseReference::Named(vec![RSUseName::Name(
+                                    "Deserialize".into()
+                                ), RSUseName::Name(
+                                    "Serialize".into()
+                                )]),
+                                dependency: RSDependency::Serde,
+                            }
+                        ],
+                        definitions: vec![RSDefinition::Struct(RSStruct {
+                            id: GTDefinitionId("book".into(), "Book".into()),
+                            doc: None,
+                            attributes: vec![
+                                "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                                    .into()
+                            ],
+                            name: "Book".into(),
+                            fields: vec![
+                                RSField {
+                                    doc: None,
+                                    attributes: vec![],
+                                    name: "title".into(),
+                                    descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                                },
+                                RSField {
+                                    doc: None,
+                                    attributes: vec![],
+                                    name: "author".into(),
+                                    descriptor: RSReference {
+                                        id: GTReferenceId("book".into(), (51, 57).into()),
+                                        identifier: "author.Author".into(),
+                                        definition_id: GTDefinitionId("author".into(), "Author".into())
+                                    }.into(),
+                                },
+                                RSField {
+                                    doc: None,
+                                    attributes: vec![RSAttribute(r#"serde(rename = "authorName")"#.into())],
+                                    name: "author_name".into(),
+                                    descriptor: RSReference {
+                                        id: GTReferenceId("book".into(), (72, 82).into()),
+                                        identifier: "author.AuthorName".into(),
+                                        definition_id: GTDefinitionId("author".into(), "AuthorName".into())
+                                    }.into(),
+                                },
+                            ]
+                            .into(),
+                        })],
+                    },
+                    resolve: RSProjectModuleResolve {
+                        references: HashMap::from_iter(vec![
+                            (
+                                GTDefinitionId("author".into(), "AuthorName".into()),
+                                HashSet::from_iter(vec![GTReferenceId("book".into(), (72, 82).into())])
+                            ),
+                            (
+                                GTDefinitionId("author".into(), "Author".into()),
+                                HashSet::from_iter(vec![GTReferenceId("book".into(), (51, 57).into())])
+                            )
+                        ])
+                    },
+                },
+            ]
         )
     }
 
@@ -453,7 +452,8 @@ serde = { version = "1", features = ["derive"] }
                         path: "rs/src/lib.rs".into(),
                         code: r#"pub mod admin;
 pub mod named;
-pub mod user;"#.into(),
+pub mod user;"#
+                            .into(),
                     },
                     GTLangProjectSource {
                         path: "rs/src/admin.rs".into(),
