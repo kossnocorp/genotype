@@ -535,7 +535,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_runtime"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "pretty_assertions",
  "proc-macro2",
