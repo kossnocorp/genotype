@@ -28,16 +28,16 @@ impl RSProject {
             });
 
         let cargo = if let Some(cargo) = &self.config.package {
-            format!("{cargo}\n")
+            cargo
         } else {
-            "".into()
+            ""
         };
 
         GTLangProjectSource {
             path: self.config.package_path("Cargo.toml".into()),
             code: format!(
-                r#"{cargo}
-
+                r#"[package]
+{cargo}
 {dependencies}
 "#,
             ),

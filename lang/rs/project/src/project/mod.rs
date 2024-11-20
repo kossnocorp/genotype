@@ -312,7 +312,7 @@ mod tests {
                     },
                     GTLangProjectSource {
                         path: "rs/Cargo.toml".into(),
-                        code: r#"
+                        code: r#"[package]
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
@@ -373,7 +373,7 @@ pub struct Book {
                     },
                     GTLangProjectSource {
                         path: "rs/Cargo.toml".into(),
-                        code: r#"
+                        code: r#"[package]
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
@@ -441,7 +441,7 @@ pub struct Book {
                     },
                     GTLangProjectSource {
                         path: "rs/Cargo.toml".into(),
-                        code: r#"
+                        code: r#"[package]
 
 [dependencies]
 genotype_runtime = "0.1"
