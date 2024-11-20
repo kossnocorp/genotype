@@ -76,7 +76,7 @@ impl RSProject {
             });
 
             let to_remove = match definition {
-                Some((definition_id, (span, reference_ids))) => {
+                Some((current_definition_id, (span, reference_ids))) => {
                     let mut fields = vec![];
 
                     for id in reference_ids {
@@ -87,8 +87,8 @@ impl RSProject {
                             .ok_or_else(|| {
                                 RSProjectError::BuildModulePath(format!(
                                     "Failed to find reference with id {module_id}/{id}",
-                                    module_id = definition_id.0 .0,
-                                    id = definition_id.1
+                                    module_id = current_definition_id.0 .0,
+                                    id = current_definition_id.1
                                 ))
                             })
                             .and_then(|reference| match reference {
@@ -126,11 +126,14 @@ impl RSProject {
 
                     let module = modules
                         .iter_mut()
-                        .find(|module| module.module.id == definition_id.0)
+                        .find(|module| module.module.id == current_definition_id.0)
                         .ok_or_else(|| {
                             RSProjectError::FailedExtensionsResolve(
                                 span.clone(),
-                                format!("Can't find module with id {id}", id = definition_id.0 .0),
+                                format!(
+                                    "Can't find module with id {id}",
+                                    id = current_definition_id.0 .0
+                                ),
                             )
                         })?;
 
@@ -138,14 +141,14 @@ impl RSProject {
                         .module
                         .definitions
                         .iter_mut()
-                        .find(|definition| definition.id() == definition_id)
+                        .find(|definition| definition.id() == current_definition_id)
                         .ok_or_else(|| {
                             RSProjectError::FailedExtensionsResolve(
                                 span.clone(),
                                 format!(
                                     "Can't find definition {module_id}/{id}",
-                                    module_id = definition_id.0 .0,
-                                    id = definition_id.1
+                                    module_id = current_definition_id.0 .0,
+                                    id = current_definition_id.1
                                 ),
                             )
                         })
@@ -196,10 +199,14 @@ impl RSProject {
                     }
 
                     // Add missing uses from the extension fields.
-                    for (_, definition_id) in visitor.references {
+                    for (_, reference_definition_id) in visitor.references {
+                        if reference_definition_id.0 == current_definition_id.0 {
+                            continue;
+                        }
+
                         let existing_use = module.module.imports.iter_mut().find(|import| {
                             if let RSDependency::Local(path) = &import.dependency {
-                                return path.0 == definition_id.0;
+                                return path.0 == reference_definition_id.0;
                             }
                             false
                         });
@@ -213,7 +220,9 @@ impl RSProject {
                                 RSUseReference::Named(names) => {
                                     let mut names = names.clone();
                                     // [TODO] Pass through Rust renamer?
-                                    names.push(RSUseName::Name(definition_id.1.clone().into()));
+                                    names.push(RSUseName::Name(
+                                        reference_definition_id.1.clone().into(),
+                                    ));
                                     r#use.reference = RSUseReference::Named(names);
                                 }
 
@@ -225,11 +234,11 @@ impl RSProject {
                                 // Create new named import
                                 module.module.imports.push(RSUse {
                                     reference: RSUseReference::Named(vec![RSUseName::Name(
-                                        definition_id.1.clone().into(),
+                                        reference_definition_id.1.clone().into(),
                                     )]),
                                     dependency: RSDependency::Local(RSPath(
-                                        definition_id.0.clone(),
-                                        format!("crate::{}", definition_id.0 .0).into(),
+                                        reference_definition_id.0.clone(),
+                                        format!("crate::{}", reference_definition_id.0 .0).into(),
                                     )),
                                 });
                             }
@@ -271,7 +280,7 @@ impl RSProject {
                         }
                     });
 
-                    definition_id.clone()
+                    current_definition_id.clone()
                 }
 
                 None => {
