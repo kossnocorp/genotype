@@ -22,7 +22,7 @@ impl RSDependency {
 
     pub fn external_str(&self) -> Option<String> {
         match self {
-            Self::Runtime => Some(r#"genotype_runtime = "0.1""#.into()),
+            Self::Runtime => Some(r#"genotype_runtime = "0.2""#.into()),
             Self::Serde => Some(r#"serde = { version = "1", features = ["derive"] }"#.into()),
             Self::SerdeJson => Some(r#"serde_json = "1""#.into()),
             _ => None,
