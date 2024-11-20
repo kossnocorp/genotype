@@ -21,7 +21,7 @@ impl RSTraverse for RSDescriptor {
 
             RSDescriptor::Tuple(tuple) => tuple.traverse(visitor),
 
-            RSDescriptor::HashMap(hash_map) => hash_map.traverse(visitor),
+            RSDescriptor::Map(map) => map.traverse(visitor),
 
             RSDescriptor::Option(option) => option.traverse(visitor),
 

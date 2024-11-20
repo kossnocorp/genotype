@@ -1,12 +1,12 @@
-use genotype_lang_rs_tree::RSHashMap;
+use genotype_lang_rs_tree::RSMap;
 
 use crate::visitor::RSVisitor;
 
 use super::RSTraverse;
 
-impl RSTraverse for RSHashMap {
+impl RSTraverse for RSMap {
     fn traverse(&mut self, visitor: &mut dyn RSVisitor) {
-        visitor.visit_hash_map(self);
+        visitor.visit_map(self);
 
         self.key.traverse(visitor);
         self.descriptor.traverse(visitor);

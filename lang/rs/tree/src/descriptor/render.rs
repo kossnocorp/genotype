@@ -13,7 +13,7 @@ impl RSRender for RSDescriptor {
             RSDescriptor::Reference(name) => name.render(indent, config)?,
             RSDescriptor::InlineUse(inline_use) => inline_use.render(indent, config)?,
             RSDescriptor::Tuple(tuple) => tuple.render(indent, config)?,
-            RSDescriptor::HashMap(dict) => dict.render(indent, config)?,
+            RSDescriptor::Map(dict) => dict.render(indent, config)?,
             RSDescriptor::Option(option) => option.render(indent, config)?,
             RSDescriptor::Any(any) => any.render(indent, config)?,
         })
@@ -98,15 +98,15 @@ mod tests {
     }
 
     #[test]
-    fn test_render_hash_map() {
+    fn test_render_map() {
         assert_eq!(
-            RSDescriptor::HashMap(Box::new(RSHashMap {
+            RSDescriptor::Map(Box::new(RSMap {
                 key: RSPrimitive::String.into(),
                 descriptor: RSPrimitive::Int.into(),
             }))
             .render(&rs_indent(), &Default::default())
             .unwrap(),
-            "HashMap<String, isize>"
+            "BTreeMap <String, isize>"
         );
     }
 

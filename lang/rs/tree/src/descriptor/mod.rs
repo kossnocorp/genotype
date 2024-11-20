@@ -10,7 +10,7 @@ pub enum RSDescriptor {
     Reference(RSReference),
     InlineUse(RSInlineUse),
     Tuple(RSTuple),
-    HashMap(Box<RSHashMap>),
+    Map(Box<RSMap>),
     Option(Box<RSOption>),
     Any(RSAny),
 }
@@ -51,9 +51,9 @@ impl From<RSVec> for RSDescriptor {
     }
 }
 
-impl From<RSHashMap> for RSDescriptor {
-    fn from(hash_map: RSHashMap) -> Self {
-        RSDescriptor::HashMap(Box::new(hash_map))
+impl From<RSMap> for RSDescriptor {
+    fn from(map: RSMap) -> Self {
+        RSDescriptor::Map(Box::new(map))
     }
 }
 

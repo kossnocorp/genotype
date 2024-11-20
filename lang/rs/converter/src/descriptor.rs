@@ -273,8 +273,7 @@ mod tests {
                 id: GTDefinitionId("module".into(), "Union".into()),
                 doc: None,
                 attributes: vec![
-                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
-                        .into(),
+                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into(),
                     "serde(untagged)".into(),
                 ],
                 name: "Union".into(),

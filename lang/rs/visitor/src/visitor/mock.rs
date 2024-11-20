@@ -16,7 +16,7 @@ pub enum RSMockVisited {
     EnumVariantDescriptor(RSEnumVariantDescriptor),
     Field(RSField),
     FieldName(RSFieldName),
-    HashMap(RSHashMap),
+    HashMap(RSMap),
     Identifier(RSIdentifier),
     InlineUse(RSInlineUse),
     Module(RSModule),
@@ -101,8 +101,8 @@ impl RSVisitor for RSMockVisitor {
             .push(RSMockVisited::FieldName(field_name.clone()));
     }
 
-    fn visit_hash_map(&mut self, hash_map: &mut RSHashMap) {
-        self.visited.push(RSMockVisited::HashMap(hash_map.clone()));
+    fn visit_map(&mut self, map: &mut RSMap) {
+        self.visited.push(RSMockVisited::HashMap(map.clone()));
     }
 
     fn visit_identifier(&mut self, identifier: &mut RSIdentifier) {

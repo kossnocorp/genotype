@@ -4,13 +4,13 @@ use miette::Result;
 
 use crate::RSRender;
 
-use super::RSHashMap;
+use super::RSMap;
 
-impl RSRender for RSHashMap {
+impl RSRender for RSMap {
     fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
         let key = self.key.render(indent, config)?;
         let descriptor = self.descriptor.render(indent, config)?;
-        Ok(format!("HashMap<{key}, {descriptor}>"))
+        Ok(format!("BTreeMap <{key}, {descriptor}>"))
     }
 }
 
@@ -23,13 +23,13 @@ mod tests {
     #[test]
     fn test_render() {
         assert_eq!(
-            RSHashMap {
+            RSMap {
                 key: RSPrimitive::String.into(),
                 descriptor: RSPrimitive::Int.into(),
             }
             .render(&rs_indent(), &Default::default())
             .unwrap(),
-            "HashMap<String, isize>"
+            "BTreeMap <String, isize>"
         );
     }
 }

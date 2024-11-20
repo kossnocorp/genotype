@@ -28,7 +28,7 @@ pub trait RSVisitor {
 
     fn visit_field_name(&mut self, _field_name: &mut RSFieldName) {}
 
-    fn visit_hash_map(&mut self, _hash_map: &mut RSHashMap) {}
+    fn visit_map(&mut self, _map: &mut RSMap) {}
 
     fn visit_identifier(&mut self, _identifier: &mut RSIdentifier) {}
 

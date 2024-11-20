@@ -444,7 +444,7 @@ pub struct Book {
                         code: r#"[package]
 
 [dependencies]
-genotype_runtime = "0.1"
+genotype_runtime = "0.2"
 serde = { version = "1", features = ["derive"] }
 "#
                         .into(),
@@ -478,7 +478,7 @@ pub struct AdminRoleAdmin;
 #[literal("moderator")]
 pub struct AdminRoleModerator;
 
-#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum AdminRole {
     Superadmin(AdminRoleSuperadmin),

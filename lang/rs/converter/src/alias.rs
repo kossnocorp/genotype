@@ -181,8 +181,7 @@ mod tests {
                 id: GTDefinitionId("module".into(), "Book".into()),
                 doc: None,
                 attributes: vec![
-                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
-                        .into(),
+                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into(),
                     r#"serde(untagged)"#.into(),
                 ],
                 name: "Book".into(),
