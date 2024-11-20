@@ -1,0 +1,15 @@
+[package]
+name = "genotype_runtime"
+version = "0.3.0"
+edition = "2021"
+description = "Genotype runtime"
+authors = ["Sasha Koss <koss@nocorp.me>"]
+license = "MIT"
+repository = "https://github.com/kossnocorp/genotype"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+serde_json = "1.0.132"
+
+[dependencies]
+serde = "1.0.210"

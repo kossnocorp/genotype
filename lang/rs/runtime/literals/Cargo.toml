@@ -1,8 +1,8 @@
 [package]
-name = "genotype_runtime"
-version = "0.2.0"
+name = "literals"
+version = "0.1.0"
 edition = "2021"
-description = "Genotype runtime"
+description = "Literals for Rust"
 authors = ["Sasha Koss <koss@nocorp.me>"]
 license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"

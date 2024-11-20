@@ -1,4 +1,4 @@
-use genotype_runtime::literal;
+use literals::literal;
 use pretty_assertions::assert_eq;
 use serde::{Deserialize, Serialize};
 use std::hash::Hash;
