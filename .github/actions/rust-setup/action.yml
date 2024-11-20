@@ -1,0 +1,27 @@
+name: Rust setup
+
+defaults:
+  run:
+    shell: bash
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+
+    - name: Cache cargo registry
+      uses: actions/cache@v3
+      with:
+        path: ~/.cargo
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Cache rustup
+      uses: actions/cache@v4
+      with:
+        path: ~/.rustup
+        key: ${{ runner.os }}-rustup-${{ hashFiles('**/rust-toolchain.toml') }}

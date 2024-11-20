@@ -1,0 +1,83 @@
+name: Test, lint and build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: ./.github/actions/rust-setup
+
+      - name: Run Clippy
+        run: cargo clippy --all-targets --all-features -- --cap-lints=warn
+
+      - name: Install cargo-nextest
+        run: cargo install cargo-nextest --locked
+
+      - name: Run tests
+        run: cargo nextest run
+
+  build:
+    needs:
+      - test
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            artifact_name: gt
+
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            artifact_name: gt
+
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact_name: gt.exe
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: ./.github/actions/rust-setup
+
+      - name: Cache target
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ runner.os }}-target-${{ matrix.target }}-${{ hashFiles('cli/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-target-${{ matrix.target }}-
+
+      - name: Add target
+        run: rustup target add ${{ matrix.target }}
+
+      - name: Build CLI
+        working-directory: cli
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Archive binary
+        if: runner.os != 'Windows'
+        run: tar -czvf ${{ matrix.artifact_name }}-${{ matrix.os }}.tar.gz -C target/${{ matrix.target }}/release ${{ matrix.artifact_name }}
+
+      - name: Archive binary
+        if: runner.os == 'Windows'
+        run: Compress-Archive -Path target\${{ matrix.target }}\release\${{ matrix.artifact_name }} -DestinationPath ${{ matrix.artifact_name }}-${{ matrix.os }}.zip
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}-${{ matrix.os }}
+          path: ${{ matrix.artifact_name }}-${{ matrix.os }}.*
