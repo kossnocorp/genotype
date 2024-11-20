@@ -166,7 +166,7 @@ mod tests {
                 id: GTDefinitionId("module".into(), "Person".into()),
                 doc: None,
                 attributes: vec![
-                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
                         .into()
                 ],
                 name: "Person".into(),

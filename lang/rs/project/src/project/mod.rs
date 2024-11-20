@@ -54,102 +54,106 @@ mod tests {
         assert_eq!(
             RSProject::generate(&project, rs_config).unwrap().modules,
             vec![
-                    RSProjectModule {
-                        name: "author".into(),
-                        path: "rs/src/author.rs".into(),
-                        module: RSModule {
-                            id: "author".into(),
+                RSProjectModule {
+                    name: "author".into(),
+                    path: "rs/src/author.rs".into(),
+                    module: RSModule {
+                        id: "author".into(),
+                        doc: None,
+                        imports: vec![RSUse {
+                            reference: RSUseReference::Named(vec![
+                                RSUseName::Name("Deserialize".into()),
+                                RSUseName::Name("Serialize".into())
+                            ]),
+                            dependency: RSDependency::Serde,
+                        }],
+                        definitions: vec![RSDefinition::Struct(RSStruct {
+                            id: GTDefinitionId("author".into(), "Author".into()),
                             doc: None,
-                            imports: vec![RSUse {
+                            attributes: vec![
+                                "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                                    .into()
+                            ],
+                            name: "Author".into(),
+                            fields: vec![RSField {
+                                doc: None,
+                                attributes: vec![],
+                                name: "name".into(),
+                                descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                            }]
+                            .into(),
+                        })]
+                    },
+                    resolve: RSProjectModuleResolve {
+                        references: HashMap::from_iter(vec![])
+                    },
+                },
+                RSProjectModule {
+                    name: "book".into(),
+                    path: "rs/src/book.rs".into(),
+                    module: RSModule {
+                        id: "book".into(),
+                        doc: None,
+                        imports: vec![
+                            RSUse {
+                                reference: RSUseReference::Named(vec![RSUseName::Name(
+                                    "Author".into()
+                                )]),
+                                dependency: RSDependency::Local(RSPath(
+                                    "author".into(),
+                                    "super::author".into()
+                                )),
+                            },
+                            RSUse {
                                 reference: RSUseReference::Named(vec![
                                     RSUseName::Name("Deserialize".into()),
                                     RSUseName::Name("Serialize".into())
                                 ]),
                                 dependency: RSDependency::Serde,
-                            }],
-                            definitions: vec![RSDefinition::Struct(RSStruct {
-                                id: GTDefinitionId("author".into(), "Author".into()),
-                                doc: None,
-                                attributes: vec![
-                                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
-                                        .into()
-                                ],
-                                name: "Author".into(),
-                                fields: vec![RSField {
+                            }
+                        ],
+                        definitions: vec![RSDefinition::Struct(RSStruct {
+                            id: GTDefinitionId("book".into(), "Book".into()),
+                            doc: None,
+                            attributes: vec![
+                                "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                                    .into()
+                            ],
+                            name: "Book".into(),
+                            fields: vec![
+                                RSField {
                                     doc: None,
                                     attributes: vec![],
-                                    name: "name".into(),
+                                    name: "title".into(),
                                     descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                                }]
-                                .into(),
-                            })]
-                        },
-                        resolve: RSProjectModuleResolve {
-                            references: HashMap::from_iter(vec![])
-                        },
-                    },
-                    RSProjectModule {
-                        name: "book".into(),
-                        path: "rs/src/book.rs".into(),
-                        module: RSModule {
-                            id: "book".into(),
-                            doc: None,
-                            imports: vec![
-                                RSUse {
-                                    reference: RSUseReference::Named(vec![RSUseName::Name(
-                                        "Author".into()
-                                    )]),
-                                    dependency: RSDependency::Local(RSPath("author".into(), "super::author".into())),
                                 },
-                                RSUse {
-                                    reference: RSUseReference::Named(vec![RSUseName::Name(
-                                        "Deserialize".into()
-                                    ), RSUseName::Name(
-                                        "Serialize".into()
-                                    )]),
-                                    dependency: RSDependency::Serde,
-                                }
-                            ],
-                            definitions: vec![RSDefinition::Struct(RSStruct {
-                                id: GTDefinitionId("book".into(), "Book".into()),
-                                doc: None,
-                                attributes: vec![
-                                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
-                                        .into()
-                                ],
-                                name: "Book".into(),
-                                fields: vec![
-                                    RSField {
-                                        doc: None,
-                                        attributes: vec![],
-                                        name: "title".into(),
-                                        descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                                    },
-                                    RSField {
-                                        doc: None,
-                                        attributes: vec![],
-                                        name: "author".into(),
-                                        descriptor: RSReference {
-                                            id: GTReferenceId("book".into(), (56, 62).into()),
-                                            identifier: "Author".into(),
-                                            definition_id: GTDefinitionId("author".into(), "Author".into())
-                                        }.into(),
-                                    },
-                                ]
-                                .into(),
-                            })]
+                                RSField {
+                                    doc: None,
+                                    attributes: vec![],
+                                    name: "author".into(),
+                                    descriptor: RSReference {
+                                        id: GTReferenceId("book".into(), (56, 62).into()),
+                                        identifier: "Author".into(),
+                                        definition_id: GTDefinitionId(
+                                            "author".into(),
+                                            "Author".into()
+                                        )
+                                    }
+                                    .into(),
+                                },
+                            ]
                             .into(),
-                        },
-                        resolve: RSProjectModuleResolve {
-                            references: HashMap::from_iter(vec![
-                                (
-                                    GTDefinitionId("author".into(), "Author".into()),
-                                    HashSet::from_iter(vec![GTReferenceId("book".into(), (56, 62).into())])
-                                )
-                            ])
-                        },
+                        })]
+                        .into(),
                     },
-                ]
+                    resolve: RSProjectModuleResolve {
+                        references: HashMap::from_iter(vec![(
+                            GTDefinitionId("author".into(), "Author".into()),
+                            HashSet::from_iter(vec![GTReferenceId("book".into(), (56, 62).into())])
+                        )])
+                    },
+                },
+            ]
         )
     }
 
@@ -180,7 +184,7 @@ mod tests {
                                 id: GTDefinitionId("author".into(), "Author".into()),
                                 doc: None,
                                 attributes: vec![
-                                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
                                         .into()
                                 ],
                                 name: "Author".into(),
@@ -240,7 +244,7 @@ mod tests {
                             id: GTDefinitionId("book".into(), "Book".into()),
                             doc: None,
                             attributes: vec![
-                                "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                                "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
                                     .into()
                             ],
                             name: "Book".into(),
@@ -328,7 +332,7 @@ pub mod book;"#
                         path: "rs/src/author.rs".into(),
                         code: r#"use serde::{Deserialize, Serialize};
 
-#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Author {
     name: String,
 }
@@ -340,7 +344,7 @@ pub struct Author {
                         code: r#"use super::author::Author;
 use serde::{Deserialize, Serialize};
 
-#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Book {
     title: String,
     author: Author,
@@ -398,7 +402,7 @@ pub mod shop;"#
                         code: r#"use super::shop::goods::book::Book;
 use serde::{Deserialize, Serialize};
 
-#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Inventory {
     goods: Vec<Book>,
 }
@@ -409,7 +413,7 @@ pub struct Inventory {
                         path: "rs/src/shop/goods/book.rs".into(),
                         code: r#"use serde::{Deserialize, Serialize};
 
-#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Book {
     title: String,
 }
@@ -461,7 +465,7 @@ pub mod user;"#
 use serde::{Deserialize, Serialize};
 use crate::named::Name;
 
-#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Admin {
     name: Name,
     email: String,
@@ -492,7 +496,7 @@ pub enum AdminRole {
                         path: "rs/src/named.rs".into(),
                         code: r#"use serde::{Deserialize, Serialize};
 
-#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Named {
     name: Name,
 }
@@ -506,14 +510,14 @@ pub type Name = String;
                         code: r#"use super::named::Name;
 use serde::{Deserialize, Serialize};
 
-#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct User {
     name: Name,
     email: String,
     age: Option<isize>,
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Account {
     email: String,
 }

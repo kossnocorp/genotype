@@ -244,7 +244,7 @@ mod tests {
                     RSDefinition::Struct(RSStruct {
                         id: GTDefinitionId("module".into(), "User".into()),
                         doc: None,
-                        attributes: vec!["derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()],
+                        attributes: vec!["derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()],
                         name: "User".into(),
                         fields: vec![
                             RSField {
@@ -265,7 +265,7 @@ mod tests {
                     RSDefinition::Struct(RSStruct {
                         id: GTDefinitionId("module".into(), "Order".into()),
                         doc: None,
-                        attributes: vec!["derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()],
+                        attributes: vec!["derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()],
                         name: "Order".into(),
                         fields: vec![RSField {
                             doc: None,
@@ -282,7 +282,7 @@ mod tests {
                     RSDefinition::Struct(RSStruct {
                         id: GTDefinitionId("module".into(), "Book".into()),
                         doc: None,
-                        attributes: vec!["derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()],
+                        attributes: vec!["derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()],
                         name: "Book".into(),
                         fields: vec![
                             RSField {

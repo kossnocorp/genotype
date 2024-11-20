@@ -118,8 +118,7 @@ mod tests {
                 id: GTDefinitionId("module".into(), "Book".into()),
                 doc: None,
                 attributes: vec![
-                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
-                        .into()
+                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()
                 ],
                 name: "Book".into(),
                 fields: vec![
@@ -215,8 +214,7 @@ mod tests {
                 id: GTDefinitionId("module".into(), "BookObj".into()),
                 doc: None,
                 attributes: vec![
-                    "derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
-                        .into(),
+                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into(),
                 ],
                 name: "BookObj".into(),
                 fields: vec![RSField {
