@@ -1,11 +1,15 @@
 [package]
 name = "genotype_cli"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2021"
 description = "Genotype language CLI"
 authors = ["Sasha Koss <koss@nocorp.me>"]
 license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
+
+[[bin]]
+name = "gt"
+path = "src/main.rs"
 
 [dependencies]
 genotype_project = { version = "0.3.0", path = "../project" }
