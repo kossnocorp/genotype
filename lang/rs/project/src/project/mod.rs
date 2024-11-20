@@ -99,7 +99,7 @@ mod tests {
                                     reference: RSUseReference::Named(vec![RSUseName::Name(
                                         "Author".into()
                                     )]),
-                                    dependency: RSDependency::Local(RSPath("author".into(), "self::author".into())),
+                                    dependency: RSDependency::Local(RSPath("author".into(), "super::author".into())),
                                 },
                                 RSUse {
                                     reference: RSUseReference::Named(vec![RSUseName::Name(
@@ -224,7 +224,7 @@ mod tests {
                                 RSUse {
                                     reference: RSUseReference::Module,
                                     dependency: RSDependency::Local(
-                                        RSPath("author".into(), "self::author".into())
+                                        RSPath("author".into(), "super::author".into())
                                     ),
                                 },
                                 RSUse {
@@ -338,7 +338,7 @@ pub struct Author {
                     },
                     GTLangProjectSource {
                         path: "rs/src/book.rs".into(),
-                        code: r#"use self::author::Author;
+                        code: r#"use super::author::Author;
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -396,7 +396,7 @@ pub mod shop;"#
                     },
                     GTLangProjectSource {
                         path: "rs/src/inventory.rs".into(),
-                        code: r#"use self::shop::goods::book::Book;
+                        code: r#"use super::shop::goods::book::Book;
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -503,7 +503,7 @@ pub type Name = String;
                     },
                     GTLangProjectSource {
                         path: "rs/src/user.rs".into(),
-                        code: r#"use self::named::Name;
+                        code: r#"use super::named::Name;
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]

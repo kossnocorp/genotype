@@ -115,7 +115,7 @@ mod tests {
             .convert(&mut context)
             .unwrap(),
             RSDescriptor::InlineUse(RSInlineUse {
-                path: RSPath("path/to/module".into(), "self::path::to::module".into()),
+                path: RSPath("path/to/module".into(), "super::path::to::module".into()),
                 name: "Name".into()
             })
         );

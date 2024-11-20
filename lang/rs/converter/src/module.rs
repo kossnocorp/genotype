@@ -216,7 +216,7 @@ mod tests {
                         dependency: RSDependency::Local(
                             RSPath(
                                 GTModuleId("module/path".into()),
-                                "self::path::to::module".into()
+                                "super::path::to::module".into()
                             )
                         )
                     },
@@ -228,7 +228,7 @@ mod tests {
                         dependency: RSDependency::Local(
                             RSPath(
                                 GTModuleId("module/path".into()),
-                                "self::path::to::module".into()
+                                "super::path::to::module".into()
                             )
                         )
                     },

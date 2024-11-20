@@ -35,7 +35,7 @@ mod tesrs {
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
             RSInlineUse {
-                path: RSPath("module/path".into(), "self::path::to::module".into()),
+                path: RSPath("module/path".into(), "super::path::to::module".into()),
                 name: "Name".into(),
             }
         );

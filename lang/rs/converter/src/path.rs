@@ -5,8 +5,8 @@ use miette::Result;
 use crate::{context::RSConvertContext, convert::RSConvert, error::RSConverterError};
 
 pub fn rs_parse_module_path(path: String) -> String {
-    path.replace("../", "super::")
-        .replace("./", "self::")
+    path.replace("../", "super::super::")
+        .replace("./", "super::")
         .replace("/", "::")
 }
 
@@ -39,7 +39,7 @@ mod tests {
         assert_eq!(
             RSPath(
                 GTModuleId("module/path".into()),
-                "self::path::to::module".into()
+                "super::path::to::module".into()
             ),
             GTPath::new(
                 (0, 0).into(),
@@ -70,7 +70,7 @@ mod tests {
         assert_eq!(
             RSPath(
                 GTModuleId("module/path".into()),
-                "super::path::to::module".into()
+                "super::super::path::to::module".into()
             ),
             GTPath::new(
                 (0, 0).into(),
@@ -101,7 +101,7 @@ mod tests {
         assert_eq!(
             RSPath(
                 GTModuleId("module/path".into()),
-                "self::path::to::another::module".into()
+                "super::path::to::another::module".into()
             ),
             GTPath::new(
                 (0, 0).into(),

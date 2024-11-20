@@ -63,7 +63,7 @@ mod tests {
                 reference: RSUseReference::Module,
                 dependency: RSDependency::Local(RSPath(
                     "module/path".into(),
-                    "self::path::to::module".into()
+                    "super::path::to::module".into()
                 ))
             }
         );
@@ -103,7 +103,7 @@ mod tests {
                 ]),
                 dependency: RSDependency::Local(RSPath(
                     "module/path".into(),
-                    "self::path::to::module".into()
+                    "super::path::to::module".into()
                 ))
             }
         );
@@ -127,7 +127,7 @@ mod tests {
                 reference: RSUseReference::Named(vec![RSUseName::Name("Name".into())]),
                 dependency: RSDependency::Local(RSPath(
                     "module/path".into(),
-                    "self::path::to::module".into()
+                    "super::path::to::module".into()
                 ))
             }
         );
