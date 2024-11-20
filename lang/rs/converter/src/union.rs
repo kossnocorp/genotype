@@ -1,7 +1,8 @@
 use std::collections::HashSet;
 
 use genotype_lang_rs_tree::{
-    RSContext, RSDependency, RSEnum, RSEnumVariant, RSEnumVariantDescriptor, RSIdentifier,
+    RSContext, RSContextRenderDeriveMode, RSDependency, RSEnum, RSEnumVariant,
+    RSEnumVariantDescriptor, RSIdentifier,
 };
 use genotype_parser::{tree::union::GTUnion, GTDescriptor, GTPrimitive};
 use heck::ToPascalCase;
@@ -36,7 +37,12 @@ impl RSConvert<RSEnum> for GTUnion {
             id,
             doc,
             name,
-            attributes: vec![context.render_derive().into(), r#"serde(untagged)"#.into()],
+            attributes: vec![
+                context
+                    .render_derive(RSContextRenderDeriveMode::UnionEnum)
+                    .into(),
+                r#"serde(untagged)"#.into(),
+            ],
             variants,
         };
 

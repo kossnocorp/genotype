@@ -35,11 +35,12 @@ impl RSContext for RSConvertContext {
         }
     }
 
-    fn render_derive(&self) -> String {
+    fn render_derive(&self, mode: RSContextRenderDeriveMode) -> String {
         let mut traits = self
             .config
             .derive
             .iter()
+            .filter(|f| mode != RSContextRenderDeriveMode::UnionEnum || *f != "Default")
             .map(|derive| derive.as_str())
             .collect::<Vec<&str>>();
 

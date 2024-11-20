@@ -39,7 +39,9 @@ impl RSConvert<RSStruct> for GTObject {
         let r#struct = RSStruct {
             id,
             doc,
-            attributes: vec![context.render_derive().into()],
+            attributes: vec![context
+                .render_derive(RSContextRenderDeriveMode::Struct)
+                .into()],
             name,
             fields,
         };
