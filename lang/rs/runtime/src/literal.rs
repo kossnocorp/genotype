@@ -9,7 +9,7 @@ pub fn macro_attribute(attr: TokenStream, input: TokenStream) -> TokenStream {
         syn::Item::Struct(item) => {
             let literal = parse_macro_input!(attr as Lit);
 
-            let serde_code = match literal {
+            let serde_code = match &literal {
                 Lit::Str(lit_str) => str_serde_code(lit_str.value(), item.ident.clone()),
 
                 Lit::Bool(lit_bool) => bool_serde_code(lit_bool.value(), item.ident.clone()),
@@ -19,10 +19,19 @@ pub fn macro_attribute(attr: TokenStream, input: TokenStream) -> TokenStream {
                 _ => panic!("The #[literal] attribute only supports string, bool or int literals"),
             };
 
+            let hash_code = hash_trait_code(&literal, &item.ident);
+
+            let debug_code = debug_trait_code(&literal, &item.ident);
+
             quote! {
+                #[derive(Default, Eq, PartialEq)]
                 #item
 
                 #serde_code
+
+                #hash_code
+
+                #debug_code
             }
         }
 
@@ -205,6 +214,32 @@ where
                 Err(serde::de::Error::invalid_value(
                     serde::de::Unexpected::#visit_unexpected(s.into()), &self
                 ))
+            }
+        }
+    }
+}
+
+fn hash_trait_code<L>(literal: &L, target: &syn::Ident) -> proc_macro2::TokenStream
+where
+    L: ToTokens,
+{
+    quote! {
+        impl std::hash::Hash for #target {
+            fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+                #literal.hash(state);
+            }
+        }
+    }
+}
+
+fn debug_trait_code<L>(literal: &L, target: &syn::Ident) -> proc_macro2::TokenStream
+where
+    L: ToTokens,
+{
+    quote! {
+        impl std::fmt::Debug for #target {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                write!(f, "{:?}", #literal)
             }
         }
     }
