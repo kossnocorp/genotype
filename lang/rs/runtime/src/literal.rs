@@ -9,22 +9,44 @@ pub fn macro_attribute(attr: TokenStream, input: TokenStream) -> TokenStream {
         syn::Item::Struct(item) => {
             let literal = parse_macro_input!(attr as Lit);
 
-            let serde_code = match &literal {
-                Lit::Str(lit_str) => str_serde_code(lit_str.value(), item.ident.clone()),
+            let (hasher_code, serde_code) = match &literal {
+                Lit::Str(lit_str) => (
+                    std_hasher(&literal),
+                    str_serde_code(lit_str.value(), item.ident.clone()),
+                ),
 
-                Lit::Bool(lit_bool) => bool_serde_code(lit_bool.value(), item.ident.clone()),
+                Lit::Bool(lit_bool) => (
+                    std_hasher(&literal),
+                    bool_serde_code(lit_bool.value(), item.ident.clone()),
+                ),
 
-                Lit::Int(lit_int) => int_serde_code(lit_int.base10_digits(), item.ident.clone()),
+                Lit::Int(lit_int) => (
+                    std_hasher(&literal),
+                    int_serde_code(lit_int.base10_digits(), item.ident.clone()),
+                ),
 
-                _ => panic!("The #[literal] attribute only supports string, bool or int literals"),
+                Lit::Float(lit_float) => {
+                    let literal: f64 = lit_float
+                        .base10_digits()
+                        .parse()
+                        .expect("Invalid f64 literal");
+                    (
+                        float_hasher(&literal),
+                        float_serde_code(&literal, item.ident.clone()),
+                    )
+                }
+
+                _ => panic!(
+                    "The #[literal] attribute only supports string, bool, int or float literals"
+                ),
             };
 
-            let hash_code = hash_trait_code(&literal, &item.ident);
+            let hash_code = hash_trait_code(hasher_code, &item.ident);
 
             let debug_code = debug_trait_code(&literal, &item.ident);
 
             quote! {
-                #[derive(Default, Eq, PartialEq)]
+                #[derive(Clone, Default, Eq, PartialEq)]
                 #item
 
                 #serde_code
@@ -109,6 +131,26 @@ fn int_serde_code(literal: &str, target: syn::Ident) -> proc_macro2::TokenStream
                     },
                 ),
             ],
+        },
+    )
+}
+
+fn float_serde_code(literal: &f64, target: syn::Ident) -> proc_macro2::TokenStream {
+    serde_code(
+        &literal,
+        &target,
+        SerdeConsts {
+            serialize: "serialize_f64",
+            deserialize: "deserialize_f64",
+            visit_fns: vec![serde_visit_code(
+                &literal,
+                &target,
+                SerdeVisitConsts {
+                    visit: "visit_f64",
+                    visit_arg: quote! { f64 },
+                    visit_unexpected: "Float",
+                },
+            )],
         },
     )
 }
@@ -219,14 +261,37 @@ where
     }
 }
 
-fn hash_trait_code<L>(literal: &L, target: &syn::Ident) -> proc_macro2::TokenStream
+fn std_hasher<L>(literal: &L) -> proc_macro2::TokenStream
 where
     L: ToTokens,
 {
+    quote! { #literal.hash(state) }
+}
+
+fn float_hasher(literal: &f64) -> proc_macro2::TokenStream {
+    quote! {
+        let mut bits = #literal.to_bits();
+
+        // Treat all NaN values the same
+        if #literal.is_nan() {
+            bits = f64::NAN.to_bits();
+        } else if bits == (-0.0f64).to_bits() {
+            // Normalize -0.0 to 0.0
+            bits = 0.0f64.to_bits();
+        }
+
+        bits.hash(state);
+    }
+}
+
+fn hash_trait_code(
+    hasher: proc_macro2::TokenStream,
+    target: &syn::Ident,
+) -> proc_macro2::TokenStream {
     quote! {
         impl std::hash::Hash for #target {
             fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-                #literal.hash(state);
+                #hasher
             }
         }
     }

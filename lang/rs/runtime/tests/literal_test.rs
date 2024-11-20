@@ -38,6 +38,15 @@ fn test_int() {
 }
 
 #[test]
+fn test_float() {
+    #[literal(3.14159)]
+    pub struct Pi;
+
+    assert_eq!(serde_json::to_string_pretty(&Pi).unwrap(), "3.14159");
+    assert_eq!(serde_json::from_str::<Pi>("3.14159").unwrap(), Pi);
+}
+
+#[test]
 fn test_hash() {
     #[literal("a")]
     pub struct A;
@@ -88,6 +97,18 @@ fn test_debug() {
     pub struct B;
 
     assert_eq!(format!("{:?}", B), r#"42"#);
+
+    #[literal(3.14159)]
+    pub struct C;
+
+    assert_eq!(format!("{:?}", C), r#"3.14159"#);
+}
+
+#[test]
+fn test_clone() {
+    #[literal("a")]
+    pub struct A;
+    let _a = A.clone();
 }
 
 #[test]
