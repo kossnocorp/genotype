@@ -13,8 +13,6 @@ impl Default for RSLangConfig {
                 "PartialEq".into(),
                 "Eq".into(),
                 "Hash".into(),
-                "Serialize".into(),
-                "Deserialize".into(),
             ],
         }
     }

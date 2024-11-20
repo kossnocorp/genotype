@@ -36,13 +36,17 @@ impl RSContext for RSConvertContext {
     }
 
     fn render_derive(&self) -> String {
-        let traits = self
+        let mut traits = self
             .config
             .derive
             .iter()
-            .map(|derive| derive.to_string())
-            .collect::<Vec<String>>()
-            .join(", ");
+            .map(|derive| derive.as_str())
+            .collect::<Vec<&str>>();
+
+        // We always need to derive Serialize and Deserialize
+        traits.extend(vec!["Serialize", "Deserialize"]);
+        let traits = traits.join(", ");
+
         format!("derive({traits})")
     }
 }
