@@ -6,7 +6,7 @@ use crate::{context::RSConvertContext, convert::RSConvert};
 
 impl RSConvert<RSMap> for GTRecord {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSMap> {
-        context.import(RSDependency::Std("collections".into()), "HashMap".into());
+        context.import(RSDependency::Std("collections".into()), "BTreeMap".into());
         Ok(RSMap {
             key: self.key.convert(context)?,
             descriptor: self.descriptor.convert(context)?,
@@ -57,7 +57,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![(RSDependency::Std("collections".into()), "HashMap".into()),]
+            vec![(RSDependency::Std("collections".into()), "BTreeMap".into()),]
         );
     }
 }

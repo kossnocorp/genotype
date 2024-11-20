@@ -10,7 +10,7 @@ impl RSRender for RSMap {
     fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
         let key = self.key.render(indent, config)?;
         let descriptor = self.descriptor.render(indent, config)?;
-        Ok(format!("BTreeMap <{key}, {descriptor}>"))
+        Ok(format!("BTreeMap<{key}, {descriptor}>"))
     }
 }
 
@@ -29,7 +29,7 @@ mod tests {
             }
             .render(&rs_indent(), &Default::default())
             .unwrap(),
-            "BTreeMap <String, isize>"
+            "BTreeMap<String, isize>"
         );
     }
 }

@@ -106,7 +106,7 @@ mod tests {
             }))
             .render(&rs_indent(), &Default::default())
             .unwrap(),
-            "BTreeMap <String, isize>"
+            "BTreeMap<String, isize>"
         );
     }
 
@@ -128,7 +128,7 @@ mod tests {
             RSDescriptor::Any(RSAny)
                 .render(&rs_indent(), &Default::default())
                 .unwrap(),
-            "Value"
+            "Any"
         );
     }
 }

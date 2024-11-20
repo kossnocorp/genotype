@@ -7,7 +7,8 @@ impl Default for RSLangConfig {
     fn default() -> Self {
         Self {
             derive: vec![
-                "Default".into(),
+                // [TODO] Implement Default for union enums
+                // "Default".into(),
                 "Debug".into(),
                 "Clone".into(),
                 "PartialEq".into(),

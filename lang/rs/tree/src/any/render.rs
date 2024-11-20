@@ -8,7 +8,7 @@ use super::RSAny;
 
 impl RSRender for RSAny {
     fn render(&self, _indent: &GTIndent, _config: &RSLangConfig) -> Result<String> {
-        Ok("Value".into())
+        Ok("Any".into())
     }
 }
 
@@ -20,7 +20,7 @@ mod tests {
     #[test]
     fn test_render() {
         assert_eq!(
-            "Value",
+            "Any",
             RSAny.render(&rs_indent(), &Default::default()).unwrap(),
         );
     }

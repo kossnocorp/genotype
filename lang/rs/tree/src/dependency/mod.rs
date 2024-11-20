@@ -4,8 +4,8 @@ use crate::RSPath;
 pub enum RSDependency {
     Local(RSPath),
     Runtime,
+    Literals,
     Serde,
-    SerdeJson,
     Std(String),
 }
 
@@ -14,17 +14,17 @@ impl RSDependency {
         match self {
             Self::Local(path) => path.1.clone(),
             Self::Runtime => "genotype_runtime".into(),
+            Self::Literals => "literals".into(),
             Self::Serde => "serde".into(),
-            Self::SerdeJson => "serde_json".into(),
             Self::Std(path) => format!("std::{path}"),
         }
     }
 
     pub fn external_str(&self) -> Option<String> {
         match self {
-            Self::Runtime => Some(r#"genotype_runtime = "0.2""#.into()),
+            Self::Runtime => Some(r#"genotype_runtime = "0.4""#.into()),
+            Self::Literals => Some(r#"literals = "0.1""#.into()),
             Self::Serde => Some(r#"serde = { version = "1", features = ["derive"] }"#.into()),
-            Self::SerdeJson => Some(r#"serde_json = "1""#.into()),
             _ => None,
         }
     }

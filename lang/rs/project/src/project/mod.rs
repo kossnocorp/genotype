@@ -444,7 +444,7 @@ pub struct Book {
                         code: r#"[package]
 
 [dependencies]
-genotype_runtime = "0.2"
+literals = "0.1"
 serde = { version = "1", features = ["derive"] }
 "#
                         .into(),
@@ -457,7 +457,7 @@ pub mod user;"#.into(),
                     },
                     GTLangProjectSource {
                         path: "rs/src/admin.rs".into(),
-                        code: r#"use genotype_runtime::literal;
+                        code: r#"use literals::literal;
 use serde::{Deserialize, Serialize};
 use crate::named::Name;
 

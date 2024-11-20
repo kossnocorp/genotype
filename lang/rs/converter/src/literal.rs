@@ -6,7 +6,7 @@ use crate::{context::RSConvertContext, convert::RSConvert};
 
 impl RSConvert<RSStruct> for GTLiteral {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSStruct> {
-        context.import(RSDependency::Runtime, "literal".into());
+        context.import(RSDependency::Literals, "literal".into());
 
         let doc = context.consume_doc();
         let name = if let Some(name) = context.claim_alias() {
@@ -119,7 +119,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![(RSDependency::Runtime, "literal".into())]
+            vec![(RSDependency::Literals, "literal".into())]
         );
     }
 

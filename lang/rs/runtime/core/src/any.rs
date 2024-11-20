@@ -5,7 +5,7 @@ use std::collections::BTreeMap;
 use std::fmt;
 use std::hash::{Hash, Hasher};
 
-#[derive(Clone, PartialEq, Debug)]
+#[derive(Clone, Debug)]
 pub enum Any {
     Null,
     Bool(bool),
@@ -21,6 +21,41 @@ impl Default for Any {
         Any::Null
     }
 }
+
+impl PartialEq for Any {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Any::Null, Any::Null) => true,
+
+            (Any::Bool(a), Any::Bool(b)) => a == b,
+
+            (Any::Int(a), Any::Int(b)) => a == b,
+
+            (Any::Float(a), Any::Float(b)) => {
+                // Normalize -0.0 to 0.0
+                let a = if a == &-0.0 { 0.0 } else { *a };
+                let b = if b == &-0.0 { 0.0 } else { *b };
+
+                // Treat NaN as equal to NaN
+                if a.is_nan() && b.is_nan() {
+                    true
+                } else {
+                    a == b
+                }
+            }
+
+            (Any::String(a), Any::String(b)) => a == b,
+
+            (Any::Array(a), Any::Array(b)) => a == b,
+
+            (Any::Object(a), Any::Object(b)) => a == b,
+
+            _ => false,
+        }
+    }
+}
+
+impl Eq for Any {}
 
 impl Hash for Any {
     fn hash<H: Hasher>(&self, state: &mut H) {
@@ -220,7 +255,7 @@ mod tests {
 
     #[test]
     fn test_serialize_string() {
-        let value = Any::String("Hello, World!".to_string());
+        let value = Any::String("Hello, World!".into());
         let serialized = serde_json::to_string(&value).unwrap();
         assert_eq!(serialized, r#""Hello, World!""#);
     }
@@ -230,7 +265,7 @@ mod tests {
         let value = Any::Array(vec![
             Any::Float(1.0),
             Any::Bool(false),
-            Any::String("test".to_string()),
+            Any::String("test".into()),
         ]);
         let serialized = serde_json::to_string(&value).unwrap();
         assert_eq!(serialized, "[1.0,false,\"test\"]");
@@ -239,9 +274,9 @@ mod tests {
     #[test]
     fn test_serialize_object() {
         let value = Any::Object(BTreeMap::from_iter(vec![
-            ("number".to_string(), Any::Float(1.0)),
-            ("bool".to_string(), Any::Bool(false)),
-            ("string".to_string(), Any::String("test".to_string())),
+            ("number".into(), Any::Float(1.0)),
+            ("bool".into(), Any::Bool(false)),
+            ("string".into(), Any::String("test".into())),
         ]));
         let serialized = serde_json::to_string(&value).unwrap();
         assert_eq!(serialized, r#"{"bool":false,"number":1.0,"string":"test"}"#);
@@ -274,7 +309,7 @@ mod tests {
     #[test]
     fn test_deserialize_string() {
         let value: Any = serde_json::from_str(r#""Hello, World!""#).unwrap();
-        assert_eq!(value, Any::String("Hello, World!".to_string()));
+        assert_eq!(value, Any::String("Hello, World!".into()));
     }
 
     #[test]
@@ -285,7 +320,7 @@ mod tests {
             Any::Array(vec![
                 Any::Float(1.0),
                 Any::Bool(false),
-                Any::String("test".to_string()),
+                Any::String("test".into()),
             ])
         );
     }
@@ -297,9 +332,9 @@ mod tests {
         assert_eq!(
             value,
             Any::Object(BTreeMap::from_iter(vec![
-                ("number".to_string(), Any::Float(1.0)),
-                ("bool".to_string(), Any::Bool(false)),
-                ("string".to_string(), Any::String("test".to_string())),
+                ("number".into(), Any::Float(1.0)),
+                ("bool".into(), Any::Bool(false)),
+                ("string".into(), Any::String("test".into())),
             ]))
         );
     }
@@ -319,24 +354,24 @@ mod tests {
         }"#;
         let json_any: Any = serde_json::from_str(json).unwrap();
         let custom_any = Any::Object(BTreeMap::from_iter(vec![
-            ("null".to_string(), Any::Null),
-            ("bool".to_string(), Any::Bool(true)),
-            ("number".to_string(), Any::Float(123.456)),
-            ("string".to_string(), Any::String("text".to_string())),
+            ("null".into(), Any::Null),
+            ("bool".into(), Any::Bool(true)),
+            ("number".into(), Any::Float(123.456)),
+            ("string".into(), Any::String("text".into())),
             (
-                "array".to_string(),
+                "array".into(),
                 Any::Array(vec![
                     Any::Int(1),
-                    Any::String("two".to_string()),
+                    Any::String("two".into()),
                     Any::Bool(false),
                 ]),
             ),
             (
-                "object".to_string(),
+                "object".into(),
                 Any::Object(BTreeMap::from_iter(vec![
-                    ("nested_number".to_string(), Any::Int(789)),
+                    ("nested_number".into(), Any::Int(789)),
                     (
-                        "nested_array".to_string(),
+                        "nested_array".into(),
                         Any::Array(vec![Any::Int(3), Any::Int(4), Any::Int(5)]),
                     ),
                 ])),
@@ -395,5 +430,103 @@ mod tests {
         let hash_nope = hasher.finish();
 
         assert_ne!(hash_null1, hash_nope);
+    }
+
+    #[test]
+    fn test_float_equality() {
+        assert_eq!(Any::Float(0.0), Any::Float(-0.0));
+        assert_eq!(Any::Float(f64::NAN), Any::Float(f64::NAN));
+        assert_eq!(Any::Float(f64::INFINITY), Any::Float(f64::INFINITY));
+        assert_eq!(Any::Float(f64::NEG_INFINITY), Any::Float(f64::NEG_INFINITY),);
+
+        assert_ne!(Any::Float(1.0), Any::Float(2.0));
+        assert_ne!(Any::Float(f64::NAN), Any::Float(1.0));
+        assert_ne!(Any::Float(f64::INFINITY), Any::Float(f64::NEG_INFINITY),);
+    }
+
+    #[test]
+    fn test_int_equality() {
+        assert_eq!(Any::Int(42), Any::Int(42));
+        assert_eq!(Any::Int(-100), Any::Int(-100));
+
+        assert_ne!(Any::Int(42), Any::Int(43));
+        assert_ne!(Any::Int(0), Any::Int(1));
+    }
+
+    #[test]
+    fn test_bool_equality() {
+        assert_eq!(Any::Bool(true), Any::Bool(true));
+        assert_eq!(Any::Bool(false), Any::Bool(false));
+
+        assert_ne!(Any::Bool(true), Any::Bool(false));
+    }
+
+    #[test]
+    fn test_string_equality() {
+        assert_eq!(Any::String("test".into()), Any::String("test".into()));
+        assert_eq!(Any::String("".into()), Any::String("".into()));
+
+        assert_ne!(Any::String("test".into()), Any::String("different".into()));
+        assert_ne!(Any::String("Test".into()), Any::String("test".into()));
+    }
+
+    #[test]
+    fn test_null_equality() {
+        assert_eq!(Any::Null, Any::Null);
+
+        assert_ne!(Any::Null, Any::Int(0));
+        assert_ne!(Any::Null, Any::Bool(false));
+        assert_ne!(Any::Null, Any::String("null".into()));
+    }
+
+    #[test]
+    fn test_array_equality() {
+        assert_eq!(
+            Any::Array(vec![Any::Int(1), Any::Int(2)]),
+            Any::Array(vec![Any::Int(1), Any::Int(2)])
+        );
+        assert_eq!(Any::Array(vec![]), Any::Array(vec![]));
+
+        assert_ne!(
+            Any::Array(vec![Any::Int(1), Any::Int(2)]),
+            Any::Array(vec![Any::Int(2), Any::Int(1)])
+        );
+        assert_ne!(
+            Any::Array(vec![Any::Int(1)]),
+            Any::Array(vec![Any::Int(1), Any::Int(2)])
+        );
+    }
+
+    #[test]
+    fn test_object_equality() {
+        assert_eq!(
+            Any::Object(BTreeMap::from_iter(vec![
+                ("key1".into(), Any::Int(1)),
+                ("key2".into(), Any::Int(2)),
+            ])),
+            Any::Object(BTreeMap::from_iter(vec![
+                ("key2".into(), Any::Int(2)),
+                ("key1".into(), Any::Int(1)),
+            ]))
+        );
+        assert_eq!(Any::Object(BTreeMap::new()), Any::Object(BTreeMap::new()));
+
+        assert_ne!(
+            Any::Object(BTreeMap::from_iter(vec![
+                ("key1".into(), Any::Int(1)),
+                ("key2".into(), Any::Int(2)),
+            ])),
+            Any::Object(BTreeMap::from_iter(vec![
+                ("key1".into(), Any::Int(2)),
+                ("key2".into(), Any::Int(1)),
+            ]))
+        );
+        assert_ne!(
+            Any::Object(BTreeMap::from_iter(vec![("key1".into(), Any::Int(1)),])),
+            Any::Object(BTreeMap::from_iter(vec![
+                ("key1".into(), Any::Int(1)),
+                ("key2".into(), Any::Int(2)),
+            ]))
+        );
     }
 }

@@ -6,7 +6,7 @@ use crate::{context::RSConvertContext, convert::RSConvert};
 
 impl RSConvert<RSAny> for GTAny {
     fn convert(&self, resolve: &mut RSConvertContext) -> Result<RSAny> {
-        resolve.import(RSDependency::SerdeJson, "Value".into());
+        resolve.import(RSDependency::Runtime, "Any".into());
         Ok(RSAny)
     }
 }
@@ -35,7 +35,7 @@ mod tests {
         assert_eq!(GTAny((0, 0).into(),).convert(&mut context).unwrap(), RSAny);
         assert_eq!(
             context.as_dependencies(),
-            vec![(RSDependency::SerdeJson, "Value".into())]
+            vec![(RSDependency::Runtime, "Any".into())]
         );
     }
 }
