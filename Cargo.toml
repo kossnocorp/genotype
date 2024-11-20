@@ -2,7 +2,6 @@
 resolver = "2"
 members = [
   "lang/core/tree",
-  "lang/core/converter",
   "lang/core/project",
   "lang/ts/tree",
   "lang/ts/converter",
