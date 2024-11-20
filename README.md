@@ -2,6 +2,14 @@
 
 🚧 Work in progress
 
+## Installation
+
+Currently, Genotype can be only installed from source code using Cargo:
+
+```sh
+cargo install genotype_cli
+```
+
 ## Roadmap
 
 The current goal is to ship v0.1. There's an immediate need for Genotype in the projects I'm working on, so the first version would include everything to start using it in production. Namely:
