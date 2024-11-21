@@ -80,8 +80,8 @@ mod tests {
             .render(&rs_indent(), &Default::default())
             .unwrap(),
             r#"pub struct Name {
-    name: String,
-    age: isize,
+    pub name: String,
+    pub age: isize,
 }"#
         );
     }
@@ -113,8 +113,8 @@ mod tests {
             .render(&rs_indent().increment(), &Default::default())
             .unwrap(),
             r#"    pub struct Name {
-        name: String,
-        age: isize,
+        pub name: String,
+        pub age: isize,
     }"#
         );
     }
@@ -156,7 +156,7 @@ pub struct Name;"#
             .unwrap(),
             r#"/// Hello, world!
 pub struct Name {
-    name: String,
+    pub name: String,
 }"#
         );
     }

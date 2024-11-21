@@ -113,8 +113,8 @@ use self::path::to::module::{Name, Name as Alias};
 pub type Name = String;
 
 pub struct Name {
-    name: String,
-    age: isize,
+    pub name: String,
+    pub age: isize,
 }
 "#
         );

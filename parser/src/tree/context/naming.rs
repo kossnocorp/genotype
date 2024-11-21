@@ -1,8 +1,7 @@
 use heck::ToPascalCase;
 
 use crate::{
-    identifier, GTIdentifier, GTNode, GTNodeParseResult, GTObjectName, GTObjectNameParent,
-    GTParseError, GTSpan,
+    GTIdentifier, GTNode, GTNodeParseResult, GTObjectName, GTObjectNameParent, GTParseError, GTSpan,
 };
 
 use super::{GTContext, GTContextParent};

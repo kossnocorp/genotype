@@ -61,8 +61,8 @@ mod tests {
             .render(&rs_indent(), &Default::default())
             .unwrap(),
             r#" {
-    name: String,
-    age: isize,
+    pub name: String,
+    pub age: isize,
 }"#
         );
     }
@@ -97,8 +97,8 @@ mod tests {
             .render(&rs_indent().increment(), &Default::default())
             .unwrap(),
             r#" {
-        name: String,
-        age: isize,
+        pub name: String,
+        pub age: isize,
     }"#
         );
     }

@@ -23,7 +23,7 @@ impl RSRender for RSField {
         let name = self.name.render(indent, config)?;
         let descriptor = self.descriptor.render(indent, config)?;
         blocks.push(format!(
-            "{indent}{name}: {descriptor}",
+            "{indent}pub {name}: {descriptor}",
             indent = indent.string
         ));
 
@@ -49,7 +49,7 @@ mod tests {
             }
             .render(&rs_indent(), &Default::default())
             .unwrap(),
-            "name: String"
+            "pub name: String"
         );
         assert_eq!(
             RSField {
@@ -65,7 +65,7 @@ mod tests {
             }
             .render(&rs_indent(), &Default::default())
             .unwrap(),
-            "name: Name"
+            "pub name: Name"
         );
     }
 
@@ -80,7 +80,7 @@ mod tests {
             }
             .render(&rs_indent().increment(), &Default::default())
             .unwrap(),
-            "    name: String"
+            "    pub name: String"
         );
     }
 
@@ -96,7 +96,7 @@ mod tests {
             .render(&rs_indent(), &Default::default())
             .unwrap(),
             r#"/// Hello, world!
-name: String"#
+pub name: String"#
         );
         assert_eq!(
             RSField {
@@ -108,7 +108,7 @@ name: String"#
             .render(&rs_indent().increment(), &Default::default())
             .unwrap(),
             r#"    /// Hello, world!
-    name: String"#
+    pub name: String"#
         );
     }
 
@@ -124,7 +124,7 @@ name: String"#
             .render(&rs_indent(), &Default::default())
             .unwrap(),
             "#[derive(Clone)]
-name: String"
+pub name: String"
         );
         assert_eq!(
             RSField {
@@ -136,7 +136,7 @@ name: String"
             .render(&rs_indent().increment(), &Default::default())
             .unwrap(),
             "    #[derive(Clone)]
-    name: String"
+    pub name: String"
         );
         assert_eq!(
             RSField {
@@ -149,7 +149,7 @@ name: String"
             .unwrap(),
             "    /// Hello, world!
     #[derive(Clone)]
-    name: String"
+    pub name: String"
         );
     }
 }

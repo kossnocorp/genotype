@@ -334,7 +334,7 @@ pub mod book;"#
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Author {
-    name: String,
+    pub name: String,
 }
 "#
                         .into()
@@ -346,8 +346,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Book {
-    title: String,
-    author: Author,
+    pub title: String,
+    pub author: Author,
 }
 "#
                         .into()
@@ -404,7 +404,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Inventory {
-    goods: Vec<Book>,
+    pub goods: Vec<Book>,
 }
 "#
                         .into()
@@ -415,7 +415,7 @@ pub struct Inventory {
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Book {
-    title: String,
+    pub title: String,
 }
 "#
                         .into()
@@ -467,10 +467,10 @@ use crate::named::Name;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Admin {
-    name: Name,
-    email: String,
-    age: Option<isize>,
-    role: AdminRole,
+    pub name: Name,
+    pub email: String,
+    pub age: Option<isize>,
+    pub role: AdminRole,
 }
 
 #[literal("superadmin")]
@@ -498,7 +498,7 @@ pub enum AdminRole {
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Named {
-    name: Name,
+    pub name: Name,
 }
 
 pub type Name = String;
@@ -512,14 +512,14 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct User {
-    name: Name,
-    email: String,
-    age: Option<isize>,
+    pub name: Name,
+    pub email: String,
+    pub age: Option<isize>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Account {
-    email: String,
+    pub email: String,
 }
 "#
                         .into()

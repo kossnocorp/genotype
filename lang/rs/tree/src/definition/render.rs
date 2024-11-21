@@ -66,8 +66,8 @@ mod tests {
             .render(&rs_indent(), &Default::default())
             .unwrap(),
             r#"pub struct Name {
-    name: String,
-    age: isize,
+    pub name: String,
+    pub age: isize,
 }"#
         );
     }

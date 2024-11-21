@@ -2,7 +2,7 @@ use genotype_parser::tree::descriptor::GTDescriptor;
 
 use crate::visitor::GTVisitor;
 
-use super::{branded, GTTraverse};
+use super::GTTraverse;
 
 impl GTTraverse for GTDescriptor {
     fn traverse(&mut self, visitor: &mut dyn GTVisitor) {
