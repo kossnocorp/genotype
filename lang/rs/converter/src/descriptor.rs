@@ -3,7 +3,7 @@ use genotype_lang_rs_tree::*;
 use genotype_parser::tree::descriptor::GTDescriptor;
 use miette::Result;
 
-use crate::{context::RSConvertContext, convert::RSConvert};
+use crate::{branded, context::RSConvertContext, convert::RSConvert};
 
 impl RSConvert<RSDescriptor> for GTDescriptor {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSDescriptor> {
@@ -38,7 +38,9 @@ impl RSConvert<RSDescriptor> for GTDescriptor {
 
             GTDescriptor::Any(any) => any.convert(context)?.into(),
 
-            GTDescriptor::Branded(_) => todo!(),
+            GTDescriptor::Branded(branded) => context
+                .hoist(|context| Ok((branded.convert(context)?, branded.span())))?
+                .into(),
         })
     }
 }

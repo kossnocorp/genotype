@@ -16,6 +16,7 @@ mod identifier;
 mod inline_use;
 mod map;
 mod module;
+mod newtype;
 mod option;
 mod path;
 mod primitive;
