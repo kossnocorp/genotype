@@ -10,6 +10,7 @@ mod attribute_key;
 mod attribute_name;
 mod attribute_property;
 mod attribute_value;
+mod branded;
 mod descriptor;
 mod doc;
 mod extension;

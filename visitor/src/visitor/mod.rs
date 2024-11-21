@@ -65,4 +65,6 @@ pub trait GTVisitor {
     fn visit_union(&mut self, _union: &mut GTUnion) {}
 
     fn visit_any(&mut self, _any: &mut GTAny) {}
+
+    fn visit_branded(&mut self, _branded: &mut GTBranded) {}
 }
