@@ -8,13 +8,13 @@ impl GTObject {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
         let span: GTSpan = pair.as_span().into();
 
-        let name = context.resolve_name(span.clone())?;
+        let name = context.name_object(span.clone())?;
 
         // It is an explicitely named object, so we need to add an anonymous parent so following
         // children don't get the object name.
         let named = matches!(name, GTObjectName::Named(_));
         if named {
-            context.parents.push(GTContextParent::Anonymous);
+            context.enter_parent(GTContextParent::Anonymous);
         }
 
         let mut object = GTObject {
@@ -39,7 +39,7 @@ impl GTObject {
         }
 
         if named {
-            context.pop_parent(span, GTNode::Object)?;
+            context.exit_parent(span, GTNode::Object)?;
         }
 
         Ok(object)
@@ -65,6 +65,7 @@ mod tests {
                 (0, 5).into(),
                 "Hello".into(),
             ))],
+            taken_names: Default::default(),
         };
         assert_eq!(
             GTObject::parse(pairs.next().unwrap(), &mut context).unwrap(),
@@ -134,6 +135,7 @@ mod tests {
                 GTContextParent::Alias(GTIdentifier::new((0, 5).into(), "Hello".into())),
                 GTContextParent::Anonymous,
             ],
+            taken_names: Default::default(),
         };
         assert_eq!(
             GTObject::parse(pairs.next().unwrap(), &mut context).unwrap(),

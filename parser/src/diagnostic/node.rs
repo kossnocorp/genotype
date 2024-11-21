@@ -21,6 +21,7 @@ pub enum GTNode {
     Property,
     Record,
     RecordKey,
+    Branded,
 }
 
 impl GTNode {
@@ -45,6 +46,7 @@ impl GTNode {
             Self::Property => "property",
             Self::Record => "record",
             Self::RecordKey => "record key",
+            Self::Branded => "branded primitive",
         }
     }
 }

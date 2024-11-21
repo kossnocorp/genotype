@@ -503,6 +503,7 @@ dependencies = [
 name = "genotype_parser"
 version = "0.3.0"
 dependencies = [
+ "heck",
  "miette",
  "pest",
  "pest_derive",

@@ -13,7 +13,7 @@ impl GTDescriptor {
 
         let is_union = inner.len() > 1;
         if is_union {
-            context.parents.push(GTContextParent::Anonymous);
+            context.enter_parent(GTContextParent::Anonymous);
         }
 
         while let Some(pair) = inner.next() {
@@ -43,6 +43,8 @@ impl GTDescriptor {
 
                 Rule::any => GTDescriptor::Any(pair.into()),
 
+                Rule::branded => GTDescriptor::Branded(GTBranded::parse(pair, context)?),
+
                 _ => return Err(GTParseError::UnknownRule(span.clone(), GTNode::Descriptor)),
             };
 
@@ -50,7 +52,7 @@ impl GTDescriptor {
         }
 
         if is_union {
-            context.pop_parent(span.clone(), GTNode::Descriptor)?;
+            context.exit_parent(span.clone(), GTNode::Descriptor)?;
         }
 
         match descriptors.as_slice() {

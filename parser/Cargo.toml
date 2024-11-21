@@ -13,6 +13,7 @@ miette = { version = "7.2.0", features = ["fancy"] }
 pest = { version = "2.7.13", features = ["miette-error"] }
 pest_derive = "2.7.13"
 thiserror = "1.0.64"
+heck = "0.5.0"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

@@ -37,6 +37,8 @@ impl PYConvert<PYDescriptor> for GTDescriptor {
             GTDescriptor::Union(union) => union.convert(context).into(),
 
             GTDescriptor::Any(any) => any.convert(context).into(),
+
+            GTDescriptor::Branded(_) => todo!(),
         }
     }
 }

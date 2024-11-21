@@ -14,7 +14,7 @@ impl GTAlias {
             .ok_or_else(|| GTParseError::Internal(span.clone(), GTNode::Alias))?;
         let alias = parse(inner, pair, context, ParseState::Doc(span.clone(), None))?;
 
-        context.pop_parent(span, GTNode::Alias)?;
+        context.exit_parent(span, GTNode::Alias)?;
 
         Ok(alias)
     }
@@ -83,7 +83,7 @@ fn parse(
             let name: GTIdentifier = pair.into();
 
             context.resolve.exports.push(name.clone());
-            context.parents.push(GTContextParent::Alias(name.clone()));
+            context.enter_parent(GTContextParent::Alias(name.clone()));
 
             match inner.next() {
                 Some(pair) => parse(
@@ -175,6 +175,7 @@ mod tests {
             module_id: "module".into(),
             parents: parents.clone(),
             resolve: GTResolve::new(),
+            taken_names: Default::default(),
         };
 
         GTAlias::parse(pairs.next().unwrap(), &mut context).unwrap();

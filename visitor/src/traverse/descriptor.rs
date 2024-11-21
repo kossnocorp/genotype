@@ -30,6 +30,8 @@ impl GTTraverse for GTDescriptor {
             GTDescriptor::Record(record) => record.traverse(visitor),
 
             GTDescriptor::Any(any) => any.traverse(visitor),
+
+            GTDescriptor::Branded(_) => todo!(),
         }
     }
 }

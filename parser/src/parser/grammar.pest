@@ -8,7 +8,7 @@ name = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC)* }
 
 descriptor = @{ "|"? ~ WHITESPACE* ~ descriptor_inner ~ (WHITESPACE* ~ "|" ~ WHITESPACE* ~ descriptor_inner)* }
 
-descriptor_inner = !{ literal | inline_import | primitive | any | object | array | tuple | record | alias | name }
+descriptor_inner = !{ literal | inline_import | primitive | branded | any | object | array | tuple | record | alias | name }
 
 primitive = { "string" | "int" | "float" | "boolean" | "null" }
 
@@ -39,6 +39,10 @@ digits = @{ (ASCII_DIGIT | ("_" ~ ASCII_DIGIT))+ }
 exponent = @{ ("E" | "e") ~ ("+" | "-")? ~ ASCII_DIGIT+ }
 
 literal_boolean = ${ "true" | "false" }
+
+// Branded
+
+branded = ${ "@" ~ primitive }
 
 // Objects
 

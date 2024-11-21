@@ -1,0 +1,9 @@
+OrgId = @int
+
+UserId = @string
+
+Const = @float
+
+Yes = @boolean
+
+Nope = @null

@@ -20,7 +20,7 @@ impl GTProperty {
             ParseState::Doc(span.clone(), required, None),
         )?;
 
-        context.pop_parent(span, GTNode::Property)?;
+        context.exit_parent(span, GTNode::Property)?;
 
         Ok(property)
     }
@@ -92,9 +92,7 @@ fn parse(
         ParseState::Name(span, required, doc, attributes) => {
             let name = GTKey::parse(pair);
 
-            context
-                .parents
-                .push(GTContextParent::Property(name.clone()));
+            context.enter_parent(GTContextParent::Property(name.clone()));
 
             match inner.next() {
                 Some(pair) => parse(
@@ -161,6 +159,7 @@ mod tests {
             module_id: "module".into(),
             parents: parents.clone(),
             resolve: GTResolve::new(),
+            taken_names: Default::default(),
         };
 
         GTProperty::parse(pairs.next().unwrap(), &mut context).unwrap();

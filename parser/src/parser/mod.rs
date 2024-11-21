@@ -90,6 +90,11 @@ mod tests {
     }
 
     #[test]
+    fn test_branded() {
+        parse_file("../examples/01-syntax/16-branded.type");
+    }
+
+    #[test]
     fn test_empty() {
         parse_code("");
     }

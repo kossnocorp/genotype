@@ -37,6 +37,8 @@ impl RSConvert<RSDescriptor> for GTDescriptor {
                 .into(),
 
             GTDescriptor::Any(any) => any.convert(context)?.into(),
+
+            GTDescriptor::Branded(_) => todo!(),
         })
     }
 }
@@ -166,8 +168,7 @@ mod tests {
                 id: GTDefinitionId("module".into(), "Person".into()),
                 doc: None,
                 attributes: vec![
-                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
-                        .into()
+                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()
                 ],
                 name: "Person".into(),
                 fields: vec![

@@ -59,6 +59,8 @@ impl TSConvert<TSDescriptor> for GTDescriptor {
             }
 
             GTDescriptor::Any(any) => TSDescriptor::Any(any.convert(resolve, hoist)),
+
+            GTDescriptor::Branded(_) => todo!(),
         }
     }
 }

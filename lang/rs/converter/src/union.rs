@@ -125,6 +125,7 @@ fn name_descriptor(
         GTDescriptor::Record(_) => "Map".into(),
         GTDescriptor::Tuple(_) => "Tuple".into(),
         GTDescriptor::Any(_) => "Any".into(),
+        GTDescriptor::Branded(_) => todo!(),
     })
 }
 

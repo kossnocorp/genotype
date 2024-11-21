@@ -15,6 +15,7 @@ pub enum GTDescriptor {
     Union(GTUnion),
     Record(Box<GTRecord>),
     Any(GTAny),
+    Branded(GTBranded),
 }
 
 impl From<GTObject> for GTDescriptor {
@@ -55,5 +56,11 @@ impl From<GTRecord> for GTDescriptor {
 impl From<GTAny> for GTDescriptor {
     fn from(any: GTAny) -> Self {
         GTDescriptor::Any(any)
+    }
+}
+
+impl From<GTBranded> for GTDescriptor {
+    fn from(branded: GTBranded) -> Self {
+        GTDescriptor::Branded(branded)
     }
 }

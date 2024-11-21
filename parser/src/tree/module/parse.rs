@@ -1710,6 +1710,101 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_branded() {
+        let source_code = read_source_code("../examples/01-syntax/16-branded.type");
+        assert_module(
+            "module".into(),
+            source_code.clone(),
+            GTModuleParse {
+                module: GTModule {
+                    id: "module".into(),
+                    source_code,
+                    doc: None,
+                    imports: vec![],
+                    aliases: vec![
+                        GTAlias {
+                            id: GTDefinitionId("module".into(), "OrgId".into()),
+                            span: (0, 12).into(),
+                            doc: None,
+                            attributes: vec![],
+                            name: GTIdentifier::new((0, 5).into(), "OrgId".into()),
+                            descriptor: GTBranded::Int(
+                                (8, 12).into(),
+                                GTDefinitionId("module".into(), "OrgId".into()),
+                                GTIdentifier::new((0, 5).into(), "OrgId".into()),
+                            )
+                            .into(),
+                        },
+                        GTAlias {
+                            id: GTDefinitionId("module".into(), "UserId".into()),
+                            span: (14, 30).into(),
+                            doc: None,
+                            attributes: vec![],
+                            name: GTIdentifier::new((14, 20).into(), "UserId".into()),
+                            descriptor: GTBranded::String(
+                                (23, 30).into(),
+                                GTDefinitionId("module".into(), "UserId".into()),
+                                GTIdentifier::new((14, 20).into(), "UserId".into()),
+                            )
+                            .into(),
+                        },
+                        GTAlias {
+                            id: GTDefinitionId("module".into(), "Const".into()),
+                            span: (32, 46).into(),
+                            doc: None,
+                            attributes: vec![],
+                            name: GTIdentifier::new((32, 37).into(), "Const".into()),
+                            descriptor: GTBranded::Float(
+                                (40, 46).into(),
+                                GTDefinitionId("module".into(), "Const".into()),
+                                GTIdentifier::new((32, 37).into(), "Const".into()),
+                            )
+                            .into(),
+                        },
+                        GTAlias {
+                            id: GTDefinitionId("module".into(), "Yes".into()),
+                            span: (48, 62).into(),
+                            doc: None,
+                            attributes: vec![],
+                            name: GTIdentifier::new((48, 51).into(), "Yes".into()),
+                            descriptor: GTBranded::Boolean(
+                                (54, 62).into(),
+                                GTDefinitionId("module".into(), "Yes".into()),
+                                GTIdentifier::new((48, 51).into(), "Yes".into()),
+                            )
+                            .into(),
+                        },
+                        GTAlias {
+                            id: GTDefinitionId("module".into(), "Nope".into()),
+                            span: (64, 76).into(),
+                            doc: None,
+                            attributes: vec![],
+                            name: GTIdentifier::new((64, 68).into(), "Nope".into()),
+                            descriptor: GTBranded::Null(
+                                (71, 76).into(),
+                                GTDefinitionId("module".into(), "Nope".into()),
+                                GTIdentifier::new((64, 68).into(), "Nope".into()),
+                            )
+                            .into(),
+                        },
+                    ],
+                },
+                resolve: GTResolve {
+                    deps: HashSet::new(),
+                    exports: vec![
+                        GTIdentifier::new((0, 5).into(), "OrgId".into()),
+                        GTIdentifier::new((14, 20).into(), "UserId".into()),
+                        GTIdentifier::new((32, 37).into(), "Const".into()),
+                        GTIdentifier::new((48, 51).into(), "Yes".into()),
+                        GTIdentifier::new((64, 68).into(), "Nope".into()),
+                    ],
+                    references: HashSet::new(),
+                },
+            },
+        );
+    }
+
     fn read_source_code(path: &str) -> NamedSource<String> {
         let content = fs::read_to_string(path).expect("cannot read file");
         NamedSource::new(path, content)
