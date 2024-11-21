@@ -16,77 +16,77 @@ mod tests {
 
     #[test]
     fn test_alias() {
-        parse_file("./examples/syntax/01-alias.type");
+        parse_file("../examples/01-syntax/01-alias.type");
     }
 
     #[test]
     fn test_primitives() {
-        parse_file("./examples/syntax/02-primitives.type");
+        parse_file("../examples/01-syntax/02-primitives.type");
     }
 
     #[test]
     fn test_objects() {
-        parse_file("./examples/syntax/03-objects.type");
+        parse_file("../examples/01-syntax/03-objects.type");
     }
 
     #[test]
     fn test_comments() {
-        parse_file("./examples/syntax/04-comments.type");
+        parse_file("../examples/01-syntax/04-comments.type");
     }
 
     #[test]
     fn test_optional() {
-        parse_file("./examples/syntax/05-optional.type");
+        parse_file("../examples/01-syntax/05-optional.type");
     }
 
     #[test]
     fn test_nested() {
-        parse_file("./examples/syntax/06-nested.type");
+        parse_file("../examples/01-syntax/06-nested.type");
     }
 
     #[test]
     fn test_arrays() {
-        parse_file("./examples/syntax/07-arrays.type");
+        parse_file("../examples/01-syntax/07-arrays.type");
     }
 
     #[test]
     fn test_tuples() {
-        parse_file("./examples/syntax/08-tuples.type");
+        parse_file("../examples/01-syntax/08-tuples.type");
     }
 
     #[test]
     fn test_modules() {
-        parse_file("./examples/syntax/09-modules.type");
+        parse_file("../examples/01-syntax/09-modules.type");
     }
 
     #[test]
     fn test_extensions() {
-        parse_file("./examples/syntax/10-extensions.type");
+        parse_file("../examples/01-syntax/10-extensions.type");
     }
 
     #[test]
     fn test_literals() {
-        parse_file("./examples/syntax/11-literals.type");
+        parse_file("../examples/01-syntax/11-literals.type");
     }
 
     #[test]
     fn test_unions() {
-        parse_file("./examples/syntax/12-unions.type");
+        parse_file("../examples/01-syntax/12-unions.type");
     }
 
     #[test]
     fn test_attributes() {
-        parse_file("./examples/syntax/13-attributes.type");
+        parse_file("../examples/01-syntax/13-attributes.type");
     }
 
     #[test]
     fn test_records() {
-        parse_file("./examples/syntax/14-records.type");
+        parse_file("../examples/01-syntax/14-records.type");
     }
 
     #[test]
     fn test_any() {
-        parse_file("./examples/syntax/15-any.type");
+        parse_file("../examples/01-syntax/15-any.type");
     }
 
     #[test]

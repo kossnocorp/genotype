@@ -110,7 +110,7 @@ mod tests {
 
     #[test]
     fn test_alias() {
-        let source_code = read_source_code("./examples/syntax/01-alias.type");
+        let source_code = read_source_code("../examples/01-syntax/01-alias.type");
         assert_module(
             "module".into(),
             source_code.clone(),
@@ -162,7 +162,7 @@ mod tests {
 
     #[test]
     fn test_primitives() {
-        let source_code = read_source_code("./examples/syntax/02-primitives.type");
+        let source_code = read_source_code("../examples/01-syntax/02-primitives.type");
         assert_module(
             "module".into(),
             source_code.clone(),
@@ -232,7 +232,7 @@ mod tests {
 
     #[test]
     fn test_objects() {
-        let source_code = read_source_code("./examples/syntax/03-objects.type");
+        let source_code = read_source_code("../examples/01-syntax/03-objects.type");
         assert_module(
             "module".into(),
             source_code.clone(),
@@ -399,7 +399,7 @@ mod tests {
 
     #[test]
     fn test_comments() {
-        let source_code = read_source_code("./examples/syntax/04-comments.type");
+        let source_code = read_source_code("../examples/01-syntax/04-comments.type");
         assert_module(
             "module".into(),
             source_code.clone(),
@@ -485,7 +485,7 @@ mod tests {
 
     #[test]
     fn test_optional() {
-        let source_code = read_source_code("./examples/syntax/05-optional.type");
+        let source_code = read_source_code("../examples/01-syntax/05-optional.type");
         assert_module(
             "module".into(),
             source_code.clone(),
@@ -538,7 +538,7 @@ mod tests {
 
     #[test]
     fn test_nested() {
-        let source_code = read_source_code("./examples/syntax/06-nested.type");
+        let source_code = read_source_code("../examples/01-syntax/06-nested.type");
         assert_module(
             "module".into(),
             source_code.clone(),
@@ -680,7 +680,7 @@ mod tests {
 
     #[test]
     fn test_arrays() {
-        let source_code = read_source_code("./examples/syntax/07-arrays.type");
+        let source_code = read_source_code("../examples/01-syntax/07-arrays.type");
         assert_module(
             "module".into(),
             source_code.clone(),
@@ -738,7 +738,7 @@ mod tests {
 
     #[test]
     fn test_tuples() {
-        let source_code = read_source_code("./examples/syntax/08-tuples.type");
+        let source_code = read_source_code("../examples/01-syntax/08-tuples.type");
         assert_module(
             "module".into(),
             source_code.clone(),
@@ -826,7 +826,7 @@ mod tests {
 
     #[test]
     fn test_modules() {
-        let source_code = read_source_code("./examples/syntax/09-modules.type");
+        let source_code = read_source_code("../examples/01-syntax/09-modules.type");
         assert_module(
             "module".into(),
             source_code.clone(),
@@ -968,7 +968,7 @@ mod tests {
 
     #[test]
     fn test_extensions() {
-        let source_code = read_source_code("./examples/syntax/10-extensions.type");
+        let source_code = read_source_code("../examples/01-syntax/10-extensions.type");
         assert_module(
             "module".into(),
             source_code.clone(),
@@ -1100,7 +1100,7 @@ mod tests {
 
     #[test]
     fn test_literals() {
-        let source_code = read_source_code("./examples/syntax/11-literals.type");
+        let source_code = read_source_code("../examples/01-syntax/11-literals.type");
         assert_module(
             "module".into(),
             source_code.clone(),
@@ -1348,7 +1348,7 @@ mod tests {
 
     #[test]
     fn test_unions() {
-        let source_code = read_source_code("./examples/syntax/12-unions.type");
+        let source_code = read_source_code("../examples/01-syntax/12-unions.type");
         assert_module(
             "module".into(),
             source_code.clone(),
@@ -1405,7 +1405,7 @@ mod tests {
 
     #[test]
     fn test_attributes() {
-        let source_code = read_source_code("./examples/syntax/13-attributes.type");
+        let source_code = read_source_code("../examples/01-syntax/13-attributes.type");
         assert_module(
             "module".into(),
             source_code.clone(),
@@ -1629,7 +1629,7 @@ mod tests {
 
     #[test]
     fn test_records() {
-        let source_code = read_source_code("./examples/syntax/14-records.type");
+        let source_code = read_source_code("../examples/01-syntax/14-records.type");
         assert_module(
             "module".into(),
             source_code.clone(),
@@ -1682,7 +1682,7 @@ mod tests {
 
     #[test]
     fn test_any() {
-        let source_code = read_source_code("./examples/syntax/15-any.type");
+        let source_code = read_source_code("../examples/01-syntax/15-any.type");
         assert_module(
             "module".into(),
             source_code.clone(),
