@@ -26,6 +26,12 @@ impl RSConvert<RSDefinition> for GTAlias {
                 RSDefinition::Struct(object.convert(context)?)
             }
 
+            GTDescriptor::Branded(branded) => {
+                context.provide_definition_id(self.id.clone());
+                context.provide_doc(doc);
+                RSDefinition::Struct(branded.convert(context)?)
+            }
+
             GTDescriptor::Union(union) => {
                 context.provide_definition_id(self.id.clone());
                 context.provide_doc(doc);
@@ -136,6 +142,37 @@ mod tests {
                     }
                 ]
                 .into(),
+            }),
+        );
+    }
+
+    #[test]
+    fn test_convert_branded() {
+        assert_eq!(
+            GTAlias {
+                id: GTDefinitionId("module".into(), "BookId".into()),
+                span: (0, 0).into(),
+                doc: None,
+                attributes: vec![],
+                name: GTIdentifier::new((0, 0).into(), "BookId".into()),
+                descriptor: GTDescriptor::Branded(GTBranded::Int(
+                    (0, 0).into(),
+                    GTDefinitionId("module".into(), "BookId".into()),
+                    GTIdentifier((0, 0).into(), "BookId".into())
+                ))
+                .into(),
+            }
+            .convert(&mut RSConvertContext::empty("module".into()))
+            .unwrap(),
+            RSDefinition::Struct(RSStruct {
+                id: GTDefinitionId("module".into(), "BookId".into()),
+                doc: None,
+                attributes: vec![
+                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()
+                ],
+                name: "BookId".into(),
+                fields: RSStructFields::Tuple(vec![RSDescriptor::Primitive(RSPrimitive::Int),])
+                    .into(),
             }),
         );
     }
