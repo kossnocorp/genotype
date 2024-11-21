@@ -12,7 +12,6 @@ impl RSTraverse for RSDefinition {
             RSDefinition::Alias(alias) => alias.traverse(visitor),
             RSDefinition::Struct(r#struct) => r#struct.traverse(visitor),
             RSDefinition::Enum(r#enum) => r#enum.traverse(visitor),
-            RSDefinition::Newtype(newtype) => newtype.traverse(visitor),
         }
     }
 }

@@ -1,11 +1,13 @@
-use genotype_lang_rs_tree::{RSContext, RSContextRenderDeriveMode, RSNewtype, RSPrimitive};
+use genotype_lang_rs_tree::{
+    RSContext, RSContextRenderDeriveMode, RSPrimitive, RSStruct, RSStructFields,
+};
 use genotype_parser::GTBranded;
 use miette::Result;
 
 use crate::{context::RSConvertContext, convert::RSConvert};
 
-impl RSConvert<RSNewtype> for GTBranded {
-    fn convert(&self, context: &mut RSConvertContext) -> Result<RSNewtype> {
+impl RSConvert<RSStruct> for GTBranded {
+    fn convert(&self, context: &mut RSConvertContext) -> Result<RSStruct> {
         let doc = context.consume_doc();
         let name = self.name().convert(context)?;
         let id = context
@@ -21,14 +23,14 @@ impl RSConvert<RSNewtype> for GTBranded {
         }
         .into();
 
-        Ok(RSNewtype {
+        Ok(RSStruct {
             id,
             doc,
             attributes: vec![context
                 .render_derive(RSContextRenderDeriveMode::Struct)
                 .into()],
             name,
-            descriptors: vec![descriptor].into(),
+            fields: RSStructFields::Tuple(vec![descriptor]),
         })
     }
 }

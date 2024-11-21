@@ -9,6 +9,24 @@ use super::{RSRender, RSStructFields};
 impl RSRender for RSStructFields {
     fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
         match self {
+            RSStructFields::Tuple(descriptors) => {
+                if descriptors.len() == 0 {
+                    return Ok(";".into());
+                }
+
+                let descriptors = descriptors
+                    .iter()
+                    .map(|descriptor| {
+                        descriptor
+                            .render(indent, config)
+                            .map(|result| format!("pub {result}"))
+                    })
+                    .collect::<Result<Vec<String>>>()?
+                    .join(", ");
+
+                Ok(format!("({descriptors});"))
+            }
+
             RSStructFields::Resolved(fields) => {
                 if fields.len() == 0 {
                     return Ok(";".into());
@@ -100,6 +118,29 @@ mod tests {
         pub name: String,
         pub age: isize,
     }"#
+        );
+    }
+
+    #[test]
+    fn test_render_tuple() {
+        assert_eq!(
+            RSStructFields::Tuple(vec![
+                RSDescriptor::Primitive(RSPrimitive::String),
+                RSDescriptor::Primitive(RSPrimitive::Int),
+            ])
+            .render(&rs_indent(), &Default::default())
+            .unwrap(),
+            "(pub String, pub isize);"
+        );
+    }
+
+    #[test]
+    fn test_render_empty_tuple() {
+        assert_eq!(
+            RSStructFields::Tuple(vec![])
+                .render(&rs_indent(), &Default::default())
+                .unwrap(),
+            ";"
         );
     }
 }

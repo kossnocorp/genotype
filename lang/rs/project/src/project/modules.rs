@@ -98,6 +98,11 @@ impl RSProject {
                                             Ok(resolved_fields.clone())
                                         }
 
+                                        RSStructFields::Tuple(_) => {
+                                            Err(RSProjectError::TupleStructExtension(span.clone())
+                                                .into())
+                                        }
+
                                         RSStructFields::Unresolved(span, _, _) => {
                                             // [TODO] Include the current struct too
                                             Err(RSProjectError::FailedExtensionsResolve(
@@ -162,7 +167,7 @@ impl RSProject {
                                         Ok(references)
                                     }
 
-                                    RSStructFields::Resolved(_) => {
+                                    RSStructFields::Tuple(_) | RSStructFields::Resolved(_) => {
                                         Err(RSProjectError::FailedExtensionsResolve(
                                             span.clone(),
                                             "Definition is already resolved".into(),

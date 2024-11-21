@@ -57,6 +57,4 @@ pub trait RSVisitor {
     fn visit_use_reference(&mut self, _reference: &mut RSUseReference) {}
 
     fn visit_vec(&mut self, _vec: &mut RSVec) {}
-
-    fn visit_newtype(&mut self, _newtype: &mut RSNewtype) {}
 }

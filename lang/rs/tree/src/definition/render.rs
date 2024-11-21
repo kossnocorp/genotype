@@ -12,7 +12,6 @@ impl RSRender for RSDefinition {
             RSDefinition::Alias(alias) => alias.render(indent, config)?,
             RSDefinition::Struct(interface) => interface.render(indent, config)?,
             RSDefinition::Enum(r#enum) => r#enum.render(indent, config)?,
-            RSDefinition::Newtype(newtype) => newtype.render(indent, config)?,
         })
     }
 }

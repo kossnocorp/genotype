@@ -19,4 +19,8 @@ pub enum RSProjectError {
     #[error("Detected cyclic dependencies")]
     #[diagnostic(code(GTRSP203))]
     CyclicExtensions(#[label(collection, "these structs reference each other")] Vec<GTSpan>),
+
+    #[error("Tuple structs can't be extended with")]
+    #[diagnostic(code(GTRSP204))]
+    TupleStructExtension(#[label("this struct extensions")] GTSpan),
 }

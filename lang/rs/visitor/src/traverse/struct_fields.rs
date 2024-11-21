@@ -9,6 +9,12 @@ impl RSTraverse for RSStructFields {
         visitor.visit_struct_fields(self);
 
         match self {
+            RSStructFields::Tuple(descriptors) => {
+                for descriptor in descriptors {
+                    descriptor.traverse(visitor);
+                }
+            }
+
             RSStructFields::Resolved(fields) => {
                 for field in fields {
                     field.traverse(visitor);
