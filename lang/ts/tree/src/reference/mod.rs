@@ -10,3 +10,9 @@ impl From<&str> for TSReference {
         TSReference(str.into())
     }
 }
+
+impl From<TSIdentifier> for TSReference {
+    fn from(identifier: TSIdentifier) -> Self {
+        TSReference(identifier)
+    }
+}

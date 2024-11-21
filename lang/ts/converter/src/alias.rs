@@ -12,6 +12,10 @@ impl TSConvert<TSDefinition> for GTAlias {
         let name = self.name.convert(resolve, hoist);
 
         match &self.descriptor {
+            GTDescriptor::Branded(branded) => {
+                TSDefinition::Branded(branded.convert(resolve, hoist))
+            }
+
             GTDescriptor::Object(object) => TSDefinition::Interface(TSInterface {
                 doc,
                 name,
@@ -118,6 +122,30 @@ mod tests {
                         required: true,
                     }
                 ]
+            }),
+        );
+    }
+
+    #[test]
+    fn test_convert_branded() {
+        assert_eq!(
+            GTAlias {
+                id: GTDefinitionId("module".into(), "BookId".into()),
+                span: (0, 0).into(),
+                doc: None,
+                attributes: vec![],
+                name: GTIdentifier::new((0, 0).into(), "BookId".into()),
+                descriptor: GTDescriptor::Branded(GTBranded::String(
+                    (0, 0).into(),
+                    GTDefinitionId("module".into(), "BookId".into()),
+                    GTIdentifier::new((0, 0).into(), "BookId".into())
+                ))
+            }
+            .convert(&TSConvertResolve::new(), &|_| {}),
+            TSDefinition::Branded(TSBranded {
+                doc: None,
+                name: "BookId".into(),
+                primitive: TSPrimitive::String,
             }),
         );
     }

@@ -9,6 +9,7 @@ repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
 genotype_lang_core_tree = { version = "0.3.0", path = "../../core/tree" }
+heck = "0.5.0"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

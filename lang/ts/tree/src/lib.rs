@@ -1,6 +1,7 @@
 pub mod alias;
 pub mod any;
 pub mod array;
+pub mod branded;
 pub mod definition;
 pub mod descriptor;
 pub mod doc;
@@ -29,6 +30,7 @@ pub mod union;
 pub use alias::*;
 pub use any::*;
 pub use array::*;
+pub use branded::*;
 pub use definition::*;
 pub use descriptor::*;
 pub use doc::*;

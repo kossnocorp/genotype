@@ -60,7 +60,12 @@ impl TSConvert<TSDescriptor> for GTDescriptor {
 
             GTDescriptor::Any(any) => TSDescriptor::Any(any.convert(resolve, hoist)),
 
-            GTDescriptor::Branded(_) => todo!(),
+            GTDescriptor::Branded(branded) => {
+                let branded = branded.convert(resolve, hoist);
+                let reference = branded.name.clone().into();
+                hoist(branded.into());
+                TSDescriptor::Reference(reference)
+            }
         }
     }
 }
@@ -318,6 +323,31 @@ mod tests {
         assert_eq!(
             GTDescriptor::Any(GTAny((0, 0).into())).convert(&TSConvertResolve::new(), &|_| {}),
             TSDescriptor::Any(TSAny)
+        );
+    }
+
+    #[test]
+    fn test_convert_branded() {
+        let hoisted = Mutex::new(vec![]);
+        assert_eq!(
+            GTDescriptor::Branded(GTBranded::String(
+                (0, 0).into(),
+                GTDefinitionId("module".into(), "UserId".into()),
+                GTIdentifier::new((0, 0).into(), "UserId".into())
+            ))
+            .convert(&TSConvertResolve::new(), &|definition| {
+                let mut hoisted = hoisted.lock().unwrap();
+                hoisted.push(definition);
+            }),
+            TSDescriptor::Reference("UserId".into())
+        );
+        assert_eq!(
+            hoisted.lock().unwrap().clone(),
+            vec![TSDefinition::Branded(TSBranded {
+                doc: None,
+                name: "UserId".into(),
+                primitive: TSPrimitive::String,
+            })]
         );
     }
 }

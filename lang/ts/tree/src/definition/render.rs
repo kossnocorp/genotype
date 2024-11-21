@@ -7,6 +7,7 @@ impl GTRender for TSDefinition {
         match self {
             TSDefinition::Alias(alias) => alias.render(indent),
             TSDefinition::Interface(interface) => interface.render(indent),
+            TSDefinition::Branded(branded) => branded.render(indent),
         }
     }
 }
@@ -56,6 +57,20 @@ mod tests {
   name: string;
   age?: number;
 }"#
+        );
+    }
+
+    #[test]
+    fn test_render_branded() {
+        assert_eq!(
+            TSDefinition::Branded(TSBranded {
+                doc: None,
+                name: "Version".into(),
+                primitive: TSPrimitive::Number
+            })
+            .render(&ts_indent()),
+            r#"export type Version = number & { [versionBrand]: true };
+declare const versionBrand: unique symbol;"#
         );
     }
 }
