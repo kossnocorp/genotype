@@ -330,11 +330,12 @@ mod tests {
     fn test_convert_branded() {
         let hoisted = Mutex::new(vec![]);
         assert_eq!(
-            GTDescriptor::Branded(GTBranded::String(
-                (0, 0).into(),
-                GTDefinitionId("module".into(), "UserId".into()),
-                GTIdentifier::new((0, 0).into(), "UserId".into())
-            ))
+            GTDescriptor::Branded(GTBranded {
+                span: (0, 0).into(),
+                id: GTDefinitionId("module".into(), "UserId".into()),
+                name: GTIdentifier::new((0, 0).into(), "UserId".into()),
+                primitive: GTPrimitive::String((0, 0).into()).into(),
+            })
             .convert(&TSConvertResolve::new(), &|definition| {
                 let mut hoisted = hoisted.lock().unwrap();
                 hoisted.push(definition);

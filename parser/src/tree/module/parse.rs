@@ -1729,11 +1729,12 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTIdentifier::new((0, 5).into(), "OrgId".into()),
-                            descriptor: GTBranded::Int(
-                                (8, 12).into(),
-                                GTDefinitionId("module".into(), "OrgId".into()),
-                                GTIdentifier::new((0, 5).into(), "OrgId".into()),
-                            )
+                            descriptor: GTBranded {
+                                span: (8, 12).into(),
+                                id: GTDefinitionId("module".into(), "OrgId".into()),
+                                name: GTIdentifier::new((0, 5).into(), "OrgId".into()),
+                                primitive: GTPrimitive::Int((9, 12).into()).into(),
+                            }
                             .into(),
                         },
                         GTAlias {
@@ -1742,11 +1743,12 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTIdentifier::new((14, 20).into(), "UserId".into()),
-                            descriptor: GTBranded::String(
-                                (23, 30).into(),
-                                GTDefinitionId("module".into(), "UserId".into()),
-                                GTIdentifier::new((14, 20).into(), "UserId".into()),
-                            )
+                            descriptor: GTBranded {
+                                span: (23, 30).into(),
+                                id: GTDefinitionId("module".into(), "UserId".into()),
+                                name: GTIdentifier::new((14, 20).into(), "UserId".into()),
+                                primitive: GTPrimitive::String((24, 30).into()).into(),
+                            }
                             .into(),
                         },
                         GTAlias {
@@ -1755,11 +1757,12 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTIdentifier::new((32, 37).into(), "Const".into()),
-                            descriptor: GTBranded::Float(
-                                (40, 46).into(),
-                                GTDefinitionId("module".into(), "Const".into()),
-                                GTIdentifier::new((32, 37).into(), "Const".into()),
-                            )
+                            descriptor: GTBranded {
+                                span: (40, 46).into(),
+                                id: GTDefinitionId("module".into(), "Const".into()),
+                                name: GTIdentifier::new((32, 37).into(), "Const".into()),
+                                primitive: GTPrimitive::Float((41, 46).into()).into(),
+                            }
                             .into(),
                         },
                         GTAlias {
@@ -1768,11 +1771,12 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTIdentifier::new((48, 51).into(), "Yes".into()),
-                            descriptor: GTBranded::Boolean(
-                                (54, 62).into(),
-                                GTDefinitionId("module".into(), "Yes".into()),
-                                GTIdentifier::new((48, 51).into(), "Yes".into()),
-                            )
+                            descriptor: GTBranded {
+                                span: (54, 62).into(),
+                                id: GTDefinitionId("module".into(), "Yes".into()),
+                                name: GTIdentifier::new((48, 51).into(), "Yes".into()),
+                                primitive: GTPrimitive::Boolean((55, 62).into()).into(),
+                            }
                             .into(),
                         },
                         GTAlias {
@@ -1781,11 +1785,12 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTIdentifier::new((64, 68).into(), "Nope".into()),
-                            descriptor: GTBranded::Null(
-                                (71, 76).into(),
-                                GTDefinitionId("module".into(), "Nope".into()),
-                                GTIdentifier::new((64, 68).into(), "Nope".into()),
-                            )
+                            descriptor: GTBranded {
+                                span: (71, 76).into(),
+                                id: GTDefinitionId("module".into(), "Nope".into()),
+                                name: GTIdentifier::new((64, 68).into(), "Nope".into()),
+                                primitive: GTPrimitive::Null((72, 76).into()).into(),
+                            }
                             .into(),
                         },
                     ],

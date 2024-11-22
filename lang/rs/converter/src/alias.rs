@@ -155,11 +155,12 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "BookId".into()),
-                descriptor: GTDescriptor::Branded(GTBranded::Int(
-                    (0, 0).into(),
-                    GTDefinitionId("module".into(), "BookId".into()),
-                    GTIdentifier((0, 0).into(), "BookId".into())
-                ))
+                descriptor: GTDescriptor::Branded(GTBranded {
+                    span: (0, 0).into(),
+                    id: GTDefinitionId("module".into(), "BookId".into()),
+                    name: GTIdentifier((0, 0).into(), "BookId".into()),
+                    primitive: GTPrimitive::Int((0, 0).into())
+                })
                 .into(),
             }
             .convert(&mut RSConvertContext::empty("module".into()))

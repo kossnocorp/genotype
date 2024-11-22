@@ -39,7 +39,7 @@ impl RSConvert<RSDescriptor> for GTDescriptor {
             GTDescriptor::Any(any) => any.convert(context)?.into(),
 
             GTDescriptor::Branded(branded) => context
-                .hoist(|context| Ok((branded.convert(context)?, branded.span())))?
+                .hoist(|context| Ok((branded.convert(context)?, branded.span.clone())))?
                 .into(),
         })
     }

@@ -9,19 +9,11 @@ use crate::{context::RSConvertContext, convert::RSConvert};
 impl RSConvert<RSStruct> for GTBranded {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSStruct> {
         let doc = context.consume_doc();
-        let name = self.name().convert(context)?;
+        let name = self.name.convert(context)?;
         let id = context
             .consume_definition_id()
             .unwrap_or_else(|| context.build_definition_id(&name));
-
-        let descriptor = match &self {
-            GTBranded::Boolean(_, _, _) => RSPrimitive::Boolean,
-            GTBranded::String(_, _, _) => RSPrimitive::String,
-            GTBranded::Int(_, _, _) => RSPrimitive::Int,
-            GTBranded::Float(_, _, _) => RSPrimitive::Float64,
-            GTBranded::Null(_, _, _) => RSPrimitive::Unit,
-        }
-        .into();
+        let descriptor = self.primitive.convert(context)?.into();
 
         Ok(RSStruct {
             id,

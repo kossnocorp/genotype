@@ -113,7 +113,7 @@ fn name_descriptor(
         GTDescriptor::InlineImport(import) => import.name.convert(context)?,
         GTDescriptor::Object(object) => object.name.to_identifier().convert(context)?,
         GTDescriptor::Literal(literal) => literal.to_string().to_pascal_case().into(),
-        GTDescriptor::Branded(branded) => branded.name().convert(context)?,
+        GTDescriptor::Branded(branded) => branded.name.convert(context)?,
         GTDescriptor::Primitive(primitive) => match primitive {
             GTPrimitive::Boolean(_) => "Boolean".into(),
             GTPrimitive::Float(_) => "Float".into(),
