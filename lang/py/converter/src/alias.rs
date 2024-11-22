@@ -16,6 +16,11 @@ impl PYConvert<PYDefinition> for GTAlias {
                 PYDefinition::Class(object.convert(context))
             }
 
+            GTDescriptor::Branded(branded) => {
+                context.provide_doc(doc);
+                PYDefinition::Newtype(branded.convert(context))
+            }
+
             _ => {
                 context.create_references_scope();
 
@@ -136,6 +141,31 @@ mod tests {
                 ],
                 references: vec![],
             }),
+        );
+    }
+
+    #[test]
+    fn test_convert_branded() {
+        assert_eq!(
+            GTAlias {
+                id: GTDefinitionId("module".into(), "UserId".into()),
+                span: (0, 0).into(),
+                doc: None,
+                attributes: vec![],
+                name: GTIdentifier::new((0, 0).into(), "UserId".into()),
+                descriptor: GTDescriptor::Branded(GTBranded {
+                    span: (0, 0).into(),
+                    id: GTDefinitionId("module".into(), "UserId".into()),
+                    name: GTIdentifier::new((0, 0).into(), "UserId".into()),
+                    primitive: GTPrimitive::String((0, 0).into()).into(),
+                })
+            }
+            .convert(&mut PYConvertContext::default()),
+            PYDefinition::Newtype(PYNewtype {
+                doc: None,
+                name: "UserId".into(),
+                primitive: PYPrimitive::String,
+            })
         );
     }
 
