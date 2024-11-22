@@ -12,7 +12,7 @@ impl PYRender for PYAlias {
         let descriptor = self.descriptor.render(indent, config);
 
         let alias = if let PYVersion::Legacy = config.version {
-            format!("{} : TypeAlias = {}", name, descriptor)
+            format!("{}: TypeAlias = {}", name, descriptor)
         } else {
             format!("type {} = {}", name, descriptor)
         };
@@ -57,7 +57,7 @@ mod tests {
                 references: vec![],
             }
             .render(&py_indent(), &PYLangConfig::new(PYVersion::Legacy)),
-            "Name : TypeAlias = str"
+            "Name: TypeAlias = str"
         );
     }
 
