@@ -16,9 +16,7 @@ impl TSConvert<TSBranded> for GTBranded {
             GTBranded::Null(_, _, identifier) => (identifier, TSPrimitive::Null),
         };
 
-        // [TODO]
-        let doc = None;
-        let name = identifier.convert(resolve, hoist);
+        let name = self.convert(resolve, hoist);
 
         TSBranded {
             doc,
