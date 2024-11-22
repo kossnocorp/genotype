@@ -18,9 +18,7 @@ impl PYConvert<PYDescriptor> for GTDescriptor {
 
             GTDescriptor::Literal(literal) => literal.convert(context).into(),
 
-            GTDescriptor::Object(object) => context
-                .hoist(|context| object.convert(context).into())
-                .into(),
+            GTDescriptor::Object(object) => context.hoist(|context| object.convert(context)).into(),
 
             GTDescriptor::Primitive(primitive) => primitive.convert(context).into(),
 
@@ -38,7 +36,9 @@ impl PYConvert<PYDescriptor> for GTDescriptor {
 
             GTDescriptor::Any(any) => any.convert(context).into(),
 
-            GTDescriptor::Branded(_) => todo!(),
+            GTDescriptor::Branded(branded) => {
+                context.hoist(|context| branded.convert(context)).into()
+            }
         }
     }
 }
@@ -233,6 +233,30 @@ mod tests {
                 ],
                 discriminator: None
             })
+        );
+    }
+
+    #[test]
+    fn test_convert_branded() {
+        let mut context = PYConvertContext::default();
+        assert_eq!(
+            GTDescriptor::Branded(GTBranded {
+                span: (0, 0).into(),
+                id: GTDefinitionId("module".into(), "UserId".into()),
+                name: GTIdentifier::new((0, 0).into(), "UserId".into()),
+                primitive: GTPrimitive::String((0, 0).into()).into(),
+            })
+            .convert(&mut context),
+            PYDescriptor::Reference(PYReference::new("UserId".into(), true))
+        );
+        let hoisted = context.drain_hoisted();
+        assert_eq!(
+            hoisted,
+            vec![PYDefinition::Newtype(PYNewtype {
+                doc: None,
+                name: "UserId".into(),
+                primitive: PYPrimitive::String,
+            })]
         );
     }
 }

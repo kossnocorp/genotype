@@ -18,6 +18,7 @@ mod key;
 mod list;
 mod literal;
 mod module;
+mod newtype;
 mod path;
 mod primitive;
 mod property;

@@ -1,6 +1,6 @@
 use crate::diagnostic::span::GTSpan;
 
-use super::{GTDefinitionId, GTDoc, GTIdentifier, GTPrimitive};
+use super::{GTDefinitionId, GTIdentifier, GTPrimitive};
 
 mod parse;
 

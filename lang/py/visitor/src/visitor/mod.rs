@@ -51,4 +51,6 @@ pub trait PYVisitor {
     fn visit_tuple(&mut self, _tuple: &mut PYTuple) {}
 
     fn visit_union(&mut self, _union: &mut PYUnion) {}
+
+    fn visit_newtype(&mut self, _newtype: &mut PYNewtype) {}
 }

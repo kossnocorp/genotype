@@ -1,4 +1,4 @@
-use crate::{alias::PYAlias, class::PYClass, PYDoc, PYIdentifier};
+use crate::{alias::PYAlias, class::PYClass, PYDoc, PYIdentifier, PYNewtype};
 
 mod render;
 
@@ -6,6 +6,7 @@ mod render;
 pub enum PYDefinition {
     Alias(PYAlias),
     Class(PYClass),
+    Newtype(PYNewtype),
 }
 
 impl PYDefinition {
@@ -13,6 +14,7 @@ impl PYDefinition {
         match self {
             Self::Alias(alias) => &alias.name,
             Self::Class(class) => &class.name,
+            Self::Newtype(newtype) => &newtype.name,
         }
     }
 
@@ -20,6 +22,7 @@ impl PYDefinition {
         match self {
             Self::Alias(alias) => &alias.doc,
             Self::Class(class) => &class.doc,
+            Self::Newtype(newtype) => &newtype.doc,
         }
     }
 
@@ -27,6 +30,7 @@ impl PYDefinition {
         match self {
             Self::Alias(alias) => alias.references.iter().collect(),
             Self::Class(class) => class.references.iter().collect(),
+            Self::Newtype(_) => vec![],
         }
     }
 }
@@ -34,6 +38,18 @@ impl PYDefinition {
 impl From<PYClass> for PYDefinition {
     fn from(class: PYClass) -> Self {
         PYDefinition::Class(class)
+    }
+}
+
+impl From<PYAlias> for PYDefinition {
+    fn from(alias: PYAlias) -> Self {
+        PYDefinition::Alias(alias)
+    }
+}
+
+impl From<PYNewtype> for PYDefinition {
+    fn from(newtype: PYNewtype) -> Self {
+        PYDefinition::Newtype(newtype)
     }
 }
 

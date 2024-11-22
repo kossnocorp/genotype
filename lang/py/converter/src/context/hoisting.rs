@@ -3,12 +3,13 @@ use genotype_lang_py_tree::{PYDefinition, PYReference};
 use super::PYConvertContext;
 
 impl PYConvertContext {
-    pub fn hoist<HoistFn>(&mut self, mut hoist_fn: HoistFn) -> PYReference
+    pub fn hoist<HoistFn, Definition>(&mut self, mut hoist_fn: HoistFn) -> PYReference
     where
-        HoistFn: FnMut(&mut PYConvertContext) -> PYDefinition,
+        Definition: Into<PYDefinition>,
+        HoistFn: FnMut(&mut PYConvertContext) -> Definition,
     {
         self.hoisting = true;
-        let definition = hoist_fn(self);
+        let definition = hoist_fn(self).into();
         let reference = PYReference::new(definition.name().clone(), true);
         self.hoisted.push(definition);
         self.hoisting = false;

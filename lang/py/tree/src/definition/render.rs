@@ -10,6 +10,7 @@ impl PYRender for PYDefinition {
         match self {
             PYDefinition::Alias(alias) => alias.render(indent, config),
             PYDefinition::Class(interface) => interface.render(indent, config),
+            PYDefinition::Newtype(newtype) => newtype.render(indent, config),
         }
     }
 }
@@ -61,6 +62,19 @@ mod tests {
             r#"class Name(Model):
     name: str
     age: Optional[int] = None"#
+        );
+    }
+
+    #[test]
+    fn test_render_branded() {
+        assert_eq!(
+            PYDefinition::Newtype(PYNewtype {
+                doc: None,
+                name: "UserId".into(),
+                primitive: PYPrimitive::String,
+            })
+            .render(&py_indent(), &Default::default()),
+            r#"UserId = NewType("UserId", str)"#
         );
     }
 }

@@ -11,6 +11,7 @@ impl PYTraverse for PYDefinition {
         match self {
             PYDefinition::Alias(alias) => alias.traverse(visitor),
             PYDefinition::Class(class) => class.traverse(visitor),
+            PYDefinition::Newtype(newtype) => newtype.traverse(visitor),
         }
     }
 }

@@ -1,6 +1,4 @@
-use genotype_lang_rs_tree::{
-    RSContext, RSContextRenderDeriveMode, RSPrimitive, RSStruct, RSStructFields,
-};
+use genotype_lang_rs_tree::{RSContext, RSContextRenderDeriveMode, RSStruct, RSStructFields};
 use genotype_parser::GTBranded;
 use miette::Result;
 
