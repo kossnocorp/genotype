@@ -1,13 +1,10 @@
 use genotype_lang_ts_tree::*;
 use genotype_parser::GTAny;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{context::TSConvertContext, convert::TSConvert};
 
 impl TSConvert<TSAny> for GTAny {
-    fn convert<HoistFn>(&self, _resolve: &TSConvertResolve, _hoist: &HoistFn) -> TSAny
-    where
-        HoistFn: Fn(TSDefinition),
-    {
+    fn convert(&self, _context: &mut TSConvertContext) -> TSAny {
         TSAny
     }
 }
@@ -16,15 +13,10 @@ impl TSConvert<TSAny> for GTAny {
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use crate::resolve::TSConvertResolve;
-
     use super::*;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
-            GTAny((0, 0).into()).convert(&TSConvertResolve::new(), &|_| {}),
-            TSAny
-        );
+        assert_eq!(GTAny((0, 0).into()).convert(&mut Default::default()), TSAny);
     }
 }

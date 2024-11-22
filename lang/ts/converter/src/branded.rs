@@ -1,20 +1,16 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, TSBranded};
+use genotype_lang_ts_tree::TSBranded;
 use genotype_parser::GTBranded;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{context::TSConvertContext, convert::TSConvert};
 
 impl TSConvert<TSBranded> for GTBranded {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSBranded
-    where
-        HoistFn: Fn(TSDefinition),
-    {
-        let name = self.name.convert(resolve, hoist);
-        let primitive = self.primitive.convert(resolve, hoist);
+    fn convert(&self, context: &mut TSConvertContext) -> TSBranded {
+        let doc = context.consume_doc();
+        let name = self.name.convert(context);
+        let primitive = self.primitive.convert(context);
 
-        // [TODO] Hoist
         TSBranded {
-            // [TODO]
-            doc: None,
+            doc,
             name,
             primitive,
         }
@@ -23,27 +19,49 @@ impl TSConvert<TSBranded> for GTBranded {
 
 #[cfg(test)]
 mod tests {
+    use genotype_lang_ts_tree::TSPrimitive;
     use pretty_assertions::assert_eq;
 
     use crate::resolve::TSConvertResolve;
 
     use super::*;
-    use genotype_parser::{GTDefinitionId, GTIdentifier};
+    use genotype_parser::{GTDefinitionId, GTIdentifier, GTPrimitive};
 
-    // #[test]
-    // fn test_convert() {
-    //     assert_eq!(
-    //         GTBranded::String(
-    //             (0, 0).into(),
-    //             GTDefinitionId("module".into(), "UserId".into()),
-    //             GTIdentifier::new((0, 0).into(), "UserId".into())
-    //         )
-    //         .convert(&TSConvertResolve::new(), &|_| {}),
-    //         TSBranded {
-    //             doc: None,
-    //             name: "UserId".into(),
-    //             primitive: TSPrimitive::String,
-    //         }
-    //     );
-    // }
+    #[test]
+    fn test_convert() {
+        assert_eq!(
+            GTBranded {
+                span: (0, 0).into(),
+                id: GTDefinitionId("module".into(), "UserId".into()),
+                name: GTIdentifier::new((0, 0).into(), "UserId".into()),
+                primitive: GTPrimitive::String((0, 0).into()).into(),
+            }
+            .convert(&mut Default::default()),
+            TSBranded {
+                doc: None,
+                name: "UserId".into(),
+                primitive: TSPrimitive::String,
+            }
+        );
+    }
+
+    #[test]
+    fn test_doc() {
+        let mut context = TSConvertContext::new(TSConvertResolve::new());
+        context.provide_doc(Some("This is a user ID.".into()));
+        assert_eq!(
+            GTBranded {
+                span: (0, 0).into(),
+                id: GTDefinitionId("module".into(), "UserId".into()),
+                name: GTIdentifier::new((0, 0).into(), "UserId".into()),
+                primitive: GTPrimitive::String((0, 0).into()).into(),
+            }
+            .convert(&mut context),
+            TSBranded {
+                doc: Some("This is a user ID.".into()),
+                name: "UserId".into(),
+                primitive: TSPrimitive::String,
+            }
+        );
+    }
 }

@@ -1,18 +1,15 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, union::TSUnion};
+use genotype_lang_ts_tree::union::TSUnion;
 use genotype_parser::tree::union::GTUnion;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{context::TSConvertContext, convert::TSConvert};
 
 impl TSConvert<TSUnion> for GTUnion {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSUnion
-    where
-        HoistFn: Fn(TSDefinition),
-    {
+    fn convert(&self, context: &mut TSConvertContext) -> TSUnion {
         TSUnion {
             descriptors: self
                 .descriptors
                 .iter()
-                .map(|descriptor| descriptor.convert(resolve, hoist))
+                .map(|descriptor| descriptor.convert(context))
                 .collect(),
         }
     }
@@ -23,8 +20,6 @@ mod tests {
     use genotype_lang_ts_tree::*;
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
-
-    use crate::resolve::TSConvertResolve;
 
     use super::*;
 
@@ -38,7 +33,7 @@ mod tests {
                     GTPrimitive::String((0, 0).into()).into(),
                 ]
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSUnion {
                 descriptors: vec![
                     TSDescriptor::Primitive(TSPrimitive::Boolean),

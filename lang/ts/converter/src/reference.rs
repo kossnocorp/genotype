@@ -1,14 +1,11 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, reference::TSReference};
+use genotype_lang_ts_tree::reference::TSReference;
 use genotype_parser::tree::reference::GTReference;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{context::TSConvertContext, convert::TSConvert};
 
 impl TSConvert<TSReference> for GTReference {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSReference
-    where
-        HoistFn: Fn(TSDefinition),
-    {
-        TSReference(self.identifier.convert(resolve, hoist))
+    fn convert(&self, context: &mut TSConvertContext) -> TSReference {
+        TSReference(self.identifier.convert(context))
     }
 }
 
@@ -33,7 +30,7 @@ mod tests {
                 )),
                 identifier: GTIdentifier::new((0, 0).into(), "Name".into())
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
         );
     }
 }

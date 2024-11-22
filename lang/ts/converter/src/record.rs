@@ -1,16 +1,13 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, TSRecord};
+use genotype_lang_ts_tree::TSRecord;
 use genotype_parser::GTRecord;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{context::TSConvertContext, convert::TSConvert};
 
 impl TSConvert<TSRecord> for GTRecord {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSRecord
-    where
-        HoistFn: Fn(TSDefinition),
-    {
+    fn convert(&self, context: &mut TSConvertContext) -> TSRecord {
         TSRecord {
-            key: self.key.convert(resolve, hoist),
-            descriptor: self.descriptor.convert(resolve, hoist),
+            key: self.key.convert(context),
+            descriptor: self.descriptor.convert(context),
         }
     }
 }
@@ -20,8 +17,6 @@ mod tests {
     use genotype_lang_ts_tree::*;
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
-
-    use crate::resolve::TSConvertResolve;
 
     use super::*;
 
@@ -33,7 +28,7 @@ mod tests {
                 key: GTRecordKey::String((0, 0).into()),
                 descriptor: GTPrimitive::String((0, 0).into()).into(),
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSRecord {
                 key: TSRecordKey::String,
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String),

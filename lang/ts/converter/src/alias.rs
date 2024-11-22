@@ -1,19 +1,17 @@
 use genotype_lang_ts_tree::{alias::TSAlias, definition::TSDefinition, interface::TSInterface};
 use genotype_parser::tree::{alias::GTAlias, descriptor::GTDescriptor};
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{context::TSConvertContext, convert::TSConvert};
 
 impl TSConvert<TSDefinition> for GTAlias {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSDefinition
-    where
-        HoistFn: Fn(TSDefinition),
-    {
-        let doc = self.doc.as_ref().map(|d| d.convert(resolve, hoist));
-        let name = self.name.convert(resolve, hoist);
+    fn convert(&self, context: &mut TSConvertContext) -> TSDefinition {
+        let doc = self.doc.as_ref().map(|d| d.convert(context));
+        let name = self.name.convert(context);
 
         match &self.descriptor {
             GTDescriptor::Branded(branded) => {
-                TSDefinition::Branded(branded.convert(resolve, hoist))
+                context.provide_doc(doc);
+                TSDefinition::Branded(branded.convert(context))
             }
 
             GTDescriptor::Object(object) => TSDefinition::Interface(TSInterface {
@@ -22,19 +20,19 @@ impl TSConvert<TSDefinition> for GTAlias {
                 extensions: object
                     .extensions
                     .iter()
-                    .map(|e| e.convert(resolve, hoist))
+                    .map(|e| e.convert(context))
                     .collect(),
                 properties: object
                     .properties
                     .iter()
-                    .map(|p| p.convert(resolve, hoist))
+                    .map(|p| p.convert(context))
                     .collect(),
             }),
 
             _ => TSDefinition::Alias(TSAlias {
                 doc,
                 name,
-                descriptor: self.descriptor.convert(resolve, hoist),
+                descriptor: self.descriptor.convert(context),
             }),
         }
     }
@@ -61,7 +59,7 @@ mod tests {
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSDefinition::Alias(TSAlias {
                 doc: None,
                 name: "Name".into(),
@@ -103,7 +101,7 @@ mod tests {
                     ]
                 })
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSDefinition::Interface(TSInterface {
                 doc: None,
                 name: "Book".into(),
@@ -142,7 +140,7 @@ mod tests {
                     primitive: GTPrimitive::String((0, 0).into()).into(),
                 })
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSDefinition::Branded(TSBranded {
                 doc: None,
                 name: "BookId".into(),
@@ -186,7 +184,7 @@ mod tests {
                     }]
                 })
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSDefinition::Interface(TSInterface {
                 doc: None,
                 name: "Book".into(),
@@ -245,7 +243,7 @@ mod tests {
                     ]
                 })
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSDefinition::Alias(TSAlias {
                 doc: None,
                 name: "Book".into(),
@@ -290,7 +288,7 @@ mod tests {
                     properties: vec![]
                 })
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSDefinition::Interface(TSInterface {
                 doc: Some(TSDoc("Hello, world!".into())),
                 name: "Book".into(),
@@ -311,11 +309,36 @@ mod tests {
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSDefinition::Alias(TSAlias {
                 doc: Some(TSDoc("Hello, world!".into())),
                 name: "Name".into(),
                 descriptor: TSDescriptor::Primitive(TSPrimitive::Boolean),
+            }),
+        );
+    }
+
+    #[test]
+    fn test_convert_doc_branded() {
+        assert_eq!(
+            GTAlias {
+                id: GTDefinitionId("module".into(), "BookId".into()),
+                span: (0, 0).into(),
+                doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
+                attributes: vec![],
+                name: GTIdentifier::new((0, 0).into(), "BookId".into()),
+                descriptor: GTDescriptor::Branded(GTBranded {
+                    span: (0, 0).into(),
+                    id: GTDefinitionId("module".into(), "BookId".into()),
+                    name: GTIdentifier::new((0, 0).into(), "BookId".into()),
+                    primitive: GTPrimitive::String((0, 0).into()).into(),
+                })
+            }
+            .convert(&mut Default::default()),
+            TSDefinition::Branded(TSBranded {
+                doc: Some(TSDoc("Hello, world!".into())),
+                name: "BookId".into(),
+                primitive: TSPrimitive::String,
             }),
         );
     }

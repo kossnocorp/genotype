@@ -1,13 +1,10 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, doc::TSDoc};
+use genotype_lang_ts_tree::doc::TSDoc;
 use genotype_parser::tree::doc::GTDoc;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{context::TSConvertContext, convert::TSConvert};
 
 impl TSConvert<TSDoc> for GTDoc {
-    fn convert<HoistFn>(&self, _resolve: &TSConvertResolve, _hoist: &HoistFn) -> TSDoc
-    where
-        HoistFn: Fn(TSDefinition),
-    {
+    fn convert(&self, _context: &mut TSConvertContext) -> TSDoc {
         TSDoc(self.1.clone())
     }
 }
@@ -22,7 +19,7 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             TSDoc("Hello, world!".into()),
-            GTDoc((0, 0).into(), "Hello, world!".into()).convert(&TSConvertResolve::new(), &|_| {}),
+            GTDoc((0, 0).into(), "Hello, world!".into()).convert(&mut Default::default()),
         );
     }
 }

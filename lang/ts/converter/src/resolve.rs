@@ -18,3 +18,9 @@ impl TSConvertResolve {
         }
     }
 }
+
+impl Default for TSConvertResolve {
+    fn default() -> Self {
+        Self::new()
+    }
+}

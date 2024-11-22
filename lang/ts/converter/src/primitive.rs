@@ -1,13 +1,10 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, primitive::TSPrimitive};
+use genotype_lang_ts_tree::primitive::TSPrimitive;
 use genotype_parser::tree::primitive::GTPrimitive;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{context::TSConvertContext, convert::TSConvert};
 
 impl TSConvert<TSPrimitive> for GTPrimitive {
-    fn convert<HoistFn>(&self, _resolve: &TSConvertResolve, _hoist: &HoistFn) -> TSPrimitive
-    where
-        HoistFn: Fn(TSDefinition),
-    {
+    fn convert(&self, _context: &mut TSConvertContext) -> TSPrimitive {
         match self {
             GTPrimitive::Boolean(_) => TSPrimitive::Boolean,
             GTPrimitive::String(_) => TSPrimitive::String,
@@ -22,31 +19,29 @@ impl TSConvert<TSPrimitive> for GTPrimitive {
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use crate::resolve::TSConvertResolve;
-
     use super::*;
     use genotype_parser::tree::primitive::GTPrimitive;
 
     #[test]
     fn test_convert() {
         assert_eq!(
-            GTPrimitive::Boolean((0, 0).into()).convert(&TSConvertResolve::new(), &|_| {}),
+            GTPrimitive::Boolean((0, 0).into()).convert(&mut Default::default()),
             TSPrimitive::Boolean
         );
         assert_eq!(
-            GTPrimitive::String((0, 0).into()).convert(&TSConvertResolve::new(), &|_| {}),
+            GTPrimitive::String((0, 0).into()).convert(&mut Default::default()),
             TSPrimitive::String
         );
         assert_eq!(
-            GTPrimitive::Int((0, 0).into()).convert(&TSConvertResolve::new(), &|_| {}),
+            GTPrimitive::Int((0, 0).into()).convert(&mut Default::default()),
             TSPrimitive::Number
         );
         assert_eq!(
-            GTPrimitive::Float((0, 0).into()).convert(&TSConvertResolve::new(), &|_| {}),
+            GTPrimitive::Float((0, 0).into()).convert(&mut Default::default()),
             TSPrimitive::Number
         );
         assert_eq!(
-            GTPrimitive::Null((0, 0).into()).convert(&TSConvertResolve::new(), &|_| {}),
+            GTPrimitive::Null((0, 0).into()).convert(&mut Default::default()),
             TSPrimitive::Null
         );
     }

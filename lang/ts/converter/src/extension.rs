@@ -1,15 +1,12 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, TSExtension};
+use genotype_lang_ts_tree::TSExtension;
 use genotype_parser::tree::GTExtension;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{context::TSConvertContext, convert::TSConvert};
 
 impl TSConvert<TSExtension> for GTExtension {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSExtension
-    where
-        HoistFn: Fn(TSDefinition),
-    {
+    fn convert(&self, context: &mut TSConvertContext) -> TSExtension {
         TSExtension {
-            reference: self.reference.convert(resolve, hoist),
+            reference: self.reference.convert(context),
         }
     }
 }
@@ -40,7 +37,7 @@ mod tests {
                     identifier: GTIdentifier::new((0, 0).into(), "Name".into())
                 }
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
         );
     }
 }

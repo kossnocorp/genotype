@@ -1,18 +1,15 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, object::TSObject};
+use genotype_lang_ts_tree::object::TSObject;
 use genotype_parser::tree::object::GTObject;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{context::TSConvertContext, convert::TSConvert};
 
 impl TSConvert<TSObject> for GTObject {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSObject
-    where
-        HoistFn: Fn(TSDefinition),
-    {
+    fn convert(&self, context: &mut TSConvertContext) -> TSObject {
         TSObject {
             properties: self
                 .properties
                 .iter()
-                .map(|property| property.convert(resolve, hoist))
+                .map(|property| property.convert(context))
                 .collect(),
         }
     }
@@ -52,7 +49,7 @@ mod tests {
                     }
                 ]
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSObject {
                 properties: vec![
                     TSProperty {

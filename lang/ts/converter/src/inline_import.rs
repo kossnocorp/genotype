@@ -1,16 +1,13 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, inline_import::TSInlineImport};
+use genotype_lang_ts_tree::inline_import::TSInlineImport;
 use genotype_parser::tree::inline_import::GTInlineImport;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{context::TSConvertContext, convert::TSConvert};
 
 impl TSConvert<TSInlineImport> for GTInlineImport {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSInlineImport
-    where
-        HoistFn: Fn(TSDefinition),
-    {
+    fn convert(&self, context: &mut TSConvertContext) -> TSInlineImport {
         TSInlineImport {
-            path: self.path.convert(resolve, hoist),
-            name: self.name.convert(resolve, hoist),
+            path: self.path.convert(context),
+            name: self.name.convert(context),
         }
     }
 }
@@ -30,7 +27,7 @@ mod tests {
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSInlineImport {
                 path: "./path/to/module.ts".into(),
                 name: "Name".into(),

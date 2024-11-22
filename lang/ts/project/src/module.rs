@@ -78,7 +78,7 @@ impl GTLangProjectModule<TSProjectConfig> for TSProjectModule {
             }
         }
 
-        let module = TSConvertModule::convert(&module.module, &resolve).0;
+        let module = TSConvertModule::convert(&module.module, resolve).0;
 
         Ok(Self { path, module })
     }

@@ -1,14 +1,11 @@
 use genotype_lang_ts_tree::*;
 use genotype_parser::tree::property::GTProperty;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{context::TSConvertContext, convert::TSConvert};
 
 impl TSConvert<TSProperty> for GTProperty {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSProperty
-    where
-        HoistFn: Fn(TSDefinition),
-    {
-        let descriptor = self.descriptor.convert(resolve, hoist);
+    fn convert(&self, context: &mut TSConvertContext) -> TSProperty {
+        let descriptor = self.descriptor.convert(context);
 
         let descriptor = if self.required {
             descriptor
@@ -20,8 +17,8 @@ impl TSConvert<TSProperty> for GTProperty {
         };
 
         TSProperty {
-            doc: self.doc.as_ref().map(|d| d.convert(resolve, hoist)),
-            name: self.name.convert(resolve, hoist),
+            doc: self.doc.as_ref().map(|d| d.convert(context)),
+            name: self.name.convert(context),
             descriptor,
             required: self.required,
         }
@@ -47,7 +44,7 @@ mod tests {
                 descriptor: GTPrimitive::String((0, 0).into()).into(),
                 required: true,
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSProperty {
                 doc: None,
                 name: "name".into(),
@@ -68,7 +65,7 @@ mod tests {
                 descriptor: GTPrimitive::String((0, 0).into()).into(),
                 required: true,
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSProperty {
                 doc: Some(TSDoc("Hello, world!".into())),
                 name: "name".into(),
@@ -89,7 +86,7 @@ mod tests {
                 descriptor: GTPrimitive::String((0, 0).into()).into(),
                 required: false,
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSProperty {
                 doc: Some(TSDoc("Hello, world!".into())),
                 name: "name".into(),

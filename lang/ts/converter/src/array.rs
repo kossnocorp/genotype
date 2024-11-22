@@ -1,15 +1,12 @@
-use genotype_lang_ts_tree::{array::TSArray, definition::TSDefinition};
+use genotype_lang_ts_tree::array::TSArray;
 use genotype_parser::tree::array::GTArray;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{context::TSConvertContext, convert::TSConvert};
 
 impl TSConvert<TSArray> for GTArray {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSArray
-    where
-        HoistFn: Fn(TSDefinition),
-    {
+    fn convert(&self, context: &mut TSConvertContext) -> TSArray {
         TSArray {
-            descriptor: self.descriptor.convert(resolve, hoist),
+            descriptor: self.descriptor.convert(context),
         }
     }
 }
@@ -29,7 +26,7 @@ mod tests {
                 span: (0, 0).into(),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSArray {
                 descriptor: TSDescriptor::Primitive(TSPrimitive::Boolean)
             }

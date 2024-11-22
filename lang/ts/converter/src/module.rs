@@ -1,44 +1,40 @@
-use std::sync::Mutex;
-
 use genotype_lang_ts_tree::module::TSModule;
 use genotype_parser::tree::module::GTModule;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{context::TSConvertContext, convert::TSConvert, resolve::TSConvertResolve};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TSConvertModule(pub TSModule);
 
 impl TSConvertModule {
-    pub fn convert(module: &GTModule, resolve: &TSConvertResolve) -> Self {
+    pub fn convert(module: &GTModule, resolve: TSConvertResolve) -> Self {
+        let mut context = TSConvertContext::new(resolve);
+
         let imports = module
             .imports
             .iter()
-            .map(|import| import.convert(resolve, &|_| {}))
+            .map(|import| import.convert(&mut context))
             .collect();
 
-        let definitions = Mutex::new(Vec::new());
+        let mut definitions = vec![];
 
         for alias in &module.aliases {
-            let hoisted = Mutex::new(Vec::new());
+            let definition = alias.convert(&mut context);
 
-            let definition = alias.convert(resolve, &|definition| {
-                let mut hoisted = hoisted.lock().unwrap();
-                hoisted.push(definition);
-            });
-
-            let mut definitions = definitions.lock().unwrap();
             definitions.push(definition);
-            definitions.extend(hoisted.into_inner().unwrap());
+            definitions.extend(context.drain_hoisted());
         }
 
+        let doc = module.doc.as_ref().map(|doc| {
+            let mut doc = doc.convert(&mut context);
+            doc.0 = "@file ".to_string() + &doc.0;
+            doc
+        });
+
         TSConvertModule(TSModule {
-            doc: module.doc.as_ref().map(|doc| {
-                let mut doc = doc.convert(resolve, &|_| {});
-                doc.0 = "@file ".to_string() + &doc.0;
-                doc
-            }),
+            doc,
             imports,
-            definitions: definitions.into_inner().unwrap(),
+            definitions,
         })
     }
 }
@@ -205,7 +201,7 @@ mod tests {
                         },
                     ],
                 },
-                &resolve
+                resolve
             ),
             TSConvertModule(TSModule {
                 doc: None,
@@ -299,7 +295,7 @@ mod tests {
                     imports: vec![],
                     aliases: vec![],
                 },
-                &TSConvertResolve::new()
+                TSConvertResolve::new()
             ),
             TSConvertModule(TSModule {
                 doc: Some(TSDoc("@file Hello, world!".into())),

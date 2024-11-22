@@ -1,33 +1,23 @@
 use genotype_lang_ts_tree::*;
 use genotype_parser::tree::descriptor::GTDescriptor;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{context::TSConvertContext, convert::TSConvert};
 
 impl TSConvert<TSDescriptor> for GTDescriptor {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSDescriptor
-    where
-        HoistFn: Fn(TSDefinition),
-    {
+    fn convert(&self, context: &mut TSConvertContext) -> TSDescriptor {
         match self {
-            GTDescriptor::Alias(alias) => {
-                hoist(alias.convert(resolve, hoist));
-                TSDescriptor::Reference(TSReference(alias.name.convert(resolve, hoist)))
-            }
+            GTDescriptor::Alias(alias) => context.hoist(|context| alias.convert(context)).into(),
 
-            GTDescriptor::Array(array) => {
-                TSDescriptor::Array(Box::new(array.convert(resolve, hoist)))
-            }
+            GTDescriptor::Array(array) => TSDescriptor::Array(Box::new(array.convert(context))),
 
             GTDescriptor::InlineImport(import) => {
-                TSDescriptor::InlineImport(import.convert(resolve, hoist))
+                TSDescriptor::InlineImport(import.convert(context))
             }
 
-            GTDescriptor::Literal(literal) => {
-                TSDescriptor::Literal(literal.convert(resolve, hoist))
-            }
+            GTDescriptor::Literal(literal) => TSDescriptor::Literal(literal.convert(context)),
 
             GTDescriptor::Object(object) => {
-                let descriptor = TSDescriptor::Object(object.convert(resolve, hoist));
+                let descriptor = TSDescriptor::Object(object.convert(context));
                 if object.extensions.is_empty() {
                     descriptor
                 } else {
@@ -35,9 +25,7 @@ impl TSConvert<TSDescriptor> for GTDescriptor {
                     let extensions = object
                         .extensions
                         .iter()
-                        .map(|extension| {
-                            TSDescriptor::from(extension.reference.convert(resolve, hoist))
-                        })
+                        .map(|extension| TSDescriptor::from(extension.reference.convert(context)))
                         .collect::<Vec<TSDescriptor>>();
                     descriptors.extend(extensions);
                     TSDescriptor::Intersection(TSIntersection { descriptors })
@@ -45,26 +33,21 @@ impl TSConvert<TSDescriptor> for GTDescriptor {
             }
 
             GTDescriptor::Primitive(primitive) => {
-                TSDescriptor::Primitive(primitive.convert(resolve, hoist))
+                TSDescriptor::Primitive(primitive.convert(context))
             }
 
-            GTDescriptor::Reference(name) => TSDescriptor::Reference(name.convert(resolve, hoist)),
+            GTDescriptor::Reference(name) => TSDescriptor::Reference(name.convert(context)),
 
-            GTDescriptor::Tuple(tuple) => TSDescriptor::Tuple(tuple.convert(resolve, hoist)),
+            GTDescriptor::Tuple(tuple) => TSDescriptor::Tuple(tuple.convert(context)),
 
-            GTDescriptor::Union(union) => TSDescriptor::Union(union.convert(resolve, hoist)),
+            GTDescriptor::Union(union) => TSDescriptor::Union(union.convert(context)),
 
-            GTDescriptor::Record(record) => {
-                TSDescriptor::Record(Box::new(record.convert(resolve, hoist)))
-            }
+            GTDescriptor::Record(record) => TSDescriptor::Record(Box::new(record.convert(context))),
 
-            GTDescriptor::Any(any) => TSDescriptor::Any(any.convert(resolve, hoist)),
+            GTDescriptor::Any(any) => TSDescriptor::Any(any.convert(context)),
 
             GTDescriptor::Branded(branded) => {
-                let branded = branded.convert(resolve, hoist);
-                let reference = branded.name.clone().into();
-                hoist(branded.into());
-                TSDescriptor::Reference(reference)
+                context.hoist(|context| branded.convert(context)).into()
             }
         }
     }
@@ -72,20 +55,15 @@ impl TSConvert<TSDescriptor> for GTDescriptor {
 
 #[cfg(test)]
 mod tests {
-
-    use std::sync::Mutex;
-
     use genotype_lang_ts_tree::*;
     use genotype_parser::tree::*;
     use pretty_assertions::assert_eq;
-
-    use crate::resolve::TSConvertResolve;
 
     use super::*;
 
     #[test]
     fn test_convert_alias() {
-        let hoisted = Mutex::new(vec![]);
+        let mut context = Default::default();
         assert_eq!(
             GTDescriptor::Alias(Box::new(GTAlias {
                 id: GTDefinitionId("module".into(), "Name".into()),
@@ -95,14 +73,12 @@ mod tests {
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }))
-            .convert(&TSConvertResolve::new(), &|definition| {
-                let mut hoisted = hoisted.lock().unwrap();
-                hoisted.push(definition);
-            }),
+            .convert(&mut context),
             TSDescriptor::Reference("Name".into())
         );
+        let hoisted = context.drain_hoisted();
         assert_eq!(
-            hoisted.lock().unwrap().clone(),
+            hoisted,
             vec![TSDefinition::Alias(TSAlias {
                 doc: None,
                 name: "Name".into(),
@@ -118,7 +94,7 @@ mod tests {
                 span: (0, 0).into(),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }))
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSDescriptor::Array(Box::new(TSArray {
                 descriptor: TSDescriptor::Primitive(TSPrimitive::Boolean)
             }))
@@ -133,7 +109,7 @@ mod tests {
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 name: GTIdentifier::new((0, 0).into(), "Name".into())
             })
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSDescriptor::InlineImport(TSInlineImport {
                 path: "./path/to/module.ts".into(),
                 name: "Name".into()
@@ -167,7 +143,7 @@ mod tests {
                     }
                 ]
             })
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSDescriptor::Object(TSObject {
                 properties: vec![
                     TSProperty {
@@ -218,7 +194,7 @@ mod tests {
                     required: true,
                 },]
             })
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSDescriptor::Intersection(TSIntersection {
                 descriptors: vec![
                     TSObject {
@@ -240,7 +216,7 @@ mod tests {
     fn test_convert_primitive() {
         assert_eq!(
             GTDescriptor::Primitive(GTPrimitive::Boolean((0, 0).into()))
-                .convert(&TSConvertResolve::new(), &|_| {}),
+                .convert(&mut Default::default()),
             TSDescriptor::Primitive(TSPrimitive::Boolean)
         );
     }
@@ -257,7 +233,7 @@ mod tests {
                 ),),
                 identifier: GTIdentifier::new((0, 0).into(), "Name".into())
             })
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSDescriptor::Reference("Name".into())
         );
     }
@@ -272,7 +248,7 @@ mod tests {
                     GTPrimitive::String((0, 0).into()).into(),
                 ]
             })
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSDescriptor::Tuple(TSTuple {
                 descriptors: vec![
                     TSDescriptor::Primitive(TSPrimitive::Boolean),
@@ -292,7 +268,7 @@ mod tests {
                     GTPrimitive::String((0, 0).into()).into(),
                 ]
             })
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSDescriptor::Union(TSUnion {
                 descriptors: vec![
                     TSDescriptor::Primitive(TSPrimitive::Boolean),
@@ -310,7 +286,7 @@ mod tests {
                 key: GTRecordKey::String((0, 0).into()),
                 descriptor: GTPrimitive::String((0, 0).into()).into(),
             }))
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSDescriptor::Record(Box::new(TSRecord {
                 key: TSRecordKey::String,
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String)
@@ -321,14 +297,14 @@ mod tests {
     #[test]
     fn test_convert_any() {
         assert_eq!(
-            GTDescriptor::Any(GTAny((0, 0).into())).convert(&TSConvertResolve::new(), &|_| {}),
+            GTDescriptor::Any(GTAny((0, 0).into())).convert(&mut Default::default()),
             TSDescriptor::Any(TSAny)
         );
     }
 
     #[test]
     fn test_convert_branded() {
-        let hoisted = Mutex::new(vec![]);
+        let mut context = Default::default();
         assert_eq!(
             GTDescriptor::Branded(GTBranded {
                 span: (0, 0).into(),
@@ -336,14 +312,12 @@ mod tests {
                 name: GTIdentifier::new((0, 0).into(), "UserId".into()),
                 primitive: GTPrimitive::String((0, 0).into()).into(),
             })
-            .convert(&TSConvertResolve::new(), &|definition| {
-                let mut hoisted = hoisted.lock().unwrap();
-                hoisted.push(definition);
-            }),
+            .convert(&mut context),
             TSDescriptor::Reference("UserId".into())
         );
+        let hoisted = context.drain_hoisted();
         assert_eq!(
-            hoisted.lock().unwrap().clone(),
+            hoisted,
             vec![TSDefinition::Branded(TSBranded {
                 doc: None,
                 name: "UserId".into(),

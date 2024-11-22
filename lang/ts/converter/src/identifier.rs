@@ -1,14 +1,11 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, identifier::TSIdentifier};
+use genotype_lang_ts_tree::identifier::TSIdentifier;
 use genotype_parser::tree::identifier::GTIdentifier;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{context::TSConvertContext, convert::TSConvert};
 
 impl TSConvert<TSIdentifier> for GTIdentifier {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, _hoist: &HoistFn) -> TSIdentifier
-    where
-        HoistFn: Fn(TSDefinition),
-    {
-        TSIdentifier(resolve.identifiers.get(&self).unwrap_or(&self).1.clone())
+    fn convert(&self, context: &mut TSConvertContext) -> TSIdentifier {
+        TSIdentifier(context.resolve_identifier(self))
     }
 }
 
@@ -16,14 +13,15 @@ impl TSConvert<TSIdentifier> for GTIdentifier {
 mod tests {
     use pretty_assertions::assert_eq;
 
+    use crate::resolve::TSConvertResolve;
+
     use super::*;
 
     #[test]
     fn test_convert_base() {
         assert_eq!(
             TSIdentifier("Foo".into()),
-            GTIdentifier::new((0, 0).into(), "Foo".into())
-                .convert(&TSConvertResolve::new(), &|_| {}),
+            GTIdentifier::new((0, 0).into(), "Foo".into()).convert(&mut Default::default()),
         );
     }
 
@@ -36,7 +34,8 @@ mod tests {
         );
         assert_eq!(
             TSIdentifier("foo.Bar".into()),
-            GTIdentifier::new((0, 0).into(), "Foo".into()).convert(&resolve, &|_| {}),
+            GTIdentifier::new((0, 0).into(), "Foo".into())
+                .convert(&mut TSConvertContext::new(resolve)),
         );
     }
 }

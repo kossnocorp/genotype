@@ -1,18 +1,15 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, import_name::TSImportName};
+use genotype_lang_ts_tree::import_name::TSImportName;
 use genotype_parser::tree::import_name::GTImportName;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{context::TSConvertContext, convert::TSConvert};
 
 impl TSConvert<TSImportName> for GTImportName {
-    fn convert<HoistFn>(&self, resolve: &TSConvertResolve, hoist: &HoistFn) -> TSImportName
-    where
-        HoistFn: Fn(TSDefinition),
-    {
+    fn convert(&self, context: &mut TSConvertContext) -> TSImportName {
         match self {
-            Self::Name(_, name) => TSImportName::Name(name.convert(resolve, hoist)),
+            Self::Name(_, name) => TSImportName::Name(name.convert(context)),
 
             Self::Alias(_, name, alias) => {
-                TSImportName::Alias(name.convert(resolve, hoist), alias.convert(resolve, hoist))
+                TSImportName::Alias(name.convert(context), alias.convert(context))
             }
         }
     }
@@ -33,7 +30,7 @@ mod tests {
                 (0, 0).into(),
                 GTIdentifier::new((0, 0).into(), "Name".into())
             )
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSImportName::Name("Name".into()),
         );
     }
@@ -46,7 +43,7 @@ mod tests {
                 GTIdentifier::new((0, 0).into(), "Name".into()),
                 GTIdentifier::new((0, 0).into(), "Alias".into())
             )
-            .convert(&TSConvertResolve::new(), &|_| {}),
+            .convert(&mut Default::default()),
             TSImportName::Alias("Name".into(), "Alias".into()),
         );
     }

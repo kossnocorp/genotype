@@ -1,13 +1,10 @@
-use genotype_lang_ts_tree::{definition::TSDefinition, key::TSKey};
+use genotype_lang_ts_tree::key::TSKey;
 use genotype_parser::tree::key::GTKey;
 
-use crate::{convert::TSConvert, resolve::TSConvertResolve};
+use crate::{context::TSConvertContext, convert::TSConvert};
 
 impl TSConvert<TSKey> for GTKey {
-    fn convert<HoistFn>(&self, _resolve: &TSConvertResolve, _hoist: &HoistFn) -> TSKey
-    where
-        HoistFn: Fn(TSDefinition),
-    {
+    fn convert(&self, _context: &mut TSConvertContext) -> TSKey {
         TSKey(self.1.clone())
     }
 }
@@ -22,7 +19,7 @@ mod tests {
     fn test_convert() {
         assert_eq!(
             TSKey("foo".into()),
-            GTKey::new((0, 0).into(), "foo".into()).convert(&TSConvertResolve::new(), &|_| {}),
+            GTKey::new((0, 0).into(), "foo".into()).convert(&mut Default::default()),
         );
     }
 }
