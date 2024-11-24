@@ -25,6 +25,9 @@ miette = { version = "7.2.0", features = ["fancy"] }
 thiserror = "1.0.64"
 owo-colors = "4.1.0"
 inquire = "0.7.5"
+heck = "0.5.0"
+regex = "1.11.1"
+toml = { version = "0.8.19", features = ["preserve_order"] }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

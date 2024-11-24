@@ -6,7 +6,11 @@ use inquire::{
 };
 use miette::Result;
 
+use heck::{ToKebabCase, ToSnakeCase};
+use owo_colors::OwoColorize;
+use regex::Regex;
 use std::fmt::{Display, Formatter};
+use std::fs::{create_dir_all, write};
 use std::path::PathBuf;
 
 #[derive(Args)]
@@ -19,18 +23,69 @@ pub struct GTInitCommand {
 pub fn init_command(args: &GTInitCommand) -> Result<()> {
     let mut config = GTConfig::default();
 
-    // Name
+    let name = configure_name(&mut config)?;
+    configure_targers(&mut config, &name)?;
+
+    let root = args.path.clone().unwrap_or_else(|| PathBuf::from("."));
+
+    create_dir_all(root.clone())
+        .map_err(|_| GTCliError::FailedCreateDir(root.to_string_lossy().into()))?;
+
+    write(
+        root.join("genotype.toml"),
+        toml::to_string(&config).map_err(|_| GTCliError::StringifyConfig)?,
+    )
+    .map_err(|_| GTCliError::FailedWrite("genotype.toml".into()))?;
+
+    let src = root.join(config.src());
+
+    create_dir_all(src.clone())
+        .map_err(|_| GTCliError::FailedCreateDir(src.to_string_lossy().into()))?;
+
+    for (file, content) in GUIDE_FILES {
+        write(src.join(file), content)
+            .map_err(|_| GTCliError::FailedWrite(src.join(file).to_string_lossy().into()))?;
+    }
+
+    println!(
+        "{generated} project at {path:?}, run `{command}` to build the project",
+        generated = "Generated".green().bold(),
+        path = root.to_string_lossy(),
+        command = "gt build".yellow().bold()
+    );
+
+    Ok(())
+}
+
+const GUIDE_FILES: &'static [(&str, &str)] = &[
+    (
+        "guide.type",
+        include_str!("../../../examples/01-guide/guide.type"),
+    ),
+    (
+        "module.type",
+        include_str!("../../../examples/01-guide/module.type"),
+    ),
+];
+
+fn configure_name(config: &mut GTConfig) -> Result<String> {
+    let cd_name = std::env::current_dir()
+        .map(|path| path.file_name().unwrap().to_string_lossy().to_string())
+        .unwrap_or_default();
 
     let name = Text::new("Name your project:")
+        .with_default(&cd_name)
         .with_validator(required!("Please provide the project name"))
         .with_validator(min_length!(1, "Please provide the project name"))
         .prompt()
-        .map_err(|_| GTCliError::FailedReadline("name"))?;
+        .map_err(|_| GTCliError::FailedReadline("project name"))?;
 
-    config.name = Some(name);
+    config.name = Some(name.clone());
 
-    // Targets
+    Ok(name)
+}
 
+fn configure_targers(config: &mut GTConfig, name: &String) -> Result<()> {
     let targets = MultiSelect::new(
         "Choose the languages you want to target:",
         Target::VARIANTS.to_vec(),
@@ -47,36 +102,105 @@ pub fn init_command(args: &GTInitCommand) -> Result<()> {
 
     for target in targets {
         match target {
-            Target::TypeScript => {
-                let ts = GTConfigTS::default();
-                // [TODO] Generate name
-                // [TODO] Generate package data
-                config.ts = Some(ts);
-            }
-
-            Target::Python => {
-                let py = GTConfigPY::default();
-                // [TODO] Generate name
-                // [TODO] Generate package data
-                config.python = Some(py);
-            }
-
-            Target::Rust => {
-                let rs = GTConfigRS::default();
-                // [TODO] Generate name
-                // [TODO] Generate package data
-                config.rust = Some(rs);
-            }
+            Target::TypeScript => configure_ts(config, &name)?,
+            Target::Python => configure_py(config, &name)?,
+            Target::Rust => configure_rs(config, &name)?,
         }
     }
 
-    // [TODO] Write config to genotype.toml
+    Ok(())
+}
 
-    // [TODO] Create src directory
+fn configure_ts(config: &mut GTConfig, name: &String) -> Result<()> {
+    let mut ts = GTConfigTS::default();
 
-    // [TODO] Create guide file
+    let default_name = name.to_kebab_case();
+    let name = Text::new("Name the TypeScript package:")
+        .with_default(&default_name)
+        .with_validator(required!("Please provide the TypeScript package name"))
+        .with_validator(min_length!(1, "Please provide the TypeScript package name"))
+        .with_validator(|name: &str| {
+            let re = Regex::new(r"^(@[a-z0-9][a-z0-9\-_\.]*\/)?[a-z0-9][a-z0-9\-_\.]*$")?;
+            Ok(if re.is_match(name) {
+                Validation::Valid
+            } else {
+                Validation::Invalid("Invalid package name".into())
+            })
+        })
+        .prompt()
+        .map_err(|_| GTCliError::FailedReadline("TypeScript package name"))?;
 
-    // [TODO] Suggest to run `genotype build` after the project is initialized
+    let package = toml::Value::Table(toml::map::Map::from_iter(vec![
+        ("name".into(), toml::Value::String(name.clone())),
+        ("version".into(), toml::Value::String("0.1.0".into())),
+    ]));
+
+    ts.package = Some(package);
+
+    config.ts = Some(ts);
+
+    Ok(())
+}
+
+fn configure_py(config: &mut GTConfig, name: &String) -> Result<()> {
+    let mut py = GTConfigPY::default();
+
+    let default_name = name.to_kebab_case();
+    let name = Text::new("Name the Python package:")
+        .with_default(&default_name)
+        .with_validator(required!("Please provide the Python package name"))
+        .with_validator(min_length!(1, "Please provide the Python package name"))
+        .with_validator(|name: &str| {
+            let re = Regex::new(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")?;
+            Ok(if re.is_match(name) {
+                Validation::Valid
+            } else {
+                Validation::Invalid("Invalid package name".into())
+            })
+        })
+        .prompt()
+        .map_err(|_| GTCliError::FailedReadline("Python package name"))?;
+
+    let package = toml::Value::Table(toml::map::Map::from_iter(vec![
+        ("name".into(), toml::Value::String(name.clone())),
+        ("version".into(), toml::Value::String("0.1.0".into())),
+    ]));
+
+    py.package = Some(package);
+
+    config.python = Some(py);
+
+    Ok(())
+}
+
+fn configure_rs(config: &mut GTConfig, name: &String) -> Result<()> {
+    let mut rs = GTConfigRS::default();
+
+    let default_name = name.to_snake_case();
+    let name = Text::new("Name the Rust crate:")
+        .with_default(&default_name)
+        .with_validator(required!("Please provide the Rust crate name"))
+        .with_validator(min_length!(1, "Please provide the Rust crate name"))
+        .with_validator(|name: &str| {
+            let re = Regex::new(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")?;
+            Ok(if re.is_match(name) {
+                Validation::Valid
+            } else {
+                Validation::Invalid("Invalid crate name".into())
+            })
+        })
+        .prompt()
+        .map_err(|_| GTCliError::FailedReadline("Rust package name"))?;
+
+    let package = toml::Value::Table(toml::map::Map::from_iter(vec![
+        ("name".into(), toml::Value::String(name.clone())),
+        ("version".into(), toml::Value::String("0.1.0".into())),
+        ("edition".into(), toml::Value::String("2021".into())),
+    ]));
+
+    rs.package = Some(package);
+
+    config.rust = Some(rs);
 
     Ok(())
 }
