@@ -60,11 +60,11 @@ pub fn init_command(args: &GTInitCommand) -> Result<()> {
 const GUIDE_FILES: &'static [(&str, &str)] = &[
     (
         "guide.type",
-        include_str!("../../../examples/01-guide/guide.type"),
+        include_str!("../../examples/guide/guide.type"),
     ),
     (
         "module.type",
-        include_str!("../../../examples/01-guide/module.type"),
+        include_str!("../../examples/guide/module.type"),
     ),
 ];
 
