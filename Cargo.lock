@@ -362,7 +362,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_cli"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "clap",
  "genotype_config",
@@ -385,7 +385,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_config"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "clap",
  "figment",
@@ -402,7 +402,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_core_project"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "genotype_project",
  "miette",
@@ -411,14 +411,14 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_core_tree"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "pretty_assertions",
 ]
 
 [[package]]
 name = "genotype_lang_py_config"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "pretty_assertions",
  "serde",
@@ -426,7 +426,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_py_converter"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "genotype_lang_py_config",
  "genotype_lang_py_tree",
@@ -440,7 +440,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_py_project"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "genotype_config",
  "genotype_lang_core_project",
@@ -457,7 +457,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_py_tree"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "genotype_lang_core_tree",
  "genotype_lang_py_config",
@@ -466,7 +466,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_py_visitor"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "genotype_lang_py_tree",
  "pretty_assertions",
@@ -474,7 +474,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_rs_config"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "pretty_assertions",
  "serde",
@@ -483,7 +483,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_rs_converter"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "genotype_lang_rs_config",
  "genotype_lang_rs_tree",
@@ -496,7 +496,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_rs_project"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "genotype_config",
  "genotype_lang_core_project",
@@ -515,7 +515,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_rs_tree"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "genotype_lang_core_tree",
  "genotype_lang_rs_config",
@@ -527,7 +527,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_rs_visitor"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "genotype_lang_rs_tree",
  "pretty_assertions",
@@ -535,7 +535,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_ts_config"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "pretty_assertions",
  "toml",
@@ -543,7 +543,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_ts_converter"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "genotype_lang_ts_tree",
  "genotype_parser",
@@ -553,7 +553,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_ts_project"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "genotype_config",
  "genotype_lang_core_project",
@@ -573,7 +573,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_ts_tree"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "genotype_lang_core_tree",
  "heck",
@@ -582,7 +582,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_parser"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "heck",
  "miette",
@@ -594,7 +594,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_project"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "genotype_config",
  "genotype_parser",
@@ -618,7 +618,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_visitor"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "genotype_parser",
  "miette",
@@ -627,7 +627,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_writer"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "genotype_config",
  "genotype_lang_core_project",
