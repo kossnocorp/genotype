@@ -1,0 +1,8 @@
+FullName = {
+  firstName: string,
+  lastName: string,
+}
+
+Email = @string
+
+Zip = @string

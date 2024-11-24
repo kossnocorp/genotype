@@ -1,3 +1,131 @@
 //! Welcome to the Genotype language guide!
+//!
+//! Comments at the beginning of a file prefixed with `//!` are treated as
+//! the module documentation and translated to the corresponding documentation
+//! comments in the target language.
 
-// [TODO]
+
+/// Comments before types and fields prefixed with `///` are treated as
+/// documentation comments for the type or field.
+User = {
+  /// Full user name field
+  name: /* Inline comments... */ string,
+  // ...just like `//` comments are allowed too, but won't be included in
+  // the generated source code.
+}
+
+// Btw, that was a simple object type alias `User` with a single field `name`.
+// It will translate to a corresponding type in the target language. For
+// instance. In Python, that will define `class Name`. In TypeScript, it will be
+// `interface Name`l In Rust, `struct Name`, etc.
+
+// You can define type aliases for all kinds of types, for example, primitives
+// such as string, int, float, boolean, and null:
+Nothing = boolean
+
+Account = {
+  /// You can define nested object types:
+  name: {
+    first: string,
+    /// Fields can be optional:
+    last?: string,
+  }
+
+  /// You can also assign the name inline, which will create a separate type:
+  address: Address = {
+    street: string,
+    city: string,
+    zip: string,
+  },
+}
+
+Order = {
+  /// You can reference other types, including the ones defined inline:
+  address: Address,
+  /// ...or the ones defined later:
+  cart: Card,
+}
+
+Card = {
+  /// Btw, this is how you define arrays:
+  items: [Item],
+
+  /// ...tuples:
+  fees: (float, float, float),
+
+  /// ...and maps:
+  discounts: { [string]: float },
+  /// Unless the key is an int, float, or bool, you can skip the key type to make
+  /// it a string:
+  prices: { []: float },
+}
+
+/// You can reuse types...
+ItemBase = {
+  title: string,
+  price: float,
+}
+
+ItemBook = {
+  // ...by extending other types:
+  ...ItemBase,
+  isbn: string,
+}
+
+ItemGame = {
+  ...ItemBase,
+  platform: string,
+}
+
+/// You can union types:
+Item = ItemBook | ItemGame
+
+Payload = {
+  /// You can use literal types to define constants:
+  version: 1,
+  /// And branded types to define unique identifiers:
+  id: PayloadId = @string
+}
+
+/// There's also a special type any that will translate into any JSON value:
+JSON = any
+
+// Genotype features module system, so you can import types from other files:
+// use ./module/FullName
+
+Contact = {
+  /// And use them in your types:
+  // name: FullName,
+  /// You can also import types inline:
+  email: ./module/Email,
+}
+
+// You can import multiple types, as well as rename them:
+use ./module/{FullName, Email as EmailAddress}
+
+// Or import all types from a module implicitly:
+use ./module/*
+
+// ...in the target language it will be translated to corresponding imports,
+// e.g. `use super::module` and `module::Zip` in Rust:
+ZipAlias = Zip
+
+// Finally, it's worth mentioning that Genotype supports annotating types and
+// fields with attributes, which can be used to add metadata.
+
+#[discriminator = "type"]
+Animal = Dog | Cat
+
+Dog = {
+  type: "dog",
+}
+
+Cat = {
+  type: "cat",
+}
+
+// For now, only the `discriminator` attribute is supported, which will assign
+// discriminator to the field in Python.
+
+// That is is. Thank you for reading the guide! For more examples, see
+// the `examples` directory: https://github.com/kossnocorp/genotype
