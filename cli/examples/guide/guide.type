@@ -4,7 +4,6 @@
 //! the module documentation and translated to the corresponding documentation
 //! comments in the target language.
 
-
 /// Comments before types and fields prefixed with `///` are treated as
 /// documentation comments for the type or field.
 User = {
