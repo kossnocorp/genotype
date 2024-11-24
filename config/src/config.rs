@@ -9,26 +9,28 @@ use crate::{error::GTConfigError, result::GTConfigResult, GTConfigPY, GTConfigRS
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GTConfig {
-    /// Project name
-    name: Option<String>,
-    /// The root directory
+    /// Project name. If not provided it will be inferred from the root directory.
+    pub name: Option<String>,
+    /// Project root directory used to resolve relative paths. It defaults to the current directory.
     pub root: Option<PathBuf>,
-    /// The source directory
-    src: Option<PathBuf>,
-    /// The entry pattern
-    entry: Option<PathBuf>,
-    /// The out directory
-    out: Option<PathBuf>,
-    /// TypeScript
-    ts: Option<GTConfigTS>,
-    /// Python config
-    python: Option<GTConfigPY>,
-    /// Rust config
-    rust: Option<GTConfigRS>,
+    /// Project out directory. It defaults to `./libs` relative to the project's root directory.
+    pub out: Option<PathBuf>,
+    /// Where the Genotype source files are located. It defaults to `./src` relative to
+    /// the project's root directory.
+    pub src: Option<PathBuf>,
+    /// Project entry pattern. It defaults to `**/*.type` relative to the project's source
+    /// directory.
+    pub entry: Option<PathBuf>,
+    /// TypeScript config.
+    pub ts: Option<GTConfigTS>,
+    /// Python config.
+    pub python: Option<GTConfigPY>,
+    /// Rust config.
+    pub rust: Option<GTConfigRS>,
 }
 
 impl GTConfig {
-    pub fn out(&self) -> PathBuf {
+    pub fn full_out(&self) -> PathBuf {
         if let Some(out) = &self.out {
             if out.is_absolute() {
                 out.clone()
@@ -37,6 +39,14 @@ impl GTConfig {
             }
         } else {
             self.root().join("libs")
+        }
+    }
+
+    pub fn out(&self) -> PathBuf {
+        if let Some(out) = &self.out {
+            out.clone()
+        } else {
+            PathBuf::from("libs")
         }
     }
 
@@ -72,7 +82,7 @@ impl GTConfig {
     }
 
     pub fn as_ts_project(&self) -> TSProjectConfig {
-        GTConfigTS::derive_project(&self.name, &self.ts)
+        GTConfigTS::derive_project(&self.name, self.out(), &self.ts)
     }
 
     pub fn python_enabled(&self) -> bool {
@@ -82,7 +92,7 @@ impl GTConfig {
     }
 
     pub fn as_python_project(&self) -> GTConfigResult<PYProjectConfig> {
-        GTConfigPY::derive_project(&self.name, &self.python)
+        GTConfigPY::derive_project(&self.name, self.out(), &self.python)
     }
 
     pub fn rust_enabled(&self) -> bool {
@@ -92,11 +102,11 @@ impl GTConfig {
     }
 
     pub fn as_rust_project(&self) -> RSProjectConfig {
-        GTConfigRS::derive_project(&self.name, &self.rust)
+        GTConfigRS::derive_project(&self.name, self.out(), &self.rust)
     }
 
     pub fn source_path(&self, path: &PathBuf) -> PathBuf {
-        self.out().join(path)
+        self.root().join(path)
     }
 
     pub fn from_root(name: &str, root: &str) -> Self {
@@ -117,16 +127,20 @@ impl GTConfig {
             ..GTConfig::default()
         }
     }
+
+    pub fn with_rust(&mut self, config: GTConfigRS) {
+        self.rust = Some(config);
+    }
 }
 
 impl Default for GTConfig {
     fn default() -> GTConfig {
         GTConfig {
             name: None,
-            entry: None,
             root: None,
-            src: None,
-            out: None,
+            out: Some(PathBuf::from("libs")),
+            src: Some(PathBuf::from("src")),
+            entry: Some(PathBuf::from("**/*.type")),
             ts: None,
             python: None,
             rust: None,

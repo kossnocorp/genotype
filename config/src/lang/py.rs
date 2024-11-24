@@ -9,11 +9,14 @@ use crate::{error::GTConfigError, result::GTConfigResult};
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GTConfigPY {
     pub enabled: Option<bool>,
+    /// Path where to generate the Python package. It defaults to `py` relative to the project's
+    /// out directory.
     pub out: Option<PathBuf>,
+    /// Python version to use. It defaults to the latest stable version.
     pub version: Option<PYVersion>,
     /// Python module name. If not provided the project name will be used.
     pub module: Option<String>,
-    /// Python package data
+    /// pyproject.toml data.
     pub package: Option<toml::Value>,
 }
 
@@ -31,13 +34,16 @@ impl GTConfigPY {
 
     pub fn derive_project(
         name: &Option<String>,
+        out: PathBuf,
         config: &Option<GTConfigPY>,
     ) -> GTConfigResult<PYProjectConfig> {
         Ok(PYProjectConfig {
-            out: config
-                .as_ref()
-                .and_then(|c| c.out.clone())
-                .unwrap_or_else(|| PathBuf::from("py")),
+            out: out.join(
+                config
+                    .as_ref()
+                    .and_then(|c| c.out.clone())
+                    .unwrap_or_else(|| PathBuf::from("py")),
+            ),
             module: GTConfigPY::derive_module(name, config)?,
             lang: PYLangConfig {
                 version: config
@@ -51,5 +57,17 @@ impl GTConfigPY {
                     .and_then(|p| toml::to_string_pretty(&p).ok())
             }),
         })
+    }
+}
+
+impl Default for GTConfigPY {
+    fn default() -> Self {
+        GTConfigPY {
+            enabled: Some(true),
+            out: Some(PathBuf::from("py")),
+            version: Some(PYVersion::default()),
+            module: None,
+            package: None,
+        }
     }
 }

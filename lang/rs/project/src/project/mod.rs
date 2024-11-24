@@ -56,7 +56,7 @@ mod tests {
             vec![
                 RSProjectModule {
                     name: "author".into(),
-                    path: "rs/src/author.rs".into(),
+                    path: "libs/rs/src/author.rs".into(),
                     module: RSModule {
                         id: "author".into(),
                         doc: None,
@@ -90,7 +90,7 @@ mod tests {
                 },
                 RSProjectModule {
                     name: "book".into(),
-                    path: "rs/src/book.rs".into(),
+                    path: "libs/rs/src/book.rs".into(),
                     module: RSModule {
                         id: "book".into(),
                         doc: None,
@@ -168,7 +168,7 @@ mod tests {
              vec![
                 RSProjectModule {
                     name: "author".into(),
-                    path: "rs/src/author.rs".into(),
+                    path: "libs/rs/src/author.rs".into(),
                     module: RSModule {
                         id: "author".into(),
                         doc: None,
@@ -220,7 +220,7 @@ mod tests {
                 },
                 RSProjectModule {
                     name: "book".into(),
-                    path: "rs/src/book.rs".into(),
+                    path: "libs/rs/src/book.rs".into(),
                     module: RSModule {
                         id: "book".into(),
                         doc: None,
@@ -310,11 +310,11 @@ mod tests {
             GTLangProjectRender {
                 files: vec![
                     GTLangProjectSource {
-                        path: "rs/.gitignore".into(),
+                        path: "libs/rs/.gitignore".into(),
                         code: r#"target"#.into(),
                     },
                     GTLangProjectSource {
-                        path: "rs/Cargo.toml".into(),
+                        path: "libs/rs/Cargo.toml".into(),
                         code: r#"[package]
 
 [dependencies]
@@ -323,13 +323,13 @@ serde = { version = "1", features = ["derive"] }
                         .into()
                     },
                     GTLangProjectSource {
-                        path: "rs/src/lib.rs".into(),
+                        path: "libs/rs/src/lib.rs".into(),
                         code: r#"pub mod author;
 pub mod book;"#
                             .into(),
                     },
                     GTLangProjectSource {
-                        path: "rs/src/author.rs".into(),
+                        path: "libs/rs/src/author.rs".into(),
                         code: r#"use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -340,7 +340,7 @@ pub struct Author {
                         .into()
                     },
                     GTLangProjectSource {
-                        path: "rs/src/book.rs".into(),
+                        path: "libs/rs/src/book.rs".into(),
                         code: r#"use super::author::Author;
 use serde::{Deserialize, Serialize};
 
@@ -371,11 +371,11 @@ pub struct Book {
             GTLangProjectRender {
                 files: vec![
                     GTLangProjectSource {
-                        path: "rs/.gitignore".into(),
+                        path: "libs/rs/.gitignore".into(),
                         code: r#"target"#.into(),
                     },
                     GTLangProjectSource {
-                        path: "rs/Cargo.toml".into(),
+                        path: "libs/rs/Cargo.toml".into(),
                         code: r#"[package]
 
 [dependencies]
@@ -384,21 +384,21 @@ serde = { version = "1", features = ["derive"] }
                         .into(),
                     },
                     GTLangProjectSource {
-                        path: "rs/src/lib.rs".into(),
+                        path: "libs/rs/src/lib.rs".into(),
                         code: r#"pub mod inventory;
 pub mod shop;"#
                             .into(),
                     },
                     GTLangProjectSource {
-                        path: "rs/src/shop/goods/mod.rs".into(),
+                        path: "libs/rs/src/shop/goods/mod.rs".into(),
                         code: r#"pub mod book;"#.into(),
                     },
                     GTLangProjectSource {
-                        path: "rs/src/shop/mod.rs".into(),
+                        path: "libs/rs/src/shop/mod.rs".into(),
                         code: r#"pub mod goods;"#.into(),
                     },
                     GTLangProjectSource {
-                        path: "rs/src/inventory.rs".into(),
+                        path: "libs/rs/src/inventory.rs".into(),
                         code: r#"use super::shop::goods::book::Book;
 use serde::{Deserialize, Serialize};
 
@@ -410,7 +410,7 @@ pub struct Inventory {
                         .into()
                     },
                     GTLangProjectSource {
-                        path: "rs/src/shop/goods/book.rs".into(),
+                        path: "libs/rs/src/shop/goods/book.rs".into(),
                         code: r#"use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -439,11 +439,11 @@ pub struct Book {
             GTLangProjectRender {
                 files: vec![
                     GTLangProjectSource {
-                        path: "rs/.gitignore".into(),
+                        path: "libs/rs/.gitignore".into(),
                         code: r#"target"#.into(),
                     },
                     GTLangProjectSource {
-                        path: "rs/Cargo.toml".into(),
+                        path: "libs/rs/Cargo.toml".into(),
                         code: r#"[package]
 
 [dependencies]
@@ -453,14 +453,14 @@ serde = { version = "1", features = ["derive"] }
                         .into(),
                     },
                     GTLangProjectSource {
-                        path: "rs/src/lib.rs".into(),
+                        path: "libs/rs/src/lib.rs".into(),
                         code: r#"pub mod admin;
 pub mod named;
 pub mod user;"#
                             .into(),
                     },
                     GTLangProjectSource {
-                        path: "rs/src/admin.rs".into(),
+                        path: "libs/rs/src/admin.rs".into(),
                         code: r#"use literals::literal;
 use serde::{Deserialize, Serialize};
 use crate::named::Name;
@@ -493,7 +493,7 @@ pub enum AdminRole {
                         .into()
                     },
                     GTLangProjectSource {
-                        path: "rs/src/named.rs".into(),
+                        path: "libs/rs/src/named.rs".into(),
                         code: r#"use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -506,7 +506,7 @@ pub type Name = String;
                         .into()
                     },
                     GTLangProjectSource {
-                        path: "rs/src/user.rs".into(),
+                        path: "libs/rs/src/user.rs".into(),
                         code: r#"use super::named::Name;
 use serde::{Deserialize, Serialize};
 

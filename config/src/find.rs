@@ -21,8 +21,7 @@ impl GTConfig {
             .extract()?;
 
         if let None = config.root {
-            // [TODO] Error here
-            config.root = Some(path.parent().unwrap().to_path_buf());
+            config.root = Some(path.to_path_buf());
         }
 
         Ok(config)

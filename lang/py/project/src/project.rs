@@ -164,7 +164,7 @@ mod tests {
             vec![
                 PYProjectModule {
                     name: "author".into(),
-                    path: "py/module/author.py".into(),
+                    path: "libs/py/module/author.py".into(),
                     module: PYModule {
                         doc: None,
                         imports: vec![PYImport {
@@ -190,7 +190,7 @@ mod tests {
                 },
                 PYProjectModule {
                     name: "book".into(),
-                    path: "py/module/book.py".into(),
+                    path: "libs/py/module/book.py".into(),
                     module: PYModule {
                         doc: None,
                         imports: vec![
@@ -246,7 +246,7 @@ mod tests {
             vec![
                 PYProjectModule {
                     name: "author".into(),
-                    path: "py/module/author.py".into(),
+                    path: "libs/py/module/author.py".into(),
                     module: PYModule {
                         doc: None,
                         imports: vec![PYImport {
@@ -280,7 +280,7 @@ mod tests {
                 },
                 PYProjectModule {
                     name: "book".into(),
-                    path: "py/module/book.py".into(),
+                    path: "libs/py/module/book.py".into(),
                     module: PYModule {
                         doc: None,
                         imports: vec![
@@ -348,13 +348,13 @@ mod tests {
             GTLangProjectRender {
                 files: vec![
                     GTLangProjectSource {
-                        path: "py/.gitignore".into(),
+                        path: "libs/py/.gitignore".into(),
                         code: r#"__pycache__
 dist"#
                             .into(),
                     },
                     GTLangProjectSource {
-                        path: "py/pyproject.toml".into(),
+                        path: "libs/py/pyproject.toml".into(),
                         code: r#"[tool.poetry]
 packages = [{ include = "module" }]
 
@@ -369,11 +369,11 @@ build-backend = "poetry.core.masonry.api"
                         .into(),
                     },
                     GTLangProjectSource {
-                        path: "py/module/py.typed".into(),
+                        path: "libs/py/module/py.typed".into(),
                         code: "".into(),
                     },
                     GTLangProjectSource {
-                        path: "py/module/__init__.py".into(),
+                        path: "libs/py/module/__init__.py".into(),
                         code: r#"from .author import Author
 from .book import Book
 
@@ -382,7 +382,7 @@ __all__ = ["Author", "Book"]"#
                             .into(),
                     },
                     GTLangProjectSource {
-                        path: "py/module/author.py".into(),
+                        path: "libs/py/module/author.py".into(),
                         code: r#"from genotype import Model
 
 
@@ -392,7 +392,7 @@ class Author(Model):
                         .into()
                     },
                     GTLangProjectSource {
-                        path: "py/module/book.py".into(),
+                        path: "libs/py/module/book.py".into(),
                         code: r#"from .author import Author
 from genotype import Model
 
@@ -422,13 +422,13 @@ class Book(Model):
             GTLangProjectRender {
                 files: vec![
                     GTLangProjectSource {
-                        path: "py/.gitignore".into(),
+                        path: "libs/py/.gitignore".into(),
                         code: r#"__pycache__
 dist"#
                             .into(),
                     },
                     GTLangProjectSource {
-                        path: "py/pyproject.toml".into(),
+                        path: "libs/py/pyproject.toml".into(),
                         code: r#"[tool.poetry]
 packages = [{ include = "module" }]
 
@@ -443,11 +443,11 @@ build-backend = "poetry.core.masonry.api"
                         .into(),
                     },
                     GTLangProjectSource {
-                        path: "py/module/py.typed".into(),
+                        path: "libs/py/module/py.typed".into(),
                         code: "".into(),
                     },
                     GTLangProjectSource {
-                        path: "py/module/__init__.py".into(),
+                        path: "libs/py/module/__init__.py".into(),
                         code: r#"from .inventory import Inventory
 from .shop.goods.book import Book
 
@@ -456,11 +456,11 @@ __all__ = ["Inventory", "Book"]"#
                             .into(),
                     },
                     GTLangProjectSource {
-                        path: "py/module/shop/goods/__init__.py".into(),
+                        path: "libs/py/module/shop/goods/__init__.py".into(),
                         code: "".into(),
                     },
                     GTLangProjectSource {
-                        path: "py/module/inventory.py".into(),
+                        path: "libs/py/module/inventory.py".into(),
                         code: r#"from .shop.goods.book import Book
 from genotype import Model
 
@@ -471,7 +471,7 @@ class Inventory(Model):
                         .into()
                     },
                     GTLangProjectSource {
-                        path: "py/module/shop/goods/book.py".into(),
+                        path: "libs/py/module/shop/goods/book.py".into(),
                         code: r#"from genotype import Model
 
 

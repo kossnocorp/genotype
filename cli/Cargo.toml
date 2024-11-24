@@ -24,7 +24,7 @@ clap = { version = "4.5.19", features = ["derive"] }
 miette = { version = "7.2.0", features = ["fancy"] }
 thiserror = "1.0.64"
 owo-colors = "4.1.0"
-promkit = "0.5.0"
+inquire = "0.7.5"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

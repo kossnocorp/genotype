@@ -11,7 +11,7 @@ pub enum GTCliError {
     #[diagnostic(code(GTC101))]
     UnknownCommand(String),
 
-    #[error("fail to read line for `{0}`")]
+    #[error("failed to read line for `{0}`")]
     #[diagnostic(code(GTC102))]
     FailedReadline(&'static str),
 

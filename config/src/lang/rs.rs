@@ -6,18 +6,27 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GTConfigRS {
     pub enabled: Option<bool>,
+    /// Path where to generate the Rust package. It defaults to `rs` relative to the project's
+    /// out directory.
     pub out: Option<PathBuf>,
+    /// The traits to derive for the generated Rust structs and enums.
     pub derive: Option<Vec<String>>,
-    /// Rust package data
+    /// Cargo.toml data.
     pub package: Option<toml::Value>,
 }
 
 impl GTConfigRS {
-    pub fn derive_project(_name: &Option<String>, config: &Option<GTConfigRS>) -> RSProjectConfig {
-        let out = config
-            .as_ref()
-            .and_then(|c| c.out.clone())
-            .unwrap_or_else(|| PathBuf::from("rs"));
+    pub fn derive_project(
+        _name: &Option<String>,
+        out: PathBuf,
+        config: &Option<GTConfigRS>,
+    ) -> RSProjectConfig {
+        let out = out.join(
+            config
+                .as_ref()
+                .and_then(|c| c.out.clone())
+                .unwrap_or_else(|| PathBuf::from("rs")),
+        );
 
         let mut lang = RSLangConfig::default();
         if let Some(derive) = &config.as_ref().and_then(|c| c.derive.clone()) {
@@ -31,5 +40,16 @@ impl GTConfigRS {
         });
 
         RSProjectConfig { out, lang, package }
+    }
+}
+
+impl Default for GTConfigRS {
+    fn default() -> Self {
+        GTConfigRS {
+            enabled: Some(true),
+            out: Some(PathBuf::from("rs")),
+            derive: Some(RSLangConfig::default_derive()),
+            package: None,
+        }
     }
 }

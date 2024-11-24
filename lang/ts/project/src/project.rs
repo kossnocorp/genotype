@@ -118,7 +118,7 @@ mod tests {
                 .modules,
             vec![
                 TSProjectModule {
-                    path: "ts/src/author.ts".into(),
+                    path: "libs/ts/src/author.ts".into(),
                     module: TSModule {
                         doc: None,
                         imports: vec![],
@@ -137,7 +137,7 @@ mod tests {
                     },
                 },
                 TSProjectModule {
-                    path: "ts/src/book.ts".into(),
+                    path: "libs/ts/src/book.ts".into(),
                     module: TSModule {
                         doc: None,
                         imports: vec![TSImport {
@@ -181,7 +181,7 @@ mod tests {
             TSProject::generate(&project, ts_config).unwrap().modules,
             vec![
                 TSProjectModule {
-                    path: "ts/src/author.ts".into(),
+                    path: "libs/ts/src/author.ts".into(),
                     module: TSModule {
                         doc: None,
                         imports: vec![],
@@ -206,7 +206,7 @@ mod tests {
                     },
                 },
                 TSProjectModule {
-                    path: "ts/src/book.ts".into(),
+                    path: "libs/ts/src/book.ts".into(),
                     module: TSModule {
                         doc: None,
                         imports: vec![TSImport {
@@ -258,25 +258,25 @@ mod tests {
             GTLangProjectRender {
                 files: vec![
                     GTLangProjectSource {
-                        path: "ts/.gitignore".into(),
+                        path: "libs/ts/.gitignore".into(),
                         code: "node_modules".into(),
                     },
                     GTLangProjectSource {
-                        path: "ts/package.json".into(),
+                        path: "libs/ts/package.json".into(),
                         code: r#"{
   "types": "src/index.ts"
 }"#
                         .into()
                     },
                     GTLangProjectSource {
-                        path: "ts/src/index.ts".into(),
+                        path: "libs/ts/src/index.ts".into(),
                         code: r#"export * from "./author.ts";
 export * from "./book.ts";
 "#
                         .into()
                     },
                     GTLangProjectSource {
-                        path: "ts/src/author.ts".into(),
+                        path: "libs/ts/src/author.ts".into(),
                         code: r#"export interface Author {
   name: string;
 }
@@ -284,7 +284,7 @@ export * from "./book.ts";
                         .into()
                     },
                     GTLangProjectSource {
-                        path: "ts/src/book.ts".into(),
+                        path: "libs/ts/src/book.ts".into(),
                         code: r#"import { Author } from "./author.ts";
 
 export interface Book {

@@ -1,18 +1,12 @@
 use crate::diagnostic::error::GTCliError;
 use clap::Args;
-use genotype_config::GTConfig;
-use genotype_lang_core_project::project::GTLangProject;
-use genotype_lang_py_project::project::PYProject;
-use genotype_lang_rs_project::project::RSProject;
-use genotype_lang_ts_project::project::TSProject;
-use genotype_project::GTProject;
-use genotype_writer::GTWriter;
-use miette::Result;
-use owo_colors::OwoColorize;
-use promkit::{
-    preset::{checkbox::Checkbox, readline::Readline},
-    suggest::Suggest,
+use genotype_config::{GTConfig, GTConfigPY, GTConfigRS, GTConfigTS};
+use inquire::{
+    list_option::ListOption, min_length, required, validator::Validation, MultiSelect, Text,
 };
+use miette::Result;
+
+use std::fmt::{Display, Formatter};
 use std::path::PathBuf;
 
 #[derive(Args)]
@@ -23,15 +17,83 @@ pub struct GTInitCommand {
 }
 
 pub fn init_command(args: &GTInitCommand) -> Result<()> {
-    let targets = Checkbox::new(vec!["TypeScript", "Python", "Rust"])
-        .title("Choose the languages you want to target")
-        .checkbox_lines(5)
-        .prompt()
-        .map_err(|_| GTCliError::FailedReadline("targets"))?
-        .run()
-        .map_err(|_| GTCliError::FailedReadline("targets"))?;
+    let mut config = GTConfig::default();
 
-    println!("Targets: {:?}", targets);
+    // Name
+
+    let name = Text::new("Name your project:")
+        .with_validator(required!("Please provide the project name"))
+        .with_validator(min_length!(1, "Please provide the project name"))
+        .prompt()
+        .map_err(|_| GTCliError::FailedReadline("name"))?;
+
+    config.name = Some(name);
+
+    // Targets
+
+    let targets = MultiSelect::new(
+        "Choose the languages you want to target:",
+        Target::VARIANTS.to_vec(),
+    )
+    .with_validator(|targets: &[ListOption<&Target>]| {
+        Ok(if targets.len() < 1 {
+            Validation::Invalid("Please select at least one language".into())
+        } else {
+            Validation::Valid
+        })
+    })
+    .prompt()
+    .map_err(|_| GTCliError::FailedReadline("targets"))?;
+
+    for target in targets {
+        match target {
+            Target::TypeScript => {
+                let ts = GTConfigTS::default();
+                // [TODO] Generate name
+                // [TODO] Generate package data
+                config.ts = Some(ts);
+            }
+
+            Target::Python => {
+                let py = GTConfigPY::default();
+                // [TODO] Generate name
+                // [TODO] Generate package data
+                config.python = Some(py);
+            }
+
+            Target::Rust => {
+                let rs = GTConfigRS::default();
+                // [TODO] Generate name
+                // [TODO] Generate package data
+                config.rust = Some(rs);
+            }
+        }
+    }
+
+    // [TODO] Write config to genotype.toml
+
+    // [TODO] Create src directory
+
+    // [TODO] Create guide file
+
+    // [TODO] Suggest to run `genotype build` after the project is initialized
 
     Ok(())
+}
+
+#[derive(Debug, Clone, Copy)]
+enum Target {
+    TypeScript,
+    Python,
+    Rust,
+}
+
+impl Target {
+    const VARIANTS: &'static [Target] = &[Self::TypeScript, Self::Python, Self::Rust];
+}
+
+impl Display for Target {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+        write!(f, "{self:?}")
+    }
 }
