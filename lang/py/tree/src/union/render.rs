@@ -27,7 +27,7 @@ impl PYRender for PYUnion {
 
         if let Some(discriminator) = &self.discriminator {
             format!(
-                r#"Annotated[{}, Field(json_schema_extra={{'descriminator': '{}'}})]"#,
+                r#"Annotated[{}, Field(json_schema_extra={{'discriminator': '{}'}})]"#,
                 union, discriminator
             )
         } else {
@@ -85,7 +85,7 @@ mod tests {
                 discriminator: Some("type".into())
             }
             .render(&py_indent(), &Default::default()),
-            r#"Annotated[str | int, Field(json_schema_extra={'descriminator': 'type'})]"#
+            r#"Annotated[str | int, Field(json_schema_extra={'discriminator': 'type'})]"#
         );
     }
 
@@ -100,7 +100,7 @@ mod tests {
                 discriminator: Some("type".into())
             }
             .render(&py_indent(), &PYLangConfig::new(PYVersion::Legacy)),
-            r#"Annotated[Union[str, int], Field(json_schema_extra={'descriminator': 'type'})]"#
+            r#"Annotated[Union[str, int], Field(json_schema_extra={'discriminator': 'type'})]"#
         );
     }
 }
