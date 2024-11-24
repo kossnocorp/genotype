@@ -1,0 +1,60 @@
+
+
+
+// Shared version
+
+WorkspaceV!v = {
+  version: !v,
+  users: [User!v]
+  chat: Chat!v
+}
+
+UserV!v = {
+  id: string
+  name: string
+  !v2 -name
+  !v2 firstName: string
+  !v2 lastName: string
+}
+
+ChatV!v = {
+  messages: [MessageV!v]
+}
+
+MessageV!v = {
+  !v1 message: string
+  !v2 message: MessageObj = {
+    type: string,
+    !v3 type: "user" | "system",
+    message: string,
+  }
+}
+
+// Independent versions
+
+Workspace = <!v>{
+  users: [User<!{ 1: v1, 2: v2 }>]
+  chat: Chat<!{ 1: v1, 2: v3, 3: v4 }>
+}
+
+User = <!v>{
+  id: string
+  name: string
+  !v2 -name
+  !v2 firstName: string
+  !v2 lastName: string
+}
+
+Chat = <!v>{
+  messages: [Message<!v>]
+}
+
+Message = <!v>{
+  version: !v
+  !v1 message: string
+  !v2 message: MessageObj<!{ 1: v2, 2: v3 }> = <!v>{
+    type: string,
+    !v2 type: "user" | "system",
+    message: string,
+  }
+}
