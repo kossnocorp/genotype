@@ -77,13 +77,13 @@ jobs:
 
       - name: Archive binaries
         if: runner.os != 'Windows'
-        run:
+        run: |
           tar -czvf ${{ matrix.cli-name }}-${{ matrix.os }}.tar.gz -C target/${{ matrix.target }}/release ${{ matrix.cli-name }}
           tar -czvf ${{ matrix.lsp-name }}-${{ matrix.os }}.tar.gz -C target/${{ matrix.target }}/release ${{ matrix.lsp-name }}
 
       - name: Archive binaries
         if: runner.os == 'Windows'
-        run:
+        run: |
           Compress-Archive -Path target\${{ matrix.target }}\release\${{ matrix.cli-name }} -DestinationPath ${{ matrix.cli-name }}-${{ matrix.os }}.zip
           Compress-Archive -Path target\${{ matrix.target }}\release\${{ matrix.lsp-name }} -DestinationPath ${{ matrix.lsp-name }}-${{ matrix.os }}.zip
 
