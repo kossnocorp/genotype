@@ -1,0 +1,19 @@
+[package]
+name = "genotype_lsp"
+version = "0.6.0"
+edition = "2021"
+description = "Genotype language LSP server"
+authors = ["Sasha Koss <koss@nocorp.me>"]
+license = "MIT"
+repository = "https://github.com/kossnocorp/genotype"
+
+[dependencies]
+async-lsp = { version = "0.2.1", features = ["tokio"] }
+futures = "0.3.31"
+tokio = { version = "1.42.0", features = ["full"] }
+tower = "0.5.2"
+tracing = "0.1.41"
+tracing-subscriber = "0.3.19"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"

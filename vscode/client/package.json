@@ -1,0 +1,21 @@
+{
+  "name": "genotype-client",
+  "version": "0.1.0",
+  "description": "Genotype language LSP client",
+  "author": "Sasha Koss <koss@nocorp.me>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kossnocorp/genotype.git"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "publisher": "nocorp",
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.96.0"
+  }
+}

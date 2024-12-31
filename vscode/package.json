@@ -1,20 +1,51 @@
 {
   "name": "genotype",
-  "publisher": "nocorp",
-  "displayName": "Genotype",
-  "description": "",
   "version": "0.1.0",
+  "description": "Genotype language support",
+  "author": "Sasha Koss <koss@nocorp.me>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kossnocorp/genotype.git"
+  },
   "engines": {
     "vscode": "^1.90.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/kossnocorp/genotypen.git"
-  },
+  "displayName": "Genotype",
+  "publisher": "nocorp",
   "categories": [
     "Programming Languages"
   ],
   "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Multi LSP configuration",
+      "properties": {
+        "genotype.enable": {
+          "scope": "resource",
+          "type": "boolean",
+          "default": true,
+          "description": "Controls the enablement."
+        },
+        "genotype.options": {
+          "scope": "resource",
+          "type": "object",
+          "default": {},
+          "description": "Additional options."
+        },
+        "genotype.trace.server": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VSCode and the language server."
+        }
+      }
+    },
     "languages": [
       {
         "id": "genotype",
@@ -35,5 +66,14 @@
         "path": "./syntaxes/genotype.tmLanguage.json"
       }
     ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -b",
+    "watch": "tsc -b -w",
+    "postinstall": "cd client && npm install && cd ../server && npm install && cd .."
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
   }
 }
