@@ -2,6 +2,7 @@
   "name": "genotype-lsp",
   "version": "0.6.0-alpha.1",
   "license": "MIT",
+  "files": [],
   "optionalDependencies": {
     "@genotype-lsp/darwin-arm64": "workspace:*",
     "@genotype-lsp/darwin-x64": "workspace:*",
