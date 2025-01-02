@@ -11,6 +11,9 @@ test-watch:
 
 version version:
   cargo release version {{version}} --exclude literals --exclude genotype_runtime --execute
+  cd lsp && just version {{version}}
+  # [TODO] Include into the release process?
+  # cd vscode && just version {{version}}
 
 publish:
   cargo release publish --exclude literals --exclude genotype_runtime --execute

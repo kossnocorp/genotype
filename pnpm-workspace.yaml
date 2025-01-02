@@ -1,0 +1,6 @@
+packages:
+  - "lsp"
+  - "lsp/npm/*"
+  - "vscode"
+  - "vscode/server"
+  - "vscode/client"

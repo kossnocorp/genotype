@@ -1,2 +1,3 @@
-/target
+target
+node_modules
 /tmp

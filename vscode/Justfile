@@ -4,5 +4,10 @@ install:
 build:
   toml2json ./src/syntax.toml --pretty > ./syntaxes/genotype.tmLanguage.json
 
+version:
+  npm version {{version}}
+  cd client && npm version {{version}}
+  cd server && npm version {{version}}
+
 publish: build
 	npx @vscode/vsce publish

@@ -1,6 +1,6 @@
 {
   "name": "genotype",
-  "version": "0.1.0",
+  "version": "0.6.0",
   "description": "Genotype language support",
   "author": "Sasha Koss <koss@nocorp.me>",
   "license": "MIT",

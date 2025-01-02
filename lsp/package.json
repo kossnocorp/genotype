@@ -1,0 +1,13 @@
+{
+  "name": "genotype-lsp",
+  "version": "0.6.0-alpha.1",
+  "license": "MIT",
+  "optionalDependencies": {
+    "@genotype-lsp/darwin-arm64": "workspace:*",
+    "@genotype-lsp/darwin-x64": "workspace:*",
+    "@genotype-lsp/linux-arm64": "workspace:*",
+    "@genotype-lsp/linux-x64": "workspace:*",
+    "@genotype-lsp/win32-arm64": "workspace:*",
+    "@genotype-lsp/win32-x64": "workspace:*"
+  }
+}

@@ -1,5 +1,59 @@
+install:
+  cargo install cross
+
 test:
   cargo test
 
 test-watch:
   cargo watch -x test
+
+build:
+  # aarch64-apple-darwin
+  cross build --release --target aarch64-apple-darwin --target-dir target
+  cp target/aarch64-apple-darwin/release/gts npm/darwin-arm64/bin/
+  chmod +x npm/darwin-arm64/bin/gts
+  # x86_64-apple-darwin
+  cross build --release --target x86_64-apple-darwin --target-dir target
+  cp target/x86_64-apple-darwin/release/gts npm/darwin-x64/bin/
+  chmod +x npm/darwin-x64/bin/gts
+  # aarch64-unknown-linux-gnu
+  cross build --release --target aarch64-unknown-linux-gnu --target-dir target
+  cp target/aarch64-unknown-linux-gnu/release/gts npm/linux-arm64/bin/
+  chmod +x npm/linux-arm64/bin/gts
+  # x86_64-unknown-linux-gnu
+  cross build --release --target x86_64-unknown-linux-gnu --target-dir target
+  cp target/aarch64-unknown-linux-gnu/release/gts npm/linux-x64/bin/
+  chmod +x npm/linux-x64/bin/gts
+  # aarch64-pc-windows-msvc
+  cross build --release --target aarch64-pc-windows-msvc --target-dir target
+  cp target/aarch64-pc-windows-msvc/release/gts.exe npm/win32-x64/bin/
+  # x86_64-pc-windows-msvc
+  cross build --release --target x86_64-pc-windows-msvc --target-dir target
+  cp target/x86_64-pc-windows-msvc/release/gts.exe npm/win32-arm64/bin/
+
+version version:
+  npm version {{version}}
+  cd npm/darwin-arm64 && npm version {{version}}
+  cd npm/darwin-x64 && npm version {{version}}
+  cd npm/linux-arm64 && npm version {{version}}
+  cd npm/linux-x64 && npm version {{version}}
+  cd npm/win32-x64 && npm version {{version}}
+  cd npm/win32-arm64 && npm version {{version}}
+
+publish: build
+  cd npm/darwin-arm64 && npm publish --access public
+  cd npm/darwin-x64 && npm publish --access public
+  cd npm/linux-arm64 && npm publish --access public
+  cd npm/linux-x64 && npm publish --access public
+  cd npm/win32-x64 && npm publish --access public
+  cd npm/win32-arm64 && npm publish --access public
+  npm publish
+
+publish-next: build
+  cd npm/darwin-arm64 && pnpm publish --tag next --access public
+  cd npm/darwin-x64 && pnpm publish --tag next --access public
+  cd npm/linux-arm64 && pnpm publish --tag next --access public
+  cd npm/linux-x64 && pnpm publish --tag next --access public
+  cd npm/win32-x64 && pnpm publish --tag next --access public
+  cd npm/win32-arm64 && pnpm publish --tag next --access public
+  npm publish --tag next

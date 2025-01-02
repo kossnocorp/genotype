@@ -25,76 +25,77 @@ jobs:
       - name: Run tests
         run: cargo nextest run
 
-  build:
-    needs:
-      - test
+  # [TODO] Remove or reenable with practical setup
+  # build:
+  #   needs:
+  #     - test
 
-    runs-on: ${{ matrix.os }}
+  #   runs-on: ${{ matrix.os }}
 
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-            cli-name: gt
-            lsp-name: gts
+  #   strategy:
+  #     matrix:
+  #       include:
+  #         - os: ubuntu-latest
+  #           target: x86_64-unknown-linux-gnu
+  #           cli-name: gt
+  #           lsp-name: gts
 
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            cli-name: gt
-            lsp-name: gts
+  #         - os: macos-latest
+  #           target: x86_64-apple-darwin
+  #           cli-name: gt
+  #           lsp-name: gts
 
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            cli-name: gt.exe
-            lsp-name: gts.exe
+  #         - os: windows-latest
+  #           target: x86_64-pc-windows-msvc
+  #           cli-name: gt.exe
+  #           lsp-name: gts.exe
 
-    steps:
-      - name: Check out repo
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Check out repo
+  #       uses: actions/checkout@v4
 
-      - name: Set up Rust
-        uses: ./.github/actions/rust-setup
+  #     - name: Set up Rust
+  #       uses: ./.github/actions/rust-setup
 
-      - name: Cache target
-        uses: actions/cache@v4
-        with:
-          path: target
-          key: ${{ runner.os }}-target-${{ matrix.target }}-${{ hashFiles('cli/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-target-${{ matrix.target }}-
+  #     - name: Cache target
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: target
+  #         key: ${{ runner.os }}-target-${{ matrix.target }}-${{ hashFiles('cli/Cargo.lock') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-target-${{ matrix.target }}-
 
-      - name: Add target
-        run: rustup target add ${{ matrix.target }}
+  #     - name: Add target
+  #       run: rustup target add ${{ matrix.target }}
 
-      - name: Build CLI
-        working-directory: cli
-        run: cargo build --release --target ${{ matrix.target }}
+  #     - name: Build CLI
+  #       working-directory: cli
+  #       run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Build LSP
-        working-directory: lsp
-        run: cargo build --release --target ${{ matrix.target }}
+  #     - name: Build LSP
+  #       working-directory: lsp
+  #       run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Archive binaries
-        if: runner.os != 'Windows'
-        run: |
-          tar -czvf ${{ matrix.cli-name }}-${{ matrix.os }}.tar.gz -C target/${{ matrix.target }}/release ${{ matrix.cli-name }}
-          tar -czvf ${{ matrix.lsp-name }}-${{ matrix.os }}.tar.gz -C target/${{ matrix.target }}/release ${{ matrix.lsp-name }}
+  #     - name: Archive binaries
+  #       if: runner.os != 'Windows'
+  #       run: |
+  #         tar -czvf ${{ matrix.cli-name }}-${{ matrix.os }}.tar.gz -C target/${{ matrix.target }}/release ${{ matrix.cli-name }}
+  #         tar -czvf ${{ matrix.lsp-name }}-${{ matrix.os }}.tar.gz -C target/${{ matrix.target }}/release ${{ matrix.lsp-name }}
 
-      - name: Archive binaries
-        if: runner.os == 'Windows'
-        run: |
-          Compress-Archive -Path target\${{ matrix.target }}\release\${{ matrix.cli-name }} -DestinationPath ${{ matrix.cli-name }}-${{ matrix.os }}.zip
-          Compress-Archive -Path target\${{ matrix.target }}\release\${{ matrix.lsp-name }} -DestinationPath ${{ matrix.lsp-name }}-${{ matrix.os }}.zip
+  #     - name: Archive binaries
+  #       if: runner.os == 'Windows'
+  #       run: |
+  #         Compress-Archive -Path target\${{ matrix.target }}\release\${{ matrix.cli-name }} -DestinationPath ${{ matrix.cli-name }}-${{ matrix.os }}.zip
+  #         Compress-Archive -Path target\${{ matrix.target }}\release\${{ matrix.lsp-name }} -DestinationPath ${{ matrix.lsp-name }}-${{ matrix.os }}.zip
 
-      - name: Upload CLI binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.cli-name }}-${{ matrix.os }}
-          path: ${{ matrix.cli-name }}-${{ matrix.os }}.*
+  #     - name: Upload CLI binaries
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ${{ matrix.cli-name }}-${{ matrix.os }}
+  #         path: ${{ matrix.cli-name }}-${{ matrix.os }}.*
 
-      - name: Upload LSP binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.lsp-name }}-${{ matrix.os }}
-          path: ${{ matrix.lsp-name }}-${{ matrix.os }}.*
+  #     - name: Upload LSP binaries
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ${{ matrix.lsp-name }}-${{ matrix.os }}
+  #         path: ${{ matrix.lsp-name }}-${{ matrix.os }}.*
