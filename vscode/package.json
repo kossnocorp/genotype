@@ -31,28 +31,10 @@
       "type": "object",
       "title": "Multi LSP configuration",
       "properties": {
-        "genotype.enable": {
-          "scope": "resource",
-          "type": "boolean",
-          "default": true,
-          "description": "Controls the enablement."
-        },
-        "genotype.options": {
-          "scope": "resource",
+        "genotype.server.executable": {
           "type": "object",
           "default": {},
-          "description": "Additional options."
-        },
-        "genotype.trace.server": {
-          "scope": "window",
-          "type": "string",
-          "enum": [
-            "off",
-            "messages",
-            "verbose"
-          ],
-          "default": "off",
-          "description": "Traces the communication between VSCode and the language server."
+          "description": "Genotype LSP server executable options"
         }
       }
     },

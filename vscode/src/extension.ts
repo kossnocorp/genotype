@@ -2,19 +2,23 @@ import { getBinPath } from "genotype-lsp";
 import * as vscode from "vscode";
 import { workspace } from "vscode";
 import {
+  Executable,
   LanguageClient,
   LanguageClientOptions,
-  ServerOptions,
 } from "vscode-languageclient/node";
 
 let client: LanguageClient | undefined;
 
 export function activate(_context: vscode.ExtensionContext) {
+  const config = workspace.getConfiguration("genotype");
+  const command = config.get<Partial<Executable>>("server.executable");
+
   const binPath = getBinPath();
 
-  const serverOptions: ServerOptions = {
+  const serverOptions: Executable = {
     command: binPath,
     args: [],
+    ...command,
   };
 
   const clientOptions: LanguageClientOptions = {
@@ -35,7 +39,6 @@ export function activate(_context: vscode.ExtensionContext) {
   client.start();
 }
 
-export async function deactivate(): Promise<void> {
-  await client?.stop();
-  client = undefined;
+export function deactivate() {
+  return client?.stop();
 }

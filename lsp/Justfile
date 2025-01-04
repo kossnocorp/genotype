@@ -7,29 +7,35 @@ test:
 test-watch:
   cargo watch -x test
 
-build:
-  # aarch64-apple-darwin
+build: build-darwin-arm64 build-darwin-x64 build-linux-arm64 build-linux-x64 build-win32-x64 build-win32-arm64
+
+build-darwin-arm64:
   cross build --release --target aarch64-apple-darwin --target-dir target
   cp target/aarch64-apple-darwin/release/gts npm/darwin-arm64/bin/
   chmod +x npm/darwin-arm64/bin/gts
-  # x86_64-apple-darwin
+
+build-darwin-x64:
   cross build --release --target x86_64-apple-darwin --target-dir target
   cp target/x86_64-apple-darwin/release/gts npm/darwin-x64/bin/
   chmod +x npm/darwin-x64/bin/gts
-  # aarch64-unknown-linux-gnu
+
+build-linux-arm64:
   cross build --release --target aarch64-unknown-linux-gnu --target-dir target
   cp target/aarch64-unknown-linux-gnu/release/gts npm/linux-arm64/bin/
   chmod +x npm/linux-arm64/bin/gts
-  # x86_64-unknown-linux-gnu
+
+build-linux-x64:
   cross build --release --target x86_64-unknown-linux-gnu --target-dir target
   cp target/x86_64-unknown-linux-gnu/release/gts npm/linux-x64/bin/
   chmod +x npm/linux-x64/bin/gts
-  # aarch64-pc-windows-msvc
-  cross build --release --target aarch64-pc-windows-msvc --target-dir target
-  cp target/aarch64-pc-windows-msvc/release/gts.exe npm/win32-x64/bin/
-  # x86_64-pc-windows-msvc
+
+build-win32-x64:
   cross build --release --target x86_64-pc-windows-msvc --target-dir target
-  cp target/x86_64-pc-windows-msvc/release/gts.exe npm/win32-arm64/bin/
+  cp target/x86_64-pc-windows-msvc/release/gts.exe npm/win32-x64/bin/
+  
+build-win32-arm64:
+  cross build --release --target aarch64-pc-windows-msvc --target-dir target
+  cp target/aarch64-pc-windows-msvc/release/gts.exe npm/win32-arm64/bin/
 
 version version:
   npm version {{version}}
