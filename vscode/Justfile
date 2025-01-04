@@ -1,10 +1,15 @@
 install:
   cargo install toml2json
 
-build:
+build: build-syntax build-extension
+
+build-syntax:
   toml2json ./src/syntax.toml --pretty > ./syntaxes/genotype.tmLanguage.json
 
-version:
+build-extension:
+  pnpm exec tsc
+
+version version:
   npm version {{version}}
   cd client && npm version {{version}}
   cd server && npm version {{version}}

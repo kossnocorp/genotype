@@ -3,6 +3,7 @@
   "version": "0.6.0-alpha.1",
   "license": "MIT",
   "files": [],
+  "main": "index.js",
   "optionalDependencies": {
     "@genotype-lsp/darwin-arm64": "workspace:*",
     "@genotype-lsp/darwin-x64": "workspace:*",
