@@ -22,7 +22,7 @@ build:
   chmod +x npm/linux-arm64/bin/gts
   # x86_64-unknown-linux-gnu
   cross build --release --target x86_64-unknown-linux-gnu --target-dir target
-  cp target/aarch64-unknown-linux-gnu/release/gts npm/linux-x64/bin/
+  cp target/x86_64-unknown-linux-gnu/release/gts npm/linux-x64/bin/
   chmod +x npm/linux-x64/bin/gts
   # aarch64-pc-windows-msvc
   cross build --release --target aarch64-pc-windows-msvc --target-dir target

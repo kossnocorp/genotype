@@ -9,6 +9,9 @@ build-syntax:
 build-extension:
   pnpm exec tsc
 
+build-extension-watch:
+  pnpm exec tsc --watch
+
 version version:
   npm version {{version}}
   cd client && npm version {{version}}

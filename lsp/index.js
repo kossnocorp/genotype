@@ -1,9 +1,7 @@
 const { join } = require("path");
 const { existsSync } = require("fs");
 
-module.exports.getBinPath = function getBinPath(
-  contextPath = import.meta.dirname
-) {
+module.exports.getBinPath = function getBinPath(contextPath = __dirname) {
   const variation = `${process.platform}-${process.arch}`;
   const binName = process.platform === "win32" ? "gts.exe" : "gts";
   const binPath = join(

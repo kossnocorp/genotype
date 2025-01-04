@@ -2,11 +2,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Extension",
+      "name": "VS Code extension",
       "type": "extensionHost",
       "request": "launch",
-      "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
-      "cwd": "${workspaceFolder}/vscode"
+      "args": ["--extensionDevelopmentPath=${workspaceRoot}/vscode"],
+      "outFiles": ["${workspaceRoot}/vscode/out/**/*.js"],
+      "autoAttachChildProcesses": true
     }
   ]
 }

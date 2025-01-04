@@ -82,7 +82,64 @@ struct TickEvent;
 impl ServerState {
     fn new_router(client: ClientSocket) -> Router<Self> {
         let mut router = Router::from_language_server(Self { client, counter: 0 });
+
         router.event(Self::on_tick);
+
+        router.request::<lsp_types::request::Initialize, _>(|_, params| async move {
+            eprintln!("Initialize with {params:?}");
+            Ok(lsp_types::InitializeResult {
+                capabilities: lsp_types::ServerCapabilities {
+                    hover_provider: Some(lsp_types::HoverProviderCapability::Simple(true)),
+                    definition_provider: Some(lsp_types::OneOf::Left(true)),
+                    ..lsp_types::ServerCapabilities::default()
+                },
+                server_info: None,
+            })
+        });
+
+        router.request::<lsp_types::request::HoverRequest, _>(|st, _| {
+            let client = st.client.clone();
+            let counter = st.counter;
+            async move {
+                tokio::time::sleep(Duration::from_secs(1)).await;
+                client
+                    .notify::<lsp_types::notification::ShowMessage>(lsp_types::ShowMessageParams {
+                        typ: lsp_types::MessageType::INFO,
+                        message: "Hello LSP".into(),
+                    })
+                    .unwrap();
+                Ok(Some(lsp_types::Hover {
+                    contents: lsp_types::HoverContents::Scalar(lsp_types::MarkedString::String(
+                        format!("I am a hover text {counter}!"),
+                    )),
+                    range: None,
+                }))
+            }
+        });
+
+        router.request::<lsp_types::request::GotoDefinition, _>(|_, _| async move {
+            unimplemented!("Not yet implemented!")
+        });
+
+        router
+            .notification::<lsp_types::notification::Initialized>(|_, _| ControlFlow::Continue(()));
+
+        router.notification::<lsp_types::notification::DidChangeConfiguration>(|_, _| {
+            ControlFlow::Continue(())
+        });
+
+        router.notification::<lsp_types::notification::DidOpenTextDocument>(|_, _| {
+            ControlFlow::Continue(())
+        });
+
+        router.notification::<lsp_types::notification::DidChangeTextDocument>(|_, _| {
+            ControlFlow::Continue(())
+        });
+
+        router.notification::<lsp_types::notification::DidCloseTextDocument>(|_, _| {
+            ControlFlow::Continue(())
+        });
+
         router
     }
 

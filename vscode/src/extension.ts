@@ -1,4 +1,4 @@
-import { getGenotypeLspBinPath } from "genotype-lsp";
+import { getBinPath } from "genotype-lsp";
 import * as vscode from "vscode";
 import { workspace } from "vscode";
 import {
@@ -9,8 +9,8 @@ import {
 
 let client: LanguageClient | undefined;
 
-export function activate(context: vscode.ExtensionContext) {
-  const binPath = getGenotypeLspBinPath(context.extensionPath);
+export function activate(_context: vscode.ExtensionContext) {
+  const binPath = getBinPath();
 
   const serverOptions: ServerOptions = {
     command: binPath,
@@ -19,7 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   const clientOptions: LanguageClientOptions = {
     documentSelector: [{ scheme: "file", language: "genotype" }],
-    outputChannelName: "Genotype LSP",
+    outputChannelName: "Genotype",
     synchronize: {
       fileEvents: workspace.createFileSystemWatcher("**/genotype.toml"),
     },

@@ -12,6 +12,15 @@
     "vscode": "^1.90.0"
   },
   "main": "./out/extension.js",
+  "files": [
+    "out",
+    "syntaxes",
+    "language-configuration.json",
+    "package.json",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE.md"
+  ],
   "displayName": "Genotype",
   "publisher": "nocorp",
   "categories": [
@@ -67,11 +76,6 @@
         "path": "./syntaxes/genotype.tmLanguage.json"
       }
     ]
-  },
-  "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -b",
-    "watch": "tsc -b -w"
   },
   "dependencies": {
     "genotype-lsp": "workspace:*",
