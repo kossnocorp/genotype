@@ -1,4 +1,4 @@
-use super::{alias::GTAlias, doc::GTDoc, import::GTImport, GTModuleId};
+use crate::*;
 
 mod parse;
 use miette::NamedSource;

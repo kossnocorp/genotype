@@ -132,7 +132,7 @@ mod tests {
     use crate::{GTProjectModuleReference, GTProjectModuleResolve};
 
     use super::*;
-    use genotype_parser::tree::*;
+    use genotype_parser::*;
     use miette::NamedSource;
     use pretty_assertions::assert_eq;
 

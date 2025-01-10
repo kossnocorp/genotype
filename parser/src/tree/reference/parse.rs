@@ -27,7 +27,7 @@ mod tests {
     use miette::NamedSource;
     use pretty_assertions::assert_eq;
 
-    use crate::{tree::GTModule, GTIdentifier};
+    use crate::*;
 
     #[test]
     fn test_parse_references() {

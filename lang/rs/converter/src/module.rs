@@ -1,6 +1,6 @@
 use genotype_lang_rs_config::RSLangConfig;
 use genotype_lang_rs_tree::module::RSModule;
-use genotype_parser::tree::module::GTModule;
+use genotype_parser::module::GTModule;
 use miette::Result;
 
 use crate::{context::RSConvertContext, convert::RSConvert, resolve::RSConvertResolve};
@@ -76,12 +76,20 @@ mod tests {
                     imports: vec![
                         GTImport {
                             span: (0, 0).into(),
-                            path: GTPath::new((0, 0).into(), GTPathModuleId::Resolved("module/path".into()), "./path/to/module".into()),
+                            path: GTPath::new(
+                                (0, 0).into(),
+                                GTPathModuleId::Resolved("module/path".into()),
+                                "./path/to/module".into()
+                            ),
                             reference: GTImportReference::Glob((0, 0).into())
                         },
                         GTImport {
                             span: (0, 0).into(),
-                            path: GTPath::new((0, 0).into(), GTPathModuleId::Resolved("module/path".into()), "./path/to/module".into()),
+                            path: GTPath::new(
+                                (0, 0).into(),
+                                GTPathModuleId::Resolved("module/path".into()),
+                                "./path/to/module".into()
+                            ),
                             reference: GTImportReference::Names(
                                 (0, 0).into(),
                                 vec![
@@ -176,15 +184,23 @@ mod tests {
                                                     ),
                                                     descriptor: GTReference {
                                                         span: (0, 0).into(),
-                                                        id: GTReferenceId("module".into(), (0, 1).into()),
-                                                        definition_id: GTReferenceDefinitionId::Resolved(
-                                                            GTDefinitionId("module".into(), "Author".into())
+                                                        id: GTReferenceId(
+                                                            "module".into(),
+                                                            (0, 1).into()
                                                         ),
+                                                        definition_id:
+                                                            GTReferenceDefinitionId::Resolved(
+                                                                GTDefinitionId(
+                                                                    "module".into(),
+                                                                    "Author".into()
+                                                                )
+                                                            ),
                                                         identifier: GTIdentifier::new(
                                                             (0, 0).into(),
                                                             "Author".into()
                                                         )
-                                                     }.into(),
+                                                    }
+                                                    .into(),
                                                     required: true,
                                                 }
                                             ]
@@ -206,31 +222,28 @@ mod tests {
                 },
                 &resolve,
                 &Default::default()
-            ).unwrap(),
+            )
+            .unwrap(),
             RSConvertModule(RSModule {
                 id: "module".into(),
                 doc: None,
                 imports: vec![
                     RSUse {
                         reference: RSUseReference::Module,
-                        dependency: RSDependency::Local(
-                            RSPath(
-                                GTModuleId("module/path".into()),
-                                "super::path::to::module".into()
-                            )
-                        )
+                        dependency: RSDependency::Local(RSPath(
+                            GTModuleId("module/path".into()),
+                            "super::path::to::module".into()
+                        ))
                     },
                     RSUse {
                         reference: RSUseReference::Named(vec![
                             RSUseName::Name("Name".into()),
                             RSUseName::Alias("Name".into(), "Alias".into())
                         ]),
-                        dependency: RSDependency::Local(
-                            RSPath(
-                                GTModuleId("module/path".into()),
-                                "super::path::to::module".into()
-                            )
-                        )
+                        dependency: RSDependency::Local(RSPath(
+                            GTModuleId("module/path".into()),
+                            "super::path::to::module".into()
+                        ))
                     },
                     RSUse {
                         reference: RSUseReference::Named(vec![
@@ -244,7 +257,10 @@ mod tests {
                     RSDefinition::Struct(RSStruct {
                         id: GTDefinitionId("module".into(), "User".into()),
                         doc: None,
-                        attributes: vec!["derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()],
+                        attributes: vec![
+                            "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                                .into()
+                        ],
                         name: "User".into(),
                         fields: vec![
                             RSField {
@@ -265,7 +281,10 @@ mod tests {
                     RSDefinition::Struct(RSStruct {
                         id: GTDefinitionId("module".into(), "Order".into()),
                         doc: None,
-                        attributes: vec!["derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()],
+                        attributes: vec![
+                            "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                                .into()
+                        ],
                         name: "Order".into(),
                         fields: vec![RSField {
                             doc: None,
@@ -275,14 +294,18 @@ mod tests {
                                 id: GTReferenceId("module".into(), (0, 0).into()),
                                 identifier: "Book".into(),
                                 definition_id: GTDefinitionId("module".into(), "Book".into())
-                            }.into(),
+                            }
+                            .into(),
                         }]
                         .into(),
                     }),
                     RSDefinition::Struct(RSStruct {
                         id: GTDefinitionId("module".into(), "Book".into()),
                         doc: None,
-                        attributes: vec!["derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()],
+                        attributes: vec![
+                            "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
+                                .into()
+                        ],
                         name: "Book".into(),
                         fields: vec![
                             RSField {
@@ -299,7 +322,8 @@ mod tests {
                                     id: GTReferenceId("module".into(), (0, 1).into()),
                                     identifier: "Author".into(),
                                     definition_id: GTDefinitionId("module".into(), "Author".into())
-                                }.into(),
+                                }
+                                .into(),
                             }
                         ]
                         .into(),

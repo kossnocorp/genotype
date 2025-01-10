@@ -1,5 +1,5 @@
 use genotype_lang_ts_tree::module::TSModule;
-use genotype_parser::tree::module::GTModule;
+use genotype_parser::module::GTModule;
 
 use crate::{context::TSConvertContext, convert::TSConvert, resolve::TSConvertResolve};
 

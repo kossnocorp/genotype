@@ -1,7 +1,7 @@
 use genotype_lang_py_config::PYLangConfig;
 use genotype_lang_py_tree::module::PYModule;
 use genotype_lang_py_visitor::traverse::PYTraverse;
-use genotype_parser::tree::module::GTModule;
+use genotype_parser::GTModule;
 use visitor::PYModuleVisitor;
 
 use crate::{context::PYConvertContext, convert::PYConvert, resolve::PYConvertResolve};

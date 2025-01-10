@@ -1,4 +1,4 @@
-use genotype_parser::tree::module::GTModule;
+use genotype_parser::module::GTModule;
 
 use crate::visitor::GTVisitor;
 

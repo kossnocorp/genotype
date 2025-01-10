@@ -1,4 +1,4 @@
-use genotype_parser::tree::GTModule;
+use genotype_parser::GTModule;
 use genotype_visitor::traverse::GTTraverse;
 use miette::Result;
 

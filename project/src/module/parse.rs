@@ -1,6 +1,6 @@
 use std::fs::read_to_string;
 
-use genotype_parser::tree::{GTModule, GTModuleParse};
+use genotype_parser::{GTModule, GTModuleParse};
 use miette::{NamedSource, Result};
 
 use crate::error::GTProjectError;

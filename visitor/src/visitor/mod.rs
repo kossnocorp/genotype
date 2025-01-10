@@ -1,4 +1,4 @@
-use genotype_parser::tree::*;
+use genotype_parser::*;
 
 #[cfg(test)]
 pub mod mock;

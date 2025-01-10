@@ -1,4 +1,4 @@
-use genotype_parser::tree::*;
+use genotype_parser::*;
 
 use crate::visitor::GTVisitor;
 
