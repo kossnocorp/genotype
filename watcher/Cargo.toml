@@ -1,0 +1,11 @@
+[package]
+name = "genotype_watcher"
+version = "0.6.0"
+edition = "2021"
+description = "Genotype language file system watcher"
+authors = ["Sasha Koss <koss@nocorp.me>"]
+license = "MIT"
+repository = "https://github.com/kossnocorp/genotype"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
