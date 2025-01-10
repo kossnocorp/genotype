@@ -9,6 +9,12 @@ test:
 test-watch:
   cargo watch -s 'cargo nextest run'
 
+build:
+  cargo build
+
+build-watch:
+  cargo watch -x build
+
 version version:
   cargo release version {{version}} --exclude literals --exclude genotype_runtime --execute
   cd lsp && just version {{version}}
