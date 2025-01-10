@@ -1,8 +1,8 @@
 [package]
-name = "genotype_server"
+name = "genotype_workspace"
 version = "0.6.0"
 edition = "2021"
-description = "Genotype language server"
+description = "Genotype language workspace"
 authors = ["Sasha Koss <koss@nocorp.me>"]
 license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"

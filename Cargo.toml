@@ -26,6 +26,6 @@ members = [
   "writer",
   "cli",
   "config",
-  "server",
+  "workspace",
   "watcher",
 ]

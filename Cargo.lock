@@ -766,15 +766,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "genotype_server"
-version = "0.6.0"
-dependencies = [
- "miette",
- "pretty_assertions",
- "thiserror 1.0.64",
-]
-
-[[package]]
 name = "genotype_visitor"
 version = "0.5.0"
 dependencies = [
@@ -788,6 +779,15 @@ name = "genotype_watcher"
 version = "0.6.0"
 dependencies = [
  "pretty_assertions",
+]
+
+[[package]]
+name = "genotype_workspace"
+version = "0.6.0"
+dependencies = [
+ "miette",
+ "pretty_assertions",
+ "thiserror 1.0.64",
 ]
 
 [[package]]
