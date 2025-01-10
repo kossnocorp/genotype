@@ -140,6 +140,11 @@ impl ServerState {
             ControlFlow::Continue(())
         });
 
+        router.notification::<lsp_types::notification::DidChangeWatchedFiles>(|_, params| {
+            info!("watched files changed: {:?}", params);
+            ControlFlow::Continue(())
+        });
+
         router
     }
 
