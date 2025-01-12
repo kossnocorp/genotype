@@ -1,5 +1,5 @@
 use std::{
-    path::PathBuf,
+    collections::HashSet,
     sync::{Arc, Mutex},
 };
 
@@ -8,7 +8,7 @@ use miette::Result;
 
 use crate::{
     error::GTWError,
-    file::{GTWFile, GTWFiles},
+    file::{GTWFile, GTWFileSource, GTWFiles},
     path::GTWPath,
 };
 
@@ -23,21 +23,39 @@ impl<'a> GTWorkspace {
         }
     }
 
-    pub fn load_file(&self, path: &String) -> Result<()> {
+    pub fn load_file(&self, path: &String, processing: Arc<Mutex<HashSet<GTWPath>>>) -> Result<()> {
         let path = GTWPath::new(path)?;
 
-        // Check if the file is already loading
+        // Check if the file is already processing
+        {
+            let mut processing = processing.lock().map_err(|_| GTWError::FilesLock)?;
+            if processing.contains(&path) {
+                return Ok(());
+            }
+            processing.insert(path.clone());
+        }
+
+        // Load the source
+        let source = GTWFileSource::read(&path)?;
+
+        // Check if the file exists and needs no reloading
         {
             let files = self.files.lock().map_err(|_| GTWError::FilesLock)?;
-            if let Some(GTWFile::Loading) = files.get(&path) {
-                // The file is already loading, do nothing
-                return Ok(());
+            if let Some(file) = files.get(&path) {
+                if file.same_hash(&source) {
+                    return Ok(());
+                }
             }
         }
 
-        // Load the file content and check if it needs to be reloaded
-        let source = GTWFile::read_source(&path);
-        // [TODO]
+        // Load the file
+        let file = GTWFile::load(&path, &source)?;
+
+        // Update the files map
+        {
+            let mut files = self.files.lock().map_err(|_| GTWError::FilesLock)?;
+            files.insert(path, file);
+        }
 
         Ok(())
     }

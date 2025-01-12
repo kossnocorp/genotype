@@ -792,6 +792,7 @@ dependencies = [
  "num_cpus",
  "pretty_assertions",
  "rayon",
+ "sha2",
  "thiserror 1.0.64",
 ]
 
