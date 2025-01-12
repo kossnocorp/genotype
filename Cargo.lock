@@ -783,10 +783,15 @@ dependencies = [
 
 [[package]]
 name = "genotype_workspace"
-version = "0.6.0"
+version = "0.5.0"
 dependencies = [
+ "genotype_config",
+ "genotype_parser",
+ "indexmap",
  "miette",
+ "num_cpus",
  "pretty_assertions",
+ "rayon",
  "thiserror 1.0.64",
 ]
 
