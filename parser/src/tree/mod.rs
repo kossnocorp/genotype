@@ -33,7 +33,6 @@ pub mod record_key;
 pub mod reference;
 pub mod reference_definition_id;
 pub mod reference_id;
-pub mod resolve;
 pub mod tuple;
 pub mod union;
 
@@ -72,6 +71,5 @@ pub use record_key::*;
 pub use reference::*;
 pub use reference_definition_id::*;
 pub use reference_id::*;
-pub use resolve::*;
 pub use tuple::*;
 pub use union::*;

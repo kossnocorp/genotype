@@ -156,7 +156,7 @@ mod tests {
     fn test_object_name_named() {
         let mut context = GTContext {
             module_id: "module".into(),
-            resolve: GTResolve::new(),
+            resolve: GTModuleResolve::new(),
             parents: vec![
                 GTContextParent::Alias(GTIdentifier::new((0, 5).into(), "Hi".into())),
                 GTContextParent::Alias(GTIdentifier::new((5, 10).into(), "Hello".into())),
@@ -173,7 +173,7 @@ mod tests {
     fn test_object_name_alias() {
         let mut context = GTContext {
             module_id: "module".into(),
-            resolve: GTResolve::new(),
+            resolve: GTModuleResolve::new(),
             parents: vec![
                 GTContextParent::Alias(GTIdentifier::new((0, 5).into(), "Hi".into())),
                 GTContextParent::Alias(GTIdentifier::new((5, 10).into(), "Hello".into())),
@@ -194,7 +194,7 @@ mod tests {
     fn test_object_name_property() {
         let mut context = GTContext {
             module_id: "module".into(),
-            resolve: GTResolve::new(),
+            resolve: GTModuleResolve::new(),
             parents: vec![
                 GTContextParent::Alias(GTIdentifier::new((0, 5).into(), "Hi".into())),
                 GTContextParent::Alias(GTIdentifier::new((5, 10).into(), "Hello".into())),

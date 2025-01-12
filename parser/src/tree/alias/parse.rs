@@ -174,7 +174,7 @@ mod tests {
         let mut context = GTContext {
             module_id: "module".into(),
             parents: parents.clone(),
-            resolve: GTResolve::new(),
+            resolve: GTModuleResolve::new(),
             taken_names: Default::default(),
         };
 

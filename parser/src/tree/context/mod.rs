@@ -1,6 +1,8 @@
 use std::collections::HashSet;
 
-use super::{GTIdentifier, GTKey, GTModuleId, GTResolve};
+use crate::GTModuleResolve;
+
+use super::{GTIdentifier, GTKey, GTModuleId};
 
 mod ids;
 mod naming;
@@ -9,7 +11,7 @@ mod naming;
 pub struct GTContext {
     /// Current module id.
     pub module_id: GTModuleId,
-    pub resolve: GTResolve,
+    pub resolve: GTModuleResolve,
     pub parents: Vec<GTContextParent>,
     /// A set of taken definition names. It allows to generate unique syntetic
     /// names.
@@ -32,7 +34,7 @@ impl GTContext {
     pub fn new(module_id: GTModuleId) -> Self {
         GTContext {
             module_id,
-            resolve: GTResolve::new(),
+            resolve: GTModuleResolve::new(),
             parents: vec![],
             taken_names: HashSet::new(),
         }
