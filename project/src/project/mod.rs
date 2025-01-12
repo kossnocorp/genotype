@@ -48,12 +48,10 @@ impl GTProject {
 
         rayon::scope(|scope| {
             for entry in entries {
-                let root = Arc::clone(&src);
                 let processed_paths = Arc::clone(&processed_paths);
                 let modules = Arc::clone(&modules);
 
-                scope
-                    .spawn(|scope| Self::load_module(root, entry, scope, processed_paths, modules));
+                scope.spawn(|scope| Self::load_module(entry, scope, processed_paths, modules));
             }
         });
 
@@ -83,7 +81,6 @@ impl GTProject {
     }
 
     fn load_module(
-        root: Arc<PathBuf>,
         path: GTProjectModulePath,
         scope: &Scope<'_>,
         processed_paths: Arc<Mutex<HashSet<GTProjectModulePath>>>,
@@ -102,12 +99,11 @@ impl GTProject {
         let result = GTProjectModuleParse::try_new(id, path).and_then(|parse| {
             parse.deps().and_then(|deps| {
                 for dep in deps {
-                    let root = Arc::clone(&root);
                     let processed_paths = Arc::clone(&processed_paths);
                     let modules = Arc::clone(&modules);
 
                     scope.spawn(|scope| {
-                        Self::load_module(root, dep, scope, processed_paths, modules);
+                        Self::load_module(dep, scope, processed_paths, modules);
                     });
                 }
 
