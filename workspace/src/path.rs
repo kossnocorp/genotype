@@ -1,49 +1,47 @@
-use std::path::PathBuf;
+use std::{env, path::PathBuf};
 
 use miette::Result;
 
 use crate::error::GTWError;
 
+/// Workspace path. It holds the absolute canonical path of a file or directory.
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct GTWPath {
+    /// Absolute canonical path.
     path: PathBuf,
-    kind: GTWPathKind,
 }
 
 impl GTWPath {
-    pub fn new(path: &String) -> Result<GTWPath> {
-        let absolute_path = PathBuf::from(path)
-            .canonicalize()
-            .map_err(|_| GTWError::CanonicalizePath(path.clone()))?;
-        let kind = GTWPath::detect_kind(&absolute_path)?;
-        Ok(GTWPath {
-            path: absolute_path,
-            kind,
-        })
-    }
+    /// Creates a new `GTWPath` from a string. A relative path will resolve to
+    /// the passed working directory or the current directory. The path will
+    /// be canonicalized.
+    pub fn try_new(path_str: &String, cwd: Option<&GTWPath>) -> Result<GTWPath> {
+        let path = PathBuf::from(path_str);
 
-    pub fn detect_kind(path: &PathBuf) -> Result<GTWPathKind> {
-        let ext = path.extension().and_then(|ext| ext.to_str());
-        match ext {
-            Some("toml") => {
-                if path.starts_with("genotype") {
-                    return Ok(GTWPathKind::Config);
-                }
-            }
-            Some("type") => {
-                return Ok(GTWPathKind::Module);
-            }
-            _ => {}
-        }
-        Err(GTWError::DetectKind(path.display().to_string()).into())
+        let path = match path.is_absolute() {
+            true => path,
+
+            false => match cwd {
+                Some(root) => root.path.join(path),
+                None => match cwd {
+                    Some(root) => root.path.join(path),
+                    None => match env::current_dir() {
+                        Ok(cwd) => cwd.join(path),
+                        Err(_) => return Err(GTWError::ResolvePath(path_str.clone()).into()),
+                    },
+                },
+            },
+        };
+
+        let path = path
+            .canonicalize()
+            .map_err(|_| GTWError::CanonicalizePath(path_str.clone()))?;
+
+        Ok(GTWPath { path })
     }
 
     pub fn as_path(&self) -> &PathBuf {
         &self.path
-    }
-
-    pub fn kind(&self) -> &GTWPathKind {
-        &self.kind
     }
 }
 
@@ -57,10 +55,4 @@ impl From<&GTWPath> for String {
     fn from(path: &GTWPath) -> String {
         path.path.display().to_string()
     }
-}
-
-#[derive(Debug, Clone, Hash, Eq, PartialEq)]
-pub enum GTWPathKind {
-    Config,
-    Module,
 }

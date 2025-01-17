@@ -13,18 +13,31 @@ use crate::{
 };
 
 pub struct GTWorkspace {
+    /// Workspace root path. It helps to format relative paths, i.e. to display
+    /// errors in an editor, so that it can open the file.
+    path: GTWPath,
+    /// Workspace files map. It associated the absolute path with the file.
+    /// Note that the file doesn't necessarily is inside the workspace path,
+    /// as editors can open files outside the workspace.
     files: GTWFiles,
 }
 
 impl<'a> GTWorkspace {
-    pub fn new() -> GTWorkspace {
-        GTWorkspace {
+    pub fn try_new(path_str: &String) -> Result<GTWorkspace> {
+        let path = GTWPath::try_new(path_str, None)?;
+
+        Ok(GTWorkspace {
+            path,
             files: Arc::new(Mutex::new(IndexMap::new())),
-        }
+        })
     }
 
-    pub fn load_file(&self, path: &String, processing: Arc<Mutex<HashSet<GTWPath>>>) -> Result<()> {
-        let path = GTWPath::new(path)?;
+    pub fn load_file(
+        &self,
+        path_str: &String,
+        processing: Arc<Mutex<HashSet<GTWPath>>>,
+    ) -> Result<()> {
+        let path = GTWPath::try_new(path_str, Some(&self.path))?;
 
         // Check if the file is already processing
         {
@@ -49,7 +62,7 @@ impl<'a> GTWorkspace {
         }
 
         // Load the file
-        let file = GTWFile::load(&path, &source)?;
+        let file = GTWFile::load(&path, source)?;
 
         // Update the files map
         {
