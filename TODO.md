@@ -19,3 +19,7 @@ At the moment the goal is to move modules parsing from the the project to the wo
   A curve ball is that editors can open files from outside of the workspace and the module id should probably be an absolute path.
 
   At the moment the module creates id from the string when parsing. It is better to move it outiside.
+
+- [ ] Move module parsing & error reporting from the project to workspace crate so that parsed modules can be shared between projects (e.g. as external modules), one can open orphan modules or modules ouside the workspace.
+
+  Projects should be responsible for building and linking modules.
