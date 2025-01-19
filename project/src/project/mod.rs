@@ -94,8 +94,7 @@ impl GTProject {
             processed.insert(path.clone());
         }
 
-        // [TODO] Get rid of paths in favor of ids and path -> id resolve?
-        let id = path.as_id().as_str().to_owned();
+        let id = path.as_id().as_str().to_owned().into();
         let result = GTProjectModuleParse::try_new(id, path).and_then(|parse| {
             parse.deps().and_then(|deps| {
                 for dep in deps {

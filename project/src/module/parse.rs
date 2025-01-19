@@ -1,6 +1,6 @@
 use std::fs::read_to_string;
 
-use genotype_parser::{GTModule, GTModuleParse};
+use genotype_parser::{GTModule, GTModuleId, GTModuleParse};
 use miette::{NamedSource, Result};
 
 use crate::error::GTProjectError;
@@ -11,7 +11,7 @@ use super::GTProjectModulePath;
 pub struct GTProjectModuleParse(pub GTProjectModulePath, pub GTModuleParse);
 
 impl<'a> GTProjectModuleParse {
-    pub fn try_new(id: String, path: GTProjectModulePath) -> Result<Self> {
+    pub fn try_new(id: GTModuleId, path: GTProjectModulePath) -> Result<Self> {
         let code = read_to_string(&path).map_err(|_| {
             GTProjectError::NotFound(path.as_path().as_os_str().to_str().unwrap().to_owned())
         })?;

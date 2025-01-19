@@ -14,8 +14,7 @@ pub struct GTModuleParse {
 }
 
 impl GTModule {
-    pub fn parse<'a>(id: String, source_code: NamedSource<String>) -> Result<GTModuleParse> {
-        let id = GTModuleId(id);
+    pub fn parse<'a>(id: GTModuleId, source_code: NamedSource<String>) -> Result<GTModuleParse> {
         match parse_gt_code(source_code.inner()) {
             Ok(mut pairs) => match pairs.next() {
                 Some(pair) => match Self::parse_pairs(id.clone(), pair) {
@@ -1819,7 +1818,7 @@ mod tests {
         NamedSource::new(path, content)
     }
 
-    fn assert_module(id: String, source_code: NamedSource<String>, expected: GTModuleParse) {
+    fn assert_module(id: GTModuleId, source_code: NamedSource<String>, expected: GTModuleParse) {
         let parse = GTModule::parse(id, source_code).unwrap();
         assert_eq!(parse, expected);
     }

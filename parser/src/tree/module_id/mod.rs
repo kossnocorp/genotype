@@ -14,3 +14,9 @@ impl From<&str> for GTModuleId {
         GTModuleId(s.to_string())
     }
 }
+
+impl From<String> for GTModuleId {
+    fn from(s: String) -> Self {
+        GTModuleId(s)
+    }
+}
