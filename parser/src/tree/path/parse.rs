@@ -170,7 +170,6 @@ mod tests {
             parse.module,
             GTModule {
                 id: "module".into(),
-                source_code,
                 doc: None,
                 imports: vec![
                     GTImport {

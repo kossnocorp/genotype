@@ -11,6 +11,10 @@ pub struct GTModuleParse {
     /// Module resolve. It contains module meta information used to build
     /// the dependency graph.
     pub resolve: GTModuleResolve,
+    /// Module source code.
+    /// [TODO] After implementing workspace, find a better place for it.
+    #[deprecated]
+    pub source_code: NamedSource<String>,
 }
 
 impl GTModule {
@@ -22,11 +26,11 @@ impl GTModule {
                         resolve: result.resolve,
                         module: GTModule {
                             id,
-                            source_code,
                             doc: result.doc,
                             imports: result.imports,
                             aliases: result.aliases,
                         },
+                        source_code,
                     }),
 
                     Err(error) => Err(error.with_source_code(source_code)),
@@ -120,7 +124,6 @@ mod tests {
             GTModuleParse {
                 module: GTModule {
                     id: "module".into(),
-                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![
@@ -159,6 +162,7 @@ mod tests {
                         "Age".into(),
                     )]),
                 },
+                source_code,
             },
         );
     }
@@ -172,7 +176,6 @@ mod tests {
             GTModuleParse {
                 module: GTModule {
                     id: "module".into(),
-                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![
@@ -229,6 +232,7 @@ mod tests {
                     ],
                     references: HashSet::new(),
                 },
+                source_code,
             },
         );
     }
@@ -242,7 +246,6 @@ mod tests {
             GTModuleParse {
                 module: GTModule {
                     id: "module".into(),
-                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![
@@ -396,6 +399,7 @@ mod tests {
                     ],
                     references: HashSet::new(),
                 },
+                source_code,
             },
         );
     }
@@ -409,7 +413,6 @@ mod tests {
             GTModuleParse {
                 module: GTModule {
                     id: "module".into(),
-                    source_code,
                     doc: Some(GTDoc::new(
                         (4, 38).into(),
                         "Module comment...\n...multiline".into(),
@@ -482,6 +485,7 @@ mod tests {
                     ],
                     references: HashSet::new(),
                 },
+                source_code,
             },
         );
     }
@@ -495,7 +499,6 @@ mod tests {
             GTModuleParse {
                 module: GTModule {
                     id: "module".into(),
-                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![GTAlias {
@@ -535,6 +538,7 @@ mod tests {
                     exports: vec![GTIdentifier::new((0, 5).into(), "Hello".into())],
                     references: HashSet::new(),
                 },
+                source_code,
             },
         );
     }
@@ -548,7 +552,6 @@ mod tests {
             GTModuleParse {
                 module: GTModule {
                     id: "module".into(),
-                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![
@@ -677,6 +680,7 @@ mod tests {
                     ],
                     references: HashSet::new(),
                 },
+                source_code,
             },
         );
     }
@@ -690,7 +694,6 @@ mod tests {
             GTModuleParse {
                 module: GTModule {
                     id: "module".into(),
-                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![GTAlias {
@@ -735,6 +738,7 @@ mod tests {
                     exports: vec![GTIdentifier::new((0, 4).into(), "Book".into())],
                     references: HashSet::new(),
                 },
+                source_code,
             },
         );
     }
@@ -748,7 +752,6 @@ mod tests {
             GTModuleParse {
                 module: GTModule {
                     id: "module".into(),
-                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![
@@ -823,6 +826,7 @@ mod tests {
                     ],
                     references: HashSet::new(),
                 },
+                source_code,
             },
         );
     }
@@ -836,7 +840,6 @@ mod tests {
             GTModuleParse {
                 module: GTModule {
                     id: "module".into(),
-                    source_code,
                     doc: None,
                     imports: vec![
                         GTImport {
@@ -965,6 +968,7 @@ mod tests {
                         "Genre".into(),
                     )]),
                 },
+                source_code,
             },
         );
     }
@@ -978,7 +982,6 @@ mod tests {
             GTModuleParse {
                 module: GTModule {
                     id: "module".into(),
-                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![
@@ -1097,6 +1100,7 @@ mod tests {
                         GTIdentifier::new((94, 98).into(), "Base".into()),
                     ]),
                 },
+                source_code,
             },
         );
     }
@@ -1110,7 +1114,6 @@ mod tests {
             GTModuleParse {
                 module: GTModule {
                     id: "module".into(),
-                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![
@@ -1345,6 +1348,7 @@ mod tests {
                         GTIdentifier::new((153, 164).into(), "CommentBase".into()),
                     ]),
                 },
+                source_code,
             },
         );
     }
@@ -1358,7 +1362,6 @@ mod tests {
             GTModuleParse {
                 module: GTModule {
                     id: "module".into(),
-                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![
@@ -1402,6 +1405,7 @@ mod tests {
                     ],
                     references: HashSet::new(),
                 },
+                source_code,
             },
         );
     }
@@ -1415,7 +1419,6 @@ mod tests {
             GTModuleParse {
                 module: GTModule {
                     id: "module".into(),
-                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![
@@ -1626,6 +1629,7 @@ mod tests {
                         GTIdentifier::new((18, 20).into(), "DM".into()),
                     ]),
                 },
+                source_code,
             },
         );
     }
@@ -1639,7 +1643,6 @@ mod tests {
             GTModuleParse {
                 module: GTModule {
                     id: "module".into(),
-                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![
@@ -1679,6 +1682,7 @@ mod tests {
                     ],
                     references: HashSet::new(),
                 },
+                source_code,
             },
         );
     }
@@ -1692,7 +1696,6 @@ mod tests {
             GTModuleParse {
                 module: GTModule {
                     id: "module".into(),
-                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![GTAlias {
@@ -1709,6 +1712,7 @@ mod tests {
                     exports: vec![GTIdentifier::new((0, 8).into(), "Anything".into())],
                     references: HashSet::new(),
                 },
+                source_code,
             },
         );
     }
@@ -1722,7 +1726,6 @@ mod tests {
             GTModuleParse {
                 module: GTModule {
                     id: "module".into(),
-                    source_code,
                     doc: None,
                     imports: vec![],
                     aliases: vec![
@@ -1809,6 +1812,7 @@ mod tests {
                     ],
                     references: HashSet::new(),
                 },
+                source_code,
             },
         );
     }

@@ -168,10 +168,6 @@ mod tests {
                     path: module_path.clone(),
                     module: GTModule {
                         id: "anonymous".into(),
-                        source_code: NamedSource::new(
-                            "anonymous.type",
-                            read_to_string(&module_path).unwrap(),
-                        ),
                         doc: None,
                         imports: vec![],
                         aliases: vec![
@@ -346,6 +342,10 @@ mod tests {
                         references_identifiers: Default::default(),
                         references: Default::default(),
                     },
+                    source_code: NamedSource::new(
+                        "anonymous.type",
+                        read_to_string(&module_path).unwrap(),
+                    ),
                 },],
             }
         );
@@ -381,10 +381,6 @@ mod tests {
                     path: author_path.clone(),
                     module: GTModule {
                         id: "author".into(),
-                        source_code: NamedSource::new(
-                            "author.type",
-                            read_to_string(&author_path).unwrap(),
-                        ),
                         doc: None,
                         imports: vec![],
                         aliases: vec![GTAlias {
@@ -413,15 +409,15 @@ mod tests {
                         references_identifiers: Default::default(),
                         references: HashMap::from_iter([]),
                     },
+                    source_code: NamedSource::new(
+                        "author.type",
+                        read_to_string(&author_path).unwrap(),
+                    ),
                 },
                 GTProjectModule {
                     path: book_path.clone(),
                     module: GTModule {
                         id: "book".into(),
-                        source_code: NamedSource::new(
-                            "book.type",
-                            read_to_string(&book_path).unwrap(),
-                        ),
                         doc: None,
                         imports: vec![GTImport {
                             span: (0, 19).into(),
@@ -492,15 +488,12 @@ mod tests {
                             HashSet::from_iter([GTReferenceId("book".into(), (56, 62).into())]),
                         )]),
                     },
+                    source_code: NamedSource::new("book.type", read_to_string(&book_path).unwrap()),
                 },
                 GTProjectModule {
                     path: order_path.clone(),
                     module: GTModule {
                         id: "order".into(),
-                        source_code: NamedSource::new(
-                            "order.type",
-                            read_to_string(&order_path).unwrap(),
-                        ),
                         doc: None,
                         imports: vec![GTImport {
                             span: (0, 15).into(),
@@ -584,15 +577,15 @@ mod tests {
                             HashSet::from_iter([GTReferenceId("order".into(), (57, 61).into())]),
                         )]),
                     },
+                    source_code: NamedSource::new(
+                        "order.type",
+                        read_to_string(&order_path).unwrap(),
+                    ),
                 },
                 GTProjectModule {
                     path: user_path.clone(),
                     module: GTModule {
                         id: "user".into(),
-                        source_code: NamedSource::new(
-                            "user.type",
-                            read_to_string(&user_path).unwrap(),
-                        ),
                         doc: None,
                         imports: vec![],
                         aliases: vec![GTAlias {
@@ -631,6 +624,7 @@ mod tests {
                         references_identifiers: Default::default(),
                         references: Default::default(),
                     },
+                    source_code: NamedSource::new("user.type", read_to_string(&user_path).unwrap()),
                 },
             ],
         }

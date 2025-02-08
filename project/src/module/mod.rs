@@ -1,6 +1,6 @@
 use genotype_parser::GTModule;
 use genotype_visitor::traverse::GTTraverse;
-use miette::Result;
+use miette::{NamedSource, Result};
 
 mod parse;
 mod path;
@@ -17,6 +17,10 @@ pub struct GTProjectModule {
     pub path: GTProjectModulePath,
     pub module: GTModule,
     pub resolve: GTProjectModuleResolve,
+    /// Module source code.
+    /// [TODO] After implementing workspace, find a better place for it.
+    #[deprecated]
+    pub source_code: NamedSource<String>,
 }
 
 impl GTProjectModule {
@@ -26,7 +30,7 @@ impl GTProjectModule {
         parse: GTProjectModuleParse,
     ) -> Result<Self> {
         let mut resolve = GTProjectModuleResolve::try_new(modules, &parse)
-            .map_err(|err| err.with_source_code(parse.1.module.source_code.clone()))?;
+            .map_err(|err| err.with_source_code(parse.1.source_code.clone()))?;
 
         // Combine these two ^v
 
@@ -40,6 +44,7 @@ impl GTProjectModule {
             path: parse.0,
             module: parse.1.module,
             resolve,
+            source_code: parse.1.source_code.clone(),
         })
     }
 }

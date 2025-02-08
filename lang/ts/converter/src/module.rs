@@ -43,7 +43,6 @@ impl TSConvertModule {
 mod tests {
     use genotype_lang_ts_tree::*;
     use genotype_parser::tree::*;
-    use miette::NamedSource;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -60,7 +59,6 @@ mod tests {
             TSConvertModule::convert(
                 &GTModule {
                     id: "module".into(),
-                    source_code: NamedSource::new("module.type", "".into()),
                     doc: None,
                     imports: vec![
                         GTImport {
@@ -290,7 +288,6 @@ mod tests {
             TSConvertModule::convert(
                 &GTModule {
                     id: "module".into(),
-                    source_code: NamedSource::new("module.type", "".into()),
                     doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
                     imports: vec![],
                     aliases: vec![],

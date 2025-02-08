@@ -115,7 +115,7 @@ impl GTLangProjectModule<RSProjectConfig> for RSProjectModule {
         let resolve = RSProjectModuleResolve { references };
 
         let module = RSConvertModule::convert(&module.module, &convert_resolve, &config.lang)
-            .map_err(|err| err.with_source_code(module.module.source_code.clone()))?
+            .map_err(|err| err.with_source_code(module.source_code.clone()))?
             .0;
 
         Ok(Self {
