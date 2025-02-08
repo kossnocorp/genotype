@@ -1,11 +1,3 @@
-install:
-  cargo install cargo-watch
-  cargo install cargo-nextest --locked
-  cargo install cargo-release
-
-env:
-  nix develop --command zsh
-
 test:
   cargo nextest run
 

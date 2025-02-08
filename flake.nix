@@ -16,6 +16,9 @@
         packages = with pkgs; [
           rustc
           cargo
+          cargo-watch
+          cargo-nextest
+          cargo-release
         ];
       };
     };
