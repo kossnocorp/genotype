@@ -20,7 +20,11 @@
           cargo-nextest
           cargo-release
         ];
+
+        shellHook = ''
+          # Provide rust-src for rust-analyzer
+          export RUST_SRC_PATH="${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}"
+        '';
       };
     };
-
 }
