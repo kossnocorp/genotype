@@ -19,6 +19,7 @@
           cargo-watch
           cargo-nextest
           cargo-release
+          rustfmt
         ];
 
         shellHook = ''
