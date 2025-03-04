@@ -41,7 +41,7 @@ mod tests {
                 span: (0, 13).into(),
                 descriptors: vec![
                     GTDescriptor::Primitive(GTPrimitive::String((1, 7).into())),
-                    GTDescriptor::Primitive(GTPrimitive::Int((9, 12).into())),
+                    GTDescriptor::Primitive(GTPrimitive::Int32((9, 12).into())),
                 ],
             }
         );

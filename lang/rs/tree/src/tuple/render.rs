@@ -30,7 +30,7 @@ mod tests {
             RSTuple {
                 descriptors: vec![
                     RSDescriptor::Primitive(RSPrimitive::String),
-                    RSDescriptor::Primitive(RSPrimitive::Int),
+                    RSDescriptor::Primitive(RSPrimitive::IntSize),
                 ]
             }
             .render(&rs_indent(), &Default::default())

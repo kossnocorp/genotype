@@ -469,7 +469,7 @@ use crate::named::Name;
 pub struct Admin {
     pub name: Name,
     pub email: String,
-    pub age: Option<isize>,
+    pub age: Option<i32>,
     pub role: AdminRole,
 }
 
@@ -514,7 +514,7 @@ use serde::{Deserialize, Serialize};
 pub struct User {
     pub name: Name,
     pub email: String,
-    pub age: Option<isize>,
+    pub age: Option<i32>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]

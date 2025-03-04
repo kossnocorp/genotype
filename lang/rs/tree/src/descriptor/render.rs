@@ -31,7 +31,7 @@ mod tests {
     fn test_render_array() {
         assert_eq!(
             RSDescriptor::Vec(Box::new(RSVec {
-                descriptor: RSDescriptor::Primitive(RSPrimitive::Int)
+                descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize)
             }))
             .render(&rs_indent(), &Default::default())
             .unwrap(),
@@ -87,7 +87,7 @@ mod tests {
         assert_eq!(
             RSDescriptor::Tuple(RSTuple {
                 descriptors: vec![
-                    RSDescriptor::Primitive(RSPrimitive::Int),
+                    RSDescriptor::Primitive(RSPrimitive::IntSize),
                     RSDescriptor::Primitive(RSPrimitive::String)
                 ]
             })
@@ -102,7 +102,7 @@ mod tests {
         assert_eq!(
             RSDescriptor::Map(Box::new(RSMap {
                 key: RSPrimitive::String.into(),
-                descriptor: RSPrimitive::Int.into(),
+                descriptor: RSPrimitive::IntSize.into(),
             }))
             .render(&rs_indent(), &Default::default())
             .unwrap(),

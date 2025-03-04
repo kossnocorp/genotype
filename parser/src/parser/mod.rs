@@ -95,6 +95,11 @@ mod tests {
     }
 
     #[test]
+    fn test_number_sizes() {
+        parse_file("../examples/02-syntax/17-number_sizes.type");
+    }
+
+    #[test]
     fn test_empty() {
         parse_code("");
     }

@@ -83,7 +83,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "age".into()),
-                        descriptor: GTPrimitive::Int((0, 0).into()).into(),
+                        descriptor: GTPrimitive::Int32((0, 0).into()).into(),
                         required: false,
                     }
                 ]
@@ -94,8 +94,7 @@ mod tests {
                 id: GTDefinitionId("module".into(), "Person".into()),
                 doc: None,
                 attributes: vec![
-                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
-                        .into()
+                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()
                 ],
                 name: "Person".into(),
                 fields: vec![
@@ -109,7 +108,8 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: "age".into(),
-                        descriptor: RSOption::new(RSDescriptor::Primitive(RSPrimitive::Int)).into(),
+                        descriptor: RSOption::new(RSDescriptor::Primitive(RSPrimitive::Int32))
+                            .into(),
                     }
                 ]
                 .into(),
@@ -133,8 +133,7 @@ mod tests {
                 id: GTDefinitionId("module".into(), "Person".into()),
                 doc: None,
                 attributes: vec![
-                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
-                        .into()
+                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()
                 ],
                 name: "Person".into(),
                 fields: vec![].into(),
@@ -166,8 +165,7 @@ mod tests {
                 id: GTDefinitionId("module".into(), "Person".into()),
                 doc: Some("Hello, world!".into()),
                 attributes: vec![
-                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
-                        .into()
+                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()
                 ],
                 name: "Person".into(),
                 fields: vec![].into(),
@@ -209,7 +207,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "age".into()),
-                        descriptor: GTPrimitive::Int((0, 0).into()).into(),
+                        descriptor: GTPrimitive::IntSize((0, 0).into()).into(),
                         required: false,
                     }
                 ]
@@ -220,8 +218,7 @@ mod tests {
                 id: GTDefinitionId("module".into(), "Person".into()),
                 doc: None,
                 attributes: vec![
-                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)"
-                        .into()
+                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()
                 ],
                 name: "Person".into(),
                 fields: RSStructFields::Unresolved(
@@ -242,8 +239,10 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: "age".into(),
-                            descriptor: RSOption::new(RSDescriptor::Primitive(RSPrimitive::Int))
-                                .into(),
+                            descriptor: RSOption::new(RSDescriptor::Primitive(
+                                RSPrimitive::IntSize
+                            ))
+                            .into(),
                         }
                     ]
                 )

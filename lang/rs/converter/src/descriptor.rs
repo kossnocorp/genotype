@@ -147,7 +147,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "age".into()),
-                        descriptor: GTPrimitive::Int((0, 0).into()).into(),
+                        descriptor: GTPrimitive::Int32((0, 0).into()).into(),
                         required: false,
                     }
                 ],
@@ -184,7 +184,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: "age".into(),
-                        descriptor: RSOption::new(RSPrimitive::Int.into()).into(),
+                        descriptor: RSOption::new(RSPrimitive::Int32.into()).into(),
                     }
                 ]
                 .into(),

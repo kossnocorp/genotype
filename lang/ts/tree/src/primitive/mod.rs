@@ -4,6 +4,7 @@ mod render;
 pub enum TSPrimitive {
     String,
     Number,
+    BigInt,
     Boolean,
     Null,
     Undefined,

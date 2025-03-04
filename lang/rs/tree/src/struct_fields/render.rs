@@ -73,7 +73,7 @@ mod tests {
                     doc: None,
                     attributes: vec![],
                     name: "age".into(),
-                    descriptor: RSDescriptor::Primitive(RSPrimitive::Int),
+                    descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize),
                 }
             ])
             .render(&rs_indent(), &Default::default())
@@ -109,7 +109,7 @@ mod tests {
                     doc: None,
                     attributes: vec![],
                     name: "age".into(),
-                    descriptor: RSDescriptor::Primitive(RSPrimitive::Int),
+                    descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize),
                 }
             ])
             .render(&rs_indent().increment(), &Default::default())
@@ -126,7 +126,7 @@ mod tests {
         assert_eq!(
             RSStructFields::Tuple(vec![
                 RSDescriptor::Primitive(RSPrimitive::String),
-                RSDescriptor::Primitive(RSPrimitive::Int),
+                RSDescriptor::Primitive(RSPrimitive::IntSize),
             ])
             .render(&rs_indent(), &Default::default())
             .unwrap(),

@@ -10,7 +10,7 @@ descriptor = @{ "|"? ~ WHITESPACE* ~ descriptor_inner ~ (WHITESPACE* ~ "|" ~ WHI
 
 descriptor_inner = !{ literal | inline_import | primitive | branded | any | object | array | tuple | record | alias | name }
 
-primitive = { "string" | "int" | "float" | "boolean" | "null" }
+primitive = { "string" | "int" | "i8" | "i16" | "i32" | "i64" | "i128" | "isize" | "u8" | "u16" | "u32" | "u64" | "u128" | "usize" | "float" | "f32" | "f64" | "boolean" | "null" }
 
 any = { "any" }
 
@@ -88,7 +88,7 @@ record = { "{" ~ record_key ~ ":" ~ descriptor ~ "}" }
 
 record_key = { "[" ~ record_key_type? ~ "]" }
 
-record_key_type = { "string" | "int" | "float" | "boolean" }
+record_key_type = { "string" | "int" | "i8" | "i16" | "i32" | "i64" | "i128" | "isize" | "u8" | "u16" | "u32" | "u64" | "u128" | "usize" | "float" | "f32" | "f64" | "boolean" }
 
 // Modules
 

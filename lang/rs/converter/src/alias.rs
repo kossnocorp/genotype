@@ -159,7 +159,7 @@ mod tests {
                     span: (0, 0).into(),
                     id: GTDefinitionId("module".into(), "BookId".into()),
                     name: GTIdentifier((0, 0).into(), "BookId".into()),
-                    primitive: GTPrimitive::Int((0, 0).into())
+                    primitive: GTPrimitive::Int32((0, 0).into())
                 })
                 .into(),
             }
@@ -172,7 +172,7 @@ mod tests {
                     "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()
                 ],
                 name: "BookId".into(),
-                fields: RSStructFields::Tuple(vec![RSDescriptor::Primitive(RSPrimitive::Int),])
+                fields: RSStructFields::Tuple(vec![RSDescriptor::Primitive(RSPrimitive::Int32),])
                     .into(),
             }),
         );

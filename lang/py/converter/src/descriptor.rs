@@ -132,7 +132,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "age".into()),
-                        descriptor: GTPrimitive::Int((0, 0).into()).into(),
+                        descriptor: GTPrimitive::Int32((0, 0).into()).into(),
                         required: false,
                     }
                 ],

@@ -25,7 +25,7 @@ mod tests {
         assert_eq!(
             RSMap {
                 key: RSPrimitive::String.into(),
-                descriptor: RSPrimitive::Int.into(),
+                descriptor: RSPrimitive::IntSize.into(),
             }
             .render(&rs_indent(), &Default::default())
             .unwrap(),

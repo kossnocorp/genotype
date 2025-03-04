@@ -61,7 +61,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: "Int".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::Int).into(),
+                        descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize).into(),
                     },
                 ],
             }
@@ -93,7 +93,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: "Int".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::Int).into(),
+                        descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize).into(),
                     },
                 ],
             }
@@ -125,7 +125,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: "Int".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::Int).into(),
+                        descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize).into(),
                     },
                 ],
             }
@@ -158,7 +158,7 @@ pub enum Union {
                         doc: None,
                         attributes: vec![],
                         name: "Int".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::Int).into(),
+                        descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize).into(),
                     },
                 ],
             }
@@ -191,7 +191,7 @@ pub enum Union {
                         doc: None,
                         attributes: vec![],
                         name: "Int".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::Int).into(),
+                        descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize).into(),
                     },
                 ],
             }

@@ -7,8 +7,28 @@ impl TSConvert<TSRecordKey> for GTRecordKey {
     fn convert(&self, _context: &mut TSConvertContext) -> TSRecordKey {
         match self {
             GTRecordKey::String(_) => TSRecordKey::String,
-            GTRecordKey::Int(_) | GTRecordKey::Float(_) => TSRecordKey::Number,
+            GTRecordKey::Int8(_)
+            | GTRecordKey::Int16(_)
+            | GTRecordKey::Int32(_)
+            | GTRecordKey::IntU8(_)
+            | GTRecordKey::IntU16(_)
+            | GTRecordKey::IntU32(_)
+            | GTRecordKey::Float32(_)
+            | GTRecordKey::Float64(_) => TSRecordKey::Number,
             GTRecordKey::Boolean(_) => TSRecordKey::Boolean,
+
+            GTRecordKey::Int64(_)
+            | GTRecordKey::Int128(_)
+            | GTRecordKey::IntSize(_)
+            | GTRecordKey::IntU64(_)
+            | GTRecordKey::IntU128(_)
+            | GTRecordKey::IntUSize(_) => {
+                // [TODO] Return an error instead of panicking. It is not
+                // straightforward because it will require chaning `TSConvert`
+                // to return `Result`.
+                // See: https://github.com/kossnocorp/genotype/issues/8
+                panic!("TypeScript records don't support BigInt as a key")
+            }
         }
     }
 }
@@ -27,11 +47,11 @@ mod tests {
         );
         assert_eq!(
             TSRecordKey::Number,
-            GTRecordKey::Int((0, 0).into()).convert(&mut Default::default()),
+            GTRecordKey::Int32((0, 0).into()).convert(&mut Default::default()),
         );
         assert_eq!(
             TSRecordKey::Number,
-            GTRecordKey::Float((0, 0).into()).convert(&mut Default::default()),
+            GTRecordKey::Float64((0, 0).into()).convert(&mut Default::default()),
         );
         assert_eq!(
             TSRecordKey::Boolean,

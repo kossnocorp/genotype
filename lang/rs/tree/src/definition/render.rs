@@ -57,7 +57,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: "age".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::Int),
+                        descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize),
                     }
                 ]
                 .into(),

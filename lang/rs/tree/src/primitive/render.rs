@@ -17,13 +17,13 @@ impl RSRender for RSPrimitive {
             RSPrimitive::Int32 => "i32",
             RSPrimitive::Int64 => "i64",
             RSPrimitive::Int128 => "i128",
-            RSPrimitive::Int => "isize",
-            RSPrimitive::UInt8 => "u8",
-            RSPrimitive::UInt16 => "u16",
-            RSPrimitive::UInt32 => "u32",
-            RSPrimitive::UInt64 => "u64",
-            RSPrimitive::UInt128 => "u128",
-            RSPrimitive::UInt => "usize",
+            RSPrimitive::IntSize => "isize",
+            RSPrimitive::IntU8 => "u8",
+            RSPrimitive::IntU16 => "u16",
+            RSPrimitive::IntU32 => "u32",
+            RSPrimitive::IntU64 => "u64",
+            RSPrimitive::IntU128 => "u128",
+            RSPrimitive::IntUSize => "usize",
             RSPrimitive::Float32 => "f32",
             RSPrimitive::Float64 => "f64",
         }
@@ -87,43 +87,43 @@ mod tests {
             "i128"
         );
         assert_eq!(
-            RSPrimitive::Int
+            RSPrimitive::IntSize
                 .render(&rs_indent(), &Default::default())
                 .unwrap(),
             "isize"
         );
         assert_eq!(
-            RSPrimitive::UInt8
+            RSPrimitive::IntU8
                 .render(&rs_indent(), &Default::default())
                 .unwrap(),
             "u8"
         );
         assert_eq!(
-            RSPrimitive::UInt16
+            RSPrimitive::IntU16
                 .render(&rs_indent(), &Default::default())
                 .unwrap(),
             "u16"
         );
         assert_eq!(
-            RSPrimitive::UInt32
+            RSPrimitive::IntU32
                 .render(&rs_indent(), &Default::default())
                 .unwrap(),
             "u32"
         );
         assert_eq!(
-            RSPrimitive::UInt64
+            RSPrimitive::IntU64
                 .render(&rs_indent(), &Default::default())
                 .unwrap(),
             "u64"
         );
         assert_eq!(
-            RSPrimitive::UInt128
+            RSPrimitive::IntU128
                 .render(&rs_indent(), &Default::default())
                 .unwrap(),
             "u128"
         );
         assert_eq!(
-            RSPrimitive::UInt
+            RSPrimitive::IntUSize
                 .render(&rs_indent(), &Default::default())
                 .unwrap(),
             "usize"
