@@ -1,6 +1,6 @@
 {
   "name": "@genotype-lsp/win32-x64",
-  "version": "0.6.0-alpha.1",
+  "version": "0.6.0",
   "os": [
     "win32"
   ],

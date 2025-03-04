@@ -1,6 +1,6 @@
 [package]
 name = "genotype_lang_py_visitor"
-version = "0.5.0"
+version = "0.6.0"
 edition = "2021"
 description = "Genotype language Python target visitor crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
@@ -8,7 +8,7 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_lang_py_tree = { version = "0.5.0", path = "../tree" }
+genotype_lang_py_tree = { version = "0.6.0", path = "../tree" }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
