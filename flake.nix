@@ -14,12 +14,16 @@
     {
       devShells.${system}.default = pkgs.mkShell {
         packages = with pkgs; [
+          # Rust
           rustc
           cargo
           cargo-watch
           cargo-nextest
           cargo-release
           rustfmt
+          # Node.js
+          nodejs
+          corepack
         ];
 
         shellHook = ''

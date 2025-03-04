@@ -38,7 +38,7 @@ build-win32-arm64:
   cp target/aarch64-pc-windows-msvc/release/gts.exe npm/win32-arm64/bin/
 
 version version:
-  npm version {{version}}
+  pnpm version {{version}}
   cd npm/darwin-arm64 && npm version {{version}}
   cd npm/darwin-x64 && npm version {{version}}
   cd npm/linux-arm64 && npm version {{version}}
