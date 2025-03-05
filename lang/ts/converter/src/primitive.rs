@@ -11,15 +11,15 @@ impl TSConvert<TSPrimitive> for GTPrimitive {
             GTPrimitive::Int8(_) => TSPrimitive::Number,
             GTPrimitive::Int16(_) => TSPrimitive::Number,
             GTPrimitive::Int32(_) => TSPrimitive::Number,
-            GTPrimitive::Int64(_) => TSPrimitive::BigInt,
+            GTPrimitive::Int64(_) => TSPrimitive::Number,
             GTPrimitive::Int128(_) => TSPrimitive::BigInt,
-            GTPrimitive::IntSize(_) => TSPrimitive::BigInt,
+            GTPrimitive::IntSize(_) => TSPrimitive::Number,
             GTPrimitive::IntU8(_) => TSPrimitive::Number,
             GTPrimitive::IntU16(_) => TSPrimitive::Number,
             GTPrimitive::IntU32(_) => TSPrimitive::Number,
-            GTPrimitive::IntU64(_) => TSPrimitive::BigInt,
+            GTPrimitive::IntU64(_) => TSPrimitive::Number,
             GTPrimitive::IntU128(_) => TSPrimitive::BigInt,
-            GTPrimitive::IntUSize(_) => TSPrimitive::BigInt,
+            GTPrimitive::IntUSize(_) => TSPrimitive::Number,
             GTPrimitive::Float32(_) => TSPrimitive::Number,
             GTPrimitive::Float64(_) => TSPrimitive::Number,
             GTPrimitive::Null(_) => TSPrimitive::Null,
@@ -58,7 +58,7 @@ mod tests {
         );
         assert_eq!(
             GTPrimitive::Int64((0, 0).into()).convert(&mut Default::default()),
-            TSPrimitive::BigInt
+            TSPrimitive::Number
         );
         assert_eq!(
             GTPrimitive::Int128((0, 0).into()).convert(&mut Default::default()),
@@ -66,7 +66,7 @@ mod tests {
         );
         assert_eq!(
             GTPrimitive::IntSize((0, 0).into()).convert(&mut Default::default()),
-            TSPrimitive::BigInt
+            TSPrimitive::Number
         );
         assert_eq!(
             GTPrimitive::IntU8((0, 0).into()).convert(&mut Default::default()),
@@ -82,7 +82,7 @@ mod tests {
         );
         assert_eq!(
             GTPrimitive::IntU64((0, 0).into()).convert(&mut Default::default()),
-            TSPrimitive::BigInt
+            TSPrimitive::Number
         );
         assert_eq!(
             GTPrimitive::IntU128((0, 0).into()).convert(&mut Default::default()),
@@ -90,7 +90,7 @@ mod tests {
         );
         assert_eq!(
             GTPrimitive::IntUSize((0, 0).into()).convert(&mut Default::default()),
-            TSPrimitive::BigInt
+            TSPrimitive::Number
         );
         assert_eq!(
             GTPrimitive::Float32((0, 0).into()).convert(&mut Default::default()),

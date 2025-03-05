@@ -40,9 +40,9 @@ mod tests {
             GTBranded::parse(pairs.next().unwrap(), &mut context).unwrap(),
             GTBranded {
                 span: GTSpan(0, 4),
-                id: GTDefinitionId("module".into(), "I32".into()),
-                name: GTIdentifier::new(GTSpan(0, 4), "I32".into()),
-                primitive: GTPrimitive::Int32(GTSpan(1, 4)),
+                id: GTDefinitionId("module".into(), "I64".into()),
+                name: GTIdentifier::new(GTSpan(0, 4), "I64".into()),
+                primitive: GTPrimitive::Int64(GTSpan(1, 4)),
             }
         );
     }
@@ -61,7 +61,7 @@ mod tests {
                 span: GTSpan(0, 4),
                 id: GTDefinitionId("module".into(), "Id".into()),
                 name: GTIdentifier::new(GTSpan(0, 3), "Id".into()),
-                primitive: GTPrimitive::Int32(GTSpan(1, 4)),
+                primitive: GTPrimitive::Int64(GTSpan(1, 4)),
             }
         );
     }
@@ -79,9 +79,9 @@ mod tests {
             GTBranded::parse(pairs.next().unwrap(), &mut context).unwrap(),
             GTBranded {
                 span: GTSpan(0, 4),
-                id: GTDefinitionId("module".into(), "IdI32".into()),
-                name: GTIdentifier::new(GTSpan(0, 4), "IdI32".into()),
-                primitive: GTPrimitive::Int32(GTSpan(1, 4)),
+                id: GTDefinitionId("module".into(), "IdI64".into()),
+                name: GTIdentifier::new(GTSpan(0, 4), "IdI64".into()),
+                primitive: GTPrimitive::Int64(GTSpan(1, 4)),
             }
         );
     }

@@ -133,7 +133,7 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTIdentifier::new((0, 3).into(), "Age".into()),
-                            descriptor: GTPrimitive::Int32((6, 9).into()).into(),
+                            descriptor: GTPrimitive::Int64((6, 9).into()).into(),
                         },
                         GTAlias {
                             id: GTDefinitionId("module".into(), "AnotherAge".into()),
@@ -193,7 +193,7 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTIdentifier::new((17, 20).into(), "Int".into()),
-                            descriptor: GTPrimitive::Int32((23, 26).into()).into(),
+                            descriptor: GTPrimitive::Int64((23, 26).into()).into(),
                         },
                         GTAlias {
                             id: GTDefinitionId("module".into(), "Float".into()),
@@ -293,7 +293,7 @@ mod tests {
                                         doc: None,
                                         attributes: vec![],
                                         name: GTKey::new((55, 58).into(), "age".into()),
-                                        descriptor: GTPrimitive::Int32((60, 63).into()).into(),
+                                        descriptor: GTPrimitive::Int64((60, 63).into()).into(),
                                         required: true,
                                     },
                                     GTProperty {
@@ -379,7 +379,7 @@ mod tests {
                                         doc: None,
                                         attributes: vec![],
                                         name: GTKey::new((161, 164).into(), "age".into()),
-                                        descriptor: GTPrimitive::Int32((166, 169).into()).into(),
+                                        descriptor: GTPrimitive::Int64((166, 169).into()).into(),
                                         required: true,
                                     },
                                 ],
@@ -460,7 +460,7 @@ mod tests {
                                         )),
                                         attributes: vec![],
                                         name: GTKey::new((246, 249).into(), "age".into()),
-                                        descriptor: GTPrimitive::Int32((251, 254).into()).into(),
+                                        descriptor: GTPrimitive::Int64((251, 254).into()).into(),
                                         required: true,
                                     },
                                 ],
@@ -526,7 +526,7 @@ mod tests {
                                     doc: None,
                                     attributes: vec![],
                                     name: GTKey::new((27, 30).into(), "age".into()),
-                                    descriptor: GTPrimitive::Int32((33, 36).into()).into(),
+                                    descriptor: GTPrimitive::Int64((33, 36).into()).into(),
                                     required: false,
                                 },
                             ],
@@ -791,7 +791,7 @@ mod tests {
                                         descriptor: GTDescriptor::Tuple(GTTuple {
                                             span: (45, 66).into(),
                                             descriptors: vec![
-                                                GTPrimitive::Int32((46, 49).into()).into(),
+                                                GTPrimitive::Int64((46, 49).into()).into(),
                                                 GTPrimitive::String((51, 57).into()).into(),
                                                 GTPrimitive::String((59, 65).into()).into(),
                                             ],
@@ -810,7 +810,7 @@ mod tests {
                             descriptor: GTDescriptor::Tuple(GTTuple {
                                 span: (80, 101).into(),
                                 descriptors: vec![
-                                    GTPrimitive::Int32((81, 84).into()).into(),
+                                    GTPrimitive::Int64((81, 84).into()).into(),
                                     GTPrimitive::String((86, 92).into()).into(),
                                     GTPrimitive::String((94, 100).into()).into(),
                                 ],
@@ -1012,7 +1012,7 @@ mod tests {
                                         doc: None,
                                         attributes: vec![],
                                         name: GTKey::new((27, 30).into(), "age".into()),
-                                        descriptor: GTPrimitive::Int32((32, 35).into()).into(),
+                                        descriptor: GTPrimitive::Int64((32, 35).into()).into(),
                                         required: true,
                                     },
                                 ],
@@ -1047,7 +1047,7 @@ mod tests {
                                     doc: None,
                                     attributes: vec![],
                                     name: GTKey::new((66, 71).into(), "cores".into()),
-                                    descriptor: GTPrimitive::Int32((73, 76).into()).into(),
+                                    descriptor: GTPrimitive::Int64((73, 76).into()).into(),
                                     required: true,
                                 }],
                             }),
@@ -1667,7 +1667,7 @@ mod tests {
                             name: GTIdentifier::new((23, 26).into(), "Map".into()),
                             descriptor: GTRecord {
                                 span: (29, 46).into(),
-                                key: GTRecordKey::Int32((31, 36).into()),
+                                key: GTRecordKey::Int64((31, 36).into()),
                                 descriptor: GTPrimitive::String((38, 44).into()).into(),
                             }
                             .into(),
@@ -1739,7 +1739,7 @@ mod tests {
                                 span: (8, 12).into(),
                                 id: GTDefinitionId("module".into(), "OrgId".into()),
                                 name: GTIdentifier::new((0, 5).into(), "OrgId".into()),
-                                primitive: GTPrimitive::Int32((9, 12).into()).into(),
+                                primitive: GTPrimitive::Int64((9, 12).into()).into(),
                             }
                             .into(),
                         },

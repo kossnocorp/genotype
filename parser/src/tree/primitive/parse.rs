@@ -13,7 +13,7 @@ impl TryFrom<Pair<'_, Rule>> for GTPrimitive {
         match pair.as_str() {
             "boolean" => Ok(GTPrimitive::Boolean(span)),
             "string" => Ok(GTPrimitive::String(span)),
-            "int" => Ok(GTPrimitive::Int32(span)),
+            "int" => Ok(GTPrimitive::Int64(span)),
             "i8" => Ok(GTPrimitive::Int8(span)),
             "i16" => Ok(GTPrimitive::Int16(span)),
             "i32" => Ok(GTPrimitive::Int32(span)),

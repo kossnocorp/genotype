@@ -85,7 +85,7 @@ mod tests {
             GTRecord::parse(pairs.next().unwrap(), &mut context).unwrap(),
             GTRecord {
                 span: (0, 17).into(),
-                key: GTRecordKey::Int32((2, 7).into()),
+                key: GTRecordKey::Int64((2, 7).into()),
                 descriptor: GTPrimitive::String((9, 15).into()).into(),
             }
         );

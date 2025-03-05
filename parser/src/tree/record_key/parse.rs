@@ -10,7 +10,7 @@ impl GTRecordKey {
 
         match pair.into_inner().as_str() {
             "" | "string" => Ok(GTRecordKey::String(span)),
-            "int" => Ok(GTRecordKey::Int32(span)),
+            "int" => Ok(GTRecordKey::Int64(span)),
             "i8" => Ok(GTRecordKey::Int8(span)),
             "i16" => Ok(GTRecordKey::Int16(span)),
             "i32" => Ok(GTRecordKey::Int32(span)),
@@ -61,7 +61,7 @@ mod tests {
     fn test_parse_int() {
         let mut pairs = GenotypeParser::parse(Rule::record_key, "[int]").unwrap();
         assert_eq!(
-            GTRecordKey::Int32((0, 5).into()),
+            GTRecordKey::Int64((0, 5).into()),
             GTRecordKey::parse(pairs.next().unwrap()).unwrap(),
         );
         let mut pairs = GenotypeParser::parse(Rule::record_key, "[i8]").unwrap();
