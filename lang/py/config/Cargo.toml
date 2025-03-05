@@ -1,6 +1,6 @@
 [package]
 name = "genotype_lang_py_config"
-version = "0.6.0"
+version = "0.7.0"
 edition = "2021"
 description = "Genotype language Python target config crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
