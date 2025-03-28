@@ -124,7 +124,7 @@ impl GTProject {
 mod tests {
     use std::{collections::HashMap, fs::read_to_string};
 
-    use crate::{GTProjectModuleReference, GTProjectModuleResolve};
+    use crate::{GTProjectModuleReferenceKind, GTProjectModuleResolve};
 
     use super::*;
     use genotype_parser::*;
@@ -479,7 +479,7 @@ mod tests {
                         )]),
                         references_identifiers: HashMap::from_iter([(
                             GTIdentifier::new((56, 62).into(), "Author".into()),
-                            GTProjectModuleReference::External(
+                            GTProjectModuleReferenceKind::External(
                                 GTPath::parse((4, 12).into(), "./author").unwrap(),
                             ),
                         )]),
@@ -568,7 +568,7 @@ mod tests {
                         ]),
                         references_identifiers: HashMap::from_iter([(
                             GTIdentifier::new((57, 61).into(), "Book".into()),
-                            GTProjectModuleReference::External(
+                            GTProjectModuleReferenceKind::External(
                                 GTPath::parse((4, 10).into(), "./book").unwrap(),
                             ),
                         )]),

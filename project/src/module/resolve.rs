@@ -16,7 +16,9 @@ use super::{GTProjectModuleParse, GTProjectModulePath};
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTProjectModuleResolve {
     pub deps: HashMap<GTPath, Arc<GTProjectModulePath>>,
-    pub references_identifiers: HashMap<GTIdentifier, GTProjectModuleReference>,
+    /// Associates module identifiers with reference kinds. Tells where to look for a reference.
+    pub references_identifiers: HashMap<GTIdentifier, GTProjectModuleReferenceKind>,
+    /// Associates module definitions with references.
     pub references: HashMap<GTDefinitionId, HashSet<GTReferenceId>>,
 }
 
@@ -59,7 +61,8 @@ impl GTProjectModuleResolve {
                 .iter()
                 .any(|export| export.1 == reference.1)
             {
-                references_identifiers.insert(reference.clone(), GTProjectModuleReference::Local);
+                references_identifiers
+                    .insert(reference.clone(), GTProjectModuleReferenceKind::Local);
                 continue;
             }
 
@@ -104,7 +107,7 @@ impl GTProjectModuleResolve {
 
             references_identifiers.insert(
                 reference.clone(),
-                GTProjectModuleReference::External(local_path.clone()),
+                GTProjectModuleReferenceKind::External(local_path.clone()),
             );
         }
 
@@ -116,8 +119,14 @@ impl GTProjectModuleResolve {
     }
 }
 
+/// Module reference kind.
 #[derive(Debug, PartialEq, Clone)]
-pub enum GTProjectModuleReference {
+pub enum GTProjectModuleReferenceKind {
+    /// Reference to a local identifier.
     Local,
-    External(GTPath),
+    /// External module reference.
+    External(
+        /// Path to the module that contains the reference.
+        GTPath,
+    ),
 }

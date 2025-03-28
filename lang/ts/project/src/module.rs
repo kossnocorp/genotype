@@ -9,7 +9,7 @@ use genotype_lang_ts_config::TSProjectConfig;
 use genotype_lang_ts_converter::{module::TSConvertModule, resolve::TSConvertResolve};
 use genotype_lang_ts_tree::module::TSModule;
 use genotype_parser::{tree::GTImportReference, GTIdentifier};
-use genotype_project::{module::GTProjectModule, GTProject, GTProjectModuleReference};
+use genotype_project::{module::GTProjectModule, GTProject, GTProjectModuleReferenceKind};
 use miette::Result;
 
 use crate::error::TSProjectError;
@@ -45,7 +45,7 @@ impl GTLangProjectModule<TSProjectConfig> for TSProjectModule {
                     .references_identifiers
                     .iter()
                     .filter(|(_, reference)| {
-                        if let GTProjectModuleReference::External(path) = reference {
+                        if let GTProjectModuleReferenceKind::External(path) = reference {
                             return import.path == *path;
                         }
                         false
