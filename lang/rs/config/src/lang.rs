@@ -16,8 +16,16 @@ impl RSLangConfig {
         // "Hash",
     ];
 
+    const FLOAT_UNIMPLEMENTED_DERIVES: &'static [&str] = &["Eq", "Hash", "Ord"];
+
     pub fn default_derive() -> Vec<String> {
         Self::DEFAULT_DERIVE.iter().map(|s| s.to_string()).collect()
+    }
+
+    pub fn needs_ordered_floats(&self) -> bool {
+        self.derive
+            .iter()
+            .any(|d| Self::FLOAT_UNIMPLEMENTED_DERIVES.contains(&d.as_str()))
     }
 }
 
@@ -26,5 +34,24 @@ impl Default for RSLangConfig {
         Self {
             derive: Self::default_derive(),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_ordered_floats() {
+        let config = RSLangConfig {
+            derive: vec!["Debug".to_string(), "Eq".to_string()],
+        };
+        assert_eq!(config.needs_ordered_floats(), true);
+
+        let config = RSLangConfig {
+            derive: vec!["Debug".to_string(), "Clone".to_string()],
+        };
+        assert_eq!(config.needs_ordered_floats(), false);
     }
 }
