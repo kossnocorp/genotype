@@ -117,11 +117,10 @@ fn name_descriptor(
         GTDescriptor::Primitive(primitive) => match primitive {
             GTPrimitive::Boolean(_) => "Boolean".into(),
             GTPrimitive::String(_) => "String".into(),
-            GTPrimitive::IntSize(_) => "Int".into(),
             GTPrimitive::Int8(_) => "Int8".into(),
             GTPrimitive::Int16(_) => "Int16".into(),
             GTPrimitive::Int32(_) => "Int32".into(),
-            GTPrimitive::Int64(_) => "Int64".into(),
+            GTPrimitive::Int64(_) => "Int".into(),
             GTPrimitive::Int128(_) => "Int128".into(),
             GTPrimitive::IntSize(_) => "IntSize".into(),
             GTPrimitive::IntU8(_) => "IntU8".into(),
@@ -130,9 +129,8 @@ fn name_descriptor(
             GTPrimitive::IntU64(_) => "IntU64".into(),
             GTPrimitive::IntU128(_) => "IntU128".into(),
             GTPrimitive::IntUSize(_) => "IntUSize".into(),
-            GTPrimitive::Float64(_) => "Float".into(),
             GTPrimitive::Float32(_) => "Float32".into(),
-            GTPrimitive::Float64(_) => "Float64".into(),
+            GTPrimitive::Float64(_) => "Float".into(),
             GTPrimitive::Null(_) => "Null".into(),
         },
         GTDescriptor::Array(_) => "Vec".into(),
@@ -420,6 +418,73 @@ mod tests {
                                 descriptors: vec![]
                             }
                             .into()
+                        ),
+                    },
+                ],
+            }
+        );
+    }
+
+    #[test]
+    fn test_numeric_name() {
+        let mut context = RSConvertContext::empty("module".into());
+        context.enter_parent(RSContextParent::Alias("Union".into()));
+        assert_eq!(
+            GTUnion {
+                span: (0, 0).into(),
+                descriptors: vec![
+                    GTPrimitive::Int32((0, 0).into()).into(),
+                    GTPrimitive::Int64((0, 0).into()).into(),
+                    GTPrimitive::IntSize((0, 0).into()).into(),
+                    GTPrimitive::Float32((0, 0).into()).into(),
+                    GTPrimitive::Float64((0, 0).into()).into(),
+                ],
+            }
+            .convert(&mut context)
+            .unwrap(),
+            RSEnum {
+                id: GTDefinitionId("module".into(), "Union".into()),
+                doc: None,
+                attributes: vec![
+                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into(),
+                    r#"serde(untagged)"#.into(),
+                ],
+                name: "Union".into(),
+                variants: vec![
+                    RSEnumVariant {
+                        doc: None,
+                        attributes: vec![],
+                        name: "Int32".into(),
+                        descriptor: RSEnumVariantDescriptor::Descriptor(RSPrimitive::Int32.into()),
+                    },
+                    RSEnumVariant {
+                        doc: None,
+                        attributes: vec![],
+                        name: "Int".into(),
+                        descriptor: RSEnumVariantDescriptor::Descriptor(RSPrimitive::Int64.into()),
+                    },
+                    RSEnumVariant {
+                        doc: None,
+                        attributes: vec![],
+                        name: "IntSize".into(),
+                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                            RSPrimitive::IntSize.into()
+                        ),
+                    },
+                    RSEnumVariant {
+                        doc: None,
+                        attributes: vec![],
+                        name: "Float32".into(),
+                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                            RSPrimitive::Float32.into()
+                        ),
+                    },
+                    RSEnumVariant {
+                        doc: None,
+                        attributes: vec![],
+                        name: "Float".into(),
+                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                            RSPrimitive::Float64.into()
                         ),
                     },
                 ],
