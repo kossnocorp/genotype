@@ -123,9 +123,7 @@ mod tests {
             RSDefinition::Struct(RSStruct {
                 id: GTDefinitionId("module".into(), "Book".into()),
                 doc: None,
-                attributes: vec![
-                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()
-                ],
+                attributes: vec!["derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into()],
                 name: "Book".into(),
                 fields: vec![
                     RSField {
@@ -168,9 +166,7 @@ mod tests {
             RSDefinition::Struct(RSStruct {
                 id: GTDefinitionId("module".into(), "BookId".into()),
                 doc: None,
-                attributes: vec![
-                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()
-                ],
+                attributes: vec!["derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into()],
                 name: "BookId".into(),
                 fields: RSStructFields::Tuple(vec![RSDescriptor::Primitive(RSPrimitive::Int32),])
                     .into(),
@@ -218,7 +214,7 @@ mod tests {
                 id: GTDefinitionId("module".into(), "Book".into()),
                 doc: None,
                 attributes: vec![
-                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into(),
+                    "derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into(),
                     r#"serde(untagged)"#.into(),
                 ],
                 name: "Book".into(),
@@ -251,9 +247,7 @@ mod tests {
             vec![RSDefinition::Struct(RSStruct {
                 id: GTDefinitionId("module".into(), "BookObj".into()),
                 doc: None,
-                attributes: vec![
-                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into(),
-                ],
+                attributes: vec!["derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into(),],
                 name: "BookObj".into(),
                 fields: vec![RSField {
                     doc: None,

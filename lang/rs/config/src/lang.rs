@@ -10,8 +10,10 @@ impl RSLangConfig {
         "Debug",
         "Clone",
         "PartialEq",
-        "Eq",
-        "Hash",
+        // [NOTE] Eq and Hash are disabled by default as float types do not implement them.
+        // See: https://github.com/kossnocorp/genotype/issues/9
+        // "Eq",
+        // "Hash",
     ];
 
     pub fn default_derive() -> Vec<String> {

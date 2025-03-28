@@ -93,9 +93,7 @@ mod tests {
             RSStruct {
                 id: GTDefinitionId("module".into(), "Person".into()),
                 doc: None,
-                attributes: vec![
-                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()
-                ],
+                attributes: vec!["derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into()],
                 name: "Person".into(),
                 fields: vec![
                     RSField {
@@ -132,9 +130,7 @@ mod tests {
             RSStruct {
                 id: GTDefinitionId("module".into(), "Person".into()),
                 doc: None,
-                attributes: vec![
-                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()
-                ],
+                attributes: vec!["derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into()],
                 name: "Person".into(),
                 fields: vec![].into(),
             }
@@ -164,9 +160,7 @@ mod tests {
             RSStruct {
                 id: GTDefinitionId("module".into(), "Person".into()),
                 doc: Some("Hello, world!".into()),
-                attributes: vec![
-                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()
-                ],
+                attributes: vec!["derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into()],
                 name: "Person".into(),
                 fields: vec![].into(),
             }
@@ -217,9 +211,7 @@ mod tests {
             RSStruct {
                 id: GTDefinitionId("module".into(), "Person".into()),
                 doc: None,
-                attributes: vec![
-                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()
-                ],
+                attributes: vec!["derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into()],
                 name: "Person".into(),
                 fields: RSStructFields::Unresolved(
                     (1, 8).into(),

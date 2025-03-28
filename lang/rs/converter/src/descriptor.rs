@@ -169,9 +169,7 @@ mod tests {
             vec![RSDefinition::Struct(RSStruct {
                 id: GTDefinitionId("module".into(), "Person".into()),
                 doc: None,
-                attributes: vec![
-                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into()
-                ],
+                attributes: vec!["derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into()],
                 name: "Person".into(),
                 fields: vec![
                     RSField {
@@ -276,7 +274,7 @@ mod tests {
                 id: GTDefinitionId("module".into(), "Union".into()),
                 doc: None,
                 attributes: vec![
-                    "derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)".into(),
+                    "derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into(),
                     "serde(untagged)".into(),
                 ],
                 name: "Union".into(),
