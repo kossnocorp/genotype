@@ -5,13 +5,6 @@ use miette::Result;
 
 use crate::{context::RSConvertContext, convert::RSConvert};
 
-const KEYWORDS: [&str; 35] = [
-    "as", "break", "const", "continue", "crate", "else", "enum", "extern", "false", "fn", "for",
-    "if", "impl", "in", "let", "loop", "match", "mod", "move", "mut", "pub", "ref", "return",
-    "self", "Self", "static", "struct", "super", "trait", "true", "type", "unsafe", "use", "where",
-    "while",
-];
-
 impl RSConvert<RSFieldName> for GTKey {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSFieldName> {
         let name = self.1.to_snake_case();
@@ -23,13 +16,6 @@ impl RSConvert<RSFieldName> for GTKey {
                 original_name = self.1
             ));
         }
-
-        // Escape Rust keywords
-        let name = if KEYWORDS.contains(&name.as_str()) {
-            format!("r#{}", name)
-        } else {
-            name
-        };
 
         Ok(RSFieldName(name))
     }
@@ -73,10 +59,10 @@ mod tests {
     fn test_convert_keyword() {
         let mut context = RSConvertContext::empty("module".into());
         assert_eq!(
-            RSFieldName("r#type".into()),
             GTKey::new((0, 0).into(), "type".into())
                 .convert(&mut context)
                 .unwrap(),
+            RSFieldName("type".into()),
         );
         assert_eq!(context.drain_field_attributes(), vec![])
     }

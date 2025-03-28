@@ -630,6 +630,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "genotype_lang_rs_core"
+version = "0.7.0"
+dependencies = [
+ "pretty_assertions",
+]
+
+[[package]]
 name = "genotype_lang_rs_project"
 version = "0.7.0"
 dependencies = [
@@ -654,6 +661,7 @@ version = "0.7.0"
 dependencies = [
  "genotype_lang_core_tree",
  "genotype_lang_rs_config",
+ "genotype_lang_rs_core",
  "genotype_parser",
  "miette",
  "pretty_assertions",

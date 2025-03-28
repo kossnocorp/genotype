@@ -12,6 +12,7 @@ members = [
   "lang/py/project",
   "lang/py/config",
   "lang/py/visitor",
+  "lang/rs/core",
   "lang/rs/tree",
   "lang/rs/converter",
   "lang/rs/project",

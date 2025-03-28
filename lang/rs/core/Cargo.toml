@@ -1,0 +1,11 @@
+[package]
+name = "genotype_lang_rs_core"
+version = "0.7.0"
+edition = "2021"
+description = "Genotype language Rust target core crate"
+authors = ["Sasha Koss <koss@nocorp.me>"]
+license = "MIT"
+repository = "https://github.com/kossnocorp/genotype"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"

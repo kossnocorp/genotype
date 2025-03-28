@@ -4,6 +4,9 @@ test:
 test-watch:
   cargo watch -s 'cargo nextest run'
 
+test-run-cli:
+  cargo run --bin gt -- build ${TEST_RUN_CLI_PROJECT}
+
 build:
   cargo build
 
