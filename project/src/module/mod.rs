@@ -2,10 +2,14 @@ use genotype_parser::GTModule;
 use genotype_visitor::traverse::GTTraverse;
 use miette::{NamedSource, Result};
 
+mod definition;
+mod identifier;
 mod parse;
 mod path;
 mod resolve;
 
+pub use definition::*;
+pub use identifier::*;
 pub use parse::*;
 pub use path::*;
 pub use resolve::*;
@@ -14,9 +18,9 @@ use crate::{visitor::GTProjectResolveVisitor, GTProjectResolve};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTProjectModule {
-    pub path: GTProjectModulePath,
+    pub path: GTPModulePath,
     pub module: GTModule,
-    pub resolve: GTProjectModuleResolve,
+    pub resolve: GTPModuleResolve,
     /// Module source code.
     /// [TODO] After implementing workspace, find a better place for it.
     #[deprecated]
@@ -29,7 +33,7 @@ impl GTProjectModule {
         modules: &Vec<GTProjectModuleParse>,
         parse: GTProjectModuleParse,
     ) -> Result<Self> {
-        let mut resolve = GTProjectModuleResolve::try_new(modules, &parse)
+        let mut resolve = GTPModuleResolve::try_new(modules, &parse)
             .map_err(|err| err.with_source_code(parse.1.source_code.clone()))?;
 
         // Combine these two ^v

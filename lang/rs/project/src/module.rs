@@ -11,7 +11,7 @@ use genotype_lang_rs_converter::{
 };
 use genotype_lang_rs_tree::module::RSModule;
 use genotype_parser::{tree::GTImportReference, GTIdentifier, GTImportName};
-use genotype_project::{module::GTProjectModule, GTProject, GTProjectModuleReferenceKind};
+use genotype_project::{module::GTProjectModule, GTPModuleIdentifierSource, GTProject};
 use miette::Result;
 
 use crate::{error::RSProjectError, resolve::RSProjectModuleResolve};
@@ -54,10 +54,10 @@ impl GTLangProjectModule<RSProjectConfig> for RSProjectModule {
                 GTImportReference::Glob(_) => {
                     let references = module
                         .resolve
-                        .references_identifiers
+                        .identifier_sources
                         .iter()
                         .filter(|(_, reference)| {
-                            if let GTProjectModuleReferenceKind::External(path) = reference {
+                            if let GTPModuleIdentifierSource::External(path) = reference {
                                 return import.path == *path;
                             }
                             false

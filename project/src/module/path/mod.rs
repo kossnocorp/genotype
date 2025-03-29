@@ -9,14 +9,17 @@ use miette::Result;
 
 use crate::error::GTProjectError;
 
+pub mod resolve;
+pub use resolve::*;
+
 #[derive(Debug, Clone)]
-pub struct GTProjectModulePath {
+pub struct GTPModulePath {
     root: Arc<PathBuf>,
     path: PathBuf,
     id: GTPath,
 }
 
-impl GTProjectModulePath {
+impl GTPModulePath {
     pub fn as_path(&self) -> &PathBuf {
         &self.path
     }
@@ -63,21 +66,21 @@ impl GTProjectModulePath {
     }
 }
 
-impl AsRef<Path> for GTProjectModulePath {
+impl AsRef<Path> for GTPModulePath {
     fn as_ref(&self) -> &Path {
         self.path.as_ref()
     }
 }
 
-impl PartialEq for GTProjectModulePath {
+impl PartialEq for GTPModulePath {
     fn eq(&self, other: &Self) -> bool {
         self.path == other.path
     }
 }
 
-impl Eq for GTProjectModulePath {}
+impl Eq for GTPModulePath {}
 
-impl Hash for GTProjectModulePath {
+impl Hash for GTPModulePath {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.path.hash(state);
     }
@@ -92,7 +95,7 @@ mod tests {
     fn test_try_new() {
         let root = Arc::new(PathBuf::from("./examples/basic").canonicalize().unwrap());
         let path = root.join("author.type");
-        let module_path = GTProjectModulePath::try_new(root, &path).unwrap();
+        let module_path = GTPModulePath::try_new(root, &path).unwrap();
         assert_eq!(module_path.as_path(), &path.canonicalize().unwrap());
         assert_eq!(module_path.as_id().as_str(), "author")
     }

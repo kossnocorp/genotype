@@ -5,13 +5,13 @@ use miette::{NamedSource, Result};
 
 use crate::error::GTProjectError;
 
-use super::GTProjectModulePath;
+use super::GTPModulePath;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct GTProjectModuleParse(pub GTProjectModulePath, pub GTModuleParse);
+pub struct GTProjectModuleParse(pub GTPModulePath, pub GTModuleParse);
 
 impl<'a> GTProjectModuleParse {
-    pub fn try_new(id: GTModuleId, path: GTProjectModulePath) -> Result<Self> {
+    pub fn try_new(id: GTModuleId, path: GTPModulePath) -> Result<Self> {
         let code = read_to_string(&path).map_err(|_| {
             GTProjectError::NotFound(path.as_path().as_os_str().to_str().unwrap().to_owned())
         })?;
@@ -21,7 +21,7 @@ impl<'a> GTProjectModuleParse {
         Ok(Self(path, parse))
     }
 
-    pub fn deps(&self) -> Result<Vec<GTProjectModulePath>> {
+    pub fn deps(&self) -> Result<Vec<GTPModulePath>> {
         self.1
             .resolve
             .deps

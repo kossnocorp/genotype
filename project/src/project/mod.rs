@@ -30,11 +30,11 @@ impl GTProject {
         let pattern = config.entry_pattern()?;
 
         let entry_paths = glob(&pattern).map_err(|_| GTProjectError::Unknown)?;
-        let entries: Vec<GTProjectModulePath> = entry_paths
+        let entries: Vec<GTPModulePath> = entry_paths
             .collect::<Result<Vec<_>, _>>()
             .map_err(|_| GTProjectError::Unknown)?
             .iter()
-            .map(|entry| GTProjectModulePath::try_new(Arc::clone(&src), entry))
+            .map(|entry| GTPModulePath::try_new(Arc::clone(&src), entry))
             .collect::<Result<Vec<_>, _>>()
             .map_err(|_| GTProjectError::Unknown)?;
 
@@ -81,9 +81,9 @@ impl GTProject {
     }
 
     fn load_module(
-        path: GTProjectModulePath,
+        path: GTPModulePath,
         scope: &Scope<'_>,
-        processed_paths: Arc<Mutex<HashSet<GTProjectModulePath>>>,
+        processed_paths: Arc<Mutex<HashSet<GTPModulePath>>>,
         modules: Arc<Mutex<Vec<Result<GTProjectModuleParse>>>>,
     ) {
         {
@@ -124,7 +124,7 @@ impl GTProject {
 mod tests {
     use std::{collections::HashMap, fs::read_to_string};
 
-    use crate::{GTProjectModuleReferenceKind, GTProjectModuleResolve};
+    use crate::{GTPModuleIdentifierSource, GTPModuleResolve};
 
     use super::*;
     use genotype_parser::*;
@@ -150,7 +150,7 @@ mod tests {
     #[test]
     fn test_process_anonymous() {
         let root = Arc::new(PathBuf::from("./examples/process").canonicalize().unwrap());
-        let module_path = GTProjectModulePath::try_new(
+        let module_path = GTPModulePath::try_new(
             root.clone(),
             &PathBuf::from("./examples/process/anonymous.type"),
         )
@@ -337,9 +337,9 @@ mod tests {
                             }
                         ],
                     },
-                    resolve: GTProjectModuleResolve {
+                    resolve: GTPModuleResolve {
                         deps: Default::default(),
-                        references_identifiers: Default::default(),
+                        identifier_sources: Default::default(),
                         references: Default::default(),
                     },
                     source_code: NamedSource::new(
@@ -353,26 +353,18 @@ mod tests {
 
     fn basic_project() -> GTProject {
         let root = Arc::new(PathBuf::from("./examples/basic").canonicalize().unwrap());
-        let author_path = GTProjectModulePath::try_new(
-            root.clone(),
-            &PathBuf::from("./examples/basic/author.type"),
-        )
-        .unwrap();
-        let book_path = GTProjectModulePath::try_new(
-            root.clone(),
-            &PathBuf::from("./examples/basic/book.type"),
-        )
-        .unwrap();
-        let order_path = GTProjectModulePath::try_new(
-            root.clone(),
-            &PathBuf::from("./examples/basic/order.type"),
-        )
-        .unwrap();
-        let user_path = GTProjectModulePath::try_new(
-            root.clone(),
-            &PathBuf::from("./examples/basic/user.type"),
-        )
-        .unwrap();
+        let author_path =
+            GTPModulePath::try_new(root.clone(), &PathBuf::from("./examples/basic/author.type"))
+                .unwrap();
+        let book_path =
+            GTPModulePath::try_new(root.clone(), &PathBuf::from("./examples/basic/book.type"))
+                .unwrap();
+        let order_path =
+            GTPModulePath::try_new(root.clone(), &PathBuf::from("./examples/basic/order.type"))
+                .unwrap();
+        let user_path =
+            GTPModulePath::try_new(root.clone(), &PathBuf::from("./examples/basic/user.type"))
+                .unwrap();
 
         GTProject {
             root: root.clone(),
@@ -404,9 +396,9 @@ mod tests {
                             }),
                         }],
                     },
-                    resolve: GTProjectModuleResolve {
+                    resolve: GTPModuleResolve {
                         deps: Default::default(),
-                        references_identifiers: Default::default(),
+                        identifier_sources: Default::default(),
                         references: HashMap::from_iter([]),
                     },
                     source_code: NamedSource::new(
@@ -472,14 +464,14 @@ mod tests {
                             }),
                         }],
                     },
-                    resolve: GTProjectModuleResolve {
+                    resolve: GTPModuleResolve {
                         deps: HashMap::from_iter([(
                             GTPath::parse((4, 12).into(), "./author").unwrap(),
                             Arc::new(author_path.clone()),
                         )]),
-                        references_identifiers: HashMap::from_iter([(
+                        identifier_sources: HashMap::from_iter([(
                             GTIdentifier::new((56, 62).into(), "Author".into()),
-                            GTProjectModuleReferenceKind::External(
+                            GTPModuleIdentifierSource::External(
                                 GTPath::parse((4, 12).into(), "./author").unwrap(),
                             ),
                         )]),
@@ -555,7 +547,7 @@ mod tests {
                             }),
                         }],
                     },
-                    resolve: GTProjectModuleResolve {
+                    resolve: GTPModuleResolve {
                         deps: HashMap::from_iter([
                             (
                                 GTPath::parse((4, 10).into(), "./book").unwrap(),
@@ -566,9 +558,9 @@ mod tests {
                                 Arc::new(user_path.clone()),
                             ),
                         ]),
-                        references_identifiers: HashMap::from_iter([(
+                        identifier_sources: HashMap::from_iter([(
                             GTIdentifier::new((57, 61).into(), "Book".into()),
-                            GTProjectModuleReferenceKind::External(
+                            GTPModuleIdentifierSource::External(
                                 GTPath::parse((4, 10).into(), "./book").unwrap(),
                             ),
                         )]),
@@ -619,9 +611,9 @@ mod tests {
                             }),
                         }],
                     },
-                    resolve: GTProjectModuleResolve {
+                    resolve: GTPModuleResolve {
                         deps: Default::default(),
-                        references_identifiers: Default::default(),
+                        identifier_sources: Default::default(),
                         references: Default::default(),
                     },
                     source_code: NamedSource::new("user.type", read_to_string(&user_path).unwrap()),

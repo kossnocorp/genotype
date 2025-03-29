@@ -11,18 +11,35 @@ use miette::Result;
 
 use crate::error::GTProjectError;
 
-use super::{GTProjectModuleParse, GTProjectModulePath};
+use super::{
+    identifier::GTPModuleIdentifierSource, GTPModuleDefinitionResolve, GTPModuleIdentifierResolve,
+    GTPModulePath, GTPModulePathResolve, GTProjectModuleParse,
+};
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct GTProjectModuleResolve {
-    pub deps: HashMap<GTPath, Arc<GTProjectModulePath>>,
-    /// Associates module identifiers with reference kinds. Tells where to look for a reference.
-    pub references_identifiers: HashMap<GTIdentifier, GTProjectModuleReferenceKind>,
+pub struct GTPModuleResolve {
+    pub deps: HashMap<GTPath, Arc<GTPModulePath>>,
+    /// Associates module identifiers with identifier source. Tells where to look for the identifier
+    /// definition.
+    pub identifier_sources: HashMap<GTIdentifier, GTPModuleIdentifierSource>,
     /// Associates module definitions with references.
     pub references: HashMap<GTDefinitionId, HashSet<GTReferenceId>>,
 }
 
-impl GTProjectModuleResolve {
+// [TODO] Use this kind of structure instead of `GTPModuleResolve`. Then resolve definition
+// dependencies in the `GTPModuleDefinitionResolve` struct, so that they can used to identify if
+// float is a part of the dependency tree, if there's a circular dependency, etc.
+#[derive(Debug, PartialEq, Clone)]
+pub struct GTPModuleResolveNew {
+    /// Paths resolve.
+    pub paths: HashMap<GTPath, GTPModulePathResolve>,
+    /// Identifiers resolve.
+    pub identifiers: HashMap<GTIdentifier, GTPModuleIdentifierResolve>,
+    /// Definitions resolve.
+    pub definitions: HashMap<GTDefinitionId, GTPModuleDefinitionResolve>,
+}
+
+impl GTPModuleResolve {
     pub fn try_new(
         modules: &Vec<GTProjectModuleParse>,
         parse: &GTProjectModuleParse,
@@ -61,8 +78,7 @@ impl GTProjectModuleResolve {
                 .iter()
                 .any(|export| export.1 == reference.1)
             {
-                references_identifiers
-                    .insert(reference.clone(), GTProjectModuleReferenceKind::Local);
+                references_identifiers.insert(reference.clone(), GTPModuleIdentifierSource::Local);
                 continue;
             }
 
@@ -107,26 +123,14 @@ impl GTProjectModuleResolve {
 
             references_identifiers.insert(
                 reference.clone(),
-                GTProjectModuleReferenceKind::External(local_path.clone()),
+                GTPModuleIdentifierSource::External(local_path.clone()),
             );
         }
 
-        Ok(GTProjectModuleResolve {
+        Ok(GTPModuleResolve {
             deps,
-            references_identifiers,
+            identifier_sources: references_identifiers,
             references: Default::default(),
         })
     }
-}
-
-/// Module reference kind.
-#[derive(Debug, PartialEq, Clone)]
-pub enum GTProjectModuleReferenceKind {
-    /// Reference to a local identifier.
-    Local,
-    /// External module reference.
-    External(
-        /// Path to the module that contains the reference.
-        GTPath,
-    ),
 }

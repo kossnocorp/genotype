@@ -11,7 +11,7 @@ use genotype_lang_py_converter::{
 };
 use genotype_lang_py_tree::module::PYModule;
 use genotype_parser::{tree::GTImportReference, GTIdentifier, GTImportName};
-use genotype_project::{module::GTProjectModule, GTProject, GTProjectModuleReferenceKind};
+use genotype_project::{module::GTProjectModule, GTPModuleIdentifierSource, GTProject};
 use miette::Result;
 
 use crate::error::PYProjectError;
@@ -53,10 +53,10 @@ impl GTLangProjectModule<PYProjectConfig> for PYProjectModule {
                 GTImportReference::Glob(_) => {
                     let references = module
                         .resolve
-                        .references_identifiers
+                        .identifier_sources
                         .iter()
                         .filter(|(_, reference)| {
-                            if let GTProjectModuleReferenceKind::External(path) = reference {
+                            if let GTPModuleIdentifierSource::External(path) = reference {
                                 return import.path == *path;
                             }
                             false

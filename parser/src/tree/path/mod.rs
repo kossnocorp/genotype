@@ -6,8 +6,16 @@ use super::GTPathModuleId;
 
 mod parse;
 
+/// Unique module path identifier.
 #[derive(Debug, Eq, Hash, Clone)]
-pub struct GTPath(pub GTSpan, pub GTPathModuleId, String);
+pub struct GTPath(
+    /// Where the path is defined in the source code.
+    pub GTSpan,
+    /// Module identifier. May be unresolved.
+    pub GTPathModuleId,
+    /// Literal path string.
+    String,
+);
 
 impl GTPath {
     pub fn new(span: GTSpan, module_id: GTPathModuleId, path: String) -> Self {
