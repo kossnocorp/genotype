@@ -1,8 +1,9 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
-use genotype_parser::{GTDefinitionId, GTReferenceId};
+use genotype_parser::GTDefinitionId;
+use genotype_project::GTPModuleDefinitionResolve;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct RSProjectModuleResolve {
-    pub references: HashMap<GTDefinitionId, HashSet<GTReferenceId>>,
+pub struct RSPModuleResolve {
+    pub definitions: HashMap<GTDefinitionId, GTPModuleDefinitionResolve>,
 }

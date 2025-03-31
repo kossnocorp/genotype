@@ -63,7 +63,7 @@ impl GTProject {
             .into_iter()
             .collect::<Result<Vec<_>>>()?;
 
-        let definitions: GTProjectResolve = (&modules_parse).try_into()?;
+        let definitions: GTPResolve = (&modules_parse).try_into()?;
 
         let mut modules = modules_parse
             .iter()
@@ -338,9 +338,9 @@ mod tests {
                         ],
                     },
                     resolve: GTPModuleResolve {
-                        deps: Default::default(),
-                        identifier_sources: Default::default(),
-                        references: Default::default(),
+                        paths: Default::default(),
+                        identifiers: Default::default(),
+                        definitions: Default::default(),
                     },
                     source_code: NamedSource::new(
                         "anonymous.type",
@@ -397,9 +397,9 @@ mod tests {
                         }],
                     },
                     resolve: GTPModuleResolve {
-                        deps: Default::default(),
-                        identifier_sources: Default::default(),
-                        references: HashMap::from_iter([]),
+                        paths: Default::default(),
+                        identifiers: Default::default(),
+                        definitions: HashMap::from_iter([]),
                     },
                     source_code: NamedSource::new(
                         "author.type",
@@ -465,19 +465,29 @@ mod tests {
                         }],
                     },
                     resolve: GTPModuleResolve {
-                        deps: HashMap::from_iter([(
+                        paths: HashMap::from_iter([(
                             GTPath::parse((4, 12).into(), "./author").unwrap(),
-                            Arc::new(author_path.clone()),
+                            GTPModulePathResolve {
+                                module_path: author_path.clone(),
+                            },
                         )]),
-                        identifier_sources: HashMap::from_iter([(
+                        identifiers: HashMap::from_iter([(
                             GTIdentifier::new((56, 62).into(), "Author".into()),
-                            GTPModuleIdentifierSource::External(
-                                GTPath::parse((4, 12).into(), "./author").unwrap(),
-                            ),
+                            GTPModuleIdentifierResolve {
+                                source: GTPModuleIdentifierSource::External(
+                                    GTPath::parse((4, 12).into(), "./author").unwrap(),
+                                ),
+                            },
                         )]),
-                        references: HashMap::from_iter([(
+                        definitions: HashMap::from_iter([(
                             GTDefinitionId("author".into(), "Author".into()),
-                            HashSet::from_iter([GTReferenceId("book".into(), (56, 62).into())]),
+                            GTPModuleDefinitionResolve {
+                                references: HashSet::from_iter([GTReferenceId(
+                                    "book".into(),
+                                    (56, 62).into(),
+                                )]),
+                                deps: Default::default(),
+                            },
                         )]),
                     },
                     source_code: NamedSource::new("book.type", read_to_string(&book_path).unwrap()),
@@ -548,25 +558,37 @@ mod tests {
                         }],
                     },
                     resolve: GTPModuleResolve {
-                        deps: HashMap::from_iter([
+                        paths: HashMap::from_iter([
                             (
                                 GTPath::parse((4, 10).into(), "./book").unwrap(),
-                                Arc::new(book_path.clone()),
+                                GTPModulePathResolve {
+                                    module_path: book_path.clone(),
+                                },
                             ),
                             (
                                 GTPath::parse((35, 41).into(), "./user").unwrap(),
-                                Arc::new(user_path.clone()),
+                                GTPModulePathResolve {
+                                    module_path: user_path.clone(),
+                                },
                             ),
                         ]),
-                        identifier_sources: HashMap::from_iter([(
+                        identifiers: HashMap::from_iter([(
                             GTIdentifier::new((57, 61).into(), "Book".into()),
-                            GTPModuleIdentifierSource::External(
-                                GTPath::parse((4, 10).into(), "./book").unwrap(),
-                            ),
+                            GTPModuleIdentifierResolve {
+                                source: GTPModuleIdentifierSource::External(
+                                    GTPath::parse((4, 10).into(), "./book").unwrap(),
+                                ),
+                            },
                         )]),
-                        references: HashMap::from_iter([(
+                        definitions: HashMap::from_iter([(
                             GTDefinitionId("book".into(), "Book".into()),
-                            HashSet::from_iter([GTReferenceId("order".into(), (57, 61).into())]),
+                            GTPModuleDefinitionResolve {
+                                references: HashSet::from_iter([GTReferenceId(
+                                    "order".into(),
+                                    (57, 61).into(),
+                                )]),
+                                deps: Default::default(),
+                            },
                         )]),
                     },
                     source_code: NamedSource::new(
@@ -612,9 +634,9 @@ mod tests {
                         }],
                     },
                     resolve: GTPModuleResolve {
-                        deps: Default::default(),
-                        identifier_sources: Default::default(),
-                        references: Default::default(),
+                        paths: Default::default(),
+                        identifiers: Default::default(),
+                        definitions: Default::default(),
                     },
                     source_code: NamedSource::new("user.type", read_to_string(&user_path).unwrap()),
                 },

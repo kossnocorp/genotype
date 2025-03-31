@@ -7,7 +7,7 @@ use crate::{error::GTProjectError, GTProjectModuleParse};
 
 pub mod visitor;
 
-pub struct GTProjectResolve {
+pub struct GTPResolve {
     /// Map of definitions for each module. The definitions can be either root, nested or synthetic
     /// (where the name is derived from the parents). It defines what is exported from the module.
     pub definitions: HashMap<GTModuleId, Vec<GTDefinitionId>>,
@@ -18,9 +18,9 @@ pub struct GTProjectResolve {
     pub paths: HashMap<GTModuleId, HashMap<String, GTModuleId>>,
 }
 
-impl GTProjectResolve {
-    pub fn new() -> GTProjectResolve {
-        GTProjectResolve {
+impl GTPResolve {
+    pub fn new() -> GTPResolve {
+        GTPResolve {
             definitions: Default::default(),
             imports: Default::default(),
             paths: Default::default(),
@@ -28,10 +28,10 @@ impl GTProjectResolve {
     }
 }
 
-impl TryFrom<&Vec<GTProjectModuleParse>> for GTProjectResolve {
+impl TryFrom<&Vec<GTProjectModuleParse>> for GTPResolve {
     type Error = miette::Error;
 
-    fn try_from(modules_parse: &Vec<GTProjectModuleParse>) -> Result<GTProjectResolve> {
+    fn try_from(modules_parse: &Vec<GTProjectModuleParse>) -> Result<GTPResolve> {
         let mut definitions: HashMap<GTModuleId, Vec<GTDefinitionId>> = HashMap::new();
         for module in modules_parse {
             let module_definitions = module
@@ -75,7 +75,7 @@ impl TryFrom<&Vec<GTProjectModuleParse>> for GTProjectResolve {
             paths.insert(module.1.module.id.clone(), module_paths);
         }
 
-        Ok(GTProjectResolve {
+        Ok(GTPResolve {
             definitions,
             paths,
             imports,

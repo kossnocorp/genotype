@@ -39,9 +39,10 @@ mod tests {
     use genotype_lang_core_project::source::GTLangProjectSource;
     use genotype_lang_rs_tree::*;
     use genotype_parser::{GTDefinitionId, GTReferenceId};
+    use genotype_project::GTPModuleDefinitionResolve;
     use pretty_assertions::assert_eq;
 
-    use crate::resolve::RSProjectModuleResolve;
+    use crate::resolve::RSPModuleResolve;
 
     use super::*;
 
@@ -83,8 +84,8 @@ mod tests {
                             .into(),
                         })]
                     },
-                    resolve: RSProjectModuleResolve {
-                        references: HashMap::from_iter(vec![])
+                    resolve: RSPModuleResolve {
+                        definitions: Default::default()
                     },
                 },
                 RSProjectModule {
@@ -144,10 +145,16 @@ mod tests {
                         })]
                         .into(),
                     },
-                    resolve: RSProjectModuleResolve {
-                        references: HashMap::from_iter(vec![(
+                    resolve: RSPModuleResolve {
+                        definitions: HashMap::from_iter(vec![(
                             GTDefinitionId("author".into(), "Author".into()),
-                            HashSet::from_iter(vec![GTReferenceId("book".into(), (56, 62).into())])
+                            GTPModuleDefinitionResolve {
+                                references: HashSet::from_iter(vec![GTReferenceId(
+                                    "book".into(),
+                                    (56, 62).into()
+                                )]),
+                                deps: Default::default()
+                            }
                         )])
                     },
                 },
@@ -211,13 +218,16 @@ mod tests {
                         ]
                         .into()
                     },
-                    resolve: RSProjectModuleResolve {
-                        references: HashMap::from_iter(vec![(
+                    resolve: RSPModuleResolve {
+                        definitions: HashMap::from_iter(vec![(
                             GTDefinitionId("author".into(), "AuthorName".into()),
-                            HashSet::from_iter(vec![GTReferenceId(
-                                "author".into(),
-                                (19, 29).into()
-                            )])
+                            GTPModuleDefinitionResolve {
+                                references: HashSet::from_iter(vec![GTReferenceId(
+                                    "author".into(),
+                                    (19, 29).into()
+                                )]),
+                                deps: Default::default()
+                            }
                         )])
                     },
                 },
@@ -291,21 +301,27 @@ mod tests {
                             .into(),
                         })],
                     },
-                    resolve: RSProjectModuleResolve {
-                        references: HashMap::from_iter(vec![
+                    resolve: RSPModuleResolve {
+                        definitions: HashMap::from_iter(vec![
                             (
                                 GTDefinitionId("author".into(), "AuthorName".into()),
-                                HashSet::from_iter(vec![GTReferenceId(
-                                    "book".into(),
-                                    (72, 82).into()
-                                )])
+                                GTPModuleDefinitionResolve {
+                                    references: HashSet::from_iter(vec![GTReferenceId(
+                                        "book".into(),
+                                        (72, 82).into()
+                                    )]),
+                                    deps: Default::default()
+                                }
                             ),
                             (
                                 GTDefinitionId("author".into(), "Author".into()),
-                                HashSet::from_iter(vec![GTReferenceId(
-                                    "book".into(),
-                                    (51, 57).into()
-                                )])
+                                GTPModuleDefinitionResolve {
+                                    references: HashSet::from_iter(vec![GTReferenceId(
+                                        "book".into(),
+                                        (51, 57).into()
+                                    )]),
+                                    deps: Default::default()
+                                }
                             )
                         ])
                     },

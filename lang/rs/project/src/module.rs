@@ -14,14 +14,14 @@ use genotype_parser::{tree::GTImportReference, GTIdentifier, GTImportName};
 use genotype_project::{module::GTProjectModule, GTPModuleIdentifierSource, GTProject};
 use miette::Result;
 
-use crate::{error::RSProjectError, resolve::RSProjectModuleResolve};
+use crate::{error::RSProjectError, resolve::RSPModuleResolve};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct RSProjectModule {
     pub name: String,
     pub path: PathBuf,
     pub module: RSModule,
-    pub resolve: RSProjectModuleResolve,
+    pub resolve: RSPModuleResolve,
 }
 
 impl GTLangProjectModule<RSProjectConfig> for RSProjectModule {
@@ -54,10 +54,10 @@ impl GTLangProjectModule<RSProjectConfig> for RSProjectModule {
                 GTImportReference::Glob(_) => {
                     let references = module
                         .resolve
-                        .identifier_sources
+                        .identifiers
                         .iter()
-                        .filter(|(_, reference)| {
-                            if let GTPModuleIdentifierSource::External(path) = reference {
+                        .filter(|(_, resolve)| {
+                            if let GTPModuleIdentifierSource::External(path) = &resolve.source {
                                 return import.path == *path;
                             }
                             false
@@ -111,8 +111,8 @@ impl GTLangProjectModule<RSProjectConfig> for RSProjectModule {
             }
         }
 
-        let references = module.resolve.references.clone();
-        let resolve = RSProjectModuleResolve { references };
+        let definitions = module.resolve.definitions.clone();
+        let resolve = RSPModuleResolve { definitions };
 
         let module = RSConvertModule::convert(&module.module, &convert_resolve, &config.lang)
             .map_err(|err| err.with_source_code(module.source_code.clone()))?

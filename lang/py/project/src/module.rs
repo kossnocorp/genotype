@@ -53,10 +53,10 @@ impl GTLangProjectModule<PYProjectConfig> for PYProjectModule {
                 GTImportReference::Glob(_) => {
                     let references = module
                         .resolve
-                        .identifier_sources
+                        .identifiers
                         .iter()
-                        .filter(|(_, reference)| {
-                            if let GTPModuleIdentifierSource::External(path) = reference {
+                        .filter(|(_, resolve)| {
+                            if let GTPModuleIdentifierSource::External(path) = &resolve.source {
                                 return import.path == *path;
                             }
                             false

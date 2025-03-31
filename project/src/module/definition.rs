@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use genotype_parser::*;
 
 /// Project module definition resolve data.
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Default, Debug, PartialEq, Clone)]
 pub struct GTPModuleDefinitionResolve {
     /// Definition references.
     pub references: HashSet<GTReferenceId>,

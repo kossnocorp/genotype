@@ -1,11 +1,8 @@
-use std::{
-    collections::{HashMap, HashSet},
-    sync::Arc,
-};
+use std::collections::HashMap;
 
 use genotype_parser::{
     tree::{GTIdentifier, GTImportName, GTImportReference, GTPath},
-    GTDefinitionId, GTReferenceId,
+    GTDefinitionId,
 };
 use miette::Result;
 
@@ -13,24 +10,12 @@ use crate::error::GTProjectError;
 
 use super::{
     identifier::GTPModuleIdentifierSource, GTPModuleDefinitionResolve, GTPModuleIdentifierResolve,
-    GTPModulePath, GTPModulePathResolve, GTProjectModuleParse,
+    GTPModulePathResolve, GTProjectModuleParse,
 };
 
+/// Module resolve data. It describes relations between module entities. It allows to
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTPModuleResolve {
-    pub deps: HashMap<GTPath, Arc<GTPModulePath>>,
-    /// Associates module identifiers with identifier source. Tells where to look for the identifier
-    /// definition.
-    pub identifier_sources: HashMap<GTIdentifier, GTPModuleIdentifierSource>,
-    /// Associates module definitions with references.
-    pub references: HashMap<GTDefinitionId, HashSet<GTReferenceId>>,
-}
-
-// [TODO] Use this kind of structure instead of `GTPModuleResolve`. Then resolve definition
-// dependencies in the `GTPModuleDefinitionResolve` struct, so that they can used to identify if
-// float is a part of the dependency tree, if there's a circular dependency, etc.
-#[derive(Debug, PartialEq, Clone)]
-pub struct GTPModuleResolveNew {
     /// Paths resolve.
     pub paths: HashMap<GTPath, GTPModulePathResolve>,
     /// Identifiers resolve.
@@ -45,28 +30,26 @@ impl GTPModuleResolve {
         parse: &GTProjectModuleParse,
     ) -> Result<Self> {
         // Resolve module dependencies by mapping local paths to project module paths
-        let mut deps = HashMap::new();
+        let mut paths: HashMap<GTPath, GTPModulePathResolve> = HashMap::new();
         for local_path in parse.1.resolve.deps.iter() {
             // Continue if the dependency is already resolved
-            if deps.contains_key(local_path) {
+            if paths.contains_key(local_path) {
                 continue;
             }
 
             // Get the project module path from the local path
-            let path = Arc::new(
-                parse
-                    .0
-                    .resolve(local_path)
-                    .map_err(|_| GTProjectError::CannotResolve(local_path.as_str().to_owned()))?,
-            );
-            deps.insert(local_path.clone(), path);
+            let module_path = parse
+                .0
+                .resolve(local_path)
+                .map_err(|_| GTProjectError::CannotResolve(local_path.as_str().to_owned()))?;
+            paths.insert(local_path.clone(), GTPModulePathResolve { module_path });
         }
 
         // Resolve module references mapping identifiers to dependencies
-        let mut references_identifiers = HashMap::new();
+        let mut identifiers: HashMap<GTIdentifier, GTPModuleIdentifierResolve> = HashMap::new();
         for reference in parse.1.resolve.references.iter() {
             // Continue if the reference is already resolved
-            if references_identifiers.contains_key(reference) {
+            if identifiers.contains_key(reference) {
                 continue;
             };
 
@@ -78,14 +61,19 @@ impl GTPModuleResolve {
                 .iter()
                 .any(|export| export.1 == reference.1)
             {
-                references_identifiers.insert(reference.clone(), GTPModuleIdentifierSource::Local);
+                identifiers.insert(
+                    reference.clone(),
+                    GTPModuleIdentifierResolve {
+                        source: GTPModuleIdentifierSource::Local,
+                    },
+                );
                 continue;
             }
 
             // Find the local path of the reference
-            let (local_path, _) = deps
+            let (local_path, _) = paths
                 .iter()
-                .find(|(local_path, path)| {
+                .find(|(local_path, module_resolve)| {
                     let import = parse.1.module.imports.iter().find(|import| {
                         if import.path != **local_path {
                             return false;
@@ -93,8 +81,10 @@ impl GTPModuleResolve {
 
                         match &import.reference {
                             GTImportReference::Glob(_) => {
-                                let module =
-                                    modules.iter().find(|module| module.0 == ***path).unwrap();
+                                let module = modules
+                                    .iter()
+                                    .find(|module| module.0 == module_resolve.module_path)
+                                    .unwrap();
                                 module
                                     .1
                                     .resolve
@@ -121,16 +111,18 @@ impl GTPModuleResolve {
                     identifier: reference.as_string(),
                 })?;
 
-            references_identifiers.insert(
+            identifiers.insert(
                 reference.clone(),
-                GTPModuleIdentifierSource::External(local_path.clone()),
+                GTPModuleIdentifierResolve {
+                    source: GTPModuleIdentifierSource::External(local_path.clone()),
+                },
             );
         }
 
         Ok(GTPModuleResolve {
-            deps,
-            identifier_sources: references_identifiers,
-            references: Default::default(),
+            paths,
+            identifiers,
+            definitions: Default::default(),
         })
     }
 }

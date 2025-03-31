@@ -186,21 +186,21 @@ impl RSProject {
                     for reference in cleared_references {
                         module
                             .resolve
-                            .references
+                            .definitions
                             .entry(reference.definition_id)
-                            .and_modify(|set| {
-                                set.remove(&reference.id);
+                            .and_modify(|resolve| {
+                                resolve.references.remove(&reference.id);
                             });
                     }
 
                     // Now add references pulled from the extension fields.
                     for (reference_id, definition_id) in visitor.references.clone() {
-                        module
+                        let resolve = module
                             .resolve
-                            .references
+                            .definitions
                             .entry(definition_id)
-                            .or_insert_with(Default::default)
-                            .insert(reference_id);
+                            .or_insert_with(Default::default);
+                        resolve.references.insert(reference_id);
                     }
 
                     // Add missing uses from the extension fields.
@@ -256,8 +256,11 @@ impl RSProject {
                         .imports
                         .retain(|r#use| match &r#use.dependency {
                             RSDependency::Local(path) => {
-                                module.resolve.references.values().any(|references| {
-                                    references.iter().any(|reference| reference.0 == path.0)
+                                module.resolve.definitions.values().any(|resolve| {
+                                    resolve
+                                        .references
+                                        .iter()
+                                        .any(|reference| reference.0 == path.0)
                                 })
                             }
                             _ => true,
@@ -269,13 +272,13 @@ impl RSProject {
                             if let RSUseReference::Named(names) = &r#use.reference {
                                 let mut names = names.clone();
                                 names.retain(|name| {
-                                    let active_references = module.resolve.references.get(
+                                    let resolve = module.resolve.definitions.get(
                                         // [TODO] Avoid creating this in-place
                                         &GTDefinitionId(path.0.clone(), name.name().clone().0),
                                     );
 
-                                    if let Some(references) = active_references {
-                                        return references.len() > 0;
+                                    if let Some(resolve) = resolve {
+                                        return resolve.references.len() > 0;
                                     }
 
                                     false

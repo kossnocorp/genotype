@@ -14,12 +14,13 @@ pub use parse::*;
 pub use path::*;
 pub use resolve::*;
 
-use crate::{visitor::GTProjectResolveVisitor, GTProjectResolve};
+use crate::{visitor::GTPResolveVisitor, GTPResolve};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTProjectModule {
     pub path: GTPModulePath,
     pub module: GTModule,
+    /// Project module resolve.
     pub resolve: GTPModuleResolve,
     /// Module source code.
     /// [TODO] After implementing workspace, find a better place for it.
@@ -29,7 +30,7 @@ pub struct GTProjectModule {
 
 impl GTProjectModule {
     pub fn try_new(
-        definitions: &GTProjectResolve,
+        definitions: &GTPResolve,
         modules: &Vec<GTProjectModuleParse>,
         parse: GTProjectModuleParse,
     ) -> Result<Self> {
@@ -38,11 +39,11 @@ impl GTProjectModule {
 
         // Combine these two ^v
 
-        let mut visitor = GTProjectResolveVisitor::new(parse.1.module.id.clone(), &definitions);
+        let mut visitor = GTPResolveVisitor::new(parse.1.module.id.clone(), &definitions);
         let mut parse = parse;
         parse.1.module.traverse(&mut visitor);
 
-        resolve.references = visitor.drain_references();
+        resolve.definitions = visitor.drain_definitions();
 
         Ok(GTProjectModule {
             path: parse.0,

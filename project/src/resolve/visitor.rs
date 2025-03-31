@@ -3,36 +3,36 @@ use std::collections::{HashMap, HashSet};
 use genotype_parser::*;
 use genotype_visitor::visitor::GTVisitor;
 
-use super::GTProjectResolve;
+use crate::GTPModuleDefinitionResolve;
 
-pub struct GTProjectResolveVisitor<'a> {
+use super::GTPResolve;
+
+pub struct GTPResolveVisitor<'a> {
     module_id: GTModuleId,
-    resolve: &'a GTProjectResolve,
-    /// Map of references for each module. It serves as a reference counter.
-    references: HashMap<GTModuleId, HashMap<GTDefinitionId, HashSet<GTReferenceId>>>,
+    resolve: &'a GTPResolve,
+    /// Module definitions resolve accumulated during the visit. It is then
+    /// moved to corresponding module `GTPModuleResolve` struct.
+    definitions: HashMap<GTModuleId, HashMap<GTDefinitionId, GTPModuleDefinitionResolve>>,
 }
 
-impl<'a> GTProjectResolveVisitor<'a> {
-    pub fn new(
-        module_id: GTModuleId,
-        resolve: &'a GTProjectResolve,
-    ) -> GTProjectResolveVisitor<'a> {
-        GTProjectResolveVisitor {
+impl<'a> GTPResolveVisitor<'a> {
+    pub fn new(module_id: GTModuleId, resolve: &'a GTPResolve) -> GTPResolveVisitor<'a> {
+        GTPResolveVisitor {
             module_id,
             resolve,
-            references: Default::default(),
+            definitions: Default::default(),
         }
     }
 
-    pub fn drain_references(self) -> HashMap<GTDefinitionId, HashSet<GTReferenceId>> {
-        self.references
+    pub fn drain_definitions(self) -> HashMap<GTDefinitionId, GTPModuleDefinitionResolve> {
+        self.definitions
             .get(&self.module_id)
             .and_then(|references| Some(references.clone()))
             .unwrap_or_default()
     }
 }
 
-impl GTVisitor for GTProjectResolveVisitor<'_> {
+impl GTVisitor for GTPResolveVisitor<'_> {
     fn visit_import(&mut self, import: &mut GTImport) {
         if let GTPathModuleId::Unresolved = &import.path.1 {
             let module_paths = self.resolve.paths.get(&self.module_id).unwrap();
@@ -60,12 +60,13 @@ impl GTVisitor for GTProjectResolveVisitor<'_> {
                         reference.definition_id =
                             GTReferenceDefinitionId::Resolved(local_definition.clone());
 
-                        self.references
+                        let resolve = self
+                            .definitions
                             .entry(self.module_id.clone())
                             .or_default()
                             .entry(local_definition.clone())
-                            .or_default()
-                            .insert(reference.id.clone());
+                            .or_default();
+                        resolve.references.insert(reference.id.clone());
                     }
                 }
 
@@ -77,12 +78,13 @@ impl GTVisitor for GTProjectResolveVisitor<'_> {
                         reference.definition_id =
                             GTReferenceDefinitionId::Resolved(imported_definition.clone());
 
-                        self.references
+                        let resolve = self
+                            .definitions
                             .entry(self.module_id.clone())
                             .or_default()
                             .entry(imported_definition.clone())
-                            .or_default()
-                            .insert(reference.id.clone());
+                            .or_default();
+                        resolve.references.insert(reference.id.clone());
                     }
                 }
 
@@ -90,12 +92,13 @@ impl GTVisitor for GTProjectResolveVisitor<'_> {
             }
 
             GTReferenceDefinitionId::Resolved(definition_id) => {
-                self.references
+                let resolve = self
+                    .definitions
                     .entry(self.module_id.clone())
                     .or_default()
                     .entry(definition_id.clone())
-                    .or_default()
-                    .insert(reference.id.clone());
+                    .or_default();
+                resolve.references.insert(reference.id.clone());
             }
         }
     }
