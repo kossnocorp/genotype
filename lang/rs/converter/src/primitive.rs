@@ -9,6 +9,7 @@ impl RSConvert<RSPrimitive> for GTPrimitive {
         Ok(match self {
             GTPrimitive::Boolean(_) => RSPrimitive::Boolean,
             GTPrimitive::String(_) => RSPrimitive::String,
+            GTPrimitive::Number(_) => RSPrimitive::Float64,
             GTPrimitive::Int8(_) => RSPrimitive::Int8,
             GTPrimitive::Int16(_) => RSPrimitive::Int16,
             GTPrimitive::Int32(_) => RSPrimitive::Int32,

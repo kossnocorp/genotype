@@ -8,6 +8,7 @@ impl RSConvert<RSDescriptor> for GTRecordKey {
     fn convert(&self, _context: &mut RSConvertContext) -> Result<RSDescriptor> {
         Ok(match self {
             GTRecordKey::String(_) => RSPrimitive::String.into(),
+            GTRecordKey::Number(_) => RSPrimitive::Float64.into(),
             GTRecordKey::Int8(_) => RSPrimitive::Int8.into(),
             GTRecordKey::Int16(_) => RSPrimitive::Int16.into(),
             GTRecordKey::Int32(_) => RSPrimitive::Int32.into(),

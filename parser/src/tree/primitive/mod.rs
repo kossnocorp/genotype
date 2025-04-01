@@ -10,6 +10,7 @@ mod parse;
 pub enum GTPrimitive {
     Boolean(GTSpan),
     String(GTSpan),
+    Number(GTSpan),
     Int8(GTSpan),
     Int16(GTSpan),
     Int32(GTSpan),
@@ -32,6 +33,7 @@ impl Display for GTPrimitive {
         match self {
             GTPrimitive::Boolean(_) => write!(f, "bool"),
             GTPrimitive::String(_) => write!(f, "str"),
+            GTPrimitive::Number(_) => write!(f, "number"),
             GTPrimitive::Int8(_) => write!(f, "i8"),
             GTPrimitive::Int16(_) => write!(f, "i16"),
             GTPrimitive::Int32(_) => write!(f, "i32"),

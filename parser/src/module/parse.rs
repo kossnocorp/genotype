@@ -2164,6 +2164,54 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_number() {
+        let source_code = read_source_code("../examples/02-syntax/18-number.type");
+        assert_module(
+            "module".into(),
+            source_code.clone(),
+            GTModuleParse {
+                module: GTModule {
+                    id: "module".into(),
+                    doc: None,
+                    imports: vec![],
+                    aliases: vec![
+                        GTAlias {
+                            id: GTDefinitionId("module".into(), "Hello".into()),
+                            span: (0, 14).into(),
+                            doc: None,
+                            attributes: vec![],
+                            name: GTIdentifier::new((0, 5).into(), "Hello".into()),
+                            descriptor: GTPrimitive::Number((8, 14).into()).into(),
+                        },
+                        GTAlias {
+                            id: GTDefinitionId("module".into(), "World".into()),
+                            span: (16, 44).into(),
+                            doc: None,
+                            attributes: vec![],
+                            name: GTIdentifier::new((16, 21).into(), "World".into()),
+                            descriptor: GTRecord {
+                                span: (24, 44).into(),
+                                key: GTRecordKey::Number((26, 34).into()),
+                                descriptor: GTPrimitive::String((36, 42).into()).into(),
+                            }
+                            .into(),
+                        },
+                    ],
+                },
+                resolve: GTModuleResolve {
+                    deps: HashSet::new(),
+                    exports: vec![
+                        GTIdentifier::new((0, 5).into(), "Hello".into()),
+                        GTIdentifier::new((16, 21).into(), "World".into()),
+                    ],
+                    references: HashSet::new(),
+                },
+                source_code,
+            },
+        );
+    }
+
     fn read_source_code(path: &str) -> NamedSource<String> {
         let content = fs::read_to_string(path).expect("cannot read file");
         NamedSource::new(path, content)

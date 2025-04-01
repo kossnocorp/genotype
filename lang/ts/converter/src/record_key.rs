@@ -7,7 +7,8 @@ impl TSConvert<TSRecordKey> for GTRecordKey {
     fn convert(&self, _context: &mut TSConvertContext) -> TSRecordKey {
         match self {
             GTRecordKey::String(_) => TSRecordKey::String,
-            GTRecordKey::Int8(_)
+            GTRecordKey::Number(_)
+            | GTRecordKey::Int8(_)
             | GTRecordKey::Int16(_)
             | GTRecordKey::Int32(_)
             | GTRecordKey::IntU8(_)

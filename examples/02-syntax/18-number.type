@@ -1,0 +1,3 @@
+Hello = number
+
+World = { [number]: string }

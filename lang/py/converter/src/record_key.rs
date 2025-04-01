@@ -19,7 +19,9 @@ impl PYConvert<PYDictKey> for GTRecordKey {
             | GTRecordKey::IntU64(_)
             | GTRecordKey::IntU128(_)
             | GTRecordKey::IntUSize(_) => PYDictKey::Int,
-            GTRecordKey::Float32(_) | GTRecordKey::Float64(_) => PYDictKey::Float,
+            GTRecordKey::Number(_) | GTRecordKey::Float32(_) | GTRecordKey::Float64(_) => {
+                PYDictKey::Float
+            }
             GTRecordKey::Boolean(_) => PYDictKey::Boolean,
         }
     }

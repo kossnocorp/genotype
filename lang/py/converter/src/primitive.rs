@@ -8,6 +8,7 @@ impl PYConvert<PYPrimitive> for GTPrimitive {
         match self {
             GTPrimitive::Boolean(_) => PYPrimitive::Boolean,
             GTPrimitive::String(_) => PYPrimitive::String,
+            GTPrimitive::Number(_) => PYPrimitive::Float,
             GTPrimitive::Int8(_) => PYPrimitive::Int,
             GTPrimitive::Int16(_) => PYPrimitive::Int,
             GTPrimitive::Int32(_) => PYPrimitive::Int,
@@ -43,6 +44,10 @@ mod tests {
         assert_eq!(
             GTPrimitive::String((0, 0).into()).convert(&mut PYConvertContext::default()),
             PYPrimitive::String
+        );
+        assert_eq!(
+            GTPrimitive::Number((0, 0).into()).convert(&mut PYConvertContext::default()),
+            PYPrimitive::Float
         );
         assert_eq!(
             GTPrimitive::Int8((0, 0).into()).convert(&mut PYConvertContext::default()),

@@ -8,6 +8,7 @@ impl TSConvert<TSPrimitive> for GTPrimitive {
         match self {
             GTPrimitive::Boolean(_) => TSPrimitive::Boolean,
             GTPrimitive::String(_) => TSPrimitive::String,
+            GTPrimitive::Number(_) => TSPrimitive::Number,
             GTPrimitive::Int8(_) => TSPrimitive::Number,
             GTPrimitive::Int16(_) => TSPrimitive::Number,
             GTPrimitive::Int32(_) => TSPrimitive::Number,

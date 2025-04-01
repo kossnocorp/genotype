@@ -13,6 +13,7 @@ impl TryFrom<Pair<'_, Rule>> for GTPrimitive {
         match pair.as_str() {
             "boolean" => Ok(GTPrimitive::Boolean(span)),
             "string" => Ok(GTPrimitive::String(span)),
+            "number" => Ok(GTPrimitive::Number(span)),
             "int" => Ok(GTPrimitive::Int64(span)),
             "i8" => Ok(GTPrimitive::Int8(span)),
             "i16" => Ok(GTPrimitive::Int16(span)),
@@ -120,6 +121,15 @@ mod tests {
         assert_eq!(
             GTPrimitive::try_from(pairs.next().unwrap()).unwrap(),
             GTPrimitive::IntUSize(GTSpan(0, 5))
+        );
+    }
+
+    #[test]
+    fn test_number() {
+        let mut pairs = GenotypeParser::parse(Rule::primitive, "number").unwrap();
+        assert_eq!(
+            GTPrimitive::try_from(pairs.next().unwrap()).unwrap(),
+            GTPrimitive::Number(GTSpan(0, 6))
         );
     }
 }

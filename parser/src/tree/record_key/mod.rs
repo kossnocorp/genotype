@@ -5,6 +5,7 @@ mod parse;
 #[derive(Debug, PartialEq, Clone)]
 pub enum GTRecordKey {
     String(GTSpan),
+    Number(GTSpan),
     Int8(GTSpan),
     Int16(GTSpan),
     Int32(GTSpan),

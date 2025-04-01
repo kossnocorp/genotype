@@ -117,6 +117,7 @@ fn name_descriptor(
         GTDescriptor::Primitive(primitive) => match primitive {
             GTPrimitive::Boolean(_) => "Boolean".into(),
             GTPrimitive::String(_) => "String".into(),
+            GTPrimitive::Number(_) => "Number".into(),
             GTPrimitive::Int8(_) => "Int8".into(),
             GTPrimitive::Int16(_) => "Int16".into(),
             GTPrimitive::Int32(_) => "Int32".into(),
