@@ -3,134 +3,134 @@ use literals::literal;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum JsonAny {
-    JsonNull(JsonNull),
-    JsonBoolean(JsonBoolean),
-    JsonNumber(JsonNumber),
-    JsonString(JsonString),
-    JsonArray(JsonArray),
-    JsonObject(JsonObject),
-    JsonUnion(JsonUnion),
-    JsonLiteral(JsonLiteral),
-    JsonTuple(JsonTuple),
+pub enum JsonSchema {
+    JsonSchemaNull(JsonSchemaNull),
+    JsonSchemaBoolean(JsonSchemaBoolean),
+    JsonSchemaNumber(JsonSchemaNumber),
+    JsonSchemaString(JsonSchemaString),
+    JsonSchemaArray(JsonSchemaArray),
+    JsonSchemaObject(JsonSchemaObject),
+    JsonSchemaUnion(JsonSchemaUnion),
+    JsonSchemaLiteral(JsonSchemaLiteral),
+    JsonSchemaTuple(JsonSchemaTuple),
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonBase {
+pub struct JsonSchemaBase {
     pub name: Option<String>,
     pub doc: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonNull {
+pub struct JsonSchemaNull {
     pub name: Option<String>,
     pub doc: Option<String>,
-    pub kind: JsonNullKindNull,
+    pub kind: JsonSchemaNullKindNull,
 }
 
 #[literal("null")]
-pub struct JsonNullKindNull;
+pub struct JsonSchemaNullKindNull;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonBoolean {
+pub struct JsonSchemaBoolean {
     pub name: Option<String>,
     pub doc: Option<String>,
-    pub kind: JsonBooleanKindBoolean,
+    pub kind: JsonSchemaBooleanKindBoolean,
 }
 
 #[literal("boolean")]
-pub struct JsonBooleanKindBoolean;
+pub struct JsonSchemaBooleanKindBoolean;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonNumber {
+pub struct JsonSchemaNumber {
     pub name: Option<String>,
     pub doc: Option<String>,
-    pub kind: JsonNumberKindNumber,
+    pub kind: JsonSchemaNumberKindNumber,
 }
 
 #[literal("number")]
-pub struct JsonNumberKindNumber;
+pub struct JsonSchemaNumberKindNumber;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonString {
+pub struct JsonSchemaString {
     pub name: Option<String>,
     pub doc: Option<String>,
-    pub kind: JsonStringKindString,
+    pub kind: JsonSchemaStringKindString,
 }
 
 #[literal("string")]
-pub struct JsonStringKindString;
+pub struct JsonSchemaStringKindString;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonArray {
+pub struct JsonSchemaArray {
     pub name: Option<String>,
     pub doc: Option<String>,
-    pub kind: JsonArrayKindArray,
-    pub descriptor: JsonAny,
+    pub kind: JsonSchemaArrayKindArray,
+    pub descriptor: JsonSchema,
 }
 
 #[literal("array")]
-pub struct JsonArrayKindArray;
+pub struct JsonSchemaArrayKindArray;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonObject {
+pub struct JsonSchemaObject {
     pub name: Option<String>,
     pub doc: Option<String>,
-    pub kind: JsonObjectKindObject,
-    pub properties: Vec<JsonProperty>,
+    pub kind: JsonSchemaObjectKindObject,
+    pub properties: Vec<JsonSchemaProperty>,
 }
 
 #[literal("object")]
-pub struct JsonObjectKindObject;
+pub struct JsonSchemaObjectKindObject;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonProperty {
-    pub kind: JsonPropertyKindProperty,
+pub struct JsonSchemaProperty {
+    pub kind: JsonSchemaPropertyKindProperty,
     pub name: String,
     pub doc: Option<String>,
-    pub descriptor: JsonAny,
+    pub descriptor: JsonSchema,
     pub required: Option<bool>,
 }
 
 #[literal("property")]
-pub struct JsonPropertyKindProperty;
+pub struct JsonSchemaPropertyKindProperty;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonUnion {
+pub struct JsonSchemaUnion {
     pub name: Option<String>,
     pub doc: Option<String>,
-    pub kind: JsonUnionKindUnion,
-    pub descriptors: Vec<JsonAny>,
+    pub kind: JsonSchemaUnionKindUnion,
+    pub descriptors: Vec<JsonSchema>,
 }
 
 #[literal("union")]
-pub struct JsonUnionKindUnion;
+pub struct JsonSchemaUnionKindUnion;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonTuple {
+pub struct JsonSchemaTuple {
     pub name: Option<String>,
     pub doc: Option<String>,
-    pub kind: JsonTupleKindTuple,
-    pub descriptors: Vec<JsonAny>,
+    pub kind: JsonSchemaTupleKindTuple,
+    pub descriptors: Vec<JsonSchema>,
 }
 
 #[literal("tuple")]
-pub struct JsonTupleKindTuple;
+pub struct JsonSchemaTupleKindTuple;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonLiteral {
+pub struct JsonSchemaLiteral {
     pub name: Option<String>,
     pub doc: Option<String>,
-    pub kind: JsonLiteralKindLiteral,
-    pub value: JsonLiteralValue,
+    pub kind: JsonSchemaLiteralKindLiteral,
+    pub value: JsonSchemaLiteralValue,
 }
 
 #[literal("literal")]
-pub struct JsonLiteralKindLiteral;
+pub struct JsonSchemaLiteralKindLiteral;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum JsonLiteralValue {
+pub enum JsonSchemaLiteralValue {
     String(String),
     Number(f64),
     Boolean(bool),
@@ -139,21 +139,21 @@ pub enum JsonLiteralValue {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum JsonLiteralKind {
-    String(JsonLiteralKindString),
-    Number(JsonLiteralKindNumber),
-    Boolean(JsonLiteralKindBoolean),
-    Null(JsonLiteralKindNull),
+pub enum JsonSchemaLiteralKind {
+    String(JsonSchemaLiteralKindString),
+    Number(JsonSchemaLiteralKindNumber),
+    Boolean(JsonSchemaLiteralKindBoolean),
+    Null(JsonSchemaLiteralKindNull),
 }
 
 #[literal("string")]
-pub struct JsonLiteralKindString;
+pub struct JsonSchemaLiteralKindString;
 
 #[literal("number")]
-pub struct JsonLiteralKindNumber;
+pub struct JsonSchemaLiteralKindNumber;
 
 #[literal("boolean")]
-pub struct JsonLiteralKindBoolean;
+pub struct JsonSchemaLiteralKindBoolean;
 
 #[literal("null")]
-pub struct JsonLiteralKindNull;
+pub struct JsonSchemaLiteralKindNull;

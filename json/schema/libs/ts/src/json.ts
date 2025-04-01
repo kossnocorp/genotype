@@ -1,57 +1,57 @@
-export type JsonAny = JsonNull | JsonBoolean | JsonNumber | JsonString | JsonArray | JsonObject | JsonUnion | JsonLiteral | JsonTuple;
+export type JsonSchema = JsonSchemaNull | JsonSchemaBoolean | JsonSchemaNumber | JsonSchemaString | JsonSchemaArray | JsonSchemaObject | JsonSchemaUnion | JsonSchemaLiteral | JsonSchemaTuple;
 
-export interface JsonBase {
+export interface JsonSchemaBase {
   name?: string | undefined;
   doc?: string | undefined;
 }
 
-export interface JsonNull extends JsonBase {
+export interface JsonSchemaNull extends JsonSchemaBase {
   kind: "null";
 }
 
-export interface JsonBoolean extends JsonBase {
+export interface JsonSchemaBoolean extends JsonSchemaBase {
   kind: "boolean";
 }
 
-export interface JsonNumber extends JsonBase {
+export interface JsonSchemaNumber extends JsonSchemaBase {
   kind: "number";
 }
 
-export interface JsonString extends JsonBase {
+export interface JsonSchemaString extends JsonSchemaBase {
   kind: "string";
 }
 
-export interface JsonArray extends JsonBase {
+export interface JsonSchemaArray extends JsonSchemaBase {
   kind: "array";
-  descriptor: JsonAny;
+  descriptor: JsonSchema;
 }
 
-export interface JsonObject extends JsonBase {
+export interface JsonSchemaObject extends JsonSchemaBase {
   kind: "object";
-  properties: Array<JsonProperty>;
+  properties: Array<JsonSchemaProperty>;
 }
 
-export interface JsonProperty {
+export interface JsonSchemaProperty {
   kind: "property";
   name: string;
   doc?: string | undefined;
-  descriptor: JsonAny;
+  descriptor: JsonSchema;
   required?: boolean | undefined;
 }
 
-export interface JsonUnion extends JsonBase {
+export interface JsonSchemaUnion extends JsonSchemaBase {
   kind: "union";
-  descriptors: Array<JsonAny>;
+  descriptors: Array<JsonSchema>;
 }
 
-export interface JsonTuple extends JsonBase {
+export interface JsonSchemaTuple extends JsonSchemaBase {
   kind: "tuple";
-  descriptors: Array<JsonAny>;
+  descriptors: Array<JsonSchema>;
 }
 
-export interface JsonLiteral extends JsonBase {
+export interface JsonSchemaLiteral extends JsonSchemaBase {
   kind: "literal";
   value: string | number | boolean | null;
 }
 
-export type JsonLiteralKind = "string" | "number" | "boolean" | "null";
+export type JsonSchemaLiteralKind = "string" | "number" | "boolean" | "null";

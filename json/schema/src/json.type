@@ -1,66 +1,66 @@
-JsonAny = JsonNull | JsonBoolean | JsonNumber | JsonString | JsonArray | JsonObject | JsonUnion | JsonLiteral | JsonTuple
+JsonSchema = JsonSchemaNull | JsonSchemaBoolean | JsonSchemaNumber | JsonSchemaString | JsonSchemaArray | JsonSchemaObject | JsonSchemaUnion | JsonSchemaLiteral | JsonSchemaTuple
 
-JsonBase = {
+JsonSchemaBase = {
   name?: string,
   doc?: string,
 }
 
-JsonNull = {
-  ...JsonBase,
+JsonSchemaNull = {
+  ...JsonSchemaBase,
   kind: "null",
 }
 
-JsonBoolean = {
-  ...JsonBase,
+JsonSchemaBoolean = {
+  ...JsonSchemaBase,
   kind: "boolean",
 }
 
-JsonNumber = {
-  ...JsonBase,
+JsonSchemaNumber = {
+  ...JsonSchemaBase,
   kind: "number",
 }
 
-JsonString = {
-  ...JsonBase,
+JsonSchemaString = {
+  ...JsonSchemaBase,
   kind: "string",
 }
 
-JsonArray = {
-  ...JsonBase,
+JsonSchemaArray = {
+  ...JsonSchemaBase,
   kind: "array",
-  descriptor: JsonAny,
+  descriptor: JsonSchema,
 }
 
-JsonObject = {
-  ...JsonBase,
+JsonSchemaObject = {
+  ...JsonSchemaBase,
   kind: "object",
-  properties: [JsonProperty],
+  properties: [JsonSchemaProperty],
 }
 
-JsonProperty = {
+JsonSchemaProperty = {
   kind: "property",
   name: string,
   doc?: string,
-  descriptor: JsonAny,
+  descriptor: JsonSchema,
   required?: boolean,
 }
 
-JsonUnion = {
-  ...JsonBase,
+JsonSchemaUnion = {
+  ...JsonSchemaBase,
   kind: "union",
-  descriptors: [JsonAny],
+  descriptors: [JsonSchema],
 }
 
-JsonTuple = {
-  ...JsonBase,
+JsonSchemaTuple = {
+  ...JsonSchemaBase,
   kind: "tuple",
-  descriptors: [JsonAny],
+  descriptors: [JsonSchema],
 }
 
-JsonLiteral = {
-  ...JsonBase,
+JsonSchemaLiteral = {
+  ...JsonSchemaBase,
   kind: "literal",
   value: string | number | boolean | null,
 }
 
-JsonLiteralKind = "string" | "number" | "boolean" | "null"
+JsonSchemaLiteralKind = "string" | "number" | "boolean" | "null"

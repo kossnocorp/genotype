@@ -2,61 +2,61 @@ from typing import Optional, Literal
 from genotype import Model
 
 
-class JsonBase(Model):
+class JsonSchemaBase(Model):
     name: Optional[str] = None
     doc: Optional[str] = None
 
 
-class JsonNull(JsonBase, Model):
+class JsonSchemaNull(JsonSchemaBase, Model):
     kind: Literal["null"]
 
 
-class JsonBoolean(JsonBase, Model):
+class JsonSchemaBoolean(JsonSchemaBase, Model):
     kind: Literal["boolean"]
 
 
-class JsonNumber(JsonBase, Model):
+class JsonSchemaNumber(JsonSchemaBase, Model):
     kind: Literal["number"]
 
 
-class JsonString(JsonBase, Model):
+class JsonSchemaString(JsonSchemaBase, Model):
     kind: Literal["string"]
 
 
-class JsonLiteral(JsonBase, Model):
+class JsonSchemaLiteral(JsonSchemaBase, Model):
     kind: Literal["literal"]
     value: str | float | bool | None
 
 
-type JsonLiteralKind = Literal["string"] | Literal["number"] | Literal["boolean"] | Literal["null"]
+type JsonSchemaLiteralKind = Literal["string"] | Literal["number"] | Literal["boolean"] | Literal["null"]
 
 
-type JsonAny = JsonNull | JsonBoolean | JsonNumber | JsonString | JsonArray | JsonObject | JsonUnion | JsonLiteral | JsonTuple
+type JsonSchema = JsonSchemaNull | JsonSchemaBoolean | JsonSchemaNumber | JsonSchemaString | JsonSchemaArray | JsonSchemaObject | JsonSchemaUnion | JsonSchemaLiteral | JsonSchemaTuple
 
 
-class JsonArray(JsonBase, Model):
+class JsonSchemaArray(JsonSchemaBase, Model):
     kind: Literal["array"]
-    descriptor: JsonAny
+    descriptor: JsonSchema
 
 
-class JsonObject(JsonBase, Model):
+class JsonSchemaObject(JsonSchemaBase, Model):
     kind: Literal["object"]
-    properties: list[JsonProperty]
+    properties: list[JsonSchemaProperty]
 
 
-class JsonProperty(Model):
+class JsonSchemaProperty(Model):
     kind: Literal["property"]
     name: str
     doc: Optional[str] = None
-    descriptor: JsonAny
+    descriptor: JsonSchema
     required: Optional[bool] = None
 
 
-class JsonUnion(JsonBase, Model):
+class JsonSchemaUnion(JsonSchemaBase, Model):
     kind: Literal["union"]
-    descriptors: list[JsonAny]
+    descriptors: list[JsonSchema]
 
 
-class JsonTuple(JsonBase, Model):
+class JsonSchemaTuple(JsonSchemaBase, Model):
     kind: Literal["tuple"]
-    descriptors: list[JsonAny]
+    descriptors: list[JsonSchema]
