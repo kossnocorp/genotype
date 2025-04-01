@@ -1,0 +1,66 @@
+JsonAny = JsonNull | JsonBoolean | JsonNumber | JsonString | JsonArray | JsonObject | JsonUnion | JsonLiteral | JsonTuple
+
+JsonBase = {
+  name?: string,
+  doc?: string,
+}
+
+JsonNull = {
+  ...JsonBase,
+  kind: "null",
+}
+
+JsonBoolean = {
+  ...JsonBase,
+  kind: "boolean",
+}
+
+JsonNumber = {
+  ...JsonBase,
+  kind: "number",
+}
+
+JsonString = {
+  ...JsonBase,
+  kind: "string",
+}
+
+JsonArray = {
+  ...JsonBase,
+  kind: "array",
+  descriptor: JsonAny,
+}
+
+JsonObject = {
+  ...JsonBase,
+  kind: "object",
+  properties: [JsonProperty],
+}
+
+JsonProperty = {
+  kind: "property",
+  name: string,
+  doc?: string,
+  descriptor: JsonAny,
+  required?: boolean,
+}
+
+JsonUnion = {
+  ...JsonBase,
+  kind: "union",
+  descriptors: [JsonAny],
+}
+
+JsonTuple = {
+  ...JsonBase,
+  kind: "tuple",
+  descriptors: [JsonAny],
+}
+
+JsonLiteral = {
+  ...JsonBase,
+  kind: "literal",
+  value: string | number | boolean | null,
+}
+
+JsonLiteralKind = "string" | "number" | "boolean" | "null"

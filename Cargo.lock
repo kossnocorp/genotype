@@ -536,6 +536,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "genotype_json_schema"
+version = "0.1.0"
+dependencies = [
+ "literals 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde",
+]
+
+[[package]]
 name = "genotype_lang_core_project"
 version = "0.7.0"
 dependencies = [
@@ -746,6 +754,7 @@ dependencies = [
  "pest",
  "pest_derive",
  "pretty_assertions",
+ "serde",
  "thiserror 1.0.64",
 ]
 
@@ -1066,6 +1075,18 @@ dependencies = [
  "quote",
  "serde",
  "serde_json",
+ "syn",
+]
+
+[[package]]
+name = "literals"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c15206e229138be74537dfa6c12e886cc6c3128b3c666dd46ed4742e69ca0a02"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "serde",
  "syn",
 ]
 
@@ -1467,18 +1488,18 @@ checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
 name = "serde"
-version = "1.0.214"
+version = "1.0.219"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f55c3193aca71c12ad7890f1785d2b73e1b9f63a0bbc353c08ef26fe03fc56b5"
+checksum = "5f0e2c6ed6606019b4e29e69dbaba95b11854410e5347d525002456dbbb786b6"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.214"
+version = "1.0.219"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "de523f781f095e28fa605cdce0f8307e451cc0fd14e2eb4cd2e98a355b147766"
+checksum = "5b0276cf7f2c73365f7157c8123c21cd9a50fbbd844757af28ca1f5925fc2a00"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1487,9 +1508,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.132"
+version = "1.0.140"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d726bfaff4b320266d395898905d0eba0345aae23b54aee3a737e260fd46db03"
+checksum = "20068b6e96dc6c9bd23e01df8827e6c7e1f2fddd43c21810382803c136b99373"
 dependencies = [
  "itoa",
  "memchr",

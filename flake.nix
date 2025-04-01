@@ -14,6 +14,9 @@
     {
       devShells.${system}.default = pkgs.mkShell {
         packages = with pkgs; [
+          # Tools
+          just
+          entr
           # Rust
           rustc
           cargo

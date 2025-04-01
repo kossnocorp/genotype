@@ -1,0 +1,10 @@
+[package]
+description = "Genotype JSON schema"
+edition = "2021"
+license = "MIT"
+name = "genotype_json_schema"
+version = "0.1.0"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+literals = "0.1"

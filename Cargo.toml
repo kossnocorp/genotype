@@ -20,6 +20,7 @@ members = [
   "lang/rs/visitor",
   "lang/rs/runtime/literals",
   "lang/rs/runtime/core",
+  "json/schema/libs/rs",
   "lsp",
   "parser",
   "project",

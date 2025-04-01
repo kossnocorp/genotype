@@ -1,0 +1,17 @@
+[tool.poetry]
+authors = ["Sasha Koss <koss@nocorp.me>"]
+description = "Genotype JSON schema"
+license = "MIT"
+name = "genotype-json-schema"
+readme = "README.md"
+version = "0.1.0"
+
+packages = [{ include = "genotype_json_schema" }]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+genotype-runtime = "^0.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
