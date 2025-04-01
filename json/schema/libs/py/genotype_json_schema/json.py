@@ -2,61 +2,61 @@ from typing import Optional, Literal
 from genotype import Model
 
 
-class JsonSchemaBase(Model):
+class GtjBase(Model):
     name: Optional[str] = None
     doc: Optional[str] = None
 
 
-class JsonSchemaNull(JsonSchemaBase, Model):
+class GtjNull(GtjBase, Model):
     kind: Literal["null"]
 
 
-class JsonSchemaBoolean(JsonSchemaBase, Model):
+class GtjBoolean(GtjBase, Model):
     kind: Literal["boolean"]
 
 
-class JsonSchemaNumber(JsonSchemaBase, Model):
+class GtjNumber(GtjBase, Model):
     kind: Literal["number"]
 
 
-class JsonSchemaString(JsonSchemaBase, Model):
+class GtjString(GtjBase, Model):
     kind: Literal["string"]
 
 
-class JsonSchemaLiteral(JsonSchemaBase, Model):
+class GtjLiteral(GtjBase, Model):
     kind: Literal["literal"]
     value: str | float | bool | None
 
 
-type JsonSchemaLiteralKind = Literal["string"] | Literal["number"] | Literal["boolean"] | Literal["null"]
+type GtjLiteralKind = Literal["string"] | Literal["number"] | Literal["boolean"] | Literal["null"]
 
 
-type JsonSchema = JsonSchemaNull | JsonSchemaBoolean | JsonSchemaNumber | JsonSchemaString | JsonSchemaArray | JsonSchemaObject | JsonSchemaUnion | JsonSchemaLiteral | JsonSchemaTuple
+type GtjAny = GtjNull | GtjBoolean | GtjNumber | GtjString | GtjArray | GtjObject | GtjUnion | GtjLiteral | GtjTuple
 
 
-class JsonSchemaArray(JsonSchemaBase, Model):
+class GtjArray(GtjBase, Model):
     kind: Literal["array"]
-    descriptor: JsonSchema
+    descriptor: GtjAny
 
 
-class JsonSchemaObject(JsonSchemaBase, Model):
+class GtjObject(GtjBase, Model):
     kind: Literal["object"]
-    properties: list[JsonSchemaProperty]
+    properties: list[GtjProperty]
 
 
-class JsonSchemaProperty(Model):
+class GtjProperty(Model):
     kind: Literal["property"]
     name: str
     doc: Optional[str] = None
-    descriptor: JsonSchema
+    descriptor: GtjAny
     required: Optional[bool] = None
 
 
-class JsonSchemaUnion(JsonSchemaBase, Model):
+class GtjUnion(GtjBase, Model):
     kind: Literal["union"]
-    descriptors: list[JsonSchema]
+    descriptors: list[GtjAny]
 
 
-class JsonSchemaTuple(JsonSchemaBase, Model):
+class GtjTuple(GtjBase, Model):
     kind: Literal["tuple"]
-    descriptors: list[JsonSchema]
+    descriptors: list[GtjAny]

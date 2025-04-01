@@ -3,134 +3,134 @@ use literals::literal;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum JsonSchema {
-    JsonSchemaNull(JsonSchemaNull),
-    JsonSchemaBoolean(JsonSchemaBoolean),
-    JsonSchemaNumber(JsonSchemaNumber),
-    JsonSchemaString(JsonSchemaString),
-    JsonSchemaArray(JsonSchemaArray),
-    JsonSchemaObject(JsonSchemaObject),
-    JsonSchemaUnion(JsonSchemaUnion),
-    JsonSchemaLiteral(JsonSchemaLiteral),
-    JsonSchemaTuple(JsonSchemaTuple),
+pub enum GtjAny {
+    GtjNull(GtjNull),
+    GtjBoolean(GtjBoolean),
+    GtjNumber(GtjNumber),
+    GtjString(GtjString),
+    GtjArray(GtjArray),
+    GtjObject(GtjObject),
+    GtjUnion(GtjUnion),
+    GtjLiteral(GtjLiteral),
+    GtjTuple(GtjTuple),
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonSchemaBase {
+pub struct GtjBase {
     pub name: Option<String>,
     pub doc: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonSchemaNull {
+pub struct GtjNull {
     pub name: Option<String>,
     pub doc: Option<String>,
-    pub kind: JsonSchemaNullKindNull,
+    pub kind: GtjNullKindNull,
 }
 
 #[literal("null")]
-pub struct JsonSchemaNullKindNull;
+pub struct GtjNullKindNull;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonSchemaBoolean {
+pub struct GtjBoolean {
     pub name: Option<String>,
     pub doc: Option<String>,
-    pub kind: JsonSchemaBooleanKindBoolean,
+    pub kind: GtjBooleanKindBoolean,
 }
 
 #[literal("boolean")]
-pub struct JsonSchemaBooleanKindBoolean;
+pub struct GtjBooleanKindBoolean;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonSchemaNumber {
+pub struct GtjNumber {
     pub name: Option<String>,
     pub doc: Option<String>,
-    pub kind: JsonSchemaNumberKindNumber,
+    pub kind: GtjNumberKindNumber,
 }
 
 #[literal("number")]
-pub struct JsonSchemaNumberKindNumber;
+pub struct GtjNumberKindNumber;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonSchemaString {
+pub struct GtjString {
     pub name: Option<String>,
     pub doc: Option<String>,
-    pub kind: JsonSchemaStringKindString,
+    pub kind: GtjStringKindString,
 }
 
 #[literal("string")]
-pub struct JsonSchemaStringKindString;
+pub struct GtjStringKindString;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonSchemaArray {
+pub struct GtjArray {
     pub name: Option<String>,
     pub doc: Option<String>,
-    pub kind: JsonSchemaArrayKindArray,
-    pub descriptor: JsonSchema,
+    pub kind: GtjArrayKindArray,
+    pub descriptor: GtjAny,
 }
 
 #[literal("array")]
-pub struct JsonSchemaArrayKindArray;
+pub struct GtjArrayKindArray;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonSchemaObject {
+pub struct GtjObject {
     pub name: Option<String>,
     pub doc: Option<String>,
-    pub kind: JsonSchemaObjectKindObject,
-    pub properties: Vec<JsonSchemaProperty>,
+    pub kind: GtjObjectKindObject,
+    pub properties: Vec<GtjProperty>,
 }
 
 #[literal("object")]
-pub struct JsonSchemaObjectKindObject;
+pub struct GtjObjectKindObject;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonSchemaProperty {
-    pub kind: JsonSchemaPropertyKindProperty,
+pub struct GtjProperty {
+    pub kind: GtjPropertyKindProperty,
     pub name: String,
     pub doc: Option<String>,
-    pub descriptor: JsonSchema,
+    pub descriptor: GtjAny,
     pub required: Option<bool>,
 }
 
 #[literal("property")]
-pub struct JsonSchemaPropertyKindProperty;
+pub struct GtjPropertyKindProperty;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonSchemaUnion {
+pub struct GtjUnion {
     pub name: Option<String>,
     pub doc: Option<String>,
-    pub kind: JsonSchemaUnionKindUnion,
-    pub descriptors: Vec<JsonSchema>,
+    pub kind: GtjUnionKindUnion,
+    pub descriptors: Vec<GtjAny>,
 }
 
 #[literal("union")]
-pub struct JsonSchemaUnionKindUnion;
+pub struct GtjUnionKindUnion;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonSchemaTuple {
+pub struct GtjTuple {
     pub name: Option<String>,
     pub doc: Option<String>,
-    pub kind: JsonSchemaTupleKindTuple,
-    pub descriptors: Vec<JsonSchema>,
+    pub kind: GtjTupleKindTuple,
+    pub descriptors: Vec<GtjAny>,
 }
 
 #[literal("tuple")]
-pub struct JsonSchemaTupleKindTuple;
+pub struct GtjTupleKindTuple;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct JsonSchemaLiteral {
+pub struct GtjLiteral {
     pub name: Option<String>,
     pub doc: Option<String>,
-    pub kind: JsonSchemaLiteralKindLiteral,
-    pub value: JsonSchemaLiteralValue,
+    pub kind: GtjLiteralKindLiteral,
+    pub value: GtjLiteralValue,
 }
 
 #[literal("literal")]
-pub struct JsonSchemaLiteralKindLiteral;
+pub struct GtjLiteralKindLiteral;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum JsonSchemaLiteralValue {
+pub enum GtjLiteralValue {
     String(String),
     Number(f64),
     Boolean(bool),
@@ -139,21 +139,21 @@ pub enum JsonSchemaLiteralValue {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum JsonSchemaLiteralKind {
-    String(JsonSchemaLiteralKindString),
-    Number(JsonSchemaLiteralKindNumber),
-    Boolean(JsonSchemaLiteralKindBoolean),
-    Null(JsonSchemaLiteralKindNull),
+pub enum GtjLiteralKind {
+    String(GtjLiteralKindString),
+    Number(GtjLiteralKindNumber),
+    Boolean(GtjLiteralKindBoolean),
+    Null(GtjLiteralKindNull),
 }
 
 #[literal("string")]
-pub struct JsonSchemaLiteralKindString;
+pub struct GtjLiteralKindString;
 
 #[literal("number")]
-pub struct JsonSchemaLiteralKindNumber;
+pub struct GtjLiteralKindNumber;
 
 #[literal("boolean")]
-pub struct JsonSchemaLiteralKindBoolean;
+pub struct GtjLiteralKindBoolean;
 
 #[literal("null")]
-pub struct JsonSchemaLiteralKindNull;
+pub struct GtjLiteralKindNull;

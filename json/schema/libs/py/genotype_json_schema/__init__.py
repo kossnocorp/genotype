@@ -1,4 +1,4 @@
-from .json import JsonSchemaBase, JsonSchemaNull, JsonSchemaBoolean, JsonSchemaNumber, JsonSchemaString, JsonSchemaLiteral, JsonSchemaLiteralKind, JsonSchema, JsonSchemaArray, JsonSchemaObject, JsonSchemaProperty, JsonSchemaUnion, JsonSchemaTuple
+from .json import GtjBase, GtjNull, GtjBoolean, GtjNumber, GtjString, GtjLiteral, GtjLiteralKind, GtjAny, GtjArray, GtjObject, GtjProperty, GtjUnion, GtjTuple
 
 
-__all__ = ["JsonSchemaBase", "JsonSchemaNull", "JsonSchemaBoolean", "JsonSchemaNumber", "JsonSchemaString", "JsonSchemaLiteral", "JsonSchemaLiteralKind", "JsonSchema", "JsonSchemaArray", "JsonSchemaObject", "JsonSchemaProperty", "JsonSchemaUnion", "JsonSchemaTuple"]
+__all__ = ["GtjBase", "GtjNull", "GtjBoolean", "GtjNumber", "GtjString", "GtjLiteral", "GtjLiteralKind", "GtjAny", "GtjArray", "GtjObject", "GtjProperty", "GtjUnion", "GtjTuple"]

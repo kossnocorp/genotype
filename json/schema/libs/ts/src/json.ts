@@ -1,57 +1,57 @@
-export type JsonSchema = JsonSchemaNull | JsonSchemaBoolean | JsonSchemaNumber | JsonSchemaString | JsonSchemaArray | JsonSchemaObject | JsonSchemaUnion | JsonSchemaLiteral | JsonSchemaTuple;
+export type GtjAny = GtjNull | GtjBoolean | GtjNumber | GtjString | GtjArray | GtjObject | GtjUnion | GtjLiteral | GtjTuple;
 
-export interface JsonSchemaBase {
+export interface GtjBase {
   name?: string | undefined;
   doc?: string | undefined;
 }
 
-export interface JsonSchemaNull extends JsonSchemaBase {
+export interface GtjNull extends GtjBase {
   kind: "null";
 }
 
-export interface JsonSchemaBoolean extends JsonSchemaBase {
+export interface GtjBoolean extends GtjBase {
   kind: "boolean";
 }
 
-export interface JsonSchemaNumber extends JsonSchemaBase {
+export interface GtjNumber extends GtjBase {
   kind: "number";
 }
 
-export interface JsonSchemaString extends JsonSchemaBase {
+export interface GtjString extends GtjBase {
   kind: "string";
 }
 
-export interface JsonSchemaArray extends JsonSchemaBase {
+export interface GtjArray extends GtjBase {
   kind: "array";
-  descriptor: JsonSchema;
+  descriptor: GtjAny;
 }
 
-export interface JsonSchemaObject extends JsonSchemaBase {
+export interface GtjObject extends GtjBase {
   kind: "object";
-  properties: Array<JsonSchemaProperty>;
+  properties: Array<GtjProperty>;
 }
 
-export interface JsonSchemaProperty {
+export interface GtjProperty {
   kind: "property";
   name: string;
   doc?: string | undefined;
-  descriptor: JsonSchema;
+  descriptor: GtjAny;
   required?: boolean | undefined;
 }
 
-export interface JsonSchemaUnion extends JsonSchemaBase {
+export interface GtjUnion extends GtjBase {
   kind: "union";
-  descriptors: Array<JsonSchema>;
+  descriptors: Array<GtjAny>;
 }
 
-export interface JsonSchemaTuple extends JsonSchemaBase {
+export interface GtjTuple extends GtjBase {
   kind: "tuple";
-  descriptors: Array<JsonSchema>;
+  descriptors: Array<GtjAny>;
 }
 
-export interface JsonSchemaLiteral extends JsonSchemaBase {
+export interface GtjLiteral extends GtjBase {
   kind: "literal";
   value: string | number | boolean | null;
 }
 
-export type JsonSchemaLiteralKind = "string" | "number" | "boolean" | "null";
+export type GtjLiteralKind = "string" | "number" | "boolean" | "null";

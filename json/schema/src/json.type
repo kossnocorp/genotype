@@ -1,66 +1,66 @@
-JsonSchema = JsonSchemaNull | JsonSchemaBoolean | JsonSchemaNumber | JsonSchemaString | JsonSchemaArray | JsonSchemaObject | JsonSchemaUnion | JsonSchemaLiteral | JsonSchemaTuple
+GtjAny = GtjNull | GtjBoolean | GtjNumber | GtjString | GtjArray | GtjObject | GtjUnion | GtjLiteral | GtjTuple
 
-JsonSchemaBase = {
+GtjBase = {
   name?: string,
   doc?: string,
 }
 
-JsonSchemaNull = {
-  ...JsonSchemaBase,
+GtjNull = {
+  ...GtjBase,
   kind: "null",
 }
 
-JsonSchemaBoolean = {
-  ...JsonSchemaBase,
+GtjBoolean = {
+  ...GtjBase,
   kind: "boolean",
 }
 
-JsonSchemaNumber = {
-  ...JsonSchemaBase,
+GtjNumber = {
+  ...GtjBase,
   kind: "number",
 }
 
-JsonSchemaString = {
-  ...JsonSchemaBase,
+GtjString = {
+  ...GtjBase,
   kind: "string",
 }
 
-JsonSchemaArray = {
-  ...JsonSchemaBase,
+GtjArray = {
+  ...GtjBase,
   kind: "array",
-  descriptor: JsonSchema,
+  descriptor: GtjAny,
 }
 
-JsonSchemaObject = {
-  ...JsonSchemaBase,
+GtjObject = {
+  ...GtjBase,
   kind: "object",
-  properties: [JsonSchemaProperty],
+  properties: [GtjProperty],
 }
 
-JsonSchemaProperty = {
+GtjProperty = {
   kind: "property",
   name: string,
   doc?: string,
-  descriptor: JsonSchema,
+  descriptor: GtjAny,
   required?: boolean,
 }
 
-JsonSchemaUnion = {
-  ...JsonSchemaBase,
+GtjUnion = {
+  ...GtjBase,
   kind: "union",
-  descriptors: [JsonSchema],
+  descriptors: [GtjAny],
 }
 
-JsonSchemaTuple = {
-  ...JsonSchemaBase,
+GtjTuple = {
+  ...GtjBase,
   kind: "tuple",
-  descriptors: [JsonSchema],
+  descriptors: [GtjAny],
 }
 
-JsonSchemaLiteral = {
-  ...JsonSchemaBase,
+GtjLiteral = {
+  ...GtjBase,
   kind: "literal",
   value: string | number | boolean | null,
 }
 
-JsonSchemaLiteralKind = "string" | "number" | "boolean" | "null"
+GtjLiteralKind = "string" | "number" | "boolean" | "null"
