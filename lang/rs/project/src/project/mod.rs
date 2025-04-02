@@ -562,4 +562,62 @@ pub struct Account {
             }
         )
     }
+
+    #[test]
+    fn test_render_dependencies() {
+        let config = GTConfig::from_root("module", "./examples/dependencies");
+        let mut rs_config = config.as_rust_project();
+        let project = GTProject::load(&config).unwrap();
+
+        rs_config.dependencies = Some(HashMap::from_iter(vec![
+            ("serde".into(), "1.0".into()),
+            ("literals".into(), "0.1".into()),
+        ]));
+
+        rs_config.dependencies = Some(HashMap::from_iter(vec![(
+            "genotype_json_schema".into(),
+            "genotype_json".into(),
+        )]));
+
+        assert_eq!(
+            RSProject::generate(&project, rs_config)
+                .unwrap()
+                .render()
+                .unwrap(),
+            GTLangProjectRender {
+                files: vec![
+                    GTLangProjectSource {
+                        path: "libs/rs/.gitignore".into(),
+                        code: r#"target"#.into(),
+                    },
+                    GTLangProjectSource {
+                        path: "libs/rs/Cargo.toml".into(),
+                        code: r#"[package]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+"#
+                        .into()
+                    },
+                    GTLangProjectSource {
+                        path: "libs/rs/src/lib.rs".into(),
+                        code: r#"pub mod prompt;"#.into(),
+                    },
+                    GTLangProjectSource {
+                        path: "libs/rs/src/prompt.rs".into(),
+                        code: r#"use genotype_json::JsonAny;
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Prompt {
+    pub content: String,
+    pub output: JsonAny,
+}
+"#
+                        .into()
+                    }
+                ]
+            }
+        )
+    }
 }

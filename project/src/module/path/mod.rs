@@ -14,7 +14,9 @@ pub use resolve::*;
 
 #[derive(Debug, Clone)]
 pub struct GTPModulePath {
+    // [TODO] Root must belong to the project not the module
     root: Arc<PathBuf>,
+    // Canonical path to the module.
     path: PathBuf,
     id: GTPath,
 }
@@ -29,15 +31,15 @@ impl GTPModulePath {
     }
 
     pub fn as_name(&self) -> String {
-        self.id.as_str().into()
+        self.id.source_str().into()
     }
 
     pub fn as_path_str(&self) -> String {
-        format!("{}.type", self.id.as_str())
+        format!("{}.type", self.id.source_str())
     }
 
     pub fn resolve(&self, path: &GTPath) -> Result<Self> {
-        let path = format!("{}.type", path.as_str());
+        let path = format!("{}.type", path.source_str());
         Self::try_new(
             Arc::clone(&self.root),
             &self.path.parent().unwrap().join(path),
@@ -97,6 +99,6 @@ mod tests {
         let path = root.join("author.type");
         let module_path = GTPModulePath::try_new(root, &path).unwrap();
         assert_eq!(module_path.as_path(), &path.canonicalize().unwrap());
-        assert_eq!(module_path.as_id().as_str(), "author")
+        assert_eq!(module_path.as_id().source_str(), "author")
     }
 }

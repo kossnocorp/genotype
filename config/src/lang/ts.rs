@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{collections::HashMap, path::PathBuf};
 
 use genotype_lang_ts_config::TSProjectConfig;
 use serde::{Deserialize, Serialize};
@@ -14,6 +14,8 @@ pub struct GTConfigTS {
     pub src: Option<PathBuf>,
     /// package.json data.
     pub package: Option<toml::Value>,
+    /// Manually mapped dependencies.
+    pub dependencies: Option<HashMap<String, String>>,
 }
 
 impl GTConfigTS {
@@ -34,6 +36,10 @@ impl GTConfigTS {
                 .and_then(|c| c.src.clone())
                 .unwrap_or("src".into()),
             package: config.as_ref().and_then(|c| c.package.clone()),
+            dependencies: config
+                .as_ref()
+                .and_then(|c| Some(c.dependencies.clone()))
+                .unwrap_or_default(),
         }
     }
 }
@@ -45,6 +51,7 @@ impl Default for GTConfigTS {
             out: Some(PathBuf::from("ts")),
             src: Some("src".into()),
             package: None,
+            dependencies: Default::default(),
         }
     }
 }

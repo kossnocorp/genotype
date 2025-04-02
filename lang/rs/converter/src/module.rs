@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use genotype_lang_rs_config::RSLangConfig;
 use genotype_lang_rs_tree::module::RSModule;
 use genotype_parser::module::GTModule;
@@ -13,9 +15,15 @@ impl RSConvertModule {
         module: &GTModule,
         resolve: &RSConvertResolve,
         config: &RSLangConfig,
+        dependecies_config: Option<HashMap<String, String>>,
     ) -> Result<Self> {
         // [TODO] Get rid of unnecessary clone
-        let mut context = RSConvertContext::new(module.id.clone(), resolve.clone(), config.clone());
+        let mut context = RSConvertContext::new(
+            module.id.clone(),
+            resolve.clone(),
+            config.clone(),
+            dependecies_config,
+        );
 
         let doc = if let Some(doc) = &module.doc {
             let mut doc = doc.convert(&mut context)?;
@@ -219,7 +227,8 @@ mod tests {
                     ],
                 },
                 &resolve,
-                &Default::default()
+                &Default::default(),
+                None
             )
             .unwrap(),
             RSConvertModule(RSModule {
@@ -345,7 +354,8 @@ mod tests {
                     aliases: vec![],
                 },
                 &Default::default(),
-                &Default::default()
+                &Default::default(),
+                None
             )
             .unwrap(),
             RSConvertModule(RSModule {

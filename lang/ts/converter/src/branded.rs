@@ -47,7 +47,7 @@ mod tests {
 
     #[test]
     fn test_doc() {
-        let mut context = TSConvertContext::new(TSConvertResolve::new());
+        let mut context = TSConvertContext::new(TSConvertResolve::new(), None);
         context.provide_doc(Some("This is a user ID.".into()));
         assert_eq!(
             GTBranded {

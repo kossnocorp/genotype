@@ -20,6 +20,10 @@ pub enum GTProjectError {
     #[diagnostic(code(GTP104))]
     CannotResolve(String),
 
+    #[error("YO")]
+    #[diagnostic(code(YO))]
+    YO,
+
     #[error("undefined type `{identifier}`")]
     #[diagnostic(code(GTP201))]
     UndefinedType {

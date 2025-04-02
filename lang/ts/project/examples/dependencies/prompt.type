@@ -1,0 +1,6 @@
+use genotype_json_schema/JsonAny
+
+Prompt = {
+  content: string,
+  output: JsonAny
+}

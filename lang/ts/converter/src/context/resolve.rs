@@ -4,13 +4,25 @@ use super::TSConvertContext;
 
 impl TSConvertContext {
     pub fn resolve_path(&self, path: &GTPath) -> String {
-        self.resolve
-            .paths
-            .get(path)
-            .unwrap_or(path)
-            .as_str()
-            .to_owned()
-            + ".ts"
+        // [TODO] Refactor `resolve_path` between Python, Rust and TypeScript
+        if let Some((package_path, inner_path)) = path.package_path() {
+            if let Some(dependency) = self.dependencies_config.get(&package_path) {
+                match inner_path {
+                    Some(inner_path) => format!("{dependency}/{inner_path}"),
+                    None => dependency.to_owned(),
+                }
+            } else {
+                path.source_str().to_owned()
+            }
+        } else {
+            self.resolve
+                .paths
+                .get(path)
+                .unwrap_or(path)
+                .source_str()
+                .to_owned()
+                + ".ts"
+        }
     }
 
     pub fn resolve_glob(&self, import: &GTImport) -> String {

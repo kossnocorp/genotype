@@ -53,7 +53,7 @@ impl GTLangProjectModule<TSProjectConfig> for TSProjectModule {
                     .collect::<Vec<_>>();
 
                 if references.len() > 0 {
-                    let str = import.path.as_str();
+                    let str = import.path.source_str();
                     let name = str.split('/').last().unwrap_or(str).to_string();
                     let prefix = if let Some(count) = prefixes.get(&name) {
                         let prefix = format!("{}{}", name, count);
@@ -78,7 +78,8 @@ impl GTLangProjectModule<TSProjectConfig> for TSProjectModule {
             }
         }
 
-        let module = TSConvertModule::convert(&module.module, resolve).0;
+        let module =
+            TSConvertModule::convert(&module.module, resolve, config.dependencies.clone()).0;
 
         Ok(Self { path, module })
     }

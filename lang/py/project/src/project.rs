@@ -147,6 +147,8 @@ build-backend = "poetry.core.masonry.api"
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashMap;
+
     use genotype_config::GTConfig;
     use genotype_lang_py_tree::*;
     use pretty_assertions::assert_eq;
@@ -480,6 +482,74 @@ class Book(Model):
 "#
                         .into()
                     }
+                ]
+            }
+        )
+    }
+
+    #[test]
+    fn test_render_dependencies() {
+        let config = GTConfig::from_root("module", "./examples/dependencies");
+        let mut py_config = config.as_python_project().unwrap();
+        let project = GTProject::load(&config).unwrap();
+
+        py_config.dependencies = Some(HashMap::from_iter(vec![(
+            "genotype_json_schema".into(),
+            "genotype_json".into(),
+        )]));
+
+        assert_eq!(
+            PYProject::generate(&project, py_config)
+                .unwrap()
+                .render()
+                .unwrap(),
+            GTLangProjectRender {
+                files: vec![
+                    GTLangProjectSource {
+                        path: "libs/py/.gitignore".into(),
+                        code: r#"__pycache__
+dist"#
+                            .into(),
+                    },
+                    GTLangProjectSource {
+                        path: "libs/py/pyproject.toml".into(),
+                        code: r#"[tool.poetry]
+packages = [{ include = "module" }]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+genotype-runtime = "^0.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+"#
+                        .into(),
+                    },
+                    GTLangProjectSource {
+                        path: "libs/py/module/py.typed".into(),
+                        code: "".into(),
+                    },
+                    GTLangProjectSource {
+                        path: "libs/py/module/__init__.py".into(),
+                        code: r#"from .prompt import Prompt
+
+
+__all__ = ["Prompt"]"#
+                            .into(),
+                    },
+                    GTLangProjectSource {
+                        path: "libs/py/module/prompt.py".into(),
+                        code: r#"from genotype_json import JsonAny
+from genotype import Model
+
+
+class Prompt(Model):
+    content: str
+    output: JsonAny
+"#
+                        .into()
+                    },
                 ]
             }
         )

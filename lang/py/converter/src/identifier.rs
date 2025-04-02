@@ -33,7 +33,7 @@ mod tests {
             GTIdentifier::new((0, 0).into(), "Foo".into()),
             GTIdentifier::new((0, 0).into(), "foo.Bar".into()),
         );
-        let mut context = PYConvertContext::new(resolve.clone(), Default::default());
+        let mut context = PYConvertContext::new(resolve.clone(), Default::default(), None);
         assert_eq!(
             PYIdentifier("foo.Bar".into()),
             GTIdentifier::new((0, 0).into(), "Foo".into()).convert(&mut context),

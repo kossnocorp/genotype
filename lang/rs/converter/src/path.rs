@@ -97,7 +97,7 @@ mod tests {
                 "./path/to/another/module".into(),
             ),
         );
-        let mut context = RSConvertContext::new("module".into(), resolve, Default::default());
+        let mut context = RSConvertContext::new("module".into(), resolve, Default::default(), None);
         assert_eq!(
             RSPath(
                 GTModuleId("module/path".into()),

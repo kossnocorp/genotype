@@ -101,6 +101,8 @@ impl GTLangProject<TSProjectConfig> for TSProject {
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashMap;
+
     use genotype_config::GTConfig;
     use genotype_lang_ts_tree::*;
     use pretty_assertions::assert_eq;
@@ -294,6 +296,57 @@ export interface Book {
 "#
                         .into()
                     }
+                ]
+            }
+        )
+    }
+
+    #[test]
+    fn test_render_dependencies() {
+        let config = GTConfig::from_root("module", "./examples/dependencies");
+        let mut ts_config = config.as_ts_project();
+        let project = GTProject::load(&config).unwrap();
+
+        ts_config.dependencies = Some(HashMap::from_iter(vec![(
+            "genotype_json_schema".into(),
+            "@genotype/json".into(),
+        )]));
+
+        assert_eq!(
+            TSProject::generate(&project, ts_config)
+                .unwrap()
+                .render()
+                .unwrap(),
+            GTLangProjectRender {
+                files: vec![
+                    GTLangProjectSource {
+                        path: "libs/ts/.gitignore".into(),
+                        code: "node_modules".into(),
+                    },
+                    GTLangProjectSource {
+                        path: "libs/ts/package.json".into(),
+                        code: r#"{
+  "types": "src/index.ts"
+}"#
+                        .into()
+                    },
+                    GTLangProjectSource {
+                        path: "libs/ts/src/index.ts".into(),
+                        code: r#"export * from "./prompt.ts";
+"#
+                        .into()
+                    },
+                    GTLangProjectSource {
+                        path: "libs/ts/src/prompt.ts".into(),
+                        code: r#"import { JsonAny } from "@genotype/json";
+
+export interface Prompt {
+  content: string;
+  output: JsonAny;
+}
+"#
+                        .into()
+                    },
                 ]
             }
         )

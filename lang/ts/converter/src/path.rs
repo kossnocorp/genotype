@@ -38,7 +38,7 @@ mod tests {
             TSPath("./path/to/module/index.ts".into()),
             GTPath::parse((0, 0).into(), "./path/to/module")
                 .unwrap()
-                .convert(&mut TSConvertContext::new(resolve)),
+                .convert(&mut TSConvertContext::new(resolve, None)),
         );
     }
 }

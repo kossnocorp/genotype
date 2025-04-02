@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use genotype_lang_rs_config::RSLangConfig;
 use genotype_lang_rs_tree::*;
 use genotype_parser::{GTDefinitionId, GTIdentifier, GTModuleId, GTPath};
@@ -25,6 +27,7 @@ pub struct RSConvertContext {
     module_id: GTModuleId,
     definition_id: Option<GTDefinitionId>,
     field_attributes: Vec<RSAttribute>,
+    dependencies_config: HashMap<String, String>,
 }
 
 impl RSContext for RSConvertContext {
@@ -54,10 +57,15 @@ impl RSContext for RSConvertContext {
 
 impl RSConvertContext {
     pub fn empty(module_id: GTModuleId) -> Self {
-        Self::new(module_id, Default::default(), Default::default())
+        Self::new(module_id, Default::default(), Default::default(), None)
     }
 
-    pub fn new(module_id: GTModuleId, resolve: RSConvertResolve, config: RSLangConfig) -> Self {
+    pub fn new(
+        module_id: GTModuleId,
+        resolve: RSConvertResolve,
+        config: RSLangConfig,
+        dependencies_config: Option<HashMap<String, String>>,
+    ) -> Self {
         Self {
             module_id,
             definition_id: None,
@@ -73,6 +81,7 @@ impl RSConvertContext {
             doc: None,
             parents: vec![],
             field_attributes: vec![],
+            dependencies_config: dependencies_config.unwrap_or_default(),
         }
     }
 
@@ -94,12 +103,24 @@ impl RSConvertContext {
     }
 
     pub fn resolve_path(&self, path: &GTPath) -> String {
-        self.resolve
-            .paths
-            .get(path)
-            .unwrap_or(path)
-            .as_str()
-            .to_owned()
+        // [TODO] Refactor `resolve_path` between Python, Rust and TypeScript
+        if let Some((package_path, inner_path)) = path.package_path() {
+            if let Some(dependency) = self.dependencies_config.get(&package_path) {
+                match inner_path {
+                    Some(inner_path) => format!("{dependency}/{inner_path}"),
+                    None => dependency.to_owned(),
+                }
+            } else {
+                path.source_str().to_owned()
+            }
+        } else {
+            self.resolve
+                .paths
+                .get(path)
+                .unwrap_or(path)
+                .source_str()
+                .to_owned()
+        }
     }
 
     #[cfg(test)]

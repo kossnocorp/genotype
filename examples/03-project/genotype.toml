@@ -1,0 +1,19 @@
+name = "genotype-examples-03-project"
+
+[ts]
+enabled = true
+
+[ts.dependencies]
+yo = "@genotype/yo"
+
+[rust]
+enabled = true
+
+[rust.dependencies]
+yo = "genotype_yo"
+
+[python]
+enabled = true
+
+[python.dependencies]
+yo = "genotype-yo"

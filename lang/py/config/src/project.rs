@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{collections::HashMap, path::PathBuf};
 
 use crate::lang::PYLangConfig;
 
@@ -8,6 +8,8 @@ pub struct PYProjectConfig {
     pub module: String,
     pub lang: PYLangConfig,
     pub package: Option<String>,
+    /// Manually mapped dependencies.
+    pub dependencies: Option<HashMap<String, String>>,
 }
 
 impl PYProjectConfig {

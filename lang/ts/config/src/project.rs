@@ -1,10 +1,12 @@
-use std::path::PathBuf;
+use std::{collections::HashMap, path::PathBuf};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TSProjectConfig {
     pub out: PathBuf,
     pub src: PathBuf,
     pub package: Option<toml::Value>,
+    /// Manually mapped dependencies.
+    pub dependencies: Option<HashMap<String, String>>,
 }
 
 impl TSProjectConfig {

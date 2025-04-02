@@ -35,7 +35,7 @@ mod tests {
         assert_eq!(
             TSIdentifier("foo.Bar".into()),
             GTIdentifier::new((0, 0).into(), "Foo".into())
-                .convert(&mut TSConvertContext::new(resolve)),
+                .convert(&mut TSConvertContext::new(resolve, None)),
         );
     }
 }

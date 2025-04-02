@@ -63,11 +63,11 @@ impl GTProject {
             .into_iter()
             .collect::<Result<Vec<_>>>()?;
 
-        let definitions: GTPResolve = (&modules_parse).try_into()?;
+        let resolve: GTPResolve = (&modules_parse).try_into()?;
 
         let mut modules = modules_parse
             .iter()
-            .map(|parse| GTProjectModule::try_new(&definitions, &modules_parse, parse.clone()))
+            .map(|parse| GTProjectModule::try_new(&resolve, &modules_parse, parse.clone()))
             .collect::<Result<Vec<_>, _>>()?;
 
         // [TODO] It's needed for tests, hide behind cfg(test), keep or replace with something like
@@ -81,22 +81,24 @@ impl GTProject {
     }
 
     fn load_module(
-        path: GTPModulePath,
+        module_path: GTPModulePath,
         scope: &Scope<'_>,
         processed_paths: Arc<Mutex<HashSet<GTPModulePath>>>,
         modules: Arc<Mutex<Vec<Result<GTProjectModuleParse>>>>,
     ) {
+        // Check if the module is already processed to avoid infinite recursion.
         {
             let mut processed = processed_paths.lock().expect("Failed to lock modules");
-            if processed.contains(&path) {
+            if processed.contains(&module_path) {
                 return;
             }
-            processed.insert(path.clone());
+            processed.insert(module_path.clone());
         }
 
-        let id = path.as_id().as_str().to_owned().into();
-        let result = GTProjectModuleParse::try_new(id, path).and_then(|parse| {
+        let module_id = module_path.as_id().source_str().to_owned().into();
+        let result = GTProjectModuleParse::try_new(module_id, module_path).and_then(|parse| {
             parse.deps().and_then(|deps| {
+                // Iterate each module dependency and load it in a thread.
                 for dep in deps {
                     let processed_paths = Arc::clone(&processed_paths);
                     let modules = Arc::clone(&modules);
@@ -106,13 +108,17 @@ impl GTProject {
                     });
                 }
 
-                let mut modules = modules.lock().expect("Failed to lock modules");
-                modules.push(Ok(parse));
+                // Push the module parse result to the modules vector.
+                {
+                    let mut modules = modules.lock().expect("Failed to lock modules");
+                    modules.push(Ok(parse));
+                }
 
                 Ok(())
             })
         });
 
+        // If parsing failed, push the error to the modules vector.
         if let Err(err) = result {
             let mut modules = modules.lock().expect("Failed to lock modules");
             modules.push(Err(err));

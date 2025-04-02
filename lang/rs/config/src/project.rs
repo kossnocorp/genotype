@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{collections::HashMap, path::PathBuf};
 
 use crate::lang::RSLangConfig;
 
@@ -7,6 +7,7 @@ pub struct RSProjectConfig {
     pub out: PathBuf,
     pub lang: RSLangConfig,
     pub package: Option<String>,
+    pub dependencies: Option<HashMap<String, String>>,
 }
 
 impl RSProjectConfig {

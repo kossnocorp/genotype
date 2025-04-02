@@ -60,7 +60,7 @@ mod tests {
             GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
             GTPath::parse((0, 0).into(), "./path/to/another/module").unwrap(),
         );
-        let mut context = PYConvertContext::new(resolve, Default::default());
+        let mut context = PYConvertContext::new(resolve, Default::default(), None);
         assert_eq!(
             PYPath(".path.to.another.module".into()),
             GTPath::parse((0, 0).into(), "./path/to/module")

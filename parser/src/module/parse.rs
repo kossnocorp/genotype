@@ -3,10 +3,10 @@ use pest::iterators::Pair;
 
 use crate::*;
 
-/// Module parse result. It contains the module AST and resolve.
+/// Module parse result. It contains the module tree and resolve data.
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTModuleParse {
-    /// Module AST.
+    /// Module tree.
     pub module: GTModule,
     /// Module resolve. It contains module meta information used to build
     /// the dependency graph.
@@ -152,7 +152,7 @@ mod tests {
                     ],
                 },
                 resolve: GTModuleResolve {
-                    deps: HashSet::new(),
+                    deps: Default::default(),
                     exports: vec![
                         GTIdentifier::new((0, 3).into(), "Age".into()),
                         GTIdentifier::new((11, 21).into(), "AnotherAge".into()),
@@ -222,7 +222,7 @@ mod tests {
                     ],
                 },
                 resolve: GTModuleResolve {
-                    deps: HashSet::new(),
+                    deps: Default::default(),
                     exports: vec![
                         GTIdentifier::new((0, 6).into(), "String".into()),
                         GTIdentifier::new((17, 20).into(), "Int".into()),
@@ -388,7 +388,7 @@ mod tests {
                     ],
                 },
                 resolve: GTModuleResolve {
-                    deps: HashSet::new(),
+                    deps: Default::default(),
                     exports: vec![
                         GTIdentifier::new((0, 5).into(), "Hello".into()),
                         GTIdentifier::new((28, 33).into(), "Hello".into()),
@@ -477,7 +477,7 @@ mod tests {
                     ],
                 },
                 resolve: GTModuleResolve {
-                    deps: HashSet::new(),
+                    deps: Default::default(),
                     exports: vec![
                         GTIdentifier::new((76, 81).into(), "Hello".into()),
                         GTIdentifier::new((151, 156).into(), "Hello".into()),
@@ -534,7 +534,7 @@ mod tests {
                     }],
                 },
                 resolve: GTModuleResolve {
-                    deps: HashSet::new(),
+                    deps: Default::default(),
                     exports: vec![GTIdentifier::new((0, 5).into(), "Hello".into())],
                     references: HashSet::new(),
                 },
@@ -672,7 +672,7 @@ mod tests {
                     ],
                 },
                 resolve: GTModuleResolve {
-                    deps: HashSet::new(),
+                    deps: Default::default(),
                     exports: vec![
                         GTIdentifier::new((0, 5).into(), "Hello".into()),
                         GTIdentifier::new((62, 67).into(), "Hello".into()),
@@ -734,7 +734,7 @@ mod tests {
                     }],
                 },
                 resolve: GTModuleResolve {
-                    deps: HashSet::new(),
+                    deps: Default::default(),
                     exports: vec![GTIdentifier::new((0, 4).into(), "Book".into())],
                     references: HashSet::new(),
                 },
@@ -819,7 +819,7 @@ mod tests {
                     ],
                 },
                 resolve: GTModuleResolve {
-                    deps: HashSet::new(),
+                    deps: Default::default(),
                     exports: vec![
                         GTIdentifier::new((0, 4).into(), "User".into()),
                         GTIdentifier::new((70, 77).into(), "Address".into()),
@@ -1089,7 +1089,7 @@ mod tests {
                     ],
                 },
                 resolve: GTModuleResolve {
-                    deps: HashSet::new(),
+                    deps: Default::default(),
                     exports: vec![
                         GTIdentifier::new((0, 4).into(), "Base".into()),
                         GTIdentifier::new((39, 48).into(), "Processor".into()),
@@ -1329,7 +1329,7 @@ mod tests {
                     ],
                 },
                 resolve: GTModuleResolve {
-                    deps: HashSet::new(),
+                    deps: Default::default(),
                     exports: vec![
                         GTIdentifier::new((0, 11).into(), "CommentBase".into()),
                         GTIdentifier::new((41, 52).into(), "UserComment".into()),
@@ -1398,7 +1398,7 @@ mod tests {
                     ],
                 },
                 resolve: GTModuleResolve {
-                    deps: HashSet::new(),
+                    deps: Default::default(),
                     exports: vec![
                         GTIdentifier::new((0, 5).into(), "Hello".into()),
                         GTIdentifier::new((27, 36).into(), "Multiline".into()),
@@ -1615,7 +1615,7 @@ mod tests {
                     ],
                 },
                 resolve: GTModuleResolve {
-                    deps: HashSet::new(),
+                    deps: Default::default(),
                     exports: vec![
                         GTIdentifier::new((0, 7).into(), "Message".into()),
                         GTIdentifier::new((22, 27).into(), "Reply".into()),
@@ -1675,7 +1675,7 @@ mod tests {
                     ],
                 },
                 resolve: GTModuleResolve {
-                    deps: HashSet::new(),
+                    deps: Default::default(),
                     exports: vec![
                         GTIdentifier::new((0, 4).into(), "Dict".into()),
                         GTIdentifier::new((23, 26).into(), "Map".into()),
@@ -1708,7 +1708,7 @@ mod tests {
                     }],
                 },
                 resolve: GTModuleResolve {
-                    deps: HashSet::new(),
+                    deps: Default::default(),
                     exports: vec![GTIdentifier::new((0, 8).into(), "Anything".into())],
                     references: HashSet::new(),
                 },
@@ -1802,7 +1802,7 @@ mod tests {
                     ],
                 },
                 resolve: GTModuleResolve {
-                    deps: HashSet::new(),
+                    deps: Default::default(),
                     exports: vec![
                         GTIdentifier::new((0, 5).into(), "OrgId".into()),
                         GTIdentifier::new((14, 20).into(), "UserId".into()),
@@ -2126,7 +2126,7 @@ mod tests {
                     ],
                 },
                 resolve: GTModuleResolve {
-                    deps: HashSet::new(),
+                    deps: Default::default(),
                     exports: vec![
                         GTIdentifier::new((0, 4).into(), "Int8".into()),
                         GTIdentifier::new((10, 15).into(), "Int16".into()),
@@ -2200,7 +2200,7 @@ mod tests {
                     ],
                 },
                 resolve: GTModuleResolve {
-                    deps: HashSet::new(),
+                    deps: Default::default(),
                     exports: vec![
                         GTIdentifier::new((0, 5).into(), "Hello".into()),
                         GTIdentifier::new((16, 21).into(), "World".into()),

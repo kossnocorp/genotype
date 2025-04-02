@@ -1,6 +1,6 @@
 use std::fs::read_to_string;
 
-use genotype_parser::{GTModule, GTModuleId, GTModuleParse};
+use genotype_parser::{GTModule, GTModuleId, GTModuleParse, GTPathKind};
 use miette::{NamedSource, Result};
 
 use crate::error::GTProjectError;
@@ -22,11 +22,13 @@ impl<'a> GTProjectModuleParse {
     }
 
     pub fn deps(&self) -> Result<Vec<GTPModulePath>> {
-        self.1
-            .resolve
-            .deps
-            .iter()
-            .map(|dep| self.0.resolve(dep))
-            .collect()
+        let mut paths = vec![];
+        for dep in self.1.resolve.deps.iter() {
+            if dep.kind() == GTPathKind::Package {
+                continue;
+            }
+            paths.push(self.0.resolve(dep)?);
+        }
+        Ok(paths)
     }
 }

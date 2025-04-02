@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use genotype_lang_py_config::PYLangConfig;
 use genotype_lang_py_tree::module::PYModule;
 use genotype_lang_py_visitor::traverse::PYTraverse;
@@ -13,9 +15,15 @@ mod visitor;
 pub struct PYConvertModule(pub PYModule);
 
 impl PYConvertModule {
-    pub fn convert(module: &GTModule, resolve: &PYConvertResolve, config: &PYLangConfig) -> Self {
+    pub fn convert(
+        module: &GTModule,
+        resolve: &PYConvertResolve,
+        config: &PYLangConfig,
+        dependencies_config: Option<HashMap<String, String>>,
+    ) -> Self {
         // [TODO] Get rid of unnecessary clone
-        let mut context = PYConvertContext::new(resolve.clone(), config.clone());
+        let mut context =
+            PYConvertContext::new(resolve.clone(), config.clone(), dependencies_config);
 
         let doc = module.doc.as_ref().map(|doc| doc.convert(&mut context));
 
@@ -207,7 +215,8 @@ mod tests {
                     ],
                 },
                 &resolve,
-                &Default::default()
+                &Default::default(),
+                None
             ),
             PYConvertModule(PYModule {
                 doc: None,
@@ -315,7 +324,8 @@ mod tests {
                     aliases: vec![],
                 },
                 &Default::default(),
-                &Default::default()
+                &Default::default(),
+                None
             ),
             PYConvertModule(PYModule {
                 doc: Some(PYDoc("Hello, world!".into())),
@@ -410,7 +420,8 @@ mod tests {
                     ],
                 },
                 &Default::default(),
-                &Default::default()
+                &Default::default(),
+                None
             ),
             PYConvertModule(PYModule {
                 doc: None,

@@ -17,4 +17,9 @@ pub enum GTPModuleIdentifierSource {
         /// Path to the module that contains the identifier.
         GTPath,
     ),
+    /// Package identifier.
+    Package(
+        /// Path to the package that contains the identifier.
+        GTPath,
+    ),
 }

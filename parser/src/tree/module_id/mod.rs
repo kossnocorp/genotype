@@ -1,7 +1,10 @@
 use super::{GTDefinitionId, GTIdentifier};
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone)]
-pub struct GTModuleId(pub String);
+pub struct GTModuleId(
+    /// Module identifier string.
+    pub String,
+);
 
 impl GTModuleId {
     pub fn definition_id(&self, name: &GTIdentifier) -> GTDefinitionId {

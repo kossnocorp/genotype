@@ -36,7 +36,7 @@ impl GTVisitor for GTPResolveVisitor<'_> {
     fn visit_import(&mut self, import: &mut GTImport) {
         if let GTPathModuleId::Unresolved = &import.path.1 {
             let module_paths = self.resolve.paths.get(&self.module_id).unwrap();
-            let module_id = module_paths.get(import.path.as_str()).unwrap();
+            let module_id = module_paths.get(import.path.source_str()).unwrap();
             import.path.1 = GTPathModuleId::Resolved(module_id.clone());
         }
     }
@@ -44,7 +44,7 @@ impl GTVisitor for GTPResolveVisitor<'_> {
     fn visit_inline_import(&mut self, import: &mut GTInlineImport) {
         if let GTPathModuleId::Unresolved = &import.path.1 {
             let module_paths = self.resolve.paths.get(&self.module_id).unwrap();
-            let module_id = module_paths.get(import.path.as_str()).unwrap();
+            let module_id = module_paths.get(import.path.source_str()).unwrap();
             import.path.1 = GTPathModuleId::Resolved(module_id.clone());
         }
     }

@@ -7,6 +7,8 @@ use crate::{error::GTProjectError, GTProjectModuleParse};
 
 pub mod visitor;
 
+#[derive(Default)]
+// [TODO] Reorganize so that it works like `GTPModuleResolve` with maps organized by module id.
 pub struct GTPResolve {
     /// Map of definitions for each module. The definitions can be either root, nested or synthetic
     /// (where the name is derived from the parents). It defines what is exported from the module.
@@ -20,11 +22,7 @@ pub struct GTPResolve {
 
 impl GTPResolve {
     pub fn new() -> GTPResolve {
-        GTPResolve {
-            definitions: Default::default(),
-            imports: Default::default(),
-            paths: Default::default(),
-        }
+        Default::default()
     }
 }
 
@@ -49,18 +47,54 @@ impl TryFrom<&Vec<GTProjectModuleParse>> for GTPResolve {
         for module in modules_parse {
             let mut module_paths: HashMap<String, GTModuleId> = HashMap::new();
 
+            // Manually assign the imports for the package modules
+            module.1.module.imports.iter().for_each(|import| {
+                if import.path.kind() != GTPathKind::Package {
+                    return;
+                }
+
+                let package_module_id = GTModuleId(import.path.source_str().to_owned());
+                let mut definitions = vec![];
+                match &import.reference {
+                    GTImportReference::Name(_, name) => {
+                        definitions.push(GTDefinitionId(package_module_id.clone(), name.1.clone()))
+                    }
+
+                    GTImportReference::Names(_, names) => {
+                        names.iter().for_each(|name| match name {
+                            GTImportName::Name(_, name) => definitions
+                                .push(GTDefinitionId(package_module_id.clone(), name.1.clone())),
+                            GTImportName::Alias(_, _, alias) => definitions
+                                .push(GTDefinitionId(package_module_id.clone(), alias.1.clone())),
+                        })
+                    }
+
+                    GTImportReference::Glob(_) => {}
+                }
+
+                imports
+                    .entry(module.1.module.id.clone())
+                    .or_insert(Default::default())
+                    .extend(definitions.clone());
+            });
+
             for local_path in module.1.resolve.deps.iter() {
-                let module_id = if let Some(module_id) = module_paths.get(local_path.as_str()) {
+                let module_id = if let Some(module_id) = module_paths.get(local_path.source_str()) {
                     // It's already resolved
                     module_id.clone()
+                } else if local_path.kind() == GTPathKind::Package {
+                    // It is a package path
+                    let id = GTModuleId(local_path.source_str().to_owned());
+                    module_paths.insert(local_path.source_str().into(), id.clone());
+                    id
                 } else {
                     // Get the project module path from the local path
                     let path = module.0.resolve(local_path).map_err(|_| {
-                        GTProjectError::CannotResolve(local_path.as_str().to_owned())
+                        GTProjectError::CannotResolve(local_path.source_str().to_owned())
                     })?;
                     // [TODO] Get rid of paths in favor of ids and path -> id resolve?
-                    let id = GTModuleId(path.as_id().as_str().to_owned());
-                    module_paths.insert(local_path.as_str().into(), id.clone());
+                    let id = GTModuleId(path.as_id().source_str().to_owned());
+                    module_paths.insert(local_path.source_str().into(), id.clone());
                     id
                 };
 

@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use genotype_lang_ts_tree::module::TSModule;
 use genotype_parser::module::GTModule;
 
@@ -7,8 +9,12 @@ use crate::{context::TSConvertContext, convert::TSConvert, resolve::TSConvertRes
 pub struct TSConvertModule(pub TSModule);
 
 impl TSConvertModule {
-    pub fn convert(module: &GTModule, resolve: TSConvertResolve) -> Self {
-        let mut context = TSConvertContext::new(resolve);
+    pub fn convert(
+        module: &GTModule,
+        resolve: TSConvertResolve,
+        dependencies_config: Option<HashMap<String, String>>,
+    ) -> Self {
+        let mut context = TSConvertContext::new(resolve, dependencies_config);
 
         let imports = module
             .imports
@@ -199,7 +205,8 @@ mod tests {
                         },
                     ],
                 },
-                resolve
+                resolve,
+                None
             ),
             TSConvertModule(TSModule {
                 doc: None,
@@ -292,7 +299,8 @@ mod tests {
                     imports: vec![],
                     aliases: vec![],
                 },
-                TSConvertResolve::new()
+                TSConvertResolve::new(),
+                None
             ),
             TSConvertModule(TSModule {
                 doc: Some(TSDoc("@file Hello, world!".into())),

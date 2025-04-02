@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{collections::HashMap, path::PathBuf};
 
 use genotype_lang_py_config::{PYLangConfig, PYProjectConfig, PYVersion};
 use heck::ToSnakeCase;
@@ -18,6 +18,8 @@ pub struct GTConfigPY {
     pub module: Option<String>,
     /// pyproject.toml data.
     pub package: Option<toml::Value>,
+    /// Manually mapped dependencies.
+    pub dependencies: Option<HashMap<String, String>>,
 }
 
 impl GTConfigPY {
@@ -56,6 +58,10 @@ impl GTConfigPY {
                     .as_ref()
                     .and_then(|p| toml::to_string_pretty(&p).ok())
             }),
+            dependencies: config
+                .as_ref()
+                .and_then(|c| Some(c.dependencies.clone()))
+                .unwrap_or_default(),
         })
     }
 }
@@ -68,6 +74,7 @@ impl Default for GTConfigPY {
             version: Some(PYVersion::default()),
             module: None,
             package: None,
+            dependencies: None,
         }
     }
 }

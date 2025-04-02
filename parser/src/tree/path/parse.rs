@@ -122,31 +122,31 @@ mod tests {
         assert_eq!(
             GTPath::parse((0, 0).into(), "./path/to/../module")
                 .unwrap()
-                .as_str(),
+                .source_str(),
             "./path/module"
         );
         assert_eq!(
             GTPath::parse((0, 0).into(), "./path/./to/./module")
                 .unwrap()
-                .as_str(),
+                .source_str(),
             "./path/to/module"
         );
         assert_eq!(
             GTPath::parse((0, 0).into(), "path/./to/./module/../module")
                 .unwrap()
-                .as_str(),
+                .source_str(),
             "path/to/module"
         );
         assert_eq!(
             GTPath::parse((0, 0).into(), "./././path/./to/./module/../module")
                 .unwrap()
-                .as_str(),
+                .source_str(),
             "./path/to/module"
         );
         assert_eq!(
             GTPath::parse((0, 0).into(), "../../../path/./to/./module/../module")
                 .unwrap()
-                .as_str(),
+                .source_str(),
             "../../../path/to/module"
         );
     }

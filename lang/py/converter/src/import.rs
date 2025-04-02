@@ -31,7 +31,7 @@ impl PYConvert<PYImport> for GTImport {
 }
 
 fn module_name(path: &GTPath) -> PYIdentifier {
-    let str = path.as_str();
+    let str = path.source_str();
     str.split("/").last().unwrap_or(str).into()
 }
 

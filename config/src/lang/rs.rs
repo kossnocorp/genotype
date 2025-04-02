@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{collections::HashMap, path::PathBuf};
 
 use genotype_lang_rs_config::{RSLangConfig, RSProjectConfig};
 use serde::{Deserialize, Serialize};
@@ -13,6 +13,8 @@ pub struct GTConfigRS {
     pub derive: Option<Vec<String>>,
     /// Cargo.toml data.
     pub package: Option<toml::Value>,
+    /// Manually mapped dependencies.
+    pub dependencies: Option<HashMap<String, String>>,
 }
 
 impl GTConfigRS {
@@ -39,7 +41,17 @@ impl GTConfigRS {
                 .and_then(|p| toml::to_string_pretty(&p).ok())
         });
 
-        RSProjectConfig { out, lang, package }
+        let dependencies_config = config
+            .as_ref()
+            .and_then(|c| Some(c.dependencies.clone()))
+            .unwrap_or_default();
+
+        RSProjectConfig {
+            out,
+            lang,
+            package,
+            dependencies: dependencies_config,
+        }
     }
 }
 
@@ -50,6 +62,7 @@ impl Default for GTConfigRS {
             out: Some(PathBuf::from("rs")),
             derive: Some(RSLangConfig::default_derive()),
             package: None,
+            dependencies: Default::default(),
         }
     }
 }

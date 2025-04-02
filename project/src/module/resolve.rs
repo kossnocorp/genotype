@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use genotype_parser::{
     tree::{GTIdentifier, GTImportName, GTImportReference, GTPath},
-    GTDefinitionId,
+    GTDefinitionId, GTPathKind,
 };
 use miette::Result;
 
@@ -32,8 +32,8 @@ impl GTPModuleResolve {
         // Resolve module dependencies by mapping local paths to project module paths
         let mut paths: HashMap<GTPath, GTPModulePathResolve> = HashMap::new();
         for local_path in parse.1.resolve.deps.iter() {
-            // Continue if the dependency is already resolved
-            if paths.contains_key(local_path) {
+            // Continue if the dependency is already resolved or it is a package path
+            if paths.contains_key(local_path) || local_path.kind() == GTPathKind::Package {
                 continue;
             }
 
@@ -41,7 +41,7 @@ impl GTPModuleResolve {
             let module_path = parse
                 .0
                 .resolve(local_path)
-                .map_err(|_| GTProjectError::CannotResolve(local_path.as_str().to_owned()))?;
+                .map_err(|_| GTProjectError::CannotResolve(local_path.source_str().to_owned()))?;
             paths.insert(local_path.clone(), GTPModulePathResolve { module_path });
         }
 
@@ -52,6 +52,32 @@ impl GTPModuleResolve {
             if identifiers.contains_key(reference) {
                 continue;
             };
+
+            // Check if the reference is a package import
+            let package_import = parse.1.module.imports.iter().find(|import| {
+                if import.path.kind() != GTPathKind::Package {
+                    return false;
+                }
+                match &import.reference {
+                    GTImportReference::Name(_, name) => name.1 == reference.1,
+
+                    GTImportReference::Names(_, names) => names.iter().any(|name| match name {
+                        GTImportName::Name(_, name) => name.1 == reference.1,
+                        GTImportName::Alias(_, _, alias) => alias.1 == reference.1,
+                    }),
+
+                    GTImportReference::Glob(_) => false,
+                }
+            });
+            if let Some(import) = package_import {
+                identifiers.insert(
+                    reference.clone(),
+                    GTPModuleIdentifierResolve {
+                        source: GTPModuleIdentifierSource::Package(import.path.clone()),
+                    },
+                );
+                continue;
+            }
 
             // Check if the reference is local
             if parse

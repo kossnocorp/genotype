@@ -30,25 +30,25 @@ pub struct GTProjectModule {
 
 impl GTProjectModule {
     pub fn try_new(
-        definitions: &GTPResolve,
+        project_resolve: &GTPResolve,
         modules: &Vec<GTProjectModuleParse>,
         parse: GTProjectModuleParse,
     ) -> Result<Self> {
-        let mut resolve = GTPModuleResolve::try_new(modules, &parse)
+        let mut module_resolve = GTPModuleResolve::try_new(modules, &parse)
             .map_err(|err| err.with_source_code(parse.1.source_code.clone()))?;
 
         // Combine these two ^v
 
-        let mut visitor = GTPResolveVisitor::new(parse.1.module.id.clone(), &definitions);
+        let mut visitor = GTPResolveVisitor::new(parse.1.module.id.clone(), &project_resolve);
         let mut parse = parse;
         parse.1.module.traverse(&mut visitor);
 
-        resolve.definitions = visitor.drain_definitions();
+        module_resolve.definitions = visitor.drain_definitions();
 
         Ok(GTProjectModule {
             path: parse.0,
             module: parse.1.module,
-            resolve,
+            resolve: module_resolve,
             source_code: parse.1.source_code.clone(),
         })
     }

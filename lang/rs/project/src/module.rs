@@ -65,7 +65,7 @@ impl GTLangProjectModule<RSProjectConfig> for RSProjectModule {
                         .collect::<Vec<_>>();
 
                     if references.len() > 0 {
-                        let str = import.path.as_str();
+                        let str = import.path.source_str();
                         let name = str.split('/').last().unwrap_or(str).to_string();
                         let prefix = if let Some(count) = prefixes.get(&name) {
                             let prefix = format!("{}{}", name, count);
@@ -114,9 +114,14 @@ impl GTLangProjectModule<RSProjectConfig> for RSProjectModule {
         let definitions = module.resolve.definitions.clone();
         let resolve = RSPModuleResolve { definitions };
 
-        let module = RSConvertModule::convert(&module.module, &convert_resolve, &config.lang)
-            .map_err(|err| err.with_source_code(module.source_code.clone()))?
-            .0;
+        let module = RSConvertModule::convert(
+            &module.module,
+            &convert_resolve,
+            &config.lang,
+            config.dependencies.clone(),
+        )
+        .map_err(|err| err.with_source_code(module.source_code.clone()))?
+        .0;
 
         Ok(Self {
             name,

@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use genotype_lang_py_config::{PYLangConfig, PYVersion};
 use genotype_lang_py_tree::*;
 use genotype_parser::{GTIdentifier, GTPath};
@@ -11,6 +13,7 @@ mod references;
 pub struct PYConvertContext {
     resolve: PYConvertResolve,
     config: PYLangConfig,
+    dependencies_config: HashMap<String, String>,
     imports: Vec<PYImport>,
     definitions: Vec<PYDefinition>,
     defined: Vec<PYIdentifier>,
@@ -36,10 +39,15 @@ impl PYContext for PYConvertContext {
 }
 
 impl PYConvertContext {
-    pub fn new(resolve: PYConvertResolve, config: PYLangConfig) -> Self {
+    pub fn new(
+        resolve: PYConvertResolve,
+        config: PYLangConfig,
+        dependencies_config: Option<HashMap<String, String>>,
+    ) -> Self {
         Self {
             resolve,
             config,
+            dependencies_config: dependencies_config.unwrap_or_default(),
             imports: vec![],
             definitions: vec![],
             defined: vec![],
@@ -70,12 +78,24 @@ impl PYConvertContext {
     }
 
     pub fn resolve_path(&self, path: &GTPath) -> String {
-        self.resolve
-            .paths
-            .get(path)
-            .unwrap_or(path)
-            .as_str()
-            .to_owned()
+        // [TODO] Refactor `resolve_path` between Python, Rust and TypeScript
+        if let Some((package_path, inner_path)) = path.package_path() {
+            if let Some(dependency) = self.dependencies_config.get(&package_path) {
+                match inner_path {
+                    Some(inner_path) => format!("{dependency}/{inner_path}"),
+                    None => dependency.to_owned(),
+                }
+            } else {
+                path.source_str().to_owned()
+            }
+        } else {
+            self.resolve
+                .paths
+                .get(path)
+                .unwrap_or(path)
+                .source_str()
+                .to_owned()
+        }
     }
 
     #[cfg(test)]
@@ -149,7 +169,7 @@ impl PYConvertContext {
 
 impl Default for PYConvertContext {
     fn default() -> Self {
-        Self::new(PYConvertResolve::default(), Default::default())
+        Self::new(PYConvertResolve::default(), Default::default(), None)
     }
 }
 
@@ -216,7 +236,7 @@ mod tests {
         resolve
             .imported
             .insert(GTIdentifier((0, 0).into(), "Name".into()));
-        let context = PYConvertContext::new(resolve, Default::default());
+        let context = PYConvertContext::new(resolve, Default::default(), None);
         assert_eq!(
             context.is_forward_identifier(
                 &"Other".into(),

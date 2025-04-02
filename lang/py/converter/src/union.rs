@@ -54,6 +54,7 @@ mod tests {
         let mut context = PYConvertContext::new(
             PYConvertResolve::default(),
             PYLangConfig::new(PYVersion::Legacy),
+            None,
         );
         assert_eq!(
             GTUnion {
