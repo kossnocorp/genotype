@@ -1,4 +1,4 @@
-use genotype_json_schema::json::*;
+use genotype_json_schema::*;
 use genotype_parser::*;
 
 use crate::{GtjConvert, GtjConvertContext};

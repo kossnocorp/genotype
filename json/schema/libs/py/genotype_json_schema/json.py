@@ -49,7 +49,7 @@ class GtjProperty(Model):
     name: str
     doc: Optional[str] = None
     descriptor: GtjAny
-    required: Optional[bool] = None
+    required: bool
 
 
 class GtjUnion(GtjBase, Model):

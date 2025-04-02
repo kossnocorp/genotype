@@ -358,9 +358,12 @@ serde = { version = "1", features = ["derive"] }
                     },
                     GTLangProjectSource {
                         path: "libs/rs/src/lib.rs".into(),
-                        code: r#"pub mod author;
-pub mod book;"#
-                            .into(),
+                        code: r#"mod author;
+pub use author::*;
+mod book;
+pub use book::*;
+"#
+                        .into(),
                     },
                     GTLangProjectSource {
                         path: "libs/rs/src/author.rs".into(),
@@ -419,17 +422,26 @@ serde = { version = "1", features = ["derive"] }
                     },
                     GTLangProjectSource {
                         path: "libs/rs/src/lib.rs".into(),
-                        code: r#"pub mod inventory;
-pub mod shop;"#
-                            .into(),
+                        code: r#"mod inventory;
+pub use inventory::*;
+mod shop;
+pub use shop::*;
+"#
+                        .into(),
                     },
                     GTLangProjectSource {
                         path: "libs/rs/src/shop/goods/mod.rs".into(),
-                        code: r#"pub mod book;"#.into(),
+                        code: r#"mod book;
+pub use book::*;
+"#
+                        .into(),
                     },
                     GTLangProjectSource {
                         path: "libs/rs/src/shop/mod.rs".into(),
-                        code: r#"pub mod goods;"#.into(),
+                        code: r#"mod goods;
+pub use goods::*;
+"#
+                        .into(),
                     },
                     GTLangProjectSource {
                         path: "libs/rs/src/inventory.rs".into(),
@@ -488,10 +500,14 @@ serde = { version = "1", features = ["derive"] }
                     },
                     GTLangProjectSource {
                         path: "libs/rs/src/lib.rs".into(),
-                        code: r#"pub mod admin;
-pub mod named;
-pub mod user;"#
-                            .into(),
+                        code: r#"mod admin;
+pub use admin::*;
+mod named;
+pub use named::*;
+mod user;
+pub use user::*;
+"#
+                        .into(),
                     },
                     GTLangProjectSource {
                         path: "libs/rs/src/admin.rs".into(),
@@ -601,7 +617,10 @@ serde = { version = "1", features = ["derive"] }
                     },
                     GTLangProjectSource {
                         path: "libs/rs/src/lib.rs".into(),
-                        code: r#"pub mod prompt;"#.into(),
+                        code: r#"mod prompt;
+pub use prompt::*;
+"#
+                        .into(),
                     },
                     GTLangProjectSource {
                         path: "libs/rs/src/prompt.rs".into(),

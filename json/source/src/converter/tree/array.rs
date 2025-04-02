@@ -1,4 +1,4 @@
-use genotype_json_schema::json::*;
+use genotype_json_schema::*;
 use genotype_parser::*;
 
 use crate::{GtjConvert, GtjConvertContext};
@@ -31,8 +31,6 @@ impl GtjConvert<GTDescriptor> for GtjArray {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_json_schema::json::{GtjAny, GtjArrayKindArray, GtjNull, GtjNullKindNull};
-    use genotype_parser::GTArray;
     use pretty_assertions::assert_eq;
 
     #[test]

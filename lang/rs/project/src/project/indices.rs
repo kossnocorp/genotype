@@ -46,11 +46,17 @@ impl RSProject {
                     "mod.rs"
                 });
 
-                let code = modules
+                let mut code = modules
                     .iter()
-                    .map(|module| format!("pub mod {};", module))
+                    .map(|module| {
+                        format!(
+                            r#"mod {module};
+pub use {module}::*;"#
+                        )
+                    })
                     .collect::<Vec<_>>()
                     .join("\n");
+                code += "\n";
 
                 GTLangProjectSource { path, code }
             })

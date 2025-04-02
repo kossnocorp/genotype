@@ -42,7 +42,7 @@ GtjProperty = {
   name: string,
   doc?: string,
   descriptor: GtjAny,
-  required?: boolean,
+  required: boolean,
 }
 
 GtjUnion = {

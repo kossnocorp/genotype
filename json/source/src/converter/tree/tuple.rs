@@ -1,4 +1,4 @@
-use genotype_json_schema::json::*;
+use genotype_json_schema::*;
 use genotype_parser::*;
 
 use crate::{GtjConvert, GtjConvertContext};
@@ -36,8 +36,6 @@ impl GtjConvert<GTDescriptor> for GtjTuple {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_json_schema::json::{GtjAny, GtjNull, GtjNullKindNull, GtjTupleKindTuple};
-    use genotype_parser::GTTuple;
     use pretty_assertions::assert_eq;
 
     #[test]

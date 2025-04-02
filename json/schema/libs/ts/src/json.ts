@@ -36,7 +36,7 @@ export interface GtjProperty {
   name: string;
   doc?: string | undefined;
   descriptor: GtjAny;
-  required?: boolean | undefined;
+  required: boolean;
 }
 
 export interface GtjUnion extends GtjBase {
