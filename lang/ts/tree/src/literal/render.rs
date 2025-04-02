@@ -5,6 +5,7 @@ use super::TSLiteral;
 impl GTRender for TSLiteral {
     fn render(&self, _indent: &GTIndent) -> String {
         match self {
+            TSLiteral::Null => "null".to_string(),
             TSLiteral::Boolean(value) => value.to_string(),
             TSLiteral::Integer(value) => value.to_string(),
             TSLiteral::Float(value) => {
@@ -26,6 +27,11 @@ mod tests {
 
     use super::*;
     use crate::*;
+
+    #[test]
+    fn test_render_null() {
+        assert_eq!(TSLiteral::Null.render(&ts_indent()), "null");
+    }
 
     #[test]
     fn test_render_boolean() {

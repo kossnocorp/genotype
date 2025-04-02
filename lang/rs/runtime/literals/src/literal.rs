@@ -7,43 +7,56 @@ pub fn macro_attribute(attr: TokenStream, input: TokenStream) -> TokenStream {
 
     let expanded = match item {
         syn::Item::Struct(item) => {
-            let literal = parse_macro_input!(attr as Lit);
+            let attr_tokens = proc_macro2::TokenStream::from(attr.clone());
+            let attr_str = attr_tokens.to_string().trim().to_string();
 
-            let (hasher_code, serde_code) = match &literal {
-                Lit::Str(lit_str) => (
-                    std_hasher(&literal),
-                    str_serde_code(lit_str.value(), item.ident.clone()),
-                ),
+            let (serde_code, hash_code, debug_code) = if attr_str == "null" {
+                let serde_code = null_serde_code(item.ident.clone());
+                let hash_code = quote! {};
+                let debug_code = debug_trait_code(&"null", &item.ident);
 
-                Lit::Bool(lit_bool) => (
-                    std_hasher(&literal),
-                    bool_serde_code(lit_bool.value(), item.ident.clone()),
-                ),
+                (serde_code, hash_code, debug_code)
+            } else {
+                let literal = parse_macro_input!(attr as Lit);
 
-                Lit::Int(lit_int) => (
-                    std_hasher(&literal),
-                    int_serde_code(lit_int.base10_digits(), item.ident.clone()),
-                ),
+                let (hasher_code, serde_code) = match &literal {
+                    Lit::Str(lit_str) => (
+                        std_hasher(&literal),
+                        str_serde_code(lit_str.value(), item.ident.clone()),
+                    ),
 
-                Lit::Float(lit_float) => {
-                    let literal: f64 = lit_float
-                        .base10_digits()
-                        .parse()
-                        .expect("Invalid f64 literal");
-                    (
-                        float_hasher(&literal),
-                        float_serde_code(&literal, item.ident.clone()),
-                    )
-                }
+                    Lit::Bool(lit_bool) => (
+                        std_hasher(&literal),
+                        bool_serde_code(lit_bool.value(), item.ident.clone()),
+                    ),
 
-                _ => panic!(
+                    Lit::Int(lit_int) => (
+                        std_hasher(&literal),
+                        int_serde_code(lit_int.base10_digits(), item.ident.clone()),
+                    ),
+
+                    Lit::Float(lit_float) => {
+                        let literal: f64 = lit_float
+                            .base10_digits()
+                            .parse()
+                            .expect("Invalid f64 literal");
+                        (
+                            float_hasher(&literal),
+                            float_serde_code(&literal, item.ident.clone()),
+                        )
+                    }
+
+                    _ => panic!(
                     "The #[literal] attribute only supports string, bool, int or float literals"
                 ),
+                };
+
+                let hash_code = hash_trait_code(hasher_code, &item.ident);
+
+                let debug_code = debug_trait_code(&literal, &item.ident);
+
+                (serde_code, hash_code, debug_code)
             };
-
-            let hash_code = hash_trait_code(hasher_code, &item.ident);
-
-            let debug_code = debug_trait_code(&literal, &item.ident);
 
             quote! {
                 #[derive(Clone, Default, Eq, PartialEq)]
@@ -63,12 +76,31 @@ pub fn macro_attribute(attr: TokenStream, input: TokenStream) -> TokenStream {
     TokenStream::from(expanded)
 }
 
+fn null_serde_code(target: syn::Ident) -> proc_macro2::TokenStream {
+    serde_code(
+        &"null",
+        &target,
+        SerdeConsts {
+            serialize_call: quote! { serialize_unit() },
+            deserialize: "deserialize_unit".into(),
+            visit_fns: vec![quote! {
+                fn visit_unit<E>(self) -> Result<Self::Value, E>
+                where
+                    E: serde::de::Error,
+                {
+                    Ok(Null)
+                }
+            }],
+        },
+    )
+}
+
 fn str_serde_code(literal: String, target: syn::Ident) -> proc_macro2::TokenStream {
     serde_code(
         &literal,
         &target,
         SerdeConsts {
-            serialize: "serialize_str".into(),
+            serialize_call: quote! { serialize_str(#literal) },
             deserialize: "deserialize_str".into(),
             visit_fns: vec![serde_visit_code(
                 &literal,
@@ -88,7 +120,7 @@ fn bool_serde_code(literal: bool, target: syn::Ident) -> proc_macro2::TokenStrea
         &literal,
         &target,
         SerdeConsts {
-            serialize: "serialize_bool".into(),
+            serialize_call: quote! { serialize_bool(#literal) },
             deserialize: "deserialize_bool".into(),
             visit_fns: vec![serde_visit_code(
                 &literal,
@@ -109,7 +141,7 @@ fn int_serde_code(literal: &str, target: syn::Ident) -> proc_macro2::TokenStream
         &literal,
         &target,
         SerdeConsts {
-            serialize: "serialize_i64",
+            serialize_call: quote! { serialize_i64(#literal) },
             deserialize: "deserialize_i64",
             visit_fns: vec![
                 serde_visit_code(
@@ -140,7 +172,7 @@ fn float_serde_code(literal: &f64, target: syn::Ident) -> proc_macro2::TokenStre
         &literal,
         &target,
         SerdeConsts {
-            serialize: "serialize_f64",
+            serialize_call: quote! { serialize_f64(#literal) },
             deserialize: "deserialize_f64",
             visit_fns: vec![serde_visit_code(
                 &literal,
@@ -156,7 +188,7 @@ fn float_serde_code(literal: &f64, target: syn::Ident) -> proc_macro2::TokenStre
 }
 
 struct SerdeConsts {
-    pub serialize: &'static str,
+    pub serialize_call: proc_macro2::TokenStream,
     pub deserialize: &'static str,
     pub visit_fns: Vec<proc_macro2::TokenStream>,
 }
@@ -165,14 +197,14 @@ fn serde_code<L>(literal: &L, target: &syn::Ident, consts: SerdeConsts) -> proc_
 where
     L: ToTokens,
 {
-    let serialize = syn::Ident::new(&consts.serialize, target.span());
+    let serialize_call = consts.serialize_call;
     let serialize_code = quote! {
         impl serde::Serialize for #target {
             fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
             where
                 S: serde::Serializer,
             {
-                serializer.#serialize(#literal)
+                serializer.#serialize_call
             }
         }
     };

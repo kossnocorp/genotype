@@ -5,6 +5,7 @@ use super::PYLiteral;
 impl GTRender for PYLiteral {
     fn render(&self, _indent: &GTIndent) -> String {
         let str = match self {
+            PYLiteral::None => "None".to_string(),
             PYLiteral::Boolean(value) => if *value { "True" } else { "False" }.to_string(),
             PYLiteral::Integer(value) => value.to_string(),
             PYLiteral::Float(value) => {
@@ -27,6 +28,11 @@ mod tests {
 
     use super::*;
     use crate::*;
+
+    #[test]
+    fn test_render_none() {
+        assert_eq!(PYLiteral::None.render(&py_indent()), "Literal[None]");
+    }
 
     #[test]
     fn test_render_boolean() {

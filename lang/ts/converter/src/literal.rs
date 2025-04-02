@@ -6,6 +6,7 @@ use crate::{context::TSConvertContext, convert::TSConvert};
 impl TSConvert<TSLiteral> for GTLiteral {
     fn convert(&self, _context: &mut TSConvertContext) -> TSLiteral {
         match self {
+            GTLiteral::Null(_) => TSLiteral::Null,
             GTLiteral::Boolean(_, value) => TSLiteral::Boolean(*value),
             GTLiteral::Integer(_, value) => TSLiteral::Integer(*value),
             GTLiteral::Float(_, value) => TSLiteral::Float(*value),
@@ -22,6 +23,10 @@ mod tests {
 
     #[test]
     fn test_convert() {
+        assert_eq!(
+            TSLiteral::Null,
+            GTLiteral::Null(Default::default()).convert(&mut Default::default()),
+        );
         assert_eq!(
             TSLiteral::Boolean(true),
             GTLiteral::Boolean((0, 0).into(), true).convert(&mut Default::default()),

@@ -6,6 +6,7 @@ use crate::{context::PYConvertContext, convert::PYConvert};
 impl PYConvert<PYLiteral> for GTLiteral {
     fn convert(&self, context: &mut PYConvertContext) -> PYLiteral {
         match self {
+            GTLiteral::Null(_) => PYLiteral::None,
             GTLiteral::Boolean(_, value) => PYLiteral::Boolean(*value),
             GTLiteral::Integer(_, value) => PYLiteral::Integer(*value),
             GTLiteral::Float(_, value) => PYLiteral::Float(*value),
@@ -26,6 +27,10 @@ mod tests {
 
     #[test]
     fn test_convert() {
+        assert_eq!(
+            PYLiteral::None,
+            GTLiteral::Null((0, 0).into()).convert(&mut PYConvertContext::default()),
+        );
         assert_eq!(
             PYLiteral::Boolean(true),
             GTLiteral::Boolean((0, 0).into(), true).convert(&mut PYConvertContext::default()),

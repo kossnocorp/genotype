@@ -4,6 +4,7 @@ mod parse;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum GTLiteral {
+    Null(GTSpan),
     String(GTSpan, String),
     Integer(GTSpan, i64),
     Float(GTSpan, f64),
@@ -13,6 +14,7 @@ pub enum GTLiteral {
 impl GTLiteral {
     pub fn to_span(&self) -> GTSpan {
         match self {
+            GTLiteral::Null(span) => span,
             GTLiteral::String(span, _) => span,
             GTLiteral::Integer(span, _) => span,
             GTLiteral::Float(span, _) => span,
@@ -23,6 +25,7 @@ impl GTLiteral {
 
     pub fn to_string(&self) -> String {
         match self {
+            GTLiteral::Null(_) => "null".to_string(),
             GTLiteral::String(_, value) => value.clone(),
             GTLiteral::Integer(_, value) => value.to_string(),
             GTLiteral::Float(_, value) => value.to_string(),

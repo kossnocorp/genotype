@@ -47,6 +47,15 @@ fn test_float() {
 }
 
 #[test]
+fn test_null() {
+    #[literal(null)]
+    pub struct Null;
+
+    assert_eq!(serde_json::to_string_pretty(&Null).unwrap(), "null");
+    assert_eq!(serde_json::from_str::<Null>("null").unwrap(), Null);
+}
+
+#[test]
 fn test_hash() {
     #[literal("a")]
     pub struct A;
