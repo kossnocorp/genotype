@@ -159,7 +159,7 @@ mod tests {
             module_id: "module".into(),
             parents: parents.clone(),
             resolve: GTModuleResolve::new(),
-            taken_names: Default::default(),
+            claimed_names: Default::default(),
         };
 
         GTProperty::parse(pairs.next().unwrap(), &mut context).unwrap();

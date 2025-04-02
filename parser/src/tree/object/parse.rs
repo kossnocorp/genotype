@@ -65,7 +65,7 @@ mod tests {
                 (0, 5).into(),
                 "Hello".into(),
             ))],
-            taken_names: Default::default(),
+            claimed_names: Default::default(),
         };
         assert_eq!(
             GTObject::parse(pairs.next().unwrap(), &mut context).unwrap(),
@@ -135,7 +135,7 @@ mod tests {
                 GTContextParent::Alias(GTIdentifier::new((0, 5).into(), "Hello".into())),
                 GTContextParent::Anonymous,
             ],
-            taken_names: Default::default(),
+            claimed_names: Default::default(),
         };
         assert_eq!(
             GTObject::parse(pairs.next().unwrap(), &mut context).unwrap(),

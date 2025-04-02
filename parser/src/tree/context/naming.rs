@@ -22,7 +22,7 @@ impl GTContext {
     pub fn name_object(&mut self, span: GTSpan) -> GTNodeParseResult<GTObjectName> {
         // The alias is the immediate parent, so we can return it.
         if let Some(name) = self.claim_alias() {
-            self.take_name(&name.1);
+            self.claim_name(&name.1);
             return Ok(GTObjectName::Named(name));
         }
 
@@ -46,7 +46,7 @@ impl GTContext {
 
                     let identifier = parent.to_identifier(span.clone());
                     // [TODO] Ensure unique name
-                    self.take_name(&identifier.1);
+                    self.claim_name(&identifier.1);
 
                     return Ok(GTObjectName::Alias(identifier, parent));
                 }
@@ -108,14 +108,14 @@ impl GTContext {
             self.ensure_unique_name(span, name)
         };
 
-        self.take_name(&name.1);
+        self.claim_name(&name.1);
 
         name
     }
 
-    /// Enumerates the name if it's already taken.
+    /// Enumerates the name if it's already claimed.
     fn ensure_unique_name(&self, span: &GTSpan, name: String) -> GTIdentifier {
-        let name = if self.is_name_taken(&name) {
+        let name = if self.is_name_claimed(&name) {
             self.enumerate_name(&name)
         } else {
             name
@@ -124,26 +124,26 @@ impl GTContext {
         GTIdentifier::new(span.clone(), name)
     }
 
-    /// Enumerates the name if it's already taken.
+    /// Enumerates the name if it's already claimed.
     fn enumerate_name(&self, name: &String) -> String {
         let mut index = 2;
         loop {
             let enumerated_name = format!("{name}{index}");
-            if !self.taken_names.contains(&enumerated_name) {
+            if !self.claimed_names.contains(&enumerated_name) {
                 return enumerated_name;
             }
             index += 1;
         }
     }
 
-    /// Checks whether the name is already taken.
-    fn is_name_taken<Str: AsRef<str>>(&self, name: Str) -> bool {
-        self.taken_names.contains(name.as_ref())
+    /// Checks whether the name is already claimed.
+    fn is_name_claimed<Str: AsRef<str>>(&self, name: Str) -> bool {
+        self.claimed_names.contains(name.as_ref())
     }
 
     /// Takes the name so it can't be used again.
-    fn take_name(&mut self, name: &String) {
-        self.taken_names.insert(name.clone());
+    fn claim_name(&mut self, name: &String) {
+        self.claimed_names.insert(name.clone());
     }
 }
 
@@ -161,7 +161,7 @@ mod tests {
                 GTContextParent::Alias(GTIdentifier::new((0, 5).into(), "Hi".into())),
                 GTContextParent::Alias(GTIdentifier::new((5, 10).into(), "Hello".into())),
             ],
-            taken_names: Default::default(),
+            claimed_names: Default::default(),
         };
         assert_eq!(
             context.name_object((50, 55).into()).unwrap(),
@@ -179,7 +179,7 @@ mod tests {
                 GTContextParent::Alias(GTIdentifier::new((5, 10).into(), "Hello".into())),
                 GTContextParent::Anonymous,
             ],
-            taken_names: Default::default(),
+            claimed_names: Default::default(),
         };
         assert_eq!(
             context.name_object((50, 55).into()).unwrap(),
@@ -202,7 +202,7 @@ mod tests {
                 GTContextParent::Property(GTKey::new((10, 15).into(), "cruel".into())),
                 GTContextParent::Property(GTKey::new((15, 20).into(), "world".into())),
             ],
-            taken_names: Default::default(),
+            claimed_names: Default::default(),
         };
         assert_eq!(
             context.name_object((50, 55).into()).unwrap(),

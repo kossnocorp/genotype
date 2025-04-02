@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use literals::literal;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -8,7 +8,7 @@ pub enum GtjAny {
     GtjBoolean(GtjBoolean),
     GtjNumber(GtjNumber),
     GtjString(GtjString),
-    GtjArray(GtjArray),
+    GtjArray(Box<GtjArray>),
     GtjObject(GtjObject),
     GtjUnion(GtjUnion),
     GtjLiteral(GtjLiteral),
@@ -89,7 +89,7 @@ pub struct GtjProperty {
     pub name: String,
     pub doc: Option<String>,
     pub descriptor: GtjAny,
-    pub required: Option<bool>,
+    pub required: bool,
 }
 
 #[literal("property")]

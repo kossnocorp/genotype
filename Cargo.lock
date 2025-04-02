@@ -544,6 +544,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "genotype_json_source"
+version = "0.7.0"
+dependencies = [
+ "genotype_json_schema",
+ "genotype_parser",
+ "heck",
+ "literals 0.1.0",
+ "miette",
+ "pretty_assertions",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.64",
+]
+
+[[package]]
 name = "genotype_lang_core_project"
 version = "0.7.0"
 dependencies = [

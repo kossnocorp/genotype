@@ -15,7 +15,8 @@ pub struct GTContext {
     pub parents: Vec<GTContextParent>,
     /// A set of taken definition names. It allows to generate unique syntetic
     /// names.
-    pub taken_names: HashSet<String>,
+    // [TODO] Use `GTNamingContext` instead of `claimed_names` in the future.
+    pub claimed_names: HashSet<String>,
 }
 
 /// The parent context enum that defines the kind of a parent an object has.
@@ -36,7 +37,7 @@ impl GTContext {
             module_id,
             resolve: GTModuleResolve::new(),
             parents: vec![],
-            taken_names: HashSet::new(),
+            claimed_names: HashSet::new(),
         }
     }
 }
