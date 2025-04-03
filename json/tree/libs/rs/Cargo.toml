@@ -1,0 +1,10 @@
+[package]
+description = "Genotype language JSON tree"
+edition = "2021"
+license = "MIT"
+name = "genotype_json_tree"
+version = "0.1.0"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+literals = "0.1"

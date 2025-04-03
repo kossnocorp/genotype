@@ -13,14 +13,14 @@ build:
 build-watch:
   cargo watch -x build
 
-build-json-schema:
-  cargo run --bin gt -- build json/schema
+build-json-tree:
+  cargo run --bin gt -- build json/tree
 
-build-json-schema-watch:
-  while sleep 0.1; do ls json/schema/src/*.type | entr -d just build-json-schema; done
+build-json-tree-watch:
+  while sleep 0.1; do ls json/schema/src/*.type | entr -d just build-json-tree; done
 
 version version:
-  cargo release version {{version}} --exclude literals --exclude genotype_runtime --exclude genotype_json_schema --execute
+  cargo release version {{version}} --exclude literals --exclude genotype_runtime --exclude genotype_json_tree --execute
   cd lsp && just version {{version}}
   # [TODO] Include into the release process?
   # cd vscode && just version {{version}}

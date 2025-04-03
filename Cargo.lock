@@ -536,18 +536,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "genotype_json_schema"
-version = "0.1.0"
-dependencies = [
- "literals 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde",
-]
-
-[[package]]
-name = "genotype_json_source"
+name = "genotype_json_converter"
 version = "0.7.0"
 dependencies = [
- "genotype_json_schema",
+ "genotype_json_tree",
  "genotype_parser",
  "heck",
  "literals 0.1.0",
@@ -556,6 +548,26 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 1.0.64",
+]
+
+[[package]]
+name = "genotype_json_schema"
+version = "0.7.0"
+dependencies = [
+ "genotype_json_converter",
+ "genotype_json_tree",
+ "literals 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pretty_assertions",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "genotype_json_tree"
+version = "0.1.0"
+dependencies = [
+ "literals 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde",
 ]
 
 [[package]]
