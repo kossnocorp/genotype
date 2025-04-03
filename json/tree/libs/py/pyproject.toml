@@ -4,12 +4,12 @@ description = "Genotype language JSON tree"
 license = "MIT"
 name = "genotype-json-tree"
 readme = "README.md"
-version = "0.1.0"
+version = "0.2.0"
 
 packages = [{ include = "genotype_json_tree" }]
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.8"
 genotype-runtime = "^0.4"
 
 [build-system]

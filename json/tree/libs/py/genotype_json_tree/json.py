@@ -1,4 +1,4 @@
-from typing import Optional, Literal
+from typing import Union, TypeAlias, Optional, Literal, List
 from genotype import Model
 
 
@@ -25,15 +25,13 @@ class GtjString(GtjBase, Model):
 
 class GtjLiteral(GtjBase, Model):
     kind: Literal["literal"]
-    value: str | float | bool | None
+    value: Union[str, float, bool, None]
 
 
-type GtjLiteralKind = Literal["string"] | Literal["number"] | Literal[
-    "boolean"
-] | Literal["null"]
+GtjLiteralKind: TypeAlias = Union[Literal["string"], Literal["number"], Literal["boolean"], Literal["null"]]
 
 
-type GtjAny = GtjNull | GtjBoolean | GtjNumber | GtjString | GtjArray | GtjObject | GtjUnion | GtjLiteral | GtjTuple
+GtjAny: TypeAlias = Union[GtjNull, GtjBoolean, GtjNumber, GtjString, "GtjArray", "GtjObject", "GtjUnion", GtjLiteral, "GtjTuple"]
 
 
 class GtjArray(GtjBase, Model):
@@ -43,7 +41,7 @@ class GtjArray(GtjBase, Model):
 
 class GtjObject(GtjBase, Model):
     kind: Literal["object"]
-    properties: list["GtjProperty"]
+    properties: List["GtjProperty"]
 
 
 class GtjProperty(Model):
@@ -56,9 +54,9 @@ class GtjProperty(Model):
 
 class GtjUnion(GtjBase, Model):
     kind: Literal["union"]
-    descriptors: list[GtjAny]
+    descriptors: List[GtjAny]
 
 
 class GtjTuple(GtjBase, Model):
     kind: Literal["tuple"]
-    descriptors: list[GtjAny]
+    descriptors: List[GtjAny]

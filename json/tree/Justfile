@@ -1,3 +1,6 @@
+build:
+  cargo run --bin gt -- build json/tree
+
 publish: publish-py publish-ts publish-rs
 
 publish-py:
