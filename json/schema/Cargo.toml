@@ -1,9 +1,11 @@
 [package]
 name = "genotype_json_schema"
 version = "0.8.0"
-description = "Genotype language JSON Schema crate"
 edition = "2021"
+description = "Genotype language JSON Schema crate"
+authors = ["Sasha Koss <koss@nocorp.me>"]
 license = "MIT"
+repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
 genotype_json_converter = { path = "../converter" }
