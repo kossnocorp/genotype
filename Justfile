@@ -26,4 +26,4 @@ version version:
   # cd vscode && just version {{version}}
 
 publish:
-  cargo release publish --exclude literals --exclude genotype_runtime --execute
+  cargo release publish --exclude literals --exclude genotype_runtime --exclude genotype_json_tree --execute
