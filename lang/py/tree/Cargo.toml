@@ -1,6 +1,6 @@
 [package]
 name = "genotype_lang_py_tree"
-version = "0.8.1"
+version = "0.9.0"
 edition = "2021"
 description = "Genotype language Python target AST crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
@@ -8,8 +8,8 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_lang_core_tree = { version = "0.8.1", path = "../../core/tree" }
-genotype_lang_py_config = { version = "0.8.1", path = "../config" }
+genotype_lang_core_tree = { version = "0.9.0", path = "../../core/tree" }
+genotype_lang_py_config = { version = "0.9.0", path = "../config" }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
