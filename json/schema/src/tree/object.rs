@@ -1,5 +1,3 @@
-// additionalProperties
-
 use std::collections::HashMap;
 
 use crate::*;
@@ -11,6 +9,8 @@ use serde::{Deserialize, Serialize};
 pub struct GtjSchemaObject {
     pub r#type: GtjSchemaObjectType,
     pub properties: HashMap<String, GtjSchemaAny>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub required: Option<Vec<String>>,
     #[serde(rename = "additionalProperties")]
     pub additional_properties: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -24,19 +24,25 @@ pub struct GtjSchemaObjectType;
 
 impl GtjSchemaConvert<GtjSchemaObject> for GtjObject {
     fn convert(&self, _context: &mut GtjSchemaConvertContext) -> GtjSchemaObject {
+        let mut required = vec![];
+        let properties = self
+            .properties
+            .iter()
+            .map(|property| {
+                let name = property.name.clone();
+                let schema = property.descriptor.convert(_context);
+                if property.required {
+                    required.push(name.clone());
+                }
+                (name, schema)
+            })
+            .collect();
         GtjSchemaObject {
             r#type: GtjSchemaObjectType,
             title: self.name.clone(),
             description: self.doc.clone(),
-            properties: self
-                .properties
-                .iter()
-                .map(|property| {
-                    let name = property.name.clone();
-                    let schema = property.descriptor.convert(_context);
-                    (name, schema)
-                })
-                .collect(),
+            properties,
+            required: Some(required),
             additional_properties: false,
         }
     }
@@ -86,6 +92,7 @@ mod tests {
                         description: None,
                     })
                 )]),
+                required: Some(vec!["foo".into()]),
                 additional_properties: false
             },
             object.convert(&mut GtjSchemaConvertContext {}),
