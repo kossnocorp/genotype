@@ -1,6 +1,6 @@
 [package]
 name = "genotype_lang_py_converter"
-version = "0.7.0"
+version = "0.8.0"
 edition = "2021"
 description = "Genotype language Python target converter crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
@@ -8,10 +8,10 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_parser = { version = "0.7.0", path = "../../../parser" }
-genotype_lang_py_tree = { version = "0.7.0", path = "../tree" }
-genotype_lang_py_config = { version = "0.7.0", path = "../config" }
-genotype_lang_py_visitor = { version = "0.7.0", path = "../visitor" }
+genotype_parser = { version = "0.8.0", path = "../../../parser" }
+genotype_lang_py_tree = { version = "0.8.0", path = "../tree" }
+genotype_lang_py_config = { version = "0.8.0", path = "../config" }
+genotype_lang_py_visitor = { version = "0.8.0", path = "../visitor" }
 heck = "0.5.0"
 indexmap = "2.6.0"
 

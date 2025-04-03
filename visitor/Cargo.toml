@@ -1,6 +1,6 @@
 [package]
 name = "genotype_visitor"
-version = "0.7.0"
+version = "0.8.0"
 edition = "2021"
 description = "Genotype language visitor crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
@@ -8,7 +8,7 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_parser = { version = "0.7.0", path = "../parser" }
+genotype_parser = { version = "0.8.0", path = "../parser" }
 
 [dev-dependencies]
 miette = "7.2.0"
