@@ -15,19 +15,19 @@ pub struct GtjSchemaNumber {
 #[literal("number")]
 pub struct GtjSchemaNumberType;
 
-impl GtjSchemaConvert<GtjSchemaNumber> for GtjNumber {
-    fn convert(&self, _context: &mut GtjSchemaConvertContext) -> GtjSchemaNumber {
+impl From<GtjNumber> for GtjSchemaNumber {
+    fn from(number: GtjNumber) -> GtjSchemaNumber {
         GtjSchemaNumber {
             r#type: GtjSchemaNumberType,
-            title: self.name.clone(),
-            description: self.doc.clone(),
+            title: number.name.clone(),
+            description: number.doc.clone(),
         }
     }
 }
 
-impl GtjSchemaConvert<GtjSchemaAny> for GtjNumber {
-    fn convert(&self, _context: &mut GtjSchemaConvertContext) -> GtjSchemaAny {
-        GtjSchemaAny::Number(self.convert(_context))
+impl From<GtjNumber> for GtjSchemaAny {
+    fn from(number: GtjNumber) -> GtjSchemaAny {
+        GtjSchemaAny::Number(number.into())
     }
 }
 
@@ -49,7 +49,7 @@ mod tests {
                 title: Some("hello".into()),
                 description: Some("Hello, world!".into()),
             },
-            number.convert(&mut GtjSchemaConvertContext {}),
+            number.into(),
         );
     }
 }

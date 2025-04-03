@@ -14,24 +14,24 @@ pub struct GtjSchemaTuple {
     pub description: Option<String>,
 }
 
-impl GtjSchemaConvert<GtjSchemaTuple> for GtjTuple {
-    fn convert(&self, _context: &mut GtjSchemaConvertContext) -> GtjSchemaTuple {
+impl From<GtjTuple> for GtjSchemaTuple {
+    fn from(tuple: GtjTuple) -> GtjSchemaTuple {
         GtjSchemaTuple {
             r#type: GtjSchemaArrayType,
-            title: self.name.clone(),
-            description: self.doc.clone(),
-            prefix_items: self
+            title: tuple.name.clone(),
+            description: tuple.doc.clone(),
+            prefix_items: tuple
                 .descriptors
                 .iter()
-                .map(|descriptor| descriptor.convert(_context))
+                .map(|descriptor| descriptor.clone().into())
                 .collect(),
         }
     }
 }
 
-impl GtjSchemaConvert<GtjSchemaAny> for GtjTuple {
-    fn convert(&self, _context: &mut GtjSchemaConvertContext) -> GtjSchemaAny {
-        GtjSchemaAny::Tuple(self.convert(_context))
+impl From<GtjTuple> for GtjSchemaAny {
+    fn from(tuple: GtjTuple) -> GtjSchemaAny {
+        GtjSchemaAny::Tuple(tuple.into())
     }
 }
 
@@ -63,7 +63,7 @@ mod tests {
                     description: None,
                 })],
             },
-            tuple.convert(&mut GtjSchemaConvertContext {}),
+            tuple.into(),
         );
     }
 }

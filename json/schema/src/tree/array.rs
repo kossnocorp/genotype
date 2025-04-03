@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtjSchemaArray {
     pub r#type: GtjSchemaArrayType,
-    pub items: Box<GtjSchemaAny>,
+    pub items: GtjSchemaAny,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -16,20 +16,20 @@ pub struct GtjSchemaArray {
 #[literal("array")]
 pub struct GtjSchemaArrayType;
 
-impl GtjSchemaConvert<GtjSchemaArray> for GtjArray {
-    fn convert(&self, _context: &mut GtjSchemaConvertContext) -> GtjSchemaArray {
+impl From<GtjArray> for GtjSchemaArray {
+    fn from(array: GtjArray) -> GtjSchemaArray {
         GtjSchemaArray {
             r#type: GtjSchemaArrayType,
-            title: self.name.clone(),
-            description: self.doc.clone(),
-            items: Box::new(self.descriptor.convert(_context)),
+            title: array.name.clone(),
+            description: array.doc.clone(),
+            items: array.descriptor.into(),
         }
     }
 }
 
-impl GtjSchemaConvert<GtjSchemaAny> for GtjArray {
-    fn convert(&self, _context: &mut GtjSchemaConvertContext) -> GtjSchemaAny {
-        GtjSchemaAny::Array(self.convert(_context))
+impl From<Box<GtjArray>> for GtjSchemaAny {
+    fn from(array: Box<GtjArray>) -> GtjSchemaAny {
+        GtjSchemaAny::Array(Box::new((*array).into()))
     }
 }
 
@@ -55,13 +55,13 @@ mod tests {
                 r#type: GtjSchemaArrayType,
                 title: Some("hello".into()),
                 description: Some("Hello, world!".into()),
-                items: Box::new(GtjSchemaAny::Boolean(GtjSchemaBoolean {
+                items: GtjSchemaAny::Boolean(GtjSchemaBoolean {
                     r#type: GtjSchemaBooleanType,
                     title: None,
                     description: None,
-                })),
+                }),
             },
-            array.convert(&mut GtjSchemaConvertContext {}),
+            array.into(),
         );
     }
 }

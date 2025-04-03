@@ -15,19 +15,19 @@ pub struct GtjSchemaNull {
 #[literal("null")]
 pub struct GtjSchemaNullType;
 
-impl GtjSchemaConvert<GtjSchemaNull> for GtjNull {
-    fn convert(&self, _context: &mut GtjSchemaConvertContext) -> GtjSchemaNull {
+impl From<GtjNull> for GtjSchemaNull {
+    fn from(null: GtjNull) -> GtjSchemaNull {
         GtjSchemaNull {
             r#type: GtjSchemaNullType,
-            title: self.name.clone(),
-            description: self.doc.clone(),
+            title: null.name.clone(),
+            description: null.doc.clone(),
         }
     }
 }
 
-impl GtjSchemaConvert<GtjSchemaAny> for GtjNull {
-    fn convert(&self, _context: &mut GtjSchemaConvertContext) -> GtjSchemaAny {
-        GtjSchemaAny::Null(self.convert(_context))
+impl From<GtjNull> for GtjSchemaAny {
+    fn from(null: GtjNull) -> GtjSchemaAny {
+        GtjSchemaAny::Null(null.into())
     }
 }
 
@@ -49,7 +49,7 @@ mod tests {
                 title: Some("hello".into()),
                 description: Some("Hello, world!".into()),
             },
-            null.convert(&mut GtjSchemaConvertContext {}),
+            null.into(),
         );
     }
 }

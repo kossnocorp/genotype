@@ -20,12 +20,12 @@ pub enum GtjSchemaConstValue {
     String(String),
 }
 
-impl GtjSchemaConvert<GtjSchemaConst> for GtjLiteral {
-    fn convert(&self, _context: &mut GtjSchemaConvertContext) -> GtjSchemaConst {
+impl From<GtjLiteral> for GtjSchemaConst {
+    fn from(literal: GtjLiteral) -> GtjSchemaConst {
         GtjSchemaConst {
-            title: self.name.clone(),
-            description: self.doc.clone(),
-            r#const: match self.value {
+            title: literal.name.clone(),
+            description: literal.doc.clone(),
+            r#const: match literal.value {
                 GtjLiteralValue::Null(value) => GtjSchemaConstValue::Null(value),
                 GtjLiteralValue::Boolean(value) => GtjSchemaConstValue::Boolean(value),
                 GtjLiteralValue::Number(value) => GtjSchemaConstValue::Number(value),
@@ -35,9 +35,9 @@ impl GtjSchemaConvert<GtjSchemaConst> for GtjLiteral {
     }
 }
 
-impl GtjSchemaConvert<GtjSchemaAny> for GtjLiteral {
-    fn convert(&self, _context: &mut GtjSchemaConvertContext) -> GtjSchemaAny {
-        GtjSchemaAny::Literal(self.convert(_context))
+impl From<GtjLiteral> for GtjSchemaAny {
+    fn from(literal: GtjLiteral) -> GtjSchemaAny {
+        GtjSchemaAny::Literal(literal.into())
     }
 }
 
@@ -60,7 +60,7 @@ mod tests {
                 description: Some("Hello, world!".into()),
                 r#const: GtjSchemaConstValue::Null(()),
             },
-            literal.convert(&mut GtjSchemaConvertContext {}),
+            literal.into(),
         );
     }
 
@@ -78,7 +78,7 @@ mod tests {
                 description: Some("Hello, world!".into()),
                 r#const: GtjSchemaConstValue::Boolean(true),
             },
-            literal.convert(&mut GtjSchemaConvertContext {}),
+            literal.into(),
         );
     }
 
@@ -96,7 +96,7 @@ mod tests {
                 description: Some("Hello, world!".into()),
                 r#const: GtjSchemaConstValue::Number(42.0),
             },
-            literal.convert(&mut GtjSchemaConvertContext {}),
+            literal.into(),
         );
     }
 
@@ -114,7 +114,7 @@ mod tests {
                 description: Some("Hello, world!".into()),
                 r#const: GtjSchemaConstValue::String("Hello".into()),
             },
-            literal.convert(&mut GtjSchemaConvertContext {}),
+            literal.into(),
         );
     }
 }

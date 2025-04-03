@@ -10,24 +10,24 @@ pub enum GtjSchemaAny {
     Number(GtjSchemaNumber),
     String(GtjSchemaString),
     Object(GtjSchemaObject),
-    Array(GtjSchemaArray),
+    Array(Box<GtjSchemaArray>),
     Union(GtjSchemaUnion),
     Literal(GtjSchemaConst),
     Tuple(GtjSchemaTuple),
 }
 
-impl GtjSchemaConvert<GtjSchemaAny> for GtjAny {
-    fn convert(&self, _context: &mut GtjSchemaConvertContext) -> GtjSchemaAny {
-        match self {
-            GtjAny::GtjNull(null) => null.convert(_context),
-            GtjAny::GtjBoolean(boolean) => boolean.convert(_context),
-            GtjAny::GtjNumber(number) => number.convert(_context),
-            GtjAny::GtjString(string) => string.convert(_context),
-            GtjAny::GtjObject(object) => object.convert(_context),
-            GtjAny::GtjArray(array) => array.convert(_context),
-            GtjAny::GtjUnion(union) => union.convert(_context),
-            GtjAny::GtjLiteral(literal) => literal.convert(_context),
-            GtjAny::GtjTuple(tuple) => tuple.convert(_context),
+impl From<GtjAny> for GtjSchemaAny {
+    fn from(any: GtjAny) -> GtjSchemaAny {
+        match any {
+            GtjAny::GtjNull(null) => null.into(),
+            GtjAny::GtjBoolean(boolean) => boolean.into(),
+            GtjAny::GtjNumber(number) => number.into(),
+            GtjAny::GtjString(string) => string.into(),
+            GtjAny::GtjObject(object) => object.into(),
+            GtjAny::GtjArray(array) => array.into(),
+            GtjAny::GtjUnion(union) => union.into(),
+            GtjAny::GtjLiteral(literal) => literal.into(),
+            GtjAny::GtjTuple(tuple) => tuple.into(),
         }
     }
 }
@@ -52,7 +52,7 @@ mod tests {
                 title: Some("hello".into()),
                 description: Some("Hello, world!".into()),
             }),
-            null.convert(&mut GtjSchemaConvertContext {}),
+            null.into(),
         );
     }
 
@@ -69,7 +69,7 @@ mod tests {
                 title: Some("hello".into()),
                 description: Some("Hello, world!".into()),
             }),
-            boolean.convert(&mut GtjSchemaConvertContext {}),
+            boolean.into(),
         );
     }
 
@@ -86,7 +86,7 @@ mod tests {
                 title: Some("hello".into()),
                 description: Some("Hello, world!".into()),
             }),
-            number.convert(&mut GtjSchemaConvertContext {}),
+            number.into(),
         );
     }
 
@@ -103,7 +103,7 @@ mod tests {
                 title: Some("hello".into()),
                 description: Some("Hello, world!".into()),
             }),
-            string.convert(&mut GtjSchemaConvertContext {}),
+            string.into(),
         );
     }
 
@@ -141,7 +141,7 @@ mod tests {
                 required: Some(vec!["foo".into()]),
                 additional_properties: false,
             }),
-            object.convert(&mut GtjSchemaConvertContext {}),
+            object.into(),
         );
     }
 
@@ -158,17 +158,17 @@ mod tests {
             }),
         }));
         assert_eq!(
-            GtjSchemaAny::Array(GtjSchemaArray {
+            GtjSchemaAny::Array(Box::new(GtjSchemaArray {
                 r#type: GtjSchemaArrayType,
                 title: Some("hello".into()),
                 description: Some("Hello, world!".into()),
-                items: Box::new(GtjSchemaAny::Null(GtjSchemaNull {
+                items: GtjSchemaAny::Null(GtjSchemaNull {
                     r#type: GtjSchemaNullType,
                     title: None,
                     description: None,
-                })),
-            }),
-            array.convert(&mut GtjSchemaConvertContext {}),
+                }),
+            })),
+            array.into(),
         );
     }
 
@@ -208,7 +208,7 @@ mod tests {
                     }),
                 ],
             }),
-            union.convert(&mut GtjSchemaConvertContext {}),
+            union.into(),
         );
     }
 
@@ -226,7 +226,7 @@ mod tests {
                 description: Some("Hello, world!".into()),
                 r#const: GtjSchemaConstValue::Boolean(true),
             }),
-            literal.convert(&mut GtjSchemaConvertContext {}),
+            literal.into(),
         );
     }
 
@@ -253,7 +253,7 @@ mod tests {
                     description: None,
                 })],
             }),
-            tuple.convert(&mut GtjSchemaConvertContext {}),
+            tuple.into(),
         );
     }
 }

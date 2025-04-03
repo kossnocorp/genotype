@@ -15,19 +15,19 @@ pub struct GtjSchemaBoolean {
 #[literal("boolean")]
 pub struct GtjSchemaBooleanType;
 
-impl GtjSchemaConvert<GtjSchemaBoolean> for GtjBoolean {
-    fn convert(&self, _context: &mut GtjSchemaConvertContext) -> GtjSchemaBoolean {
+impl From<GtjBoolean> for GtjSchemaBoolean {
+    fn from(boolean: GtjBoolean) -> GtjSchemaBoolean {
         GtjSchemaBoolean {
             r#type: GtjSchemaBooleanType,
-            title: self.name.clone(),
-            description: self.doc.clone(),
+            title: boolean.name.clone(),
+            description: boolean.doc.clone(),
         }
     }
 }
 
-impl GtjSchemaConvert<GtjSchemaAny> for GtjBoolean {
-    fn convert(&self, _context: &mut GtjSchemaConvertContext) -> GtjSchemaAny {
-        GtjSchemaAny::Boolean(self.convert(_context))
+impl From<GtjBoolean> for GtjSchemaAny {
+    fn from(boolean: GtjBoolean) -> GtjSchemaAny {
+        GtjSchemaAny::Boolean(boolean.into())
     }
 }
 
@@ -49,7 +49,7 @@ mod tests {
                 title: Some("hello".into()),
                 description: Some("Hello, world!".into()),
             },
-            boolean.convert(&mut GtjSchemaConvertContext {}),
+            boolean.into(),
         );
     }
 }

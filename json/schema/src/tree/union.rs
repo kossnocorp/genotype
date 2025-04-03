@@ -13,23 +13,23 @@ pub struct GtjSchemaUnion {
     pub description: Option<String>,
 }
 
-impl GtjSchemaConvert<GtjSchemaUnion> for GtjUnion {
-    fn convert(&self, _context: &mut GtjSchemaConvertContext) -> GtjSchemaUnion {
+impl From<GtjUnion> for GtjSchemaUnion {
+    fn from(union: GtjUnion) -> GtjSchemaUnion {
         GtjSchemaUnion {
-            title: self.name.clone(),
-            description: self.doc.clone(),
-            any_of: self
+            title: union.name.clone(),
+            description: union.doc.clone(),
+            any_of: union
                 .descriptors
                 .iter()
-                .map(|descriptor| descriptor.convert(_context))
+                .map(|descriptor| descriptor.clone().into())
                 .collect(),
         }
     }
 }
 
-impl GtjSchemaConvert<GtjSchemaAny> for GtjUnion {
-    fn convert(&self, _context: &mut GtjSchemaConvertContext) -> GtjSchemaAny {
-        GtjSchemaAny::Union(self.convert(_context))
+impl From<GtjUnion> for GtjSchemaAny {
+    fn from(union: GtjUnion) -> GtjSchemaAny {
+        GtjSchemaAny::Union(union.into())
     }
 }
 
@@ -60,7 +60,7 @@ mod tests {
                     description: None,
                 })],
             },
-            union.convert(&mut GtjSchemaConvertContext {}),
+            union.into(),
         );
     }
 }

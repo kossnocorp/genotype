@@ -22,15 +22,15 @@ pub struct GtjSchemaObject {
 #[literal("object")]
 pub struct GtjSchemaObjectType;
 
-impl GtjSchemaConvert<GtjSchemaObject> for GtjObject {
-    fn convert(&self, _context: &mut GtjSchemaConvertContext) -> GtjSchemaObject {
+impl From<GtjObject> for GtjSchemaObject {
+    fn from(object: GtjObject) -> GtjSchemaObject {
         let mut required = vec![];
-        let properties = self
+        let properties = object
             .properties
             .iter()
             .map(|property| {
                 let name = property.name.clone();
-                let schema = property.descriptor.convert(_context);
+                let schema = property.descriptor.clone().into();
                 if property.required {
                     required.push(name.clone());
                 }
@@ -39,8 +39,8 @@ impl GtjSchemaConvert<GtjSchemaObject> for GtjObject {
             .collect();
         GtjSchemaObject {
             r#type: GtjSchemaObjectType,
-            title: self.name.clone(),
-            description: self.doc.clone(),
+            title: object.name.clone(),
+            description: object.doc.clone(),
             properties,
             required: Some(required),
             additional_properties: false,
@@ -48,9 +48,9 @@ impl GtjSchemaConvert<GtjSchemaObject> for GtjObject {
     }
 }
 
-impl GtjSchemaConvert<GtjSchemaAny> for GtjObject {
-    fn convert(&self, _context: &mut GtjSchemaConvertContext) -> GtjSchemaAny {
-        GtjSchemaAny::Object(self.convert(_context))
+impl From<GtjObject> for GtjSchemaAny {
+    fn from(object: GtjObject) -> GtjSchemaAny {
+        GtjSchemaAny::Object(object.into())
     }
 }
 
@@ -95,7 +95,7 @@ mod tests {
                 required: Some(vec!["foo".into()]),
                 additional_properties: false
             },
-            object.convert(&mut GtjSchemaConvertContext {}),
+            object.into(),
         );
     }
 }
