@@ -28,7 +28,9 @@ class GtjLiteral(GtjBase, Model):
     value: str | float | bool | None
 
 
-type GtjLiteralKind = Literal["string"] | Literal["number"] | Literal["boolean"] | Literal["null"]
+type GtjLiteralKind = Literal["string"] | Literal["number"] | Literal[
+    "boolean"
+] | Literal["null"]
 
 
 type GtjAny = GtjNull | GtjBoolean | GtjNumber | GtjString | GtjArray | GtjObject | GtjUnion | GtjLiteral | GtjTuple
@@ -41,7 +43,7 @@ class GtjArray(GtjBase, Model):
 
 class GtjObject(GtjBase, Model):
     kind: Literal["object"]
-    properties: list[GtjProperty]
+    properties: list["GtjProperty"]
 
 
 class GtjProperty(Model):
