@@ -1,0 +1,13 @@
+build:
+  cargo run --bin gt -- build .
+
+publish: publish-py publish-ts publish-rs
+
+publish-py:
+  cd libs/py && poetry publish --build
+
+publish-ts:
+  cd libs/ts && pnpm publish
+
+publish-rs:
+  cd libs/rs && cargo publish

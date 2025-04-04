@@ -591,7 +591,7 @@ pub struct Account {
         ]));
 
         rs_config.dependencies = Some(HashMap::from_iter(vec![(
-            "genotype_json_tree".into(),
+            "genotype_json_types".into(),
             "genotype_json".into(),
         )]));
 

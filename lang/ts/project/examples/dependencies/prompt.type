@@ -1,4 +1,4 @@
-use genotype_json_tree/JsonAny
+use genotype_json_types/JsonAny
 
 Prompt = {
   content: string,

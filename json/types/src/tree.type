@@ -1,0 +1,66 @@
+GtjAny = GtjNull | GtjBoolean | GtjNumber | GtjString | GtjObject | GtjArray | GtjUnion | GtjTuple | GtjLiteral
+
+GtjBase = {
+  name?: string,
+  doc?: string,
+}
+
+GtjNull = {
+  ...GtjBase,
+  type: "null",
+}
+
+GtjBoolean = {
+  ...GtjBase,
+  type: "boolean",
+}
+
+GtjNumber = {
+  ...GtjBase,
+  type: "number",
+}
+
+GtjString = {
+  ...GtjBase,
+  type: "string",
+}
+
+GtjObject = {
+  ...GtjBase,
+  type: "object",
+  properties: [GtjProperty],
+}
+
+GtjProperty = {
+  type: "property",
+  name: string,
+  doc?: string,
+  descriptor: GtjAny,
+  required: boolean,
+}
+
+GtjArray = {
+  ...GtjBase,
+  type: "array",
+  descriptor: GtjAny,
+}
+
+GtjUnion = {
+  ...GtjBase,
+  type: "union",
+  descriptors: [GtjAny],
+}
+
+GtjTuple = {
+  ...GtjBase,
+  type: "tuple",
+  descriptors: [GtjAny],
+}
+
+GtjLiteral = {
+  ...GtjBase,
+  type: "literal",
+  value: string | number | boolean | null,
+}
+
+GtjLiteralType = "string" | "number" | "boolean" | "null"

@@ -1,0 +1,35 @@
+name = "genotype-json-types"
+
+[ts]
+enabled = true
+
+[ts.package]
+name = "genotype-json-types"
+version = "0.1.0"
+description = "Genotype language JSON types"
+authors = ["Sasha Koss <koss@nocorp.me>"]
+license = "MIT"
+files = ["src", "README.md"]
+
+[rust]
+enabled = true
+
+[rust.package]
+name = "genotype_json_types"
+version = "0.1.0"
+edition = "2021"
+description = "Genotype language JSON types"
+license = "MIT"
+
+[python]
+enabled = true
+module = "genotype_json_types"
+version = "legacy"
+
+[python.package]
+name = "genotype-json-types"
+version = "0.1.0"
+description = "Genotype language JSON types"
+authors = ["Sasha Koss <koss@nocorp.me>"]
+license = "MIT"
+readme = "README.md"

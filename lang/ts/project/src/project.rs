@@ -308,7 +308,7 @@ export interface Book {
         let project = GTProject::load(&config).unwrap();
 
         ts_config.dependencies = Some(HashMap::from_iter(vec![(
-            "genotype_json_tree".into(),
+            "genotype_json_types".into(),
             "@genotype/json".into(),
         )]));
 

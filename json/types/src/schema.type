@@ -1,0 +1,56 @@
+GtjSchemaAny = GtjSchemaNull | GtjSchemaBoolean | GtjSchemaNumber | GtjSchemaString | GtjSchemaObject | GtjSchemaArray | GtjSchemaUnion | GtjSchemaTuple | GtjSchemaLiteral
+
+GtjSchemaBase = {
+  title?: string,
+  description?: string,
+}
+
+GtjSchemaNull = {
+  ...GtjSchemaBase,
+  type: "null",
+}
+
+GtjSchemaBoolean = {
+  ...GtjSchemaBase,
+  type: "boolean",
+}
+
+GtjSchemaNumber = {
+  ...GtjSchemaBase,
+  type: "number",
+}
+
+GtjSchemaString = {
+  ...GtjSchemaBase,
+  type: "string",
+}
+
+GtjSchemaObject = {
+  ...GtjSchemaBase,
+  type: "object",
+  properties: { [string]: GtjSchemaAny },
+  required?: [string]
+  additionalProperties?: boolean
+}
+
+GtjSchemaArray = {
+  ...GtjSchemaBase,
+  type: "array",
+  items: GtjSchemaAny,
+}
+
+GtjSchemaUnion = {
+  ...GtjSchemaBase,
+  anyOf: [GtjSchemaAny],
+}
+
+GtjSchemaTuple = {
+  ...GtjSchemaBase,
+  type: "array",
+  prefixItems: [GtjSchemaAny],
+}
+
+GtjSchemaLiteral = {
+  ...GtjSchemaBase,
+  const: null | boolean | number | string
+}
