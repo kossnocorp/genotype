@@ -1,4 +1,4 @@
-use genotype_lang_core_codegen::GtlCodegen;
+use genotype_lang_core_codegen::*;
 use genotype_lang_core_tree::{
     indent::GTIndent,
     render::{GTRender, GTRenderModule},
@@ -11,18 +11,15 @@ use miette::Result;
 pub struct TsCodegen {}
 
 impl TsCodegen {
-    fn render_hoisted(context: &mut TSConvertContext) -> Option<String> {
+    fn gen_hoisted(context: &mut TSConvertContext) -> String {
         let hoisted = context.drain_hoisted();
-        if hoisted.is_empty() {
-            None
-        } else {
-            Some(TSModule::join_definitions(
-                hoisted
-                    .iter()
-                    .map(|definition| definition.render(&ts_indent()))
-                    .collect(),
-            ))
-        }
+
+        TSModule::join_definitions(
+            hoisted
+                .iter()
+                .map(|definition| definition.render(&ts_indent()))
+                .collect(),
+        )
     }
 }
 
@@ -31,34 +28,55 @@ impl GtlCodegen for TsCodegen {
         ts_indent()
     }
 
-    fn render_descriptor(descriptor: &GTDescriptor) -> Result<(String, Option<String>)> {
+    fn gen_descriptor(descriptor: &GTDescriptor) -> Result<GtlCodegenResultDescriptor> {
         let mut context = TSConvertContext::default();
         let converted = descriptor.convert(&mut context);
-        let rendered = converted.render(&ts_indent());
-        let hoisted_rendered = Self::render_hoisted(&mut context);
-        Ok((rendered, hoisted_rendered))
+
+        let inline = converted.render(&ts_indent());
+        let definitions = Self::gen_hoisted(&mut context);
+
+        Ok(GtlCodegenResultDescriptor {
+            inline,
+            definitions,
+            // [TODO]
+            resolve: GtlCodegenResolve {
+                imports: vec![],
+                claims: vec![],
+            },
+        })
     }
 
-    fn render_alias(alias: &GTAlias) -> Result<String> {
-        let mut rendered = vec![];
+    fn gen_alias(alias: &GTAlias) -> Result<GtlCodegenResultAlias> {
+        let mut definitions = vec![];
 
         let mut context = TSConvertContext::default();
         let converted = alias.convert(&mut context);
 
         let rendered_alias = converted.render(&ts_indent());
-        rendered.push(rendered_alias);
+        definitions.push(rendered_alias);
 
-        if let Some(hoisted_rendered) = Self::render_hoisted(&mut context) {
-            rendered.push(hoisted_rendered);
+        let rendered_hoisted = Self::gen_hoisted(&mut context);
+        if !rendered_hoisted.is_empty() {
+            definitions.push(rendered_hoisted);
         }
 
-        Ok(TSModule::join_definitions(rendered))
+        let definitions = TSModule::join_definitions(definitions);
+
+        Ok(GtlCodegenResultAlias {
+            definitions,
+            // [TODO]
+            resolve: GtlCodegenResolve {
+                imports: vec![],
+                claims: vec![],
+            },
+        })
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use genotype_lang_core_codegen::GtlCodegenResolve;
     use genotype_parser::{GTAlias, GTDefinitionId, GTIdentifier, GTLiteral, GTModuleId, GTUnion};
     use pretty_assertions::assert_eq;
 
@@ -66,8 +84,15 @@ mod tests {
     fn test_render_descriptor() {
         let literal = GTDescriptor::Literal(GTLiteral::Boolean(Default::default(), true));
         assert_eq!(
-            TsCodegen::render_descriptor(&literal).unwrap(),
-            ("true".into(), None)
+            TsCodegen::gen_descriptor(&literal).unwrap(),
+            GtlCodegenResultDescriptor {
+                inline: "true".into(),
+                definitions: "".into(),
+                resolve: GtlCodegenResolve {
+                    imports: vec![],
+                    claims: vec![],
+                },
+            }
         );
     }
 
@@ -82,8 +107,15 @@ mod tests {
             descriptor: GTDescriptor::Literal(GTLiteral::Boolean(Default::default(), true)),
         }));
         assert_eq!(
-            TsCodegen::render_descriptor(&alias).unwrap(),
-            ("Hello".into(), Some("export type Hello = true;".into()))
+            TsCodegen::gen_descriptor(&alias).unwrap(),
+            GtlCodegenResultDescriptor {
+                inline: "Hello".into(),
+                definitions: "export type Hello = true;".into(),
+                resolve: GtlCodegenResolve {
+                    imports: vec![],
+                    claims: vec![],
+                },
+            }
         );
     }
 
@@ -114,16 +146,18 @@ mod tests {
             ],
         });
         assert_eq!(
-            TsCodegen::render_descriptor(&union).unwrap(),
-            (
-                "Hello | World".into(),
-                Some(
-                    r#"export type Hello = true;
+            TsCodegen::gen_descriptor(&union).unwrap(),
+            GtlCodegenResultDescriptor {
+                inline: "Hello | World".into(),
+                definitions: r#"export type Hello = true;
 
 export type World = "world";"#
-                        .into()
-                )
-            )
+                    .into(),
+                resolve: GtlCodegenResolve {
+                    imports: vec![],
+                    claims: vec![],
+                },
+            }
         );
     }
 
@@ -164,12 +198,19 @@ export type World = "world";"#
             }),
         };
         assert_eq!(
-            TsCodegen::render_alias(&alias).unwrap(),
-            r#"export type Hi = Hello | World;
+            TsCodegen::gen_alias(&alias).unwrap(),
+            GtlCodegenResultAlias {
+                definitions: r#"export type Hi = Hello | World;
 
 export type Hello = true;
 
 export type World = "world";"#
+                    .into(),
+                resolve: GtlCodegenResolve {
+                    imports: vec![],
+                    claims: vec![],
+                },
+            }
         );
     }
 }

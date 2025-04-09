@@ -1,4 +1,4 @@
-use genotype_lang_core_codegen::GtlCodegen;
+use genotype_lang_core_codegen::*;
 use genotype_lang_core_tree::{indent::GTIndent, render::GTRenderModule};
 use genotype_lang_rs_converter::{context::RSConvertContext, convert::RSConvert};
 use genotype_lang_rs_tree::*;
@@ -8,18 +8,15 @@ use miette::Result;
 pub struct RsCodegen {}
 
 impl RsCodegen {
-    fn render_hoisted(context: &mut RSConvertContext) -> Result<Option<String>> {
+    fn gen_hoisted(context: &mut RSConvertContext) -> Result<String> {
         let hoisted = context.drain_hoisted();
-        Ok(if hoisted.is_empty() {
-            None
-        } else {
-            Some(RSModule::join_definitions(
-                hoisted
-                    .iter()
-                    .map(|definition| definition.render(&rs_indent(), &Default::default()))
-                    .collect::<Result<_>>()?,
-            ))
-        })
+
+        Ok(RSModule::join_definitions(
+            hoisted
+                .iter()
+                .map(|definition| definition.render(&rs_indent(), &Default::default()))
+                .collect::<Result<_>>()?,
+        ))
     }
 }
 
@@ -28,30 +25,50 @@ impl GtlCodegen for RsCodegen {
         rs_indent()
     }
 
-    fn render_descriptor(descriptor: &GTDescriptor) -> Result<(String, Option<String>)> {
+    fn gen_descriptor(descriptor: &GTDescriptor) -> Result<GtlCodegenResultDescriptor> {
         let module_id = GTModuleId("module".into());
         let mut context = RSConvertContext::empty(module_id);
         let converted = descriptor.convert(&mut context)?;
-        let rendered = converted.render(&rs_indent(), &Default::default())?;
-        let hoisted_rendered = Self::render_hoisted(&mut context)?;
-        Ok((rendered, hoisted_rendered))
+
+        let inline = converted.render(&rs_indent(), &Default::default())?;
+        let definitions = Self::gen_hoisted(&mut context)?;
+
+        Ok(GtlCodegenResultDescriptor {
+            inline,
+            definitions,
+            // [TODO]
+            resolve: GtlCodegenResolve {
+                imports: vec![],
+                claims: vec![],
+            },
+        })
     }
 
-    fn render_alias(alias: &GTAlias) -> Result<String> {
-        let mut rendered = vec![];
+    fn gen_alias(alias: &GTAlias) -> Result<GtlCodegenResultAlias> {
+        let mut definitions = vec![];
 
         let module_id = GTModuleId("module".into());
         let mut context = RSConvertContext::empty(module_id);
         let converted = alias.convert(&mut context)?;
 
         let rendered_alias = converted.render(&rs_indent(), &Default::default())?;
-        rendered.push(rendered_alias);
+        definitions.push(rendered_alias);
 
-        if let Some(hoisted_rendered) = Self::render_hoisted(&mut context)? {
-            rendered.push(hoisted_rendered);
+        let rendered_hoisted = Self::gen_hoisted(&mut context)?;
+        if !rendered_hoisted.is_empty() {
+            definitions.push(rendered_hoisted);
         }
 
-        Ok(RSModule::join_definitions(rendered))
+        let definitions = RSModule::join_definitions(definitions);
+
+        Ok(GtlCodegenResultAlias {
+            definitions,
+            // [TODO]
+            resolve: GtlCodegenResolve {
+                imports: vec![],
+                claims: vec![],
+            },
+        })
     }
 }
 
@@ -65,15 +82,17 @@ mod tests {
     fn test_render_descriptor() {
         let literal = GTDescriptor::Literal(GTLiteral::Boolean(Default::default(), true));
         assert_eq!(
-            RsCodegen::render_descriptor(&literal).unwrap(),
-            (
-                "True".into(),
-                Some(
-                    r#"#[literal(true)]
+            RsCodegen::gen_descriptor(&literal).unwrap(),
+            GtlCodegenResultDescriptor {
+                inline: "True".into(),
+                definitions: r#"#[literal(true)]
 pub struct True;"#
-                        .into()
-                )
-            )
+                    .into(),
+                resolve: GtlCodegenResolve {
+                    imports: vec![],
+                    claims: vec![],
+                },
+            }
         );
     }
 
@@ -88,17 +107,19 @@ pub struct True;"#
             descriptor: GTDescriptor::Literal(GTLiteral::Boolean(Default::default(), true)),
         }));
         assert_eq!(
-            RsCodegen::render_descriptor(&alias).unwrap(),
-            (
-                "Hello".into(),
-                Some(
-                    r#"#[literal(true)]
+            RsCodegen::gen_descriptor(&alias).unwrap(),
+            GtlCodegenResultDescriptor {
+                inline: "Hello".into(),
+                definitions: r#"#[literal(true)]
 pub struct HelloTrue;
 
 pub type Hello = HelloTrue;"#
-                        .into()
-                )
-            )
+                    .into(),
+                resolve: GtlCodegenResolve {
+                    imports: vec![],
+                    claims: vec![],
+                },
+            }
         );
     }
 
@@ -129,11 +150,10 @@ pub type Hello = HelloTrue;"#
             ],
         });
         assert_eq!(
-            RsCodegen::render_descriptor(&union).unwrap(),
-            (
-                "".into(),
-                Some(
-                    r#"#[literal(true)]
+            RsCodegen::gen_descriptor(&union).unwrap(),
+            GtlCodegenResultDescriptor {
+                inline: "".into(),
+                definitions: r#"#[literal(true)]
 pub struct HelloTrue;
 
 pub type Hello = HelloTrue;
@@ -149,9 +169,12 @@ pub enum  {
     Hello(Hello),
     World(World),
 }"#
-                    .into()
-                )
-            )
+                .into(),
+                resolve: GtlCodegenResolve {
+                    imports: vec![],
+                    claims: vec![],
+                },
+            }
         );
     }
 
@@ -192,8 +215,9 @@ pub enum  {
             }),
         };
         assert_eq!(
-            RsCodegen::render_alias(&alias).unwrap(),
-            r#"#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+            RsCodegen::gen_alias(&alias).unwrap(),
+            GtlCodegenResultAlias {
+                definitions: r#"#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Hi {
     Hello(Hello),
@@ -209,6 +233,12 @@ pub type Hello = HiHelloTrue;
 pub struct HiWorldWorld;
 
 pub type World = HiWorldWorld;"#
+                    .into(),
+                resolve: GtlCodegenResolve {
+                    imports: vec![],
+                    claims: vec![],
+                },
+            }
         );
     }
 }

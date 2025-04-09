@@ -1,4 +1,4 @@
-use genotype_lang_core_codegen::GtlCodegen;
+use genotype_lang_core_codegen::*;
 use genotype_lang_core_tree::{indent::GTIndent, render::GTRenderModule};
 use genotype_lang_py_converter::{context::PYConvertContext, convert::PYConvert};
 use genotype_lang_py_tree::*;
@@ -8,18 +8,15 @@ use miette::Result;
 pub struct PyCodegen {}
 
 impl PyCodegen {
-    fn render_hoisted(context: &mut PYConvertContext) -> Option<String> {
+    fn gen_hoisted(context: &mut PYConvertContext) -> String {
         let hoisted = context.drain_hoisted();
-        if hoisted.is_empty() {
-            None
-        } else {
-            Some(PYModule::join_definitions(
-                hoisted
-                    .iter()
-                    .map(|definition| definition.render(&py_indent(), &Default::default()))
-                    .collect(),
-            ))
-        }
+
+        PYModule::join_definitions(
+            hoisted
+                .iter()
+                .map(|definition| definition.render(&py_indent(), &Default::default()))
+                .collect(),
+        )
     }
 }
 
@@ -28,34 +25,55 @@ impl GtlCodegen for PyCodegen {
         py_indent()
     }
 
-    fn render_descriptor(descriptor: &GTDescriptor) -> Result<(String, Option<String>)> {
+    fn gen_descriptor(descriptor: &GTDescriptor) -> Result<GtlCodegenResultDescriptor> {
         let mut context = PYConvertContext::default();
         let converted = descriptor.convert(&mut context);
-        let rendered = converted.render(&py_indent(), &Default::default());
-        let hoisted_rendered = Self::render_hoisted(&mut context);
-        Ok((rendered, hoisted_rendered))
+
+        let inline = converted.render(&py_indent(), &Default::default());
+        let definitions = Self::gen_hoisted(&mut context);
+
+        Ok(GtlCodegenResultDescriptor {
+            inline,
+            definitions,
+            // [TODO]
+            resolve: GtlCodegenResolve {
+                imports: vec![],
+                claims: vec![],
+            },
+        })
     }
 
-    fn render_alias(alias: &GTAlias) -> Result<String> {
-        let mut rendered = vec![];
+    fn gen_alias(alias: &GTAlias) -> Result<GtlCodegenResultAlias> {
+        let mut definitions = vec![];
 
         let mut context = PYConvertContext::default();
         let converted = alias.convert(&mut context);
 
         let rendered_alias = converted.render(&py_indent(), &Default::default());
-        rendered.push(rendered_alias);
+        definitions.push(rendered_alias);
 
-        if let Some(hoisted_rendered) = Self::render_hoisted(&mut context) {
-            rendered.push(hoisted_rendered);
+        let rendered_hoisted = Self::gen_hoisted(&mut context);
+        if !rendered_hoisted.is_empty() {
+            definitions.push(rendered_hoisted);
         }
 
-        Ok(PYModule::join_definitions(rendered))
+        let definitions = PYModule::join_definitions(definitions);
+
+        Ok(GtlCodegenResultAlias {
+            definitions,
+            // [TODO]
+            resolve: GtlCodegenResolve {
+                imports: vec![],
+                claims: vec![],
+            },
+        })
     }
 }
 
 #[cfg(test)]
 mod tespy {
     use super::*;
+    use genotype_lang_core_codegen::GtlCodegenResolve;
     use genotype_parser::{GTAlias, GTDefinitionId, GTIdentifier, GTLiteral, GTModuleId, GTUnion};
     use pretty_assertions::assert_eq;
 
@@ -63,8 +81,15 @@ mod tespy {
     fn test_render_descriptor() {
         let literal = GTDescriptor::Literal(GTLiteral::Boolean(Default::default(), true));
         assert_eq!(
-            PyCodegen::render_descriptor(&literal).unwrap(),
-            ("Literal[True]".into(), None)
+            PyCodegen::gen_descriptor(&literal).unwrap(),
+            GtlCodegenResultDescriptor {
+                inline: "Literal[True]".into(),
+                definitions: "".into(),
+                resolve: GtlCodegenResolve {
+                    imports: vec![],
+                    claims: vec![],
+                },
+            }
         );
     }
 
@@ -79,8 +104,15 @@ mod tespy {
             descriptor: GTDescriptor::Literal(GTLiteral::Boolean(Default::default(), true)),
         }));
         assert_eq!(
-            PyCodegen::render_descriptor(&alias).unwrap(),
-            ("Hello".into(), Some("type Hello = Literal[True]".into()))
+            PyCodegen::gen_descriptor(&alias).unwrap(),
+            GtlCodegenResultDescriptor {
+                inline: "Hello".into(),
+                definitions: "type Hello = Literal[True]".into(),
+                resolve: GtlCodegenResolve {
+                    imports: vec![],
+                    claims: vec![],
+                },
+            }
         );
     }
 
@@ -111,17 +143,19 @@ mod tespy {
             ],
         });
         assert_eq!(
-            PyCodegen::render_descriptor(&union).unwrap(),
-            (
-                "Hello | World".into(),
-                Some(
-                    r#"type Hello = Literal[True]
+            PyCodegen::gen_descriptor(&union).unwrap(),
+            GtlCodegenResultDescriptor {
+                inline: "Hello | World".into(),
+                definitions: r#"type Hello = Literal[True]
 
 
 type World = Literal["world"]"#
-                        .into()
-                )
-            )
+                    .into(),
+                resolve: GtlCodegenResolve {
+                    imports: vec![],
+                    claims: vec![],
+                },
+            }
         );
     }
 
@@ -161,15 +195,21 @@ type World = Literal["world"]"#
                 ],
             }),
         };
-        assert_eq!(
-            PyCodegen::render_alias(&alias).unwrap(),
-            r#"type Hi = Hello | World
+        assert_eq!(PyCodegen::gen_alias(&alias).unwrap(), {
+            GtlCodegenResultAlias {
+                definitions: r#"type Hi = Hello | World
 
 
 type Hello = Literal[True]
 
 
 type World = Literal["world"]"#
-        );
+                    .into(),
+                resolve: GtlCodegenResolve {
+                    imports: vec![],
+                    claims: vec![],
+                },
+            }
+        });
     }
 }
