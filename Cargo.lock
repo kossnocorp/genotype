@@ -559,6 +559,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "genotype_lang_core_codegen"
+version = "0.10.0"
+dependencies = [
+ "genotype_lang_core_tree",
+ "genotype_parser",
+ "miette",
+ "pretty_assertions",
+]
+
+[[package]]
 name = "genotype_lang_core_project"
 version = "0.10.0"
 dependencies = [
@@ -571,6 +581,19 @@ dependencies = [
 name = "genotype_lang_core_tree"
 version = "0.10.0"
 dependencies = [
+ "pretty_assertions",
+]
+
+[[package]]
+name = "genotype_lang_py_codegen"
+version = "0.10.0"
+dependencies = [
+ "genotype_lang_core_codegen",
+ "genotype_lang_core_tree",
+ "genotype_lang_py_converter",
+ "genotype_lang_py_tree",
+ "genotype_parser",
+ "miette",
  "pretty_assertions",
 ]
 
@@ -627,6 +650,19 @@ name = "genotype_lang_py_visitor"
 version = "0.10.0"
 dependencies = [
  "genotype_lang_py_tree",
+ "pretty_assertions",
+]
+
+[[package]]
+name = "genotype_lang_rs_codegen"
+version = "0.10.0"
+dependencies = [
+ "genotype_lang_core_codegen",
+ "genotype_lang_core_tree",
+ "genotype_lang_rs_converter",
+ "genotype_lang_rs_tree",
+ "genotype_parser",
+ "miette",
  "pretty_assertions",
 ]
 
@@ -696,6 +732,19 @@ name = "genotype_lang_rs_visitor"
 version = "0.10.0"
 dependencies = [
  "genotype_lang_rs_tree",
+ "pretty_assertions",
+]
+
+[[package]]
+name = "genotype_lang_ts_codegen"
+version = "0.10.0"
+dependencies = [
+ "genotype_lang_core_codegen",
+ "genotype_lang_core_tree",
+ "genotype_lang_ts_converter",
+ "genotype_lang_ts_tree",
+ "genotype_parser",
+ "miette",
  "pretty_assertions",
 ]
 

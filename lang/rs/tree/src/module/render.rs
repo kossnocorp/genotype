@@ -1,4 +1,4 @@
-use genotype_lang_core_tree::indent::GTIndent;
+use genotype_lang_core_tree::{indent::GTIndent, render::GTRenderModule};
 use genotype_lang_rs_config::RSLangConfig;
 use miette::Result;
 
@@ -17,31 +17,33 @@ impl RSRender for RSModule {
             }
         }
 
-        let imports = self
-            .imports
-            .iter()
-            .map(|import| import.render(indent, config))
-            .collect::<Result<Vec<String>>>()?
-            .join("\n");
+        let imports = Self::join_imports(
+            self.imports
+                .iter()
+                .map(|import| import.render(indent, config))
+                .collect::<Result<Vec<String>>>()?,
+        );
 
         if !imports.is_empty() {
             blocks.push(imports);
         }
 
-        let definitions = self
-            .definitions
-            .iter()
-            .map(|definition| definition.render(indent, config))
-            .collect::<Result<Vec<String>>>()?
-            .join("\n\n");
+        let definitions = Self::join_definitions(
+            self.definitions
+                .iter()
+                .map(|definition| definition.render(indent, config))
+                .collect::<Result<Vec<String>>>()?,
+        );
 
         if !definitions.is_empty() {
             blocks.push(definitions);
         }
 
-        Ok(blocks.join("\n\n") + "\n")
+        Ok(Self::join_blocks(blocks))
     }
 }
+
+impl GTRenderModule for RSModule {}
 
 #[cfg(test)]
 mod tests {

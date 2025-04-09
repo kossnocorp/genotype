@@ -1,6 +1,6 @@
 use std::{collections::HashMap, path::PathBuf};
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Default, Debug, PartialEq, Clone)]
 pub struct TSProjectConfig {
     pub out: PathBuf,
     pub src: PathBuf,

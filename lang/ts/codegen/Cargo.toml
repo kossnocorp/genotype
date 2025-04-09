@@ -1,0 +1,19 @@
+[package]
+name = "genotype_lang_ts_codegen"
+version = "0.10.0"
+edition = "2021"
+description = "Genotype language TypeScript target codegen crate"
+authors = ["Sasha Koss <koss@nocorp.me>"]
+license = "MIT"
+repository = "https://github.com/kossnocorp/genotype"
+
+[dependencies]
+genotype_lang_core_codegen = { version = "0.10.0", path = "../../core/codegen" }
+genotype_lang_core_tree = { version = "0.10.0", path = "../../core/tree" }
+genotype_lang_ts_converter = { version = "0.10.0", path = "../converter" }
+genotype_lang_ts_tree = { version = "0.10.0", path = "../tree" }
+genotype_parser = { version = "0.10.0", path = "../../../parser" }
+miette = { version = "7.2.0", features = ["fancy"] }
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"

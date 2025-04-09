@@ -1,4 +1,7 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use genotype_lang_core_tree::{
+    indent::GTIndent,
+    render::{GTRender, GTRenderModule},
+};
 use genotype_lang_py_config::PYLangConfig;
 
 use crate::PYRender;
@@ -19,28 +22,38 @@ impl PYRender for PYModule {
             blocks.push(doc);
         }
 
-        let imports = self
-            .imports
-            .iter()
-            .map(|import| import.render(indent))
-            .collect::<Vec<String>>()
-            .join("\n");
+        let imports = Self::join_imports(
+            self.imports
+                .iter()
+                .map(|import| import.render(indent))
+                .collect(),
+        );
 
         if !imports.is_empty() {
             blocks.push(imports);
         }
 
-        let definitions = self
-            .definitions
-            .iter()
-            .map(|definition| definition.render(indent, config))
-            .collect::<Vec<String>>()
-            .join("\n\n\n");
+        let definitions = Self::join_definitions(
+            self.definitions
+                .iter()
+                .map(|definition| definition.render(indent, config))
+                .collect::<Vec<String>>(),
+        );
 
         if !definitions.is_empty() {
             blocks.push(definitions);
         }
 
+        Self::join_blocks(blocks)
+    }
+}
+
+impl GTRenderModule for PYModule {
+    fn join_definitions(definitions: Vec<String>) -> String {
+        definitions.join("\n\n\n")
+    }
+
+    fn join_blocks(blocks: Vec<String>) -> String {
         blocks.join("\n\n\n") + "\n"
     }
 }

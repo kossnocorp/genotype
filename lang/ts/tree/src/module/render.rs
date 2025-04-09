@@ -1,4 +1,7 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use genotype_lang_core_tree::{
+    indent::GTIndent,
+    render::{GTRender, GTRenderModule},
+};
 
 use crate::TSDoc;
 
@@ -6,20 +9,20 @@ use super::TSModule;
 
 impl GTRender for TSModule {
     fn render(&self, indent: &GTIndent) -> String {
-        let imports = self
-            .imports
-            .iter()
-            .map(|import| import.render(indent))
-            .collect::<Vec<String>>()
-            .join("\n");
+        let imports = Self::join_imports(
+            self.imports
+                .iter()
+                .map(|import| import.render(indent))
+                .collect(),
+        );
         let has_imports = !imports.is_empty();
 
-        let definitions = self
-            .definitions
-            .iter()
-            .map(|definition| definition.render(indent))
-            .collect::<Vec<String>>()
-            .join("\n\n");
+        let definitions = Self::join_definitions(
+            self.definitions
+                .iter()
+                .map(|definition| definition.render(indent))
+                .collect(),
+        );
         let has_definitions = !definitions.is_empty();
 
         let mut str = imports;
@@ -37,6 +40,8 @@ impl GTRender for TSModule {
         TSDoc::with_doc(&self.doc, indent, str, true)
     }
 }
+
+impl GTRenderModule for TSModule {}
 
 #[cfg(test)]
 mod tests {
