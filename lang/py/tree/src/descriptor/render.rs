@@ -1,28 +1,28 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
-use genotype_lang_py_config::PYLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::{PYDescriptor, PYRender};
+impl<'a> GtlRender<'a> for PYDescriptor {
+    type RenderContext = PYRenderContext<'a>;
 
-impl PYRender for PYDescriptor {
-    fn render(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         match self {
-            PYDescriptor::List(array) => array.render(indent, config),
-            PYDescriptor::Literal(literal) => literal.render(indent),
-            PYDescriptor::Primitive(primitive) => primitive.render(indent),
-            PYDescriptor::Reference(name) => name.render(indent, config),
-            PYDescriptor::Tuple(tuple) => tuple.render(indent, config),
-            PYDescriptor::Union(union) => union.render(indent, config),
-            PYDescriptor::Dict(dict) => dict.render(indent, config),
-            PYDescriptor::Any(any) => any.render(indent),
+            PYDescriptor::List(array) => array.render(context),
+            PYDescriptor::Literal(literal) => literal.render(context),
+            PYDescriptor::Primitive(primitive) => primitive.render(context),
+            PYDescriptor::Reference(name) => name.render(context),
+            PYDescriptor::Tuple(tuple) => tuple.render(context),
+            PYDescriptor::Union(union) => union.render(context),
+            PYDescriptor::Dict(dict) => dict.render(context),
+            PYDescriptor::Any(any) => any.render(context),
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use pretty_assertions::assert_eq;
-
-    use crate::*;
 
     #[test]
     fn test_render_array() {
@@ -30,7 +30,8 @@ mod tests {
             PYDescriptor::List(Box::new(PYList {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Int)
             }))
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             "list[int]"
         );
     }
@@ -38,11 +39,15 @@ mod tests {
     #[test]
     fn test_render_primitive() {
         assert_eq!(
-            PYDescriptor::Primitive(PYPrimitive::Boolean).render(&py_indent(), &Default::default()),
+            PYDescriptor::Primitive(PYPrimitive::Boolean)
+                .render(&mut Default::default())
+                .unwrap(),
             "bool"
         );
         assert_eq!(
-            PYDescriptor::Primitive(PYPrimitive::String).render(&py_indent(), &Default::default()),
+            PYDescriptor::Primitive(PYPrimitive::String)
+                .render(&mut Default::default())
+                .unwrap(),
             "str"
         );
     }
@@ -51,7 +56,8 @@ mod tests {
     fn test_render_reference() {
         assert_eq!(
             PYDescriptor::Reference(PYReference::new("Name".into(), false))
-                .render(&py_indent(), &Default::default()),
+                .render(&mut Default::default())
+                .unwrap(),
             "Name"
         );
     }
@@ -65,7 +71,8 @@ mod tests {
                     PYDescriptor::Primitive(PYPrimitive::String)
                 ]
             })
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             "tuple[int, str]"
         );
     }
@@ -80,7 +87,8 @@ mod tests {
                 ],
                 discriminator: None
             })
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             "str | int"
         );
     }
@@ -92,7 +100,8 @@ mod tests {
                 key: PYDictKey::String,
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
             }))
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             "dict[str, int]"
         );
     }
@@ -100,7 +109,9 @@ mod tests {
     #[test]
     fn test_render_any() {
         assert_eq!(
-            PYDescriptor::Any(PYAny).render(&py_indent(), &Default::default()),
+            PYDescriptor::Any(PYAny)
+                .render(&mut Default::default())
+                .unwrap(),
             "Any"
         );
     }

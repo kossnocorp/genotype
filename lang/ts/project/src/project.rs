@@ -1,15 +1,13 @@
-use std::path::PathBuf;
-
 use genotype_lang_core_project::{
     module::GTLangProjectModule,
     project::{GTLangProject, GTLangProjectRender},
     source::GTLangProjectSource,
 };
-use genotype_lang_core_tree::render::GTRender;
+use genotype_lang_core_tree::*;
 use genotype_lang_ts_config::TSProjectConfig;
-use genotype_lang_ts_tree::ts_indent;
 use genotype_project::project::GTProject;
 use miette::Result;
+use std::path::PathBuf;
 
 use crate::{module::TSProjectModule, package::TSPackage};
 
@@ -88,7 +86,7 @@ impl GTLangProject<TSProjectConfig> for TSProject {
             .iter()
             .map(|module| GTLangProjectSource {
                 path: module.path.clone(),
-                code: module.module.render(&ts_indent()),
+                code: module.module.render(&mut Default::default()).unwrap(),
             })
             .collect::<Vec<_>>();
 

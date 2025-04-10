@@ -1,23 +1,21 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_rs_config::RSLangConfig;
+use super::RSDoc;
+use crate::*;
+use genotype_lang_core_tree::*;
 use miette::Result;
 
-use crate::RSRender;
+impl<'a> GtlRender<'a> for RSDoc {
+    type RenderContext = RSRenderContext<'a>;
 
-use super::RSDoc;
-
-impl RSRender for RSDoc {
-    fn render(&self, indent: &GTIndent, _config: &RSLangConfig) -> Result<String> {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         Ok(self
             .0
             .split("\n")
             .map(|line| {
-                format!(
-                    r#"{}{} {}"#,
-                    indent.string,
+                context.indent_format(&format!(
+                    r#"{} {}"#,
                     if self.1 { "//!" } else { "///" },
                     line
-                )
+                ))
             })
             .collect::<Vec<_>>()
             .join("\n"))
@@ -26,16 +24,14 @@ impl RSRender for RSDoc {
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
     use super::*;
-    use crate::indent::rs_indent;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render_simple() {
         assert_eq!(
             RSDoc::new("Hello, world!", false)
-                .render(&rs_indent(), &Default::default())
+                .render(&mut Default::default())
                 .unwrap(),
             r#"/// Hello, world!"#
         );
@@ -45,7 +41,7 @@ mod tests {
     fn test_render_module() {
         assert_eq!(
             RSDoc::new("Hello, world!", true)
-                .render(&rs_indent(), &Default::default())
+                .render(&mut Default::default())
                 .unwrap(),
             r#"//! Hello, world!"#
         );
@@ -60,7 +56,7 @@ cruel
 world!"#,
                 false
             )
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             r#"/// Hello,
 /// cruel
@@ -77,7 +73,7 @@ cruel
 world!"#,
                 false
             )
-            .render(&rs_indent().increment(), &Default::default())
+            .render(&mut RSRenderContext::default().indent_inc())
             .unwrap(),
             r#"    /// Hello,
     /// cruel

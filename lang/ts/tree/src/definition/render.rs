@@ -1,13 +1,15 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::TSDefinition;
+impl<'a> GtlRender<'a> for TSDefinition {
+    type RenderContext = TSRenderContext<'a>;
 
-impl GTRender for TSDefinition {
-    fn render(&self, indent: &GTIndent) -> String {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         match self {
-            TSDefinition::Alias(alias) => alias.render(indent),
-            TSDefinition::Interface(interface) => interface.render(indent),
-            TSDefinition::Branded(branded) => branded.render(indent),
+            TSDefinition::Alias(alias) => alias.render(context),
+            TSDefinition::Interface(interface) => interface.render(context),
+            TSDefinition::Branded(branded) => branded.render(context),
         }
     }
 }
@@ -15,7 +17,6 @@ impl GTRender for TSDefinition {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::*;
 
     #[test]
     fn test_render_alias() {
@@ -25,7 +26,8 @@ mod tests {
                 name: "Name".into(),
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String),
             })
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             "export type Name = string;"
         );
     }
@@ -52,7 +54,8 @@ mod tests {
                     }
                 ]
             })
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"export interface Name {
   name: string;
   age?: number;
@@ -68,7 +71,8 @@ mod tests {
                 name: "Version".into(),
                 primitive: TSPrimitive::Number
             })
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"export type Version = number & { [versionBrand]: true };
 declare const versionBrand: unique symbol;"#
         );

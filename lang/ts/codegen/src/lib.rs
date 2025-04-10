@@ -1,39 +1,37 @@
 use genotype_lang_core_codegen::*;
-use genotype_lang_core_tree::{
-    indent::GTIndent,
-    render::{GTRender, GTRenderModule},
-};
+use genotype_lang_core_tree::*;
 use genotype_lang_ts_converter::{context::TSConvertContext, convert::TSConvert};
 use genotype_lang_ts_tree::*;
 use genotype_parser::*;
 use miette::Result;
 
+mod module;
+pub use module::*;
+
 pub struct TsCodegen {}
 
 impl TsCodegen {
-    fn gen_hoisted(context: &mut TSConvertContext) -> String {
+    fn gen_hoisted(context: &mut TSConvertContext) -> Result<String> {
         let hoisted = context.drain_hoisted();
 
-        TSModule::join_definitions(
-            hoisted
+        Ok(TSModule::join_definitions(
+            &hoisted
                 .iter()
-                .map(|definition| definition.render(&ts_indent()))
-                .collect(),
-        )
+                .map(|definition| definition.render(&mut Default::default()))
+                .collect::<Result<_>>()?,
+        ))
     }
 }
 
-impl GtlCodegen for TsCodegen {
-    fn indent() -> GTIndent<'static> {
-        ts_indent()
-    }
-
-    fn gen_descriptor(descriptor: &GTDescriptor) -> Result<GtlCodegenResultDescriptor> {
+impl<'a, RenderContext> GtlCodegen<'a, RenderContext> for TsCodegen {
+    fn gen_descriptor(
+        descriptor: &GTDescriptor,
+    ) -> Result<GtlCodegenResultDescriptor<'a, RenderContext>> {
         let mut context = TSConvertContext::default();
         let converted = descriptor.convert(&mut context);
 
-        let inline = converted.render(&ts_indent());
-        let definitions = Self::gen_hoisted(&mut context);
+        let inline = converted.render(&mut Default::default())?;
+        let definitions = Self::gen_hoisted(&mut context)?;
 
         Ok(GtlCodegenResultDescriptor {
             inline,
@@ -46,21 +44,21 @@ impl GtlCodegen for TsCodegen {
         })
     }
 
-    fn gen_alias(alias: &GTAlias) -> Result<GtlCodegenResultAlias> {
+    fn gen_alias(alias: &GTAlias) -> Result<GtlCodegenResultAlias<'a, RenderContext>> {
         let mut definitions = vec![];
 
         let mut context = TSConvertContext::default();
         let converted = alias.convert(&mut context);
 
-        let rendered_alias = converted.render(&ts_indent());
+        let rendered_alias = converted.render(&mut Default::default())?;
         definitions.push(rendered_alias);
 
-        let rendered_hoisted = Self::gen_hoisted(&mut context);
+        let rendered_hoisted = Self::gen_hoisted(&mut context)?;
         if !rendered_hoisted.is_empty() {
             definitions.push(rendered_hoisted);
         }
 
-        let definitions = TSModule::join_definitions(definitions);
+        let definitions = TSModule::join_definitions(&definitions);
 
         Ok(GtlCodegenResultAlias {
             definitions,
@@ -88,7 +86,7 @@ mod tests {
             GtlCodegenResultDescriptor {
                 inline: "true".into(),
                 definitions: "".into(),
-                resolve: GtlCodegenResolve {
+                resolve: GtlCodegenResolve::<TSRenderContext> {
                     imports: vec![],
                     claims: vec![],
                 },
@@ -111,7 +109,7 @@ mod tests {
             GtlCodegenResultDescriptor {
                 inline: "Hello".into(),
                 definitions: "export type Hello = true;".into(),
-                resolve: GtlCodegenResolve {
+                resolve: GtlCodegenResolve::<TSRenderContext> {
                     imports: vec![],
                     claims: vec![],
                 },
@@ -153,7 +151,7 @@ mod tests {
 
 export type World = "world";"#
                     .into(),
-                resolve: GtlCodegenResolve {
+                resolve: GtlCodegenResolve::<TSRenderContext> {
                     imports: vec![],
                     claims: vec![],
                 },
@@ -206,7 +204,7 @@ export type Hello = true;
 
 export type World = "world";"#
                     .into(),
-                resolve: GtlCodegenResolve {
+                resolve: GtlCodegenResolve::<TSConvertContext> {
                     imports: vec![],
                     claims: vec![],
                 },

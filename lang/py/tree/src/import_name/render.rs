@@ -1,13 +1,18 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::PYImportName;
+impl<'a> GtlRender<'a> for PYImportName {
+    type RenderContext = PYRenderContext<'a>;
 
-impl GTRender for PYImportName {
-    fn render(&self, indent: &GTIndent) -> String {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         match self {
-            PYImportName::Name(name) => name.render(indent),
+            PYImportName::Name(name) => name.render(context),
+
             PYImportName::Alias(name, alias) => {
-                format!("{} as {}", name.render(indent), alias.render(indent))
+                let name = name.render(context)?;
+                let alias = alias.render(context)?;
+                Ok(format!("{name} as {alias}"))
             }
         }
     }
@@ -16,12 +21,13 @@ impl GTRender for PYImportName {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::indent::py_indent;
 
     #[test]
     fn test_render_name() {
         assert_eq!(
-            PYImportName::Name("Name".into()).render(&py_indent()),
+            PYImportName::Name("Name".into())
+                .render(&mut Default::default())
+                .unwrap(),
             "Name"
         );
     }
@@ -29,7 +35,9 @@ mod tests {
     #[test]
     fn test_render_alias() {
         assert_eq!(
-            PYImportName::Alias("Name".into(), "Alias".into()).render(&py_indent()),
+            PYImportName::Alias("Name".into(), "Alias".into())
+                .render(&mut Default::default())
+                .unwrap(),
             "Name as Alias"
         );
     }

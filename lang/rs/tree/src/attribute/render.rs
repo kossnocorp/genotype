@@ -1,32 +1,26 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_rs_config::RSLangConfig;
+use super::RSAttribute;
+use crate::*;
+use genotype_lang_core_tree::*;
 use miette::Result;
 
-use crate::RSRender;
+impl<'a> GtlRender<'a> for RSAttribute {
+    type RenderContext = RSRenderContext<'a>;
 
-use super::RSAttribute;
-
-impl RSRender for RSAttribute {
-    fn render(&self, indent: &GTIndent, _config: &RSLangConfig) -> Result<String> {
-        Ok(format!(
-            "{indent}#[{content}]",
-            indent = indent.string,
-            content = self.0
-        ))
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        Ok(context.indent_format(&format!("#[{content}]", content = self.0)))
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use pretty_assertions::assert_eq;
-
-    use crate::*;
 
     #[test]
     fn test_render() {
         assert_eq!(
             RSAttribute("derive".into())
-                .render(&rs_indent(), &Default::default())
+                .render(&mut Default::default())
                 .unwrap(),
             "#[derive]"
         );
@@ -36,7 +30,7 @@ mod tests {
     fn test_render_indent() {
         assert_eq!(
             RSAttribute("derive".into())
-                .render(&rs_indent().increment(), &Default::default())
+                .render(&mut RSRenderContext::default().indent_inc())
                 .unwrap(),
             "    #[derive]"
         );

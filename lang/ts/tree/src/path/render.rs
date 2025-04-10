@@ -1,22 +1,25 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::TSPath;
+impl<'a> GtlRender<'a> for TSPath {
+    type RenderContext = TSRenderContext<'a>;
 
-impl GTRender for TSPath {
-    fn render(&self, _indent: &GTIndent) -> String {
-        self.0.clone()
+    fn render(&self, _context: &mut Self::RenderContext) -> Result<String> {
+        Ok(self.0.clone())
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::indent::ts_indent;
 
     #[test]
     fn test_render() {
         assert_eq!(
-            TSPath("./path/to/module.ts".into()).render(&ts_indent()),
+            TSPath("./path/to/module.ts".into())
+                .render(&mut Default::default())
+                .unwrap(),
             "./path/to/module.ts"
         );
     }

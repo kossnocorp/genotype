@@ -1,35 +1,30 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_rs_config::RSLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
 use miette::Result;
 
-use crate::RSRender;
+impl<'a> GtlRender<'a> for RSEnum {
+    type RenderContext = RSRenderContext<'a>;
 
-use super::RSEnum;
-
-impl RSRender for RSEnum {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         let mut blocks = vec![];
 
         if let Some(doc) = &self.doc {
-            blocks.push(doc.render(indent, config)?);
+            blocks.push(doc.render(context)?);
         }
 
         for attribute in &self.attributes {
-            blocks.push(attribute.render(indent, config)?);
+            blocks.push(attribute.render(context)?);
         }
 
-        let name = self.name.render(indent, config)?;
-        blocks.push(format!(
-            "{indent}pub enum {name} {{",
-            indent = indent.string,
-        ));
+        let name = self.name.render(context)?;
+        blocks.push(context.indent_format(&format!("pub enum {name} {{")));
 
-        let variants_indent = indent.increment();
+        let mut variants_context = context.indent_inc();
         for variant in &self.variants {
-            blocks.push(variant.render(&variants_indent, config)?);
+            blocks.push(variant.render(&mut variants_context)?);
         }
 
-        blocks.push(indent.format("}"));
+        blocks.push(context.indent_format("}"));
 
         Ok(blocks.join("\n"))
     }
@@ -37,10 +32,9 @@ impl RSRender for RSEnum {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use genotype_parser::GTDefinitionId;
     use pretty_assertions::assert_eq;
-
-    use crate::*;
 
     #[test]
     fn test_render() {
@@ -65,7 +59,7 @@ mod tests {
                     },
                 ],
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             r#"pub enum Union {
     String(String),
@@ -97,7 +91,7 @@ mod tests {
                     },
                 ],
             }
-            .render(&rs_indent().increment(), &Default::default())
+            .render(&mut RSRenderContext::default().indent_inc())
             .unwrap(),
             r#"    pub enum Union {
         String(String),
@@ -129,7 +123,7 @@ mod tests {
                     },
                 ],
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             r#"#[derive(Deserialize, Serialize)]
 pub enum Union {
@@ -162,7 +156,7 @@ pub enum Union {
                     },
                 ],
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             r#"/// Hello, world!
 pub enum Union {
@@ -195,7 +189,7 @@ pub enum Union {
                     },
                 ],
             }
-            .render(&rs_indent().increment(), &Default::default())
+            .render(&mut RSRenderContext::default().indent_inc())
             .unwrap(),
             r#"    /// Hello, world!
     #[derive(Deserialize, Serialize)]

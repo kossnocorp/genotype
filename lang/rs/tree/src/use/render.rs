@@ -1,15 +1,13 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_rs_config::RSLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
 use miette::Result;
 
-use crate::{RSRender, RSUseReference};
+impl<'a> GtlRender<'a> for RSUse {
+    type RenderContext = RSRenderContext<'a>;
 
-use super::RSUse;
-
-impl RSRender for RSUse {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         let path = self.dependency.as_path();
-        let reference = self.reference.render(indent, config)?;
+        let reference = self.reference.render(context)?;
 
         Ok(match self.reference {
             RSUseReference::Module => format!(r#"use {path};"#),
@@ -20,10 +18,9 @@ impl RSRender for RSUse {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use genotype_parser::GTModuleId;
     use pretty_assertions::assert_eq;
-
-    use crate::*;
 
     #[test]
     fn test_render_module() {
@@ -35,7 +32,7 @@ mod tests {
                     "self::path::to::module".into()
                 ))
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             r#"use self::path::to::module;"#
         );
@@ -51,7 +48,7 @@ mod tests {
                     "self::path::to::module".into()
                 ))
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             r#"use self::path::to::module::*;"#
         );
@@ -70,7 +67,7 @@ mod tests {
                     "self::path::to::module".into()
                 ))
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             r#"use self::path::to::module::{Name, Name as Alias};"#
         );

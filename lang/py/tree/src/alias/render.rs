@@ -1,37 +1,35 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
-use genotype_lang_py_config::PYLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
 use genotype_lang_py_config::PYVersion;
+use miette::Result;
 
-use crate::PYRender;
+impl<'a> GtlRender<'a> for PYAlias {
+    type RenderContext = PYRenderContext<'a>;
 
-use super::PYAlias;
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        let name = self.name.render(context)?;
+        let descriptor = self.descriptor.render(context)?;
 
-impl PYRender for PYAlias {
-    fn render(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
-        let name = self.name.render(indent);
-        let descriptor = self.descriptor.render(indent, config);
-
-        let alias = if let PYVersion::Legacy = config.version {
-            format!("{}: TypeAlias = {}", name, descriptor)
+        let alias = if let PYVersion::Legacy = context.config.version {
+            format!("{name}: TypeAlias = {descriptor}")
         } else {
-            format!("type {} = {}", name, descriptor)
+            format!("type {name} = {descriptor}")
         };
 
-        if let Some(doc) = &self.doc {
-            format!("{}\n{}", alias, doc.render(&indent))
+        Ok(if let Some(doc) = &self.doc {
+            let doc = doc.render(context)?;
+            format!("{alias}\n{doc}")
         } else {
             alias
-        }
+        })
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_py_config::PYLangConfig;
-    use genotype_lang_py_config::PYVersion;
+    use super::*;
+    use genotype_lang_py_config::*;
     use pretty_assertions::assert_eq;
-
-    use crate::*;
 
     #[test]
     fn test_render() {
@@ -42,7 +40,8 @@ mod tests {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                 references: vec![],
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             "type Name = str"
         );
     }
@@ -56,7 +55,11 @@ mod tests {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                 references: vec![],
             }
-            .render(&py_indent(), &PYLangConfig::new(PYVersion::Legacy)),
+            .render(&mut PYRenderContext {
+                config: &PYLangConfig::new(PYVersion::Legacy),
+                ..Default::default()
+            })
+            .unwrap(),
             "Name: TypeAlias = str"
         );
     }
@@ -70,7 +73,8 @@ mod tests {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                 references: vec![],
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"type Name = str
 """Hello, world!""""#
         );

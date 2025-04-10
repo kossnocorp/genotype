@@ -1,15 +1,15 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use crate::PYImportReference;
+impl<'a> GtlRender<'a> for PYImport {
+    type RenderContext = PYRenderContext<'a>;
 
-use super::PYImport;
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        let path = self.path.render(context)?;
+        let reference = self.reference.render(context)?;
 
-impl GTRender for PYImport {
-    fn render(&self, indent: &GTIndent) -> String {
-        let path = self.path.render(indent);
-        let reference = self.reference.render(indent);
-
-        match self.reference {
+        Ok(match self.reference {
             PYImportReference::Default(_) => {
                 if reference.is_empty() {
                     format!(r#"import {}"#, path)
@@ -21,16 +21,14 @@ impl GTRender for PYImport {
             _ => {
                 format!(r#"from {} import {}"#, path, reference)
             }
-        }
+        })
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
     use super::*;
-    use crate::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render_default() {
@@ -40,7 +38,8 @@ mod tests {
                 reference: PYImportReference::Default(Some("name".into())),
                 dependency: PYDependency::Local(".path.to.module".into())
             }
-            .render(&py_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"import .path.to.module as name"#
         );
         assert_eq!(
@@ -49,7 +48,8 @@ mod tests {
                 reference: PYImportReference::Default(None),
                 dependency: PYDependency::Local(".path.to.module".into())
             }
-            .render(&py_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"import .path.to.module"#
         );
     }
@@ -62,7 +62,8 @@ mod tests {
                 reference: PYImportReference::Glob,
                 dependency: PYDependency::Local(".path.to.module".into())
             }
-            .render(&py_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"from .path.to.module import *"#
         );
     }
@@ -78,7 +79,8 @@ mod tests {
                 ]),
                 dependency: PYDependency::Local(".path.to.module".into())
             }
-            .render(&py_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"from .path.to.module import Name, Name as Alias"#
         );
     }

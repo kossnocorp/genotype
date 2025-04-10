@@ -1,10 +1,12 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::TSPrimitive;
+impl<'a> GtlRender<'a> for TSPrimitive {
+    type RenderContext = TSRenderContext<'a>;
 
-impl GTRender for TSPrimitive {
-    fn render(&self, _indent: &GTIndent) -> String {
-        match self {
+    fn render(&self, _context: &mut Self::RenderContext) -> Result<String> {
+        Ok(match self {
             TSPrimitive::String => "string",
             TSPrimitive::Number => "number",
             TSPrimitive::Boolean => "boolean",
@@ -12,22 +14,43 @@ impl GTRender for TSPrimitive {
             TSPrimitive::Null => "null",
             TSPrimitive::Undefined => "undefined",
         }
-        .to_string()
+        .to_string())
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::indent::ts_indent;
 
     #[test]
     fn test_render_primitive() {
-        assert_eq!(TSPrimitive::String.render(&ts_indent()), "string");
-        assert_eq!(TSPrimitive::Number.render(&ts_indent()), "number");
-        assert_eq!(TSPrimitive::BigInt.render(&ts_indent()), "bigint");
-        assert_eq!(TSPrimitive::Boolean.render(&ts_indent()), "boolean");
-        assert_eq!(TSPrimitive::Null.render(&ts_indent()), "null");
-        assert_eq!(TSPrimitive::Undefined.render(&ts_indent()), "undefined");
+        assert_eq!(
+            TSPrimitive::String.render(&mut Default::default()).unwrap(),
+            "string"
+        );
+        assert_eq!(
+            TSPrimitive::Number.render(&mut Default::default()).unwrap(),
+            "number"
+        );
+        assert_eq!(
+            TSPrimitive::BigInt.render(&mut Default::default()).unwrap(),
+            "bigint"
+        );
+        assert_eq!(
+            TSPrimitive::Boolean
+                .render(&mut Default::default())
+                .unwrap(),
+            "boolean"
+        );
+        assert_eq!(
+            TSPrimitive::Null.render(&mut Default::default()).unwrap(),
+            "null"
+        );
+        assert_eq!(
+            TSPrimitive::Undefined
+                .render(&mut Default::default())
+                .unwrap(),
+            "undefined"
+        );
     }
 }

@@ -1,13 +1,11 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_rs_config::RSLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
 use miette::Result;
 
-use crate::{RSRender, RSUseName};
+impl<'a> GtlRender<'a> for RSUseReference {
+    type RenderContext = RSRenderContext<'a>;
 
-use super::RSUseReference;
-
-impl RSRender for RSUseReference {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         Ok(match self {
             RSUseReference::Module => "".into(),
 
@@ -16,7 +14,7 @@ impl RSRender for RSUseReference {
             RSUseReference::Named(names) => {
                 let names_str = names
                     .iter()
-                    .map(|name| name.render(indent, config))
+                    .map(|name| name.render(context))
                     .collect::<Result<Vec<String>>>()?
                     .join(", ");
                 if names.len() == 1 {
@@ -33,13 +31,13 @@ impl RSRender for RSUseReference {
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
+    use super::*;
 
     #[test]
     fn test_render_module() {
         assert_eq!(
             RSUseReference::Module
-                .render(&rs_indent(), &Default::default())
+                .render(&mut Default::default())
                 .unwrap(),
             ""
         );
@@ -49,7 +47,7 @@ mod tests {
     fn test_render_glob() {
         assert_eq!(
             RSUseReference::Glob
-                .render(&rs_indent(), &Default::default())
+                .render(&mut Default::default())
                 .unwrap(),
             "*"
         );
@@ -62,7 +60,7 @@ mod tests {
                 RSUseName::Name("Name".into()),
                 RSUseName::Alias("Name".into(), "Alias".into()),
             ])
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             "{Name, Name as Alias}"
         );
@@ -72,7 +70,7 @@ mod tests {
     fn test_render_named_solo() {
         assert_eq!(
             RSUseReference::Named(vec![RSUseName::Name("Name".into()),])
-                .render(&rs_indent(), &Default::default())
+                .render(&mut Default::default())
                 .unwrap(),
             "Name"
         );
@@ -82,7 +80,7 @@ mod tests {
     fn test_render_named_solo_alias() {
         assert_eq!(
             RSUseReference::Named(vec![RSUseName::Alias("Name".into(), "Alias".into()),])
-                .render(&rs_indent(), &Default::default())
+                .render(&mut Default::default())
                 .unwrap(),
             "{Name as Alias}"
         );

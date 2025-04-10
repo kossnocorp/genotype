@@ -1,14 +1,12 @@
-use std::collections::HashMap;
-
-use genotype_lang_ts_tree::{TSDefinition, TSDoc};
-use genotype_parser::GTPath;
-
 use crate::resolve::TSConvertResolve;
+use genotype_lang_ts_tree::{TSDefinition, TSDoc};
+use std::collections::HashMap;
 
 pub mod doc;
 pub mod hoisting;
 pub mod resolve;
 
+#[derive(Debug, Clone, PartialEq)]
 pub struct TSConvertContext {
     resolve: TSConvertResolve,
     hoisted: Vec<TSDefinition>,

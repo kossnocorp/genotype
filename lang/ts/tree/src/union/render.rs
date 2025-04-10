@@ -1,21 +1,23 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::TSUnion;
+impl<'a> GtlRender<'a> for TSUnion {
+    type RenderContext = TSRenderContext<'a>;
 
-impl GTRender for TSUnion {
-    fn render(&self, indent: &GTIndent) -> String {
-        self.descriptors
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        Ok(self
+            .descriptors
             .iter()
-            .map(|d| d.render(indent))
-            .collect::<Vec<String>>()
-            .join(" | ")
+            .map(|d| d.render(context))
+            .collect::<Result<Vec<_>>>()?
+            .join(" | "))
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{descriptor::TSDescriptor, indent::ts_indent, primitive::TSPrimitive};
 
     #[test]
     fn test_render_union() {
@@ -26,7 +28,8 @@ mod tests {
                     TSDescriptor::Primitive(TSPrimitive::Number),
                 ]
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             "string | number"
         );
     }

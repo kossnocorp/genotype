@@ -1,3 +1,6 @@
+mod render;
+pub use render::*;
+
 pub mod alias;
 pub mod any;
 pub mod array;
@@ -10,7 +13,6 @@ pub mod identifier;
 pub mod import;
 pub mod import_name;
 pub mod import_reference;
-pub mod indent;
 pub mod inline_import;
 pub mod interface;
 pub mod intersection;
@@ -39,7 +41,6 @@ pub use identifier::*;
 pub use import::*;
 pub use import_name::*;
 pub use import_reference::*;
-pub use indent::*;
 pub use inline_import::*;
 pub use interface::*;
 pub use intersection::*;

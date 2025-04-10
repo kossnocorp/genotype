@@ -1,20 +1,24 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::PYKey;
+impl<'a> GtlRender<'a> for PYKey {
+    type RenderContext = PYRenderContext<'a>;
 
-impl GTRender for PYKey {
-    fn render(&self, _indent: &GTIndent) -> String {
-        self.0.clone()
+    fn render(&self, _context: &mut Self::RenderContext) -> Result<String> {
+        Ok(self.0.clone())
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::indent::py_indent;
 
     #[test]
     fn test_render() {
-        assert_eq!(PYKey("foo".into()).render(&py_indent()), "foo");
+        assert_eq!(
+            PYKey("foo".into()).render(&mut Default::default()).unwrap(),
+            "foo"
+        );
     }
 }

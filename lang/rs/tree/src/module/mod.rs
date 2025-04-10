@@ -1,6 +1,5 @@
+use crate::*;
 use genotype_parser::GTModuleId;
-
-use crate::{definition::RSDefinition, r#use::RSUse, RSDoc};
 
 pub mod render;
 

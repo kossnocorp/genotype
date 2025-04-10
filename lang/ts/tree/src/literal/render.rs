@@ -1,10 +1,12 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::TSLiteral;
+impl<'a> GtlRender<'a> for TSLiteral {
+    type RenderContext = TSRenderContext<'a>;
 
-impl GTRender for TSLiteral {
-    fn render(&self, _indent: &GTIndent) -> String {
-        match self {
+    fn render(&self, _context: &mut Self::RenderContext) -> Result<String> {
+        Ok(match self {
             TSLiteral::Null => "null".to_string(),
             TSLiteral::Boolean(value) => value.to_string(),
             TSLiteral::Integer(value) => value.to_string(),
@@ -16,41 +18,73 @@ impl GTRender for TSLiteral {
                 }
             }
             TSLiteral::String(value) => format!("\"{}\"", value.escape_default()),
-        }
+        })
     }
 }
 
 #[cfg(test)]
 mod tests {
-
-    use pretty_assertions::assert_eq;
-
     use super::*;
-    use crate::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render_null() {
-        assert_eq!(TSLiteral::Null.render(&ts_indent()), "null");
+        assert_eq!(
+            TSLiteral::Null.render(&mut Default::default()).unwrap(),
+            "null"
+        );
     }
 
     #[test]
     fn test_render_boolean() {
-        assert_eq!(TSLiteral::Boolean(true).render(&ts_indent()), "true");
-        assert_eq!(TSLiteral::Boolean(false).render(&ts_indent()), "false");
+        assert_eq!(
+            TSLiteral::Boolean(true)
+                .render(&mut Default::default())
+                .unwrap(),
+            "true"
+        );
+        assert_eq!(
+            TSLiteral::Boolean(false)
+                .render(&mut Default::default())
+                .unwrap(),
+            "false"
+        );
     }
 
     #[test]
     fn test_render_integer() {
-        assert_eq!(TSLiteral::Integer(1).render(&ts_indent()), "1");
-        assert_eq!(TSLiteral::Integer(-1).render(&ts_indent()), "-1");
+        assert_eq!(
+            TSLiteral::Integer(1)
+                .render(&mut Default::default())
+                .unwrap(),
+            "1"
+        );
+        assert_eq!(
+            TSLiteral::Integer(-1)
+                .render(&mut Default::default())
+                .unwrap(),
+            "-1"
+        );
     }
 
     #[test]
     fn test_render_float() {
-        assert_eq!(TSLiteral::Float(1.0).render(&ts_indent()), "1.0");
-        assert_eq!(TSLiteral::Float(-1.1).render(&ts_indent()), "-1.1");
         assert_eq!(
-            TSLiteral::Float(1.23456789).render(&ts_indent()),
+            TSLiteral::Float(1.0)
+                .render(&mut Default::default())
+                .unwrap(),
+            "1.0"
+        );
+        assert_eq!(
+            TSLiteral::Float(-1.1)
+                .render(&mut Default::default())
+                .unwrap(),
+            "-1.1"
+        );
+        assert_eq!(
+            TSLiteral::Float(1.23456789)
+                .render(&mut Default::default())
+                .unwrap(),
             "1.23456789"
         );
     }
@@ -58,11 +92,15 @@ mod tests {
     #[test]
     fn test_render_string() {
         assert_eq!(
-            TSLiteral::String("Hi!".into()).render(&ts_indent()),
+            TSLiteral::String("Hi!".into())
+                .render(&mut Default::default())
+                .unwrap(),
             "\"Hi!\""
         );
         assert_eq!(
-            TSLiteral::String("Hello, \"world\"!\\".into()).render(&ts_indent()),
+            TSLiteral::String("Hello, \"world\"!\\".into())
+                .render(&mut Default::default())
+                .unwrap(),
             "\"Hello, \\\"world\\\"!\\\\\""
         );
     }

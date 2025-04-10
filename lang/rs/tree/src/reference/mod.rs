@@ -1,4 +1,4 @@
-use genotype_parser::{GTDefinitionId, GTReferenceId};
+use genotype_parser::*;
 
 use crate::identifier::RSIdentifier;
 

@@ -1,19 +1,17 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_rs_config::RSLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
 use miette::Result;
 
-use crate::RSRender;
+impl<'a> GtlRender<'a> for RSAlias {
+    type RenderContext = RSRenderContext<'a>;
 
-use super::RSAlias;
-
-impl RSRender for RSAlias {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
-        let name = self.name.render(indent, config)?;
-        let descriptor = self.descriptor.render(indent, config)?;
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        let name = self.name.render(context)?;
+        let descriptor = self.descriptor.render(context)?;
         let r#type = format!("pub type {name} = {descriptor};");
 
         Ok(if let Some(doc) = &self.doc {
-            format!("{}\n{}", doc.render(indent, config)?, r#type)
+            format!("{}\n{}", doc.render(context)?, r#type)
         } else {
             r#type
         })
@@ -22,10 +20,9 @@ impl RSRender for RSAlias {
 
 #[cfg(test)]
 mod tests {
-    use genotype_parser::GTDefinitionId;
+    use super::*;
+    use genotype_parser::*;
     use pretty_assertions::assert_eq;
-
-    use crate::*;
 
     #[test]
     fn test_render() {
@@ -36,7 +33,7 @@ mod tests {
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             "pub type Name = String;"
         );
@@ -51,7 +48,7 @@ mod tests {
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             r#"/// Hello, world!
 pub type Name = String;"#

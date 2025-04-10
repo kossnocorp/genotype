@@ -1,32 +1,27 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_py_config::PYLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
 use genotype_lang_py_config::PYVersion;
+use miette::Result;
 
-use crate::PYRender;
+impl<'a> GtlRender<'a> for PYList {
+    type RenderContext = PYRenderContext<'a>;
 
-use super::PYList;
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        let list = if let PYVersion::Legacy = context.config.version {
+            "List"
+        } else {
+            "list"
+        };
+        let descriptor = self.descriptor.render(context)?;
 
-impl PYRender for PYList {
-    fn render(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
-        format!(
-            "{}[{}]",
-            if let PYVersion::Legacy = config.version {
-                "List"
-            } else {
-                "list"
-            },
-            self.descriptor.render(indent, config)
-        )
+        Ok(format!("{list}[{descriptor}]"))
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_py_config::PYLangConfig;
-
-    use crate::{descriptor::PYDescriptor, indent::py_indent, primitive::PYPrimitive};
-
     use super::*;
+    use genotype_lang_py_config::PYLangConfig;
 
     #[test]
     fn test_render_array() {
@@ -34,7 +29,8 @@ mod tests {
             PYList {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String)
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             "list[str]"
         );
     }
@@ -45,7 +41,11 @@ mod tests {
             PYList {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String)
             }
-            .render(&py_indent(), &PYLangConfig::new(PYVersion::Legacy)),
+            .render(&mut PYRenderContext {
+                config: &PYLangConfig::new(PYVersion::Legacy),
+                ..Default::default()
+            })
+            .unwrap(),
             "List[str]"
         );
     }

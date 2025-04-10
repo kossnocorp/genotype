@@ -1,13 +1,11 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_rs_config::RSLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
 use miette::Result;
 
-use crate::error::RSError;
+impl<'a> GtlRender<'a> for RSStructFields {
+    type RenderContext = RSRenderContext<'a>;
 
-use super::{RSRender, RSStructFields};
-
-impl RSRender for RSStructFields {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         match self {
             RSStructFields::Tuple(descriptors) => {
                 if descriptors.len() == 0 {
@@ -18,7 +16,7 @@ impl RSRender for RSStructFields {
                     .iter()
                     .map(|descriptor| {
                         descriptor
-                            .render(indent, config)
+                            .render(context)
                             .map(|result| format!("pub {result}"))
                     })
                     .collect::<Result<Vec<String>>>()?
@@ -32,18 +30,21 @@ impl RSRender for RSStructFields {
                     return Ok(";".into());
                 }
 
-                let fields_indent = indent.increment();
+                let mut fields_context = context.indent_inc();
                 let fields = fields
                     .iter()
                     .map(|property| {
                         property
-                            .render(&fields_indent, config)
+                            .render(&mut fields_context)
                             .map(|result| result + ",")
                     })
                     .collect::<Result<Vec<String>>>()?
                     .join("\n");
 
-                Ok(format!(" {{\n{fields}\n{indent}}}", indent = indent.string))
+                Ok(format!(
+                    " {{\n{fields}\n{indent}}}",
+                    indent = context.indent_str()
+                ))
             }
 
             RSStructFields::Unresolved(span, _, _) => {
@@ -55,9 +56,8 @@ impl RSRender for RSStructFields {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use pretty_assertions::assert_eq;
-
-    use crate::*;
 
     #[test]
     fn test_render_fields() {
@@ -76,7 +76,7 @@ mod tests {
                     descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize),
                 }
             ])
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             r#" {
     pub name: String,
@@ -89,7 +89,7 @@ mod tests {
     fn test_render_empty() {
         assert_eq!(
             RSStructFields::Resolved(vec![])
-                .render(&rs_indent(), &Default::default())
+                .render(&mut Default::default())
                 .unwrap(),
             ";"
         );
@@ -112,7 +112,7 @@ mod tests {
                     descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize),
                 }
             ])
-            .render(&rs_indent().increment(), &Default::default())
+            .render(&mut RSRenderContext::default().indent_inc())
             .unwrap(),
             r#" {
         pub name: String,
@@ -128,7 +128,7 @@ mod tests {
                 RSDescriptor::Primitive(RSPrimitive::String),
                 RSDescriptor::Primitive(RSPrimitive::IntSize),
             ])
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             "(pub String, pub isize);"
         );
@@ -138,7 +138,7 @@ mod tests {
     fn test_render_empty_tuple() {
         assert_eq!(
             RSStructFields::Tuple(vec![])
-                .render(&rs_indent(), &Default::default())
+                .render(&mut Default::default())
                 .unwrap(),
             ";"
         );

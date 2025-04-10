@@ -1,23 +1,19 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_rs_config::RSLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
 use miette::Result;
 
-use crate::RSRender;
+impl<'a> GtlRender<'a> for RSPath {
+    type RenderContext = RSRenderContext<'a>;
 
-use super::RSPath;
-
-impl RSRender for RSPath {
-    fn render(&self, _indent: &GTIndent, _config: &RSLangConfig) -> Result<String> {
+    fn render(&self, _context: &mut Self::RenderContext) -> Result<String> {
         Ok(self.1.clone())
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use genotype_parser::GTModuleId;
-
     use super::*;
-    use crate::indent::rs_indent;
+    use genotype_parser::GTModuleId;
 
     #[test]
     fn test_render() {
@@ -26,7 +22,7 @@ mod tests {
                 GTModuleId("path/to/module".into()),
                 "self::path::to::module".into()
             )
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             "self::path::to::module"
         );

@@ -1,11 +1,9 @@
 use genotype_lang_core_project::{module::GTLangProjectModule, source::GTLangProjectSource};
+use genotype_lang_core_tree::*;
 use genotype_lang_rs_config::RSProjectConfig;
-use genotype_lang_rs_tree::{
-    rs_indent, RSDefinition, RSDependency, RSPath, RSReference, RSRender, RSStructFields, RSUse,
-    RSUseName, RSUseReference,
-};
+use genotype_lang_rs_tree::*;
 use genotype_lang_rs_visitor::{traverse::RSTraverse, visitor::RSVisitor};
-use genotype_parser::{GTDefinitionId, GTReferenceId, GTSpan};
+use genotype_parser::*;
 use genotype_project::GTProject;
 use indexmap::{IndexMap, IndexSet};
 use miette::Result;
@@ -16,17 +14,19 @@ use super::RSProject;
 
 impl RSProject {
     pub fn modules_source(&self) -> Result<Vec<GTLangProjectSource>> {
+        let mut context = RSRenderContext {
+            indent: 0,
+            config: &self.config.lang,
+        };
         self.modules
             .iter()
-            .map(
-                |module| match module.module.render(&rs_indent(), &self.config.lang) {
-                    Ok(code) => Ok(GTLangProjectSource {
-                        path: module.path.clone(),
-                        code,
-                    }),
-                    Err(err) => Err(err),
-                },
-            )
+            .map(|module| match module.module.render(&mut context) {
+                Ok(code) => Ok(GTLangProjectSource {
+                    path: module.path.clone(),
+                    code,
+                }),
+                Err(err) => Err(err),
+            })
             .collect::<Result<Vec<_>>>()
     }
 

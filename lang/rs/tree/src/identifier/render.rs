@@ -1,13 +1,11 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_rs_config::RSLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
 use miette::Result;
 
-use crate::RSRender;
+impl<'a> GtlRender<'a> for RSIdentifier {
+    type RenderContext = RSRenderContext<'a>;
 
-use super::RSIdentifier;
-
-impl RSRender for RSIdentifier {
-    fn render(&self, _indent: &GTIndent, _config: &RSLangConfig) -> Result<String> {
+    fn render(&self, _context: &mut Self::RenderContext) -> Result<String> {
         Ok(self.0.clone())
     }
 }
@@ -15,13 +13,12 @@ impl RSRender for RSIdentifier {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::indent::rs_indent;
 
     #[test]
     fn test_render() {
         assert_eq!(
             RSIdentifier("Foo".into())
-                .render(&rs_indent(), &Default::default())
+                .render(&mut Default::default())
                 .unwrap(),
             "Foo"
         );

@@ -1,6 +1,5 @@
-use genotype_parser::GTDefinitionId;
-
-use crate::{alias::RSAlias, r#struct::RSStruct, RSDoc, RSEnum, RSIdentifier};
+use crate::*;
+use genotype_parser::*;
 
 mod render;
 

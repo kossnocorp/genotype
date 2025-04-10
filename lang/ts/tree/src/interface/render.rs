@@ -1,43 +1,45 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use crate::TSDoc;
+impl<'a> GtlRender<'a> for TSInterface {
+    type RenderContext = TSRenderContext<'a>;
 
-use super::TSInterface;
-
-impl GTRender for TSInterface {
-    fn render(&self, indent: &GTIndent) -> String {
-        let prop_indent = indent.increment();
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        let mut prop_indent = context.indent_inc();
 
         let properties = self
             .properties
             .iter()
-            .map(|property| property.render(&prop_indent) + ";")
-            .collect::<Vec<String>>()
+            .map(|property| property.render(&mut prop_indent))
+            .collect::<Result<Vec<_>>>()?
+            .iter()
+            .map(|property| format!("{property};"))
+            .collect::<Vec<_>>()
             .join("\n");
 
         let extensions = self
             .extensions
             .iter()
-            .map(|extension| extension.render(indent))
-            .collect::<Vec<String>>()
+            .map(|extension| extension.render(context))
+            .collect::<Result<Vec<_>>>()?
             .join(", ");
+
+        let name = self.name.render(context)?;
+        let extends = if extensions.len() > 0 {
+            format!(" extends {}", extensions)
+        } else {
+            "".into()
+        };
 
         TSDoc::with_doc(
             &self.doc,
-            indent,
+            context,
             format!(
-                "{}export interface {}{} {}\n{}{}{}",
-                indent.string,
-                self.name.render(indent),
-                if extensions.len() > 0 {
-                    format!(" extends {}", extensions)
-                } else {
-                    "".into()
-                },
-                "{",
-                properties,
+                "{}export interface {name}{extends} {{\n{properties}{}{}",
+                context.indent_legacy.string,
                 if properties.len() > 0 { "\n" } else { "" },
-                indent.format("}")
+                context.indent_legacy.format("}")
             ),
             false,
         )
@@ -46,11 +48,8 @@ impl GTRender for TSInterface {
 
 #[cfg(test)]
 mod tests {
-
-    use pretty_assertions::assert_eq;
-
     use super::*;
-    use crate::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render_empty() {
@@ -61,7 +60,8 @@ mod tests {
                 extensions: vec![],
                 properties: vec![]
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             "export interface Name {\n}"
         );
     }
@@ -88,7 +88,8 @@ mod tests {
                     }
                 ]
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"export interface Name {
   name: string;
   age?: number;
@@ -118,7 +119,8 @@ mod tests {
                     }
                 ]
             }
-            .render(&ts_indent().increment()),
+            .render(&mut TSRenderContext::default().indent_inc())
+            .unwrap(),
             r#"  export interface Name {
     name: string;
     age?: number;
@@ -140,7 +142,8 @@ mod tests {
                     required: true
                 },]
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"export interface Name extends Hello, World {
   name: string;
 }"#
@@ -156,7 +159,8 @@ mod tests {
                 extensions: vec![],
                 properties: vec![]
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"/** Hello, world! */
 export interface Name {
 }"#

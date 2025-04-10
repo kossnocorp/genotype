@@ -1,4 +1,4 @@
-use crate::{descriptor::TSDescriptor, identifier::TSIdentifier, TSDoc};
+use crate::*;
 
 mod render;
 

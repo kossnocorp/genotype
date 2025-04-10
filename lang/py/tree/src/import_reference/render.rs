@@ -1,13 +1,15 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::PYImportReference;
+impl<'a> GtlRender<'a> for PYImportReference {
+    type RenderContext = PYRenderContext<'a>;
 
-impl GTRender for PYImportReference {
-    fn render(&self, indent: &GTIndent) -> String {
-        match self {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        Ok(match self {
             PYImportReference::Default(name) => {
                 if let Some(name) = name {
-                    name.render(indent)
+                    name.render(context)?
                 } else {
                     "".into()
                 }
@@ -17,30 +19,41 @@ impl GTRender for PYImportReference {
 
             PYImportReference::Named(names) => names
                 .iter()
-                .map(|name| name.render(indent))
-                .collect::<Vec<String>>()
+                .map(|name| name.render(context))
+                .collect::<Result<Vec<_>>>()?
                 .join(", "),
-        }
+        })
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::*;
 
     #[test]
     fn test_render_default() {
         assert_eq!(
-            PYImportReference::Default(Some("Name".into())).render(&py_indent()),
+            PYImportReference::Default(Some("Name".into()))
+                .render(&mut Default::default())
+                .unwrap(),
             "Name"
         );
-        assert_eq!(PYImportReference::Default(None).render(&py_indent()), "");
+        assert_eq!(
+            PYImportReference::Default(None)
+                .render(&mut Default::default())
+                .unwrap(),
+            ""
+        );
     }
 
     #[test]
     fn test_render_glob() {
-        assert_eq!(PYImportReference::Glob.render(&py_indent()), "*");
+        assert_eq!(
+            PYImportReference::Glob
+                .render(&mut Default::default())
+                .unwrap(),
+            "*"
+        );
     }
 
     #[test]
@@ -50,7 +63,8 @@ mod tests {
                 PYImportName::Name("Name".into()),
                 PYImportName::Alias("Name".into(), "Alias".into()),
             ])
-            .render(&py_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             "Name, Name as Alias"
         );
     }

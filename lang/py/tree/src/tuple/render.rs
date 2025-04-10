@@ -1,44 +1,38 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_py_config::PYLangConfig;
-use genotype_lang_py_config::PYVersion;
+use crate::*;
+use genotype_lang_core_tree::*;
+use genotype_lang_py_config::*;
+use miette::Result;
 
-use crate::PYRender;
+impl<'a> GtlRender<'a> for PYTuple {
+    type RenderContext = PYRenderContext<'a>;
 
-use super::PYTuple;
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        let tuple = if let PYVersion::Legacy = context.config.version {
+            "Tuple"
+        } else {
+            "tuple"
+        };
 
-impl PYRender for PYTuple {
-    fn render(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
         let descriptors = self
             .descriptors
             .iter()
-            .map(|d| d.render(indent, config))
-            .collect::<Vec<String>>()
+            .map(|d| d.render(context))
+            .collect::<Result<Vec<_>>>()?
             .join(", ");
-        format!(
-            "{}{}{}{}",
-            if let PYVersion::Legacy = config.version {
-                "Tuple"
-            } else {
-                "tuple"
-            },
-            "[",
-            if descriptors.len() > 0 {
-                descriptors
-            } else {
-                "()".into()
-            },
-            "]"
-        )
+        let descriptors = if descriptors.len() > 0 {
+            descriptors
+        } else {
+            "()".into()
+        };
+
+        Ok(format!("{tuple}[{descriptors}]",))
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_py_config::PYLangConfig;
-    use pretty_assertions::assert_eq;
-
     use super::*;
-    use crate::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render_tuple() {
@@ -49,7 +43,8 @@ mod tests {
                     PYDescriptor::Primitive(PYPrimitive::Int),
                 ]
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             "tuple[str, int]"
         );
     }
@@ -60,7 +55,8 @@ mod tests {
             PYTuple {
                 descriptors: vec![]
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             "tuple[()]"
         );
     }
@@ -71,7 +67,11 @@ mod tests {
             PYTuple {
                 descriptors: vec![]
             }
-            .render(&py_indent(), &PYLangConfig::new(PYVersion::Legacy)),
+            .render(&mut PYRenderContext {
+                config: &PYLangConfig::new(PYVersion::Legacy),
+                ..Default::default()
+            })
+            .unwrap(),
             "Tuple[()]"
         );
     }

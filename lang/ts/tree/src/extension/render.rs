@@ -1,17 +1,18 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::TSExtension;
+impl<'a> GtlRender<'a> for TSExtension {
+    type RenderContext = TSRenderContext<'a>;
 
-impl GTRender for TSExtension {
-    fn render(&self, indent: &GTIndent) -> String {
-        self.reference.render(indent)
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        self.reference.render(context)
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::indent::ts_indent;
 
     #[test]
     fn test_render() {
@@ -19,7 +20,8 @@ mod tests {
             TSExtension {
                 reference: "Foo".into()
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             "Foo"
         );
     }

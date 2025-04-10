@@ -1,32 +1,23 @@
-use genotype_lang_core_tree::{
-    indent::GTIndent,
-    render::{GTRender, GTRenderModule},
-};
-use genotype_lang_py_config::PYLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use crate::PYRender;
+impl<'a> GtlRender<'a> for PYModule {
+    type RenderContext = PYRenderContext<'a>;
 
-use super::PYModule;
-
-impl PYRender for PYModule {
-    fn render(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         let mut blocks = vec![];
 
-        let doc = self
-            .doc
-            .as_ref()
-            .map(|doc| doc.render(indent))
-            .unwrap_or_default();
-
-        if !doc.is_empty() {
-            blocks.push(doc);
+        if let Some(doc) = &self.doc {
+            blocks.push(doc.render(context)?);
         }
 
         let imports = Self::join_imports(
-            self.imports
+            &self
+                .imports
                 .iter()
-                .map(|import| import.render(indent))
-                .collect(),
+                .map(|import| import.render(context))
+                .collect::<Result<Vec<_>>>()?,
         );
 
         if !imports.is_empty() {
@@ -34,35 +25,35 @@ impl PYRender for PYModule {
         }
 
         let definitions = Self::join_definitions(
-            self.definitions
+            &self
+                .definitions
                 .iter()
-                .map(|definition| definition.render(indent, config))
-                .collect::<Vec<String>>(),
+                .map(|definition| definition.render(context))
+                .collect::<Result<Vec<_>>>()?,
         );
 
         if !definitions.is_empty() {
             blocks.push(definitions);
         }
 
-        Self::join_blocks(blocks)
+        Ok(Self::join_blocks(&blocks))
     }
 }
 
-impl GTRenderModule for PYModule {
-    fn join_definitions(definitions: Vec<String>) -> String {
+impl GtlRenderModule for PYModule {
+    fn join_definitions(definitions: &Vec<String>) -> String {
         definitions.join("\n\n\n")
     }
 
-    fn join_blocks(blocks: Vec<String>) -> String {
+    fn join_blocks(blocks: &Vec<String>) -> String {
         blocks.join("\n\n\n") + "\n"
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use pretty_assertions::assert_eq;
-
-    use crate::*;
 
     #[test]
     fn test_render() {
@@ -113,7 +104,8 @@ mod tests {
                     }),
                 ]
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"import .path.to.module as name
 from .path.to.module import Name, Name as Alias
 
@@ -145,7 +137,8 @@ class Name(Model):
                     references: vec![],
                 })]
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#""""Hello, world!"""
 
 

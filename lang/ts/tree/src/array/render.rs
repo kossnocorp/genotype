@@ -1,17 +1,18 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::TSArray;
+impl<'a> GtlRender<'a> for TSArray {
+    type RenderContext = TSRenderContext<'a>;
 
-impl GTRender for TSArray {
-    fn render(&self, indent: &GTIndent) -> String {
-        format!("Array<{}>", self.descriptor.render(indent))
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        let descriptor = self.descriptor.render(context)?;
+        Ok(format!("Array<{descriptor}>"))
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{descriptor::TSDescriptor, indent::ts_indent, primitive::TSPrimitive};
-
     use super::*;
 
     #[test]
@@ -20,7 +21,8 @@ mod tests {
             TSArray {
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String)
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             "Array<string>"
         );
     }

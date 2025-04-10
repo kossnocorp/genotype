@@ -1,36 +1,34 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::PYDoc;
+impl<'a> GtlRender<'a> for PYDoc {
+    type RenderContext = PYRenderContext<'a>;
 
-impl GTRender for PYDoc {
-    fn render(&self, indent: &GTIndent) -> String {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         let lines = self.0.split("\n").enumerate();
-        lines
+        Ok(lines
             .map(|(index, line)| {
-                format!(
-                    "{}{}{}",
-                    indent.string,
-                    if index == 0 { r#"""""# } else { "" },
-                    line
-                )
+                let comment = if index == 0 { r#"""""# } else { "" };
+                context.indent_format(&format!("{comment}{line}"))
             })
             .collect::<Vec<_>>()
             .join("\n")
-            + r#"""""#
+            + r#"""""#)
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
     use super::*;
-    use crate::indent::py_indent;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render_simple() {
         assert_eq!(
-            PYDoc("Hello, world!".into()).render(&py_indent()),
+            PYDoc("Hello, world!".into())
+                .render(&mut Default::default())
+                .unwrap(),
             r#""""Hello, world!""""#
         );
     }
@@ -44,7 +42,8 @@ cruel
 world!"#
                     .into()
             )
-            .render(&py_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#""""Hello,
 cruel
 world!""""#
@@ -60,7 +59,8 @@ cruel
 world!"#
                     .into()
             )
-            .render(&py_indent().increment()),
+            .render(&mut PYRenderContext::default().indent_inc())
+            .unwrap(),
             r#"    """Hello,
     cruel
     world!""""#

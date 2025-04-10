@@ -581,6 +581,7 @@ dependencies = [
 name = "genotype_lang_core_tree"
 version = "0.10.0"
 dependencies = [
+ "miette",
  "pretty_assertions",
 ]
 
@@ -642,6 +643,7 @@ version = "0.10.0"
 dependencies = [
  "genotype_lang_core_tree",
  "genotype_lang_py_config",
+ "miette",
  "pretty_assertions",
 ]
 
@@ -792,6 +794,7 @@ version = "0.10.0"
 dependencies = [
  "genotype_lang_core_tree",
  "heck",
+ "miette",
  "pretty_assertions",
 ]
 

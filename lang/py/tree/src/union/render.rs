@@ -1,48 +1,45 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_py_config::PYLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
 use genotype_lang_py_config::PYVersion;
+use miette::Result;
 
-use crate::PYRender;
+impl<'a> GtlRender<'a> for PYUnion {
+    type RenderContext = PYRenderContext<'a>;
 
-use super::PYUnion;
-
-impl PYRender for PYUnion {
-    fn render(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         let content = self
             .descriptors
             .iter()
-            .map(|d| d.render(indent, config))
-            .collect::<Vec<String>>()
-            .join(if let PYVersion::Legacy = config.version {
+            .map(|d| d.render(context))
+            .collect::<Result<Vec<_>>>()?
+            .join(if let PYVersion::Legacy = context.config.version {
                 ", "
             } else {
                 " | "
             });
 
-        let union = if let PYVersion::Legacy = config.version {
+        let union = if let PYVersion::Legacy = context.config.version {
             format!("Union[{}]", content)
         } else {
             content
         };
 
-        if let Some(discriminator) = &self.discriminator {
+        Ok(if let Some(discriminator) = &self.discriminator {
             format!(
                 r#"Annotated[{}, Field(json_schema_extra={{'discriminator': '{}'}})]"#,
                 union, discriminator
             )
         } else {
             union
-        }
+        })
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use genotype_lang_py_config::PYLangConfig;
     use pretty_assertions::assert_eq;
-
-    use super::*;
-    use crate::*;
 
     #[test]
     fn test_render_union() {
@@ -54,7 +51,8 @@ mod tests {
                 ],
                 discriminator: None
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             "str | int"
         );
     }
@@ -69,7 +67,11 @@ mod tests {
                 ],
                 discriminator: None
             }
-            .render(&py_indent(), &PYLangConfig::new(PYVersion::Legacy)),
+            .render(&mut PYRenderContext {
+                config: &PYLangConfig::new(PYVersion::Legacy),
+                ..Default::default()
+            })
+            .unwrap(),
             "Union[str, int]"
         );
     }
@@ -84,7 +86,8 @@ mod tests {
                 ],
                 discriminator: Some("type".into())
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"Annotated[str | int, Field(json_schema_extra={'discriminator': 'type'})]"#
         );
     }
@@ -99,7 +102,11 @@ mod tests {
                 ],
                 discriminator: Some("type".into())
             }
-            .render(&py_indent(), &PYLangConfig::new(PYVersion::Legacy)),
+            .render(&mut PYRenderContext {
+                config: &PYLangConfig::new(PYVersion::Legacy),
+                ..Default::default()
+            })
+            .unwrap(),
             r#"Annotated[Union[str, int], Field(json_schema_extra={'discriminator': 'type'})]"#
         );
     }

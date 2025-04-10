@@ -1,31 +1,31 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::TSDescriptor;
+impl<'a> GtlRender<'a> for TSDescriptor {
+    type RenderContext = TSRenderContext<'a>;
 
-impl GTRender for TSDescriptor {
-    fn render(&self, indent: &GTIndent) -> String {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         match self {
-            TSDescriptor::Array(array) => array.render(indent),
-            TSDescriptor::InlineImport(import) => import.render(indent),
-            TSDescriptor::Intersection(intersection) => intersection.render(indent),
-            TSDescriptor::Literal(literal) => literal.render(indent),
-            TSDescriptor::Primitive(primitive) => primitive.render(indent),
-            TSDescriptor::Reference(name) => name.render(indent),
-            TSDescriptor::Object(object) => object.render(indent),
-            TSDescriptor::Tuple(tuple) => tuple.render(indent),
-            TSDescriptor::Union(union) => union.render(indent),
-            TSDescriptor::Record(record) => record.render(indent),
-            TSDescriptor::Any(any) => any.render(indent),
+            TSDescriptor::Array(array) => array.render(context),
+            TSDescriptor::InlineImport(import) => import.render(context),
+            TSDescriptor::Intersection(intersection) => intersection.render(context),
+            TSDescriptor::Literal(literal) => literal.render(context),
+            TSDescriptor::Primitive(primitive) => primitive.render(context),
+            TSDescriptor::Reference(name) => name.render(context),
+            TSDescriptor::Object(object) => object.render(context),
+            TSDescriptor::Tuple(tuple) => tuple.render(context),
+            TSDescriptor::Union(union) => union.render(context),
+            TSDescriptor::Record(record) => record.render(context),
+            TSDescriptor::Any(any) => any.render(context),
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
     use super::*;
-    use crate::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render_array() {
@@ -33,7 +33,8 @@ mod tests {
             TSDescriptor::Array(Box::new(TSArray {
                 descriptor: TSDescriptor::Primitive(TSPrimitive::Number)
             }))
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             "Array<number>"
         );
     }
@@ -45,7 +46,8 @@ mod tests {
                 path: "../path/to/module.ts".into(),
                 name: "Name".into(),
             })
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"import("../path/to/module.ts").Name"#
         );
     }
@@ -67,7 +69,8 @@ mod tests {
                     "World".into(),
                 ]
             })
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"{
   hello: string
 } & World"#
@@ -93,7 +96,8 @@ mod tests {
                     }
                 ]
             })
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"{
   name: string,
   age?: number
@@ -104,11 +108,15 @@ mod tests {
     #[test]
     fn test_render_primitive() {
         assert_eq!(
-            TSDescriptor::Primitive(TSPrimitive::Boolean).render(&ts_indent()),
+            TSDescriptor::Primitive(TSPrimitive::Boolean)
+                .render(&mut Default::default())
+                .unwrap(),
             "boolean"
         );
         assert_eq!(
-            TSDescriptor::Primitive(TSPrimitive::String).render(&ts_indent()),
+            TSDescriptor::Primitive(TSPrimitive::String)
+                .render(&mut Default::default())
+                .unwrap(),
             "string"
         );
     }
@@ -116,7 +124,9 @@ mod tests {
     #[test]
     fn test_render_reference() {
         assert_eq!(
-            TSDescriptor::Reference("Name".into()).render(&ts_indent()),
+            TSDescriptor::Reference("Name".into())
+                .render(&mut Default::default())
+                .unwrap(),
             "Name"
         );
     }
@@ -130,7 +140,8 @@ mod tests {
                     TSDescriptor::Primitive(TSPrimitive::String)
                 ]
             })
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             "[number, string]"
         );
     }
@@ -144,7 +155,8 @@ mod tests {
                     TSDescriptor::Primitive(TSPrimitive::Number),
                 ]
             })
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             "string | number"
         );
     }
@@ -156,13 +168,19 @@ mod tests {
                 key: TSRecordKey::String,
                 descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
             }))
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             "Record<string, number>"
         );
     }
 
     #[test]
     fn test_render_any() {
-        assert_eq!(TSDescriptor::Any(TSAny).render(&ts_indent()), "any");
+        assert_eq!(
+            TSDescriptor::Any(TSAny)
+                .render(&mut Default::default())
+                .unwrap(),
+            "any"
+        );
     }
 }

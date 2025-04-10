@@ -1,6 +1,5 @@
-use genotype_parser::GTDefinitionId;
-
-use crate::{descriptor::RSDescriptor, identifier::RSIdentifier, RSDoc};
+use crate::*;
+use genotype_parser::*;
 
 mod render;
 

@@ -1,21 +1,21 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::TSRecord;
+impl<'a> GtlRender<'a> for TSRecord {
+    type RenderContext = TSRenderContext<'a>;
 
-impl GTRender for TSRecord {
-    fn render(&self, indent: &GTIndent) -> String {
-        format!(
-            "Record<{}, {}>",
-            self.key.render(indent),
-            self.descriptor.render(indent)
-        )
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        let key = self.key.render(context)?;
+        let descriptor = self.descriptor.render(context)?;
+
+        Ok(format!("Record<{key}, {descriptor}>"))
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::*;
 
     #[test]
     fn test_render() {
@@ -24,7 +24,8 @@ mod tests {
                 key: TSRecordKey::Number,
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String)
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             "Record<number, string>"
         );
     }

@@ -1,14 +1,12 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_rs_config::RSLangConfig;
-use genotype_lang_rs_core::RSNaming;
+use crate::*;
+use genotype_lang_core_tree::*;
+use genotype_lang_rs_core::*;
 use miette::Result;
 
-use crate::RSRender;
+impl<'a> GtlRender<'a> for RSFieldName {
+    type RenderContext = RSRenderContext<'a>;
 
-use super::RSFieldName;
-
-impl RSRender for RSFieldName {
-    fn render(&self, _indent: &GTIndent, _config: &RSLangConfig) -> Result<String> {
+    fn render(&self, _context: &mut Self::RenderContext) -> Result<String> {
         Ok(RSNaming::render(&self.0))
     }
 }
@@ -16,13 +14,12 @@ impl RSRender for RSFieldName {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::indent::rs_indent;
 
     #[test]
     fn test_render() {
         assert_eq!(
             RSFieldName("foo".into())
-                .render(&rs_indent(), &Default::default())
+                .render(&mut Default::default())
                 .unwrap(),
             "foo"
         );
@@ -32,7 +29,7 @@ mod tests {
     fn test_render_keyword() {
         assert_eq!(
             RSFieldName("type".into())
-                .render(&rs_indent(), &Default::default())
+                .render(&mut Default::default())
                 .unwrap(),
             "r#type"
         );

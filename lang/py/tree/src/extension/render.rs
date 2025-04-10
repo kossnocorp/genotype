@@ -1,20 +1,18 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_py_config::PYLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use crate::PYRender;
+impl<'a> GtlRender<'a> for PYExtension {
+    type RenderContext = PYRenderContext<'a>;
 
-use super::PYExtension;
-
-impl PYRender for PYExtension {
-    fn render(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
-        self.reference.render(indent, config)
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        self.reference.render(context)
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{indent::py_indent, PYReference};
 
     #[test]
     fn test_render() {
@@ -22,7 +20,8 @@ mod tests {
             PYExtension {
                 reference: PYReference::new("Foo".into(), false)
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             "Foo"
         );
     }

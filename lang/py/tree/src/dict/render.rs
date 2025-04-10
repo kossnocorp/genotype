@@ -1,36 +1,29 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_core_tree::render::GTRender;
-use genotype_lang_py_config::PYLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
 use genotype_lang_py_config::PYVersion;
+use miette::Result;
 
-use crate::PYRender;
+impl<'a> GtlRender<'a> for PYDict {
+    type RenderContext = PYRenderContext<'a>;
 
-use super::PYDict;
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        let dict = if let PYVersion::Legacy = context.config.version {
+            "Dict"
+        } else {
+            "dict"
+        };
+        let key = self.key.render(context)?;
+        let descriptor = self.descriptor.render(context)?;
 
-impl PYRender for PYDict {
-    fn render(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
-        format!(
-            "{}{}{}, {}{}",
-            if let PYVersion::Legacy = config.version {
-                "Dict"
-            } else {
-                "dict"
-            },
-            "[",
-            self.key.render(indent),
-            self.descriptor.render(indent, config),
-            "]"
-        )
+        Ok(format!("{dict}[{key}, {descriptor}]"))
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use genotype_lang_py_config::PYLangConfig;
     use pretty_assertions::assert_eq;
-
-    use super::*;
-    use crate::*;
 
     #[test]
     fn test_render() {
@@ -39,7 +32,8 @@ mod tests {
                 key: PYDictKey::String,
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             "dict[str, int]"
         );
     }
@@ -51,7 +45,11 @@ mod tests {
                 key: PYDictKey::String,
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
             }
-            .render(&py_indent(), &PYLangConfig::new(PYVersion::Legacy)),
+            .render(&mut PYRenderContext {
+                config: &PYLangConfig::new(PYVersion::Legacy),
+                ..Default::default()
+            })
+            .unwrap(),
             "Dict[str, int]"
         );
     }

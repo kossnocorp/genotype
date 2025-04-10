@@ -1,21 +1,22 @@
-pub struct GTIndent<'a> {
+#[derive(Debug, Clone, PartialEq)]
+pub struct GtlIndentLegacy<'a> {
     symbol: &'a str,
     size: usize,
     pub string: String,
 }
 
-impl GTIndent<'_> {
-    pub fn new<'a>(symbol: &'a str, size: usize) -> GTIndent<'a> {
+impl GtlIndentLegacy<'_> {
+    pub fn new<'a>(symbol: &'a str, size: usize) -> GtlIndentLegacy<'a> {
         let string = symbol.repeat(size);
-        GTIndent {
+        GtlIndentLegacy {
             symbol,
             string,
             size,
         }
     }
 
-    pub fn start<'a>(symbol: &'a str) -> GTIndent<'a> {
-        GTIndent::new(symbol, 0)
+    pub fn start<'a>(symbol: &'a str) -> GtlIndentLegacy<'a> {
+        GtlIndentLegacy::new(symbol, 0)
     }
 
     pub fn format<T: Into<String>>(&self, code: T) -> String {

@@ -1,23 +1,19 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_rs_config::RSLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
 use miette::Result;
 
-use crate::RSRender;
+impl<'a> GtlRender<'a> for RSReference {
+    type RenderContext = RSRenderContext<'a>;
 
-use super::RSReference;
-
-impl RSRender for RSReference {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
-        self.identifier.render(indent, config)
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        self.identifier.render(context)
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use genotype_parser::{GTDefinitionId, GTReferenceId};
-
     use super::*;
-    use crate::indent::rs_indent;
+    use genotype_parser::*;
 
     #[test]
     fn test_render() {
@@ -28,7 +24,7 @@ mod tests {
                 identifier: "Foo".into(),
                 definition_id: GTDefinitionId("module".into(), "Foo".into())
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
         );
     }

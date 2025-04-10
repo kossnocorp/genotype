@@ -1,20 +1,21 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::PYAny;
+impl<'a> GtlRender<'a> for PYAny {
+    type RenderContext = PYRenderContext<'a>;
 
-impl GTRender for PYAny {
-    fn render(&self, _indent: &GTIndent) -> String {
-        "Any".to_string()
+    fn render(&self, _context: &mut Self::RenderContext) -> Result<String> {
+        Ok("Any".into())
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::indent::py_indent;
 
     #[test]
     fn test_render_primitive() {
-        assert_eq!(PYAny.render(&py_indent()), "Any");
+        assert_eq!(PYAny.render(&mut Default::default()).unwrap(), "Any");
     }
 }

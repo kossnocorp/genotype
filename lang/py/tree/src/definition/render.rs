@@ -1,25 +1,23 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_py_config::PYLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use crate::PYRender;
+impl<'a> GtlRender<'a> for PYDefinition {
+    type RenderContext = PYRenderContext<'a>;
 
-use super::PYDefinition;
-
-impl PYRender for PYDefinition {
-    fn render(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         match self {
-            PYDefinition::Alias(alias) => alias.render(indent, config),
-            PYDefinition::Class(interface) => interface.render(indent, config),
-            PYDefinition::Newtype(newtype) => newtype.render(indent, config),
+            PYDefinition::Alias(alias) => alias.render(context),
+            PYDefinition::Class(interface) => interface.render(context),
+            PYDefinition::Newtype(newtype) => newtype.render(context),
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use pretty_assertions::assert_eq;
-
-    use crate::*;
 
     #[test]
     fn test_render_alias() {
@@ -30,7 +28,8 @@ mod tests {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                 references: vec![],
             })
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             "type Name = str"
         );
     }
@@ -58,7 +57,8 @@ mod tests {
                 ],
                 references: vec![],
             })
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"class Name(Model):
     name: str
     age: Optional[int] = None"#
@@ -73,7 +73,8 @@ mod tests {
                 name: "UserId".into(),
                 primitive: PYPrimitive::String,
             })
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"UserId = NewType("UserId", str)"#
         );
     }

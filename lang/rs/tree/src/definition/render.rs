@@ -1,27 +1,24 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_rs_config::RSLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
 use miette::Result;
 
-use crate::RSRender;
+impl<'a> GtlRender<'a> for RSDefinition {
+    type RenderContext = RSRenderContext<'a>;
 
-use super::RSDefinition;
-
-impl RSRender for RSDefinition {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         Ok(match self {
-            RSDefinition::Alias(alias) => alias.render(indent, config)?,
-            RSDefinition::Struct(interface) => interface.render(indent, config)?,
-            RSDefinition::Enum(r#enum) => r#enum.render(indent, config)?,
+            RSDefinition::Alias(alias) => alias.render(context)?,
+            RSDefinition::Struct(interface) => interface.render(context)?,
+            RSDefinition::Enum(r#enum) => r#enum.render(context)?,
         })
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use genotype_parser::GTDefinitionId;
+    use super::*;
+    use genotype_parser::*;
     use pretty_assertions::assert_eq;
-
-    use crate::*;
 
     #[test]
     fn test_render_alias() {
@@ -32,7 +29,7 @@ mod tests {
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             })
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             "pub type Name = String;"
         );
@@ -62,7 +59,7 @@ mod tests {
                 ]
                 .into(),
             })
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             r#"pub struct Name {
     pub name: String,
@@ -98,7 +95,7 @@ mod tests {
                     }
                 ],
             })
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             r#"pub enum ValuesUnion {
     Boolean(bool),

@@ -1,13 +1,18 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::PYLiteral;
+impl<'a> GtlRender<'a> for PYLiteral {
+    type RenderContext = PYRenderContext<'a>;
 
-impl GTRender for PYLiteral {
-    fn render(&self, _indent: &GTIndent) -> String {
+    fn render(&self, _context: &mut PYRenderContext) -> Result<String> {
         let str = match self {
             PYLiteral::None => "None".to_string(),
+
             PYLiteral::Boolean(value) => if *value { "True" } else { "False" }.to_string(),
+
             PYLiteral::Integer(value) => value.to_string(),
+
             PYLiteral::Float(value) => {
                 if value.fract() == 0.0 {
                     format!("{:.1}", value)
@@ -15,49 +20,77 @@ impl GTRender for PYLiteral {
                     value.to_string()
                 }
             }
+
             PYLiteral::String(value) => format!("\"{}\"", value.escape_default()),
         };
-        format!("Literal[{str}]")
+
+        Ok(format!("Literal[{str}]"))
     }
 }
 
 #[cfg(test)]
 mod tests {
-
-    use pretty_assertions::assert_eq;
-
     use super::*;
-    use crate::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render_none() {
-        assert_eq!(PYLiteral::None.render(&py_indent()), "Literal[None]");
+        assert_eq!(
+            PYLiteral::None.render(&mut Default::default()).unwrap(),
+            "Literal[None]"
+        );
     }
 
     #[test]
     fn test_render_boolean() {
         assert_eq!(
-            PYLiteral::Boolean(true).render(&py_indent()),
+            PYLiteral::Boolean(true)
+                .render(&mut Default::default())
+                .unwrap(),
             "Literal[True]"
         );
         assert_eq!(
-            PYLiteral::Boolean(false).render(&py_indent()),
+            PYLiteral::Boolean(false)
+                .render(&mut Default::default())
+                .unwrap(),
             "Literal[False]"
         );
     }
 
     #[test]
     fn test_render_integer() {
-        assert_eq!(PYLiteral::Integer(1).render(&py_indent()), "Literal[1]");
-        assert_eq!(PYLiteral::Integer(-1).render(&py_indent()), "Literal[-1]");
+        assert_eq!(
+            PYLiteral::Integer(1)
+                .render(&mut Default::default())
+                .unwrap(),
+            "Literal[1]"
+        );
+        assert_eq!(
+            PYLiteral::Integer(-1)
+                .render(&mut Default::default())
+                .unwrap(),
+            "Literal[-1]"
+        );
     }
 
     #[test]
     fn test_render_float() {
-        assert_eq!(PYLiteral::Float(1.0).render(&py_indent()), "Literal[1.0]");
-        assert_eq!(PYLiteral::Float(-1.1).render(&py_indent()), "Literal[-1.1]");
         assert_eq!(
-            PYLiteral::Float(1.23456789).render(&py_indent()),
+            PYLiteral::Float(1.0)
+                .render(&mut Default::default())
+                .unwrap(),
+            "Literal[1.0]"
+        );
+        assert_eq!(
+            PYLiteral::Float(-1.1)
+                .render(&mut Default::default())
+                .unwrap(),
+            "Literal[-1.1]"
+        );
+        assert_eq!(
+            PYLiteral::Float(1.23456789)
+                .render(&mut Default::default())
+                .unwrap(),
             "Literal[1.23456789]"
         );
     }
@@ -65,11 +98,15 @@ mod tests {
     #[test]
     fn test_render_string() {
         assert_eq!(
-            PYLiteral::String("Hi!".into()).render(&py_indent()),
+            PYLiteral::String("Hi!".into())
+                .render(&mut Default::default())
+                .unwrap(),
             "Literal[\"Hi!\"]"
         );
         assert_eq!(
-            PYLiteral::String("Hello, \"world\"!\\".into()).render(&py_indent()),
+            PYLiteral::String("Hello, \"world\"!\\".into())
+                .render(&mut Default::default())
+                .unwrap(),
             "Literal[\"Hello, \\\"world\\\"!\\\\\"]"
         );
     }

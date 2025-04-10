@@ -1,23 +1,24 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::TSIntersection;
+impl<'a> GtlRender<'a> for TSIntersection {
+    type RenderContext = TSRenderContext<'a>;
 
-impl GTRender for TSIntersection {
-    fn render(&self, indent: &GTIndent) -> String {
-        self.descriptors
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        Ok(self
+            .descriptors
             .iter()
-            .map(|d| d.render(indent))
-            .collect::<Vec<String>>()
-            .join(" & ")
+            .map(|d| d.render(context))
+            .collect::<Result<Vec<_>>>()?
+            .join(" & "))
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
     use super::*;
-    use crate::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render_union() {
@@ -36,7 +37,8 @@ mod tests {
                     "World".into(),
                 ]
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"{
   hello: string
 } & World"#

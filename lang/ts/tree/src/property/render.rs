@@ -1,30 +1,26 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use crate::TSDoc;
+impl<'a> GtlRender<'a> for TSProperty {
+    type RenderContext = TSRenderContext<'a>;
 
-use super::TSProperty;
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        let name = self.name.render(context)?;
+        let descriptor = self.descriptor.render(context)?;
+        let str = format!(
+            "{}{name}{}: {descriptor}",
+            context.indent_legacy.string.clone(),
+            if self.required { "" } else { "?" },
+        );
 
-impl GTRender for TSProperty {
-    fn render(&self, indent: &GTIndent) -> String {
-        TSDoc::with_doc(
-            &self.doc,
-            indent,
-            format!(
-                "{}{}{}: {}",
-                indent.string,
-                self.name.render(indent),
-                if self.required { "" } else { "?" },
-                self.descriptor.render(indent)
-            ),
-            false,
-        )
+        TSDoc::with_doc(&self.doc, context, str, false)
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::*;
 
     #[test]
     fn test_render_primitive() {
@@ -35,7 +31,8 @@ mod tests {
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                 required: true
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             "name: string"
         );
         assert_eq!(
@@ -45,7 +42,8 @@ mod tests {
                 descriptor: TSDescriptor::Reference("Name".into()),
                 required: true
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             "name: Name"
         );
     }
@@ -59,7 +57,8 @@ mod tests {
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                 required: true
             }
-            .render(&ts_indent().increment()),
+            .render(&mut TSRenderContext::default().indent_inc())
+            .unwrap(),
             "  name: string"
         );
     }
@@ -73,7 +72,8 @@ mod tests {
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                 required: false
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             "name?: string"
         );
     }
@@ -87,7 +87,8 @@ mod tests {
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                 required: true
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"/** Hello, world! */
 name: string"#
         );

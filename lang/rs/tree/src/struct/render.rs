@@ -1,30 +1,25 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_rs_config::RSLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
 use miette::Result;
 
-use crate::RSRender;
+impl<'a> GtlRender<'a> for RSStruct {
+    type RenderContext = RSRenderContext<'a>;
 
-use super::RSStruct;
-
-impl RSRender for RSStruct {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         let mut blocks = vec![];
 
         if let Some(doc) = &self.doc {
-            blocks.push(doc.render(indent, config)?);
+            blocks.push(doc.render(context)?);
         }
 
         for attribute in &self.attributes {
-            blocks.push(attribute.render(indent, config)?);
+            blocks.push(attribute.render(context)?);
         }
 
-        let name = self.name.render(indent, config)?;
-        let fields = self.fields.render(indent, config)?;
+        let name = self.name.render(context)?;
+        let fields = self.fields.render(context)?;
 
-        blocks.push(format!(
-            "{indent}pub struct {name}{fields}",
-            indent = indent.string
-        ));
+        blocks.push(context.indent_format(&format!("pub struct {name}{fields}")));
 
         Ok(blocks.join("\n"))
     }
@@ -32,10 +27,9 @@ impl RSRender for RSStruct {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use genotype_parser::GTDefinitionId;
     use pretty_assertions::assert_eq;
-
-    use crate::*;
 
     #[test]
     fn test_render_empty() {
@@ -47,7 +41,7 @@ mod tests {
                 name: "Name".into(),
                 fields: vec![].into(),
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             "pub struct Name;"
         );
@@ -77,7 +71,7 @@ mod tests {
                 ]
                 .into(),
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             r#"pub struct Name {
     pub name: String,
@@ -110,7 +104,7 @@ mod tests {
                 ]
                 .into(),
             }
-            .render(&rs_indent().increment(), &Default::default())
+            .render(&mut RSRenderContext::default().indent_inc())
             .unwrap(),
             r#"    pub struct Name {
         pub name: String,
@@ -129,7 +123,7 @@ mod tests {
                 name: "Name".into(),
                 fields: vec![].into(),
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             r#"/// Hello, world!
 pub struct Name;"#
@@ -152,7 +146,7 @@ pub struct Name;"#
                 }]
                 .into(),
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             r#"/// Hello, world!
 pub struct Name {

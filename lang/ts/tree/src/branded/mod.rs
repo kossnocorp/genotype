@@ -1,4 +1,4 @@
-use crate::{TSDoc, TSIdentifier, TSPrimitive};
+use crate::*;
 
 mod render;
 

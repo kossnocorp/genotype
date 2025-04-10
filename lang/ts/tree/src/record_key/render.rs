@@ -1,26 +1,38 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::TSRecordKey;
+impl<'a> GtlRender<'a> for TSRecordKey {
+    type RenderContext = TSRenderContext<'a>;
 
-impl GTRender for TSRecordKey {
-    fn render(&self, _indent: &GTIndent) -> String {
-        match self {
+    fn render(&self, _context: &mut Self::RenderContext) -> Result<String> {
+        Ok(match self {
             TSRecordKey::String => "string".into(),
             TSRecordKey::Number => "number".into(),
             TSRecordKey::Boolean => "boolean".into(),
-        }
+        })
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::indent::ts_indent;
 
     #[test]
     fn test_render() {
-        assert_eq!(TSRecordKey::String.render(&ts_indent()), "string");
-        assert_eq!(TSRecordKey::Number.render(&ts_indent()), "number");
-        assert_eq!(TSRecordKey::Boolean.render(&ts_indent()), "boolean");
+        assert_eq!(
+            TSRecordKey::String.render(&mut Default::default()).unwrap(),
+            "string"
+        );
+        assert_eq!(
+            TSRecordKey::Number.render(&mut Default::default()).unwrap(),
+            "number"
+        );
+        assert_eq!(
+            TSRecordKey::Boolean
+                .render(&mut Default::default())
+                .unwrap(),
+            "boolean"
+        );
     }
 }

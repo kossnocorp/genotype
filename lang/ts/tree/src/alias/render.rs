@@ -1,19 +1,18 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use crate::TSDoc;
+impl<'a> GtlRender<'a> for TSAlias {
+    type RenderContext = TSRenderContext<'a>;
 
-use super::TSAlias;
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        let name = self.name.render(context)?;
+        let descriptor = self.descriptor.render(context)?;
 
-impl GTRender for TSAlias {
-    fn render(&self, indent: &GTIndent) -> String {
         TSDoc::with_doc(
             &self.doc,
-            indent,
-            format!(
-                "export type {} = {};",
-                self.name.render(indent),
-                self.descriptor.render(indent)
-            ),
+            context,
+            format!("export type {name} = {descriptor};",),
             false,
         )
     }
@@ -21,11 +20,8 @@ impl GTRender for TSAlias {
 
 #[cfg(test)]
 mod tests {
-
-    use pretty_assertions::assert_eq;
-
     use super::*;
-    use crate::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render() {
@@ -35,7 +31,8 @@ mod tests {
                 name: "Name".into(),
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String)
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             "export type Name = string;"
         );
     }
@@ -48,7 +45,8 @@ mod tests {
                 name: "Name".into(),
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String)
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"/** Hello, world! */
 export type Name = string;"#
         );

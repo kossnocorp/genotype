@@ -1,31 +1,26 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_rs_config::RSLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
 use miette::Result;
 
-use crate::RSRender;
+impl<'a> GtlRender<'a> for RSField {
+    type RenderContext = RSRenderContext<'a>;
 
-use super::RSField;
-
-impl RSRender for RSField {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         let mut blocks = vec![];
 
         if let Some(doc) = &self.doc {
-            blocks.push(doc.render(indent, config)?);
+            blocks.push(doc.render(context)?);
         }
 
         if self.attributes.len() > 0 {
             for attribute in &self.attributes {
-                blocks.push(attribute.render(indent, config)?);
+                blocks.push(attribute.render(context)?);
             }
         }
 
-        let name = self.name.render(indent, config)?;
-        let descriptor = self.descriptor.render(indent, config)?;
-        blocks.push(format!(
-            "{indent}pub {name}: {descriptor}",
-            indent = indent.string
-        ));
+        let name = self.name.render(context)?;
+        let descriptor = self.descriptor.render(context)?;
+        blocks.push(context.indent_format(&format!("pub {name}: {descriptor}")));
 
         Ok(blocks.join("\n"))
     }
@@ -33,10 +28,9 @@ impl RSRender for RSField {
 
 #[cfg(test)]
 mod tests {
-    use genotype_parser::{GTDefinitionId, GTReferenceId};
+    use super::*;
+    use genotype_parser::*;
     use pretty_assertions::assert_eq;
-
-    use crate::*;
 
     #[test]
     fn test_render_primitive() {
@@ -47,7 +41,7 @@ mod tests {
                 name: "name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             "pub name: String"
         );
@@ -63,7 +57,7 @@ mod tests {
                 }
                 .into(),
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             "pub name: Name"
         );
@@ -78,7 +72,7 @@ mod tests {
                 name: "name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
-            .render(&rs_indent().increment(), &Default::default())
+            .render(&mut RSRenderContext::default().indent_inc())
             .unwrap(),
             "    pub name: String"
         );
@@ -93,7 +87,7 @@ mod tests {
                 name: "name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             r#"/// Hello, world!
 pub name: String"#
@@ -105,7 +99,7 @@ pub name: String"#
                 name: "name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
-            .render(&rs_indent().increment(), &Default::default())
+            .render(&mut RSRenderContext::default().indent_inc())
             .unwrap(),
             r#"    /// Hello, world!
     pub name: String"#
@@ -121,7 +115,7 @@ pub name: String"#
                 name: "name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             "#[derive(Clone)]
 pub name: String"
@@ -133,7 +127,7 @@ pub name: String"
                 name: "name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
-            .render(&rs_indent().increment(), &Default::default())
+            .render(&mut RSRenderContext::default().indent_inc())
             .unwrap(),
             "    #[derive(Clone)]
     pub name: String"
@@ -145,7 +139,7 @@ pub name: String"
                 name: "name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             }
-            .render(&rs_indent().increment(), &Default::default())
+            .render(&mut RSRenderContext::default().indent_inc())
             .unwrap(),
             "    /// Hello, world!
     #[derive(Clone)]

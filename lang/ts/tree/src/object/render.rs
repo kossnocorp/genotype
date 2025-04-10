@@ -1,37 +1,39 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::TSObject;
+impl<'a> GtlRender<'a> for TSObject {
+    type RenderContext = TSRenderContext<'a>;
 
-impl GTRender for TSObject {
-    fn render(&self, indent: &GTIndent) -> String {
-        let prop_indent = indent.increment();
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        let mut prop_indent = context.indent_inc();
         let properties = self
             .properties
             .iter()
-            .map(|property| property.render(&prop_indent))
-            .collect::<Vec<String>>()
+            .map(|property| property.render(&mut prop_indent))
+            .collect::<Result<Vec<_>>>()?
             .join(",\n");
-        format!(
-            "{}\n{}{}{}",
-            "{",
-            properties,
+
+        Ok(format!(
+            "{{\n{properties}{}{}",
             if properties.len() > 0 { "\n" } else { "" },
-            indent.format("}")
-        )
+            context.indent_legacy.format("}")
+        ))
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{
-        descriptor::TSDescriptor, indent::ts_indent, primitive::TSPrimitive, property::TSProperty,
-    };
-
     use super::*;
 
     #[test]
     fn test_render_empty() {
-        assert_eq!(TSObject { properties: vec![] }.render(&ts_indent()), "{\n}");
+        assert_eq!(
+            TSObject { properties: vec![] }
+                .render(&mut Default::default())
+                .unwrap(),
+            "{\n}"
+        );
     }
 
     #[test]
@@ -53,7 +55,8 @@ mod tests {
                     }
                 ]
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             "{\n  name: string,\n  age?: number\n}"
         );
     }
@@ -77,7 +80,8 @@ mod tests {
                     }
                 ]
             }
-            .render(&ts_indent().increment()),
+            .render(&mut TSRenderContext::default().indent_inc())
+            .unwrap(),
             "{\n    name: string,\n    age?: number\n  }"
         );
     }

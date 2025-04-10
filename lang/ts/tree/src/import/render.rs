@@ -1,23 +1,22 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::TSImport;
+impl<'a> GtlRender<'a> for TSImport {
+    type RenderContext = TSRenderContext<'a>;
 
-impl GTRender for TSImport {
-    fn render(&self, indent: &GTIndent) -> String {
-        format!(
-            r#"import {} from "{}";"#,
-            self.reference.render(indent),
-            self.path.render(indent)
-        )
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        let reference = self.reference.render(context)?;
+        let path = self.path.render(context)?;
+
+        Ok(format!(r#"import {reference} from "{path}";"#))
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
     use super::*;
-    use crate::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render_default() {
@@ -26,7 +25,8 @@ mod tests {
                 path: "../path/to/module.ts".into(),
                 reference: TSImportReference::Default("Name".into()),
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"import Name from "../path/to/module.ts";"#
         );
     }
@@ -38,7 +38,8 @@ mod tests {
                 path: "../path/to/module.ts".into(),
                 reference: TSImportReference::Glob("name".into()),
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"import * as name from "../path/to/module.ts";"#
         );
     }
@@ -53,7 +54,8 @@ mod tests {
                     TSImportName::Alias("Name".into(), "Alias".into()),
                 ])
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"import { Name, Name as Alias } from "../path/to/module.ts";"#
         );
     }

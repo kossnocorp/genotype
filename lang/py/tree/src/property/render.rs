@@ -1,39 +1,34 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
-use genotype_lang_py_config::PYLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use crate::PYRender;
+impl<'a> GtlRender<'a> for PYProperty {
+    type RenderContext = PYRenderContext<'a>;
 
-use super::PYProperty;
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        let name = self.name.render(context)?;
 
-impl PYRender for PYProperty {
-    fn render(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
-        let descriptor = self.descriptor.render(indent, config);
-
+        let descriptor = self.descriptor.render(context)?;
         let descriptor = if self.required {
             descriptor
         } else {
             format!("Optional[{descriptor}] = None")
         };
 
-        format!(
-            "{}{}: {}{}",
-            indent.string,
-            self.name.render(indent),
-            descriptor,
-            if let Some(doc) = &self.doc {
-                format!("\n{}", doc.render(indent))
-            } else {
-                "".into()
-            }
-        )
+        let doc = if let Some(doc) = &self.doc {
+            format!("\n{}", doc.render(context)?)
+        } else {
+            "".into()
+        };
+
+        Ok(context.indent_format(&format!("{name}: {descriptor}{doc}",)))
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use pretty_assertions::assert_eq;
-
-    use crate::*;
 
     #[test]
     fn test_render_primitive() {
@@ -44,7 +39,8 @@ mod tests {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                 required: true
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             "name: str"
         );
         assert_eq!(
@@ -54,7 +50,8 @@ mod tests {
                 descriptor: PYReference::new("Name".into(), false).into(),
                 required: true
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             "name: Name"
         );
     }
@@ -68,7 +65,8 @@ mod tests {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                 required: true
             }
-            .render(&py_indent().increment(), &Default::default()),
+            .render(&mut PYRenderContext::default().indent_inc())
+            .unwrap(),
             "    name: str"
         );
     }
@@ -82,7 +80,8 @@ mod tests {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                 required: false
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             "name: Optional[str] = None"
         );
     }
@@ -96,7 +95,8 @@ mod tests {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                 required: false
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"name: Optional[str] = None
 """Hello, world!""""#
         );

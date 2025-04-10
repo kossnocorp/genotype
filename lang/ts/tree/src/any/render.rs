@@ -1,20 +1,21 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::TSAny;
+impl<'a> GtlRender<'a> for TSAny {
+    type RenderContext = TSRenderContext<'a>;
 
-impl GTRender for TSAny {
-    fn render(&self, _indent: &GTIndent) -> String {
-        "any".to_string()
+    fn render(&self, _context: &mut Self::RenderContext) -> Result<String> {
+        Ok("any".into())
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::indent::ts_indent;
 
     #[test]
     fn test_render() {
-        assert_eq!(TSAny.render(&ts_indent()), "any");
+        assert_eq!(TSAny.render(&mut Default::default()).unwrap(), "any");
     }
 }

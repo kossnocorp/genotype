@@ -1,14 +1,14 @@
-use std::{collections::HashSet, path::PathBuf};
-
 use genotype_lang_core_project::{
     module::GTLangProjectModule,
     project::{GTLangProject, GTLangProjectRender},
     source::GTLangProjectSource,
 };
+use genotype_lang_core_tree::*;
 use genotype_lang_py_config::PYProjectConfig;
-use genotype_lang_py_tree::{py_indent, PYRender};
+use genotype_lang_py_tree::PYRenderContext;
 use genotype_project::project::GTProject;
 use miette::Result;
+use std::{collections::HashSet, path::PathBuf};
 
 use crate::module::PYProjectModule;
 
@@ -128,14 +128,24 @@ build-backend = "poetry.core.masonry.api"
                 code: "".into(),
             });
 
+        let mut render_context = PYRenderContext {
+            indent: 0,
+            config: &self.config.lang,
+        };
+
         let project_modules = self
             .modules
             .iter()
-            .map(|module| GTLangProjectSource {
-                path: module.path.clone(),
-                code: module.module.render(&py_indent(), &self.config.lang),
+            .map(|module| {
+                module
+                    .module
+                    .render(&mut render_context)
+                    .map(|code| GTLangProjectSource {
+                        path: module.path.clone(),
+                        code,
+                    })
             })
-            .collect::<Vec<_>>();
+            .collect::<Result<Vec<_>>>()?;
 
         let mut modules = vec![gitignore, pyproject, py_typed, init];
         modules.extend(module_inits);

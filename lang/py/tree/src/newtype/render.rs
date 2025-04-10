@@ -1,31 +1,29 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
-use genotype_lang_py_config::PYLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use crate::PYRender;
+impl<'a> GtlRender<'a> for PYNewtype {
+    type RenderContext = PYRenderContext<'a>;
 
-use super::PYNewtype;
-
-impl PYRender for PYNewtype {
-    fn render(&self, indent: &GTIndent, _config: &PYLangConfig) -> String {
+    fn render(&self, context: &mut PYRenderContext) -> Result<String> {
         let mut blocks = vec![];
 
-        let name = self.name.render(indent);
-        let primitive = self.primitive.render(indent);
+        let name = self.name.render(context)?;
+        let primitive = self.primitive.render(context)?;
         blocks.push(format!(r#"{name} = NewType("{name}", {primitive})"#));
 
         if let Some(doc) = &self.doc {
-            blocks.push(doc.render(&indent));
+            blocks.push(doc.render(context)?);
         }
 
-        blocks.join("\n")
+        Ok(blocks.join("\n"))
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use pretty_assertions::assert_eq;
-
-    use crate::*;
 
     #[test]
     fn test_render() {
@@ -35,7 +33,8 @@ mod tests {
                 name: "UserId".into(),
                 primitive: PYPrimitive::String,
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"UserId = NewType("UserId", str)"#
         );
     }
@@ -48,7 +47,8 @@ mod tests {
                 name: "UserId".into(),
                 primitive: PYPrimitive::String,
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"UserId = NewType("UserId", str)
 """Hello, world!""""#
         );

@@ -1,10 +1,12 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::TSImportReference;
+impl<'a> GtlRender<'a> for TSImportReference {
+    type RenderContext = TSRenderContext<'a>;
 
-impl GTRender for TSImportReference {
-    fn render(&self, indent: &GTIndent) -> String {
-        match self {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        Ok(match self {
             TSImportReference::Default(name) => name.clone(),
 
             TSImportReference::Glob(name) => format!("* as {}", name),
@@ -12,24 +14,25 @@ impl GTRender for TSImportReference {
             TSImportReference::Named(names) => {
                 let names = names
                     .iter()
-                    .map(|name| name.render(indent))
-                    .collect::<Vec<String>>()
+                    .map(|name| name.render(context))
+                    .collect::<Result<Vec<_>>>()?
                     .join(", ");
                 format!("{{ {} }}", names)
             }
-        }
+        })
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::*;
 
     #[test]
     fn test_render_default() {
         assert_eq!(
-            TSImportReference::Default("Name".into()).render(&ts_indent()),
+            TSImportReference::Default("Name".into())
+                .render(&mut Default::default())
+                .unwrap(),
             "Name"
         );
     }
@@ -37,7 +40,9 @@ mod tests {
     #[test]
     fn test_render_glob() {
         assert_eq!(
-            TSImportReference::Glob("name".into()).render(&ts_indent()),
+            TSImportReference::Glob("name".into())
+                .render(&mut Default::default())
+                .unwrap(),
             "* as name"
         );
     }
@@ -49,7 +54,8 @@ mod tests {
                 TSImportName::Name("Name".into()),
                 TSImportName::Alias("Name".into(), "Alias".into()),
             ])
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             "{ Name, Name as Alias }"
         );
     }

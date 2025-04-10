@@ -1,70 +1,69 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
-use genotype_lang_py_config::PYLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use crate::PYRender;
+impl<'a> GtlRender<'a> for PYClass {
+    type RenderContext = PYRenderContext<'a>;
 
-use super::PYClass;
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        let name = self.name.render(context)?;
+        let extensions = self.render_extensions(context)?;
+        let body = self.render_body(context)?;
 
-impl PYRender for PYClass {
-    fn render(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
-        let name = self.name.render(indent);
-        let extensions = self.render_extensions(indent, config);
-        let body = self.render_body(indent, config);
-
-        format!("{}class {name}{extensions}:\n{body}", indent.string)
+        Ok(context.indent_format(&format!("class {name}{extensions}:\n{body}")))
     }
 }
 
-impl PYClass {
-    fn render_extensions(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
+impl<'a> PYClass {
+    fn render_extensions(&self, context: &mut PYRenderContext<'a>) -> Result<String> {
         let mut extensions = self
             .extensions
             .iter()
-            .map(|extension| extension.render(indent, config))
-            .collect::<Vec<_>>();
+            .map(|extension| extension.render(context))
+            .collect::<Result<Vec<_>>>()?;
         // [TODO] Push model when converting instead
         extensions.push("Model".into());
 
         let extensions = extensions.join(", ");
 
-        if extensions.len() > 0 {
+        Ok(if extensions.len() > 0 {
             format!("({extensions})")
         } else {
             "".into()
-        }
+        })
     }
 
-    fn render_body(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
+    fn render_body(&self, context: &mut PYRenderContext<'a>) -> Result<String> {
         let mut body = vec![];
 
         if let Some(doc) = &self.doc {
-            body.push(doc.render(&indent.increment()));
+            body.push(doc.render(&mut context.indent_inc())?);
         }
 
         if self.properties.len() > 0 {
-            body.push(self.render_properties(indent, config));
+            body.push(self.render_properties(context)?);
         } else {
-            body.push(indent.increment().format("pass"));
+            body.push(context.indent_inc().indent_format("pass"));
         }
 
-        body.join("\n\n")
+        Ok(body.join("\n\n"))
     }
 
-    fn render_properties(&self, indent: &GTIndent, config: &PYLangConfig) -> String {
-        let indent = indent.increment();
-        self.properties
+    fn render_properties(&self, context: &mut PYRenderContext<'a>) -> Result<String> {
+        let mut property_context = context.indent_inc();
+        Ok(self
+            .properties
             .iter()
-            .map(|property| property.render(&indent, config))
-            .collect::<Vec<String>>()
-            .join("\n")
+            .map(|property| property.render(&mut property_context))
+            .collect::<Result<Vec<_>>>()?
+            .join("\n"))
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use pretty_assertions::assert_eq;
-
-    use crate::*;
 
     #[test]
     fn test_render_empty() {
@@ -76,7 +75,8 @@ mod tests {
                 properties: vec![],
                 references: vec![],
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"class Name(Model):
     pass"#
         );
@@ -105,7 +105,8 @@ mod tests {
                 ],
                 references: vec![],
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"class Name(Model):
     name: str
     age: Optional[int] = None"#
@@ -135,7 +136,8 @@ mod tests {
                 ],
                 references: vec![],
             }
-            .render(&py_indent().increment(), &Default::default()),
+            .render(&mut PYRenderContext::default().indent_inc())
+            .unwrap(),
             r#"    class Name(Model):
         name: str
         age: Optional[int] = None"#
@@ -160,7 +162,8 @@ mod tests {
                 }],
                 references: vec![],
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"class Name(Hello, World, Model):
     name: str"#
         );
@@ -176,7 +179,8 @@ mod tests {
                 properties: vec![],
                 references: vec![],
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"class Name(Model):
     """Hello, world!"""
 
@@ -199,7 +203,8 @@ mod tests {
                 }],
                 references: vec![],
             }
-            .render(&py_indent(), &Default::default()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"class Name(Model):
     """Hello, world!"""
 

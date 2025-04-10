@@ -1,24 +1,21 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_rs_config::RSLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
 use miette::Result;
 
-use crate::RSRender;
+impl<'a> GtlRender<'a> for RSMap {
+    type RenderContext = RSRenderContext<'a>;
 
-use super::RSMap;
-
-impl RSRender for RSMap {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
-        let key = self.key.render(indent, config)?;
-        let descriptor = self.descriptor.render(indent, config)?;
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+        let key = self.key.render(context)?;
+        let descriptor = self.descriptor.render(context)?;
         Ok(format!("BTreeMap<{key}, {descriptor}>"))
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use pretty_assertions::assert_eq;
-
-    use crate::*;
 
     #[test]
     fn test_render() {
@@ -27,7 +24,7 @@ mod tests {
                 key: RSPrimitive::String.into(),
                 descriptor: RSPrimitive::IntSize.into(),
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             "BTreeMap<String, isize>"
         );

@@ -1,29 +1,24 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_rs_config::RSLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
 use miette::Result;
 
-use crate::RSRender;
+impl<'a> GtlRender<'a> for RSEnumVariant {
+    type RenderContext = RSRenderContext<'a>;
 
-use super::RSEnumVariant;
-
-impl RSRender for RSEnumVariant {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         let mut blocks = vec![];
 
         if let Some(doc) = &self.doc {
-            blocks.push(doc.render(indent, config)?);
+            blocks.push(doc.render(context)?);
         }
 
         for attribute in &self.attributes {
-            blocks.push(attribute.render(indent, config)?);
+            blocks.push(attribute.render(context)?);
         }
 
-        let name = self.name.render(indent, config)?;
-        let descriptor = self.descriptor.render(indent, config)?;
-        blocks.push(format!(
-            "{indent}{name}({descriptor}),",
-            indent = indent.string
-        ));
+        let name = self.name.render(context)?;
+        let descriptor = self.descriptor.render(context)?;
+        blocks.push(context.indent_format(&format!("{name}({descriptor}),")));
 
         Ok(blocks.join("\n"))
     }
@@ -31,9 +26,8 @@ impl RSRender for RSEnumVariant {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use pretty_assertions::assert_eq;
-
-    use crate::*;
 
     #[test]
     fn test_render() {
@@ -44,7 +38,7 @@ mod tests {
                 name: "Variant".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean).into(),
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             "Variant(bool),"
         );
@@ -59,7 +53,7 @@ mod tests {
                 name: "Variant".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean).into(),
             }
-            .render(&rs_indent().increment(), &Default::default())
+            .render(&mut RSRenderContext::default().indent_inc())
             .unwrap(),
             "    Variant(bool),"
         );
@@ -74,7 +68,7 @@ mod tests {
                 name: "Variant".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean).into(),
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             r#"#[serde(rename = "variant")]
 Variant(bool),"#
@@ -90,7 +84,7 @@ Variant(bool),"#
                 name: "Variant".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean).into(),
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             r#"/// Hello, world!
 Variant(bool),"#
@@ -106,7 +100,7 @@ Variant(bool),"#
                 name: "Variant".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean).into(),
             }
-            .render(&rs_indent().increment(), &Default::default())
+            .render(&mut RSRenderContext::default().indent_inc())
             .unwrap(),
             r#"    /// Hello, world!
     #[serde(rename = "variant")]

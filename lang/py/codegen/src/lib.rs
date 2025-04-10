@@ -1,5 +1,5 @@
 use genotype_lang_core_codegen::*;
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRenderModule};
+use genotype_lang_core_tree::*;
 use genotype_lang_py_converter::{context::PYConvertContext, convert::PYConvert};
 use genotype_lang_py_tree::*;
 use genotype_parser::*;
@@ -8,29 +8,27 @@ use miette::Result;
 pub struct PyCodegen {}
 
 impl PyCodegen {
-    fn gen_hoisted(context: &mut PYConvertContext) -> String {
+    fn gen_hoisted(context: &mut PYConvertContext) -> Result<String> {
         let hoisted = context.drain_hoisted();
 
-        PYModule::join_definitions(
-            hoisted
+        Ok(PYModule::join_definitions(
+            &hoisted
                 .iter()
-                .map(|definition| definition.render(&py_indent(), &Default::default()))
-                .collect(),
-        )
+                .map(|definition| definition.render(&mut Default::default()))
+                .collect::<Result<_>>()?,
+        ))
     }
 }
 
-impl GtlCodegen for PyCodegen {
-    fn indent() -> GTIndent<'static> {
-        py_indent()
-    }
-
-    fn gen_descriptor(descriptor: &GTDescriptor) -> Result<GtlCodegenResultDescriptor> {
+impl<'a, RenderContext> GtlCodegen<'a, RenderContext> for PyCodegen {
+    fn gen_descriptor(
+        descriptor: &GTDescriptor,
+    ) -> Result<GtlCodegenResultDescriptor<'a, RenderContext>> {
         let mut context = PYConvertContext::default();
         let converted = descriptor.convert(&mut context);
 
-        let inline = converted.render(&py_indent(), &Default::default());
-        let definitions = Self::gen_hoisted(&mut context);
+        let inline = converted.render(&mut Default::default())?;
+        let definitions = Self::gen_hoisted(&mut context)?;
 
         Ok(GtlCodegenResultDescriptor {
             inline,
@@ -43,21 +41,21 @@ impl GtlCodegen for PyCodegen {
         })
     }
 
-    fn gen_alias(alias: &GTAlias) -> Result<GtlCodegenResultAlias> {
+    fn gen_alias(alias: &GTAlias) -> Result<GtlCodegenResultAlias<'a, RenderContext>> {
         let mut definitions = vec![];
 
         let mut context = PYConvertContext::default();
         let converted = alias.convert(&mut context);
 
-        let rendered_alias = converted.render(&py_indent(), &Default::default());
+        let rendered_alias = converted.render(&mut Default::default())?;
         definitions.push(rendered_alias);
 
-        let rendered_hoisted = Self::gen_hoisted(&mut context);
+        let rendered_hoisted = Self::gen_hoisted(&mut context)?;
         if !rendered_hoisted.is_empty() {
             definitions.push(rendered_hoisted);
         }
 
-        let definitions = PYModule::join_definitions(definitions);
+        let definitions = PYModule::join_definitions(&definitions);
 
         Ok(GtlCodegenResultAlias {
             definitions,
@@ -85,7 +83,7 @@ mod tespy {
             GtlCodegenResultDescriptor {
                 inline: "Literal[True]".into(),
                 definitions: "".into(),
-                resolve: GtlCodegenResolve {
+                resolve: GtlCodegenResolve::<PYRenderContext> {
                     imports: vec![],
                     claims: vec![],
                 },
@@ -108,7 +106,7 @@ mod tespy {
             GtlCodegenResultDescriptor {
                 inline: "Hello".into(),
                 definitions: "type Hello = Literal[True]".into(),
-                resolve: GtlCodegenResolve {
+                resolve: GtlCodegenResolve::<PYRenderContext> {
                     imports: vec![],
                     claims: vec![],
                 },
@@ -151,7 +149,7 @@ mod tespy {
 
 type World = Literal["world"]"#
                     .into(),
-                resolve: GtlCodegenResolve {
+                resolve: GtlCodegenResolve::<PYRenderContext> {
                     imports: vec![],
                     claims: vec![],
                 },
@@ -205,7 +203,7 @@ type Hello = Literal[True]
 
 type World = Literal["world"]"#
                     .into(),
-                resolve: GtlCodegenResolve {
+                resolve: GtlCodegenResolve::<PYRenderContext> {
                     imports: vec![],
                     claims: vec![],
                 },

@@ -1,48 +1,53 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
-
-use super::TSDoc;
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
 impl TSDoc {
-    pub fn with_doc(doc: &Option<TSDoc>, indent: &GTIndent, str: String, padded: bool) -> String {
-        format!(
-            "{}{}",
-            if let Some(doc) = doc {
-                doc.render(indent) + if padded { "\n\n" } else { "\n" }
-            } else {
-                String::new()
-            },
-            str
-        )
+    pub fn with_doc(
+        doc: &Option<TSDoc>,
+        context: &mut TSRenderContext,
+        str: String,
+        padded: bool,
+    ) -> Result<String> {
+        let doc = if let Some(doc) = doc {
+            doc.render(context)? + if padded { "\n\n" } else { "\n" }
+        } else {
+            String::new()
+        };
+        Ok(format!("{doc}{str}"))
     }
 }
 
-impl GTRender for TSDoc {
-    fn render(&self, indent: &GTIndent) -> String {
+impl<'a> GtlRender<'a> for TSDoc {
+    type RenderContext = TSRenderContext<'a>;
+
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         let lines = self.0.split("\n").enumerate();
-        lines
+        Ok(lines
             .map(|(index, line)| {
                 format!(
                     "{}{} {}",
-                    indent.string,
+                    context.indent_legacy.string,
                     if index == 0 { "/**" } else { " *" },
                     line
                 )
             })
             .collect::<Vec<_>>()
             .join("\n")
-            + " */"
+            + " */")
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::indent::ts_indent;
 
     #[test]
     fn test_render_simple() {
         assert_eq!(
-            TSDoc("Hello, world!".into()).render(&ts_indent()),
+            TSDoc("Hello, world!".into())
+                .render(&mut Default::default())
+                .unwrap(),
             "/** Hello, world! */"
         );
     }
@@ -56,7 +61,8 @@ cruel
 world!"#
                     .into()
             )
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"/** Hello,
  * cruel
  * world! */"#
@@ -72,7 +78,8 @@ cruel
 world!"#
                     .into()
             )
-            .render(&ts_indent().increment()),
+            .render(&mut TSRenderContext::default().indent_inc())
+            .unwrap(),
             r#"  /** Hello,
    * cruel
    * world! */"#
@@ -84,10 +91,11 @@ world!"#
         assert_eq!(
             TSDoc::with_doc(
                 &Some(TSDoc("Hello, world!".into())),
-                &ts_indent(),
+                &mut Default::default(),
                 "type Name = string;".into(),
                 false
-            ),
+            )
+            .unwrap(),
             r#"/** Hello, world! */
 type Name = string;"#
         );
@@ -96,7 +104,13 @@ type Name = string;"#
     #[test]
     fn test_with_doc_none() {
         assert_eq!(
-            TSDoc::with_doc(&None, &ts_indent(), "type Name = string;".into(), false),
+            TSDoc::with_doc(
+                &None,
+                &mut Default::default(),
+                "type Name = string;".into(),
+                false
+            )
+            .unwrap(),
             r#"type Name = string;"#
         );
     }
@@ -106,10 +120,11 @@ type Name = string;"#
         assert_eq!(
             TSDoc::with_doc(
                 &Some(TSDoc("Hello, world!".into())),
-                &ts_indent(),
+                &mut Default::default(),
                 "type Name = string;".into(),
                 true
-            ),
+            )
+            .unwrap(),
             r#"/** Hello, world! */
 
 type Name = string;"#
@@ -119,7 +134,13 @@ type Name = string;"#
     #[test]
     fn test_with_doc_padded_none() {
         assert_eq!(
-            TSDoc::with_doc(&None, &ts_indent(), "type Name = string;".into(), true),
+            TSDoc::with_doc(
+                &None,
+                &mut Default::default(),
+                "type Name = string;".into(),
+                true
+            )
+            .unwrap(),
             r#"type Name = string;"#
         );
     }

@@ -1,26 +1,25 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRenderModule};
-use genotype_lang_rs_config::RSLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
 use miette::Result;
 
-use crate::RSRender;
+impl<'a> GtlRender<'a> for RSModule {
+    type RenderContext = RSRenderContext<'a>;
 
-use super::RSModule;
-
-impl RSRender for RSModule {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         let mut blocks = vec![];
 
         if let Some(doc) = &self.doc {
-            let doc = doc.render(indent, config)?;
+            let doc = doc.render(context)?;
             if !doc.is_empty() {
                 blocks.push(doc);
             }
         }
 
         let imports = Self::join_imports(
-            self.imports
+            &self
+                .imports
                 .iter()
-                .map(|import| import.render(indent, config))
+                .map(|import| import.render(context))
                 .collect::<Result<Vec<String>>>()?,
         );
 
@@ -29,9 +28,10 @@ impl RSRender for RSModule {
         }
 
         let definitions = Self::join_definitions(
-            self.definitions
+            &self
+                .definitions
                 .iter()
-                .map(|definition| definition.render(indent, config))
+                .map(|definition| definition.render(context))
                 .collect::<Result<Vec<String>>>()?,
         );
 
@@ -39,18 +39,17 @@ impl RSRender for RSModule {
             blocks.push(definitions);
         }
 
-        Ok(Self::join_blocks(blocks))
+        Ok(Self::join_blocks(&blocks))
     }
 }
 
-impl GTRenderModule for RSModule {}
+impl GtlRenderModule for RSModule {}
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use genotype_parser::GTDefinitionId;
     use pretty_assertions::assert_eq;
-
-    use crate::*;
 
     #[test]
     fn test_render() {
@@ -107,7 +106,7 @@ mod tests {
                     }),
                 ]
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             r#"use self::path::to::module;
 use self::path::to::module::{Name, Name as Alias};
@@ -142,7 +141,7 @@ pub struct Name {
                     descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                 })]
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             r#"//! Hello, world!
 

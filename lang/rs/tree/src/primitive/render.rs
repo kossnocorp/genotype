@@ -1,13 +1,11 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_rs_config::RSLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
 use miette::Result;
 
-use crate::RSRender;
+impl<'a> GtlRender<'a> for RSPrimitive {
+    type RenderContext = RSRenderContext<'a>;
 
-use super::RSPrimitive;
-
-impl RSRender for RSPrimitive {
-    fn render(&self, _indent: &GTIndent, _config: &RSLangConfig) -> Result<String> {
+    fn render(&self, _context: &mut Self::RenderContext) -> Result<String> {
         Ok(match self {
             RSPrimitive::Unit => "()",
             RSPrimitive::Boolean => "bool",
@@ -34,109 +32,86 @@ impl RSRender for RSPrimitive {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::indent::rs_indent;
 
     #[test]
     fn test_render_primitive() {
         assert_eq!(
-            RSPrimitive::Unit
-                .render(&rs_indent(), &Default::default())
-                .unwrap(),
+            RSPrimitive::Unit.render(&mut Default::default()).unwrap(),
             "()"
         );
         assert_eq!(
             RSPrimitive::Boolean
-                .render(&rs_indent(), &Default::default())
+                .render(&mut Default::default())
                 .unwrap(),
             "bool"
         );
         assert_eq!(
-            RSPrimitive::String
-                .render(&rs_indent(), &Default::default())
-                .unwrap(),
+            RSPrimitive::String.render(&mut Default::default()).unwrap(),
             "String"
         );
         assert_eq!(
-            RSPrimitive::Int8
-                .render(&rs_indent(), &Default::default())
-                .unwrap(),
+            RSPrimitive::Int8.render(&mut Default::default()).unwrap(),
             "i8"
         );
         assert_eq!(
-            RSPrimitive::Int16
-                .render(&rs_indent(), &Default::default())
-                .unwrap(),
+            RSPrimitive::Int16.render(&mut Default::default()).unwrap(),
             "i16"
         );
         assert_eq!(
-            RSPrimitive::Int32
-                .render(&rs_indent(), &Default::default())
-                .unwrap(),
+            RSPrimitive::Int32.render(&mut Default::default()).unwrap(),
             "i32"
         );
         assert_eq!(
-            RSPrimitive::Int64
-                .render(&rs_indent(), &Default::default())
-                .unwrap(),
+            RSPrimitive::Int64.render(&mut Default::default()).unwrap(),
             "i64"
         );
         assert_eq!(
-            RSPrimitive::Int128
-                .render(&rs_indent(), &Default::default())
-                .unwrap(),
+            RSPrimitive::Int128.render(&mut Default::default()).unwrap(),
             "i128"
         );
         assert_eq!(
             RSPrimitive::IntSize
-                .render(&rs_indent(), &Default::default())
+                .render(&mut Default::default())
                 .unwrap(),
             "isize"
         );
         assert_eq!(
-            RSPrimitive::IntU8
-                .render(&rs_indent(), &Default::default())
-                .unwrap(),
+            RSPrimitive::IntU8.render(&mut Default::default()).unwrap(),
             "u8"
         );
         assert_eq!(
-            RSPrimitive::IntU16
-                .render(&rs_indent(), &Default::default())
-                .unwrap(),
+            RSPrimitive::IntU16.render(&mut Default::default()).unwrap(),
             "u16"
         );
         assert_eq!(
-            RSPrimitive::IntU32
-                .render(&rs_indent(), &Default::default())
-                .unwrap(),
+            RSPrimitive::IntU32.render(&mut Default::default()).unwrap(),
             "u32"
         );
         assert_eq!(
-            RSPrimitive::IntU64
-                .render(&rs_indent(), &Default::default())
-                .unwrap(),
+            RSPrimitive::IntU64.render(&mut Default::default()).unwrap(),
             "u64"
         );
         assert_eq!(
             RSPrimitive::IntU128
-                .render(&rs_indent(), &Default::default())
+                .render(&mut Default::default())
                 .unwrap(),
             "u128"
         );
         assert_eq!(
             RSPrimitive::IntUSize
-                .render(&rs_indent(), &Default::default())
+                .render(&mut Default::default())
                 .unwrap(),
             "usize"
         );
         assert_eq!(
             RSPrimitive::Float32
-                .render(&rs_indent(), &Default::default())
+                .render(&mut Default::default())
                 .unwrap(),
             "f32"
         );
         assert_eq!(
             RSPrimitive::Float64
-                .render(&rs_indent(), &Default::default())
+                .render(&mut Default::default())
                 .unwrap(),
             "f64"
         );

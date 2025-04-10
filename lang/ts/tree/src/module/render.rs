@@ -1,27 +1,26 @@
-use genotype_lang_core_tree::{
-    indent::GTIndent,
-    render::{GTRender, GTRenderModule},
-};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use crate::TSDoc;
+impl<'a> GtlRender<'a> for TSModule {
+    type RenderContext = TSRenderContext<'a>;
 
-use super::TSModule;
-
-impl GTRender for TSModule {
-    fn render(&self, indent: &GTIndent) -> String {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         let imports = Self::join_imports(
-            self.imports
+            &self
+                .imports
                 .iter()
-                .map(|import| import.render(indent))
-                .collect(),
+                .map(|import| import.render(context))
+                .collect::<Result<Vec<_>>>()?,
         );
         let has_imports = !imports.is_empty();
 
         let definitions = Self::join_definitions(
-            self.definitions
+            &self
+                .definitions
                 .iter()
-                .map(|definition| definition.render(indent))
-                .collect(),
+                .map(|definition| definition.render(context))
+                .collect::<Result<Vec<_>>>()?,
         );
         let has_definitions = !definitions.is_empty();
 
@@ -37,18 +36,16 @@ impl GTRender for TSModule {
             str.push_str("\n");
         }
 
-        TSDoc::with_doc(&self.doc, indent, str, true)
+        TSDoc::with_doc(&self.doc, context, str, true)
     }
 }
 
-impl GTRenderModule for TSModule {}
+impl GtlRenderModule for TSModule {}
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
     use super::*;
-    use crate::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render() {
@@ -95,7 +92,8 @@ mod tests {
                     }),
                 ]
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"import Name from "../path/to/module.ts";
 import { Name, Name as Alias } from "../path/to/module.ts";
 
@@ -124,7 +122,8 @@ export interface Name {
                     descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                 }),]
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             r#"/** Hello, world! */
 
 import Name from "../path/to/module.ts";

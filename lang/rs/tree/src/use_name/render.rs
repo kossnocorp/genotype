@@ -1,20 +1,18 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_rs_config::RSLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
 use miette::Result;
 
-use crate::RSRender;
+impl<'a> GtlRender<'a> for RSUseName {
+    type RenderContext = RSRenderContext<'a>;
 
-use super::RSUseName;
-
-impl RSRender for RSUseName {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         Ok(match self {
-            RSUseName::Name(name) => name.render(indent, config)?,
+            RSUseName::Name(name) => name.render(context)?,
             RSUseName::Alias(name, alias) => {
                 format!(
                     "{name} as {alias}",
-                    name = name.render(indent, config)?,
-                    alias = alias.render(indent, config)?
+                    name = name.render(context)?,
+                    alias = alias.render(context)?
                 )
             }
         })
@@ -24,13 +22,12 @@ impl RSRender for RSUseName {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::indent::rs_indent;
 
     #[test]
     fn test_render_name() {
         assert_eq!(
             RSUseName::Name("Name".into())
-                .render(&rs_indent(), &Default::default())
+                .render(&mut Default::default())
                 .unwrap(),
             "Name"
         );
@@ -40,7 +37,7 @@ mod tests {
     fn test_render_alias() {
         assert_eq!(
             RSUseName::Alias("Name".into(), "Alias".into())
-                .render(&rs_indent(), &Default::default())
+                .render(&mut Default::default())
                 .unwrap(),
             "Name as Alias"
         );

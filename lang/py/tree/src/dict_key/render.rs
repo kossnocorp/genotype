@@ -1,28 +1,41 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::PYDictKey;
+impl<'a> GtlRender<'a> for PYDictKey {
+    type RenderContext = PYRenderContext<'a>;
 
-impl GTRender for PYDictKey {
-    fn render(&self, _indent: &GTIndent) -> String {
-        match self {
+    fn render(&self, _context: &mut Self::RenderContext) -> Result<String> {
+        Ok(match self {
             PYDictKey::String => "str".into(),
             PYDictKey::Int => "int".into(),
             PYDictKey::Float => "float".into(),
             PYDictKey::Boolean => "bool".into(),
-        }
+        })
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::indent::py_indent;
 
     #[test]
     fn test_render() {
-        assert_eq!(PYDictKey::Boolean.render(&py_indent()), "bool");
-        assert_eq!(PYDictKey::String.render(&py_indent()), "str");
-        assert_eq!(PYDictKey::Int.render(&py_indent()), "int");
-        assert_eq!(PYDictKey::Float.render(&py_indent()), "float");
+        assert_eq!(
+            PYDictKey::Boolean.render(&mut Default::default()).unwrap(),
+            "bool"
+        );
+        assert_eq!(
+            PYDictKey::String.render(&mut Default::default()).unwrap(),
+            "str"
+        );
+        assert_eq!(
+            PYDictKey::Int.render(&mut Default::default()).unwrap(),
+            "int"
+        );
+        assert_eq!(
+            PYDictKey::Float.render(&mut Default::default()).unwrap(),
+            "float"
+        );
     }
 }

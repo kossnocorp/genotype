@@ -1,23 +1,24 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::TSTuple;
+impl<'a> GtlRender<'a> for TSTuple {
+    type RenderContext = TSRenderContext<'a>;
 
-impl GTRender for TSTuple {
-    fn render(&self, indent: &GTIndent) -> String {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         let descriptors = self
             .descriptors
             .iter()
-            .map(|d| d.render(indent))
-            .collect::<Vec<String>>()
+            .map(|d| d.render(context))
+            .collect::<Result<Vec<_>>>()?
             .join(", ");
-        format!("{}{}{}", "[", descriptors, "]")
+        Ok(format!("[{}]", descriptors))
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{descriptor::TSDescriptor, indent::ts_indent, primitive::TSPrimitive};
 
     #[test]
     fn test_render_tuple() {
@@ -28,7 +29,8 @@ mod tests {
                     TSDescriptor::Primitive(TSPrimitive::Number),
                 ]
             }
-            .render(&ts_indent()),
+            .render(&mut Default::default())
+            .unwrap(),
             "[string, number]"
         );
     }

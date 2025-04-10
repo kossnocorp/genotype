@@ -1,13 +1,19 @@
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRender};
+use crate::*;
+use genotype_lang_core_tree::*;
+use miette::Result;
 
-use super::TSImportName;
+impl<'a> GtlRender<'a> for TSImportName {
+    type RenderContext = TSRenderContext<'a>;
 
-impl GTRender for TSImportName {
-    fn render(&self, indent: &GTIndent) -> String {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         match self {
-            TSImportName::Name(name) => name.render(indent),
+            TSImportName::Name(name) => name.render(context),
+
             TSImportName::Alias(name, alias) => {
-                format!("{} as {}", name.render(indent), alias.render(indent))
+                let name = name.render(context)?;
+                let alias = alias.render(context)?;
+
+                Ok(format!("{name} as {alias}"))
             }
         }
     }
@@ -16,12 +22,13 @@ impl GTRender for TSImportName {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::indent::ts_indent;
 
     #[test]
     fn test_render_name() {
         assert_eq!(
-            TSImportName::Name("Name".into()).render(&ts_indent()),
+            TSImportName::Name("Name".into())
+                .render(&mut Default::default())
+                .unwrap(),
             "Name"
         );
     }
@@ -29,7 +36,9 @@ mod tests {
     #[test]
     fn test_render_alias() {
         assert_eq!(
-            TSImportName::Alias("Name".into(), "Alias".into()).render(&ts_indent()),
+            TSImportName::Alias("Name".into(), "Alias".into())
+                .render(&mut Default::default())
+                .unwrap(),
             "Name as Alias"
         );
     }

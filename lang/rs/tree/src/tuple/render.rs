@@ -1,17 +1,15 @@
-use genotype_lang_core_tree::indent::GTIndent;
-use genotype_lang_rs_config::RSLangConfig;
+use crate::*;
+use genotype_lang_core_tree::*;
 use miette::Result;
 
-use crate::RSRender;
+impl<'a> GtlRender<'a> for RSTuple {
+    type RenderContext = RSRenderContext<'a>;
 
-use super::RSTuple;
-
-impl RSRender for RSTuple {
-    fn render(&self, indent: &GTIndent, config: &RSLangConfig) -> Result<String> {
+    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
         let descriptors = self
             .descriptors
             .iter()
-            .map(|d| d.render(indent, config))
+            .map(|d| d.render(context))
             .collect::<Result<Vec<String>>>()?
             .join(", ");
         Ok(format!("({descriptors})"))
@@ -20,9 +18,8 @@ impl RSRender for RSTuple {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use pretty_assertions::assert_eq;
-
-    use crate::*;
 
     #[test]
     fn test_render_tuple() {
@@ -33,7 +30,7 @@ mod tests {
                     RSDescriptor::Primitive(RSPrimitive::IntSize),
                 ]
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             "(String, isize)"
         );
@@ -45,7 +42,7 @@ mod tests {
             RSTuple {
                 descriptors: vec![]
             }
-            .render(&rs_indent(), &Default::default())
+            .render(&mut Default::default())
             .unwrap(),
             "()"
         );

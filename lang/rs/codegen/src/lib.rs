@@ -1,5 +1,5 @@
 use genotype_lang_core_codegen::*;
-use genotype_lang_core_tree::{indent::GTIndent, render::GTRenderModule};
+use genotype_lang_core_tree::*;
 use genotype_lang_rs_converter::{context::RSConvertContext, convert::RSConvert};
 use genotype_lang_rs_tree::*;
 use genotype_parser::*;
@@ -12,25 +12,23 @@ impl RsCodegen {
         let hoisted = context.drain_hoisted();
 
         Ok(RSModule::join_definitions(
-            hoisted
+            &hoisted
                 .iter()
-                .map(|definition| definition.render(&rs_indent(), &Default::default()))
+                .map(|definition| definition.render(&mut Default::default()))
                 .collect::<Result<_>>()?,
         ))
     }
 }
 
-impl GtlCodegen for RsCodegen {
-    fn indent() -> GTIndent<'static> {
-        rs_indent()
-    }
-
-    fn gen_descriptor(descriptor: &GTDescriptor) -> Result<GtlCodegenResultDescriptor> {
+impl<'a, RenderContext> GtlCodegen<'a, RenderContext> for RsCodegen {
+    fn gen_descriptor(
+        descriptor: &GTDescriptor,
+    ) -> Result<GtlCodegenResultDescriptor<'a, RenderContext>> {
         let module_id = GTModuleId("module".into());
         let mut context = RSConvertContext::empty(module_id);
         let converted = descriptor.convert(&mut context)?;
 
-        let inline = converted.render(&rs_indent(), &Default::default())?;
+        let inline = converted.render(&mut Default::default())?;
         let definitions = Self::gen_hoisted(&mut context)?;
 
         Ok(GtlCodegenResultDescriptor {
@@ -44,14 +42,14 @@ impl GtlCodegen for RsCodegen {
         })
     }
 
-    fn gen_alias(alias: &GTAlias) -> Result<GtlCodegenResultAlias> {
+    fn gen_alias(alias: &GTAlias) -> Result<GtlCodegenResultAlias<'a, RenderContext>> {
         let mut definitions = vec![];
 
         let module_id = GTModuleId("module".into());
         let mut context = RSConvertContext::empty(module_id);
         let converted = alias.convert(&mut context)?;
 
-        let rendered_alias = converted.render(&rs_indent(), &Default::default())?;
+        let rendered_alias = converted.render(&mut Default::default())?;
         definitions.push(rendered_alias);
 
         let rendered_hoisted = Self::gen_hoisted(&mut context)?;
@@ -59,7 +57,7 @@ impl GtlCodegen for RsCodegen {
             definitions.push(rendered_hoisted);
         }
 
-        let definitions = RSModule::join_definitions(definitions);
+        let definitions = RSModule::join_definitions(&definitions);
 
         Ok(GtlCodegenResultAlias {
             definitions,
@@ -88,7 +86,7 @@ mod tests {
                 definitions: r#"#[literal(true)]
 pub struct True;"#
                     .into(),
-                resolve: GtlCodegenResolve {
+                resolve: GtlCodegenResolve::<RSRenderContext> {
                     imports: vec![],
                     claims: vec![],
                 },
@@ -115,7 +113,7 @@ pub struct HelloTrue;
 
 pub type Hello = HelloTrue;"#
                     .into(),
-                resolve: GtlCodegenResolve {
+                resolve: GtlCodegenResolve::<RSRenderContext> {
                     imports: vec![],
                     claims: vec![],
                 },
@@ -170,7 +168,7 @@ pub enum  {
     World(World),
 }"#
                 .into(),
-                resolve: GtlCodegenResolve {
+                resolve: GtlCodegenResolve::<RSRenderContext> {
                     imports: vec![],
                     claims: vec![],
                 },
@@ -234,7 +232,7 @@ pub struct HiWorldWorld;
 
 pub type World = HiWorldWorld;"#
                     .into(),
-                resolve: GtlCodegenResolve {
+                resolve: GtlCodegenResolve::<RSRenderContext> {
                     imports: vec![],
                     claims: vec![],
                 },
