@@ -3,13 +3,15 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for PYImportReference {
+    type RenderState = PYRenderState;
+
     type RenderContext = PYRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
         Ok(match self {
             PYImportReference::Default(name) => {
                 if let Some(name) = name {
-                    name.render(context)?
+                    name.render(state, context)?
                 } else {
                     "".into()
                 }
@@ -19,7 +21,7 @@ impl<'a> GtlRender<'a> for PYImportReference {
 
             PYImportReference::Named(names) => names
                 .iter()
-                .map(|name| name.render(context))
+                .map(|name| name.render(state, context))
                 .collect::<Result<Vec<_>>>()?
                 .join(", "),
         })
@@ -34,13 +36,13 @@ mod tests {
     fn test_render_default() {
         assert_eq!(
             PYImportReference::Default(Some("Name".into()))
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "Name"
         );
         assert_eq!(
             PYImportReference::Default(None)
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             ""
         );
@@ -50,7 +52,7 @@ mod tests {
     fn test_render_glob() {
         assert_eq!(
             PYImportReference::Glob
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "*"
         );
@@ -63,7 +65,7 @@ mod tests {
                 PYImportName::Name("Name".into()),
                 PYImportName::Alias("Name".into(), "Alias".into()),
             ])
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "Name, Name as Alias"
         );

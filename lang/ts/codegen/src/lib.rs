@@ -17,40 +17,43 @@ impl TsCodegen {
         Ok(TSModule::join_definitions(
             &hoisted
                 .iter()
-                .map(|definition| definition.render(&mut Default::default()))
+                .map(|definition| definition.render(Default::default(), &mut Default::default()))
                 .collect::<Result<_>>()?,
         ))
     }
 }
 
-impl<'a, RenderContext> GtlCodegen<'a, RenderContext> for TsCodegen {
+impl<'a, RenderState, RenderContext> GtlCodegen<'a, RenderState, RenderContext> for TsCodegen
+where
+    Box<(dyn GtlRenderResolveImport<'a, RenderState, RenderContext>)>: Clone,
+{
     fn gen_descriptor(
         descriptor: &GTDescriptor,
-    ) -> Result<GtlCodegenResultDescriptor<'a, RenderContext>> {
+    ) -> Result<GtlCodegenResultDescriptor<'a, RenderState, RenderContext>> {
         let mut context = TSConvertContext::default();
         let converted = descriptor.convert(&mut context);
 
-        let inline = converted.render(&mut Default::default())?;
+        let inline = converted.render(Default::default(), &mut Default::default())?;
         let definitions = Self::gen_hoisted(&mut context)?;
 
         Ok(GtlCodegenResultDescriptor {
             inline,
             definitions,
             // [TODO]
-            resolve: GtlCodegenResolve {
+            resolve: GtlRenderResolve {
                 imports: vec![],
-                claims: vec![],
+                exports: vec![],
             },
         })
     }
 
-    fn gen_alias(alias: &GTAlias) -> Result<GtlCodegenResultAlias<'a, RenderContext>> {
+    fn gen_alias(alias: &GTAlias) -> Result<GtlCodegenResultAlias<'a, RenderState, RenderContext>> {
         let mut definitions = vec![];
 
         let mut context = TSConvertContext::default();
         let converted = alias.convert(&mut context);
 
-        let rendered_alias = converted.render(&mut Default::default())?;
+        let rendered_alias = converted.render(Default::default(), &mut Default::default())?;
         definitions.push(rendered_alias);
 
         let rendered_hoisted = Self::gen_hoisted(&mut context)?;
@@ -63,9 +66,9 @@ impl<'a, RenderContext> GtlCodegen<'a, RenderContext> for TsCodegen {
         Ok(GtlCodegenResultAlias {
             definitions,
             // [TODO]
-            resolve: GtlCodegenResolve {
+            resolve: GtlRenderResolve {
                 imports: vec![],
-                claims: vec![],
+                exports: vec![],
             },
         })
     }
@@ -74,7 +77,6 @@ impl<'a, RenderContext> GtlCodegen<'a, RenderContext> for TsCodegen {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_lang_core_codegen::GtlCodegenResolve;
     use genotype_parser::{GTAlias, GTDefinitionId, GTIdentifier, GTLiteral, GTModuleId, GTUnion};
     use pretty_assertions::assert_eq;
 
@@ -86,9 +88,9 @@ mod tests {
             GtlCodegenResultDescriptor {
                 inline: "true".into(),
                 definitions: "".into(),
-                resolve: GtlCodegenResolve::<TSRenderContext> {
+                resolve: GtlRenderResolve::<TSRenderState, TSRenderContext> {
                     imports: vec![],
-                    claims: vec![],
+                    exports: vec![],
                 },
             }
         );
@@ -109,9 +111,9 @@ mod tests {
             GtlCodegenResultDescriptor {
                 inline: "Hello".into(),
                 definitions: "export type Hello = true;".into(),
-                resolve: GtlCodegenResolve::<TSRenderContext> {
+                resolve: GtlRenderResolve::<TSRenderState, TSRenderContext> {
                     imports: vec![],
-                    claims: vec![],
+                    exports: vec![],
                 },
             }
         );
@@ -151,9 +153,9 @@ mod tests {
 
 export type World = "world";"#
                     .into(),
-                resolve: GtlCodegenResolve::<TSRenderContext> {
+                resolve: GtlRenderResolve::<TSRenderState, TSRenderContext> {
                     imports: vec![],
-                    claims: vec![],
+                    exports: vec![],
                 },
             }
         );
@@ -204,9 +206,9 @@ export type Hello = true;
 
 export type World = "world";"#
                     .into(),
-                resolve: GtlCodegenResolve::<TSConvertContext> {
+                resolve: GtlRenderResolve::<TSRenderState, TSRenderContext> {
                     imports: vec![],
-                    claims: vec![],
+                    exports: vec![],
                 },
             }
         );

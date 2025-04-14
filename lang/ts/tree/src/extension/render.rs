@@ -3,10 +3,12 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for TSExtension {
-    type RenderContext = TSRenderContext<'a>;
+    type RenderState = TSRenderState;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
-        self.reference.render(context)
+    type RenderContext = TSRenderContext;
+
+    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
+        self.reference.render(state, context)
     }
 }
 
@@ -20,7 +22,7 @@ mod tests {
             TSExtension {
                 reference: "Foo".into()
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "Foo"
         );

@@ -3,19 +3,21 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for RSDescriptor {
+    type RenderState = RSRenderState;
+
     type RenderContext = RSRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
         Ok(match self {
-            RSDescriptor::Enum(r#enum) => r#enum.render(context)?,
-            RSDescriptor::Vec(array) => array.render(context)?,
-            RSDescriptor::Primitive(primitive) => primitive.render(context)?,
-            RSDescriptor::Reference(name) => name.render(context)?,
-            RSDescriptor::InlineUse(inline_use) => inline_use.render(context)?,
-            RSDescriptor::Tuple(tuple) => tuple.render(context)?,
-            RSDescriptor::Map(dict) => dict.render(context)?,
-            RSDescriptor::Option(option) => option.render(context)?,
-            RSDescriptor::Any(any) => any.render(context)?,
+            RSDescriptor::Enum(r#enum) => r#enum.render(state, context)?,
+            RSDescriptor::Vec(array) => array.render(state, context)?,
+            RSDescriptor::Primitive(primitive) => primitive.render(state, context)?,
+            RSDescriptor::Reference(name) => name.render(state, context)?,
+            RSDescriptor::InlineUse(inline_use) => inline_use.render(state, context)?,
+            RSDescriptor::Tuple(tuple) => tuple.render(state, context)?,
+            RSDescriptor::Map(dict) => dict.render(state, context)?,
+            RSDescriptor::Option(option) => option.render(state, context)?,
+            RSDescriptor::Any(any) => any.render(state, context)?,
         })
     }
 }
@@ -32,7 +34,7 @@ mod tests {
             RSDescriptor::Vec(Box::new(RSVec {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize)
             }))
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "Vec<isize>"
         );
@@ -42,13 +44,13 @@ mod tests {
     fn test_render_primitive() {
         assert_eq!(
             RSDescriptor::Primitive(RSPrimitive::Boolean)
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "bool"
         );
         assert_eq!(
             RSDescriptor::Primitive(RSPrimitive::String)
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "String"
         );
@@ -62,7 +64,7 @@ mod tests {
                 identifier: "Name".into(),
                 definition_id: GTDefinitionId("module".into(), "Name".into())
             })
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "Name"
         );
@@ -75,7 +77,7 @@ mod tests {
                 path: RSPath("path/to/module".into(), "self::path::to::module".into()),
                 name: "Name".into()
             })
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "self::path::to::module::Name"
         );
@@ -90,7 +92,7 @@ mod tests {
                     RSDescriptor::Primitive(RSPrimitive::String)
                 ]
             })
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "(isize, String)"
         );
@@ -103,7 +105,7 @@ mod tests {
                 key: RSPrimitive::String.into(),
                 descriptor: RSPrimitive::IntSize.into(),
             }))
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "BTreeMap<String, isize>"
         );
@@ -115,7 +117,7 @@ mod tests {
             RSDescriptor::Option(Box::new(RSOption::new(RSDescriptor::Primitive(
                 RSPrimitive::String
             ))))
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "Option<String>"
         );
@@ -125,7 +127,7 @@ mod tests {
     fn test_render_any() {
         assert_eq!(
             RSDescriptor::Any(RSAny)
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "Any"
         );

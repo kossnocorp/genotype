@@ -3,9 +3,11 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for PYLiteral {
+    type RenderState = PYRenderState;
+
     type RenderContext = PYRenderContext<'a>;
 
-    fn render(&self, _context: &mut PYRenderContext) -> Result<String> {
+    fn render(&self, _state: PYRenderState, _context: &mut PYRenderContext) -> Result<String> {
         let str = match self {
             PYLiteral::None => "None".to_string(),
 
@@ -36,7 +38,9 @@ mod tests {
     #[test]
     fn test_render_none() {
         assert_eq!(
-            PYLiteral::None.render(&mut Default::default()).unwrap(),
+            PYLiteral::None
+                .render(Default::default(), &mut Default::default())
+                .unwrap(),
             "Literal[None]"
         );
     }
@@ -45,13 +49,13 @@ mod tests {
     fn test_render_boolean() {
         assert_eq!(
             PYLiteral::Boolean(true)
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "Literal[True]"
         );
         assert_eq!(
             PYLiteral::Boolean(false)
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "Literal[False]"
         );
@@ -61,13 +65,13 @@ mod tests {
     fn test_render_integer() {
         assert_eq!(
             PYLiteral::Integer(1)
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "Literal[1]"
         );
         assert_eq!(
             PYLiteral::Integer(-1)
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "Literal[-1]"
         );
@@ -77,19 +81,19 @@ mod tests {
     fn test_render_float() {
         assert_eq!(
             PYLiteral::Float(1.0)
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "Literal[1.0]"
         );
         assert_eq!(
             PYLiteral::Float(-1.1)
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "Literal[-1.1]"
         );
         assert_eq!(
             PYLiteral::Float(1.23456789)
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "Literal[1.23456789]"
         );
@@ -99,13 +103,13 @@ mod tests {
     fn test_render_string() {
         assert_eq!(
             PYLiteral::String("Hi!".into())
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "Literal[\"Hi!\"]"
         );
         assert_eq!(
             PYLiteral::String("Hello, \"world\"!\\".into())
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "Literal[\"Hello, \\\"world\\\"!\\\\\"]"
         );

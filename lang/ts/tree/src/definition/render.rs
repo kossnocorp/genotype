@@ -3,13 +3,15 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for TSDefinition {
-    type RenderContext = TSRenderContext<'a>;
+    type RenderState = TSRenderState;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    type RenderContext = TSRenderContext;
+
+    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
         match self {
-            TSDefinition::Alias(alias) => alias.render(context),
-            TSDefinition::Interface(interface) => interface.render(context),
-            TSDefinition::Branded(branded) => branded.render(context),
+            TSDefinition::Alias(alias) => alias.render(state, context),
+            TSDefinition::Interface(interface) => interface.render(state, context),
+            TSDefinition::Branded(branded) => branded.render(state, context),
         }
     }
 }
@@ -26,7 +28,7 @@ mod tests {
                 name: "Name".into(),
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String),
             })
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "export type Name = string;"
         );
@@ -54,7 +56,7 @@ mod tests {
                     }
                 ]
             })
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"export interface Name {
   name: string;
@@ -71,7 +73,7 @@ mod tests {
                 name: "Version".into(),
                 primitive: TSPrimitive::Number
             })
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"export type Version = number & { [versionBrand]: true };
 declare const versionBrand: unique symbol;"#

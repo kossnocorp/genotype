@@ -3,14 +3,20 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for TSModule {
-    type RenderContext = TSRenderContext<'a>;
+    type RenderState = TSRenderState;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    type RenderContext = TSRenderContext;
+
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
         let imports = Self::join_imports(
             &self
                 .imports
                 .iter()
-                .map(|import| import.render(context))
+                .map(|import| import.render(state, context))
                 .collect::<Result<Vec<_>>>()?,
         );
         let has_imports = !imports.is_empty();
@@ -19,7 +25,7 @@ impl<'a> GtlRender<'a> for TSModule {
             &self
                 .definitions
                 .iter()
-                .map(|definition| definition.render(context))
+                .map(|definition| definition.render(state, context))
                 .collect::<Result<Vec<_>>>()?,
         );
         let has_definitions = !definitions.is_empty();
@@ -36,7 +42,7 @@ impl<'a> GtlRender<'a> for TSModule {
             str.push_str("\n");
         }
 
-        TSDoc::with_doc(&self.doc, context, str, true)
+        TSDoc::with_doc(&self.doc, state, context, str, true)
     }
 }
 
@@ -92,7 +98,7 @@ mod tests {
                     }),
                 ]
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"import Name from "../path/to/module.ts";
 import { Name, Name as Alias } from "../path/to/module.ts";
@@ -122,7 +128,7 @@ export interface Name {
                     descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                 }),]
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"/** Hello, world! */
 

@@ -3,11 +3,13 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for RSInlineUse {
+    type RenderState = RSRenderState;
+
     type RenderContext = RSRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
-        let module = self.path.render(context)?;
-        let name = self.name.render(context)?;
+    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
+        let module = self.path.render(state, context)?;
+        let name = self.name.render(state, context)?;
         Ok(format!("{module}::{name}"))
     }
 }
@@ -24,7 +26,7 @@ mod tests {
                 path: RSPath("path/to/module".into(), "self::path::to::module".into()),
                 name: "Name".into(),
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "self::path::to::module::Name"
         );

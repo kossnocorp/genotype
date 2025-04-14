@@ -3,18 +3,24 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for TSProperty {
-    type RenderContext = TSRenderContext<'a>;
+    type RenderState = TSRenderState;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
-        let name = self.name.render(context)?;
-        let descriptor = self.descriptor.render(context)?;
+    type RenderContext = TSRenderContext;
+
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
+        let name = self.name.render(state, context)?;
+        let descriptor = self.descriptor.render(state, context)?;
         let str = format!(
             "{}{name}{}: {descriptor}",
-            context.indent_legacy.string.clone(),
+            state.indent_str(),
             if self.required { "" } else { "?" },
         );
 
-        TSDoc::with_doc(&self.doc, context, str, false)
+        TSDoc::with_doc(&self.doc, state, context, str, false)
     }
 }
 
@@ -31,7 +37,7 @@ mod tests {
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                 required: true
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "name: string"
         );
@@ -42,7 +48,7 @@ mod tests {
                 descriptor: TSDescriptor::Reference("Name".into()),
                 required: true
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "name: Name"
         );
@@ -57,7 +63,10 @@ mod tests {
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                 required: true
             }
-            .render(&mut TSRenderContext::default().indent_inc())
+            .render(
+                TSRenderState::default().indent_inc(),
+                &mut Default::default()
+            )
             .unwrap(),
             "  name: string"
         );
@@ -72,7 +81,7 @@ mod tests {
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                 required: false
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "name?: string"
         );
@@ -87,7 +96,7 @@ mod tests {
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String),
                 required: true
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"/** Hello, world! */
 name: string"#

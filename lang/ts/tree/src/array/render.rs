@@ -3,10 +3,12 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for TSArray {
-    type RenderContext = TSRenderContext<'a>;
+    type RenderState = TSRenderState;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
-        let descriptor = self.descriptor.render(context)?;
+    type RenderContext = TSRenderContext;
+
+    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
+        let descriptor = self.descriptor.render(state, context)?;
         Ok(format!("Array<{descriptor}>"))
     }
 }
@@ -21,7 +23,7 @@ mod tests {
             TSArray {
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String)
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "Array<string>"
         );

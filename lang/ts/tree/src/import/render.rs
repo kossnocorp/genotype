@@ -3,11 +3,17 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for TSImport {
-    type RenderContext = TSRenderContext<'a>;
+    type RenderState = TSRenderState;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
-        let reference = self.reference.render(context)?;
-        let path = self.path.render(context)?;
+    type RenderContext = TSRenderContext;
+
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
+        let reference = self.reference.render(state, context)?;
+        let path = self.path.render(state, context)?;
 
         Ok(format!(r#"import {reference} from "{path}";"#))
     }
@@ -25,7 +31,7 @@ mod tests {
                 path: "../path/to/module.ts".into(),
                 reference: TSImportReference::Default("Name".into()),
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"import Name from "../path/to/module.ts";"#
         );
@@ -38,7 +44,7 @@ mod tests {
                 path: "../path/to/module.ts".into(),
                 reference: TSImportReference::Glob("name".into()),
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"import * as name from "../path/to/module.ts";"#
         );
@@ -54,7 +60,7 @@ mod tests {
                     TSImportName::Alias("Name".into(), "Alias".into()),
                 ])
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"import { Name, Name as Alias } from "../path/to/module.ts";"#
         );

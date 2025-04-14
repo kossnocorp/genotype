@@ -4,14 +4,20 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for RSDoc {
+    type RenderState = RSRenderState;
+
     type RenderContext = RSRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(
+        &self,
+        state: Self::RenderState,
+        _context: &mut Self::RenderContext,
+    ) -> Result<String> {
         Ok(self
             .0
             .split("\n")
             .map(|line| {
-                context.indent_format(&format!(
+                state.indent_format(&format!(
                     r#"{} {}"#,
                     if self.1 { "//!" } else { "///" },
                     line
@@ -31,7 +37,7 @@ mod tests {
     fn test_render_simple() {
         assert_eq!(
             RSDoc::new("Hello, world!", false)
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             r#"/// Hello, world!"#
         );
@@ -41,7 +47,7 @@ mod tests {
     fn test_render_module() {
         assert_eq!(
             RSDoc::new("Hello, world!", true)
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             r#"//! Hello, world!"#
         );
@@ -56,7 +62,7 @@ cruel
 world!"#,
                 false
             )
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"/// Hello,
 /// cruel
@@ -73,7 +79,10 @@ cruel
 world!"#,
                 false
             )
-            .render(&mut RSRenderContext::default().indent_inc())
+            .render(
+                RSRenderState::default().indent_inc(),
+                &mut Default::default()
+            )
             .unwrap(),
             r#"    /// Hello,
     /// cruel

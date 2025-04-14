@@ -129,8 +129,8 @@ build-backend = "poetry.core.masonry.api"
             });
 
         let mut render_context = PYRenderContext {
-            indent: 0,
             config: &self.config.lang,
+            ..Default::default()
         };
 
         let project_modules = self
@@ -139,7 +139,7 @@ build-backend = "poetry.core.masonry.api"
             .map(|module| {
                 module
                     .module
-                    .render(&mut render_context)
+                    .render(Default::default(), &mut render_context)
                     .map(|code| GTLangProjectSource {
                         path: module.path.clone(),
                         code,

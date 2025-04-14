@@ -3,11 +3,13 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for RSMap {
+    type RenderState = RSRenderState;
+
     type RenderContext = RSRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
-        let key = self.key.render(context)?;
-        let descriptor = self.descriptor.render(context)?;
+    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
+        let key = self.key.render(state, context)?;
+        let descriptor = self.descriptor.render(state, context)?;
         Ok(format!("BTreeMap<{key}, {descriptor}>"))
     }
 }
@@ -24,7 +26,7 @@ mod tests {
                 key: RSPrimitive::String.into(),
                 descriptor: RSPrimitive::IntSize.into(),
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "BTreeMap<String, isize>"
         );

@@ -3,14 +3,20 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for PYDoc {
+    type RenderState = PYRenderState;
+
     type RenderContext = PYRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(
+        &self,
+        state: Self::RenderState,
+        _context: &mut Self::RenderContext,
+    ) -> Result<String> {
         let lines = self.0.split("\n").enumerate();
         Ok(lines
             .map(|(index, line)| {
                 let comment = if index == 0 { r#"""""# } else { "" };
-                context.indent_format(&format!("{comment}{line}"))
+                state.indent_format(&format!("{comment}{line}"))
             })
             .collect::<Vec<_>>()
             .join("\n")
@@ -27,7 +33,7 @@ mod tests {
     fn test_render_simple() {
         assert_eq!(
             PYDoc("Hello, world!".into())
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             r#""""Hello, world!""""#
         );
@@ -42,7 +48,7 @@ cruel
 world!"#
                     .into()
             )
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#""""Hello,
 cruel
@@ -59,7 +65,10 @@ cruel
 world!"#
                     .into()
             )
-            .render(&mut PYRenderContext::default().indent_inc())
+            .render(
+                PYRenderState::default().indent_inc(),
+                &mut Default::default()
+            )
             .unwrap(),
             r#"    """Hello,
     cruel

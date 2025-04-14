@@ -3,13 +3,15 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for TSTuple {
-    type RenderContext = TSRenderContext<'a>;
+    type RenderState = TSRenderState;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    type RenderContext = TSRenderContext;
+
+    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
         let descriptors = self
             .descriptors
             .iter()
-            .map(|d| d.render(context))
+            .map(|d| d.render(state, context))
             .collect::<Result<Vec<_>>>()?
             .join(", ");
         Ok(format!("[{}]", descriptors))
@@ -29,7 +31,7 @@ mod tests {
                     TSDescriptor::Primitive(TSPrimitive::Number),
                 ]
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "[string, number]"
         );

@@ -3,18 +3,20 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for PYDescriptor {
+    type RenderState = PYRenderState;
+
     type RenderContext = PYRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
         match self {
-            PYDescriptor::List(array) => array.render(context),
-            PYDescriptor::Literal(literal) => literal.render(context),
-            PYDescriptor::Primitive(primitive) => primitive.render(context),
-            PYDescriptor::Reference(name) => name.render(context),
-            PYDescriptor::Tuple(tuple) => tuple.render(context),
-            PYDescriptor::Union(union) => union.render(context),
-            PYDescriptor::Dict(dict) => dict.render(context),
-            PYDescriptor::Any(any) => any.render(context),
+            PYDescriptor::List(array) => array.render(state, context),
+            PYDescriptor::Literal(literal) => literal.render(state, context),
+            PYDescriptor::Primitive(primitive) => primitive.render(state, context),
+            PYDescriptor::Reference(name) => name.render(state, context),
+            PYDescriptor::Tuple(tuple) => tuple.render(state, context),
+            PYDescriptor::Union(union) => union.render(state, context),
+            PYDescriptor::Dict(dict) => dict.render(state, context),
+            PYDescriptor::Any(any) => any.render(state, context),
         }
     }
 }
@@ -30,7 +32,7 @@ mod tests {
             PYDescriptor::List(Box::new(PYList {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Int)
             }))
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "list[int]"
         );
@@ -40,13 +42,13 @@ mod tests {
     fn test_render_primitive() {
         assert_eq!(
             PYDescriptor::Primitive(PYPrimitive::Boolean)
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "bool"
         );
         assert_eq!(
             PYDescriptor::Primitive(PYPrimitive::String)
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "str"
         );
@@ -56,7 +58,7 @@ mod tests {
     fn test_render_reference() {
         assert_eq!(
             PYDescriptor::Reference(PYReference::new("Name".into(), false))
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "Name"
         );
@@ -71,7 +73,7 @@ mod tests {
                     PYDescriptor::Primitive(PYPrimitive::String)
                 ]
             })
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "tuple[int, str]"
         );
@@ -87,7 +89,7 @@ mod tests {
                 ],
                 discriminator: None
             })
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "str | int"
         );
@@ -100,7 +102,7 @@ mod tests {
                 key: PYDictKey::String,
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
             }))
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "dict[str, int]"
         );
@@ -110,7 +112,7 @@ mod tests {
     fn test_render_any() {
         assert_eq!(
             PYDescriptor::Any(PYAny)
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "Any"
         );

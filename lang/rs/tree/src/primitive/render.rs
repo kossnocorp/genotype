@@ -3,9 +3,11 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for RSPrimitive {
+    type RenderState = RSRenderState;
+
     type RenderContext = RSRenderContext<'a>;
 
-    fn render(&self, _context: &mut Self::RenderContext) -> Result<String> {
+    fn render(&self, _state: Self::RenderState, _context: &mut Self::RenderContext) -> Result<String> {
         Ok(match self {
             RSPrimitive::Unit => "()",
             RSPrimitive::Boolean => "bool",
@@ -36,82 +38,82 @@ mod tests {
     #[test]
     fn test_render_primitive() {
         assert_eq!(
-            RSPrimitive::Unit.render(&mut Default::default()).unwrap(),
+            RSPrimitive::Unit.render(Default::default(), &mut Default::default()).unwrap(),
             "()"
         );
         assert_eq!(
             RSPrimitive::Boolean
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "bool"
         );
         assert_eq!(
-            RSPrimitive::String.render(&mut Default::default()).unwrap(),
+            RSPrimitive::String.render(Default::default(), &mut Default::default()).unwrap(),
             "String"
         );
         assert_eq!(
-            RSPrimitive::Int8.render(&mut Default::default()).unwrap(),
+            RSPrimitive::Int8.render(Default::default(), &mut Default::default()).unwrap(),
             "i8"
         );
         assert_eq!(
-            RSPrimitive::Int16.render(&mut Default::default()).unwrap(),
+            RSPrimitive::Int16.render(Default::default(), &mut Default::default()).unwrap(),
             "i16"
         );
         assert_eq!(
-            RSPrimitive::Int32.render(&mut Default::default()).unwrap(),
+            RSPrimitive::Int32.render(Default::default(), &mut Default::default()).unwrap(),
             "i32"
         );
         assert_eq!(
-            RSPrimitive::Int64.render(&mut Default::default()).unwrap(),
+            RSPrimitive::Int64.render(Default::default(), &mut Default::default()).unwrap(),
             "i64"
         );
         assert_eq!(
-            RSPrimitive::Int128.render(&mut Default::default()).unwrap(),
+            RSPrimitive::Int128.render(Default::default(), &mut Default::default()).unwrap(),
             "i128"
         );
         assert_eq!(
             RSPrimitive::IntSize
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "isize"
         );
         assert_eq!(
-            RSPrimitive::IntU8.render(&mut Default::default()).unwrap(),
+            RSPrimitive::IntU8.render(Default::default(), &mut Default::default()).unwrap(),
             "u8"
         );
         assert_eq!(
-            RSPrimitive::IntU16.render(&mut Default::default()).unwrap(),
+            RSPrimitive::IntU16.render(Default::default(), &mut Default::default()).unwrap(),
             "u16"
         );
         assert_eq!(
-            RSPrimitive::IntU32.render(&mut Default::default()).unwrap(),
+            RSPrimitive::IntU32.render(Default::default(), &mut Default::default()).unwrap(),
             "u32"
         );
         assert_eq!(
-            RSPrimitive::IntU64.render(&mut Default::default()).unwrap(),
+            RSPrimitive::IntU64.render(Default::default(), &mut Default::default()).unwrap(),
             "u64"
         );
         assert_eq!(
             RSPrimitive::IntU128
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "u128"
         );
         assert_eq!(
             RSPrimitive::IntUSize
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "usize"
         );
         assert_eq!(
             RSPrimitive::Float32
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "f32"
         );
         assert_eq!(
             RSPrimitive::Float64
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "f64"
         );

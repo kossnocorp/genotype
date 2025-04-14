@@ -4,27 +4,33 @@ use heck::ToLowerCamelCase;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for TSBranded {
-    type RenderContext = TSRenderContext<'a>;
+    type RenderState = TSRenderState;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    type RenderContext = TSRenderContext;
+
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
         let brand_name = format!("{brand}Brand", brand = self.name.0).to_lower_camel_case();
 
         let mut blocks = vec![];
 
         if let Some(doc) = &self.doc {
-            blocks.push(doc.render(context)?);
+            blocks.push(doc.render(state, context)?);
         }
 
         blocks.push(format!(
             "{indent}export type {name} = {primitive} & {{ [{brand_name}]: true }};",
-            indent = context.indent_legacy.string.clone(),
-            name = self.name.render(context)?,
-            primitive = self.primitive.render(context)?
+            indent = state.indent_str(),
+            name = self.name.render(state, context)?,
+            primitive = self.primitive.render(state, context)?
         ));
 
         blocks.push(format!(
             "{indent}declare const {brand_name}: unique symbol;",
-            indent = context.indent_legacy.string,
+            indent = state.indent_str(),
         ));
 
         Ok(blocks.join("\n"))
@@ -44,7 +50,7 @@ mod tests {
                 name: "Version".into(),
                 primitive: TSPrimitive::Number
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"export type Version = number & { [versionBrand]: true };
 declare const versionBrand: unique symbol;"#
@@ -59,7 +65,7 @@ declare const versionBrand: unique symbol;"#
                 name: "Version".into(),
                 primitive: TSPrimitive::Number
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"/** Object version. */
 export type Version = number & { [versionBrand]: true };
@@ -75,7 +81,10 @@ declare const versionBrand: unique symbol;"#
                 name: "Version".into(),
                 primitive: TSPrimitive::Number
             }
-            .render(&mut TSRenderContext::default().indent_inc())
+            .render(
+                TSRenderState::default().indent_inc(),
+                &mut Default::default()
+            )
             .unwrap(),
             r#"  /** Object version. */
   export type Version = number & { [versionBrand]: true };

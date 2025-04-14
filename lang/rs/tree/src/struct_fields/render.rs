@@ -3,9 +3,15 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for RSStructFields {
+    type RenderState = RSRenderState;
+
     type RenderContext = RSRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
         match self {
             RSStructFields::Tuple(descriptors) => {
                 if descriptors.len() == 0 {
@@ -16,7 +22,7 @@ impl<'a> GtlRender<'a> for RSStructFields {
                     .iter()
                     .map(|descriptor| {
                         descriptor
-                            .render(context)
+                            .render(state, context)
                             .map(|result| format!("pub {result}"))
                     })
                     .collect::<Result<Vec<String>>>()?
@@ -30,12 +36,11 @@ impl<'a> GtlRender<'a> for RSStructFields {
                     return Ok(";".into());
                 }
 
-                let mut fields_context = context.indent_inc();
                 let fields = fields
                     .iter()
                     .map(|property| {
                         property
-                            .render(&mut fields_context)
+                            .render(state.indent_inc(), context)
                             .map(|result| result + ",")
                     })
                     .collect::<Result<Vec<String>>>()?
@@ -43,7 +48,7 @@ impl<'a> GtlRender<'a> for RSStructFields {
 
                 Ok(format!(
                     " {{\n{fields}\n{indent}}}",
-                    indent = context.indent_str()
+                    indent = state.indent_str()
                 ))
             }
 
@@ -76,7 +81,7 @@ mod tests {
                     descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize),
                 }
             ])
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#" {
     pub name: String,
@@ -89,7 +94,7 @@ mod tests {
     fn test_render_empty() {
         assert_eq!(
             RSStructFields::Resolved(vec![])
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             ";"
         );
@@ -112,7 +117,10 @@ mod tests {
                     descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize),
                 }
             ])
-            .render(&mut RSRenderContext::default().indent_inc())
+            .render(
+                RSRenderState::default().indent_inc(),
+                &mut Default::default()
+            )
             .unwrap(),
             r#" {
         pub name: String,
@@ -128,7 +136,7 @@ mod tests {
                 RSDescriptor::Primitive(RSPrimitive::String),
                 RSDescriptor::Primitive(RSPrimitive::IntSize),
             ])
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "(pub String, pub isize);"
         );
@@ -138,7 +146,7 @@ mod tests {
     fn test_render_empty_tuple() {
         assert_eq!(
             RSStructFields::Tuple(vec![])
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             ";"
         );

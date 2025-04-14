@@ -3,9 +3,11 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for TSImportReference {
-    type RenderContext = TSRenderContext<'a>;
+    type RenderState = TSRenderState;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    type RenderContext = TSRenderContext;
+
+    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
         Ok(match self {
             TSImportReference::Default(name) => name.clone(),
 
@@ -14,7 +16,7 @@ impl<'a> GtlRender<'a> for TSImportReference {
             TSImportReference::Named(names) => {
                 let names = names
                     .iter()
-                    .map(|name| name.render(context))
+                    .map(|name| name.render(state, context))
                     .collect::<Result<Vec<_>>>()?
                     .join(", ");
                 format!("{{ {} }}", names)
@@ -31,7 +33,7 @@ mod tests {
     fn test_render_default() {
         assert_eq!(
             TSImportReference::Default("Name".into())
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "Name"
         );
@@ -41,7 +43,7 @@ mod tests {
     fn test_render_glob() {
         assert_eq!(
             TSImportReference::Glob("name".into())
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "* as name"
         );
@@ -54,7 +56,7 @@ mod tests {
                 TSImportName::Name("Name".into()),
                 TSImportName::Alias("Name".into(), "Alias".into()),
             ])
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "{ Name, Name as Alias }"
         );

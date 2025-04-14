@@ -3,15 +3,19 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for TSInterface {
-    type RenderContext = TSRenderContext<'a>;
+    type RenderState = TSRenderState;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
-        let mut prop_indent = context.indent_inc();
+    type RenderContext = TSRenderContext;
 
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
         let properties = self
             .properties
             .iter()
-            .map(|property| property.render(&mut prop_indent))
+            .map(|property| property.render(state.indent_inc(), context))
             .collect::<Result<Vec<_>>>()?
             .iter()
             .map(|property| format!("{property};"))
@@ -21,11 +25,11 @@ impl<'a> GtlRender<'a> for TSInterface {
         let extensions = self
             .extensions
             .iter()
-            .map(|extension| extension.render(context))
+            .map(|extension| extension.render(state, context))
             .collect::<Result<Vec<_>>>()?
             .join(", ");
 
-        let name = self.name.render(context)?;
+        let name = self.name.render(state, context)?;
         let extends = if extensions.len() > 0 {
             format!(" extends {}", extensions)
         } else {
@@ -34,12 +38,13 @@ impl<'a> GtlRender<'a> for TSInterface {
 
         TSDoc::with_doc(
             &self.doc,
+            state,
             context,
             format!(
                 "{}export interface {name}{extends} {{\n{properties}{}{}",
-                context.indent_legacy.string,
+                state.indent_str(),
                 if properties.len() > 0 { "\n" } else { "" },
-                context.indent_legacy.format("}")
+                state.indent_format("}")
             ),
             false,
         )
@@ -60,7 +65,7 @@ mod tests {
                 extensions: vec![],
                 properties: vec![]
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "export interface Name {\n}"
         );
@@ -88,7 +93,7 @@ mod tests {
                     }
                 ]
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"export interface Name {
   name: string;
@@ -119,7 +124,10 @@ mod tests {
                     }
                 ]
             }
-            .render(&mut TSRenderContext::default().indent_inc())
+            .render(
+                TSRenderState::default().indent_inc(),
+                &mut Default::default()
+            )
             .unwrap(),
             r#"  export interface Name {
     name: string;
@@ -142,7 +150,7 @@ mod tests {
                     required: true
                 },]
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"export interface Name extends Hello, World {
   name: string;
@@ -159,7 +167,7 @@ mod tests {
                 extensions: vec![],
                 properties: vec![]
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"/** Hello, world! */
 export interface Name {

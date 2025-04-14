@@ -3,23 +3,33 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for PYClass {
+    type RenderState = PYRenderState;
+
     type RenderContext = PYRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
-        let name = self.name.render(context)?;
-        let extensions = self.render_extensions(context)?;
-        let body = self.render_body(context)?;
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
+        let name = self.name.render(state, context)?;
+        let extensions = self.render_extensions(state, context)?;
+        let body = self.render_body(state, context)?;
 
-        Ok(context.indent_format(&format!("class {name}{extensions}:\n{body}")))
+        Ok(state.indent_format(&format!("class {name}{extensions}:\n{body}")))
     }
 }
 
 impl<'a> PYClass {
-    fn render_extensions(&self, context: &mut PYRenderContext<'a>) -> Result<String> {
+    fn render_extensions(
+        &self,
+        state: PYRenderState,
+        context: &mut PYRenderContext<'a>,
+    ) -> Result<String> {
         let mut extensions = self
             .extensions
             .iter()
-            .map(|extension| extension.render(context))
+            .map(|extension| extension.render(state, context))
             .collect::<Result<Vec<_>>>()?;
         // [TODO] Push model when converting instead
         extensions.push("Model".into());
@@ -33,28 +43,35 @@ impl<'a> PYClass {
         })
     }
 
-    fn render_body(&self, context: &mut PYRenderContext<'a>) -> Result<String> {
+    fn render_body(
+        &self,
+        state: PYRenderState,
+        context: &mut PYRenderContext<'a>,
+    ) -> Result<String> {
         let mut body = vec![];
 
         if let Some(doc) = &self.doc {
-            body.push(doc.render(&mut context.indent_inc())?);
+            body.push(doc.render(state.indent_inc(), context)?);
         }
 
         if self.properties.len() > 0 {
-            body.push(self.render_properties(context)?);
+            body.push(self.render_properties(state, context)?);
         } else {
-            body.push(context.indent_inc().indent_format("pass"));
+            body.push(state.indent_inc().indent_format("pass"));
         }
 
         Ok(body.join("\n\n"))
     }
 
-    fn render_properties(&self, context: &mut PYRenderContext<'a>) -> Result<String> {
-        let mut property_context = context.indent_inc();
+    fn render_properties(
+        &self,
+        state: PYRenderState,
+        context: &mut PYRenderContext<'a>,
+    ) -> Result<String> {
         Ok(self
             .properties
             .iter()
-            .map(|property| property.render(&mut property_context))
+            .map(|property| property.render(state.indent_inc(), context))
             .collect::<Result<Vec<_>>>()?
             .join("\n"))
     }
@@ -75,7 +92,7 @@ mod tests {
                 properties: vec![],
                 references: vec![],
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"class Name(Model):
     pass"#
@@ -105,7 +122,7 @@ mod tests {
                 ],
                 references: vec![],
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"class Name(Model):
     name: str
@@ -136,7 +153,10 @@ mod tests {
                 ],
                 references: vec![],
             }
-            .render(&mut PYRenderContext::default().indent_inc())
+            .render(
+                PYRenderState::default().indent_inc(),
+                &mut Default::default()
+            )
             .unwrap(),
             r#"    class Name(Model):
         name: str
@@ -162,7 +182,7 @@ mod tests {
                 }],
                 references: vec![],
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"class Name(Hello, World, Model):
     name: str"#
@@ -179,7 +199,7 @@ mod tests {
                 properties: vec![],
                 references: vec![],
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"class Name(Model):
     """Hello, world!"""
@@ -203,7 +223,7 @@ mod tests {
                 }],
                 references: vec![],
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"class Name(Model):
     """Hello, world!"""

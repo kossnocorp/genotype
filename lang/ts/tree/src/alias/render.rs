@@ -3,14 +3,21 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for TSAlias {
-    type RenderContext = TSRenderContext<'a>;
+    type RenderState = TSRenderState;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
-        let name = self.name.render(context)?;
-        let descriptor = self.descriptor.render(context)?;
+    type RenderContext = TSRenderContext;
+
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
+        let name = self.name.render(state, context)?;
+        let descriptor = self.descriptor.render(state, context)?;
 
         TSDoc::with_doc(
             &self.doc,
+            state,
             context,
             format!("export type {name} = {descriptor};",),
             false,
@@ -31,7 +38,7 @@ mod tests {
                 name: "Name".into(),
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String)
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "export type Name = string;"
         );
@@ -45,7 +52,7 @@ mod tests {
                 name: "Name".into(),
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String)
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"/** Hello, world! */
 export type Name = string;"#

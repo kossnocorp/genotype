@@ -3,9 +3,11 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for RSPath {
+    type RenderState = RSRenderState;
+
     type RenderContext = RSRenderContext<'a>;
 
-    fn render(&self, _context: &mut Self::RenderContext) -> Result<String> {
+    fn render(&self, _state: Self::RenderState, _context: &mut Self::RenderContext) -> Result<String> {
         Ok(self.1.clone())
     }
 }
@@ -22,7 +24,7 @@ mod tests {
                 GTModuleId("path/to/module".into()),
                 "self::path::to::module".into()
             )
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "self::path::to::module"
         );

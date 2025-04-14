@@ -1,15 +1,24 @@
 use genotype_lang_core_tree::*;
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct TSRenderContext<'a> {
-    pub indent_legacy: GtlIndentLegacy<'a>,
+pub struct TSRenderContext {}
+
+impl<'a> GtlRenderContext for TSRenderContext {}
+
+impl Default for TSRenderContext {
+    fn default() -> Self {
+        Self {}
+    }
+}
+
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub struct TSRenderState {
     indent: usize,
 }
 
-impl<'a> GtlRenderContext for TSRenderContext<'a> {
+impl<'a> GtlRenderState for TSRenderState {
     fn indent_inc(&self) -> Self {
         Self {
-            indent_legacy: self.indent_legacy.increment(),
             indent: self.indent + 1,
             ..*self
         }
@@ -20,11 +29,8 @@ impl<'a> GtlRenderContext for TSRenderContext<'a> {
     }
 }
 
-impl Default for TSRenderContext<'_> {
+impl Default for TSRenderState {
     fn default() -> Self {
-        Self {
-            indent_legacy: GtlIndentLegacy::start("  "),
-            indent: 0,
-        }
+        Self { indent: 0 }
     }
 }

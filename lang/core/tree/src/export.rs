@@ -1,5 +1,5 @@
 use std::fmt::Debug;
 
-pub trait GtlImport {
+pub trait GtlExport {
     // [TODO]
 }

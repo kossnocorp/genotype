@@ -1,15 +1,32 @@
-use std::sync::LazyLock;
-
 use genotype_lang_core_tree::*;
 use genotype_lang_py_config::PYLangConfig;
+use std::sync::LazyLock;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, PartialEq)]
 pub struct PYRenderContext<'a> {
-    pub indent: usize,
     pub config: &'a PYLangConfig,
+    pub resolve: GtlRenderResolve<'a, PYRenderState, PYRenderContext<'a>>,
 }
 
-impl GtlRenderContext for PYRenderContext<'_> {
+impl GtlRenderContext for PYRenderContext<'_> {}
+
+static PY_DEFAULT_CONFIG: LazyLock<PYLangConfig> = LazyLock::new(|| PYLangConfig::default());
+
+impl Default for PYRenderContext<'_> {
+    fn default() -> Self {
+        Self {
+            config: &PY_DEFAULT_CONFIG,
+            resolve: GtlRenderResolve::default(),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct PYRenderState {
+    pub indent: usize,
+}
+
+impl GtlRenderState for PYRenderState {
     const INDENT: &'static str = "    ";
 
     fn indent_inc(&self) -> Self {
@@ -24,13 +41,8 @@ impl GtlRenderContext for PYRenderContext<'_> {
     }
 }
 
-static PY_DEFAULT_CONFIG: LazyLock<PYLangConfig> = LazyLock::new(|| PYLangConfig::default());
-
-impl Default for PYRenderContext<'_> {
+impl Default for PYRenderState {
     fn default() -> Self {
-        Self {
-            indent: 0,
-            config: &PY_DEFAULT_CONFIG,
-        }
+        Self { indent: 0 }
     }
 }

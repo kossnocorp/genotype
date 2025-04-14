@@ -3,9 +3,11 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for RSUseReference {
+    type RenderState = RSRenderState;
+
     type RenderContext = RSRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
         Ok(match self {
             RSUseReference::Module => "".into(),
 
@@ -14,7 +16,7 @@ impl<'a> GtlRender<'a> for RSUseReference {
             RSUseReference::Named(names) => {
                 let names_str = names
                     .iter()
-                    .map(|name| name.render(context))
+                    .map(|name| name.render(state, context))
                     .collect::<Result<Vec<String>>>()?
                     .join(", ");
                 if names.len() == 1 {
@@ -37,7 +39,7 @@ mod tests {
     fn test_render_module() {
         assert_eq!(
             RSUseReference::Module
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             ""
         );
@@ -47,7 +49,7 @@ mod tests {
     fn test_render_glob() {
         assert_eq!(
             RSUseReference::Glob
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "*"
         );
@@ -60,7 +62,7 @@ mod tests {
                 RSUseName::Name("Name".into()),
                 RSUseName::Alias("Name".into(), "Alias".into()),
             ])
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "{Name, Name as Alias}"
         );
@@ -70,7 +72,7 @@ mod tests {
     fn test_render_named_solo() {
         assert_eq!(
             RSUseReference::Named(vec![RSUseName::Name("Name".into()),])
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "Name"
         );
@@ -80,7 +82,7 @@ mod tests {
     fn test_render_named_solo_alias() {
         assert_eq!(
             RSUseReference::Named(vec![RSUseName::Alias("Name".into(), "Alias".into()),])
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "{Name as Alias}"
         );

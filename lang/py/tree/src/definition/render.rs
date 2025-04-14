@@ -3,13 +3,15 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for PYDefinition {
+    type RenderState = PYRenderState;
+
     type RenderContext = PYRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
         match self {
-            PYDefinition::Alias(alias) => alias.render(context),
-            PYDefinition::Class(interface) => interface.render(context),
-            PYDefinition::Newtype(newtype) => newtype.render(context),
+            PYDefinition::Alias(alias) => alias.render(state, context),
+            PYDefinition::Class(interface) => interface.render(state, context),
+            PYDefinition::Newtype(newtype) => newtype.render(state, context),
         }
     }
 }
@@ -28,7 +30,7 @@ mod tests {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                 references: vec![],
             })
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "type Name = str"
         );
@@ -57,7 +59,7 @@ mod tests {
                 ],
                 references: vec![],
             })
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"class Name(Model):
     name: str
@@ -73,7 +75,7 @@ mod tests {
                 name: "UserId".into(),
                 primitive: PYPrimitive::String,
             })
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"UserId = NewType("UserId", str)"#
         );

@@ -3,11 +3,13 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for PYImport {
+    type RenderState = PYRenderState;
+
     type RenderContext = PYRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
-        let path = self.path.render(context)?;
-        let reference = self.reference.render(context)?;
+    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
+        let path = self.path.render(state, context)?;
+        let reference = self.reference.render(state, context)?;
 
         Ok(match self.reference {
             PYImportReference::Default(_) => {
@@ -38,7 +40,7 @@ mod tests {
                 reference: PYImportReference::Default(Some("name".into())),
                 dependency: PYDependency::Local(".path.to.module".into())
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"import .path.to.module as name"#
         );
@@ -48,7 +50,7 @@ mod tests {
                 reference: PYImportReference::Default(None),
                 dependency: PYDependency::Local(".path.to.module".into())
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"import .path.to.module"#
         );
@@ -62,7 +64,7 @@ mod tests {
                 reference: PYImportReference::Glob,
                 dependency: PYDependency::Local(".path.to.module".into())
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"from .path.to.module import *"#
         );
@@ -79,7 +81,7 @@ mod tests {
                 ]),
                 dependency: PYDependency::Local(".path.to.module".into())
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"from .path.to.module import Name, Name as Alias"#
         );

@@ -3,20 +3,22 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for PYModule {
+    type RenderState = PYRenderState;
+
     type RenderContext = PYRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
         let mut blocks = vec![];
 
         if let Some(doc) = &self.doc {
-            blocks.push(doc.render(context)?);
+            blocks.push(doc.render(state, context)?);
         }
 
         let imports = Self::join_imports(
             &self
                 .imports
                 .iter()
-                .map(|import| import.render(context))
+                .map(|import| import.render(state, context))
                 .collect::<Result<Vec<_>>>()?,
         );
 
@@ -28,7 +30,7 @@ impl<'a> GtlRender<'a> for PYModule {
             &self
                 .definitions
                 .iter()
-                .map(|definition| definition.render(context))
+                .map(|definition| definition.render(state, context))
                 .collect::<Result<Vec<_>>>()?,
         );
 
@@ -104,7 +106,7 @@ mod tests {
                     }),
                 ]
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"import .path.to.module as name
 from .path.to.module import Name, Name as Alias
@@ -137,7 +139,7 @@ class Name(Model):
                     references: vec![],
                 })]
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#""""Hello, world!"""
 

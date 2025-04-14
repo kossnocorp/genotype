@@ -3,17 +3,19 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for PYNewtype {
+    type RenderState = PYRenderState;
+
     type RenderContext = PYRenderContext<'a>;
 
-    fn render(&self, context: &mut PYRenderContext) -> Result<String> {
+    fn render(&self, state: PYRenderState, context: &mut PYRenderContext) -> Result<String> {
         let mut blocks = vec![];
 
-        let name = self.name.render(context)?;
-        let primitive = self.primitive.render(context)?;
+        let name = self.name.render(state, context)?;
+        let primitive = self.primitive.render(state, context)?;
         blocks.push(format!(r#"{name} = NewType("{name}", {primitive})"#));
 
         if let Some(doc) = &self.doc {
-            blocks.push(doc.render(context)?);
+            blocks.push(doc.render(state, context)?);
         }
 
         Ok(blocks.join("\n"))
@@ -33,7 +35,7 @@ mod tests {
                 name: "UserId".into(),
                 primitive: PYPrimitive::String,
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"UserId = NewType("UserId", str)"#
         );
@@ -47,7 +49,7 @@ mod tests {
                 name: "UserId".into(),
                 primitive: PYPrimitive::String,
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"UserId = NewType("UserId", str)
 """Hello, world!""""#

@@ -14,42 +14,45 @@ impl RsCodegen {
         Ok(RSModule::join_definitions(
             &hoisted
                 .iter()
-                .map(|definition| definition.render(&mut Default::default()))
+                .map(|definition| definition.render(Default::default(), &mut Default::default()))
                 .collect::<Result<_>>()?,
         ))
     }
 }
 
-impl<'a, RenderContext> GtlCodegen<'a, RenderContext> for RsCodegen {
+impl<'a, RenderState, RenderContext> GtlCodegen<'a, RenderState, RenderContext> for RsCodegen
+where
+    Box<(dyn GtlRenderResolveImport<'a, RenderState, RenderContext>)>: Clone,
+{
     fn gen_descriptor(
         descriptor: &GTDescriptor,
-    ) -> Result<GtlCodegenResultDescriptor<'a, RenderContext>> {
+    ) -> Result<GtlCodegenResultDescriptor<'a, RenderState, RenderContext>> {
         let module_id = GTModuleId("module".into());
         let mut context = RSConvertContext::empty(module_id);
         let converted = descriptor.convert(&mut context)?;
 
-        let inline = converted.render(&mut Default::default())?;
+        let inline = converted.render(Default::default(), &mut Default::default())?;
         let definitions = Self::gen_hoisted(&mut context)?;
 
         Ok(GtlCodegenResultDescriptor {
             inline,
             definitions,
             // [TODO]
-            resolve: GtlCodegenResolve {
+            resolve: GtlRenderResolve {
                 imports: vec![],
-                claims: vec![],
+                exports: vec![],
             },
         })
     }
 
-    fn gen_alias(alias: &GTAlias) -> Result<GtlCodegenResultAlias<'a, RenderContext>> {
+    fn gen_alias(alias: &GTAlias) -> Result<GtlCodegenResultAlias<'a, RenderState, RenderContext>> {
         let mut definitions = vec![];
 
         let module_id = GTModuleId("module".into());
         let mut context = RSConvertContext::empty(module_id);
         let converted = alias.convert(&mut context)?;
 
-        let rendered_alias = converted.render(&mut Default::default())?;
+        let rendered_alias = converted.render(Default::default(), &mut Default::default())?;
         definitions.push(rendered_alias);
 
         let rendered_hoisted = Self::gen_hoisted(&mut context)?;
@@ -62,9 +65,9 @@ impl<'a, RenderContext> GtlCodegen<'a, RenderContext> for RsCodegen {
         Ok(GtlCodegenResultAlias {
             definitions,
             // [TODO]
-            resolve: GtlCodegenResolve {
+            resolve: GtlRenderResolve {
                 imports: vec![],
-                claims: vec![],
+                exports: vec![],
             },
         })
     }
@@ -86,9 +89,9 @@ mod tests {
                 definitions: r#"#[literal(true)]
 pub struct True;"#
                     .into(),
-                resolve: GtlCodegenResolve::<RSRenderContext> {
+                resolve: GtlRenderResolve::<RSRenderState, RSRenderContext> {
                     imports: vec![],
-                    claims: vec![],
+                    exports: vec![],
                 },
             }
         );
@@ -113,9 +116,9 @@ pub struct HelloTrue;
 
 pub type Hello = HelloTrue;"#
                     .into(),
-                resolve: GtlCodegenResolve::<RSRenderContext> {
+                resolve: GtlRenderResolve::<RSRenderState, RSRenderContext> {
                     imports: vec![],
-                    claims: vec![],
+                    exports: vec![],
                 },
             }
         );
@@ -168,9 +171,9 @@ pub enum  {
     World(World),
 }"#
                 .into(),
-                resolve: GtlCodegenResolve::<RSRenderContext> {
+                resolve: GtlRenderResolve::<RSRenderState, RSRenderContext> {
                     imports: vec![],
-                    claims: vec![],
+                    exports: vec![],
                 },
             }
         );
@@ -232,9 +235,9 @@ pub struct HiWorldWorld;
 
 pub type World = HiWorldWorld;"#
                     .into(),
-                resolve: GtlCodegenResolve::<RSRenderContext> {
+                resolve: GtlRenderResolve::<RSRenderState, RSRenderContext> {
                     imports: vec![],
-                    claims: vec![],
+                    exports: vec![],
                 },
             }
         );

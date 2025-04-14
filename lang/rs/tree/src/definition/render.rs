@@ -3,13 +3,15 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for RSDefinition {
+    type RenderState = RSRenderState;
+
     type RenderContext = RSRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
         Ok(match self {
-            RSDefinition::Alias(alias) => alias.render(context)?,
-            RSDefinition::Struct(interface) => interface.render(context)?,
-            RSDefinition::Enum(r#enum) => r#enum.render(context)?,
+            RSDefinition::Alias(alias) => alias.render(state, context)?,
+            RSDefinition::Struct(interface) => interface.render(state, context)?,
+            RSDefinition::Enum(r#enum) => r#enum.render(state, context)?,
         })
     }
 }
@@ -29,7 +31,7 @@ mod tests {
                 name: "Name".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String),
             })
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "pub type Name = String;"
         );
@@ -59,7 +61,7 @@ mod tests {
                 ]
                 .into(),
             })
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"pub struct Name {
     pub name: String,
@@ -95,7 +97,7 @@ mod tests {
                     }
                 ],
             })
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"pub enum ValuesUnion {
     Boolean(bool),

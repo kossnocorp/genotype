@@ -1,11 +1,11 @@
 mod import;
 pub use import::*;
 
+mod export;
+pub use export::*;
+
 mod result;
 pub use result::*;
-
-mod resolve;
-pub use resolve::*;
 
 mod module;
 pub use module::*;

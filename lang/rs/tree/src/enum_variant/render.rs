@@ -3,22 +3,28 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for RSEnumVariant {
+    type RenderState = RSRenderState;
+
     type RenderContext = RSRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
         let mut blocks = vec![];
 
         if let Some(doc) = &self.doc {
-            blocks.push(doc.render(context)?);
+            blocks.push(doc.render(state, context)?);
         }
 
         for attribute in &self.attributes {
-            blocks.push(attribute.render(context)?);
+            blocks.push(attribute.render(state, context)?);
         }
 
-        let name = self.name.render(context)?;
-        let descriptor = self.descriptor.render(context)?;
-        blocks.push(context.indent_format(&format!("{name}({descriptor}),")));
+        let name = self.name.render(state, context)?;
+        let descriptor = self.descriptor.render(state, context)?;
+        blocks.push(state.indent_format(&format!("{name}({descriptor}),")));
 
         Ok(blocks.join("\n"))
     }
@@ -38,7 +44,7 @@ mod tests {
                 name: "Variant".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean).into(),
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "Variant(bool),"
         );
@@ -53,7 +59,10 @@ mod tests {
                 name: "Variant".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean).into(),
             }
-            .render(&mut RSRenderContext::default().indent_inc())
+            .render(
+                RSRenderState::default().indent_inc(),
+                &mut Default::default()
+            )
             .unwrap(),
             "    Variant(bool),"
         );
@@ -68,7 +77,7 @@ mod tests {
                 name: "Variant".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean).into(),
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"#[serde(rename = "variant")]
 Variant(bool),"#
@@ -84,7 +93,7 @@ Variant(bool),"#
                 name: "Variant".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean).into(),
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"/// Hello, world!
 Variant(bool),"#
@@ -100,7 +109,10 @@ Variant(bool),"#
                 name: "Variant".into(),
                 descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean).into(),
             }
-            .render(&mut RSRenderContext::default().indent_inc())
+            .render(
+                RSRenderState::default().indent_inc(),
+                &mut Default::default()
+            )
             .unwrap(),
             r#"    /// Hello, world!
     #[serde(rename = "variant")]

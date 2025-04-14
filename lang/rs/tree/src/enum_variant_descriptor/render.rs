@@ -3,11 +3,17 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for RSEnumVariantDescriptor {
+    type RenderState = RSRenderState;
+
     type RenderContext = RSRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
         Ok(match self {
-            RSEnumVariantDescriptor::Descriptor(descriptor) => descriptor.render(context)?,
+            RSEnumVariantDescriptor::Descriptor(descriptor) => descriptor.render(state, context)?,
         })
     }
 }
@@ -21,13 +27,13 @@ mod tests {
     fn test_render_descriptor() {
         assert_eq!(
             RSEnumVariantDescriptor::Descriptor(RSDescriptor::Primitive(RSPrimitive::Boolean))
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "bool"
         );
         assert_eq!(
             RSEnumVariantDescriptor::Descriptor(RSDescriptor::Primitive(RSPrimitive::String))
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "String"
         );

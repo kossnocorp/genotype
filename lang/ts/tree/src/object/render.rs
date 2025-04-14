@@ -3,21 +3,26 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for TSObject {
-    type RenderContext = TSRenderContext<'a>;
+    type RenderState = TSRenderState;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
-        let mut prop_indent = context.indent_inc();
+    type RenderContext = TSRenderContext;
+
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
         let properties = self
             .properties
             .iter()
-            .map(|property| property.render(&mut prop_indent))
+            .map(|property| property.render(state.indent_inc(), context))
             .collect::<Result<Vec<_>>>()?
             .join(",\n");
 
         Ok(format!(
             "{{\n{properties}{}{}",
             if properties.len() > 0 { "\n" } else { "" },
-            context.indent_legacy.format("}")
+            state.indent_format("}")
         ))
     }
 }
@@ -30,7 +35,7 @@ mod tests {
     fn test_render_empty() {
         assert_eq!(
             TSObject { properties: vec![] }
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "{\n}"
         );
@@ -55,7 +60,7 @@ mod tests {
                     }
                 ]
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "{\n  name: string,\n  age?: number\n}"
         );
@@ -80,7 +85,10 @@ mod tests {
                     }
                 ]
             }
-            .render(&mut TSRenderContext::default().indent_inc())
+            .render(
+                TSRenderState::default().indent_inc(),
+                &mut Default::default()
+            )
             .unwrap(),
             "{\n    name: string,\n    age?: number\n  }"
         );

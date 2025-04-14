@@ -3,10 +3,12 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for RSVec {
+    type RenderState = RSRenderState;
+
     type RenderContext = RSRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
-        let descriptor = self.descriptor.render(context)?;
+    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
+        let descriptor = self.descriptor.render(state, context)?;
         Ok(format!("Vec<{descriptor}>"))
     }
 }
@@ -21,7 +23,7 @@ mod tests {
             RSVec {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String)
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "Vec<String>"
         );

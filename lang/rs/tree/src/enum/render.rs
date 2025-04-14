@@ -3,28 +3,33 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for RSEnum {
+    type RenderState = RSRenderState;
+
     type RenderContext = RSRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
         let mut blocks = vec![];
 
         if let Some(doc) = &self.doc {
-            blocks.push(doc.render(context)?);
+            blocks.push(doc.render(state, context)?);
         }
 
         for attribute in &self.attributes {
-            blocks.push(attribute.render(context)?);
+            blocks.push(attribute.render(state, context)?);
         }
 
-        let name = self.name.render(context)?;
-        blocks.push(context.indent_format(&format!("pub enum {name} {{")));
+        let name = self.name.render(state, context)?;
+        blocks.push(state.indent_format(&format!("pub enum {name} {{")));
 
-        let mut variants_context = context.indent_inc();
         for variant in &self.variants {
-            blocks.push(variant.render(&mut variants_context)?);
+            blocks.push(variant.render(state.indent_inc(), context)?);
         }
 
-        blocks.push(context.indent_format("}"));
+        blocks.push(state.indent_format("}"));
 
         Ok(blocks.join("\n"))
     }
@@ -59,7 +64,7 @@ mod tests {
                     },
                 ],
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"pub enum Union {
     String(String),
@@ -91,7 +96,10 @@ mod tests {
                     },
                 ],
             }
-            .render(&mut RSRenderContext::default().indent_inc())
+            .render(
+                RSRenderState::default().indent_inc(),
+                &mut Default::default()
+            )
             .unwrap(),
             r#"    pub enum Union {
         String(String),
@@ -123,7 +131,7 @@ mod tests {
                     },
                 ],
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"#[derive(Deserialize, Serialize)]
 pub enum Union {
@@ -156,7 +164,7 @@ pub enum Union {
                     },
                 ],
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"/// Hello, world!
 pub enum Union {
@@ -189,7 +197,10 @@ pub enum Union {
                     },
                 ],
             }
-            .render(&mut RSRenderContext::default().indent_inc())
+            .render(
+                RSRenderState::default().indent_inc(),
+                &mut Default::default()
+            )
             .unwrap(),
             r#"    /// Hello, world!
     #[derive(Deserialize, Serialize)]

@@ -3,10 +3,12 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for RSReference {
+    type RenderState = RSRenderState;
+
     type RenderContext = RSRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
-        self.identifier.render(context)
+    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
+        self.identifier.render(state, context)
     }
 }
 
@@ -24,7 +26,7 @@ mod tests {
                 identifier: "Foo".into(),
                 definition_id: GTDefinitionId("module".into(), "Foo".into())
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
         );
     }

@@ -4,13 +4,19 @@ use genotype_lang_py_config::PYVersion;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for PYUnion {
+    type RenderState = PYRenderState;
+
     type RenderContext = PYRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
         let content = self
             .descriptors
             .iter()
-            .map(|d| d.render(context))
+            .map(|d| d.render(state, context))
             .collect::<Result<Vec<_>>>()?
             .join(if let PYVersion::Legacy = context.config.version {
                 ", "
@@ -51,7 +57,7 @@ mod tests {
                 ],
                 discriminator: None
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "str | int"
         );
@@ -67,10 +73,13 @@ mod tests {
                 ],
                 discriminator: None
             }
-            .render(&mut PYRenderContext {
-                config: &PYLangConfig::new(PYVersion::Legacy),
-                ..Default::default()
-            })
+            .render(
+                Default::default(),
+                &mut PYRenderContext {
+                    config: &PYLangConfig::new(PYVersion::Legacy),
+                    ..Default::default()
+                }
+            )
             .unwrap(),
             "Union[str, int]"
         );
@@ -86,7 +95,7 @@ mod tests {
                 ],
                 discriminator: Some("type".into())
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"Annotated[str | int, Field(json_schema_extra={'discriminator': 'type'})]"#
         );
@@ -102,10 +111,13 @@ mod tests {
                 ],
                 discriminator: Some("type".into())
             }
-            .render(&mut PYRenderContext {
-                config: &PYLangConfig::new(PYVersion::Legacy),
-                ..Default::default()
-            })
+            .render(
+                Default::default(),
+                &mut PYRenderContext {
+                    config: &PYLangConfig::new(PYVersion::Legacy),
+                    ..Default::default()
+                }
+            )
             .unwrap(),
             r#"Annotated[Union[str, int], Field(json_schema_extra={'discriminator': 'type'})]"#
         );

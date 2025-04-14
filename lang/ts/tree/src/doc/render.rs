@@ -5,12 +5,13 @@ use miette::Result;
 impl TSDoc {
     pub fn with_doc(
         doc: &Option<TSDoc>,
+        state: TSRenderState,
         context: &mut TSRenderContext,
         str: String,
         padded: bool,
     ) -> Result<String> {
         let doc = if let Some(doc) = doc {
-            doc.render(context)? + if padded { "\n\n" } else { "\n" }
+            doc.render(state, context)? + if padded { "\n\n" } else { "\n" }
         } else {
             String::new()
         };
@@ -19,15 +20,21 @@ impl TSDoc {
 }
 
 impl<'a> GtlRender<'a> for TSDoc {
-    type RenderContext = TSRenderContext<'a>;
+    type RenderState = TSRenderState;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    type RenderContext = TSRenderContext;
+
+    fn render(
+        &self,
+        state: Self::RenderState,
+        _context: &mut Self::RenderContext,
+    ) -> Result<String> {
         let lines = self.0.split("\n").enumerate();
         Ok(lines
             .map(|(index, line)| {
                 format!(
                     "{}{} {}",
-                    context.indent_legacy.string,
+                    state.indent_str(),
                     if index == 0 { "/**" } else { " *" },
                     line
                 )
@@ -46,7 +53,7 @@ mod tests {
     fn test_render_simple() {
         assert_eq!(
             TSDoc("Hello, world!".into())
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "/** Hello, world! */"
         );
@@ -61,7 +68,7 @@ cruel
 world!"#
                     .into()
             )
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"/** Hello,
  * cruel
@@ -78,7 +85,10 @@ cruel
 world!"#
                     .into()
             )
-            .render(&mut TSRenderContext::default().indent_inc())
+            .render(
+                TSRenderState::default().indent_inc(),
+                &mut Default::default()
+            )
             .unwrap(),
             r#"  /** Hello,
    * cruel
@@ -91,6 +101,7 @@ world!"#
         assert_eq!(
             TSDoc::with_doc(
                 &Some(TSDoc("Hello, world!".into())),
+                Default::default(),
                 &mut Default::default(),
                 "type Name = string;".into(),
                 false
@@ -106,6 +117,7 @@ type Name = string;"#
         assert_eq!(
             TSDoc::with_doc(
                 &None,
+                Default::default(),
                 &mut Default::default(),
                 "type Name = string;".into(),
                 false
@@ -120,6 +132,7 @@ type Name = string;"#
         assert_eq!(
             TSDoc::with_doc(
                 &Some(TSDoc("Hello, world!".into())),
+                Default::default(),
                 &mut Default::default(),
                 "type Name = string;".into(),
                 true
@@ -136,6 +149,7 @@ type Name = string;"#
         assert_eq!(
             TSDoc::with_doc(
                 &None,
+                Default::default(),
                 &mut Default::default(),
                 "type Name = string;".into(),
                 true

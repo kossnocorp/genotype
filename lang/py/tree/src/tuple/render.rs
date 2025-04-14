@@ -4,9 +4,15 @@ use genotype_lang_py_config::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for PYTuple {
+    type RenderState = PYRenderState;
+
     type RenderContext = PYRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
         let tuple = if let PYVersion::Legacy = context.config.version {
             "Tuple"
         } else {
@@ -16,7 +22,7 @@ impl<'a> GtlRender<'a> for PYTuple {
         let descriptors = self
             .descriptors
             .iter()
-            .map(|d| d.render(context))
+            .map(|d| d.render(state, context))
             .collect::<Result<Vec<_>>>()?
             .join(", ");
         let descriptors = if descriptors.len() > 0 {
@@ -43,7 +49,7 @@ mod tests {
                     PYDescriptor::Primitive(PYPrimitive::Int),
                 ]
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "tuple[str, int]"
         );
@@ -55,7 +61,7 @@ mod tests {
             PYTuple {
                 descriptors: vec![]
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "tuple[()]"
         );
@@ -67,10 +73,13 @@ mod tests {
             PYTuple {
                 descriptors: vec![]
             }
-            .render(&mut PYRenderContext {
-                config: &PYLangConfig::new(PYVersion::Legacy),
-                ..Default::default()
-            })
+            .render(
+                Default::default(),
+                &mut PYRenderContext {
+                    config: &PYLangConfig::new(PYVersion::Legacy),
+                    ..Default::default()
+                }
+            )
             .unwrap(),
             "Tuple[()]"
         );

@@ -1,7 +1,5 @@
 use crate::*;
 use genotype_json_types::*;
-use literals::literal;
-use serde::{Deserialize, Serialize};
 
 impl GtjSchemaConvert<GtjSchemaLiteral> for GtjLiteral {
     fn to_schema(&self) -> GtjSchemaLiteral {

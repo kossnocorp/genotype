@@ -3,12 +3,18 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for PYProperty {
+    type RenderState = PYRenderState;
+
     type RenderContext = PYRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
-        let name = self.name.render(context)?;
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
+        let name = self.name.render(state, context)?;
 
-        let descriptor = self.descriptor.render(context)?;
+        let descriptor = self.descriptor.render(state, context)?;
         let descriptor = if self.required {
             descriptor
         } else {
@@ -16,12 +22,12 @@ impl<'a> GtlRender<'a> for PYProperty {
         };
 
         let doc = if let Some(doc) = &self.doc {
-            format!("\n{}", doc.render(context)?)
+            format!("\n{}", doc.render(state, context)?)
         } else {
             "".into()
         };
 
-        Ok(context.indent_format(&format!("{name}: {descriptor}{doc}",)))
+        Ok(state.indent_format(&format!("{name}: {descriptor}{doc}",)))
     }
 }
 
@@ -39,7 +45,7 @@ mod tests {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                 required: true
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "name: str"
         );
@@ -50,7 +56,7 @@ mod tests {
                 descriptor: PYReference::new("Name".into(), false).into(),
                 required: true
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "name: Name"
         );
@@ -65,7 +71,10 @@ mod tests {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                 required: true
             }
-            .render(&mut PYRenderContext::default().indent_inc())
+            .render(
+                PYRenderState::default().indent_inc(),
+                &mut Default::default()
+            )
             .unwrap(),
             "    name: str"
         );
@@ -80,7 +89,7 @@ mod tests {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                 required: false
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "name: Optional[str] = None"
         );
@@ -95,7 +104,7 @@ mod tests {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String),
                 required: false
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"name: Optional[str] = None
 """Hello, world!""""#

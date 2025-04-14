@@ -3,13 +3,19 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for RSModule {
+    type RenderState = RSRenderState;
+
     type RenderContext = RSRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
         let mut blocks = vec![];
 
         if let Some(doc) = &self.doc {
-            let doc = doc.render(context)?;
+            let doc = doc.render(state, context)?;
             if !doc.is_empty() {
                 blocks.push(doc);
             }
@@ -19,7 +25,7 @@ impl<'a> GtlRender<'a> for RSModule {
             &self
                 .imports
                 .iter()
-                .map(|import| import.render(context))
+                .map(|import| import.render(state, context))
                 .collect::<Result<Vec<String>>>()?,
         );
 
@@ -31,7 +37,7 @@ impl<'a> GtlRender<'a> for RSModule {
             &self
                 .definitions
                 .iter()
-                .map(|definition| definition.render(context))
+                .map(|definition| definition.render(state, context))
                 .collect::<Result<Vec<String>>>()?,
         );
 
@@ -106,7 +112,7 @@ mod tests {
                     }),
                 ]
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"use self::path::to::module;
 use self::path::to::module::{Name, Name as Alias};
@@ -141,7 +147,7 @@ pub struct Name {
                     descriptor: RSDescriptor::Primitive(RSPrimitive::String),
                 })]
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"//! Hello, world!
 

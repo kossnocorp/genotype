@@ -3,13 +3,15 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for RSTuple {
+    type RenderState = RSRenderState;
+
     type RenderContext = RSRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
         let descriptors = self
             .descriptors
             .iter()
-            .map(|d| d.render(context))
+            .map(|d| d.render(state, context))
             .collect::<Result<Vec<String>>>()?
             .join(", ");
         Ok(format!("({descriptors})"))
@@ -30,7 +32,7 @@ mod tests {
                     RSDescriptor::Primitive(RSPrimitive::IntSize),
                 ]
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "(String, isize)"
         );
@@ -42,7 +44,7 @@ mod tests {
             RSTuple {
                 descriptors: vec![]
             }
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "()"
         );

@@ -15,18 +15,19 @@ use super::RSProject;
 impl RSProject {
     pub fn modules_source(&self) -> Result<Vec<GTLangProjectSource>> {
         let mut context = RSRenderContext {
-            indent: 0,
             config: &self.config.lang,
         };
         self.modules
             .iter()
-            .map(|module| match module.module.render(&mut context) {
-                Ok(code) => Ok(GTLangProjectSource {
-                    path: module.path.clone(),
-                    code,
-                }),
-                Err(err) => Err(err),
-            })
+            .map(
+                |module| match module.module.render(Default::default(), &mut context) {
+                    Ok(code) => Ok(GTLangProjectSource {
+                        path: module.path.clone(),
+                        code,
+                    }),
+                    Err(err) => Err(err),
+                },
+            )
             .collect::<Result<Vec<_>>>()
     }
 

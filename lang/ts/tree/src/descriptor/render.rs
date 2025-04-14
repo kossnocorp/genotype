@@ -3,21 +3,23 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for TSDescriptor {
-    type RenderContext = TSRenderContext<'a>;
+    type RenderState = TSRenderState;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
+    type RenderContext = TSRenderContext;
+
+    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
         match self {
-            TSDescriptor::Array(array) => array.render(context),
-            TSDescriptor::InlineImport(import) => import.render(context),
-            TSDescriptor::Intersection(intersection) => intersection.render(context),
-            TSDescriptor::Literal(literal) => literal.render(context),
-            TSDescriptor::Primitive(primitive) => primitive.render(context),
-            TSDescriptor::Reference(name) => name.render(context),
-            TSDescriptor::Object(object) => object.render(context),
-            TSDescriptor::Tuple(tuple) => tuple.render(context),
-            TSDescriptor::Union(union) => union.render(context),
-            TSDescriptor::Record(record) => record.render(context),
-            TSDescriptor::Any(any) => any.render(context),
+            TSDescriptor::Array(array) => array.render(state, context),
+            TSDescriptor::InlineImport(import) => import.render(state, context),
+            TSDescriptor::Intersection(intersection) => intersection.render(state, context),
+            TSDescriptor::Literal(literal) => literal.render(state, context),
+            TSDescriptor::Primitive(primitive) => primitive.render(state, context),
+            TSDescriptor::Reference(name) => name.render(state, context),
+            TSDescriptor::Object(object) => object.render(state, context),
+            TSDescriptor::Tuple(tuple) => tuple.render(state, context),
+            TSDescriptor::Union(union) => union.render(state, context),
+            TSDescriptor::Record(record) => record.render(state, context),
+            TSDescriptor::Any(any) => any.render(state, context),
         }
     }
 }
@@ -33,7 +35,7 @@ mod tests {
             TSDescriptor::Array(Box::new(TSArray {
                 descriptor: TSDescriptor::Primitive(TSPrimitive::Number)
             }))
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "Array<number>"
         );
@@ -46,7 +48,7 @@ mod tests {
                 path: "../path/to/module.ts".into(),
                 name: "Name".into(),
             })
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"import("../path/to/module.ts").Name"#
         );
@@ -69,7 +71,7 @@ mod tests {
                     "World".into(),
                 ]
             })
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"{
   hello: string
@@ -96,7 +98,7 @@ mod tests {
                     }
                 ]
             })
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"{
   name: string,
@@ -109,13 +111,13 @@ mod tests {
     fn test_render_primitive() {
         assert_eq!(
             TSDescriptor::Primitive(TSPrimitive::Boolean)
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "boolean"
         );
         assert_eq!(
             TSDescriptor::Primitive(TSPrimitive::String)
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "string"
         );
@@ -125,7 +127,7 @@ mod tests {
     fn test_render_reference() {
         assert_eq!(
             TSDescriptor::Reference("Name".into())
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "Name"
         );
@@ -140,7 +142,7 @@ mod tests {
                     TSDescriptor::Primitive(TSPrimitive::String)
                 ]
             })
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "[number, string]"
         );
@@ -155,7 +157,7 @@ mod tests {
                     TSDescriptor::Primitive(TSPrimitive::Number),
                 ]
             })
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "string | number"
         );
@@ -168,7 +170,7 @@ mod tests {
                 key: TSRecordKey::String,
                 descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
             }))
-            .render(&mut Default::default())
+            .render(Default::default(), &mut Default::default())
             .unwrap(),
             "Record<string, number>"
         );
@@ -178,7 +180,7 @@ mod tests {
     fn test_render_any() {
         assert_eq!(
             TSDescriptor::Any(TSAny)
-                .render(&mut Default::default())
+                .render(Default::default(), &mut Default::default())
                 .unwrap(),
             "any"
         );

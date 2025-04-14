@@ -3,10 +3,16 @@ use genotype_lang_core_tree::*;
 use miette::Result;
 
 impl<'a> GtlRender<'a> for RSOption {
+    type RenderState = RSRenderState;
+
     type RenderContext = RSRenderContext<'a>;
 
-    fn render(&self, context: &mut Self::RenderContext) -> Result<String> {
-        let descriptor = self.descriptor.render(context)?;
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
+        let descriptor = self.descriptor.render(state, context)?;
         Ok(format!("Option<{descriptor}>"))
     }
 }
@@ -21,7 +27,7 @@ mod tests {
             RSOption {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String)
             }
-            .render(&mut RSRenderContext::default())
+            .render(RSRenderState::default(), &mut Default::default())
             .unwrap(),
             "Option<String>"
         );

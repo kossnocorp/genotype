@@ -14,40 +14,43 @@ impl PyCodegen {
         Ok(PYModule::join_definitions(
             &hoisted
                 .iter()
-                .map(|definition| definition.render(&mut Default::default()))
+                .map(|definition| definition.render(Default::default(), &mut Default::default()))
                 .collect::<Result<_>>()?,
         ))
     }
 }
 
-impl<'a, RenderContext> GtlCodegen<'a, RenderContext> for PyCodegen {
+impl<'a, RenderState, RenderContext> GtlCodegen<'a, RenderState, RenderContext> for PyCodegen
+where
+    Box<(dyn GtlRenderResolveImport<'a, RenderState, RenderContext>)>: Clone,
+{
     fn gen_descriptor(
         descriptor: &GTDescriptor,
-    ) -> Result<GtlCodegenResultDescriptor<'a, RenderContext>> {
+    ) -> Result<GtlCodegenResultDescriptor<'a, RenderState, RenderContext>> {
         let mut context = PYConvertContext::default();
         let converted = descriptor.convert(&mut context);
 
-        let inline = converted.render(&mut Default::default())?;
+        let inline = converted.render(Default::default(), &mut Default::default())?;
         let definitions = Self::gen_hoisted(&mut context)?;
 
         Ok(GtlCodegenResultDescriptor {
             inline,
             definitions,
             // [TODO]
-            resolve: GtlCodegenResolve {
+            resolve: GtlRenderResolve {
                 imports: vec![],
-                claims: vec![],
+                exports: vec![],
             },
         })
     }
 
-    fn gen_alias(alias: &GTAlias) -> Result<GtlCodegenResultAlias<'a, RenderContext>> {
+    fn gen_alias(alias: &GTAlias) -> Result<GtlCodegenResultAlias<'a, RenderState, RenderContext>> {
         let mut definitions = vec![];
 
         let mut context = PYConvertContext::default();
         let converted = alias.convert(&mut context);
 
-        let rendered_alias = converted.render(&mut Default::default())?;
+        let rendered_alias = converted.render(Default::default(), &mut Default::default())?;
         definitions.push(rendered_alias);
 
         let rendered_hoisted = Self::gen_hoisted(&mut context)?;
@@ -60,9 +63,9 @@ impl<'a, RenderContext> GtlCodegen<'a, RenderContext> for PyCodegen {
         Ok(GtlCodegenResultAlias {
             definitions,
             // [TODO]
-            resolve: GtlCodegenResolve {
+            resolve: GtlRenderResolve {
                 imports: vec![],
-                claims: vec![],
+                exports: vec![],
             },
         })
     }
@@ -71,8 +74,6 @@ impl<'a, RenderContext> GtlCodegen<'a, RenderContext> for PyCodegen {
 #[cfg(test)]
 mod tespy {
     use super::*;
-    use genotype_lang_core_codegen::GtlCodegenResolve;
-    use genotype_parser::{GTAlias, GTDefinitionId, GTIdentifier, GTLiteral, GTModuleId, GTUnion};
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -83,9 +84,9 @@ mod tespy {
             GtlCodegenResultDescriptor {
                 inline: "Literal[True]".into(),
                 definitions: "".into(),
-                resolve: GtlCodegenResolve::<PYRenderContext> {
+                resolve: GtlRenderResolve::<PYRenderState, PYRenderContext> {
                     imports: vec![],
-                    claims: vec![],
+                    exports: vec![],
                 },
             }
         );
@@ -106,9 +107,9 @@ mod tespy {
             GtlCodegenResultDescriptor {
                 inline: "Hello".into(),
                 definitions: "type Hello = Literal[True]".into(),
-                resolve: GtlCodegenResolve::<PYRenderContext> {
+                resolve: GtlRenderResolve::<PYRenderState, PYRenderContext> {
                     imports: vec![],
-                    claims: vec![],
+                    exports: vec![],
                 },
             }
         );
@@ -149,9 +150,9 @@ mod tespy {
 
 type World = Literal["world"]"#
                     .into(),
-                resolve: GtlCodegenResolve::<PYRenderContext> {
+                resolve: GtlRenderResolve::<PYRenderState, PYRenderContext> {
                     imports: vec![],
-                    claims: vec![],
+                    exports: vec![],
                 },
             }
         );
@@ -203,9 +204,9 @@ type Hello = Literal[True]
 
 type World = Literal["world"]"#
                     .into(),
-                resolve: GtlCodegenResolve::<PYRenderContext> {
+                resolve: GtlRenderResolve::<PYRenderState, PYRenderContext> {
                     imports: vec![],
-                    claims: vec![],
+                    exports: vec![],
                 },
             }
         });
