@@ -1,7 +1,4 @@
-use genotype_lang_ts_tree::import_name::TSImportName;
-use genotype_parser::tree::import_name::GTImportName;
-
-use crate::{context::TSConvertContext, convert::TSConvert};
+use crate::prelude::internal::*;
 
 impl TSConvert<TSImportName> for GTImportName {
     fn convert(&self, context: &mut TSConvertContext) -> TSImportName {
@@ -17,11 +14,8 @@ impl TSConvert<TSImportName> for GTImportName {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::import_name::TSImportName;
-    use pretty_assertions::assert_eq;
-
     use super::*;
-    use genotype_parser::{tree::import_name::GTImportName, GTIdentifier};
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_name() {

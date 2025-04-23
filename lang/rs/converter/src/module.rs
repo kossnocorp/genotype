@@ -1,11 +1,5 @@
+use crate::prelude::internal::*;
 use std::collections::HashMap;
-
-use genotype_lang_rs_config::RSLangConfig;
-use genotype_lang_rs_tree::module::RSModule;
-use genotype_parser::module::GTModule;
-use miette::Result;
-
-use crate::{context::RSConvertContext, convert::RSConvert, resolve::RSConvertResolve};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct RSConvertModule(pub RSModule);
@@ -60,11 +54,8 @@ impl RSConvertModule {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_rs_tree::*;
-    use genotype_parser::tree::*;
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {
@@ -237,7 +228,7 @@ mod tests {
                 imports: vec![
                     RSUse {
                         reference: RSUseReference::Module,
-                        dependency: RSDependency::Local(RSPath(
+                        dependency: RSDependencyIdent::Local(RSPath(
                             GTModuleId("module/path".into()),
                             "super::path::to::module".into()
                         ))
@@ -247,7 +238,7 @@ mod tests {
                             RSUseName::Name("Name".into()),
                             RSUseName::Alias("Name".into(), "Alias".into())
                         ]),
-                        dependency: RSDependency::Local(RSPath(
+                        dependency: RSDependencyIdent::Local(RSPath(
                             GTModuleId("module/path".into()),
                             "super::path::to::module".into()
                         ))
@@ -257,7 +248,7 @@ mod tests {
                             RSUseName::Name("Deserialize".into(),),
                             RSUseName::Name("Serialize".into())
                         ]),
-                        dependency: RSDependency::Serde,
+                        dependency: RSDependencyIdent::Serde,
                     }
                 ],
                 definitions: vec![

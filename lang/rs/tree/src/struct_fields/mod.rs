@@ -1,6 +1,4 @@
-use genotype_parser::GTSpan;
-
-use crate::*;
+use crate::prelude::internal::*;
 
 mod render;
 

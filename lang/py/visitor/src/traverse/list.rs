@@ -1,4 +1,4 @@
-use genotype_lang_py_tree::PYList;
+use genotype_lang_py_tree::*;
 
 use crate::visitor::PYVisitor;
 

@@ -1,13 +1,15 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for RSTuple {
     type RenderState = RSRenderState;
 
     type RenderContext = RSRenderContext<'a>;
 
-    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
         let descriptors = self
             .descriptors
             .iter()

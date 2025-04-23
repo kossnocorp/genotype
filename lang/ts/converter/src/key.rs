@@ -1,7 +1,4 @@
-use genotype_lang_ts_tree::key::TSKey;
-use genotype_parser::tree::key::GTKey;
-
-use crate::{context::TSConvertContext, convert::TSConvert};
+use crate::prelude::internal::*;
 
 impl TSConvert<TSKey> for GTKey {
     fn convert(&self, _context: &mut TSConvertContext) -> TSKey {
@@ -11,9 +8,8 @@ impl TSConvert<TSKey> for GTKey {
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

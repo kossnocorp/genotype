@@ -1,7 +1,4 @@
-use genotype_lang_ts_tree::TSBranded;
-use genotype_parser::GTBranded;
-
-use crate::{context::TSConvertContext, convert::TSConvert};
+use crate::prelude::internal::*;
 
 impl TSConvert<TSBranded> for GTBranded {
     fn convert(&self, context: &mut TSConvertContext) -> TSBranded {
@@ -19,13 +16,8 @@ impl TSConvert<TSBranded> for GTBranded {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::TSPrimitive;
-    use pretty_assertions::assert_eq;
-
-    use crate::resolve::TSConvertResolve;
-
     use super::*;
-    use genotype_parser::{GTDefinitionId, GTIdentifier, GTPrimitive};
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

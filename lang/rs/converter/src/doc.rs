@@ -1,8 +1,4 @@
-use genotype_lang_rs_tree::doc::RSDoc;
-use genotype_parser::tree::doc::GTDoc;
-use miette::Result;
-
-use crate::{context::RSConvertContext, convert::RSConvert};
+use crate::prelude::internal::*;
 
 impl RSConvert<RSDoc> for GTDoc {
     fn convert(&self, _context: &mut RSConvertContext) -> Result<RSDoc> {
@@ -15,9 +11,8 @@ impl RSConvert<RSDoc> for GTDoc {
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

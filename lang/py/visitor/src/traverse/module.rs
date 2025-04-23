@@ -1,4 +1,4 @@
-use genotype_lang_py_tree::module::PYModule;
+use genotype_lang_py_tree::*;
 
 use crate::visitor::PYVisitor;
 
@@ -34,9 +34,8 @@ mod tests {
         let mut visitor = PYMockVisitor::new();
         let path = PYPath("./path/to/module".into());
         let reference = PYImportReference::Glob;
-        let dependency = PYDependency::Local(path.clone());
+        let dependency = PYDependencyIdent::Local(path.clone());
         let import = PYImport {
-            path: path.clone(),
             reference: reference.clone(),
             dependency: dependency.clone(),
         };
@@ -59,10 +58,9 @@ mod tests {
             vec![
                 PYMockVisited::Module(module.clone()),
                 PYMockVisited::Import(import.clone()),
-                PYMockVisited::Path(path.clone()),
                 PYMockVisited::ImportReference(reference),
                 PYMockVisited::Dependency(dependency),
-                PYMockVisited::Path(path),
+                PYMockVisited::Path(path.clone()),
                 PYMockVisited::Definition(definition.clone()),
                 PYMockVisited::Alias(alias.clone()),
                 PYMockVisited::Descriptor(alias.descriptor.clone()),
@@ -77,9 +75,8 @@ mod tests {
         let mut visitor = PYMockVisitor::new();
         let path = PYPath("./path/to/module".into());
         let reference = PYImportReference::Glob;
-        let dependency = PYDependency::Local(path.clone());
+        let dependency = PYDependencyIdent::Local(path.clone());
         let import = PYImport {
-            path: path.clone(),
             reference: reference.clone(),
             dependency: dependency.clone(),
         };
@@ -103,7 +100,6 @@ mod tests {
                 PYMockVisited::Module(module.clone()),
                 PYMockVisited::Doc(module.doc.clone().unwrap()),
                 PYMockVisited::Import(import.clone()),
-                PYMockVisited::Path(path.clone()),
                 PYMockVisited::ImportReference(reference.clone()),
                 PYMockVisited::Dependency(dependency),
                 PYMockVisited::Path(path),

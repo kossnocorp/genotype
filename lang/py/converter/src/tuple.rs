@@ -1,7 +1,4 @@
-use genotype_lang_py_tree::{tuple::PYTuple, PYContextResolve};
-use genotype_parser::tree::tuple::GTTuple;
-
-use crate::{context::PYConvertContext, convert::PYConvert};
+use crate::prelude::internal::*;
 
 impl PYConvert<PYTuple> for GTTuple {
     fn convert(&self, context: &mut PYConvertContext) -> PYTuple {
@@ -18,14 +15,8 @@ impl PYConvert<PYTuple> for GTTuple {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_py_config::{PYLangConfig, PYVersion};
-    use genotype_lang_py_tree::*;
-    use genotype_parser::tree::*;
-    use pretty_assertions::assert_eq;
-
-    use crate::resolve::PYConvertResolve;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {
@@ -66,7 +57,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![(PYDependency::Typing, "Tuple".into())]
+            vec![(PYDependencyIdent::Typing, "Tuple".into())]
         );
     }
 }

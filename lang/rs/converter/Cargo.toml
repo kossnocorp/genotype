@@ -9,6 +9,7 @@ repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
 genotype_parser = { version = "0.10.0", path = "../../../parser" }
+genotype_lang_core_tree = { version = "0.10.0", path = "../../core/tree" }
 genotype_lang_rs_tree = { version = "0.10.0", path = "../tree" }
 genotype_lang_rs_config = { version = "0.10.0", path = "../config" }
 heck = "0.5.0"

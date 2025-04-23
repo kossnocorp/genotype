@@ -1,11 +1,4 @@
-use genotype_lang_rs_tree::*;
-use genotype_parser::*;
-use miette::Result;
-
-use crate::{
-    context::{naming::RSContextParent, RSConvertContext},
-    convert::RSConvert,
-};
+use crate::prelude::internal::*;
 
 impl RSConvert<RSStruct> for GTObject {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSStruct> {
@@ -46,8 +39,8 @@ impl RSConvert<RSStruct> for GTObject {
             fields,
         };
 
-        context.import(RSDependency::Serde, "Deserialize".into());
-        context.import(RSDependency::Serde, "Serialize".into());
+        context.add_import(RSDependencyIdent::Serde, "Deserialize".into());
+        context.add_import(RSDependencyIdent::Serde, "Serialize".into());
 
         context.exit_parent();
         Ok(r#struct)
@@ -56,11 +49,8 @@ impl RSConvert<RSStruct> for GTObject {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_rs_tree::*;
-    use genotype_parser::tree::*;
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {
@@ -138,8 +128,8 @@ mod tests {
         assert_eq!(
             context.as_dependencies(),
             vec![
-                (RSDependency::Serde, "Deserialize".into()),
-                (RSDependency::Serde, "Serialize".into())
+                (RSDependencyIdent::Serde, "Deserialize".into()),
+                (RSDependencyIdent::Serde, "Serialize".into())
             ]
         );
     }

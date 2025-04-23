@@ -1,7 +1,4 @@
-use genotype_lang_ts_tree::{alias::TSAlias, definition::TSDefinition, interface::TSInterface};
-use genotype_parser::tree::{alias::GTAlias, descriptor::GTDescriptor};
-
-use crate::{context::TSConvertContext, convert::TSConvert};
+use crate::prelude::internal::*;
 
 impl TSConvert<TSDefinition> for GTAlias {
     fn convert(&self, context: &mut TSConvertContext) -> TSDefinition {
@@ -40,13 +37,9 @@ impl TSConvert<TSDefinition> for GTAlias {
 
 #[cfg(test)]
 mod tests {
-    use std::vec;
-
-    use genotype_lang_ts_tree::*;
-    use pretty_assertions::assert_eq;
-
     use super::*;
-    use genotype_parser::tree::*;
+    use pretty_assertions::assert_eq;
+    use std::vec;
 
     #[test]
     fn test_convert_alias() {

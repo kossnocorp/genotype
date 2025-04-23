@@ -1,7 +1,4 @@
-use genotype_lang_ts_tree::*;
-use genotype_parser::tree::descriptor::GTDescriptor;
-
-use crate::{context::TSConvertContext, convert::TSConvert};
+use crate::prelude::internal::*;
 
 impl TSConvert<TSDescriptor> for GTDescriptor {
     fn convert(&self, context: &mut TSConvertContext) -> TSDescriptor {
@@ -55,11 +52,8 @@ impl TSConvert<TSDescriptor> for GTDescriptor {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::*;
-    use genotype_parser::tree::*;
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_alias() {

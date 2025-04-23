@@ -1,6 +1,4 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for RSEnum {
     type RenderState = RSRenderState;
@@ -38,7 +36,6 @@ impl<'a> GtlRender<'a> for RSEnum {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_parser::GTDefinitionId;
     use pretty_assertions::assert_eq;
 
     #[test]

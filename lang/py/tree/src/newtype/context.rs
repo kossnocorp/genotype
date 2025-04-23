@@ -1,26 +1,23 @@
-use crate::{PYContext, PYContextResolve, PYDependency};
-
-use super::PYNewtype;
+use crate::prelude::internal::*;
 
 impl PYContextResolve for PYNewtype {
     fn resolve<Context>(self, context: &mut Context) -> Self
     where
-        Context: PYContext,
+        Context: PYConvertContextConstraint,
     {
-        context.import(PYDependency::Typing, "NewType".into());
+        context.add_import(PYDependencyIdent::Typing, "NewType".into());
         self
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
-    use mock::PYContextMock;
+    use super::*;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_resolve() {
-        let mut context = PYContextMock::default();
+        let mut context = PYConvertContextMock::default();
         let alias = PYNewtype {
             doc: None,
             name: "Foo".into(),
@@ -29,7 +26,7 @@ mod tests {
         alias.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
-            vec![(PYDependency::Typing, "NewType".into())]
+            vec![(PYDependencyIdent::Typing, "NewType".into())]
         );
     }
 }

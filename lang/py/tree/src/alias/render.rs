@@ -1,7 +1,4 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use genotype_lang_py_config::PYVersion;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for PYAlias {
     type RenderState = PYRenderState;
@@ -34,7 +31,6 @@ impl<'a> GtlRender<'a> for PYAlias {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_lang_py_config::*;
     use pretty_assertions::assert_eq;
 
     #[test]

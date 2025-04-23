@@ -1,8 +1,4 @@
-use genotype_lang_rs_tree::identifier::RSIdentifier;
-use genotype_parser::tree::identifier::GTIdentifier;
-use miette::Result;
-
-use crate::{context::RSConvertContext, convert::RSConvert};
+use crate::prelude::internal::*;
 
 impl RSConvert<RSIdentifier> for GTIdentifier {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSIdentifier> {
@@ -12,11 +8,8 @@ impl RSConvert<RSIdentifier> for GTIdentifier {
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
-    use crate::resolve::RSConvertResolve;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_base() {

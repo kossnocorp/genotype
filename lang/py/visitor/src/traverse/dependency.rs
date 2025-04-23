@@ -1,15 +1,15 @@
-use genotype_lang_py_tree::PYDependency;
+use genotype_lang_py_tree::*;
 
 use crate::visitor::PYVisitor;
 
 use super::PYTraverse;
 
-impl PYTraverse for PYDependency {
+impl PYTraverse for PYDependencyIdent {
     fn traverse(&mut self, visitor: &mut dyn PYVisitor) {
         visitor.visit_dependency(self);
 
         match self {
-            PYDependency::Local(path) => {
+            PYDependencyIdent::Local(path) => {
                 path.traverse(visitor);
             }
 
@@ -31,7 +31,7 @@ mod tests {
     fn test_traverse_local() {
         let mut visitor = PYMockVisitor::new();
         let path = PYPath("path".into());
-        let mut dependency = PYDependency::Local(path.clone());
+        let mut dependency = PYDependencyIdent::Local(path.clone());
         dependency.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,
@@ -45,7 +45,7 @@ mod tests {
     #[test]
     fn test_traverse_external() {
         let mut visitor = PYMockVisitor::new();
-        let mut dependency = PYDependency::Runtime;
+        let mut dependency = PYDependencyIdent::Runtime;
         dependency.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,

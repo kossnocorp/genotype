@@ -1,4 +1,4 @@
-use genotype_lang_py_tree::PYDefinition;
+use genotype_lang_py_tree::*;
 
 use crate::visitor::PYVisitor;
 

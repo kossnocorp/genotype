@@ -1,7 +1,4 @@
-use genotype_lang_py_tree::*;
-use genotype_parser::*;
-
-use crate::{context::PYConvertContext, convert::PYConvert};
+use crate::prelude::internal::*;
 
 impl PYConvert<PYImport> for GTImport {
     fn convert(&self, context: &mut PYConvertContext) -> PYImport {
@@ -23,9 +20,8 @@ impl PYConvert<PYImport> for GTImport {
         let path = self.path.convert(context);
 
         PYImport {
-            path: path.clone(),
             reference,
-            dependency: PYDependency::Local(path),
+            dependency: PYDependencyIdent::Local(path),
         }
     }
 }
@@ -37,12 +33,8 @@ fn module_name(path: &GTPath) -> PYIdentifier {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_py_tree::*;
-    use pretty_assertions::assert_eq;
-
-    use crate::resolve::PYConvertResolve;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_glob() {
@@ -60,9 +52,8 @@ mod tests {
             }
             .convert(&mut context),
             PYImport {
-                path: ".path.to.module".into(),
                 reference: PYImportReference::Default(Some("module".into())),
-                dependency: PYDependency::Local(".path.to.module".into())
+                dependency: PYDependencyIdent::Local(".path.to.module".into())
             }
         );
     }
@@ -90,12 +81,11 @@ mod tests {
             }
             .convert(&mut PYConvertContext::default()),
             PYImport {
-                path: ".path.to.module".into(),
                 reference: PYImportReference::Named(vec![
                     PYImportName::Name("Name".into()),
                     PYImportName::Alias("Name".into(), "Alias".into())
                 ]),
-                dependency: PYDependency::Local(".path.to.module".into())
+                dependency: PYDependencyIdent::Local(".path.to.module".into())
             }
         );
     }
@@ -110,9 +100,8 @@ mod tests {
             }
             .convert(&mut PYConvertContext::default()),
             PYImport {
-                path: ".path.to.module".into(),
                 reference: PYImportReference::Named(vec![PYImportName::Name("Name".into())]),
-                dependency: PYDependency::Local(".path.to.module".into())
+                dependency: PYDependencyIdent::Local(".path.to.module".into())
             }
         );
     }

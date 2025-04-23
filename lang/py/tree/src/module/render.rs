@@ -1,13 +1,15 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for PYModule {
     type RenderState = PYRenderState;
 
     type RenderContext = PYRenderContext<'a>;
 
-    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
         let mut blocks = vec![];
 
         if let Some(doc) = &self.doc {
@@ -64,17 +66,15 @@ mod tests {
                 doc: None,
                 imports: vec![
                     PYImport {
-                        path: ".path.to.module".into(),
                         reference: PYImportReference::Default(Some("name".into())),
-                        dependency: PYDependency::Local(".path.to.module".into())
+                        dependency: PYDependencyIdent::Local(".path.to.module".into())
                     },
                     PYImport {
-                        path: ".path.to.module".into(),
                         reference: PYImportReference::Named(vec![
                             PYImportName::Name("Name".into()),
                             PYImportName::Alias("Name".into(), "Alias".into()),
                         ]),
-                        dependency: PYDependency::Local(".path.to.module".into())
+                        dependency: PYDependencyIdent::Local(".path.to.module".into())
                     }
                 ],
                 definitions: vec![
@@ -128,9 +128,8 @@ class Name(Model):
             PYModule {
                 doc: Some(PYDoc("Hello, world!".into())),
                 imports: vec![PYImport {
-                    path: ".path.to.module".into(),
                     reference: PYImportReference::Default(Some("name".into())),
-                    dependency: PYDependency::Local(".path.to.module".into())
+                    dependency: PYDependencyIdent::Local(".path.to.module".into())
                 },],
                 definitions: vec![PYDefinition::Alias(PYAlias {
                     doc: None,

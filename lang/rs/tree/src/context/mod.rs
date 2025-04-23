@@ -1,4 +1,4 @@
-use crate::{RSDependency, RSIdentifier};
+use crate::prelude::internal::*;
 
 #[cfg(test)]
 pub mod mock;
@@ -9,10 +9,14 @@ pub enum RSContextRenderDeriveMode {
     UnionEnum,
 }
 
-pub trait RSContext {
-    fn import(&mut self, dependency: RSDependency, name: RSIdentifier);
-
+pub trait RSConvertContextMockable {
     fn render_derive(&self, _mode: RSContextRenderDeriveMode) -> String {
         String::new()
     }
+}
+
+pub trait RSConvertContextConstraint:
+    RSConvertContextMockable
+    + GtlConvertContext<DependencyIdent = RSDependencyIdent, DependencyRef = RSIdentifier>
+{
 }

@@ -1,4 +1,4 @@
-use crate::TSReference;
+use crate::prelude::internal::*;
 
 mod render;
 

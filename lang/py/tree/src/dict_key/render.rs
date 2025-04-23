@@ -1,13 +1,15 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for PYDictKey {
     type RenderState = PYRenderState;
 
     type RenderContext = PYRenderContext<'a>;
 
-    fn render(&self, _state: Self::RenderState, _context: &mut Self::RenderContext) -> Result<String> {
+    fn render(
+        &self,
+        _state: Self::RenderState,
+        _context: &mut Self::RenderContext,
+    ) -> Result<String> {
         Ok(match self {
             PYDictKey::String => "str".into(),
             PYDictKey::Int => "int".into(),
@@ -20,23 +22,32 @@ impl<'a> GtlRender<'a> for PYDictKey {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render() {
         assert_eq!(
-            PYDictKey::Boolean.render(Default::default(), &mut Default::default()).unwrap(),
+            PYDictKey::Boolean
+                .render(Default::default(), &mut Default::default())
+                .unwrap(),
             "bool"
         );
         assert_eq!(
-            PYDictKey::String.render(Default::default(), &mut Default::default()).unwrap(),
+            PYDictKey::String
+                .render(Default::default(), &mut Default::default())
+                .unwrap(),
             "str"
         );
         assert_eq!(
-            PYDictKey::Int.render(Default::default(), &mut Default::default()).unwrap(),
+            PYDictKey::Int
+                .render(Default::default(), &mut Default::default())
+                .unwrap(),
             "int"
         );
         assert_eq!(
-            PYDictKey::Float.render(Default::default(), &mut Default::default()).unwrap(),
+            PYDictKey::Float
+                .render(Default::default(), &mut Default::default())
+                .unwrap(),
             "float"
         );
     }

@@ -1,31 +1,28 @@
-use crate::*;
-
-use super::PYLiteral;
+use crate::prelude::internal::*;
 
 impl PYContextResolve for PYLiteral {
     fn resolve<Context>(self, context: &mut Context) -> Self
     where
-        Context: PYContext,
+        Context: PYConvertContextConstraint,
     {
-        context.import(PYDependency::Typing, "Literal".into());
+        context.add_import(PYDependencyIdent::Typing, "Literal".into());
         self
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
-    use mock::PYContextMock;
+    use super::*;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_resolve() {
-        let mut context = PYContextMock::default();
+        let mut context = PYConvertContextMock::default();
         let literal = PYLiteral::Boolean(true);
         literal.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
-            vec![(PYDependency::Typing, "Literal".into())]
+            vec![(PYDependencyIdent::Typing, "Literal".into())]
         );
     }
 }

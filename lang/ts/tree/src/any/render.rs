@@ -1,13 +1,15 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for TSAny {
     type RenderState = TSRenderState;
 
     type RenderContext = TSRenderContext;
 
-    fn render(&self, _state: Self::RenderState, _context: &mut Self::RenderContext) -> Result<String> {
+    fn render(
+        &self,
+        _state: Self::RenderState,
+        _context: &mut Self::RenderContext,
+    ) -> Result<String> {
         Ok("any".into())
     }
 }
@@ -15,9 +17,15 @@ impl<'a> GtlRender<'a> for TSAny {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render() {
-        assert_eq!(TSAny.render(Default::default(), &mut Default::default()).unwrap(), "any");
+        assert_eq!(
+            TSAny
+                .render(Default::default(), &mut Default::default())
+                .unwrap(),
+            "any"
+        );
     }
 }

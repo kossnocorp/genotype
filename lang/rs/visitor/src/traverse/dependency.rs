@@ -1,15 +1,15 @@
-use genotype_lang_rs_tree::RSDependency;
+use genotype_lang_rs_tree::*;
 
 use crate::visitor::RSVisitor;
 
 use super::RSTraverse;
 
-impl RSTraverse for RSDependency {
+impl RSTraverse for RSDependencyIdent {
     fn traverse(&mut self, visitor: &mut dyn RSVisitor) {
         visitor.visit_dependency(self);
 
         match self {
-            RSDependency::Local(path) => {
+            RSDependencyIdent::Local(path) => {
                 path.traverse(visitor);
             }
 

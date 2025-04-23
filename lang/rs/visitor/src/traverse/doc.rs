@@ -1,4 +1,4 @@
-use genotype_lang_rs_tree::doc::RSDoc;
+use genotype_lang_rs_tree::*;
 
 use crate::visitor::RSVisitor;
 

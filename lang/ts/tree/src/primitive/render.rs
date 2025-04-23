@@ -1,13 +1,15 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for TSPrimitive {
     type RenderState = TSRenderState;
 
     type RenderContext = TSRenderContext;
 
-    fn render(&self, _state: Self::RenderState, _context: &mut Self::RenderContext) -> Result<String> {
+    fn render(
+        &self,
+        _state: Self::RenderState,
+        _context: &mut Self::RenderContext,
+    ) -> Result<String> {
         Ok(match self {
             TSPrimitive::String => "string",
             TSPrimitive::Number => "number",
@@ -23,19 +25,26 @@ impl<'a> GtlRender<'a> for TSPrimitive {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render_primitive() {
         assert_eq!(
-            TSPrimitive::String.render(Default::default(), &mut Default::default()).unwrap(),
+            TSPrimitive::String
+                .render(Default::default(), &mut Default::default())
+                .unwrap(),
             "string"
         );
         assert_eq!(
-            TSPrimitive::Number.render(Default::default(), &mut Default::default()).unwrap(),
+            TSPrimitive::Number
+                .render(Default::default(), &mut Default::default())
+                .unwrap(),
             "number"
         );
         assert_eq!(
-            TSPrimitive::BigInt.render(Default::default(), &mut Default::default()).unwrap(),
+            TSPrimitive::BigInt
+                .render(Default::default(), &mut Default::default())
+                .unwrap(),
             "bigint"
         );
         assert_eq!(
@@ -45,7 +54,9 @@ mod tests {
             "boolean"
         );
         assert_eq!(
-            TSPrimitive::Null.render(Default::default(), &mut Default::default()).unwrap(),
+            TSPrimitive::Null
+                .render(Default::default(), &mut Default::default())
+                .unwrap(),
             "null"
         );
         assert_eq!(

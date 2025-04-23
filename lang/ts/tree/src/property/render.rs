@@ -1,6 +1,4 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for TSProperty {
     type RenderState = TSRenderState;
@@ -27,6 +25,7 @@ impl<'a> GtlRender<'a> for TSProperty {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render_primitive() {

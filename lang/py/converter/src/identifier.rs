@@ -1,7 +1,4 @@
-use genotype_lang_py_tree::identifier::PYIdentifier;
-use genotype_parser::tree::identifier::GTIdentifier;
-
-use crate::{context::PYConvertContext, convert::PYConvert};
+use crate::prelude::internal::*;
 
 impl PYConvert<PYIdentifier> for GTIdentifier {
     fn convert(&self, context: &mut PYConvertContext) -> PYIdentifier {
@@ -11,11 +8,8 @@ impl PYConvert<PYIdentifier> for GTIdentifier {
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
-    use crate::resolve::PYConvertResolve;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_base() {

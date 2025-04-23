@@ -1,5 +1,4 @@
-use crate::*;
-use genotype_parser::*;
+use crate::prelude::internal::*;
 
 mod render;
 

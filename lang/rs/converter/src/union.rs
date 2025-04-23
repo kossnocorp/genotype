@@ -1,17 +1,6 @@
-use std::collections::HashSet;
-
-use genotype_lang_rs_tree::{
-    RSContext, RSContextRenderDeriveMode, RSDependency, RSEnum, RSEnumVariant,
-    RSEnumVariantDescriptor, RSIdentifier,
-};
-use genotype_parser::{tree::union::GTUnion, GTDescriptor, GTPrimitive};
+use crate::prelude::internal::*;
 use heck::ToPascalCase;
-use miette::Result;
-
-use crate::{
-    context::{naming::RSContextParent, RSConvertContext},
-    convert::RSConvert,
-};
+use std::collections::HashSet;
 
 impl RSConvert<RSEnum> for GTUnion {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSEnum> {
@@ -46,8 +35,8 @@ impl RSConvert<RSEnum> for GTUnion {
             variants,
         };
 
-        context.import(RSDependency::Serde, "Deserialize".into());
-        context.import(RSDependency::Serde, "Serialize".into());
+        context.add_import(RSDependencyIdent::Serde, "Deserialize".into());
+        context.add_import(RSDependencyIdent::Serde, "Serialize".into());
 
         context.exit_parent();
         Ok(r#enum)
@@ -144,13 +133,8 @@ fn name_descriptor(
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_rs_tree::*;
-    use genotype_parser::tree::*;
-    use pretty_assertions::assert_eq;
-
-    use crate::context::RSConvertContext;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {
@@ -224,8 +208,8 @@ mod tests {
         assert_eq!(
             context.as_dependencies(),
             vec![
-                (RSDependency::Serde, "Deserialize".into()),
-                (RSDependency::Serde, "Serialize".into())
+                (RSDependencyIdent::Serde, "Deserialize".into()),
+                (RSDependencyIdent::Serde, "Serialize".into())
             ]
         );
     }

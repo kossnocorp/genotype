@@ -1,7 +1,4 @@
-use genotype_lang_py_tree::PYDictKey;
-use genotype_parser::GTRecordKey;
-
-use crate::{context::PYConvertContext, convert::PYConvert};
+use crate::prelude::internal::*;
 
 impl PYConvert<PYDictKey> for GTRecordKey {
     fn convert(&self, _context: &mut PYConvertContext) -> PYDictKey {
@@ -29,11 +26,8 @@ impl PYConvert<PYDictKey> for GTRecordKey {
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
-    use crate::context::PYConvertContext;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

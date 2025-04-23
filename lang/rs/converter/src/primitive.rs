@@ -1,8 +1,4 @@
-use genotype_lang_rs_tree::primitive::RSPrimitive;
-use genotype_parser::tree::primitive::GTPrimitive;
-use miette::Result;
-
-use crate::{context::RSConvertContext, convert::RSConvert};
+use crate::prelude::internal::*;
 
 impl RSConvert<RSPrimitive> for GTPrimitive {
     fn convert(&self, _resolve: &mut RSConvertContext) -> Result<RSPrimitive> {
@@ -31,10 +27,8 @@ impl RSConvert<RSPrimitive> for GTPrimitive {
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
     use super::*;
-    use genotype_parser::tree::primitive::GTPrimitive;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

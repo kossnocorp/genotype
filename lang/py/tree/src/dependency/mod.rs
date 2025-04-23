@@ -1,7 +1,9 @@
-use crate::PYPath;
+use crate::prelude::internal::*;
+
+pub struct PYDependency {}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum PYDependency {
+pub enum PYDependencyIdent {
     Local(PYPath),
     Runtime,
     Typing,
@@ -9,7 +11,7 @@ pub enum PYDependency {
     Pydantic,
 }
 
-impl PYDependency {
+impl PYDependencyIdent {
     pub fn as_path(&self) -> PYPath {
         match self {
             Self::Local(path) => path.clone(),
@@ -29,3 +31,5 @@ impl PYDependency {
         }
     }
 }
+
+impl GtlDependencyIdent for PYDependencyIdent {}

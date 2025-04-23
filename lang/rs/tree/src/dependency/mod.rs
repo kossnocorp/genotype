@@ -1,7 +1,7 @@
-use crate::RSPath;
+use crate::prelude::internal::*;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum RSDependency {
+pub enum RSDependencyIdent {
     Local(RSPath),
     Runtime,
     Literals,
@@ -9,7 +9,7 @@ pub enum RSDependency {
     Std(String),
 }
 
-impl RSDependency {
+impl RSDependencyIdent {
     pub fn as_path(&self) -> String {
         match self {
             Self::Local(path) => path.1.clone(),
@@ -29,3 +29,5 @@ impl RSDependency {
         }
     }
 }
+
+impl GtlDependencyIdent for RSDependencyIdent {}

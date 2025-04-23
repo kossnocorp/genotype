@@ -1,6 +1,4 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl TSDoc {
     pub fn with_doc(
@@ -48,6 +46,7 @@ impl<'a> GtlRender<'a> for TSDoc {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render_simple() {

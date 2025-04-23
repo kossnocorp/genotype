@@ -1,4 +1,4 @@
-use genotype_lang_core_tree::*;
+use crate::prelude::internal::*;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct TSRenderContext {}

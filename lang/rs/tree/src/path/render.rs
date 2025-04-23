@@ -1,13 +1,15 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for RSPath {
     type RenderState = RSRenderState;
 
     type RenderContext = RSRenderContext<'a>;
 
-    fn render(&self, _state: Self::RenderState, _context: &mut Self::RenderContext) -> Result<String> {
+    fn render(
+        &self,
+        _state: Self::RenderState,
+        _context: &mut Self::RenderContext,
+    ) -> Result<String> {
         Ok(self.1.clone())
     }
 }
@@ -15,7 +17,7 @@ impl<'a> GtlRender<'a> for RSPath {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_parser::GTModuleId;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render() {

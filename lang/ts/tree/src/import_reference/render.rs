@@ -1,13 +1,15 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for TSImportReference {
     type RenderState = TSRenderState;
 
     type RenderContext = TSRenderContext;
 
-    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
         Ok(match self {
             TSImportReference::Default(name) => name.clone(),
 
@@ -28,6 +30,7 @@ impl<'a> GtlRender<'a> for TSImportReference {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render_default() {

@@ -1,31 +1,28 @@
-use crate::{PYContext, PYContextResolve, PYDependency};
-
-use super::PYAny;
+use crate::prelude::internal::*;
 
 impl PYContextResolve for PYAny {
     fn resolve<Context>(self, context: &mut Context) -> Self
     where
-        Context: PYContext,
+        Context: PYConvertContextConstraint,
     {
-        context.import(PYDependency::Typing, "Any".into());
+        context.add_import(PYDependencyIdent::Typing, "Any".into());
         self
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
-    use mock::PYContextMock;
+    use super::*;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_resolve() {
-        let mut context = PYContextMock::default();
+        let mut context = PYConvertContextMock::default();
         let alias = PYAny;
         alias.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
-            vec![(PYDependency::Typing, "Any".into())]
+            vec![(PYDependencyIdent::Typing, "Any".into())]
         );
     }
 }

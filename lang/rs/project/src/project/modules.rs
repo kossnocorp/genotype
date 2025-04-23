@@ -211,7 +211,7 @@ impl RSProject {
                         }
 
                         let existing_use = module.module.imports.iter_mut().find(|import| {
-                            if let RSDependency::Local(path) = &import.dependency {
+                            if let RSDependencyIdent::Local(path) = &import.dependency {
                                 return path.0 == reference_definition_id.0;
                             }
                             false
@@ -242,7 +242,7 @@ impl RSProject {
                                     reference: RSUseReference::Named(vec![RSUseName::Name(
                                         reference_definition_id.1.clone().into(),
                                     )]),
-                                    dependency: RSDependency::Local(RSPath(
+                                    dependency: RSDependencyIdent::Local(RSPath(
                                         reference_definition_id.0.clone(),
                                         format!("crate::{}", reference_definition_id.0 .0).into(),
                                     )),
@@ -256,7 +256,7 @@ impl RSProject {
                         .module
                         .imports
                         .retain(|r#use| match &r#use.dependency {
-                            RSDependency::Local(path) => {
+                            RSDependencyIdent::Local(path) => {
                                 module.resolve.definitions.values().any(|resolve| {
                                     resolve
                                         .references
@@ -269,7 +269,7 @@ impl RSProject {
 
                     // Clean up references
                     module.module.imports.iter_mut().for_each(|r#use| {
-                        if let RSDependency::Local(path) = &r#use.dependency {
+                        if let RSDependencyIdent::Local(path) = &r#use.dependency {
                             if let RSUseReference::Named(names) = &r#use.reference {
                                 let mut names = names.clone();
                                 names.retain(|name| {

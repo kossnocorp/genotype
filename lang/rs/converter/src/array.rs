@@ -1,8 +1,4 @@
-use genotype_lang_rs_tree::*;
-use genotype_parser::tree::array::GTArray;
-use miette::Result;
-
-use crate::{context::RSConvertContext, convert::RSConvert};
+use crate::prelude::internal::*;
 
 impl RSConvert<RSVec> for GTArray {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSVec> {
@@ -13,13 +9,8 @@ impl RSConvert<RSVec> for GTArray {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_rs_tree::*;
-    use genotype_parser::tree::*;
-    use pretty_assertions::assert_eq;
-
-    use crate::context::RSConvertContext;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

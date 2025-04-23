@@ -1,7 +1,4 @@
-use genotype_lang_py_tree::doc::PYDoc;
-use genotype_parser::tree::doc::GTDoc;
-
-use crate::{context::PYConvertContext, convert::PYConvert};
+use crate::prelude::internal::*;
 
 impl PYConvert<PYDoc> for GTDoc {
     fn convert(&self, _context: &mut PYConvertContext) -> PYDoc {
@@ -11,9 +8,8 @@ impl PYConvert<PYDoc> for GTDoc {
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

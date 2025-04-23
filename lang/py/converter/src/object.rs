@@ -1,7 +1,4 @@
-use genotype_lang_py_tree::*;
-use genotype_parser::*;
-
-use crate::{context::PYConvertContext, convert::PYConvert};
+use crate::prelude::internal::*;
 
 impl PYConvert<PYClass> for GTObject {
     fn convert(&self, context: &mut PYConvertContext) -> PYClass {
@@ -31,11 +28,8 @@ impl PYConvert<PYClass> for GTObject {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_py_tree::*;
-    use genotype_parser::tree::*;
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {
@@ -108,7 +102,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![(PYDependency::Runtime, "Model".into())]
+            vec![(PYDependencyIdent::Runtime, "Model".into())]
         );
     }
 

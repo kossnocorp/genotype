@@ -1,13 +1,15 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for TSLiteral {
     type RenderState = TSRenderState;
 
     type RenderContext = TSRenderContext;
 
-    fn render(&self, _state: Self::RenderState, _context: &mut Self::RenderContext) -> Result<String> {
+    fn render(
+        &self,
+        _state: Self::RenderState,
+        _context: &mut Self::RenderContext,
+    ) -> Result<String> {
         Ok(match self {
             TSLiteral::Null => "null".to_string(),
             TSLiteral::Boolean(value) => value.to_string(),
@@ -32,7 +34,9 @@ mod tests {
     #[test]
     fn test_render_null() {
         assert_eq!(
-            TSLiteral::Null.render(Default::default(), &mut Default::default()).unwrap(),
+            TSLiteral::Null
+                .render(Default::default(), &mut Default::default())
+                .unwrap(),
             "null"
         );
     }

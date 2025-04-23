@@ -1,8 +1,4 @@
-use genotype_lang_rs_tree::*;
-use genotype_parser::*;
-use miette::Result;
-
-use crate::{context::RSConvertContext, convert::RSConvert};
+use crate::prelude::internal::*;
 
 impl RSConvert<RSUse> for GTImport {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSUse> {
@@ -25,19 +21,15 @@ impl RSConvert<RSUse> for GTImport {
 
         Ok(RSUse {
             reference,
-            dependency: RSDependency::Local(path),
+            dependency: RSDependencyIdent::Local(path),
         })
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_rs_tree::*;
-    use pretty_assertions::assert_eq;
-
-    use crate::resolve::RSConvertResolve;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_glob() {
@@ -61,7 +53,7 @@ mod tests {
             .unwrap(),
             RSUse {
                 reference: RSUseReference::Module,
-                dependency: RSDependency::Local(RSPath(
+                dependency: RSDependencyIdent::Local(RSPath(
                     "module/path".into(),
                     "super::path::to::module".into()
                 ))
@@ -101,7 +93,7 @@ mod tests {
                     RSUseName::Name("Name".into()),
                     RSUseName::Alias("Name".into(), "Alias".into())
                 ]),
-                dependency: RSDependency::Local(RSPath(
+                dependency: RSDependencyIdent::Local(RSPath(
                     "module/path".into(),
                     "super::path::to::module".into()
                 ))
@@ -125,7 +117,7 @@ mod tests {
             .unwrap(),
             RSUse {
                 reference: RSUseReference::Named(vec![RSUseName::Name("Name".into())]),
-                dependency: RSDependency::Local(RSPath(
+                dependency: RSDependencyIdent::Local(RSPath(
                     "module/path".into(),
                     "super::path::to::module".into()
                 ))

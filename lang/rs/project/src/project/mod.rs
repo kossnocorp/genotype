@@ -66,7 +66,7 @@ mod tests {
                                 RSUseName::Name("Deserialize".into()),
                                 RSUseName::Name("Serialize".into())
                             ]),
-                            dependency: RSDependency::Serde,
+                            dependency: RSDependencyIdent::Serde,
                         }],
                         definitions: vec![RSDefinition::Struct(RSStruct {
                             id: GTDefinitionId("author".into(), "Author".into()),
@@ -99,7 +99,7 @@ mod tests {
                                 reference: RSUseReference::Named(vec![RSUseName::Name(
                                     "Author".into()
                                 )]),
-                                dependency: RSDependency::Local(RSPath(
+                                dependency: RSDependencyIdent::Local(RSPath(
                                     "author".into(),
                                     "super::author".into()
                                 )),
@@ -109,7 +109,7 @@ mod tests {
                                     RSUseName::Name("Deserialize".into()),
                                     RSUseName::Name("Serialize".into())
                                 ]),
-                                dependency: RSDependency::Serde,
+                                dependency: RSDependencyIdent::Serde,
                             }
                         ],
                         definitions: vec![RSDefinition::Struct(RSStruct {
@@ -182,7 +182,7 @@ mod tests {
                                 RSUseName::Name("Deserialize".into()),
                                 RSUseName::Name("Serialize".into())
                             ]),
-                            dependency: RSDependency::Serde,
+                            dependency: RSDependencyIdent::Serde,
                         }],
                         definitions: vec![
                             RSDefinition::Struct(RSStruct {
@@ -240,7 +240,7 @@ mod tests {
                         imports: vec![
                             RSUse {
                                 reference: RSUseReference::Module,
-                                dependency: RSDependency::Local(RSPath(
+                                dependency: RSDependencyIdent::Local(RSPath(
                                     "author".into(),
                                     "super::author".into()
                                 )),
@@ -250,7 +250,7 @@ mod tests {
                                     RSUseName::Name("Deserialize".into()),
                                     RSUseName::Name("Serialize".into())
                                 ]),
-                                dependency: RSDependency::Serde,
+                                dependency: RSDependencyIdent::Serde,
                             }
                         ],
                         definitions: vec![RSDefinition::Struct(RSStruct {

@@ -1,7 +1,4 @@
-use genotype_lang_py_tree::*;
-use genotype_parser::*;
-
-use crate::{context::PYConvertContext, convert::PYConvert};
+use crate::prelude::internal::*;
 
 impl PYConvert<PYDefinition> for GTAlias {
     fn convert(&self, context: &mut PYConvertContext) -> PYDefinition {
@@ -60,11 +57,8 @@ impl PYConvert<PYDefinition> for GTAlias {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_py_config::{PYLangConfig, PYVersion};
-    use genotype_lang_py_tree::*;
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_alias() {
@@ -262,7 +256,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![(PYDependency::Typing, "TypeAlias".into()),]
+            vec![(PYDependencyIdent::Typing, "TypeAlias".into()),]
         );
     }
 

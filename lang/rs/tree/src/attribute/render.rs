@@ -1,7 +1,4 @@
-use super::RSAttribute;
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for RSAttribute {
     type RenderState = RSRenderState;

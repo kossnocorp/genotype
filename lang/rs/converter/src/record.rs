@@ -1,12 +1,11 @@
-use genotype_lang_rs_tree::{RSContext, RSDependency, RSMap};
-use genotype_parser::GTRecord;
-use miette::Result;
-
-use crate::{context::RSConvertContext, convert::RSConvert};
+use crate::prelude::internal::*;
 
 impl RSConvert<RSMap> for GTRecord {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSMap> {
-        context.import(RSDependency::Std("collections".into()), "BTreeMap".into());
+        context.add_import(
+            RSDependencyIdent::Std("collections".into()),
+            "BTreeMap".into(),
+        );
         Ok(RSMap {
             key: self.key.convert(context)?,
             descriptor: self.descriptor.convert(context)?,
@@ -16,11 +15,8 @@ impl RSConvert<RSMap> for GTRecord {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_rs_tree::*;
-    use genotype_parser::tree::*;
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {
@@ -57,7 +53,10 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![(RSDependency::Std("collections".into()), "BTreeMap".into()),]
+            vec![(
+                RSDependencyIdent::Std("collections".into()),
+                "BTreeMap".into()
+            ),]
         );
     }
 }

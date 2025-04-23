@@ -1,13 +1,15 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for RSUseName {
     type RenderState = RSRenderState;
 
     type RenderContext = RSRenderContext<'a>;
 
-    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
         Ok(match self {
             RSUseName::Name(name) => name.render(state, context)?,
             RSUseName::Alias(name, alias) => {
@@ -24,6 +26,7 @@ impl<'a> GtlRender<'a> for RSUseName {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render_name() {

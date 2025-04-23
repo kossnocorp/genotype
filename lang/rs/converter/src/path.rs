@@ -1,8 +1,4 @@
-use genotype_lang_rs_tree::path::RSPath;
-use genotype_parser::{tree::path::GTPath, GTPathModuleId};
-use miette::Result;
-
-use crate::{context::RSConvertContext, convert::RSConvert, error::RSConverterError};
+use crate::prelude::internal::*;
 
 pub fn rs_parse_module_path(path: String) -> String {
     path.replace("../", "super::super::")
@@ -27,12 +23,8 @@ impl RSConvert<RSPath> for GTPath {
 
 #[cfg(test)]
 mod tests {
-    use genotype_parser::GTModuleId;
-    use pretty_assertions::assert_eq;
-
-    use crate::{context::RSConvertContext, resolve::RSConvertResolve};
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_base() {

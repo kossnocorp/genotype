@@ -1,4 +1,4 @@
-use genotype_lang_py_tree::PYDictKey;
+use genotype_lang_py_tree::*;
 
 use crate::visitor::PYVisitor;
 
@@ -14,7 +14,7 @@ impl PYTraverse for PYDictKey {
 mod tests {
     use super::*;
     use crate::visitor::mock::*;
-    use genotype_lang_py_tree::PYDictKey;
+    use genotype_lang_py_tree::*;
     use pretty_assertions::assert_eq;
 
     #[test]

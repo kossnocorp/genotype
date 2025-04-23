@@ -1,4 +1,4 @@
-use genotype_lang_rs_tree::{RSFieldName, RSIdentifier};
+use genotype_lang_rs_tree::*;
 use heck::ToPascalCase;
 
 use super::RSConvertContext;

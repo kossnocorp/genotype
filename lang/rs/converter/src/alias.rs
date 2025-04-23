@@ -1,11 +1,4 @@
-use genotype_lang_rs_tree::*;
-use genotype_parser::*;
-use miette::Result;
-
-use crate::{
-    context::{naming::RSContextParent, RSConvertContext},
-    convert::RSConvert,
-};
+use crate::prelude::internal::*;
 
 impl RSConvert<RSDefinition> for GTAlias {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSDefinition> {
@@ -58,10 +51,8 @@ impl RSConvert<RSDefinition> for GTAlias {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_rs_tree::*;
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_alias() {

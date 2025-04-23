@@ -1,4 +1,4 @@
-use crate::{identifier::TSIdentifier, path::TSPath};
+use crate::prelude::internal::*;
 
 mod render;
 

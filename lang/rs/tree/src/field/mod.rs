@@ -1,4 +1,5 @@
-use crate::*;
+use crate::prelude::internal::*;
+
 mod render;
 
 #[derive(Debug, PartialEq, Clone)]

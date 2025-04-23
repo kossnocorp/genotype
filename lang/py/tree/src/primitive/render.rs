@@ -1,6 +1,4 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for PYPrimitive {
     type RenderState = PYRenderState;
@@ -22,6 +20,7 @@ impl<'a> GtlRender<'a> for PYPrimitive {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render_primitive() {

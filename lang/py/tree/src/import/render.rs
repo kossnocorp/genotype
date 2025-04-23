@@ -1,14 +1,16 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for PYImport {
     type RenderState = PYRenderState;
 
     type RenderContext = PYRenderContext<'a>;
 
-    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
-        let path = self.path.render(state, context)?;
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
+        let path = self.dependency.as_path().render(state, context)?;
         let reference = self.reference.render(state, context)?;
 
         Ok(match self.reference {
@@ -36,9 +38,8 @@ mod tests {
     fn test_render_default() {
         assert_eq!(
             PYImport {
-                path: ".path.to.module".into(),
                 reference: PYImportReference::Default(Some("name".into())),
-                dependency: PYDependency::Local(".path.to.module".into())
+                dependency: PYDependencyIdent::Local(".path.to.module".into())
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -46,9 +47,8 @@ mod tests {
         );
         assert_eq!(
             PYImport {
-                path: ".path.to.module".into(),
                 reference: PYImportReference::Default(None),
-                dependency: PYDependency::Local(".path.to.module".into())
+                dependency: PYDependencyIdent::Local(".path.to.module".into())
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -60,9 +60,8 @@ mod tests {
     fn test_render_glob() {
         assert_eq!(
             PYImport {
-                path: ".path.to.module".into(),
                 reference: PYImportReference::Glob,
-                dependency: PYDependency::Local(".path.to.module".into())
+                dependency: PYDependencyIdent::Local(".path.to.module".into())
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -74,12 +73,11 @@ mod tests {
     fn test_render_named() {
         assert_eq!(
             PYImport {
-                path: ".path.to.module".into(),
                 reference: PYImportReference::Named(vec![
                     PYImportName::Name("Name".into()),
                     PYImportName::Alias("Name".into(), "Alias".into()),
                 ]),
-                dependency: PYDependency::Local(".path.to.module".into())
+                dependency: PYDependencyIdent::Local(".path.to.module".into())
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use genotype_lang_py_config::PYLangConfig;
-use genotype_lang_py_tree::module::PYModule;
+use genotype_lang_py_tree::*;
 use genotype_lang_py_visitor::traverse::PYTraverse;
 use genotype_parser::GTModule;
 use visitor::PYModuleVisitor;
@@ -222,31 +222,27 @@ mod tests {
                 doc: None,
                 imports: vec![
                     PYImport {
-                        path: ".path.to.module".into(),
                         reference: PYImportReference::Default(Some("module".into())),
-                        dependency: PYDependency::Local(".path.to.module".into()),
+                        dependency: PYDependencyIdent::Local(".path.to.module".into()),
                     },
                     PYImport {
-                        path: ".path.to.module".into(),
                         reference: PYImportReference::Named(vec![
                             PYImportName::Name("Name".into()),
                             PYImportName::Alias("Name".into(), "Alias".into())
                         ]),
-                        dependency: PYDependency::Local(".path.to.module".into()),
+                        dependency: PYDependencyIdent::Local(".path.to.module".into()),
                     },
                     PYImport {
-                        path: "typing".into(),
                         reference: PYImportReference::Named(vec![PYImportName::Name(
                             "Optional".into()
                         )]),
-                        dependency: PYDependency::Typing,
+                        dependency: PYDependencyIdent::Typing,
                     },
                     PYImport {
-                        path: "genotype".into(),
                         reference: PYImportReference::Named(vec![PYImportName::Name(
                             "Model".into()
                         )]),
-                        dependency: PYDependency::Runtime,
+                        dependency: PYDependencyIdent::Runtime,
                     }
                 ],
                 definitions: vec![
@@ -426,9 +422,8 @@ mod tests {
             PYConvertModule(PYModule {
                 doc: None,
                 imports: vec![PYImport {
-                    path: "genotype".into(),
                     reference: PYImportReference::Named(vec![PYImportName::Name("Model".into())]),
-                    dependency: PYDependency::Runtime,
+                    dependency: PYDependencyIdent::Runtime,
                 }],
                 definitions: vec![
                     PYDefinition::Class(PYClass {

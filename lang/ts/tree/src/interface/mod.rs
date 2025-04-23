@@ -1,4 +1,4 @@
-use crate::{identifier::TSIdentifier, property::TSProperty, TSDoc, TSExtension};
+use crate::prelude::internal::*;
 
 mod render;
 

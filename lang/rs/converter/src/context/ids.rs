@@ -1,4 +1,4 @@
-use genotype_lang_rs_tree::RSIdentifier;
+use genotype_lang_rs_tree::*;
 use genotype_parser::{GTDefinitionId, GTReferenceId, GTSpan};
 
 use super::RSConvertContext;

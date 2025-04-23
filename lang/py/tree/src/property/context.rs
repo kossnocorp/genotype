@@ -1,14 +1,12 @@
-use crate::*;
-
-use super::PYProperty;
+use crate::prelude::internal::*;
 
 impl PYContextResolve for PYProperty {
     fn resolve<Context>(self, context: &mut Context) -> Self
     where
-        Context: PYContext,
+        Context: PYConvertContextConstraint,
     {
         if !self.required {
-            context.import(PYDependency::Typing, "Optional".into());
+            context.add_import(PYDependencyIdent::Typing, "Optional".into());
         }
         self
     }
@@ -16,13 +14,12 @@ impl PYContextResolve for PYProperty {
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
-    use mock::PYContextMock;
+    use super::*;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_resolve() {
-        let mut context = PYContextMock::default();
+        let mut context = PYConvertContextMock::default();
         let alias = PYProperty {
             doc: None,
             name: "foo".into(),
@@ -35,7 +32,7 @@ mod tests {
 
     #[test]
     fn test_resolve_optional() {
-        let mut context = PYContextMock::default();
+        let mut context = PYConvertContextMock::default();
         let alias = PYProperty {
             doc: None,
             name: "foo".into(),
@@ -45,7 +42,7 @@ mod tests {
         alias.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
-            vec![(PYDependency::Typing, "Optional".into())]
+            vec![(PYDependencyIdent::Typing, "Optional".into())]
         );
     }
 }

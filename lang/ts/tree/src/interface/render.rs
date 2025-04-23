@@ -1,6 +1,4 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for TSInterface {
     type RenderState = TSRenderState;

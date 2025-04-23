@@ -1,6 +1,4 @@
-use genotype_parser::*;
-
-use crate::identifier::RSIdentifier;
+use crate::prelude::internal::*;
 
 mod render;
 

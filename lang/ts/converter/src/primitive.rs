@@ -1,7 +1,4 @@
-use genotype_lang_ts_tree::primitive::TSPrimitive;
-use genotype_parser::tree::primitive::GTPrimitive;
-
-use crate::{context::TSConvertContext, convert::TSConvert};
+use crate::prelude::internal::*;
 
 impl TSConvert<TSPrimitive> for GTPrimitive {
     fn convert(&self, _context: &mut TSConvertContext) -> TSPrimitive {
@@ -30,10 +27,8 @@ impl TSConvert<TSPrimitive> for GTPrimitive {
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
     use super::*;
-    use genotype_parser::tree::primitive::GTPrimitive;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

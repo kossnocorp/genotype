@@ -1,8 +1,4 @@
-use genotype_lang_rs_tree::reference::RSReference;
-use genotype_parser::{tree::reference::GTReference, GTReferenceDefinitionId};
-use miette::Result;
-
-use crate::{context::RSConvertContext, convert::RSConvert, error::RSConverterError};
+use crate::prelude::internal::*;
 
 impl RSConvert<RSReference> for GTReference {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSReference> {
@@ -24,11 +20,8 @@ impl RSConvert<RSReference> for GTReference {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_rs_tree::*;
-    use genotype_parser::{GTDefinitionId, GTIdentifier, GTReferenceDefinitionId, GTReferenceId};
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

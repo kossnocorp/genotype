@@ -1,5 +1,4 @@
-use genotype_lang_core_tree::*;
-use genotype_lang_rs_config::RSLangConfig;
+use crate::prelude::internal::*;
 use std::sync::LazyLock;
 
 #[derive(Debug, Clone, PartialEq)]

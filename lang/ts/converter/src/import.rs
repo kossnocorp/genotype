@@ -1,7 +1,4 @@
-use genotype_lang_ts_tree::{import::TSImport, TSImportName, TSImportReference};
-use genotype_parser::tree::{import::GTImport, GTImportReference};
-
-use crate::{context::TSConvertContext, convert::TSConvert};
+use crate::prelude::internal::*;
 
 impl TSConvert<TSImport> for GTImport {
     fn convert(&self, context: &mut TSConvertContext) -> TSImport {
@@ -29,13 +26,8 @@ impl TSConvert<TSImport> for GTImport {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::*;
-    use pretty_assertions::assert_eq;
-
-    use crate::{context::TSConvertContext, resolve::TSConvertResolve};
-
     use super::*;
-    use genotype_parser::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_glob() {

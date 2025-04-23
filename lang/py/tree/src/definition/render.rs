@@ -1,13 +1,15 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for PYDefinition {
     type RenderState = PYRenderState;
 
     type RenderContext = PYRenderContext<'a>;
 
-    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
         match self {
             PYDefinition::Alias(alias) => alias.render(state, context),
             PYDefinition::Class(interface) => interface.render(state, context),

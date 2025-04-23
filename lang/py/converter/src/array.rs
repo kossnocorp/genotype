@@ -1,7 +1,4 @@
-use genotype_lang_py_tree::*;
-use genotype_parser::tree::array::GTArray;
-
-use crate::{context::PYConvertContext, convert::PYConvert};
+use crate::prelude::internal::*;
 
 impl PYConvert<PYList> for GTArray {
     fn convert(&self, context: &mut PYConvertContext) -> PYList {
@@ -14,14 +11,8 @@ impl PYConvert<PYList> for GTArray {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_py_config::{PYLangConfig, PYVersion};
-    use genotype_lang_py_tree::*;
-    use genotype_parser::tree::*;
-    use pretty_assertions::assert_eq;
-
-    use crate::context::PYConvertContext;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {
@@ -56,7 +47,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![(PYDependency::Typing, "List".into())]
+            vec![(PYDependencyIdent::Typing, "List".into())]
         );
     }
 }

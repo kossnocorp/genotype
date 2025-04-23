@@ -1,7 +1,4 @@
-use genotype_lang_py_tree::path::PYPath;
-use genotype_parser::tree::path::GTPath;
-
-use crate::{context::PYConvertContext, convert::PYConvert};
+use crate::prelude::internal::*;
 
 pub fn py_parse_module_path(path: String) -> String {
     path.replace("../", "..")
@@ -17,11 +14,8 @@ impl PYConvert<PYPath> for GTPath {
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
-    use crate::{context::PYConvertContext, resolve::PYConvertResolve};
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_base() {

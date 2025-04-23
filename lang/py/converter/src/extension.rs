@@ -1,7 +1,4 @@
-use genotype_lang_py_tree::PYExtension;
-use genotype_parser::tree::GTExtension;
-
-use crate::{context::PYConvertContext, convert::PYConvert};
+use crate::prelude::internal::*;
 
 impl PYConvert<PYExtension> for GTExtension {
     fn convert(&self, context: &mut PYConvertContext) -> PYExtension {
@@ -13,13 +10,8 @@ impl PYConvert<PYExtension> for GTExtension {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_py_tree::*;
-    use genotype_parser::{
-        GTDefinitionId, GTIdentifier, GTReference, GTReferenceDefinitionId, GTReferenceId,
-    };
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

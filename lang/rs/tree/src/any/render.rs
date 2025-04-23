@@ -1,6 +1,4 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for RSAny {
     type RenderState = RSRenderState;
@@ -19,9 +17,15 @@ impl<'a> GtlRender<'a> for RSAny {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render() {
-        assert_eq!("Any", RSAny.render(Default::default(), &mut Default::default()).unwrap(),);
+        assert_eq!(
+            "Any",
+            RSAny
+                .render(Default::default(), &mut Default::default())
+                .unwrap(),
+        );
     }
 }

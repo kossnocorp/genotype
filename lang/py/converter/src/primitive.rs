@@ -1,7 +1,4 @@
-use genotype_lang_py_tree::primitive::PYPrimitive;
-use genotype_parser::tree::primitive::GTPrimitive;
-
-use crate::{context::PYConvertContext, convert::PYConvert};
+use crate::prelude::internal::*;
 
 impl PYConvert<PYPrimitive> for GTPrimitive {
     fn convert(&self, _resolve: &mut PYConvertContext) -> PYPrimitive {
@@ -30,10 +27,8 @@ impl PYConvert<PYPrimitive> for GTPrimitive {
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
     use super::*;
-    use genotype_parser::tree::primitive::GTPrimitive;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

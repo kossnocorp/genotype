@@ -1,6 +1,4 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for RSModule {
     type RenderState = RSRenderState;
@@ -66,7 +64,7 @@ mod tests {
                 imports: vec![
                     RSUse {
                         reference: RSUseReference::Module,
-                        dependency: RSDependency::Local(RSPath(
+                        dependency: RSDependencyIdent::Local(RSPath(
                             "path/to/module".into(),
                             "self::path::to::module".into()
                         ))
@@ -76,7 +74,7 @@ mod tests {
                             RSUseName::Name("Name".into()),
                             RSUseName::Alias("Name".into(), "Alias".into()),
                         ]),
-                        dependency: RSDependency::Local(RSPath(
+                        dependency: RSDependencyIdent::Local(RSPath(
                             "path/to/module".into(),
                             "self::path::to::module".into()
                         ))
@@ -135,7 +133,7 @@ pub struct Name {
                 doc: Some(RSDoc::new("Hello, world!", true)),
                 imports: vec![RSUse {
                     reference: RSUseReference::Module,
-                    dependency: RSDependency::Local(RSPath(
+                    dependency: RSDependencyIdent::Local(RSPath(
                         "path/to/module".into(),
                         "self::path::to::module".into()
                     ))

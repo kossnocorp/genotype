@@ -1,7 +1,4 @@
-use genotype_lang_ts_tree::path::TSPath;
-use genotype_parser::tree::path::GTPath;
-
-use crate::{context::TSConvertContext, convert::TSConvert};
+use crate::prelude::internal::*;
 
 impl TSConvert<TSPath> for GTPath {
     fn convert(&self, context: &mut TSConvertContext) -> TSPath {
@@ -11,11 +8,8 @@ impl TSConvert<TSPath> for GTPath {
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
-    use crate::{context::TSConvertContext, resolve::TSConvertResolve};
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_base() {

@@ -1,8 +1,5 @@
-use genotype_lang_py_tree::key::PYKey;
-use genotype_parser::tree::key::GTKey;
+use crate::prelude::internal::*;
 use heck::ToSnakeCase;
-
-use crate::{context::PYConvertContext, convert::PYConvert};
 
 impl PYConvert<PYKey> for GTKey {
     fn convert(&self, _context: &mut PYConvertContext) -> PYKey {
@@ -12,11 +9,8 @@ impl PYConvert<PYKey> for GTKey {
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
-    use crate::context::PYConvertContext;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

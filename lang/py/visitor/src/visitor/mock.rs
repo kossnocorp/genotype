@@ -9,7 +9,7 @@ pub enum PYMockVisited {
     Class(PYClass),
     Definition(PYDefinition),
     Descriptor(PYDescriptor),
-    Dependency(PYDependency),
+    Dependency(PYDependencyIdent),
     Dict(PYDict),
     DictKey(PYDictKey),
     Doc(PYDoc),
@@ -60,7 +60,7 @@ impl PYVisitor for PYMockVisitor {
             .push(PYMockVisited::Definition(definition.clone()));
     }
 
-    fn visit_dependency(&mut self, dependency: &mut PYDependency) {
+    fn visit_dependency(&mut self, dependency: &mut PYDependencyIdent) {
         self.visited
             .push(PYMockVisited::Dependency(dependency.clone()));
     }

@@ -1,8 +1,4 @@
-use genotype_lang_rs_tree::{RSContext, RSContextRenderDeriveMode, RSStruct, RSStructFields};
-use genotype_parser::GTBranded;
-use miette::Result;
-
-use crate::{context::RSConvertContext, convert::RSConvert};
+use crate::prelude::internal::*;
 
 impl RSConvert<RSStruct> for GTBranded {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSStruct> {
@@ -27,13 +23,8 @@ impl RSConvert<RSStruct> for GTBranded {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_rs_tree::*;
-    use genotype_parser::{GTDefinitionId, GTLiteral};
-    use pretty_assertions::assert_eq;
-
-    use crate::context::{naming::RSContextParent, RSConvertContext};
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {
@@ -105,7 +96,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![(RSDependency::Literals, "literal".into())]
+            vec![(RSDependencyIdent::Literals, "literal".into())]
         );
     }
 

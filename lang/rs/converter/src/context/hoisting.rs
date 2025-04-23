@@ -1,4 +1,4 @@
-use genotype_lang_rs_tree::{RSDefinition, RSReference};
+use genotype_lang_rs_tree::*;
 use genotype_parser::GTSpan;
 use miette::Result;
 

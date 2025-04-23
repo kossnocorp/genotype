@@ -1,4 +1,4 @@
-use crate::identifier::TSIdentifier;
+use crate::prelude::internal::*;
 
 mod render;
 

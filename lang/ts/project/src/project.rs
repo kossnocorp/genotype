@@ -86,7 +86,10 @@ impl GTLangProject<TSProjectConfig> for TSProject {
             .iter()
             .map(|module| GTLangProjectSource {
                 path: module.path.clone(),
-                code: module.module.render(Default::default(), &mut Default::default()).unwrap(),
+                code: module
+                    .module
+                    .render(Default::default(), &mut Default::default())
+                    .unwrap(),
             })
             .collect::<Vec<_>>();
 

@@ -12,7 +12,7 @@ pub trait RSVisitor {
 
     fn visit_definition(&mut self, _definition: &mut RSDefinition) {}
 
-    fn visit_dependency(&mut self, _dependency: &mut RSDependency) {}
+    fn visit_dependency(&mut self, _dependency: &mut RSDependencyIdent) {}
 
     fn visit_descriptor(&mut self, _descriptor: &mut RSDescriptor) {}
 

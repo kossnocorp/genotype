@@ -1,61 +1,91 @@
-pub mod alias;
-pub mod any;
-pub mod attribute;
-pub mod context;
-pub mod definition;
-pub mod dependency;
-pub mod descriptor;
-pub mod doc;
-pub mod r#enum;
-pub mod enum_variant;
-pub mod enum_variant_descriptor;
-pub mod error;
-pub mod field;
-pub mod field_name;
-pub mod identifier;
-pub mod inline_use;
-pub mod map;
-pub mod module;
-pub mod option;
-pub mod path;
-pub mod primitive;
-pub mod reference;
-pub mod render;
-pub mod r#struct;
-pub mod struct_fields;
-pub mod tuple;
-pub mod r#use;
-pub mod use_name;
-pub mod use_reference;
-pub mod vec;
-
+mod alias;
 pub use alias::*;
+
+mod any;
 pub use any::*;
+
+mod attribute;
 pub use attribute::*;
+
+mod context;
 pub use context::*;
+
+mod definition;
 pub use definition::*;
+
+mod dependency;
 pub use dependency::*;
+
+mod descriptor;
 pub use descriptor::*;
+
+mod doc;
 pub use doc::*;
-pub use enum_variant::*;
-pub use enum_variant_descriptor::*;
-pub use error::*;
-pub use field::*;
-pub use field_name::*;
-pub use identifier::*;
-pub use inline_use::*;
-pub use map::*;
-pub use module::*;
-pub use option::*;
-pub use path::*;
-pub use primitive::*;
+
+mod r#enum;
 pub use r#enum::*;
-pub use r#struct::*;
-pub use r#use::*;
+
+mod enum_variant;
+pub use enum_variant::*;
+
+mod enum_variant_descriptor;
+pub use enum_variant_descriptor::*;
+
+mod error;
+pub use error::*;
+
+mod field;
+pub use field::*;
+
+mod field_name;
+pub use field_name::*;
+
+mod identifier;
+pub use identifier::*;
+
+mod inline_use;
+pub use inline_use::*;
+
+mod map;
+pub use map::*;
+
+mod module;
+pub use module::*;
+
+mod option;
+pub use option::*;
+
+mod path;
+pub use path::*;
+
+mod prelude;
+
+mod primitive;
+pub use primitive::*;
+
+mod reference;
 pub use reference::*;
+
+mod render;
 pub use render::*;
+
+mod r#struct;
+pub use r#struct::*;
+
+mod struct_fields;
 pub use struct_fields::*;
+
+mod tuple;
 pub use tuple::*;
+
+mod r#use;
+pub use r#use::*;
+
+mod use_name;
 pub use use_name::*;
+
+mod use_reference;
 pub use use_reference::*;
+
+mod vec;
 pub use vec::*;

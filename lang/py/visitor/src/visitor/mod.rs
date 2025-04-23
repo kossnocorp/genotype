@@ -12,7 +12,7 @@ pub trait PYVisitor {
 
     fn visit_definition(&mut self, _definition: &mut PYDefinition) {}
 
-    fn visit_dependency(&mut self, _dependency: &mut PYDependency) {}
+    fn visit_dependency(&mut self, _dependency: &mut PYDependencyIdent) {}
 
     fn visit_descriptor(&mut self, _descriptor: &mut PYDescriptor) {}
 

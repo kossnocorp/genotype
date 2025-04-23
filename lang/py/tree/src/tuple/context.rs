@@ -1,16 +1,12 @@
-use genotype_lang_py_config::PYVersion;
-
-use crate::*;
-
-use super::PYTuple;
+use crate::prelude::internal::*;
 
 impl PYContextResolve for PYTuple {
     fn resolve<Context>(self, context: &mut Context) -> Self
     where
-        Context: PYContext,
+        Context: PYConvertContextConstraint,
     {
         if context.is_version(PYVersion::Legacy) {
-            context.import(PYDependency::Typing, "Tuple".into());
+            context.add_import(PYDependencyIdent::Typing, "Tuple".into());
         }
         self
     }
@@ -18,14 +14,12 @@ impl PYContextResolve for PYTuple {
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
-    use genotype_lang_py_config::PYVersion;
-    use mock::PYContextMock;
+    use super::*;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_resolve() {
-        let mut context = PYContextMock::default();
+        let mut context = PYConvertContextMock::default();
         let tuple = PYTuple {
             descriptors: vec![PYPrimitive::String.into()],
         };
@@ -35,14 +29,14 @@ mod tests {
 
     #[test]
     fn test_resolve_legacy() {
-        let mut context = PYContextMock::new(PYVersion::Legacy);
+        let mut context = PYConvertContextMock::new(PYVersion::Legacy);
         let tuple = PYTuple {
             descriptors: vec![PYPrimitive::String.into()],
         };
         tuple.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
-            vec![(PYDependency::Typing, "Tuple".into())],
+            vec![(PYDependencyIdent::Typing, "Tuple".into())],
         );
     }
 }

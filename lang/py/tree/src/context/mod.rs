@@ -1,12 +1,16 @@
-use genotype_lang_py_config::PYVersion;
-
-use crate::{PYDependency, PYIdentifier};
+use crate::prelude::internal::*;
 
 #[cfg(test)]
-pub mod mock;
+mod mock;
+#[cfg(test)]
+pub use mock::*;
 
-pub trait PYContext {
-    fn import(&mut self, dependency: PYDependency, name: PYIdentifier);
-
+pub trait PYConvertContextMockable {
     fn is_version(&self, version: PYVersion) -> bool;
+}
+
+pub trait PYConvertContextConstraint:
+    PYConvertContextMockable
+    + GtlConvertContext<DependencyIdent = PYDependencyIdent, DependencyRef = PYIdentifier>
+{
 }

@@ -1,7 +1,4 @@
-use genotype_lang_py_tree::*;
-use genotype_parser::tree::descriptor::GTDescriptor;
-
-use crate::{context::PYConvertContext, convert::PYConvert};
+use crate::prelude::internal::*;
 
 impl PYConvert<PYDescriptor> for GTDescriptor {
     fn convert(&self, context: &mut PYConvertContext) -> PYDescriptor {
@@ -45,11 +42,8 @@ impl PYConvert<PYDescriptor> for GTDescriptor {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_py_tree::*;
-    use genotype_parser::tree::*;
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_alias() {
@@ -106,7 +100,10 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![(PYDependency::Local(".path.to.module".into()), "Name".into()),]
+            vec![(
+                PYDependencyIdent::Local(".path.to.module".into()),
+                "Name".into()
+            ),]
         );
     }
 

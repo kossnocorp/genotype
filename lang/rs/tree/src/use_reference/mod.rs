@@ -1,4 +1,4 @@
-use crate::use_name::RSUseName;
+use crate::prelude::internal::*;
 
 mod render;
 

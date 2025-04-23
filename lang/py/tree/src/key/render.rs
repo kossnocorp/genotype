@@ -1,13 +1,15 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for PYKey {
     type RenderState = PYRenderState;
 
     type RenderContext = PYRenderContext<'a>;
 
-    fn render(&self, _state: Self::RenderState, _context: &mut Self::RenderContext) -> Result<String> {
+    fn render(
+        &self,
+        _state: Self::RenderState,
+        _context: &mut Self::RenderContext,
+    ) -> Result<String> {
         Ok(self.0.clone())
     }
 }
@@ -15,11 +17,14 @@ impl<'a> GtlRender<'a> for PYKey {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render() {
         assert_eq!(
-            PYKey("foo".into()).render(Default::default(), &mut Default::default()).unwrap(),
+            PYKey("foo".into())
+                .render(Default::default(), &mut Default::default())
+                .unwrap(),
             "foo"
         );
     }

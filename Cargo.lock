@@ -610,6 +610,7 @@ dependencies = [
 name = "genotype_lang_py_converter"
 version = "0.10.0"
 dependencies = [
+ "genotype_lang_core_tree",
  "genotype_lang_py_config",
  "genotype_lang_py_tree",
  "genotype_lang_py_visitor",
@@ -618,6 +619,7 @@ dependencies = [
  "indexmap",
  "miette",
  "pretty_assertions",
+ "thiserror 1.0.64",
 ]
 
 [[package]]
@@ -643,6 +645,7 @@ version = "0.10.0"
 dependencies = [
  "genotype_lang_core_tree",
  "genotype_lang_py_config",
+ "genotype_parser",
  "miette",
  "pretty_assertions",
 ]
@@ -681,6 +684,7 @@ dependencies = [
 name = "genotype_lang_rs_converter"
 version = "0.10.0"
 dependencies = [
+ "genotype_lang_core_tree",
  "genotype_lang_rs_config",
  "genotype_lang_rs_tree",
  "genotype_parser",
@@ -762,10 +766,12 @@ dependencies = [
 name = "genotype_lang_ts_converter"
 version = "0.10.0"
 dependencies = [
+ "genotype_lang_core_tree",
  "genotype_lang_ts_tree",
  "genotype_parser",
  "miette",
  "pretty_assertions",
+ "thiserror 1.0.64",
 ]
 
 [[package]]

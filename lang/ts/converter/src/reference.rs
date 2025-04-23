@@ -1,7 +1,4 @@
-use genotype_lang_ts_tree::reference::TSReference;
-use genotype_parser::tree::reference::GTReference;
-
-use crate::{context::TSConvertContext, convert::TSConvert};
+use crate::prelude::internal::*;
 
 impl TSConvert<TSReference> for GTReference {
     fn convert(&self, context: &mut TSConvertContext) -> TSReference {
@@ -11,11 +8,8 @@ impl TSConvert<TSReference> for GTReference {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::*;
-    use genotype_parser::{GTDefinitionId, GTIdentifier, GTReferenceDefinitionId, GTReferenceId};
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

@@ -1,9 +1,5 @@
-use genotype_lang_rs_tree::field_name::RSFieldName;
-use genotype_parser::tree::key::GTKey;
+use crate::prelude::internal::*;
 use heck::ToSnakeCase;
-use miette::Result;
-
-use crate::{context::RSConvertContext, convert::RSConvert};
 
 impl RSConvert<RSFieldName> for GTKey {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSFieldName> {
@@ -23,12 +19,8 @@ impl RSConvert<RSFieldName> for GTKey {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_rs_tree::RSAttribute;
-    use pretty_assertions::assert_eq;
-
-    use crate::context::RSConvertContext;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

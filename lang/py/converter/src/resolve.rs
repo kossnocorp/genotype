@@ -1,6 +1,5 @@
+use crate::prelude::internal::*;
 use std::collections::{HashMap, HashSet};
-
-use genotype_parser::tree::{GTIdentifier, GTPath};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct PYConvertResolve {

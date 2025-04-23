@@ -1,7 +1,4 @@
-use genotype_lang_ts_tree::doc::TSDoc;
-use genotype_parser::tree::doc::GTDoc;
-
-use crate::{context::TSConvertContext, convert::TSConvert};
+use crate::prelude::internal::*;
 
 impl TSConvert<TSDoc> for GTDoc {
     fn convert(&self, _context: &mut TSConvertContext) -> TSDoc {
@@ -11,9 +8,8 @@ impl TSConvert<TSDoc> for GTDoc {
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

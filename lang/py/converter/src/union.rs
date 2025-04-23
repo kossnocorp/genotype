@@ -1,7 +1,4 @@
-use genotype_lang_py_tree::{union::PYUnion, PYContextResolve};
-use genotype_parser::tree::union::GTUnion;
-
-use crate::{context::PYConvertContext, convert::PYConvert};
+use crate::prelude::internal::*;
 
 impl PYConvert<PYUnion> for GTUnion {
     fn convert(&self, context: &mut PYConvertContext) -> PYUnion {
@@ -19,14 +16,8 @@ impl PYConvert<PYUnion> for GTUnion {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_py_config::{PYLangConfig, PYVersion};
-    use genotype_lang_py_tree::*;
-    use genotype_parser::tree::*;
-    use pretty_assertions::assert_eq;
-
-    use crate::{context::PYConvertContext, resolve::PYConvertResolve};
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {
@@ -69,7 +60,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![(PYDependency::Typing, "Union".into())]
+            vec![(PYDependencyIdent::Typing, "Union".into())]
         );
     }
 }

@@ -1,4 +1,4 @@
-use crate::property::TSProperty;
+use crate::prelude::internal::*;
 
 mod render;
 

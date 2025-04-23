@@ -1,8 +1,4 @@
-use genotype_lang_rs_tree::use_name::RSUseName;
-use genotype_parser::tree::import_name::GTImportName;
-use miette::Result;
-
-use crate::{context::RSConvertContext, convert::RSConvert};
+use crate::prelude::internal::*;
 
 impl RSConvert<RSUseName> for GTImportName {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSUseName> {
@@ -20,13 +16,8 @@ impl RSConvert<RSUseName> for GTImportName {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_rs_tree::use_name::RSUseName;
-    use pretty_assertions::assert_eq;
-
-    use crate::context::RSConvertContext;
-
     use super::*;
-    use genotype_parser::{tree::import_name::GTImportName, GTIdentifier};
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_name() {

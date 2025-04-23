@@ -5,7 +5,7 @@ use genotype_lang_core_project::{
 };
 use genotype_lang_core_tree::*;
 use genotype_lang_py_config::PYProjectConfig;
-use genotype_lang_py_tree::PYRenderContext;
+use genotype_lang_py_tree::*;
 use genotype_project::project::GTProject;
 use miette::Result;
 use std::{collections::HashSet, path::PathBuf};
@@ -180,11 +180,10 @@ mod tests {
                     module: PYModule {
                         doc: None,
                         imports: vec![PYImport {
-                            path: "genotype".into(),
                             reference: PYImportReference::Named(vec![PYImportName::Name(
                                 "Model".into()
                             )]),
-                            dependency: PYDependency::Runtime,
+                            dependency: PYDependencyIdent::Runtime,
                         }],
                         definitions: vec![PYDefinition::Class(PYClass {
                             doc: None,
@@ -207,18 +206,16 @@ mod tests {
                         doc: None,
                         imports: vec![
                             PYImport {
-                                path: ".author".into(),
                                 reference: PYImportReference::Named(vec![PYImportName::Name(
                                     "Author".into()
                                 )]),
-                                dependency: PYDependency::Local(".author".into()),
+                                dependency: PYDependencyIdent::Local(".author".into()),
                             },
                             PYImport {
-                                path: "genotype".into(),
                                 reference: PYImportReference::Named(vec![PYImportName::Name(
                                     "Model".into()
                                 )]),
-                                dependency: PYDependency::Runtime,
+                                dependency: PYDependencyIdent::Runtime,
                             }
                         ],
                         definitions: vec![PYDefinition::Class(PYClass {
@@ -262,11 +259,10 @@ mod tests {
                     module: PYModule {
                         doc: None,
                         imports: vec![PYImport {
-                            path: "genotype".into(),
                             reference: PYImportReference::Named(vec![PYImportName::Name(
                                 "Model".into()
                             )]),
-                            dependency: PYDependency::Runtime,
+                            dependency: PYDependencyIdent::Runtime,
                         }],
                         definitions: vec![
                             PYDefinition::Alias(PYAlias {
@@ -297,16 +293,14 @@ mod tests {
                         doc: None,
                         imports: vec![
                             PYImport {
-                                path: ".author".into(),
                                 reference: PYImportReference::Default(Some("author".into())),
-                                dependency: PYDependency::Local(".author".into()),
+                                dependency: PYDependencyIdent::Local(".author".into()),
                             },
                             PYImport {
-                                path: "genotype".into(),
                                 reference: PYImportReference::Named(vec![PYImportName::Name(
                                     "Model".into()
                                 )]),
-                                dependency: PYDependency::Runtime,
+                                dependency: PYDependencyIdent::Runtime,
                             }
                         ],
                         definitions: vec![PYDefinition::Class(PYClass {

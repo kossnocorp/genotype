@@ -1,12 +1,8 @@
-use genotype_lang_rs_tree::{RSAttribute, RSContext, RSDependency, RSStruct};
-use genotype_parser::tree::GTLiteral;
-use miette::Result;
-
-use crate::{context::RSConvertContext, convert::RSConvert};
+use crate::prelude::internal::*;
 
 impl RSConvert<RSStruct> for GTLiteral {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSStruct> {
-        context.import(RSDependency::Literals, "literal".into());
+        context.add_import(RSDependencyIdent::Literals, "literal".into());
 
         let doc = context.consume_doc();
         let name = if let Some(name) = context.claim_alias() {
@@ -42,13 +38,8 @@ fn render_literal(literal: &GTLiteral) -> String {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_rs_tree::*;
-    use genotype_parser::GTDefinitionId;
-    use pretty_assertions::assert_eq;
-
-    use crate::context::{naming::RSContextParent, RSConvertContext};
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {
@@ -120,7 +111,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![(RSDependency::Literals, "literal".into())]
+            vec![(RSDependencyIdent::Literals, "literal".into())]
         );
     }
 

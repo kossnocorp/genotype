@@ -1,7 +1,4 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use genotype_lang_py_config::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for PYTuple {
     type RenderState = PYRenderState;

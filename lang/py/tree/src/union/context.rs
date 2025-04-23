@@ -1,26 +1,22 @@
-use genotype_lang_py_config::PYVersion;
-
-use crate::*;
-
-use super::PYUnion;
+use crate::prelude::internal::*;
 
 impl PYContextResolve for PYUnion {
     fn resolve<Context>(self, context: &mut Context) -> Self
     where
-        Context: PYContext,
+        Context: PYConvertContextConstraint,
     {
         if context.is_version(PYVersion::Legacy) {
-            context.import(PYDependency::Typing, "Union".into());
+            context.add_import(PYDependencyIdent::Typing, "Union".into());
         }
 
         if self.discriminator.is_some() {
             if context.is_version(PYVersion::Legacy) {
-                context.import(PYDependency::TypingExtensions, "Annotated".into());
+                context.add_import(PYDependencyIdent::TypingExtensions, "Annotated".into());
             } else {
-                context.import(PYDependency::Typing, "Annotated".into());
+                context.add_import(PYDependencyIdent::Typing, "Annotated".into());
             }
 
-            context.import(PYDependency::Pydantic, "Field".into());
+            context.add_import(PYDependencyIdent::Pydantic, "Field".into());
         }
 
         self
@@ -29,14 +25,12 @@ impl PYContextResolve for PYUnion {
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
-    use genotype_lang_py_config::PYVersion;
-    use mock::PYContextMock;
+    use super::*;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_resolve() {
-        let mut context = PYContextMock::default();
+        let mut context = PYConvertContextMock::default();
         let union = PYUnion {
             descriptors: vec![PYPrimitive::String.into()],
             discriminator: None,
@@ -47,7 +41,7 @@ mod tests {
 
     #[test]
     fn test_resolve_legacy() {
-        let mut context = PYContextMock::new(PYVersion::Legacy);
+        let mut context = PYConvertContextMock::new(PYVersion::Legacy);
         let union = PYUnion {
             descriptors: vec![PYPrimitive::String.into()],
             discriminator: None,
@@ -55,13 +49,13 @@ mod tests {
         union.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
-            vec![(PYDependency::Typing, "Union".into())]
+            vec![(PYDependencyIdent::Typing, "Union".into())]
         );
     }
 
     #[test]
     fn test_resolve_discriminator() {
-        let mut context = PYContextMock::default();
+        let mut context = PYConvertContextMock::default();
         let union = PYUnion {
             descriptors: vec![PYPrimitive::String.into()],
             discriminator: Some("type".into()),
@@ -70,15 +64,15 @@ mod tests {
         assert_eq!(
             context.as_imports(),
             vec![
-                (PYDependency::Typing, "Annotated".into()),
-                (PYDependency::Pydantic, "Field".into())
+                (PYDependencyIdent::Typing, "Annotated".into()),
+                (PYDependencyIdent::Pydantic, "Field".into())
             ]
         );
     }
 
     #[test]
     fn test_resolve_discriminator_legacy() {
-        let mut context = PYContextMock::new(PYVersion::Legacy);
+        let mut context = PYConvertContextMock::new(PYVersion::Legacy);
         let union = PYUnion {
             descriptors: vec![PYPrimitive::String.into()],
             discriminator: Some("type".into()),
@@ -87,9 +81,9 @@ mod tests {
         assert_eq!(
             context.as_imports(),
             vec![
-                (PYDependency::Typing, "Union".into()),
-                (PYDependency::TypingExtensions, "Annotated".into()),
-                (PYDependency::Pydantic, "Field".into())
+                (PYDependencyIdent::Typing, "Union".into()),
+                (PYDependencyIdent::TypingExtensions, "Annotated".into()),
+                (PYDependencyIdent::Pydantic, "Field".into())
             ]
         );
     }

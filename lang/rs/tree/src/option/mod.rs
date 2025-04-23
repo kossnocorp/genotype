@@ -1,4 +1,4 @@
-use crate::descriptor::RSDescriptor;
+use crate::prelude::internal::*;
 
 mod render;
 

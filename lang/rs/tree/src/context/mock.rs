@@ -1,32 +1,38 @@
-use crate::{RSDependency, RSIdentifier};
+use crate::prelude::internal::*;
 
-use super::RSContext;
-
-pub struct RSContextMock {
-    imports: Vec<(RSDependency, RSIdentifier)>,
+pub struct RSConvertContextMock {
+    imports: Vec<(RSDependencyIdent, RSIdentifier)>,
 }
 
-impl RSContextMock {
-    pub fn with_imports(mut self, imports: Vec<(RSDependency, RSIdentifier)>) -> Self {
+impl RSConvertContextMock {
+    pub fn with_imports(mut self, imports: Vec<(RSDependencyIdent, RSIdentifier)>) -> Self {
         self.imports = imports;
         self
     }
 
-    pub fn as_imports(&self) -> &[(RSDependency, RSIdentifier)] {
+    pub fn as_imports(&self) -> &[(RSDependencyIdent, RSIdentifier)] {
         &self.imports
     }
 }
 
-impl Default for RSContextMock {
+impl RSConvertContextMockable for RSConvertContextMock {}
+
+impl GtlConvertContext for RSConvertContextMock {
+    type DependencyIdent = RSDependencyIdent;
+
+    type DependencyRef = RSIdentifier;
+
+    fn add_import(self: &mut Self, ident: Self::DependencyIdent, r#ref: Self::DependencyRef) {
+        self.imports.push((ident, r#ref));
+    }
+}
+
+impl RSConvertContextConstraint for RSConvertContextMock {}
+
+impl Default for RSConvertContextMock {
     fn default() -> Self {
         Self {
             imports: Vec::new(),
         }
-    }
-}
-
-impl RSContext for RSContextMock {
-    fn import(&mut self, path: RSDependency, name: RSIdentifier) {
-        self.imports.push((path, name));
     }
 }

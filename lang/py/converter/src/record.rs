@@ -1,7 +1,4 @@
-use genotype_lang_py_tree::{PYContextResolve, PYDict};
-use genotype_parser::GTRecord;
-
-use crate::{context::PYConvertContext, convert::PYConvert};
+use crate::prelude::internal::*;
 
 impl PYConvert<PYDict> for GTRecord {
     fn convert(&self, context: &mut PYConvertContext) -> PYDict {
@@ -15,11 +12,8 @@ impl PYConvert<PYDict> for GTRecord {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_py_tree::*;
-    use genotype_parser::tree::*;
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

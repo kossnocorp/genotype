@@ -1,7 +1,4 @@
-use genotype_lang_py_tree::{PYAny, PYContextResolve};
-use genotype_parser::GTAny;
-
-use crate::{context::PYConvertContext, convert::PYConvert};
+use crate::prelude::internal::*;
 
 impl PYConvert<PYAny> for GTAny {
     fn convert(&self, resolve: &mut PYConvertContext) -> PYAny {
@@ -11,11 +8,8 @@ impl PYConvert<PYAny> for GTAny {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_py_tree::PYDependency;
-    use pretty_assertions::assert_eq;
-
     use super::*;
-    use genotype_parser::GTAny;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {
@@ -31,7 +25,7 @@ mod tests {
         assert_eq!(GTAny((0, 0).into(),).convert(&mut context), PYAny);
         assert_eq!(
             context.as_dependencies(),
-            vec![(PYDependency::Typing, "Any".into())]
+            vec![(PYDependencyIdent::Typing, "Any".into())]
         );
     }
 }

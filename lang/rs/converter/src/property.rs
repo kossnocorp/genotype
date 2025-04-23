@@ -1,11 +1,4 @@
-use genotype_lang_rs_tree::{field::RSField, RSOption};
-use genotype_parser::tree::property::GTProperty;
-use miette::Result;
-
-use crate::{
-    context::{naming::RSContextParent, RSConvertContext},
-    convert::RSConvert,
-};
+use crate::prelude::internal::*;
 
 impl RSConvert<RSField> for GTProperty {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSField> {
@@ -43,11 +36,8 @@ impl RSConvert<RSField> for GTProperty {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_rs_tree::*;
-    use pretty_assertions::assert_eq;
-
     use super::*;
-    use genotype_parser::tree::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

@@ -1,26 +1,23 @@
-use crate::{PYContext, PYContextResolve, PYDependency};
-
-use super::PYClass;
+use crate::prelude::internal::*;
 
 impl PYContextResolve for PYClass {
     fn resolve<Context>(self, context: &mut Context) -> Self
     where
-        Context: PYContext,
+        Context: PYConvertContextConstraint,
     {
-        context.import(PYDependency::Runtime, "Model".into());
+        context.add_import(PYDependencyIdent::Runtime, "Model".into());
         self
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
-    use mock::PYContextMock;
+    use super::*;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_resolve() {
-        let mut context = PYContextMock::default();
+        let mut context = PYConvertContextMock::default();
         let alias = PYClass {
             doc: None,
             name: "Foo".into(),
@@ -31,7 +28,7 @@ mod tests {
         alias.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
-            vec![(PYDependency::Runtime, "Model".into())]
+            vec![(PYDependencyIdent::Runtime, "Model".into())]
         );
     }
 }

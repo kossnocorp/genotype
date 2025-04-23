@@ -1,8 +1,4 @@
-use genotype_lang_rs_tree::{RSDescriptor, RSPrimitive};
-use genotype_parser::GTRecordKey;
-use miette::Result;
-
-use crate::{context::RSConvertContext, convert::RSConvert};
+use crate::prelude::internal::*;
 
 impl RSConvert<RSDescriptor> for GTRecordKey {
     fn convert(&self, _context: &mut RSConvertContext) -> Result<RSDescriptor> {
@@ -30,11 +26,8 @@ impl RSConvert<RSDescriptor> for GTRecordKey {
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
-    use crate::context::RSConvertContext;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

@@ -1,7 +1,4 @@
-use genotype_lang_ts_tree::tuple::TSTuple;
-use genotype_parser::tree::tuple::GTTuple;
-
-use crate::{context::TSConvertContext, convert::TSConvert};
+use crate::prelude::internal::*;
 
 impl TSConvert<TSTuple> for GTTuple {
     fn convert(&self, context: &mut TSConvertContext) -> TSTuple {
@@ -17,11 +14,8 @@ impl TSConvert<TSTuple> for GTTuple {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::*;
-    use genotype_parser::tree::*;
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

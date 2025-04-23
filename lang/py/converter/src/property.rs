@@ -1,7 +1,4 @@
-use genotype_lang_py_tree::{property::PYProperty, PYContextResolve};
-use genotype_parser::tree::property::GTProperty;
-
-use crate::{context::PYConvertContext, convert::PYConvert};
+use crate::prelude::internal::*;
 
 impl PYConvert<PYProperty> for GTProperty {
     fn convert(&self, context: &mut PYConvertContext) -> PYProperty {
@@ -17,12 +14,8 @@ impl PYConvert<PYProperty> for GTProperty {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_py_config::{PYLangConfig, PYVersion};
-    use genotype_lang_py_tree::*;
-    use pretty_assertions::assert_eq;
-
     use super::*;
-    use genotype_parser::tree::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {
@@ -71,7 +64,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![(PYDependency::Typing, "Optional".into())]
+            vec![(PYDependencyIdent::Typing, "Optional".into())]
         );
     }
 }

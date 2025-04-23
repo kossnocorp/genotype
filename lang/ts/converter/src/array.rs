@@ -1,7 +1,4 @@
-use genotype_lang_ts_tree::array::TSArray;
-use genotype_parser::tree::array::GTArray;
-
-use crate::{context::TSConvertContext, convert::TSConvert};
+use crate::prelude::internal::*;
 
 impl TSConvert<TSArray> for GTArray {
     fn convert(&self, context: &mut TSConvertContext) -> TSArray {
@@ -13,11 +10,8 @@ impl TSConvert<TSArray> for GTArray {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::*;
-    use genotype_parser::tree::*;
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

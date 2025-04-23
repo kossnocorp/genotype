@@ -1,7 +1,4 @@
-use genotype_lang_ts_tree::union::TSUnion;
-use genotype_parser::tree::union::GTUnion;
-
-use crate::{context::TSConvertContext, convert::TSConvert};
+use crate::prelude::internal::*;
 
 impl TSConvert<TSUnion> for GTUnion {
     fn convert(&self, context: &mut TSConvertContext) -> TSUnion {
@@ -17,11 +14,8 @@ impl TSConvert<TSUnion> for GTUnion {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::*;
-    use genotype_parser::tree::*;
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

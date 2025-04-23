@@ -1,7 +1,4 @@
-use genotype_lang_ts_tree::*;
-use genotype_parser::GTAny;
-
-use crate::{context::TSConvertContext, convert::TSConvert};
+use crate::prelude::internal::*;
 
 impl TSConvert<TSAny> for GTAny {
     fn convert(&self, _context: &mut TSConvertContext) -> TSAny {
@@ -11,9 +8,8 @@ impl TSConvert<TSAny> for GTAny {
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

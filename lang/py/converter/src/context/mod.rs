@@ -1,11 +1,10 @@
-use std::collections::HashMap;
-
-use genotype_lang_py_config::{PYLangConfig, PYVersion};
-use genotype_lang_py_tree::*;
-use genotype_parser::{GTIdentifier, GTPath};
-use indexmap::IndexSet;
-
 use crate::resolve::PYConvertResolve;
+use genotype_lang_core_tree::*;
+use genotype_lang_py_config::*;
+use genotype_lang_py_tree::*;
+use genotype_parser::*;
+use indexmap::IndexSet;
+use std::collections::HashMap;
 
 mod hoisting;
 mod references;
@@ -20,22 +19,9 @@ pub struct PYConvertContext {
     hoisting: bool,
     hoist_defined: Vec<PYIdentifier>,
     hoisted: Vec<PYDefinition>,
-    dependencies: Vec<(PYDependency, PYIdentifier)>,
+    dependencies: Vec<(PYDependencyIdent, PYIdentifier)>,
     doc: Option<PYDoc>,
     references: Vec<IndexSet<PYIdentifier>>,
-}
-
-impl PYContext for PYConvertContext {
-    fn is_version(&self, version: PYVersion) -> bool {
-        self.config.version == version
-    }
-
-    fn import(&mut self, dependency: PYDependency, name: PYIdentifier) {
-        let dependency = (dependency, name);
-        if !self.dependencies.contains(&dependency) {
-            self.dependencies.push(dependency);
-        }
-    }
 }
 
 impl PYConvertContext {
@@ -99,7 +85,7 @@ impl PYConvertContext {
     }
 
     #[cfg(test)]
-    pub fn as_dependencies(&self) -> Vec<(PYDependency, PYIdentifier)> {
+    pub fn as_dependencies(&self) -> Vec<(PYDependencyIdent, PYIdentifier)> {
         self.dependencies.clone().into_iter().collect()
     }
 
@@ -138,7 +124,7 @@ impl PYConvertContext {
         for (dependency, name) in dependencies {
             let import = imports
                 .iter_mut()
-                .find(|import| import.path == dependency.as_path());
+                .find(|import| import.dependency == dependency);
 
             if let Some(import) = import {
                 if let PYImportReference::Named(names) = &mut import.reference {
@@ -147,7 +133,6 @@ impl PYConvertContext {
                 }
             }
             imports.push(PYImport {
-                path: dependency.as_path(),
                 reference: PYImportReference::Named(vec![name.into()]),
                 dependency,
             });
@@ -166,6 +151,27 @@ impl PYConvertContext {
         self.definitions.drain(..).collect()
     }
 }
+
+impl PYConvertContextMockable for PYConvertContext {
+    fn is_version(&self, version: PYVersion) -> bool {
+        self.config.version == version
+    }
+}
+
+impl GtlConvertContext for PYConvertContext {
+    type DependencyIdent = PYDependencyIdent;
+
+    type DependencyRef = PYIdentifier;
+
+    fn add_import(self: &mut Self, ident: Self::DependencyIdent, r#ref: Self::DependencyRef) {
+        let dependency = (ident, r#ref);
+        if !self.dependencies.contains(&dependency) {
+            self.dependencies.push(dependency);
+        }
+    }
+}
+
+impl PYConvertContextConstraint for PYConvertContext {}
 
 impl Default for PYConvertContext {
     fn default() -> Self {

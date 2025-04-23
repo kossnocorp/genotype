@@ -1,4 +1,4 @@
-use crate::{import_reference::TSImportReference, path::TSPath};
+use crate::prelude::internal::*;
 
 mod render;
 

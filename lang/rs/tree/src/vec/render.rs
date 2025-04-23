@@ -1,13 +1,15 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for RSVec {
     type RenderState = RSRenderState;
 
     type RenderContext = RSRenderContext<'a>;
 
-    fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext) -> Result<String> {
+    fn render(
+        &self,
+        state: Self::RenderState,
+        context: &mut Self::RenderContext,
+    ) -> Result<String> {
         let descriptor = self.descriptor.render(state, context)?;
         Ok(format!("Vec<{descriptor}>"))
     }
@@ -16,6 +18,7 @@ impl<'a> GtlRender<'a> for RSVec {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_render_array() {

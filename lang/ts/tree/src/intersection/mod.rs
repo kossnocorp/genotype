@@ -1,4 +1,4 @@
-use crate::descriptor::TSDescriptor;
+use crate::prelude::internal::*;
 
 mod render;
 

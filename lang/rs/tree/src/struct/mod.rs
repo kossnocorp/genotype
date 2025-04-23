@@ -1,5 +1,4 @@
-use crate::*;
-use genotype_parser::GTDefinitionId;
+use crate::prelude::internal::*;
 
 mod render;
 

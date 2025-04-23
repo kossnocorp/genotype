@@ -1,7 +1,4 @@
-use genotype_lang_py_tree::import_name::PYImportName;
-use genotype_parser::tree::import_name::GTImportName;
-
-use crate::{context::PYConvertContext, convert::PYConvert};
+use crate::prelude::internal::*;
 
 impl PYConvert<PYImportName> for GTImportName {
     fn convert(&self, context: &mut PYConvertContext) -> PYImportName {
@@ -17,13 +14,8 @@ impl PYConvert<PYImportName> for GTImportName {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_py_tree::import_name::PYImportName;
-    use pretty_assertions::assert_eq;
-
-    use crate::context::PYConvertContext;
-
     use super::*;
-    use genotype_parser::{tree::import_name::GTImportName, GTIdentifier};
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_name() {

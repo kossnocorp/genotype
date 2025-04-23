@@ -1,7 +1,4 @@
-use genotype_lang_ts_tree::TSExtension;
-use genotype_parser::tree::GTExtension;
-
-use crate::{context::TSConvertContext, convert::TSConvert};
+use crate::prelude::internal::*;
 
 impl TSConvert<TSExtension> for GTExtension {
     fn convert(&self, context: &mut TSConvertContext) -> TSExtension {
@@ -13,11 +10,8 @@ impl TSConvert<TSExtension> for GTExtension {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::*;
-    use genotype_parser::*;
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

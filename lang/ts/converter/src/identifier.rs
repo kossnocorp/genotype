@@ -1,7 +1,4 @@
-use genotype_lang_ts_tree::identifier::TSIdentifier;
-use genotype_parser::tree::identifier::GTIdentifier;
-
-use crate::{context::TSConvertContext, convert::TSConvert};
+use crate::prelude::internal::*;
 
 impl TSConvert<TSIdentifier> for GTIdentifier {
     fn convert(&self, context: &mut TSConvertContext) -> TSIdentifier {
@@ -11,11 +8,8 @@ impl TSConvert<TSIdentifier> for GTIdentifier {
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
-    use crate::resolve::TSConvertResolve;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_base() {

@@ -1,6 +1,4 @@
-use crate::*;
-use genotype_lang_core_tree::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
 impl<'a> GtlRender<'a> for RSAlias {
     type RenderState = RSRenderState;
@@ -27,7 +25,6 @@ impl<'a> GtlRender<'a> for RSAlias {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_parser::*;
     use pretty_assertions::assert_eq;
 
     #[test]

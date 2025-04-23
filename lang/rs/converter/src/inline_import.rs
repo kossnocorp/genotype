@@ -1,8 +1,4 @@
-use genotype_lang_rs_tree::RSInlineUse;
-use genotype_parser::tree::inline_import::GTInlineImport;
-use miette::Result;
-
-use crate::{context::RSConvertContext, convert::RSConvert};
+use crate::prelude::internal::*;
 
 impl RSConvert<RSInlineUse> for GTInlineImport {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSInlineUse> {
@@ -14,11 +10,8 @@ impl RSConvert<RSInlineUse> for GTInlineImport {
 
 #[cfg(test)]
 mod tesrs {
-    use genotype_lang_rs_tree::RSPath;
-    use genotype_parser::*;
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

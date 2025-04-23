@@ -1,4 +1,4 @@
-use crate::import_name::TSImportName;
+use crate::prelude::internal::*;
 
 mod render;
 

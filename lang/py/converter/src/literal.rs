@@ -1,7 +1,4 @@
-use genotype_lang_py_tree::{PYContextResolve, PYLiteral};
-use genotype_parser::tree::GTLiteral;
-
-use crate::{context::PYConvertContext, convert::PYConvert};
+use crate::prelude::internal::*;
 
 impl PYConvert<PYLiteral> for GTLiteral {
     fn convert(&self, context: &mut PYConvertContext) -> PYLiteral {
@@ -18,12 +15,8 @@ impl PYConvert<PYLiteral> for GTLiteral {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_py_tree::*;
-    use pretty_assertions::assert_eq;
-
-    use crate::context::PYConvertContext;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {
@@ -59,7 +52,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![(PYDependency::Typing, "Literal".into())]
+            vec![(PYDependencyIdent::Typing, "Literal".into())]
         );
     }
 }

@@ -1,4 +1,4 @@
-use genotype_lang_py_tree::import::PYImport;
+use genotype_lang_py_tree::*;
 
 use crate::visitor::PYVisitor;
 
@@ -7,7 +7,6 @@ use super::PYTraverse;
 impl PYTraverse for PYImport {
     fn traverse(&mut self, visitor: &mut dyn PYVisitor) {
         visitor.visit_import(self);
-        self.path.traverse(visitor);
         self.reference.traverse(visitor);
         self.dependency.traverse(visitor);
     }
@@ -27,9 +26,8 @@ mod tests {
         let mut visitor = PYMockVisitor::new();
         let path = PYPath("./path/to/module".into());
         let reference = PYImportReference::Glob;
-        let dependency = PYDependency::Local(path.clone());
+        let dependency = PYDependencyIdent::Local(path.clone());
         let mut import = PYImport {
-            path: path.clone(),
             reference: reference.clone(),
             dependency: dependency.clone(),
         };
@@ -38,7 +36,6 @@ mod tests {
             visitor.visited,
             vec![
                 PYMockVisited::Import(import.clone()),
-                PYMockVisited::Path(path.clone()),
                 PYMockVisited::ImportReference(reference),
                 PYMockVisited::Dependency(dependency),
                 PYMockVisited::Path(path),
@@ -51,9 +48,8 @@ mod tests {
         let mut visitor = PYMockVisitor::new();
         let path = PYPath("./path/to/module".into());
         let reference = PYImportReference::Glob;
-        let dependency = PYDependency::Local(path.clone());
+        let dependency = PYDependencyIdent::Local(path.clone());
         let mut import = PYImport {
-            path: path.clone(),
             reference: reference.clone(),
             dependency: dependency.clone(),
         };
@@ -62,7 +58,6 @@ mod tests {
             visitor.visited,
             vec![
                 PYMockVisited::Import(import.clone()),
-                PYMockVisited::Path(path.clone()),
                 PYMockVisited::ImportReference(reference.clone()),
                 PYMockVisited::Dependency(dependency.clone()),
                 PYMockVisited::Path(path.clone()),

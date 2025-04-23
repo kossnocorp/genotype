@@ -1,5 +1,5 @@
-use crate::context::PYConvertContext;
+use crate::prelude::internal::*;
 
-pub trait PYConvert<PYNode> {
-    fn convert(&self, context: &mut PYConvertContext) -> PYNode;
+pub trait PYConvert<Node> {
+    fn convert(&self, context: &mut PYConvertContext) -> Node;
 }

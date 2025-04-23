@@ -1,16 +1,17 @@
+use crate::prelude::internal::*;
 use std::collections::HashMap;
 
-use genotype_lang_rs_config::RSLangConfig;
-use genotype_lang_rs_tree::*;
-use genotype_parser::{GTDefinitionId, GTIdentifier, GTModuleId, GTPath};
-use naming::RSContextParent;
+mod attributing;
+pub use attributing::*;
 
-use crate::resolve::RSConvertResolve;
+mod hoisting;
+pub use hoisting::*;
 
-pub mod attributing;
-pub mod hoisting;
-pub mod ids;
-pub mod naming;
+mod ids;
+pub use ids::*;
+
+mod naming;
+pub use naming::*;
 
 pub struct RSConvertContext {
     resolve: RSConvertResolve,
@@ -21,7 +22,7 @@ pub struct RSConvertContext {
     hoisting: bool,
     hoist_defined: Vec<RSIdentifier>,
     hoisted: Vec<RSDefinition>,
-    dependencies: Vec<(RSDependency, RSIdentifier)>,
+    dependencies: Vec<(RSDependencyIdent, RSIdentifier)>,
     doc: Option<RSDoc>,
     parents: Vec<RSContextParent>,
     module_id: GTModuleId,
@@ -30,14 +31,7 @@ pub struct RSConvertContext {
     dependencies_config: HashMap<String, String>,
 }
 
-impl RSContext for RSConvertContext {
-    fn import(&mut self, dependency: RSDependency, name: RSIdentifier) {
-        let dependency = (dependency, name);
-        if !self.dependencies.contains(&dependency) {
-            self.dependencies.push(dependency);
-        }
-    }
-
+impl RSConvertContextMockable for RSConvertContext {
     fn render_derive(&self, mode: RSContextRenderDeriveMode) -> String {
         let mut traits = self
             .config
@@ -124,7 +118,7 @@ impl RSConvertContext {
     }
 
     #[cfg(test)]
-    pub fn as_dependencies(&self) -> Vec<(RSDependency, RSIdentifier)> {
+    pub fn as_dependencies(&self) -> Vec<(RSDependencyIdent, RSIdentifier)> {
         self.dependencies.clone().into_iter().collect()
     }
 
@@ -175,12 +169,25 @@ impl RSConvertContext {
     }
 }
 
+impl GtlConvertContext for RSConvertContext {
+    type DependencyIdent = RSDependencyIdent;
+
+    type DependencyRef = RSIdentifier;
+
+    fn add_import(self: &mut Self, ident: Self::DependencyIdent, r#ref: Self::DependencyRef) {
+        let dependency = (ident, r#ref);
+        if !self.dependencies.contains(&dependency) {
+            self.dependencies.push(dependency);
+        }
+    }
+}
+
+impl RSConvertContextConstraint for RSConvertContext {}
+
 #[cfg(test)]
 mod tests {
-    use genotype_lang_rs_tree::*;
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_hoist() {

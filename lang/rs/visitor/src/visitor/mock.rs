@@ -8,7 +8,7 @@ pub enum RSMockVisited {
     Any(RSAny),
     Attribute(RSAttribute),
     Definition(RSDefinition),
-    Dependency(RSDependency),
+    Dependency(RSDependencyIdent),
     Descriptor(RSDescriptor),
     Doc(RSDoc),
     Enum(RSEnum),
@@ -64,7 +64,7 @@ impl RSVisitor for RSMockVisitor {
             .push(RSMockVisited::Definition(definition.clone()));
     }
 
-    fn visit_dependency(&mut self, dependency: &mut RSDependency) {
+    fn visit_dependency(&mut self, dependency: &mut RSDependencyIdent) {
         self.visited
             .push(RSMockVisited::Dependency(dependency.clone()));
     }

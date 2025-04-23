@@ -1,4 +1,4 @@
-use genotype_parser::GTSpan;
+use crate::prelude::internal::*;
 use miette::Diagnostic;
 use thiserror::Error;
 

@@ -1,7 +1,4 @@
-use genotype_lang_ts_tree::TSRecord;
-use genotype_parser::GTRecord;
-
-use crate::{context::TSConvertContext, convert::TSConvert};
+use crate::prelude::internal::*;
 
 impl TSConvert<TSRecord> for GTRecord {
     fn convert(&self, context: &mut TSConvertContext) -> TSRecord {
@@ -14,11 +11,8 @@ impl TSConvert<TSRecord> for GTRecord {
 
 #[cfg(test)]
 mod tests {
-    use genotype_lang_ts_tree::*;
-    use genotype_parser::tree::*;
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {

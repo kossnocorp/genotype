@@ -1,4 +1,4 @@
-use genotype_lang_py_tree::{PYDefinition, PYIdentifier};
+use genotype_lang_py_tree::*;
 use std::collections::HashSet;
 
 use super::PYConvertModule;
