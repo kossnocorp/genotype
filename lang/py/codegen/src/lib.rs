@@ -1,6 +1,5 @@
 use genotype_lang_core_codegen::*;
 use genotype_lang_core_tree::*;
-use genotype_lang_py_converter::*;
 use genotype_lang_py_tree::*;
 use genotype_parser::*;
 use miette::Result;
@@ -48,7 +47,7 @@ where
         let mut definitions = vec![];
 
         let mut context = PYConvertContext::default();
-        let converted = alias.convert(&mut context);
+        let converted = genotype_parser::GTAlias::convert(alias, &mut context);
 
         let rendered_alias = converted.render(Default::default(), &mut Default::default())?;
         definitions.push(rendered_alias);

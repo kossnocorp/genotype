@@ -10,6 +10,9 @@ pub use class::*;
 mod context;
 pub use context::*;
 
+mod convert;
+pub use convert::*;
+
 mod definition;
 pub use definition::*;
 
@@ -83,3 +86,9 @@ pub use tuple::*;
 
 mod union;
 pub use union::*;
+
+mod visitor;
+pub use visitor::*;
+
+mod traverse;
+pub use traverse::*;
