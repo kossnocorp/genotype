@@ -5,7 +5,6 @@ members = [
   "lang/core/project",
   "lang/core/codegen",
   "lang/ts/tree",
-  "lang/ts/converter",
   "lang/ts/project",
   "lang/ts/config",
   "lang/ts/codegen",

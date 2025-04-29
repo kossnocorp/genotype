@@ -6,7 +6,6 @@ use std::{
 
 use genotype_lang_core_project::module::GTLangProjectModule;
 use genotype_lang_ts_config::TSProjectConfig;
-use genotype_lang_ts_converter::*;
 use genotype_lang_ts_tree::*;
 use genotype_parser::{tree::GTImportReference, GTIdentifier};
 use genotype_project::{module::GTProjectModule, GTPModuleIdentifierSource, GTProject};

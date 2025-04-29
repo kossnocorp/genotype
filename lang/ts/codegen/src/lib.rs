@@ -1,6 +1,5 @@
 use genotype_lang_core_codegen::*;
 use genotype_lang_core_tree::*;
-use genotype_lang_ts_converter::*;
 use genotype_lang_ts_tree::*;
 use genotype_parser::*;
 use miette::Result;

@@ -1,6 +1,4 @@
-use genotype_parser::{GTIdentifier, GTImport, GTPath};
-
-use super::TSConvertContext;
+use crate::prelude::internal::*;
 
 impl TSConvertContext {
     pub fn resolve_path(&self, path: &GTPath) -> String {

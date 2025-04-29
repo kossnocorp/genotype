@@ -699,7 +699,6 @@ version = "0.10.0"
 dependencies = [
  "genotype_lang_core_codegen",
  "genotype_lang_core_tree",
- "genotype_lang_ts_converter",
  "genotype_lang_ts_tree",
  "genotype_parser",
  "miette",
@@ -715,18 +714,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "genotype_lang_ts_converter"
-version = "0.10.0"
-dependencies = [
- "genotype_lang_core_tree",
- "genotype_lang_ts_tree",
- "genotype_parser",
- "miette",
- "pretty_assertions",
- "thiserror 1.0.64",
-]
-
-[[package]]
 name = "genotype_lang_ts_project"
 version = "0.10.0"
 dependencies = [
@@ -734,7 +721,6 @@ dependencies = [
  "genotype_lang_core_project",
  "genotype_lang_core_tree",
  "genotype_lang_ts_config",
- "genotype_lang_ts_converter",
  "genotype_lang_ts_tree",
  "genotype_parser",
  "genotype_project",
@@ -751,9 +737,11 @@ name = "genotype_lang_ts_tree"
 version = "0.10.0"
 dependencies = [
  "genotype_lang_core_tree",
+ "genotype_parser",
  "heck",
  "miette",
  "pretty_assertions",
+ "thiserror 1.0.64",
 ]
 
 [[package]]

@@ -14,7 +14,6 @@ genotype_config = { version = "0.10.0", path = "../../../config" }
 genotype_lang_core_tree = { version = "0.10.0", path = "../../core/tree" }
 genotype_lang_core_project = { version = "0.10.0", path = "../../core/project" }
 genotype_lang_ts_tree = { version = "0.10.0", path = "../tree" }
-genotype_lang_ts_converter = { version = "0.10.0", path = "../converter" }
 genotype_lang_ts_config = { version = "0.10.0", path = "../config" }
 toml = "0.8.19"
 serde = { version = "1.0.210", features = ["derive"] }

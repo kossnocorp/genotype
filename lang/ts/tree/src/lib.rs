@@ -16,6 +16,9 @@ pub use branded::*;
 mod context;
 pub use context::*;
 
+mod convert;
+pub use convert::*;
+
 mod definition;
 pub use definition::*;
 
@@ -83,6 +86,9 @@ pub use record_key::*;
 
 mod reference;
 pub use reference::*;
+
+mod resolve;
+pub use resolve::*;
 
 mod tuple;
 pub use tuple::*;

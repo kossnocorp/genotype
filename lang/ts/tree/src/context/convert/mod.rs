@@ -1,10 +1,9 @@
-use crate::resolve::TSConvertResolve;
-use genotype_lang_ts_tree::{TSDefinition, TSDoc};
+use crate::prelude::internal::*;
 use std::collections::HashMap;
 
-pub mod doc;
+mod doc;
 pub mod hoisting;
-pub mod resolve;
+mod resolve;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct TSConvertContext {

@@ -1,6 +1,4 @@
-use genotype_lang_ts_tree::{TSDefinition, TSReference};
-
-use super::TSConvertContext;
+use crate::prelude::internal::*;
 
 impl TSConvertContext {
     pub fn hoist<HoistFn, Definition>(&mut self, mut hoist_fn: HoistFn) -> TSReference
