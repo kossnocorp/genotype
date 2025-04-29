@@ -1,5 +1,6 @@
 use crate::prelude::internal::*;
 
+mod convert;
 mod render;
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, PartialOrd, Ord)]

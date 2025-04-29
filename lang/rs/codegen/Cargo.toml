@@ -10,7 +10,6 @@ repository = "https://github.com/kossnocorp/genotype"
 [dependencies]
 genotype_lang_core_codegen = { version = "0.10.0", path = "../../core/codegen" }
 genotype_lang_core_tree = { version = "0.10.0", path = "../../core/tree" }
-genotype_lang_rs_converter = { version = "0.10.0", path = "../converter" }
 genotype_lang_rs_tree = { version = "0.10.0", path = "../tree" }
 genotype_parser = { version = "0.10.0", path = "../../../parser" }
 miette = { version = "7.2.0", features = ["fancy"] }

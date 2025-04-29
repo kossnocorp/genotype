@@ -2,7 +2,6 @@ use genotype_lang_core_project::{module::GTLangProjectModule, source::GTLangProj
 use genotype_lang_core_tree::*;
 use genotype_lang_rs_config::RSProjectConfig;
 use genotype_lang_rs_tree::*;
-use genotype_lang_rs_visitor::{traverse::RSTraverse, visitor::RSVisitor};
 use genotype_parser::*;
 use genotype_project::GTProject;
 use indexmap::{IndexMap, IndexSet};

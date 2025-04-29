@@ -640,7 +640,6 @@ version = "0.10.0"
 dependencies = [
  "genotype_lang_core_codegen",
  "genotype_lang_core_tree",
- "genotype_lang_rs_converter",
  "genotype_lang_rs_tree",
  "genotype_parser",
  "miette",
@@ -654,20 +653,6 @@ dependencies = [
  "pretty_assertions",
  "serde",
  "toml",
-]
-
-[[package]]
-name = "genotype_lang_rs_converter"
-version = "0.10.0"
-dependencies = [
- "genotype_lang_core_tree",
- "genotype_lang_rs_config",
- "genotype_lang_rs_tree",
- "genotype_parser",
- "heck",
- "miette",
- "pretty_assertions",
- "thiserror 1.0.64",
 ]
 
 [[package]]
@@ -685,9 +670,7 @@ dependencies = [
  "genotype_lang_core_project",
  "genotype_lang_core_tree",
  "genotype_lang_rs_config",
- "genotype_lang_rs_converter",
  "genotype_lang_rs_tree",
- "genotype_lang_rs_visitor",
  "genotype_parser",
  "genotype_project",
  "indexmap",
@@ -704,17 +687,10 @@ dependencies = [
  "genotype_lang_rs_config",
  "genotype_lang_rs_core",
  "genotype_parser",
+ "heck",
  "miette",
  "pretty_assertions",
  "thiserror 1.0.64",
-]
-
-[[package]]
-name = "genotype_lang_rs_visitor"
-version = "0.10.0"
-dependencies = [
- "genotype_lang_rs_tree",
- "pretty_assertions",
 ]
 
 [[package]]

@@ -10,6 +10,9 @@ pub use attribute::*;
 mod context;
 pub use context::*;
 
+mod convert;
+pub use convert::*;
+
 mod definition;
 pub use definition::*;
 
@@ -69,6 +72,9 @@ pub use reference::*;
 mod render;
 pub use render::*;
 
+mod resolve;
+pub use resolve::*;
+
 mod r#struct;
 pub use r#struct::*;
 
@@ -77,6 +83,9 @@ pub use struct_fields::*;
 
 mod tuple;
 pub use tuple::*;
+
+mod traverse;
+pub use traverse::*;
 
 mod r#use;
 pub use r#use::*;
@@ -89,3 +98,6 @@ pub use use_reference::*;
 
 mod vec;
 pub use vec::*;
+
+mod visitor;
+pub use visitor::*;
