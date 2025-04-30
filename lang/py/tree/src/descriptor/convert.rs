@@ -101,7 +101,7 @@ mod tests {
         assert_eq!(
             context.as_dependencies(),
             vec![(
-                PYDependencyIdent::Local(".path.to.module".into()),
+                PYDependencyIdent::Path(".path.to.module".into()),
                 "Name".into()
             ),]
         );

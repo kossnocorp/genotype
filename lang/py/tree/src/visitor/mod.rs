@@ -24,6 +24,8 @@ pub trait PYVisitor {
 
     fn visit_doc(&mut self, _doc: &mut PYDoc) {}
 
+    fn visit_embed_definition(&mut self, _embed: &mut PYEmbedDefinition) {}
+
     fn visit_extension(&mut self, _extension: &mut PYExtension) {}
 
     fn visit_identifier(&mut self, _identifier: &mut PYIdentifier) {}

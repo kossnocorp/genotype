@@ -11,6 +11,7 @@ pub enum PYMockVisited {
     Dict(PYDict),
     DictKey(PYDictKey),
     Doc(PYDoc),
+    EmbedDefinition(PYEmbedDefinition),
     Extension(PYExtension),
     Identifier(PYIdentifier),
     Import(PYImport),
@@ -78,6 +79,11 @@ impl PYVisitor for PYMockVisitor {
 
     fn visit_doc(&mut self, doc: &mut PYDoc) {
         self.visited.push(PYMockVisited::Doc(doc.clone()));
+    }
+
+    fn visit_embed_definition(&mut self, embed: &mut PYEmbedDefinition) {
+        self.visited
+            .push(PYMockVisited::EmbedDefinition(embed.clone()));
     }
 
     fn visit_extension(&mut self, extension: &mut PYExtension) {

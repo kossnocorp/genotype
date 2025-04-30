@@ -31,6 +31,9 @@ pub use dict_key::*;
 mod doc;
 pub use doc::*;
 
+mod embed_definition;
+pub use embed_definition::*;
+
 mod extension;
 pub use extension::*;
 

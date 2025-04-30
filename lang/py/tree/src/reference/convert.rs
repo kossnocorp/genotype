@@ -12,7 +12,7 @@ impl PYConvert<PYReference> for GTInlineImport {
     fn convert(&self, context: &mut PYConvertContext) -> PYReference {
         let name = self.name.convert(context);
         let path = self.path.convert(context);
-        context.add_import(PYDependencyIdent::Local(path), name.clone());
+        context.add_import(PYDependencyIdent::Path(path), name.clone());
         PYReference::new(name, false)
     }
 }
@@ -74,7 +74,7 @@ mod tests {
         assert_eq!(
             context.as_dependencies(),
             vec![(
-                PYDependencyIdent::Local(".path.to.module".into()),
+                PYDependencyIdent::Path(".path.to.module".into()),
                 "Name".into()
             )]
         );

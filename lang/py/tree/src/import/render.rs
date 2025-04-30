@@ -39,7 +39,7 @@ mod tests {
         assert_eq!(
             PYImport {
                 reference: PYImportReference::Default(Some("name".into())),
-                dependency: PYDependencyIdent::Local(".path.to.module".into())
+                dependency: PYDependencyIdent::Path(".path.to.module".into())
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -48,7 +48,7 @@ mod tests {
         assert_eq!(
             PYImport {
                 reference: PYImportReference::Default(None),
-                dependency: PYDependencyIdent::Local(".path.to.module".into())
+                dependency: PYDependencyIdent::Path(".path.to.module".into())
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -61,7 +61,7 @@ mod tests {
         assert_eq!(
             PYImport {
                 reference: PYImportReference::Glob,
-                dependency: PYDependencyIdent::Local(".path.to.module".into())
+                dependency: PYDependencyIdent::Path(".path.to.module".into())
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -77,7 +77,7 @@ mod tests {
                     PYImportName::Name("Name".into()),
                     PYImportName::Alias("Name".into(), "Alias".into()),
                 ]),
-                dependency: PYDependencyIdent::Local(".path.to.module".into())
+                dependency: PYDependencyIdent::Path(".path.to.module".into())
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),

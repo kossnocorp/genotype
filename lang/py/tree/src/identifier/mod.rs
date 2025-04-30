@@ -13,3 +13,9 @@ impl From<&str> for PYIdentifier {
         PYIdentifier(str.into())
     }
 }
+
+impl From<String> for PYIdentifier {
+    fn from(str: String) -> Self {
+        PYIdentifier(str)
+    }
+}

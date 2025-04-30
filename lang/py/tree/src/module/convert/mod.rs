@@ -215,14 +215,14 @@ mod tests {
                 imports: vec![
                     PYImport {
                         reference: PYImportReference::Default(Some("module".into())),
-                        dependency: PYDependencyIdent::Local(".path.to.module".into()),
+                        dependency: PYDependencyIdent::Path(".path.to.module".into()),
                     },
                     PYImport {
                         reference: PYImportReference::Named(vec![
                             PYImportName::Name("Name".into()),
                             PYImportName::Alias("Name".into(), "Alias".into())
                         ]),
-                        dependency: PYDependencyIdent::Local(".path.to.module".into()),
+                        dependency: PYDependencyIdent::Path(".path.to.module".into()),
                     },
                     PYImport {
                         reference: PYImportReference::Named(vec![PYImportName::Name(

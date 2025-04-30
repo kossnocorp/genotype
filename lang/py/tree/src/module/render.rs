@@ -67,14 +67,14 @@ mod tests {
                 imports: vec![
                     PYImport {
                         reference: PYImportReference::Default(Some("name".into())),
-                        dependency: PYDependencyIdent::Local(".path.to.module".into())
+                        dependency: PYDependencyIdent::Path(".path.to.module".into())
                     },
                     PYImport {
                         reference: PYImportReference::Named(vec![
                             PYImportName::Name("Name".into()),
                             PYImportName::Alias("Name".into(), "Alias".into()),
                         ]),
-                        dependency: PYDependencyIdent::Local(".path.to.module".into())
+                        dependency: PYDependencyIdent::Path(".path.to.module".into())
                     }
                 ],
                 definitions: vec![
@@ -129,7 +129,7 @@ class Name(Model):
                 doc: Some(PYDoc("Hello, world!".into())),
                 imports: vec![PYImport {
                     reference: PYImportReference::Default(Some("name".into())),
-                    dependency: PYDependencyIdent::Local(".path.to.module".into())
+                    dependency: PYDependencyIdent::Path(".path.to.module".into())
                 },],
                 definitions: vec![PYDefinition::Alias(PYAlias {
                     doc: None,

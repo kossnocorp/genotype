@@ -8,3 +8,9 @@ pub enum TSImportName {
     Name(TSIdentifier),
     Alias(TSIdentifier, TSIdentifier),
 }
+
+impl From<&str> for TSImportName {
+    fn from(str: &str) -> Self {
+        TSImportName::Name(str.into())
+    }
+}

@@ -24,6 +24,12 @@ impl From<&str> for TSDescriptor {
     }
 }
 
+impl From<TSAny> for TSDescriptor {
+    fn from(any: TSAny) -> Self {
+        TSDescriptor::Any(any)
+    }
+}
+
 impl From<TSIntersection> for TSDescriptor {
     fn from(intersection: TSIntersection) -> Self {
         TSDescriptor::Intersection(intersection)

@@ -19,7 +19,7 @@ mod tests {
         let mut visitor = PYMockVisitor::new();
         let path = PYPath("./path/to/module".into());
         let reference = PYImportReference::Glob;
-        let dependency = PYDependencyIdent::Local(path.clone());
+        let dependency = PYDependencyIdent::Path(path.clone());
         let mut import = PYImport {
             reference: reference.clone(),
             dependency: dependency.clone(),
@@ -41,7 +41,7 @@ mod tests {
         let mut visitor = PYMockVisitor::new();
         let path = PYPath("./path/to/module".into());
         let reference = PYImportReference::Glob;
-        let dependency = PYDependencyIdent::Local(path.clone());
+        let dependency = PYDependencyIdent::Path(path.clone());
         let mut import = PYImport {
             reference: reference.clone(),
             dependency: dependency.clone(),

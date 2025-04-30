@@ -8,3 +8,9 @@ pub enum TSImportReference {
     Glob(String),
     Named(Vec<TSImportName>),
 }
+
+impl From<&str> for TSImportReference {
+    fn from(str: &str) -> Self {
+        TSImportReference::Named(vec![str.into()])
+    }
+}

@@ -1,14 +1,21 @@
-mod import;
-pub use import::*;
+use genotype_lang_core_tree::*;
+use genotype_parser::*;
+use miette::Result;
 
-mod export;
-pub use export::*;
+pub trait GtlCodegen: Default {
+    type Import: GtlImport;
 
-mod result;
-pub use result::*;
+    type Definition: GtlDefinition;
 
-mod module;
-pub use module::*;
+    fn new() -> Self {
+        Default::default()
+    }
 
-mod r#trait;
-pub use r#trait::*;
+    fn register_import(&mut self, import: Self::Import);
+
+    fn register_definition(&mut self, definition: Self::Definition);
+
+    fn inject_descriptor(&mut self, descriptor: GTDescriptor) -> Result<String>;
+
+    fn render_module(&self) -> Result<String>;
+}

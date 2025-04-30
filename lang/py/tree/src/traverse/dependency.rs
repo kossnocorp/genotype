@@ -5,7 +5,7 @@ impl PYTraverse for PYDependencyIdent {
         visitor.visit_dependency(self);
 
         match self {
-            PYDependencyIdent::Local(path) => {
+            PYDependencyIdent::Path(path) => {
                 path.traverse(visitor);
             }
 
@@ -24,7 +24,7 @@ mod tests {
     fn test_traverse_local() {
         let mut visitor = PYMockVisitor::new();
         let path = PYPath("path".into());
-        let mut dependency = PYDependencyIdent::Local(path.clone());
+        let mut dependency = PYDependencyIdent::Path(path.clone());
         dependency.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,

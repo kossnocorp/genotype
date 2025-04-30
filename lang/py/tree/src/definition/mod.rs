@@ -7,6 +7,7 @@ pub enum PYDefinition {
     Alias(PYAlias),
     Class(PYClass),
     Newtype(PYNewtype),
+    Embed(PYEmbedDefinition),
 }
 
 impl PYDefinition {
@@ -15,6 +16,7 @@ impl PYDefinition {
             Self::Alias(alias) => &alias.name,
             Self::Class(class) => &class.name,
             Self::Newtype(newtype) => &newtype.name,
+            Self::Embed(embed) => &embed.name,
         }
     }
 
@@ -23,6 +25,7 @@ impl PYDefinition {
             Self::Alias(alias) => &alias.doc,
             Self::Class(class) => &class.doc,
             Self::Newtype(newtype) => &newtype.doc,
+            Self::Embed(_) => &None,
         }
     }
 
@@ -30,10 +33,12 @@ impl PYDefinition {
         match self {
             Self::Alias(alias) => alias.references.iter().collect(),
             Self::Class(class) => class.references.iter().collect(),
-            Self::Newtype(_) => vec![],
+            Self::Newtype(_) | Self::Embed(_) => vec![],
         }
     }
 }
+
+impl GtlDefinition for PYDefinition {}
 
 impl From<PYClass> for PYDefinition {
     fn from(class: PYClass) -> Self {
@@ -50,6 +55,12 @@ impl From<PYAlias> for PYDefinition {
 impl From<PYNewtype> for PYDefinition {
     fn from(newtype: PYNewtype) -> Self {
         PYDefinition::Newtype(newtype)
+    }
+}
+
+impl From<PYEmbedDefinition> for PYDefinition {
+    fn from(embed: PYEmbedDefinition) -> Self {
+        PYDefinition::Embed(embed)
     }
 }
 
@@ -82,6 +93,15 @@ mod tests {
             .name(),
             "Name".into(),
         );
+
+        assert_eq!(
+            *PYDefinition::Embed(PYEmbedDefinition {
+                name: "Name".into(),
+                embed: Default::default()
+            })
+            .name(),
+            "Name".into()
+        )
     }
 
     #[test]
@@ -107,6 +127,15 @@ mod tests {
             })
             .doc(),
             Some(PYDoc("Hello, world!".into())),
+        );
+
+        assert_eq!(
+            *PYDefinition::Embed(PYEmbedDefinition {
+                name: "Name".into(),
+                embed: Default::default()
+            })
+            .doc(),
+            None
         );
     }
 }

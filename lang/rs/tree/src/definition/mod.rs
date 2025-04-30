@@ -35,6 +35,8 @@ impl RSDefinition {
     }
 }
 
+impl GtlDefinition for RSDefinition {}
+
 impl From<RSStruct> for RSDefinition {
     fn from(r#struct: RSStruct) -> Self {
         RSDefinition::Struct(r#struct)

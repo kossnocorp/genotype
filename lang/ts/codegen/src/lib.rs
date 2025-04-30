@@ -4,212 +4,106 @@ use genotype_lang_ts_tree::*;
 use genotype_parser::*;
 use miette::Result;
 
-mod module;
-pub use module::*;
+pub mod prelude;
 
-pub struct TsCodegen {}
-
-impl TsCodegen {
-    fn gen_hoisted(context: &mut TSConvertContext) -> Result<String> {
-        let hoisted = context.drain_hoisted();
-
-        Ok(TSModule::join_definitions(
-            &hoisted
-                .iter()
-                .map(|definition| definition.render(Default::default(), &mut Default::default()))
-                .collect::<Result<_>>()?,
-        ))
-    }
+#[derive(Default)]
+pub struct TsCodegen {
+    module: TSModule,
+    convert_context: TSConvertContext,
 }
 
-impl<'a, RenderState, RenderContext> GtlCodegen<'a, RenderState, RenderContext> for TsCodegen
-where
-    Box<(dyn GtlRenderResolveImport<'a, RenderState, RenderContext>)>: Clone,
-{
-    fn gen_descriptor(
-        descriptor: &GTDescriptor,
-    ) -> Result<GtlCodegenResultDescriptor<'a, RenderState, RenderContext>> {
-        let mut context = TSConvertContext::default();
-        let converted = descriptor.convert(&mut context);
+impl GtlCodegen for TsCodegen {
+    type Import = TSImport;
 
-        let inline = converted.render(Default::default(), &mut Default::default())?;
-        let definitions = Self::gen_hoisted(&mut context)?;
+    type Definition = TSDefinition;
 
-        Ok(GtlCodegenResultDescriptor {
-            inline,
-            definitions,
-            // [TODO]
-            resolve: GtlRenderResolve {
-                imports: vec![],
-                exports: vec![],
-            },
-        })
+    fn register_import(&mut self, import: Self::Import) {
+        self.module.imports.push(import);
     }
 
-    fn gen_alias(alias: &GTAlias) -> Result<GtlCodegenResultAlias<'a, RenderState, RenderContext>> {
-        let mut definitions = vec![];
+    fn register_definition(&mut self, definition: Self::Definition) {
+        self.module.definitions.push(definition);
+    }
 
-        let mut context = TSConvertContext::default();
-        let converted = alias.convert(&mut context);
+    fn inject_descriptor(&mut self, descriptor: GTDescriptor) -> Result<String> {
+        let descriptor = descriptor.convert(&mut self.convert_context);
 
-        let rendered_alias = converted.render(Default::default(), &mut Default::default())?;
-        definitions.push(rendered_alias);
+        // [TODO] Drain imports when needed
 
-        let rendered_hoisted = Self::gen_hoisted(&mut context)?;
-        if !rendered_hoisted.is_empty() {
-            definitions.push(rendered_hoisted);
-        }
+        let definitions = self.convert_context.drain_hoisted();
+        self.module.definitions.extend(definitions);
 
-        let definitions = TSModule::join_definitions(&definitions);
+        descriptor.render(Default::default(), &mut Default::default())
+    }
 
-        Ok(GtlCodegenResultAlias {
-            definitions,
-            // [TODO]
-            resolve: GtlRenderResolve {
-                imports: vec![],
-                exports: vec![],
-            },
-        })
+    fn render_module(&self) -> Result<String> {
+        self.module
+            .render(Default::default(), &mut Default::default())
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_parser::{GTAlias, GTDefinitionId, GTIdentifier, GTLiteral, GTModuleId, GTUnion};
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn test_render_descriptor() {
-        let literal = GTDescriptor::Literal(GTLiteral::Boolean(Default::default(), true));
+    fn test_register_import() {
+        let mut codegen = TsCodegen::default();
+        codegen.register_import(TSImport::new("dependency".into(), "Name".into()));
+        codegen.register_import(TSImport::new("another".into(), "AlsoName".into()));
         assert_eq!(
-            TsCodegen::gen_descriptor(&literal).unwrap(),
-            GtlCodegenResultDescriptor {
-                inline: "true".into(),
-                definitions: "".into(),
-                resolve: GtlRenderResolve::<TSRenderState, TSRenderContext> {
-                    imports: vec![],
-                    exports: vec![],
-                },
-            }
+            codegen.render_module().unwrap(),
+            r#"import { Name } from "dependency";
+import { AlsoName } from "another";
+"#
         );
     }
 
     #[test]
-    fn test_render_descriptor_with_hoisted() {
+    fn test_register_definition() {
+        let mut codegen = TsCodegen::default();
+        codegen.register_definition(
+            TSAlias {
+                doc: None,
+                name: "Name".into(),
+                descriptor: TSAny.into(),
+            }
+            .into(),
+        );
+        assert_eq!(
+            codegen.render_module().unwrap(),
+            r#"export type Name = any;
+"#
+        );
+    }
+
+    #[test]
+    fn test_inject_descriptor() {
+        let mut codegen = TsCodegen::default();
+        let primitive = GTDescriptor::Primitive(GTPrimitive::String(Default::default()));
+        let result = codegen.inject_descriptor(primitive).unwrap();
+        assert_eq!(result, "string");
+        assert_eq!(codegen.render_module().unwrap(), "");
+    }
+
+    #[test]
+    fn test_inject_descriptor_with_hoisted() {
+        let mut codegen = TsCodegen::default();
         let alias = GTDescriptor::Alias(Box::new(GTAlias {
-            id: GTDefinitionId(GTModuleId("module".into()), "Hello".into()),
+            id: GTDefinitionId("module".into(), "Hello".into()),
             span: Default::default(),
             doc: None,
             attributes: vec![],
             name: GTIdentifier::new(Default::default(), "Hello".into()),
-            descriptor: GTDescriptor::Literal(GTLiteral::Boolean(Default::default(), true)),
+            descriptor: GTPrimitive::String(Default::default()).into(),
         }));
+        let result = codegen.inject_descriptor(alias).unwrap();
+        assert_eq!(result, "Hello");
         assert_eq!(
-            TsCodegen::gen_descriptor(&alias).unwrap(),
-            GtlCodegenResultDescriptor {
-                inline: "Hello".into(),
-                definitions: "export type Hello = true;".into(),
-                resolve: GtlRenderResolve::<TSRenderState, TSRenderContext> {
-                    imports: vec![],
-                    exports: vec![],
-                },
-            }
-        );
-    }
-
-    #[test]
-    fn test_render_descriptor_with_multiple_hoisted() {
-        let union = GTDescriptor::Union(GTUnion {
-            span: Default::default(),
-            descriptors: vec![
-                GTDescriptor::Alias(Box::new(GTAlias {
-                    id: GTDefinitionId(GTModuleId("module".into()), "Hello".into()),
-                    span: Default::default(),
-                    doc: None,
-                    attributes: vec![],
-                    name: GTIdentifier::new(Default::default(), "Hello".into()),
-                    descriptor: GTDescriptor::Literal(GTLiteral::Boolean(Default::default(), true)),
-                })),
-                GTDescriptor::Alias(Box::new(GTAlias {
-                    id: GTDefinitionId(GTModuleId("module".into()), "World".into()),
-                    span: Default::default(),
-                    doc: None,
-                    attributes: vec![],
-                    name: GTIdentifier::new(Default::default(), "World".into()),
-                    descriptor: GTDescriptor::Literal(GTLiteral::String(
-                        Default::default(),
-                        "world".into(),
-                    )),
-                })),
-            ],
-        });
-        assert_eq!(
-            TsCodegen::gen_descriptor(&union).unwrap(),
-            GtlCodegenResultDescriptor {
-                inline: "Hello | World".into(),
-                definitions: r#"export type Hello = true;
-
-export type World = "world";"#
-                    .into(),
-                resolve: GtlRenderResolve::<TSRenderState, TSRenderContext> {
-                    imports: vec![],
-                    exports: vec![],
-                },
-            }
-        );
-    }
-
-    #[test]
-    fn test_render_alias() {
-        let alias = GTAlias {
-            span: Default::default(),
-            id: GTDefinitionId(GTModuleId("module".into()), "Hi".into()),
-            doc: None,
-            attributes: vec![],
-            name: GTIdentifier::new(Default::default(), "Hi".into()),
-            descriptor: GTDescriptor::Union(GTUnion {
-                span: Default::default(),
-                descriptors: vec![
-                    GTDescriptor::Alias(Box::new(GTAlias {
-                        id: GTDefinitionId(GTModuleId("module".into()), "Hello".into()),
-                        span: Default::default(),
-                        doc: None,
-                        attributes: vec![],
-                        name: GTIdentifier::new(Default::default(), "Hello".into()),
-                        descriptor: GTDescriptor::Literal(GTLiteral::Boolean(
-                            Default::default(),
-                            true,
-                        )),
-                    })),
-                    GTDescriptor::Alias(Box::new(GTAlias {
-                        id: GTDefinitionId(GTModuleId("module".into()), "World".into()),
-                        span: Default::default(),
-                        doc: None,
-                        attributes: vec![],
-                        name: GTIdentifier::new(Default::default(), "World".into()),
-                        descriptor: GTDescriptor::Literal(GTLiteral::String(
-                            Default::default(),
-                            "world".into(),
-                        )),
-                    })),
-                ],
-            }),
-        };
-        assert_eq!(
-            TsCodegen::gen_alias(&alias).unwrap(),
-            GtlCodegenResultAlias {
-                definitions: r#"export type Hi = Hello | World;
-
-export type Hello = true;
-
-export type World = "world";"#
-                    .into(),
-                resolve: GtlRenderResolve::<TSRenderState, TSRenderContext> {
-                    imports: vec![],
-                    exports: vec![],
-                },
-            }
+            codegen.render_module().unwrap(),
+            r#"export type Hello = string;
+"#
         );
     }
 }

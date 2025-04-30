@@ -2,212 +2,138 @@ use genotype_lang_core_codegen::*;
 use genotype_lang_core_tree::*;
 use genotype_lang_py_tree::*;
 use genotype_parser::*;
-use miette::Result;
+use miette::{Context, Report};
 
-pub struct PyCodegen {}
+pub mod prelude;
 
-impl PyCodegen {
-    fn gen_hoisted(context: &mut PYConvertContext) -> Result<String> {
-        let hoisted = context.drain_hoisted();
-
-        Ok(PYModule::join_definitions(
-            &hoisted
-                .iter()
-                .map(|definition| definition.render(Default::default(), &mut Default::default()))
-                .collect::<Result<_>>()?,
-        ))
-    }
+#[derive(Default)]
+pub struct PyCodegen {
+    module: PYModule,
+    convert_context: PYConvertContext,
 }
 
-impl<'a, RenderState, RenderContext> GtlCodegen<'a, RenderState, RenderContext> for PyCodegen
-where
-    Box<(dyn GtlRenderResolveImport<'a, RenderState, RenderContext>)>: Clone,
-{
-    fn gen_descriptor(
-        descriptor: &GTDescriptor,
-    ) -> Result<GtlCodegenResultDescriptor<'a, RenderState, RenderContext>> {
-        let mut context = PYConvertContext::default();
-        let converted = descriptor.convert(&mut context);
+impl PyCodegen {}
 
-        let inline = converted.render(Default::default(), &mut Default::default())?;
-        let definitions = Self::gen_hoisted(&mut context)?;
+impl GtlCodegen for PyCodegen {
+    type Import = PYImport;
 
-        Ok(GtlCodegenResultDescriptor {
-            inline,
-            definitions,
-            // [TODO]
-            resolve: GtlRenderResolve {
-                imports: vec![],
-                exports: vec![],
-            },
-        })
+    type Definition = PYDefinition;
+
+    fn register_import(&mut self, import: Self::Import) {
+        self.module.imports.push(import);
     }
 
-    fn gen_alias(alias: &GTAlias) -> Result<GtlCodegenResultAlias<'a, RenderState, RenderContext>> {
-        let mut definitions = vec![];
+    fn register_definition(&mut self, definition: Self::Definition) {
+        self.module.definitions.push(definition);
+    }
 
-        let mut context = PYConvertContext::default();
-        let converted = genotype_parser::GTAlias::convert(alias, &mut context);
+    fn inject_descriptor(&mut self, descriptor: GTDescriptor) -> Result<String, Report> {
+        let descriptor = descriptor.convert(&mut self.convert_context);
 
-        let rendered_alias = converted.render(Default::default(), &mut Default::default())?;
-        definitions.push(rendered_alias);
+        let imports = self.convert_context.drain_imports();
+        self.module.imports.extend(imports);
 
-        let rendered_hoisted = Self::gen_hoisted(&mut context)?;
-        if !rendered_hoisted.is_empty() {
-            definitions.push(rendered_hoisted);
-        }
+        let definitions = self.convert_context.drain_hoisted();
+        self.module.definitions.extend(definitions);
 
-        let definitions = PYModule::join_definitions(&definitions);
+        descriptor
+            .render(Default::default(), &mut Default::default())
+            .wrap_err("Failed to render descriptor")
+    }
 
-        Ok(GtlCodegenResultAlias {
-            definitions,
-            // [TODO]
-            resolve: GtlRenderResolve {
-                imports: vec![],
-                exports: vec![],
-            },
-        })
+    fn render_module(&self) -> Result<String, Report> {
+        self.module
+            .render(Default::default(), &mut Default::default())
+            .wrap_err("Failed to render module")
     }
 }
 
 #[cfg(test)]
-mod tespy {
+mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn test_render_descriptor() {
-        let literal = GTDescriptor::Literal(GTLiteral::Boolean(Default::default(), true));
+    fn test_register_import() {
+        let mut codegen = PyCodegen::default();
+        codegen.register_import(PYImport::new("dependency".into(), "Name".into()));
+        codegen.register_import(PYImport::new("another".into(), "AlsoName".into()));
         assert_eq!(
-            PyCodegen::gen_descriptor(&literal).unwrap(),
-            GtlCodegenResultDescriptor {
-                inline: "Literal[True]".into(),
-                definitions: "".into(),
-                resolve: GtlRenderResolve::<PYRenderState, PYRenderContext> {
-                    imports: vec![],
-                    exports: vec![],
-                },
-            }
+            codegen.render_module().unwrap(),
+            r#"from dependency import Name
+from another import AlsoName
+"#
         );
     }
 
     #[test]
-    fn test_render_descriptor_with_hoisted() {
+    fn test_register_definition() {
+        let mut codegen = PyCodegen::default();
+        codegen.register_definition(
+            PYAlias {
+                doc: None,
+                name: "Name".into(),
+                descriptor: PYAny.into(),
+                references: vec![],
+            }
+            .into(),
+        );
+        assert_eq!(
+            codegen.render_module().unwrap(),
+            r#"type Name = Any
+"#
+        );
+    }
+
+    #[test]
+    fn test_inject_descriptor() {
+        let mut codegen = PyCodegen::default();
+        let primitive = GTDescriptor::Primitive(GTPrimitive::String(Default::default()));
+        let result = codegen.inject_descriptor(primitive).unwrap();
+        assert_eq!(result, "str");
+        assert_eq!(codegen.render_module().unwrap(), "\n");
+    }
+
+    #[test]
+    fn test_inject_descriptor_with_hoisted() {
+        let mut codegen = PyCodegen::default();
         let alias = GTDescriptor::Alias(Box::new(GTAlias {
             id: GTDefinitionId(GTModuleId("module".into()), "Hello".into()),
             span: Default::default(),
             doc: None,
             attributes: vec![],
             name: GTIdentifier::new(Default::default(), "Hello".into()),
-            descriptor: GTDescriptor::Literal(GTLiteral::Boolean(Default::default(), true)),
+            descriptor: GTPrimitive::String(Default::default()).into(),
         }));
+        let result = codegen.inject_descriptor(alias).unwrap();
+        assert_eq!(result, "Hello");
         assert_eq!(
-            PyCodegen::gen_descriptor(&alias).unwrap(),
-            GtlCodegenResultDescriptor {
-                inline: "Hello".into(),
-                definitions: "type Hello = Literal[True]".into(),
-                resolve: GtlRenderResolve::<PYRenderState, PYRenderContext> {
-                    imports: vec![],
-                    exports: vec![],
-                },
-            }
+            codegen.render_module().unwrap(),
+            r#"type Hello = str
+"#
         );
     }
 
     #[test]
-    fn test_render_descriptor_with_multiple_hoisted() {
-        let union = GTDescriptor::Union(GTUnion {
+    fn test_inject_descriptor_with_imports() {
+        let mut codegen = PyCodegen::default();
+        let alias = GTDescriptor::Alias(Box::new(GTAlias {
+            id: GTDefinitionId(GTModuleId("module".into()), "Hello".into()),
             span: Default::default(),
-            descriptors: vec![
-                GTDescriptor::Alias(Box::new(GTAlias {
-                    id: GTDefinitionId(GTModuleId("module".into()), "Hello".into()),
-                    span: Default::default(),
-                    doc: None,
-                    attributes: vec![],
-                    name: GTIdentifier::new(Default::default(), "Hello".into()),
-                    descriptor: GTDescriptor::Literal(GTLiteral::Boolean(Default::default(), true)),
-                })),
-                GTDescriptor::Alias(Box::new(GTAlias {
-                    id: GTDefinitionId(GTModuleId("module".into()), "World".into()),
-                    span: Default::default(),
-                    doc: None,
-                    attributes: vec![],
-                    name: GTIdentifier::new(Default::default(), "World".into()),
-                    descriptor: GTDescriptor::Literal(GTLiteral::String(
-                        Default::default(),
-                        "world".into(),
-                    )),
-                })),
-            ],
-        });
-        assert_eq!(
-            PyCodegen::gen_descriptor(&union).unwrap(),
-            GtlCodegenResultDescriptor {
-                inline: "Hello | World".into(),
-                definitions: r#"type Hello = Literal[True]
-
-
-type World = Literal["world"]"#
-                    .into(),
-                resolve: GtlRenderResolve::<PYRenderState, PYRenderContext> {
-                    imports: vec![],
-                    exports: vec![],
-                },
-            }
-        );
-    }
-
-    #[test]
-    fn test_render_alias() {
-        let alias = GTAlias {
-            span: Default::default(),
-            id: GTDefinitionId(GTModuleId("module".into()), "Hi".into()),
             doc: None,
             attributes: vec![],
-            name: GTIdentifier::new(Default::default(), "Hi".into()),
-            descriptor: GTDescriptor::Union(GTUnion {
-                span: Default::default(),
-                descriptors: vec![
-                    GTDescriptor::Alias(Box::new(GTAlias {
-                        id: GTDefinitionId(GTModuleId("module".into()), "Hello".into()),
-                        span: Default::default(),
-                        doc: None,
-                        attributes: vec![],
-                        name: GTIdentifier::new(Default::default(), "Hello".into()),
-                        descriptor: GTDescriptor::Literal(GTLiteral::Boolean(
-                            Default::default(),
-                            true,
-                        )),
-                    })),
-                    GTDescriptor::Alias(Box::new(GTAlias {
-                        id: GTDefinitionId(GTModuleId("module".into()), "World".into()),
-                        span: Default::default(),
-                        doc: None,
-                        attributes: vec![],
-                        name: GTIdentifier::new(Default::default(), "World".into()),
-                        descriptor: GTDescriptor::Literal(GTLiteral::String(
-                            Default::default(),
-                            "world".into(),
-                        )),
-                    })),
-                ],
-            }),
-        };
-        assert_eq!(PyCodegen::gen_alias(&alias).unwrap(), {
-            GtlCodegenResultAlias {
-                definitions: r#"type Hi = Hello | World
+            name: GTIdentifier::new(Default::default(), "Hello".into()),
+            descriptor: GTLiteral::String(Default::default(), "hello".into()).into(),
+        }));
+        let result = codegen.inject_descriptor(alias).unwrap();
+        assert_eq!(result, "Hello");
+        assert_eq!(
+            codegen.render_module().unwrap(),
+            r#"from typing import Literal
 
 
-type Hello = Literal[True]
-
-
-type World = Literal["world"]"#
-                    .into(),
-                resolve: GtlRenderResolve::<PYRenderState, PYRenderContext> {
-                    imports: vec![],
-                    exports: vec![],
-                },
-            }
-        });
+type Hello = Literal["hello"]
+"#
+        );
     }
 }

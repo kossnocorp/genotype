@@ -4,7 +4,7 @@ pub struct PYDependency {}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum PYDependencyIdent {
-    Local(PYPath),
+    Path(PYPath),
     Runtime,
     Typing,
     TypingExtensions,
@@ -14,7 +14,7 @@ pub enum PYDependencyIdent {
 impl PYDependencyIdent {
     pub fn as_path(&self) -> PYPath {
         match self {
-            Self::Local(path) => path.clone(),
+            Self::Path(path) => path.clone(),
             Self::Runtime => "genotype".into(),
             Self::Typing => "typing".into(),
             Self::TypingExtensions => "typing_extensions".into(),
@@ -33,3 +33,9 @@ impl PYDependencyIdent {
 }
 
 impl GtlDependencyIdent for PYDependencyIdent {}
+
+impl From<&str> for PYDependencyIdent {
+    fn from(str: &str) -> Self {
+        PYDependencyIdent::Path(str.into())
+    }
+}

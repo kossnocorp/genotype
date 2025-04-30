@@ -1,6 +1,6 @@
 use super::{GTDefinitionId, GTIdentifier};
 
-#[derive(Debug, Eq, PartialEq, Hash, Clone)]
+#[derive(Default, Debug, Eq, PartialEq, Hash, Clone)]
 pub struct GTModuleId(
     /// Module identifier string.
     pub String,

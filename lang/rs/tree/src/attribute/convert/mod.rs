@@ -13,6 +13,7 @@ pub use ids::*;
 mod naming;
 pub use naming::*;
 
+#[derive(Default)]
 pub struct RSConvertContext {
     resolve: RSConvertResolve,
     config: RSLangConfig,

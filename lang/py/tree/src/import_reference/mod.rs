@@ -8,3 +8,9 @@ pub enum PYImportReference {
     Glob,
     Named(Vec<PYImportName>),
 }
+
+impl From<&str> for PYImportReference {
+    fn from(str: &str) -> Self {
+        PYImportReference::Named(vec![str.into()])
+    }
+}

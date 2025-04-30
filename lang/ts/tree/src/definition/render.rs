@@ -14,6 +14,7 @@ impl<'a> GtlRender<'a> for TSDefinition {
             TSDefinition::Alias(alias) => alias.render(state, context),
             TSDefinition::Interface(interface) => interface.render(state, context),
             TSDefinition::Branded(branded) => branded.render(state, context),
+            TSDefinition::Embed(embed) => embed.render(state, context),
         }
     }
 }
@@ -80,6 +81,24 @@ mod tests {
             .unwrap(),
             r#"export type Version = number & { [versionBrand]: true };
 declare const versionBrand: unique symbol;"#
+        );
+    }
+
+    #[test]
+    fn test_render_embed() {
+        assert_eq!(
+            TSDefinition::Embed(TSEmbedDefinition {
+                name: "Name".into(),
+                embed: r#"const hello = {
+  name: "World"
+};"#
+                .into()
+            })
+            .render(Default::default(), &mut Default::default())
+            .unwrap(),
+            r#"const hello = {
+  name: "World"
+};"#
         );
     }
 }

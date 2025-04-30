@@ -8,6 +8,7 @@ impl PYTraverse for PYDefinition {
             PYDefinition::Alias(alias) => alias.traverse(visitor),
             PYDefinition::Class(class) => class.traverse(visitor),
             PYDefinition::Newtype(newtype) => newtype.traverse(visitor),
+            PYDefinition::Embed(embed) => embed.traverse(visitor),
         }
     }
 }
@@ -81,6 +82,26 @@ mod tests {
                 PYMockVisited::Descriptor(property.descriptor.clone()),
                 PYMockVisited::Primitive(PYPrimitive::String),
                 PYMockVisited::Identifier(reference.clone())
+            ]
+        );
+    }
+
+    #[test]
+    fn test_traverse_embed() {
+        let mut visitor = PYMockVisitor::new();
+        let name = PYIdentifier("Name".into());
+        let embed = PYEmbedDefinition {
+            name: name.clone(),
+            embed: Default::default(),
+        };
+        let mut definition = PYDefinition::Embed(embed.clone());
+        definition.traverse(&mut visitor);
+        assert_eq!(
+            visitor.visited,
+            vec![
+                PYMockVisited::Definition(definition),
+                PYMockVisited::EmbedDefinition(embed),
+                PYMockVisited::Identifier(name)
             ]
         );
     }

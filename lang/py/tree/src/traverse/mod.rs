@@ -9,6 +9,7 @@ mod descriptor;
 mod dict;
 mod dict_key;
 mod doc;
+mod embed_definition;
 mod extension;
 mod identifier;
 mod import;

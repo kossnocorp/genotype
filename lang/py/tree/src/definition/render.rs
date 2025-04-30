@@ -14,6 +14,7 @@ impl<'a> GtlRender<'a> for PYDefinition {
             PYDefinition::Alias(alias) => alias.render(state, context),
             PYDefinition::Class(interface) => interface.render(state, context),
             PYDefinition::Newtype(newtype) => newtype.render(state, context),
+            PYDefinition::Embed(embed) => embed.render(state, context),
         }
     }
 }
@@ -80,6 +81,22 @@ mod tests {
             .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"UserId = NewType("UserId", str)"#
+        );
+    }
+
+    #[test]
+    fn test_render_embed() {
+        assert_eq!(
+            PYDefinition::Embed(PYEmbedDefinition {
+                name: "Name".into(),
+                embed: r#"class Hello:
+    name = "World""#
+                    .into()
+            })
+            .render(Default::default(), &mut Default::default())
+            .unwrap(),
+            r#"class Hello:
+    name = "World""#
         );
     }
 }

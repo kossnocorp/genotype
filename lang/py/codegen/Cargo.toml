@@ -14,6 +14,5 @@ genotype_lang_py_tree = { version = "0.10.0", path = "../tree" }
 genotype_parser = { version = "0.10.0", path = "../../../parser" }
 miette = { version = "7.2.0", features = ["fancy"] }
 
-
 [dev-dependencies]
 pretty_assertions = "1.4.1"

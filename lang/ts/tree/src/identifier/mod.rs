@@ -13,3 +13,9 @@ impl From<&str> for TSIdentifier {
         TSIdentifier(str.into())
     }
 }
+
+impl From<String> for TSIdentifier {
+    fn from(str: String) -> Self {
+        TSIdentifier(str)
+    }
+}

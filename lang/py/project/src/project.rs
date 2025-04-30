@@ -209,7 +209,7 @@ mod tests {
                                 reference: PYImportReference::Named(vec![PYImportName::Name(
                                     "Author".into()
                                 )]),
-                                dependency: PYDependencyIdent::Local(".author".into()),
+                                dependency: PYDependencyIdent::Path(".author".into()),
                             },
                             PYImport {
                                 reference: PYImportReference::Named(vec![PYImportName::Name(
@@ -294,7 +294,7 @@ mod tests {
                         imports: vec![
                             PYImport {
                                 reference: PYImportReference::Default(Some("author".into())),
-                                dependency: PYDependencyIdent::Local(".author".into()),
+                                dependency: PYDependencyIdent::Path(".author".into()),
                             },
                             PYImport {
                                 reference: PYImportReference::Named(vec![PYImportName::Name(
