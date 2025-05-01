@@ -1,6 +1,6 @@
 [package]
 name = "genotype_lang_rs_core"
-version = "0.10.0"
+version = "0.11.0"
 edition = "2021"
 description = "Genotype language Rust target core crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
