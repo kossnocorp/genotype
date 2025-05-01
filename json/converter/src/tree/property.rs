@@ -4,10 +4,10 @@ use genotype_parser::*;
 use crate::{GtjTreeConvert, GtjTreeConvertContext};
 
 impl GtjTreeConvert<GTProperty> for GtjProperty {
-    fn to_tree(&self, context: &mut GtjTreeConvertContext) -> GTProperty {
+    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTProperty {
         let descriptor = context.enter_name_context(
             GTNamingContextName::Transitive(self.name.clone()),
-            |context| self.descriptor.to_tree(context),
+            |context| self.descriptor.to_tree_with_context(context),
         );
 
         GTProperty {
@@ -51,7 +51,7 @@ mod tests {
                 name: GTKey(Default::default(), "hello".into()),
                 doc: None,
             },
-            property.to_tree(&mut Default::default()),
+            property.to_tree_with_context(&mut Default::default()),
         );
 
         let property = GtjProperty {
@@ -74,7 +74,7 @@ mod tests {
                 name: GTKey(Default::default(), "world".into()),
                 doc: Some(GTDoc(Default::default(), "Hello, world!".into())),
             },
-            property.to_tree(&mut Default::default()),
+            property.to_tree_with_context(&mut Default::default()),
         );
     }
 }

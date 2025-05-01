@@ -4,14 +4,14 @@ use genotype_parser::*;
 use crate::{GtjTreeConvert, GtjTreeConvertContext};
 
 impl GtjTreeConvert<GTPrimitive> for GtjNumber {
-    fn to_tree(&self, _context: &mut GtjTreeConvertContext) -> GTPrimitive {
+    fn to_tree_with_context(&self, _context: &mut GtjTreeConvertContext) -> GTPrimitive {
         GTPrimitive::Number(Default::default())
     }
 }
 
 impl GtjTreeConvert<GTDescriptor> for GtjNumber {
-    fn to_tree(&self, context: &mut GtjTreeConvertContext) -> GTDescriptor {
-        GTDescriptor::Primitive(self.to_tree(context))
+    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTDescriptor {
+        GTDescriptor::Primitive(self.to_tree_with_context(context))
     }
 }
 
@@ -29,7 +29,7 @@ mod tests {
         };
         assert_eq!(
             GTPrimitive::Number(Default::default()),
-            number.to_tree(&mut Default::default()),
+            number.to_tree_with_context(&mut Default::default()),
         );
     }
 
@@ -42,7 +42,7 @@ mod tests {
         };
         assert_eq!(
             GTDescriptor::Primitive(GTPrimitive::Number(Default::default())),
-            number.to_tree(&mut Default::default()),
+            number.to_tree_with_context(&mut Default::default()),
         );
     }
 }

@@ -4,14 +4,14 @@ use genotype_parser::*;
 use crate::{GtjTreeConvert, GtjTreeConvertContext};
 
 impl GtjTreeConvert<GTObject> for GtjObject {
-    fn to_tree(&self, context: &mut GtjTreeConvertContext) -> GTObject {
+    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTObject {
         let name = context.claim_name(self.name.clone(), "Object");
 
         let properties =
             context.enter_name_context(GTNamingContextName::Identifier(name.clone()), |context| {
                 self.properties
                     .iter()
-                    .map(|property| property.to_tree(context))
+                    .map(|property| property.to_tree_with_context(context))
                     .collect()
             });
 
@@ -25,8 +25,8 @@ impl GtjTreeConvert<GTObject> for GtjObject {
 }
 
 impl GtjTreeConvert<GTDescriptor> for GtjObject {
-    fn to_tree(&self, context: &mut GtjTreeConvertContext) -> GTDescriptor {
-        GTDescriptor::Object(self.to_tree(context))
+    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTDescriptor {
+        GTDescriptor::Object(self.to_tree_with_context(context))
     }
 }
 
@@ -50,7 +50,7 @@ mod tests {
                 extensions: vec![],
                 properties: vec![],
             },
-            object.to_tree(&mut Default::default()),
+            object.to_tree_with_context(&mut Default::default()),
         );
     }
 
@@ -69,7 +69,7 @@ mod tests {
                 extensions: vec![],
                 properties: vec![],
             },
-            object.to_tree(&mut Default::default()),
+            object.to_tree_with_context(&mut Default::default()),
         );
     }
 
@@ -105,7 +105,7 @@ mod tests {
                     required: true,
                 }],
             },
-            object.to_tree(&mut Default::default()),
+            object.to_tree_with_context(&mut Default::default()),
         );
     }
 
@@ -153,7 +153,7 @@ mod tests {
                     doc: None,
                 }],
             }),
-            object.to_tree(&mut context),
+            object.to_tree_with_context(&mut context),
         );
     }
 
@@ -228,7 +228,7 @@ mod tests {
                     doc: None,
                 }],
             }),
-            object.to_tree(&mut context),
+            object.to_tree_with_context(&mut context),
         );
     }
 
@@ -276,7 +276,7 @@ mod tests {
                     doc: None,
                 }],
             }),
-            object.to_tree(&mut context),
+            object.to_tree_with_context(&mut context),
         );
     }
 
@@ -348,7 +348,7 @@ mod tests {
                     doc: None,
                 }],
             }),
-            object.to_tree(&mut context),
+            object.to_tree_with_context(&mut context),
         );
     }
 }

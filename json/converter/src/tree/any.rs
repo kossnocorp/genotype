@@ -4,17 +4,17 @@ use genotype_parser::*;
 use crate::{GtjTreeConvert, GtjTreeConvertContext};
 
 impl GtjTreeConvert<GTDescriptor> for GtjAny {
-    fn to_tree(&self, context: &mut GtjTreeConvertContext) -> GTDescriptor {
+    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTDescriptor {
         match self {
-            GtjAny::GtjNull(null) => null.to_tree(context),
-            GtjAny::GtjBoolean(boolean) => boolean.to_tree(context),
-            GtjAny::GtjNumber(number) => number.to_tree(context),
-            GtjAny::GtjString(string) => string.to_tree(context),
-            GtjAny::GtjArray(array) => array.to_tree(context),
-            GtjAny::GtjObject(object) => object.to_tree(context),
-            GtjAny::GtjUnion(union) => union.to_tree(context),
-            GtjAny::GtjLiteral(literal) => literal.to_tree(context),
-            GtjAny::GtjTuple(tuple) => tuple.to_tree(context),
+            GtjAny::GtjNull(null) => null.to_tree_with_context(context),
+            GtjAny::GtjBoolean(boolean) => boolean.to_tree_with_context(context),
+            GtjAny::GtjNumber(number) => number.to_tree_with_context(context),
+            GtjAny::GtjString(string) => string.to_tree_with_context(context),
+            GtjAny::GtjArray(array) => array.to_tree_with_context(context),
+            GtjAny::GtjObject(object) => object.to_tree_with_context(context),
+            GtjAny::GtjUnion(union) => union.to_tree_with_context(context),
+            GtjAny::GtjLiteral(literal) => literal.to_tree_with_context(context),
+            GtjAny::GtjTuple(tuple) => tuple.to_tree_with_context(context),
         }
     }
 }
@@ -33,7 +33,7 @@ mod tests {
         };
         assert_eq!(
             GTDescriptor::Primitive(GTPrimitive::Null(Default::default())),
-            null.to_tree(&mut Default::default()),
+            null.to_tree_with_context(&mut Default::default()),
         );
     }
 
@@ -46,7 +46,7 @@ mod tests {
         };
         assert_eq!(
             GTDescriptor::Primitive(GTPrimitive::Boolean(Default::default())),
-            boolean.to_tree(&mut Default::default()),
+            boolean.to_tree_with_context(&mut Default::default()),
         );
     }
 
@@ -59,7 +59,7 @@ mod tests {
         };
         assert_eq!(
             GTDescriptor::Primitive(GTPrimitive::Number(Default::default())),
-            number.to_tree(&mut Default::default()),
+            number.to_tree_with_context(&mut Default::default()),
         );
     }
 
@@ -72,7 +72,7 @@ mod tests {
         };
         assert_eq!(
             GTDescriptor::Primitive(GTPrimitive::String(Default::default())),
-            string.to_tree(&mut Default::default()),
+            string.to_tree_with_context(&mut Default::default()),
         );
     }
 
@@ -93,7 +93,7 @@ mod tests {
                 span: Default::default(),
                 descriptor: GTPrimitive::Null(Default::default()).into()
             })),
-            array.to_tree(&mut Default::default()),
+            array.to_tree_with_context(&mut Default::default()),
         );
     }
 
@@ -112,7 +112,7 @@ mod tests {
                 extensions: vec![],
                 properties: vec![],
             }),
-            object.to_tree(&mut Default::default()),
+            object.to_tree_with_context(&mut Default::default()),
         );
     }
 
@@ -129,7 +129,7 @@ mod tests {
                 span: Default::default(),
                 descriptors: vec![],
             }),
-            union.to_tree(&mut Default::default()),
+            union.to_tree_with_context(&mut Default::default()),
         );
     }
 
@@ -143,7 +143,7 @@ mod tests {
         };
         assert_eq!(
             GTDescriptor::Literal(GTLiteral::String(Default::default(), "Hello".into())),
-            literal.to_tree(&mut Default::default()),
+            literal.to_tree_with_context(&mut Default::default()),
         );
     }
 
@@ -160,7 +160,7 @@ mod tests {
                 span: Default::default(),
                 descriptors: vec![],
             }),
-            tuple.to_tree(&mut Default::default()),
+            tuple.to_tree_with_context(&mut Default::default()),
         );
     }
 }

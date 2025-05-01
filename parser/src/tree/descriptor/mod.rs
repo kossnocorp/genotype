@@ -18,6 +18,12 @@ pub enum GTDescriptor {
     Branded(GTBranded),
 }
 
+impl From<GTAlias> for GTDescriptor {
+    fn from(alias: GTAlias) -> Self {
+        GTDescriptor::Alias(Box::new(alias))
+    }
+}
+
 impl From<GTArray> for GTDescriptor {
     fn from(array: GTArray) -> Self {
         GTDescriptor::Array(Box::new(array))

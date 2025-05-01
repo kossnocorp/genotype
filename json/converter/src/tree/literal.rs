@@ -4,7 +4,7 @@ use genotype_parser::*;
 use crate::{GtjTreeConvert, GtjTreeConvertContext};
 
 impl GtjTreeConvert<GTLiteral> for GtjLiteral {
-    fn to_tree(&self, _context: &mut GtjTreeConvertContext) -> GTLiteral {
+    fn to_tree_with_context(&self, _context: &mut GtjTreeConvertContext) -> GTLiteral {
         match &self.value {
             GtjLiteralValue::Null(_) => GTLiteral::Null(Default::default()),
             GtjLiteralValue::Boolean(boolean) => {
@@ -19,8 +19,8 @@ impl GtjTreeConvert<GTLiteral> for GtjLiteral {
 }
 
 impl GtjTreeConvert<GTDescriptor> for GtjLiteral {
-    fn to_tree(&self, context: &mut GtjTreeConvertContext) -> GTDescriptor {
-        GTDescriptor::Literal(self.to_tree(context))
+    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTDescriptor {
+        GTDescriptor::Literal(self.to_tree_with_context(context))
     }
 }
 
@@ -39,7 +39,7 @@ mod tests {
         };
         assert_eq!(
             GTLiteral::Null(Default::default()),
-            literal.to_tree(&mut Default::default()),
+            literal.to_tree_with_context(&mut Default::default()),
         );
     }
 }

@@ -4,7 +4,7 @@ use genotype_parser::*;
 use crate::{GtjTreeConvert, GtjTreeConvertContext};
 
 impl GtjTreeConvert<GTUnion> for GtjUnion {
-    fn to_tree(&self, context: &mut GtjTreeConvertContext) -> GTUnion {
+    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTUnion {
         let name = context.claim_name(self.name.clone(), "Union");
 
         let descriptors =
@@ -14,7 +14,7 @@ impl GtjTreeConvert<GTUnion> for GtjUnion {
                     .map(|descriptor| {
                         context.enter_name_context(
                             GTNamingContextName::Transitive("Member".into()),
-                            |context| descriptor.to_tree(context),
+                            |context| descriptor.to_tree_with_context(context),
                         )
                     })
                     .collect()
@@ -28,8 +28,8 @@ impl GtjTreeConvert<GTUnion> for GtjUnion {
 }
 
 impl GtjTreeConvert<GTDescriptor> for GtjUnion {
-    fn to_tree(&self, context: &mut GtjTreeConvertContext) -> GTDescriptor {
-        GTDescriptor::Union(self.to_tree(context))
+    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTDescriptor {
+        GTDescriptor::Union(self.to_tree_with_context(context))
     }
 }
 
@@ -51,7 +51,7 @@ mod tests {
                 span: Default::default(),
                 descriptors: vec![]
             },
-            union.to_tree(&mut Default::default()),
+            union.to_tree_with_context(&mut Default::default()),
         );
     }
 
@@ -72,7 +72,7 @@ mod tests {
                 span: Default::default(),
                 descriptors: vec![GTPrimitive::Null(Default::default()).into()]
             }),
-            union.to_tree(&mut Default::default())
+            union.to_tree_with_context(&mut Default::default())
         );
     }
 
@@ -105,7 +105,7 @@ mod tests {
                 }
                 .into()]
             }),
-            union.to_tree(&mut context),
+            union.to_tree_with_context(&mut context),
         );
     }
 
@@ -174,7 +174,7 @@ mod tests {
                 }
                 .into()]
             }),
-            union.to_tree(&mut context),
+            union.to_tree_with_context(&mut context),
         );
     }
 
@@ -204,7 +204,7 @@ mod tests {
                 }
                 .into()]
             }),
-            union.to_tree(&mut context),
+            union.to_tree_with_context(&mut context),
         );
     }
 
@@ -273,7 +273,7 @@ mod tests {
                 }
                 .into()]
             }),
-            union.to_tree(&mut context),
+            union.to_tree_with_context(&mut context),
         );
     }
 }

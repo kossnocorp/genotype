@@ -4,14 +4,14 @@ use genotype_parser::*;
 use crate::{GtjTreeConvert, GtjTreeConvertContext};
 
 impl GtjTreeConvert<GTArray> for GtjArray {
-    fn to_tree(&self, context: &mut GtjTreeConvertContext) -> GTArray {
+    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTArray {
         let name = context.claim_name(self.name.clone(), "Array");
 
         let descriptor =
             context.enter_name_context(GTNamingContextName::Identifier(name.clone()), |context| {
                 context.enter_name_context(
                     GTNamingContextName::Transitive("Element".into()),
-                    |context| self.descriptor.to_tree(context),
+                    |context| self.descriptor.to_tree_with_context(context),
                 )
             });
 
@@ -23,8 +23,8 @@ impl GtjTreeConvert<GTArray> for GtjArray {
 }
 
 impl GtjTreeConvert<GTDescriptor> for GtjArray {
-    fn to_tree(&self, context: &mut GtjTreeConvertContext) -> GTDescriptor {
-        GTDescriptor::Array(Box::new(self.to_tree(context)))
+    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTDescriptor {
+        GTDescriptor::Array(Box::new(self.to_tree_with_context(context)))
     }
 }
 
@@ -50,7 +50,7 @@ mod tests {
                 span: Default::default(),
                 descriptor: GTPrimitive::Null(Default::default()).into()
             },
-            array.to_tree(&mut Default::default()),
+            array.to_tree_with_context(&mut Default::default()),
         );
     }
 
@@ -71,7 +71,7 @@ mod tests {
                 span: Default::default(),
                 descriptor: GTPrimitive::Null(Default::default()).into()
             })),
-            array.to_tree(&mut Default::default())
+            array.to_tree_with_context(&mut Default::default())
         );
     }
 
@@ -104,7 +104,7 @@ mod tests {
                 }
                 .into()
             })),
-            array.to_tree(&mut context),
+            array.to_tree_with_context(&mut context),
         );
     }
 
@@ -173,7 +173,7 @@ mod tests {
                 }
                 .into()
             })),
-            array.to_tree(&mut context),
+            array.to_tree_with_context(&mut context),
         );
     }
 
@@ -206,7 +206,7 @@ mod tests {
                 }
                 .into()
             })),
-            array.to_tree(&mut context),
+            array.to_tree_with_context(&mut context),
         );
     }
 
@@ -272,7 +272,7 @@ mod tests {
                 }
                 .into()
             })),
-            array.to_tree(&mut context),
+            array.to_tree_with_context(&mut context),
         );
     }
 }

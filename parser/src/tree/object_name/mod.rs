@@ -25,6 +25,12 @@ impl From<GTIdentifier> for GTObjectName {
     }
 }
 
+impl From<String> for GTObjectName {
+    fn from(value: String) -> Self {
+        GTObjectName::Named(GTIdentifier::new(Default::default(), value))
+    }
+}
+
 /// The kind of parent that builds the object name.
 #[derive(Debug, PartialEq, Clone)]
 pub enum GTObjectNameParent {
