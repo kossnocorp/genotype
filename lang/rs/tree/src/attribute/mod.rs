@@ -1,8 +1,5 @@
 mod render;
 
-mod convert;
-pub use convert::*;
-
 #[derive(Debug, PartialEq, Clone)]
 pub struct RSAttribute(pub String);
 

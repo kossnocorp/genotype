@@ -55,7 +55,7 @@ impl RSConvert<RSStruct> for GTLiteral {
         let name = if let Some(name) = context.claim_alias() {
             name
         } else {
-            context.name_child(Some(&self.to_string()))
+            context.name_child(Some(self.clone().into()))
         };
         let id = context
             .consume_definition_id()
@@ -376,6 +376,22 @@ mod tests {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![RSAttribute("literal(false)".into())],
                 name: "False".into(),
+                fields: RSStructFields::Resolved(vec![])
+            },
+        );
+    }
+
+    #[test]
+    fn test_convert_literal_float() {
+        assert_eq!(
+            GTLiteral::Float(Default::default(), 1.23456)
+                .convert(&mut RSConvertContext::empty("module".into()))
+                .unwrap(),
+            RSStruct {
+                id: GTDefinitionId("module".into(), "Lit1_23456".into()),
+                doc: None,
+                attributes: vec![RSAttribute("literal(1.23456)".into())],
+                name: "Lit1_23456".into(),
                 fields: RSStructFields::Resolved(vec![])
             },
         );

@@ -101,7 +101,9 @@ fn name_descriptor(
         GTDescriptor::Reference(reference) => reference.identifier.convert(context)?,
         GTDescriptor::InlineImport(import) => import.name.convert(context)?,
         GTDescriptor::Object(object) => object.name.to_identifier().convert(context)?,
-        GTDescriptor::Literal(literal) => literal.to_string().to_pascal_case().into(),
+        GTDescriptor::Literal(literal) => RSConvertNameSegment::Literal(literal.clone())
+            .render(true)
+            .into(),
         GTDescriptor::Branded(branded) => branded.name.convert(context)?,
         GTDescriptor::Primitive(primitive) => match primitive {
             GTPrimitive::Boolean(_) => "Boolean".into(),
@@ -473,6 +475,236 @@ mod tests {
                         ),
                     },
                 ],
+            }
+        );
+    }
+
+    #[test]
+    fn test_literal_name() {
+        let mut context = RSConvertContext::empty("module".into());
+        context.enter_parent(RSContextParent::Alias("Union".into()));
+        assert_eq!(
+            GTUnion {
+                span: (0, 0).into(),
+                descriptors: vec![
+                    GTLiteral::Null((0, 1).into()).into(),
+                    GTLiteral::String((0, 2).into(), "Hello".into()).into(),
+                    GTLiteral::Boolean((0, 3).into(), true).into(),
+                ],
+            }
+            .convert(&mut context)
+            .unwrap(),
+            RSEnum {
+                id: GTDefinitionId("module".into(), "Union".into()),
+                doc: None,
+                attributes: vec![
+                    "derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into(),
+                    r#"serde(untagged)"#.into(),
+                ],
+                name: "Union".into(),
+                variants: vec![
+                    RSEnumVariant {
+                        doc: None,
+                        attributes: vec![],
+                        name: "Null".into(),
+                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                            RSReference {
+                                id: GTReferenceId("module".into(), (0, 1).into()),
+                                identifier: "UnionNull".into(),
+                                definition_id: GTDefinitionId("module".into(), "UnionNull".into())
+                            }
+                            .into()
+                        ),
+                    },
+                    RSEnumVariant {
+                        doc: None,
+                        attributes: vec![],
+                        name: "Hello".into(),
+                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                            RSReference {
+                                id: GTReferenceId("module".into(), (0, 2).into()),
+                                identifier: "UnionHello".into(),
+                                definition_id: GTDefinitionId("module".into(), "UnionHello".into())
+                            }
+                            .into()
+                        ),
+                    },
+                    RSEnumVariant {
+                        doc: None,
+                        attributes: vec![],
+                        name: "True".into(),
+                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                            RSReference {
+                                id: GTReferenceId("module".into(), (0, 3).into()),
+                                identifier: "UnionTrue".into(),
+                                definition_id: GTDefinitionId("module".into(), "UnionTrue".into())
+                            }
+                            .into()
+                        ),
+                    },
+                ]
+            }
+        );
+    }
+
+    #[test]
+    fn test_literal_integer_name() {
+        let mut context = RSConvertContext::empty("module".into());
+        context.enter_parent(RSContextParent::Alias("Version".into()));
+        assert_eq!(
+            GTUnion {
+                span: (0, 0).into(),
+                descriptors: vec![
+                    GTLiteral::Integer((0, 1).into(), 0).into(),
+                    GTLiteral::Integer((0, 2).into(), 1).into(),
+                ],
+            }
+            .convert(&mut context)
+            .unwrap(),
+            RSEnum {
+                id: GTDefinitionId("module".into(), "Version".into()),
+                doc: None,
+                attributes: vec![
+                    "derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into(),
+                    r#"serde(untagged)"#.into(),
+                ],
+                name: "Version".into(),
+                variants: vec![
+                    RSEnumVariant {
+                        doc: None,
+                        attributes: vec![],
+                        name: "Lit0".into(),
+                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                            RSReference {
+                                id: GTReferenceId("module".into(), (0, 1).into()),
+                                identifier: "Version0".into(),
+                                definition_id: GTDefinitionId("module".into(), "Version0".into())
+                            }
+                            .into()
+                        ),
+                    },
+                    RSEnumVariant {
+                        doc: None,
+                        attributes: vec![],
+                        name: "Lit1".into(),
+                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                            RSReference {
+                                id: GTReferenceId("module".into(), (0, 2).into()),
+                                identifier: "Version1".into(),
+                                definition_id: GTDefinitionId("module".into(), "Version1".into())
+                            }
+                            .into()
+                        ),
+                    },
+                ]
+            }
+        );
+    }
+
+    #[test]
+    fn test_literal_float_name() {
+        let mut context = RSConvertContext::empty("module".into());
+        context.enter_parent(RSContextParent::Alias("Version".into()));
+        assert_eq!(
+            GTUnion {
+                span: (0, 0).into(),
+                descriptors: vec![
+                    GTLiteral::Float((0, 1).into(), 1.2).into(),
+                    GTLiteral::Float((0, 2).into(), 3.4).into(),
+                ],
+            }
+            .convert(&mut context)
+            .unwrap(),
+            RSEnum {
+                id: GTDefinitionId("module".into(), "Version".into()),
+                doc: None,
+                attributes: vec![
+                    "derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into(),
+                    r#"serde(untagged)"#.into(),
+                ],
+                name: "Version".into(),
+                variants: vec![
+                    RSEnumVariant {
+                        doc: None,
+                        attributes: vec![],
+                        name: "Lit1_2".into(),
+                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                            RSReference {
+                                id: GTReferenceId("module".into(), (0, 1).into()),
+                                identifier: "Version1_2".into(),
+                                definition_id: GTDefinitionId("module".into(), "Version1_2".into())
+                            }
+                            .into()
+                        ),
+                    },
+                    RSEnumVariant {
+                        doc: None,
+                        attributes: vec![],
+                        name: "Lit3_4".into(),
+                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                            RSReference {
+                                id: GTReferenceId("module".into(), (0, 2).into()),
+                                identifier: "Version3_4".into(),
+                                definition_id: GTDefinitionId("module".into(), "Version3_4".into())
+                            }
+                            .into()
+                        ),
+                    },
+                ]
+            }
+        );
+    }
+
+    #[test]
+    fn test_literal_invalid_string_name() {
+        let mut context = RSConvertContext::empty("module".into());
+        context.enter_parent(RSContextParent::Alias("Version".into()));
+        assert_eq!(
+            GTUnion {
+                span: (0, 0).into(),
+                descriptors: vec![
+                    GTLiteral::String((0, 1).into(), "0".into()).into(),
+                    GTLiteral::String((0, 2).into(), "1".into()).into(),
+                ],
+            }
+            .convert(&mut context)
+            .unwrap(),
+            RSEnum {
+                id: GTDefinitionId("module".into(), "Version".into()),
+                doc: None,
+                attributes: vec![
+                    "derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into(),
+                    r#"serde(untagged)"#.into(),
+                ],
+                name: "Version".into(),
+                variants: vec![
+                    RSEnumVariant {
+                        doc: None,
+                        attributes: vec![],
+                        name: "Lit0".into(),
+                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                            RSReference {
+                                id: GTReferenceId("module".into(), (0, 1).into()),
+                                identifier: "Version0".into(),
+                                definition_id: GTDefinitionId("module".into(), "Version0".into())
+                            }
+                            .into()
+                        ),
+                    },
+                    RSEnumVariant {
+                        doc: None,
+                        attributes: vec![],
+                        name: "Lit1".into(),
+                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                            RSReference {
+                                id: GTReferenceId("module".into(), (0, 2).into()),
+                                identifier: "Version1".into(),
+                                definition_id: GTDefinitionId("module".into(), "Version1".into())
+                            }
+                            .into()
+                        ),
+                    },
+                ]
             }
         );
     }
