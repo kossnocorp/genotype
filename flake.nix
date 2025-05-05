@@ -36,6 +36,8 @@
               cargo-watch
               cargo-nextest
               cargo-release
+              # Rust Tools
+              evcxr
               # Node.js
               nodejs
               corepack
