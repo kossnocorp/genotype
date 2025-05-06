@@ -1,9 +1,4 @@
-use genotype_lang_core_project::project::{GTLangProject, GTLangProjectRender};
-use genotype_lang_rs_config::RSProjectConfig;
-use genotype_project::project::GTProject;
-use miette::Result;
-
-use crate::module::RSProjectModule;
+use crate::prelude::internal::*;
 
 mod cargo;
 mod indices;
@@ -23,7 +18,7 @@ impl GTLangProject<RSProjectConfig> for RSProject {
     }
 
     fn render(&self) -> Result<GTLangProjectRender> {
-        let mut files = vec![self.gitignore_source(), self.cargo_source()];
+        let mut files = vec![self.gitignore_source(), self.cargo_source()?];
         files.extend(self.indices_source());
         files.extend(self.modules_source()?);
 
@@ -33,18 +28,9 @@ impl GTLangProject<RSProjectConfig> for RSProject {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::{HashMap, HashSet};
-
-    use genotype_config::GTConfig;
-    use genotype_lang_core_project::source::GTLangProjectSource;
-    use genotype_lang_rs_tree::*;
-    use genotype_parser::{GTDefinitionId, GTReferenceId};
-    use genotype_project::GTPModuleDefinitionResolve;
-    use pretty_assertions::assert_eq;
-
-    use crate::resolve::RSPModuleResolve;
-
     use super::*;
+    use genotype_config::GTConfig;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_base() {
@@ -349,9 +335,7 @@ mod tests {
                     },
                     GTLangProjectSource {
                         path: "libs/rs/Cargo.toml".into(),
-                        code: r#"[package]
-
-[dependencies]
+                        code: r#"[dependencies]
 serde = { version = "1", features = ["derive"] }
 "#
                         .into()
@@ -413,9 +397,7 @@ pub struct Book {
                     },
                     GTLangProjectSource {
                         path: "libs/rs/Cargo.toml".into(),
-                        code: r#"[package]
-
-[dependencies]
+                        code: r#"[dependencies]
 serde = { version = "1", features = ["derive"] }
 "#
                         .into(),
@@ -490,9 +472,7 @@ pub struct Book {
                     },
                     GTLangProjectSource {
                         path: "libs/rs/Cargo.toml".into(),
-                        code: r#"[package]
-
-[dependencies]
+                        code: r#"[dependencies]
 literals = "0.1"
 serde = { version = "1", features = ["derive"] }
 "#
@@ -581,19 +561,9 @@ pub struct Account {
 
     #[test]
     fn test_render_dependencies() {
-        let config = GTConfig::from_root("module", "./examples/dependencies");
-        let mut rs_config = config.as_rust_project();
+        let config = GTConfig::load(&"./examples/dependencies".into()).unwrap();
+        let rs_config = config.as_rust_project();
         let project = GTProject::load(&config).unwrap();
-
-        rs_config.dependencies = Some(HashMap::from_iter(vec![
-            ("serde".into(), "1.0".into()),
-            ("literals".into(), "0.1".into()),
-        ]));
-
-        rs_config.dependencies = Some(HashMap::from_iter(vec![(
-            "genotype_json_types".into(),
-            "genotype_json".into(),
-        )]));
 
         assert_eq!(
             RSProject::generate(&project, rs_config)
@@ -606,12 +576,19 @@ pub struct Account {
                         path: "libs/rs/.gitignore".into(),
                         code: r#"target"#.into(),
                     },
+                    // [NOTE] The config order is not preserved due to the figment crate missing
+                    // the feature for TOML files:
+                    // https://github.com/kossnocorp/genotype/issues/36
                     GTLangProjectSource {
                         path: "libs/rs/Cargo.toml".into(),
-                        code: r#"[package]
-
-[dependencies]
+                        code: r#"[dependencies]
+genotype_json_types = "0.1.0"
 serde = { version = "1", features = ["derive"] }
+
+[package]
+edition = "2021"
+name = "genotype_example_package"
+version = "0.1.0"
 "#
                         .into()
                     },
@@ -624,7 +601,7 @@ pub use prompt::*;
                     },
                     GTLangProjectSource {
                         path: "libs/rs/src/prompt.rs".into(),
-                        code: r#"use genotype_json::JsonAny;
+                        code: r#"use genotype_json_types::JsonAny;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

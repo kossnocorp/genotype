@@ -1,17 +1,4 @@
-use std::{
-    collections::HashMap,
-    hash::{Hash, Hasher},
-    path::PathBuf,
-};
-
-use genotype_lang_core_project::module::GTLangProjectModule;
-use genotype_lang_rs_config::RSProjectConfig;
-use genotype_lang_rs_tree::*;
-use genotype_parser::{tree::GTImportReference, GTIdentifier, GTImportName};
-use genotype_project::{module::GTProjectModule, GTPModuleIdentifierSource, GTProject};
-use miette::Result;
-
-use crate::{error::RSProjectError, resolve::RSPModuleResolve};
+use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct RSProjectModule {

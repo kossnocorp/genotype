@@ -1,15 +1,4 @@
-use genotype_lang_core_project::{module::GTLangProjectModule, source::GTLangProjectSource};
-use genotype_lang_core_tree::*;
-use genotype_lang_rs_config::RSProjectConfig;
-use genotype_lang_rs_tree::*;
-use genotype_parser::*;
-use genotype_project::GTProject;
-use indexmap::{IndexMap, IndexSet};
-use miette::Result;
-
-use crate::{error::RSProjectError, module::RSProjectModule};
-
-use super::RSProject;
+use crate::prelude::internal::*;
 
 impl RSProject {
     pub fn modules_source(&self) -> Result<Vec<GTLangProjectSource>> {

@@ -4,7 +4,7 @@ use thiserror::Error;
 
 #[derive(Error, Diagnostic, Debug, PartialEq, Clone)]
 pub enum GTProjectError {
-    #[error("`{0}` not found")]
+    #[error("`{0}` is not found")]
     #[diagnostic(code(GTP101))]
     Canonicalize(String),
 

@@ -3,7 +3,7 @@ use clap::Args;
 use genotype_config::GTConfig;
 use genotype_lang_core_project::project::GTLangProject;
 use genotype_lang_py_project::project::PYProject;
-use genotype_lang_rs_project::project::RSProject;
+use genotype_lang_rs_project::*;
 use genotype_lang_ts_project::project::TSProject;
 use genotype_project::GTProject;
 use genotype_writer::GTWriter;

@@ -19,13 +19,13 @@ pub struct GTProject {
 
 impl GTProject {
     pub fn load(config: &GTConfig) -> Result<Self> {
-        let src = config
-            .root()
-            .join(config.src())
-            .canonicalize()
-            .map_err(|_| {
-                GTProjectError::Canonicalize(format!("root directory {:?}", config.root))
-            })?;
+        let src_path = config.src();
+        let src = config.root().join(&src_path).canonicalize().map_err(|_| {
+            GTProjectError::Canonicalize(format!(
+                "src directory {:?}",
+                config.root().join(src_path)
+            ))
+        })?;
         let src = Arc::new(src);
         let pattern = config.entry_pattern()?;
 

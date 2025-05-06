@@ -1,9 +1,4 @@
-use std::path::PathBuf;
-
-use genotype_lang_core_project::source::GTLangProjectSource;
-use indexmap::{IndexMap, IndexSet};
-
-use super::RSProject;
+use crate::prelude::internal::*;
 
 impl RSProject {
     pub fn indices_source(&self) -> Vec<GTLangProjectSource> {

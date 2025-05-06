@@ -1,6 +1,4 @@
-use genotype_lang_core_project::source::GTLangProjectSource;
-
-use super::RSProject;
+use crate::prelude::internal::*;
 
 impl RSProject {
     pub fn gitignore_source(&self) -> GTLangProjectSource {

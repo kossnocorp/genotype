@@ -10,7 +10,6 @@ repository = "https://github.com/kossnocorp/genotype"
 [dependencies]
 genotype_parser = { version = "0.11.0", path = "../../../parser" }
 genotype_project = { version = "0.11.0", path = "../../../project" }
-genotype_config = { version = "0.11.0", path = "../../../config" }
 genotype_lang_core_tree = { version = "0.11.0", path = "../../core/tree" }
 genotype_lang_core_project = { version = "0.11.0", path = "../../core/project" }
 genotype_lang_rs_tree = { version = "0.11.0", path = "../tree" }
@@ -18,6 +17,9 @@ genotype_lang_rs_config = { version = "0.11.0", path = "../config" }
 miette = "7.2.0"
 thiserror = "1.0.64"
 indexmap = "2.6.0"
+toml = { version = "0.8.22", features = ["preserve_order"] }
+toml_edit = "0.22.26"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
+genotype_config = { version = "0.11.0", path = "../../../config" }

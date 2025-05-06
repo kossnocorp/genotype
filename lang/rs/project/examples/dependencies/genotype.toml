@@ -1,0 +1,15 @@
+src = "."
+
+[rust]
+enabled = true
+
+[rust.package.package]
+name = "genotype_example_package"
+version = "0.1.0"
+edition = "2021"
+
+[rust.package.dependencies]
+genotype_json_types = "0.1.0"
+
+[rust.dependencies]
+genotype_json_types = "genotype_json_types"
