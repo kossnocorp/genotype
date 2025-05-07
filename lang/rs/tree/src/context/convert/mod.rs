@@ -16,7 +16,7 @@ pub use naming::*;
 #[derive(Default)]
 pub struct RSConvertContext {
     resolve: RSConvertResolve,
-    config: RSLangConfig,
+    config: RsConfigLang,
     imports: Vec<RSUse>,
     definitions: Vec<RSDefinition>,
     defined: Vec<RSIdentifier>,
@@ -52,14 +52,19 @@ impl RSConvertContextMockable for RSConvertContext {
 
 impl RSConvertContext {
     pub fn empty(module_id: GTModuleId) -> Self {
-        Self::new(module_id, Default::default(), Default::default(), None)
+        Self::new(
+            module_id,
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
     }
 
     pub fn new(
         module_id: GTModuleId,
         resolve: RSConvertResolve,
-        config: RSLangConfig,
-        dependencies_config: Option<HashMap<String, String>>,
+        config: RsConfigLang,
+        dependencies_config: HashMap<String, String>,
     ) -> Self {
         Self {
             module_id,
@@ -76,7 +81,7 @@ impl RSConvertContext {
             doc: None,
             parents: vec![],
             field_attributes: vec![],
-            dependencies_config: dependencies_config.unwrap_or_default(),
+            dependencies_config,
         }
     }
 

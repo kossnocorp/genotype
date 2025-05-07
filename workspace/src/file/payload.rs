@@ -1,7 +1,7 @@
-use genotype_config::GTConfig;
+use genotype_config::GtConfig;
 use genotype_parser::GTModuleParse;
 
 pub enum GTWFilePayload {
-    Config(GTConfig),
+    Config(GtConfig),
     Module(GTModuleParse),
 }

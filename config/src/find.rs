@@ -1,33 +1,36 @@
-use std::path::PathBuf;
-
+use crate::prelude::internal::*;
 use figment::{
     providers::{Env, Format, Serialized, Toml},
     Figment,
 };
 
-use crate::{error::GTConfigError, result::GTConfigResult, GTConfig};
-
 pub const GTCONFIG_FILE: &str = "genotype.toml";
 
-impl GTConfig {
-    pub fn load(path: &PathBuf) -> GTConfigResult<Self> {
+impl GtConfig {
+    pub fn load(path: &PathBuf) -> Result<Self> {
         let file = Self::find(path)?;
 
-        let mut config: GTConfig = Figment::from(Serialized::defaults(GTConfig::default()))
+        let config_parent = if let Some(parent) = file.parent() {
+            RelativePathBuf::from_path(parent)
+        } else {
+            RelativePathBuf::from_path(".")
+        }
+        .into_diagnostic()?;
+
+        let mut config: GtConfig = Figment::from(Serialized::defaults(GtConfig::default()))
             // [TODO] Integrate with CLI:
             // .merge(Serialized::defaults(GTConfig::parse()))
             .merge(Toml::file(file))
             .merge(Env::prefixed("GT_"))
-            .extract()?;
+            .extract()
+            .into_diagnostic()?;
 
-        if let None = config.root {
-            config.root = Some(path.to_path_buf());
-        }
+        config.root = GtRootPath::new(config_parent.join_normalized(config.root.relative_path()));
 
         Ok(config)
     }
 
-    fn find(path: &PathBuf) -> GTConfigResult<PathBuf> {
+    fn find(path: &PathBuf) -> Result<PathBuf> {
         let mut current = if path.is_dir() {
             Some(path.as_path())
         } else {
@@ -42,6 +45,6 @@ impl GTConfig {
             current = dir.parent();
         }
 
-        Err(GTConfigError::MissingConfig(path.clone()))
+        Err(GtConfigError::MissingConfig(path.clone())).into_diagnostic()
     }
 }

@@ -1,5 +1,10 @@
-pub mod lang;
-pub mod project;
+mod index;
+pub use index::*;
 
+mod lang;
 pub use lang::*;
-pub use project::*;
+
+mod path;
+pub use path::*;
+
+pub mod prelude;

@@ -10,6 +10,7 @@ repository = "https://github.com/kossnocorp/genotype"
 [dependencies]
 genotype_lang_core_project = { version = "0.11.0", path = "../lang/core/project" }
 genotype_config = { version = "0.11.0", path = "../config" }
+genotype_path = { version = "0.11.0", path = "../path" }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

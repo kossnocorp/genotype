@@ -1,7 +1,16 @@
-pub mod lang;
-pub mod project;
-pub mod version;
+mod module;
+pub use module::*;
 
+mod lang;
 pub use lang::*;
-pub use project::*;
+
+mod index;
+pub use index::*;
+
+mod version;
 pub use version::*;
+
+mod path;
+pub use path::*;
+
+pub mod prelude;

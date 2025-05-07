@@ -1,9 +1,12 @@
-#[derive(Debug, PartialEq, Clone)]
-pub struct RSLangConfig {
+use crate::prelude::internal::*;
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+pub struct RsConfigLang {
+    #[serde(default = "RsConfigLang::default_derive")]
     pub derive: Vec<String>,
 }
 
-impl RSLangConfig {
+impl RsConfigLang {
     const DEFAULT_DERIVE: &'static [&str] = &[
         // [TODO] Implement Default for union enums
         // "Default",
@@ -29,7 +32,7 @@ impl RSLangConfig {
     }
 }
 
-impl Default for RSLangConfig {
+impl Default for RsConfigLang {
     fn default() -> Self {
         Self {
             derive: Self::default_derive(),
@@ -44,12 +47,12 @@ mod tests {
 
     #[test]
     fn test_ordered_floats() {
-        let config = RSLangConfig {
+        let config = RsConfigLang {
             derive: vec!["Debug".to_string(), "Eq".to_string()],
         };
         assert_eq!(config.needs_ordered_floats(), true);
 
-        let config = RSLangConfig {
+        let config = RsConfigLang {
             derive: vec!["Debug".to_string(), "Clone".to_string()],
         };
         assert_eq!(config.needs_ordered_floats(), false);

@@ -3,14 +3,14 @@ use crate::prelude::internal::*;
 pub struct PYConvertContextMock {
     imports: Vec<(PYDependencyIdent, PYIdentifier)>,
 
-    config: PYLangConfig,
+    config: PyConfigLang,
 }
 
 impl PYConvertContextMock {
     pub fn new(version: PYVersion) -> Self {
         Self {
             imports: Vec::new(),
-            config: PYLangConfig::new(version),
+            config: PyConfigLang::new(version),
         }
     }
 

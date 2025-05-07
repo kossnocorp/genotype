@@ -1,49 +1,57 @@
 use crate::prelude::internal::*;
 
-mod cargo;
 mod indices;
 mod misc;
 mod modules;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct RSProject {
-    pub modules: Vec<RSProjectModule>,
-    pub config: RSProjectConfig,
+pub struct RsProject<'a> {
+    pub modules: Vec<RsProjectModule>,
+    pub config: GtConfigPkg<'a, RsConfig>,
 }
 
-impl GTLangProject<RSProjectConfig> for RSProject {
-    fn generate(project: &GTProject, config: RSProjectConfig) -> Result<Self> {
-        let modules = Self::generate_modules(project, &config)?;
+impl<'a> GtlProject<'a> for RsProject<'a> {
+    type Module = RsProjectModule;
+
+    type LangConfig = RsConfig;
+
+    fn generate(project: &'a GtProject) -> Result<Self> {
+        let config = project.config.pkg_config_rs();
+        let modules = Self::generate_modules(&config.target, &project.modules)?;
         Ok(Self { modules, config })
     }
 
-    fn render(&self) -> Result<GTLangProjectRender> {
-        let mut files = vec![self.gitignore_source(), self.cargo_source()?];
+    fn dist(&self) -> Result<GtlProjectDist> {
+        let cargo = self.generate_manifest(&self.dependencies())?;
+
+        let mut files = vec![self.gitignore_source(), cargo];
         files.extend(self.indices_source());
         files.extend(self.modules_source()?);
 
-        Ok(GTLangProjectRender { files })
+        Ok(GtlProjectDist { files })
+    }
+
+    fn modules(&self) -> Vec<Self::Module> {
+        self.modules.clone()
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_config::GTConfig;
     use pretty_assertions::assert_eq;
+    use std::collections::HashSet;
 
     #[test]
     fn test_convert_base() {
-        let config = GTConfig::from_root("module", "./examples/basic");
-        let rs_config = config.as_rust_project();
-        let project = GTProject::load(&config).unwrap();
+        let config = GtConfig::from_root("module", "./examples/basic");
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
-            RSProject::generate(&project, rs_config).unwrap().modules,
+            RsProject::generate(&project).unwrap().modules,
             vec![
-                RSProjectModule {
-                    name: "author".into(),
-                    path: "libs/rs/src/author.rs".into(),
+                RsProjectModule {
+                    path: "author.rs".into(),
                     module: RSModule {
                         id: "author".into(),
                         doc: None,
@@ -74,9 +82,8 @@ mod tests {
                         definitions: Default::default()
                     },
                 },
-                RSProjectModule {
-                    name: "book".into(),
-                    path: "libs/rs/src/book.rs".into(),
+                RsProjectModule {
+                    path: "book.rs".into(),
                     module: RSModule {
                         id: "book".into(),
                         doc: None,
@@ -150,16 +157,14 @@ mod tests {
 
     #[test]
     fn test_convert_glob() {
-        let config = GTConfig::from_root("module", "./examples/glob");
-        let rs_config = config.as_rust_project();
-        let project = GTProject::load(&config).unwrap();
+        let config = GtConfig::from_root("module", "./examples/glob");
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
-            RSProject::generate(&project, rs_config).unwrap().modules,
+            RsProject::generate(&project).unwrap().modules,
             vec![
-                RSProjectModule {
-                    name: "author".into(),
-                    path: "libs/rs/src/author.rs".into(),
+                RsProjectModule {
+                    path: "author.rs".into(),
                     module: RSModule {
                         id: "author".into(),
                         doc: None,
@@ -217,9 +222,8 @@ mod tests {
                         )])
                     },
                 },
-                RSProjectModule {
-                    name: "book".into(),
-                    path: "libs/rs/src/book.rs".into(),
+                RsProjectModule {
+                    path: "book.rs".into(),
                     module: RSModule {
                         id: "book".into(),
                         doc: None,
@@ -318,40 +322,40 @@ mod tests {
 
     #[test]
     fn test_render() {
-        let config = GTConfig::from_root("module", "./examples/basic");
-        let rs_config = config.as_rust_project();
-        let project = GTProject::load(&config).unwrap();
+        let config = GtConfig::from_root("module", "./examples/basic");
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
-            RSProject::generate(&project, rs_config)
-                .unwrap()
-                .render()
-                .unwrap(),
-            GTLangProjectRender {
+            RsProject::generate(&project).unwrap().dist().unwrap(),
+            GtlProjectDist {
                 files: vec![
-                    GTLangProjectSource {
-                        path: "libs/rs/.gitignore".into(),
-                        code: r#"target"#.into(),
+                    GtlProjectFile {
+                        path: "examples/basic/dist/rs/.gitignore".into(),
+                        source: r#"target"#.into(),
                     },
-                    GTLangProjectSource {
-                        path: "libs/rs/Cargo.toml".into(),
-                        code: r#"[dependencies]
+                    GtlProjectFile {
+                        path: "examples/basic/dist/rs/Cargo.toml".into(),
+                        source: r#"[package]
+edition = "2024"
+
+[dependencies]
 serde = { version = "1", features = ["derive"] }
+
 "#
                         .into()
                     },
-                    GTLangProjectSource {
-                        path: "libs/rs/src/lib.rs".into(),
-                        code: r#"mod author;
+                    GtlProjectFile {
+                        path: "examples/basic/dist/rs/src/lib.rs".into(),
+                        source: r#"mod author;
 pub use author::*;
 mod book;
 pub use book::*;
 "#
                         .into(),
                     },
-                    GTLangProjectSource {
-                        path: "libs/rs/src/author.rs".into(),
-                        code: r#"use serde::{Deserialize, Serialize};
+                    GtlProjectFile {
+                        path: "examples/basic/dist/rs/src/author.rs".into(),
+                        source: r#"use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Author {
@@ -360,9 +364,9 @@ pub struct Author {
 "#
                         .into()
                     },
-                    GTLangProjectSource {
-                        path: "libs/rs/src/book.rs".into(),
-                        code: r#"use super::author::Author;
+                    GtlProjectFile {
+                        path: "examples/basic/dist/rs/src/book.rs".into(),
+                        source: r#"use super::author::Author;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -380,54 +384,54 @@ pub struct Book {
 
     #[test]
     fn test_render_nested() {
-        let config = GTConfig::from_root("module", "./examples/nested");
-        let rs_config = config.as_rust_project();
-        let project = GTProject::load(&config).unwrap();
+        let config = GtConfig::from_root("module", "./examples/nested");
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
-            RSProject::generate(&project, rs_config)
-                .unwrap()
-                .render()
-                .unwrap(),
-            GTLangProjectRender {
+            RsProject::generate(&project).unwrap().dist().unwrap(),
+            GtlProjectDist {
                 files: vec![
-                    GTLangProjectSource {
-                        path: "libs/rs/.gitignore".into(),
-                        code: r#"target"#.into(),
+                    GtlProjectFile {
+                        path: "examples/nested/dist/rs/.gitignore".into(),
+                        source: r#"target"#.into(),
                     },
-                    GTLangProjectSource {
-                        path: "libs/rs/Cargo.toml".into(),
-                        code: r#"[dependencies]
+                    GtlProjectFile {
+                        path: "examples/nested/dist/rs/Cargo.toml".into(),
+                        source: r#"[package]
+edition = "2024"
+
+[dependencies]
 serde = { version = "1", features = ["derive"] }
+
 "#
                         .into(),
                     },
-                    GTLangProjectSource {
-                        path: "libs/rs/src/lib.rs".into(),
-                        code: r#"mod inventory;
+                    GtlProjectFile {
+                        path: "examples/nested/dist/rs/src/lib.rs".into(),
+                        source: r#"mod inventory;
 pub use inventory::*;
 mod shop;
 pub use shop::*;
 "#
                         .into(),
                     },
-                    GTLangProjectSource {
-                        path: "libs/rs/src/shop/goods/mod.rs".into(),
-                        code: r#"mod book;
+                    GtlProjectFile {
+                        path: "examples/nested/dist/rs/src/shop/goods/mod.rs".into(),
+                        source: r#"mod book;
 pub use book::*;
 "#
                         .into(),
                     },
-                    GTLangProjectSource {
-                        path: "libs/rs/src/shop/mod.rs".into(),
-                        code: r#"mod goods;
+                    GtlProjectFile {
+                        path: "examples/nested/dist/rs/src/shop/mod.rs".into(),
+                        source: r#"mod goods;
 pub use goods::*;
 "#
                         .into(),
                     },
-                    GTLangProjectSource {
-                        path: "libs/rs/src/inventory.rs".into(),
-                        code: r#"use super::shop::goods::book::Book;
+                    GtlProjectFile {
+                        path: "examples/nested/dist/rs/src/inventory.rs".into(),
+                        source: r#"use super::shop::goods::book::Book;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -437,9 +441,9 @@ pub struct Inventory {
 "#
                         .into()
                     },
-                    GTLangProjectSource {
-                        path: "libs/rs/src/shop/goods/book.rs".into(),
-                        code: r#"use serde::{Deserialize, Serialize};
+                    GtlProjectFile {
+                        path: "examples/nested/dist/rs/src/shop/goods/book.rs".into(),
+                        source: r#"use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Book {
@@ -455,32 +459,32 @@ pub struct Book {
 
     #[test]
     fn test_render_extensions() {
-        let config = GTConfig::from_root("module", "./examples/extensions");
-        let rs_config = config.as_rust_project();
-        let project = GTProject::load(&config).unwrap();
+        let config = GtConfig::from_root("module", "./examples/extensions");
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
-            RSProject::generate(&project, rs_config)
-                .unwrap()
-                .render()
-                .unwrap(),
-            GTLangProjectRender {
+            RsProject::generate(&project).unwrap().dist().unwrap(),
+            GtlProjectDist {
                 files: vec![
-                    GTLangProjectSource {
-                        path: "libs/rs/.gitignore".into(),
-                        code: r#"target"#.into(),
+                    GtlProjectFile {
+                        path: "examples/extensions/dist/rs/.gitignore".into(),
+                        source: r#"target"#.into(),
                     },
-                    GTLangProjectSource {
-                        path: "libs/rs/Cargo.toml".into(),
-                        code: r#"[dependencies]
+                    GtlProjectFile {
+                        path: "examples/extensions/dist/rs/Cargo.toml".into(),
+                        source: r#"[package]
+edition = "2024"
+
+[dependencies]
 literals = "0.1"
 serde = { version = "1", features = ["derive"] }
+
 "#
                         .into(),
                     },
-                    GTLangProjectSource {
-                        path: "libs/rs/src/lib.rs".into(),
-                        code: r#"mod admin;
+                    GtlProjectFile {
+                        path: "examples/extensions/dist/rs/src/lib.rs".into(),
+                        source: r#"mod admin;
 pub use admin::*;
 mod named;
 pub use named::*;
@@ -489,9 +493,9 @@ pub use user::*;
 "#
                         .into(),
                     },
-                    GTLangProjectSource {
-                        path: "libs/rs/src/admin.rs".into(),
-                        code: r#"use literals::literal;
+                    GtlProjectFile {
+                        path: "examples/extensions/dist/rs/src/admin.rs".into(),
+                        source: r#"use literals::literal;
 use serde::{Deserialize, Serialize};
 use crate::named::Name;
 
@@ -522,9 +526,9 @@ pub enum AdminRole {
 "#
                         .into()
                     },
-                    GTLangProjectSource {
-                        path: "libs/rs/src/named.rs".into(),
-                        code: r#"use serde::{Deserialize, Serialize};
+                    GtlProjectFile {
+                        path: "examples/extensions/dist/rs/src/named.rs".into(),
+                        source: r#"use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Named {
@@ -535,9 +539,9 @@ pub type Name = String;
 "#
                         .into()
                     },
-                    GTLangProjectSource {
-                        path: "libs/rs/src/user.rs".into(),
-                        code: r#"use super::named::Name;
+                    GtlProjectFile {
+                        path: "examples/extensions/dist/rs/src/user.rs".into(),
+                        source: r#"use super::named::Name;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -561,47 +565,43 @@ pub struct Account {
 
     #[test]
     fn test_render_dependencies() {
-        let config = GTConfig::load(&"./examples/dependencies".into()).unwrap();
-        let rs_config = config.as_rust_project();
-        let project = GTProject::load(&config).unwrap();
+        let config = GtConfig::load(&"./examples/dependencies".into()).unwrap();
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
-            RSProject::generate(&project, rs_config)
-                .unwrap()
-                .render()
-                .unwrap(),
-            GTLangProjectRender {
+            RsProject::generate(&project).unwrap().dist().unwrap(),
+            GtlProjectDist {
                 files: vec![
-                    GTLangProjectSource {
-                        path: "libs/rs/.gitignore".into(),
-                        code: r#"target"#.into(),
+                    GtlProjectFile {
+                        path: "examples/dependencies/dist/rs/.gitignore".into(),
+                        source: r#"target"#.into(),
                     },
                     // [NOTE] The config order is not preserved due to the figment crate missing
                     // the feature for TOML files:
                     // https://github.com/kossnocorp/genotype/issues/36
-                    GTLangProjectSource {
-                        path: "libs/rs/Cargo.toml".into(),
-                        code: r#"[dependencies]
-genotype_json_types = "0.1.0"
-serde = { version = "1", features = ["derive"] }
-
-[package]
+                    GtlProjectFile {
+                        path: "examples/dependencies/dist/rs/Cargo.toml".into(),
+                        source: r#"[package]
 edition = "2021"
 name = "genotype_example_package"
 version = "0.1.0"
+[dependencies]
+genotype_json_types = "0.1.0"
+serde = { version = "1", features = ["derive"] }
+
 "#
                         .into()
                     },
-                    GTLangProjectSource {
-                        path: "libs/rs/src/lib.rs".into(),
-                        code: r#"mod prompt;
+                    GtlProjectFile {
+                        path: "examples/dependencies/dist/rs/src/lib.rs".into(),
+                        source: r#"mod prompt;
 pub use prompt::*;
 "#
                         .into(),
                     },
-                    GTLangProjectSource {
-                        path: "libs/rs/src/prompt.rs".into(),
-                        code: r#"use genotype_json_types::JsonAny;
+                    GtlProjectFile {
+                        path: "examples/dependencies/dist/rs/src/prompt.rs".into(),
+                        source: r#"use genotype_json_types::JsonAny;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

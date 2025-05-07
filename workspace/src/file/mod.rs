@@ -1,4 +1,4 @@
-use genotype_config::GTConfig;
+use genotype_config::GtConfig;
 use indexmap::IndexMap;
 use miette::Result;
 use std::sync::{Arc, Mutex};
@@ -31,7 +31,7 @@ impl GTWFile {
 
         Ok(GTWFile {
             source,
-            payload: GTWFilePayload::Config(GTConfig::default()),
+            payload: GTWFilePayload::Config(GtConfig::default()),
         })
     }
 

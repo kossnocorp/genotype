@@ -1,11 +1,5 @@
-use std::collections::{HashMap, HashSet};
-
-use genotype_parser::*;
+use crate::prelude::internal::*;
 use genotype_visitor::visitor::GTVisitor;
-
-use crate::GTPModuleDefinitionResolve;
-
-use super::GTPResolve;
 
 pub struct GTPResolveVisitor<'a> {
     module_id: GTModuleId,

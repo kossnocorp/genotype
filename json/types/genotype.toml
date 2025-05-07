@@ -3,7 +3,7 @@ name = "genotype-json-types"
 [ts]
 enabled = true
 
-[ts.package]
+[ts.manifest]
 name = "genotype-json-types"
 version = "0.1.0"
 description = "Genotype language JSON types"
@@ -11,22 +11,23 @@ authors = ["Sasha Koss <koss@nocorp.me>"]
 license = "MIT"
 files = ["src", "README.md"]
 
-[rust]
+[rs]
 enabled = true
 
-[rust.package]
+[rs.manifest]
+[rs.manifest.package]
 name = "genotype_json_types"
 version = "0.1.0"
 edition = "2021"
 description = "Genotype language JSON types"
 license = "MIT"
 
-[python]
+[py]
 enabled = true
 module = "genotype_json_types"
 version = "legacy"
 
-[python.package]
+[py.manifest]
 name = "genotype-json-types"
 version = "0.1.0"
 description = "Genotype language JSON types"

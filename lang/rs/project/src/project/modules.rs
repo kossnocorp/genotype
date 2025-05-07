@@ -1,17 +1,17 @@
 use crate::prelude::internal::*;
 
-impl RSProject {
-    pub fn modules_source(&self) -> Result<Vec<GTLangProjectSource>> {
+impl RsProject<'_> {
+    pub fn modules_source(&self) -> Result<Vec<GtlProjectFile>> {
         let mut context = RSRenderContext {
-            config: &self.config.lang,
+            config: &self.config.target.lang,
         };
         self.modules
             .iter()
             .map(
                 |module| match module.module.render(Default::default(), &mut context) {
-                    Ok(code) => Ok(GTLangProjectSource {
-                        path: module.path.clone(),
-                        code,
+                    Ok(code) => Ok(GtlProjectFile {
+                        path: self.config.pkg_src_file_path(&module.path),
+                        source: code,
                     }),
                     Err(err) => Err(err),
                 },
@@ -20,14 +20,13 @@ impl RSProject {
     }
 
     pub fn generate_modules(
-        project: &GTProject,
-        config: &RSProjectConfig,
-    ) -> Result<Vec<RSProjectModule>> {
-        let mut modules = project
-            .modules
+        config: &RsConfig,
+        modules: &Vec<GtProjectModule>,
+    ) -> Result<Vec<RsProjectModule>> {
+        let mut modules = modules
             .iter()
-            .map(|module| RSProjectModule::generate(&project, module, &config))
-            .collect::<Result<Vec<RSProjectModule>, _>>()?;
+            .map(|module| RsProjectModule::generate(&config, module))
+            .collect::<Result<Vec<RsProjectModule>, _>>()?;
 
         // Now when we generated modules, we need to go through all structs and resolve their fields
         // by copying the fields from the referenced struct as Rust doesn't support inheritance in

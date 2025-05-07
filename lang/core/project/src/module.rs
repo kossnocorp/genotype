@@ -1,8 +1,11 @@
-use genotype_project::{module::GTProjectModule, GTProject};
-use miette::Result;
+use crate::prelude::internal::*;
 
-pub trait GTLangProjectModule<Config> {
-    fn generate(project: &GTProject, module: &GTProjectModule, config: &Config) -> Result<Self>
+pub trait GtlProjectModule<LangConfig: GtlConfig> {
+    type Dependency: GtlDependencyIdent;
+
+    fn generate(config: &LangConfig, module: &GtProjectModule) -> Result<Self>
     where
         Self: Sized;
+
+    fn dependencies(&self) -> Vec<Self::Dependency>;
 }

@@ -1,3 +1,7 @@
-pub mod project;
+mod index;
+pub use index::*;
 
-pub use project::*;
+mod path;
+pub use path::*;
+
+pub mod prelude;

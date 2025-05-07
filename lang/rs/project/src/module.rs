@@ -1,33 +1,17 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct RSProjectModule {
-    pub name: String,
-    pub path: PathBuf,
+pub struct RsProjectModule {
+    pub path: GtPkgSrcRelativePath,
     pub module: RSModule,
     pub resolve: RSPModuleResolve,
 }
 
-impl GTLangProjectModule<RSProjectConfig> for RSProjectModule {
-    fn generate(
-        project: &GTProject,
-        module: &GTProjectModule,
-        config: &RSProjectConfig,
-    ) -> Result<Self> {
-        let relative_path = module
-            .path
-            .as_path()
-            .strip_prefix(project.root.as_path())
-            .map_err(|_| RSProjectError::BuildModulePath(module.path.as_name()))?;
-        let name = rs_parse_module_path(
-            relative_path
-                .with_extension("")
-                .as_os_str()
-                .to_str()
-                .unwrap()
-                .to_string(),
-        );
-        let path = config.source_path(relative_path.with_extension("rs"));
+impl GtlProjectModule<RsConfig> for RsProjectModule {
+    type Dependency = RSDependencyIdent;
+
+    fn generate(config: &RsConfig, module: &GtProjectModule) -> Result<Self> {
+        let path = module.path.to_pkg_src_relative_path("rs");
 
         let mut convert_resolve = RSConvertResolve::default();
         let mut prefixes: HashMap<String, u8> = HashMap::new();
@@ -98,25 +82,27 @@ impl GTLangProjectModule<RSProjectConfig> for RSProjectModule {
         let definitions = module.resolve.definitions.clone();
         let resolve = RSPModuleResolve { definitions };
 
-        let module = RSConvertModule::convert(
-            &module.module,
-            &convert_resolve,
-            &config.lang,
-            config.dependencies.clone(),
-        )
-        .map_err(|err| err.with_source_code(module.source_code.clone()))?
-        .0;
+        let module = RSConvertModule::convert(&module.module, &convert_resolve, &config)
+            .map_err(|err| err.with_source_code(module.source_code.clone()))?
+            .0;
 
         Ok(Self {
-            name,
             path,
             module,
             resolve,
         })
     }
+
+    fn dependencies(&self) -> Vec<Self::Dependency> {
+        self.module
+            .imports
+            .iter()
+            .map(|import| import.dependency.clone())
+            .collect()
+    }
 }
 
-impl Hash for RSProjectModule {
+impl Hash for RsProjectModule {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.path.hash(state);
     }

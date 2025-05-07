@@ -3,12 +3,12 @@ use std::sync::LazyLock;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct RSRenderContext<'a> {
-    pub config: &'a RSLangConfig,
+    pub config: &'a RsConfigLang,
 }
 
 impl GtlRenderContext for RSRenderContext<'_> {}
 
-static RS_DEFAULT_CONFIG: LazyLock<RSLangConfig> = LazyLock::new(|| RSLangConfig::default());
+static RS_DEFAULT_CONFIG: LazyLock<RsConfigLang> = LazyLock::new(|| RsConfigLang::default());
 
 impl Default for RSRenderContext<'_> {
     fn default() -> Self {

@@ -42,7 +42,7 @@ mod tests {
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 reference: GTImportReference::Glob((0, 0).into())
             }
-            .convert(&mut TSConvertContext::new(resolve, None)),
+            .convert(&mut TSConvertContext::new(resolve, Default::default())),
             TSImport {
                 path: "./path/to/module.ts".into(),
                 reference: TSImportReference::Glob("module".into())

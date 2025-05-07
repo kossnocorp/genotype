@@ -8,7 +8,7 @@ impl TSConvertModule {
     pub fn convert(
         module: &GTModule,
         resolve: TSConvertResolve,
-        dependencies_config: Option<HashMap<String, String>>,
+        dependencies_config: HashMap<String, String>,
     ) -> Self {
         let mut context = TSConvertContext::new(resolve, dependencies_config);
 
@@ -199,7 +199,7 @@ mod tests {
                     ],
                 },
                 resolve,
-                None
+                Default::default()
             ),
             TSConvertModule(TSModule {
                 doc: None,
@@ -293,7 +293,7 @@ mod tests {
                     aliases: vec![],
                 },
                 TSConvertResolve::new(),
-                None
+                Default::default()
             ),
             TSConvertModule(TSModule {
                 doc: Some(TSDoc("@file Hello, world!".into())),

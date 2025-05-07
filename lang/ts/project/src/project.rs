@@ -1,37 +1,31 @@
-use genotype_lang_core_project::{
-    module::GTLangProjectModule,
-    project::{GTLangProject, GTLangProjectRender},
-    source::GTLangProjectSource,
-};
-use genotype_lang_core_tree::*;
-use genotype_lang_ts_config::TSProjectConfig;
-use genotype_project::project::GTProject;
-use miette::Result;
-use std::path::PathBuf;
-
-use crate::{module::TSProjectModule, package::TSPackage};
+use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct TSProject {
-    pub modules: Vec<TSProjectModule>,
-    config: TSProjectConfig,
+pub struct TsProject<'a> {
+    pub modules: Vec<TsProjectModule>,
+    pub config: GtConfigPkg<'a, TsConfig>,
 }
 
-impl GTLangProject<TSProjectConfig> for TSProject {
-    fn generate(project: &GTProject, config: TSProjectConfig) -> Result<Self> {
+impl<'a> GtlProject<'a> for TsProject<'a> {
+    type Module = TsProjectModule;
+
+    type LangConfig = TsConfig;
+
+    fn generate(project: &'a GtProject) -> Result<Self> {
+        let config = project.config.pkg_config_ts();
         let modules = project
             .modules
             .iter()
-            .map(|module| TSProjectModule::generate(&project, module, &config))
+            .map(|module| TsProjectModule::generate(&config.target, module))
             .collect::<Result<_, _>>()?;
 
         Ok(Self { modules, config })
     }
 
-    fn render(&self) -> Result<GTLangProjectRender> {
-        let gitignore = GTLangProjectSource {
-            path: self.config.package_path(".gitignore".into()),
-            code: r#"node_modules"#.into(),
+    fn dist(&self) -> Result<GtlProjectDist> {
+        let gitignore = GtlProjectFile {
+            path: self.config.pkg_file_path(&".gitignore".into()),
+            source: r#"node_modules"#.into(),
         };
 
         let exports = self
@@ -41,87 +35,58 @@ impl GTLangProject<TSProjectConfig> for TSProject {
                 format!(
                     r#"export * from "./{}";
 "#,
-                    module
-                        .path
-                        .strip_prefix(self.config.out.join(self.config.src.clone()))
-                        // [TODO]
-                        .unwrap()
-                        .as_os_str()
-                        .to_str()
-                        // [TODO]
-                        .unwrap()
+                    module.path.as_str()
                 )
             })
             .collect::<Vec<_>>();
 
-        let barrel = GTLangProjectSource {
-            path: self.config.source_path("index.ts".into()),
-            code: exports.join(""),
+        let barrel = GtlProjectFile {
+            path: self.config.pkg_src_file_path(&"index.ts".into()),
+            source: exports.join(""),
         };
 
-        let package = GTLangProjectSource {
-            path: self.config.package_path("package.json".into()),
-            code: serde_json::to_string_pretty(&TSPackage {
-                types: PathBuf::from(self.config.src.clone())
-                    .join("index.ts")
-                    .as_os_str()
-                    .to_str()
-                    // [TODO]
-                    .unwrap()
-                    .into(),
-                // [TODO] Merge with package?
-                // files: vec![config
-                //     .src
-                //     .as_os_str()
-                //     .to_str()
-                //     // [TODO]
-                //     .unwrap()
-                //     .into()],
-                package: self.config.package.clone(),
-            })
-            .unwrap(),
-        };
+        let package_json = self.generate_manifest(&vec![])?;
+
         let project_modules = self
             .modules
             .iter()
-            .map(|module| GTLangProjectSource {
-                path: module.path.clone(),
-                code: module
+            .map(|module| {
+                let path = self.config.pkg_src_file_path(&module.path);
+                let source = module
                     .module
                     .render(Default::default(), &mut Default::default())
-                    .unwrap(),
+                    .unwrap();
+                GtlProjectFile { path, source }
             })
             .collect::<Vec<_>>();
 
-        let mut modules = vec![gitignore, package, barrel];
+        let mut modules = vec![gitignore, package_json, barrel];
         modules.extend(project_modules);
 
-        Ok(GTLangProjectRender { files: modules })
+        Ok(GtlProjectDist { files: modules })
+    }
+
+    fn modules(&self) -> Vec<Self::Module> {
+        self.modules.clone()
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
-
-    use genotype_config::GTConfig;
-    use genotype_lang_ts_tree::*;
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use genotype_config::GtConfig;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_base() {
-        let config = GTConfig::from_root("module", "./examples/basic");
-        let project = GTProject::load(&config).unwrap();
+        let config = GtConfig::from_root("module", "./examples/basic");
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
-            TSProject::generate(&project, config.as_ts_project())
-                .unwrap()
-                .modules,
+            TsProject::generate(&project).unwrap().modules,
             vec![
-                TSProjectModule {
-                    path: "libs/ts/src/author.ts".into(),
+                TsProjectModule {
+                    path: "author.ts".into(),
                     module: TSModule {
                         doc: None,
                         imports: vec![],
@@ -139,8 +104,8 @@ mod tests {
                         })]
                     },
                 },
-                TSProjectModule {
-                    path: "libs/ts/src/book.ts".into(),
+                TsProjectModule {
+                    path: "book.ts".into(),
                     module: TSModule {
                         doc: None,
                         imports: vec![TSImport {
@@ -176,15 +141,14 @@ mod tests {
 
     #[test]
     fn test_convert_glob() {
-        let config = GTConfig::from_root("module", "./examples/glob");
-        let ts_config = config.as_ts_project();
-        let project = GTProject::load(&config).unwrap();
+        let config = GtConfig::from_root("module", "./examples/glob");
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
-            TSProject::generate(&project, ts_config).unwrap().modules,
+            TsProject::generate(&project).unwrap().modules,
             vec![
-                TSProjectModule {
-                    path: "libs/ts/src/author.ts".into(),
+                TsProjectModule {
+                    path: "author.ts".into(),
                     module: TSModule {
                         doc: None,
                         imports: vec![],
@@ -208,8 +172,8 @@ mod tests {
                         ]
                     },
                 },
-                TSProjectModule {
-                    path: "libs/ts/src/book.ts".into(),
+                TsProjectModule {
+                    path: "book.ts".into(),
                     module: TSModule {
                         doc: None,
                         imports: vec![TSImport {
@@ -249,46 +213,42 @@ mod tests {
 
     #[test]
     fn test_render() {
-        let config = GTConfig::from_root("module", "./examples/basic");
-        let ts_config = config.as_ts_project();
-        let project = GTProject::load(&config).unwrap();
+        let config = GtConfig::from_root("module", "./examples/basic");
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
-            TSProject::generate(&project, ts_config)
-                .unwrap()
-                .render()
-                .unwrap(),
-            GTLangProjectRender {
+            TsProject::generate(&project).unwrap().dist().unwrap(),
+            GtlProjectDist {
                 files: vec![
-                    GTLangProjectSource {
-                        path: "libs/ts/.gitignore".into(),
-                        code: "node_modules".into(),
+                    GtlProjectFile {
+                        path: "examples/basic/dist/ts/.gitignore".into(),
+                        source: "node_modules".into(),
                     },
-                    GTLangProjectSource {
-                        path: "libs/ts/package.json".into(),
-                        code: r#"{
+                    GtlProjectFile {
+                        path: "examples/basic/dist/ts/package.json".into(),
+                        source: r#"{
   "types": "src/index.ts"
 }"#
                         .into()
                     },
-                    GTLangProjectSource {
-                        path: "libs/ts/src/index.ts".into(),
-                        code: r#"export * from "./author.ts";
+                    GtlProjectFile {
+                        path: "examples/basic/dist/ts/src/index.ts".into(),
+                        source: r#"export * from "./author.ts";
 export * from "./book.ts";
 "#
                         .into()
                     },
-                    GTLangProjectSource {
-                        path: "libs/ts/src/author.ts".into(),
-                        code: r#"export interface Author {
+                    GtlProjectFile {
+                        path: "examples/basic/dist/ts/src/author.ts".into(),
+                        source: r#"export interface Author {
   name: string;
 }
 "#
                         .into()
                     },
-                    GTLangProjectSource {
-                        path: "libs/ts/src/book.ts".into(),
-                        code: r#"import { Author } from "./author.ts";
+                    GtlProjectFile {
+                        path: "examples/basic/dist/ts/src/book.ts".into(),
+                        source: r#"import { Author } from "./author.ts";
 
 export interface Book {
   title: string;
@@ -304,42 +264,37 @@ export interface Book {
 
     #[test]
     fn test_render_dependencies() {
-        let config = GTConfig::from_root("module", "./examples/dependencies");
-        let mut ts_config = config.as_ts_project();
-        let project = GTProject::load(&config).unwrap();
-
-        ts_config.dependencies = Some(HashMap::from_iter(vec![(
+        let mut config = GtConfig::from_root("module", "./examples/dependencies");
+        config.ts.common.dependencies = HashMap::from_iter(vec![(
             "genotype_json_types".into(),
             "@genotype/json".into(),
-        )]));
+        )]);
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
-            TSProject::generate(&project, ts_config)
-                .unwrap()
-                .render()
-                .unwrap(),
-            GTLangProjectRender {
+            TsProject::generate(&project).unwrap().dist().unwrap(),
+            GtlProjectDist {
                 files: vec![
-                    GTLangProjectSource {
-                        path: "libs/ts/.gitignore".into(),
-                        code: "node_modules".into(),
+                    GtlProjectFile {
+                        path: "examples/dependencies/dist/ts/.gitignore".into(),
+                        source: "node_modules".into(),
                     },
-                    GTLangProjectSource {
-                        path: "libs/ts/package.json".into(),
-                        code: r#"{
+                    GtlProjectFile {
+                        path: "examples/dependencies/dist/ts/package.json".into(),
+                        source: r#"{
   "types": "src/index.ts"
 }"#
                         .into()
                     },
-                    GTLangProjectSource {
-                        path: "libs/ts/src/index.ts".into(),
-                        code: r#"export * from "./prompt.ts";
+                    GtlProjectFile {
+                        path: "examples/dependencies/dist/ts/src/index.ts".into(),
+                        source: r#"export * from "./prompt.ts";
 "#
                         .into()
                     },
-                    GTLangProjectSource {
-                        path: "libs/ts/src/prompt.ts".into(),
-                        code: r#"import { JsonAny } from "@genotype/json";
+                    GtlProjectFile {
+                        path: "examples/dependencies/dist/ts/src/prompt.ts".into(),
+                        source: r#"import { JsonAny } from "@genotype/json";
 
 export interface Prompt {
   content: string;

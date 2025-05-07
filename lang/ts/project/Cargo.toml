@@ -9,18 +9,18 @@ repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
 genotype_parser = { version = "0.11.0", path = "../../../parser" }
-genotype_project = { version = "0.11.0", path = "../../../project" }
+genotype_path = { version = "0.11.0", path = "../../../path" }
 genotype_config = { version = "0.11.0", path = "../../../config" }
+genotype_project = { version = "0.11.0", path = "../../../project" }
 genotype_lang_core_tree = { version = "0.11.0", path = "../../core/tree" }
+genotype_lang_core_config = { version = "0.11.0", path = "../../core/config" }
 genotype_lang_core_project = { version = "0.11.0", path = "../../core/project" }
 genotype_lang_ts_tree = { version = "0.11.0", path = "../tree" }
 genotype_lang_ts_config = { version = "0.11.0", path = "../config" }
-toml = "0.8.19"
+toml_edit = { version = "0.22.26", features = ["serde"] }
 serde = { version = "1.0.210", features = ["derive"] }
-serde_json = "1.0.132"
 miette = "7.2.0"
 thiserror = "1.0.64"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
-genotype_parser = { path = "../../../parser" }

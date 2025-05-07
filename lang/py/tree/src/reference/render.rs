@@ -48,7 +48,7 @@ mod tests {
                 .render(
                     Default::default(),
                     &mut PYRenderContext {
-                        config: &PYLangConfig::new(PYVersion::Legacy),
+                        config: &PyConfigLang::new(PYVersion::Legacy),
                         ..Default::default()
                     }
                 )

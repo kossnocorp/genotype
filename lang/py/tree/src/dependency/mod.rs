@@ -22,11 +22,20 @@ impl PYDependencyIdent {
         }
     }
 
-    pub fn external_str(&self) -> Option<String> {
+    pub fn external(&self) -> Option<PYDependencyExternal> {
         match self {
-            Self::Runtime => Some(r#"genotype-runtime = "^0.4""#.into()),
-            Self::TypingExtensions => Some(r#"typing-extensions = "^4""#.into()),
-            Self::Pydantic => Some(r#"pydantic = "^2.9""#.into()),
+            Self::Runtime => Some(PYDependencyExternal {
+                name: "genotype-runtime".into(),
+                version: "^0.4".into(),
+            }),
+            Self::TypingExtensions => Some(PYDependencyExternal {
+                name: "typing-extensions".into(),
+                version: "^4".into(),
+            }),
+            Self::Pydantic => Some(PYDependencyExternal {
+                name: "pydantic".into(),
+                version: "^2.9".into(),
+            }),
             _ => None,
         }
     }
@@ -38,4 +47,9 @@ impl From<&str> for PYDependencyIdent {
     fn from(str: &str) -> Self {
         PYDependencyIdent::Path(str.into())
     }
+}
+
+pub struct PYDependencyExternal {
+    pub name: String,
+    pub version: String,
 }

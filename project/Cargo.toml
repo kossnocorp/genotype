@@ -8,14 +8,18 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
+genotype_path = { version = "0.11.0", path = "../path", features = ["project"] }
 genotype_parser = { version = "0.11.0", path = "../parser" }
 genotype_config = { version = "0.11.0", path = "../config" }
 genotype_visitor = { version = "0.11.0", path = "../visitor" }
+genotype_lang_core_config = { version = "0.11.0", path = "../lang/core/config" }
 glob = "0.3.1"
 miette = { version = "7.2.0", features = ["fancy"] }
 num_cpus = "1.16.0"
 rayon = "1.10.0"
 thiserror = "1.0.64"
+delegate = "0.13.3"
+relative-path = "1.9.3"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

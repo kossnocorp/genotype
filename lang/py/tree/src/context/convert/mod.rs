@@ -1,6 +1,5 @@
 use crate::prelude::internal::*;
 use indexmap::IndexSet;
-use std::collections::HashMap;
 
 mod hoisting;
 mod references;
@@ -12,8 +11,8 @@ pub use mock::*;
 
 pub struct PYConvertContext {
     resolve: PYConvertResolve,
-    config: PYLangConfig,
-    dependencies_config: HashMap<String, String>,
+    config: PyConfig,
+    // dependencies_config: HashMap<String, String>,
     imports: Vec<PYImport>,
     definitions: Vec<PYDefinition>,
     defined: Vec<PYIdentifier>,
@@ -26,15 +25,10 @@ pub struct PYConvertContext {
 }
 
 impl PYConvertContext {
-    pub fn new(
-        resolve: PYConvertResolve,
-        config: PYLangConfig,
-        dependencies_config: Option<HashMap<String, String>>,
-    ) -> Self {
+    pub fn new(resolve: PYConvertResolve, config: PyConfig) -> Self {
         Self {
             resolve,
             config,
-            dependencies_config: dependencies_config.unwrap_or_default(),
             imports: vec![],
             definitions: vec![],
             defined: vec![],
@@ -67,7 +61,7 @@ impl PYConvertContext {
     pub fn resolve_path(&self, path: &GTPath) -> String {
         // [TODO] Refactor `resolve_path` between Python, Rust and TypeScript
         if let Some((package_path, inner_path)) = path.package_path() {
-            if let Some(dependency) = self.dependencies_config.get(&package_path) {
+            if let Some(dependency) = self.config.common.dependencies.get(&package_path) {
                 match inner_path {
                     Some(inner_path) => format!("{dependency}/{inner_path}"),
                     None => dependency.to_owned(),
@@ -155,7 +149,7 @@ impl PYConvertContext {
 
 impl PYConvertContextMockable for PYConvertContext {
     fn is_version(&self, version: PYVersion) -> bool {
-        self.config.version == version
+        self.config.lang.version == version
     }
 }
 
@@ -176,7 +170,7 @@ impl PYConvertContextConstraint for PYConvertContext {}
 
 impl Default for PYConvertContext {
     fn default() -> Self {
-        Self::new(PYConvertResolve::default(), Default::default(), None)
+        Self::new(PYConvertResolve::default(), Default::default())
     }
 }
 
@@ -241,7 +235,7 @@ mod tests {
         resolve
             .imported
             .insert(GTIdentifier((0, 0).into(), "Name".into()));
-        let context = PYConvertContext::new(resolve, Default::default(), None);
+        let context = PYConvertContext::new(resolve, Default::default());
         assert_eq!(
             context.is_forward_identifier(
                 &"Other".into(),

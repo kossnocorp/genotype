@@ -1,5 +1,4 @@
 use crate::prelude::internal::*;
-use std::collections::HashMap;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct RSConvertModule(pub RSModule);
@@ -8,15 +7,14 @@ impl RSConvertModule {
     pub fn convert(
         module: &GTModule,
         resolve: &RSConvertResolve,
-        config: &RSLangConfig,
-        dependecies_config: Option<HashMap<String, String>>,
+        config: &RsConfig,
     ) -> Result<Self> {
         // [TODO] Get rid of unnecessary clone
         let mut context = RSConvertContext::new(
             module.id.clone(),
             resolve.clone(),
-            config.clone(),
-            dependecies_config,
+            config.lang.clone(),
+            config.common.dependencies.clone(),
         );
 
         let doc = if let Some(doc) = &module.doc {
@@ -219,7 +217,6 @@ mod tests {
                 },
                 &resolve,
                 &Default::default(),
-                None
             )
             .unwrap(),
             RSConvertModule(RSModule {
@@ -346,7 +343,6 @@ mod tests {
                 },
                 &Default::default(),
                 &Default::default(),
-                None
             )
             .unwrap(),
             RSConvertModule(RSModule {

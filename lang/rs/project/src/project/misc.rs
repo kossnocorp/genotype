@@ -1,10 +1,10 @@
 use crate::prelude::internal::*;
 
-impl RSProject {
-    pub fn gitignore_source(&self) -> GTLangProjectSource {
-        GTLangProjectSource {
-            path: self.config.package_path(".gitignore".into()),
-            code: r#"target"#.into(),
+impl RsProject<'_> {
+    pub fn gitignore_source(&self) -> GtlProjectFile {
+        GtlProjectFile {
+            path: self.config.pkg_path().join(&".gitignore".into()),
+            source: r#"target"#.into(),
         }
     }
 }

@@ -1,24 +1,25 @@
 use genotype_parser::GTModule;
+use genotype_path::{GtModulePath, GtSrcRelativePath};
 use genotype_visitor::traverse::GTTraverse;
 use miette::{NamedSource, Result};
 
 mod definition;
-mod identifier;
-mod parse;
-mod path;
-mod resolve;
-
 pub use definition::*;
+
+mod identifier;
 pub use identifier::*;
+
+mod parse;
 pub use parse::*;
-pub use path::*;
+
+mod resolve;
 pub use resolve::*;
 
 use crate::{visitor::GTPResolveVisitor, GTPResolve};
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct GTProjectModule {
-    pub path: GTPModulePath,
+pub struct GtProjectModule {
+    pub path: GtModulePath,
     pub module: GTModule,
     /// Project module resolve.
     pub resolve: GTPModuleResolve,
@@ -28,7 +29,7 @@ pub struct GTProjectModule {
     pub source_code: NamedSource<String>,
 }
 
-impl GTProjectModule {
+impl GtProjectModule {
     pub fn try_new(
         project_resolve: &GTPResolve,
         modules: &Vec<GTProjectModuleParse>,
@@ -45,7 +46,7 @@ impl GTProjectModule {
 
         module_resolve.definitions = visitor.drain_definitions();
 
-        Ok(GTProjectModule {
+        Ok(GtProjectModule {
             path: parse.0,
             module: parse.1.module,
             resolve: module_resolve,

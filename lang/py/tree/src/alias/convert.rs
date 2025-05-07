@@ -234,8 +234,10 @@ mod tests {
     fn test_convert_resolve() {
         let mut context = PYConvertContext::new(
             Default::default(),
-            PYLangConfig::new(PYVersion::Legacy),
-            None,
+            PyConfig {
+                lang: PyConfigLang::new(PYVersion::Legacy),
+                ..Default::default()
+            },
         );
         assert_eq!(
             GTAlias {

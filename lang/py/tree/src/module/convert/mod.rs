@@ -10,15 +10,9 @@ pub(crate) use visitor::*;
 pub struct PYConvertModule(pub PYModule);
 
 impl PYConvertModule {
-    pub fn convert(
-        module: &GTModule,
-        resolve: &PYConvertResolve,
-        config: &PYLangConfig,
-        dependencies_config: Option<HashMap<String, String>>,
-    ) -> Self {
+    pub fn convert(module: &GTModule, resolve: &PYConvertResolve, config: &PyConfig) -> Self {
         // [TODO] Get rid of unnecessary clone
-        let mut context =
-            PYConvertContext::new(resolve.clone(), config.clone(), dependencies_config);
+        let mut context = PYConvertContext::new(resolve.clone(), config.clone());
 
         let doc = module.doc.as_ref().map(|doc| doc.convert(&mut context));
 
@@ -208,7 +202,6 @@ mod tests {
                 },
                 &resolve,
                 &Default::default(),
-                None
             ),
             PYConvertModule(PYModule {
                 doc: None,
@@ -313,7 +306,6 @@ mod tests {
                 },
                 &Default::default(),
                 &Default::default(),
-                None
             ),
             PYConvertModule(PYModule {
                 doc: Some(PYDoc("Hello, world!".into())),
@@ -409,7 +401,6 @@ mod tests {
                 },
                 &Default::default(),
                 &Default::default(),
-                None
             ),
             PYConvertModule(PYModule {
                 doc: None,
