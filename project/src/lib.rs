@@ -1,5 +1,5 @@
-mod diagnostic;
-pub use diagnostic::*;
+mod error;
+pub use error::*;
 
 mod module;
 pub use module::*;
@@ -9,3 +9,8 @@ pub use project::*;
 
 mod resolve;
 pub use resolve::*;
+
+mod path;
+pub use path::*;
+
+pub mod prelude;

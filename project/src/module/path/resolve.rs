@@ -1,4 +1,4 @@
-use super::GTPModulePath;
+use crate::prelude::internal::*;
 
 /// Project module path resolve data.
 #[derive(Debug, PartialEq, Clone)]

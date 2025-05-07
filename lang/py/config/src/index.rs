@@ -9,13 +9,13 @@ pub struct PyConfig {
     #[serde(flatten)]
     pub lang: PyConfigLang,
     #[serde(flatten)]
-    pub common: GtlConfigCommon<PyConfigOut>,
+    pub common: GtlConfigCommon<PyPackagePath>,
 }
 
 impl GtlConfig for PyConfig {
-    type Out = PyConfigOut;
+    type PackagePath = PyPackagePath;
 
-    fn common(&self) -> &GtlConfigCommon<Self::Out> {
+    fn common(&self) -> &GtlConfigCommon<Self::PackagePath> {
         &self.common
     }
 
@@ -26,18 +26,18 @@ impl GtlConfig for PyConfig {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(transparent)]
-pub struct PyConfigOut(PathBuf);
+pub struct PyPackagePath(PathBuf);
 
-impl GtlConfigOut for PyConfigOut {
-    const DEFAULT_OUT: &'static str = "py";
+impl GtlConfigPackagePathSetting for PyPackagePath {
+    const DEFAULT: &'static str = "py";
 
-    fn as_path<'a>(&'a self) -> &'a PathBuf {
+    fn pathbuf<'a>(&'a self) -> &'a PathBuf {
         &self.0
     }
 }
 
-impl Default for PyConfigOut {
+impl Default for PyPackagePath {
     fn default() -> Self {
-        PyConfigOut(Self::default_out())
+        PyPackagePath(Self::default_pathbuf())
     }
 }

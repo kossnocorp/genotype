@@ -3,13 +3,13 @@ use crate::prelude::internal::*;
 #[derive(Debug, PartialEq, Clone)]
 pub struct TsProject<'a> {
     pub modules: Vec<TSProjectModule>,
-    project: &'a GTProject,
+    project: &'a GtProject,
 }
 
 impl<'a> GtlProject<'a> for TsProject<'a> {
     type Module = TSProjectModule;
 
-    fn generate(project: &'a GTProject) -> Result<Self> {
+    fn generate(project: &'a GtProject) -> Result<Self> {
         let modules = project
             .modules
             .iter()
@@ -21,7 +21,7 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
 
     fn out(&self) -> Result<GtlProjectOut> {
         let gitignore = GtlProjectFile {
-            path: self.project.config.ts.package_path(".gitignore".into()),
+            path: self.project.config.ts.out_path().join(".gitignore".into()),
             source: r#"node_modules"#.into(),
         };
 
@@ -34,7 +34,7 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
 "#,
                     module
                         .path
-                        .strip_prefix(self.project.config.ts.src_dir_path())
+                        .strip_prefix(self.project.config.ts.src_path())
                         // [TODO]
                         .unwrap()
                         .as_os_str()
@@ -46,18 +46,22 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
             .collect::<Vec<_>>();
 
         let barrel = GtlProjectFile {
-            path: self.project.config.ts.src_file_path("index.ts".into()),
+            path: self.project.config.ts.src_path().join("index.ts".into()),
             source: exports.join(""),
         };
 
         let package = GtlProjectFile {
-            path: self.project.config.ts.package_path("package.json".into()),
+            path: self
+                .project
+                .lang_package_path(GtConfigLangIdent::Ts, "package.json".into()),
+
             source: serde_json::to_string_pretty(&TSPackage {
                 types: self
                     .project
                     .config
                     .ts
-                    .src_file_path("index.ts".into())
+                    .src_path()
+                    .join("index.ts".into())
                     .as_os_str()
                     .to_str()
                     // [TODO]
@@ -107,7 +111,7 @@ mod tests {
     #[test]
     fn test_convert_base() {
         let config = GtConfig::from_root("module", "./examples/basic");
-        let project = GTProject::load(config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         assert_eq!(
             TsProject::generate(&project).unwrap().modules,
@@ -169,7 +173,7 @@ mod tests {
     #[test]
     fn test_convert_glob() {
         let config = GtConfig::from_root("module", "./examples/glob");
-        let project = GTProject::load(config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         assert_eq!(
             TsProject::generate(&project).unwrap().modules,
@@ -241,7 +245,7 @@ mod tests {
     #[test]
     fn test_render() {
         let config = GtConfig::from_root("module", "./examples/basic");
-        let project = GTProject::load(config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         assert_eq!(
             TsProject::generate(&project).unwrap().out().unwrap(),
@@ -296,7 +300,7 @@ export interface Book {
             "genotype_json_types".into(),
             "@genotype/json".into(),
         )]);
-        let project = GTProject::load(config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         assert_eq!(
             TsProject::generate(&project).unwrap().out().unwrap(),

@@ -19,7 +19,7 @@ impl RsProject<'_> {
             .collect::<Result<Vec<_>>>()
     }
 
-    pub fn generate_modules(project: &GTProject) -> Result<Vec<RSProjectModule>> {
+    pub fn generate_modules(project: &GtProject) -> Result<Vec<RSProjectModule>> {
         let mut modules = project
             .modules
             .iter()

@@ -301,6 +301,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "delegate"
+version = "0.13.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b9b6483c2bbed26f97861cf57651d4f2b731964a28cd2257f934a4b452480d21"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "diff"
 version = "0.1.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -526,11 +537,13 @@ name = "genotype_config"
 version = "0.11.0"
 dependencies = [
  "clap",
+ "delegate",
  "figment",
  "genotype_lang_core_config",
  "genotype_lang_py_config",
  "genotype_lang_rs_config",
  "genotype_lang_ts_config",
+ "genotype_path",
  "heck",
  "miette",
  "pretty_assertions",
@@ -576,6 +589,7 @@ dependencies = [
 name = "genotype_lang_core_config"
 version = "0.11.0"
 dependencies = [
+ "delegate",
  "pretty_assertions",
  "serde",
  "toml",
@@ -789,10 +803,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "genotype_path"
+version = "0.11.0"
+dependencies = [
+ "pretty_assertions",
+ "relative-path",
+]
+
+[[package]]
 name = "genotype_project"
 version = "0.11.0"
 dependencies = [
+ "delegate",
  "genotype_config",
+ "genotype_lang_core_config",
  "genotype_parser",
  "genotype_visitor",
  "glob",
@@ -1484,6 +1508,12 @@ name = "regex-syntax"
 version = "0.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
+
+[[package]]
+name = "relative-path"
+version = "1.9.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ba39f3699c378cd8970968dcbff9c43159ea4cfbd88d43c00b22f2ef10a435d2"
 
 [[package]]
 name = "rustc-demangle"

@@ -9,8 +9,8 @@ pub struct TSProjectModule {
 impl GtlProjectModule for TSProjectModule {
     type Dependency = TSDependencyIdent;
 
-    fn generate(project: &GTProject, module: &GTProjectModule) -> Result<Self> {
-        let path = project.config.ts.src_file_path(
+    fn generate(project: &GtProject, module: &GTProjectModule) -> Result<Self> {
+        let path = project.config.ts.src_path().join(
             module
                 .path
                 .as_path()

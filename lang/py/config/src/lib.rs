@@ -1,8 +1,8 @@
 mod lang;
 pub use lang::*;
 
-mod project;
-pub use project::*;
+mod index;
+pub use index::*;
 
 mod version;
 pub use version::*;

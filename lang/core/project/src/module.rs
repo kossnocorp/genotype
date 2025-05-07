@@ -5,7 +5,7 @@ use miette::Result;
 pub trait GtlProjectModule {
     type Dependency: GtlDependencyIdent;
 
-    fn generate(project: &GTProject, module: &GTProjectModule) -> Result<Self>
+    fn generate(project: &GtProject, module: &GTProjectModule) -> Result<Self>
     where
         Self: Sized;
 

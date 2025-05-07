@@ -3,25 +3,27 @@ use crate::prelude::internal::*;
 #[derive(Debug, PartialEq, Clone)]
 pub struct PyProject<'a> {
     pub modules: Vec<PyProjectModule>,
-    project: &'a GTProject,
+    config: &'a GtConfigLang,
 }
 
 impl<'a> GtlProject<'a> for PyProject<'a> {
     type Module = PyProjectModule;
 
-    fn generate(project: &'a GTProject) -> Result<Self> {
-        let modules = project
+    fn generate(config: &'a GtConfigLang) -> Result<Self> {
+        let modules = config
             .modules
             .iter()
-            .map(|module| PyProjectModule::generate(&project, module))
+            .map(|module| PyProjectModule::generate(&config, module))
             .collect::<Result<_, _>>()?;
 
-        Ok(Self { modules, project })
+        Ok(Self { modules, config })
     }
 
     fn out(&self) -> Result<GtlProjectOut> {
         let gitignore = GtlProjectFile {
-            path: self.project.config.py.package_path(".gitignore".into()),
+            path: self
+                .project
+                .lang_package_path(GtConfigLangIdent::Py, ".gitignore".into()),
             source: r#"__pycache__
 dist"#
                 .into(),
@@ -111,13 +113,12 @@ dist"#
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_config::GtConfig;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_base() {
         let config = GtConfig::from_root("module", "./examples/basic");
-        let project = GTProject::load(config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         assert_eq!(
             PyProject::generate(&project).unwrap().modules,
@@ -195,7 +196,7 @@ mod tests {
     #[test]
     fn test_convert_glob() {
         let config = GtConfig::from_root("module", "./examples/glob");
-        let project = GTProject::load(config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         assert_eq!(
             PyProject::generate(&project).unwrap().modules,
@@ -290,7 +291,7 @@ mod tests {
     #[test]
     fn test_render() {
         let config = GtConfig::from_root("module", "./examples/basic");
-        let project = GTProject::load(config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         assert_eq!(
             PyProject::generate(&project).unwrap().out().unwrap(),
@@ -360,7 +361,7 @@ class Book(Model):
     #[test]
     fn test_render_nested() {
         let config = GtConfig::from_root("module", "./examples/nested");
-        let project = GTProject::load(config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         assert_eq!(
             PyProject::generate(&project).unwrap().out().unwrap(),
@@ -436,7 +437,7 @@ class Book(Model):
         config.py.common.dependencies =
             HashMap::from_iter(vec![("genotype_json_types".into(), "genotype_json".into())]);
 
-        let project = GTProject::load(config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         assert_eq!(
             PyProject::generate(&project).unwrap().out().unwrap(),

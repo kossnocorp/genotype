@@ -8,6 +8,7 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
+genotype_config = { version = "0.11.0", path = "../../../config" }
 genotype_parser = { version = "0.11.0", path = "../../../parser" }
 genotype_project = { version = "0.11.0", path = "../../../project" }
 genotype_lang_core_config = { version = "0.11.0", path = "../../core/config" }
@@ -22,4 +23,3 @@ toml_edit = { version = "0.22.26", features = ["serde"] }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
-genotype_config = { version = "0.11.0", path = "../../../config" }

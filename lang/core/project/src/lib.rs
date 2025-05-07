@@ -19,7 +19,7 @@ pub mod prelude;
 pub trait GtlProject<'a> {
     type Module: GtlProjectModule;
 
-    fn generate(project: &'a GTProject) -> Result<Self>
+    fn generate(project: &'a GtProject) -> Result<Self>
     where
         Self: Sized;
 

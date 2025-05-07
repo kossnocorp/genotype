@@ -2,7 +2,7 @@ use crate::prelude::internal::*;
 
 impl RsProject<'_> {
     pub fn indices_source(&self) -> Vec<GtlProjectFile> {
-        let src_root = self.project.config.rs.src_dir_path();
+        let src_root = self.project.config.rs.src_path();
         let mut crate_paths: IndexMap<PathBuf, IndexSet<String>> = IndexMap::new();
 
         for module in self.modules.iter() {

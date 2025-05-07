@@ -1,5 +1,4 @@
-use genotype_parser::GTSpan;
-use miette::Diagnostic;
+use crate::prelude::internal::*;
 use thiserror::Error;
 
 #[derive(Error, Diagnostic, Debug, PartialEq, Clone)]

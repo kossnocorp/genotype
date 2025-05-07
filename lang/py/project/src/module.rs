@@ -10,7 +10,7 @@ pub struct PyProjectModule {
 impl GtlProjectModule for PyProjectModule {
     type Dependency = PYDependencyIdent;
 
-    fn generate(project: &GTProject, module: &GTProjectModule) -> Result<Self> {
+    fn generate(project: &GtProject, module: &GTProjectModule) -> Result<Self> {
         let relative_path = module
             .path
             .as_path()
@@ -27,7 +27,8 @@ impl GtlProjectModule for PyProjectModule {
         let path = project
             .config
             .py
-            .src_file_path(relative_path.with_extension("py"));
+            .src_path()
+            .join(relative_path.with_extension("py"));
 
         let mut resolve = PYConvertResolve::default();
         let mut prefixes: HashMap<String, u8> = HashMap::new();

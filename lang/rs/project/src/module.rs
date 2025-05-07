@@ -11,7 +11,7 @@ pub struct RSProjectModule {
 impl GtlProjectModule for RSProjectModule {
     type Dependency = RSDependencyIdent;
 
-    fn generate(project: &GTProject, module: &GTProjectModule) -> Result<Self> {
+    fn generate(project: &GtProject, module: &GTProjectModule) -> Result<Self> {
         let relative_path = module
             .path
             .as_path()
@@ -28,7 +28,8 @@ impl GtlProjectModule for RSProjectModule {
         let path = project
             .config
             .rs
-            .src_file_path(relative_path.with_extension("rs"));
+            .src_path()
+            .join(relative_path.with_extension("rs"));
 
         let mut convert_resolve = RSConvertResolve::default();
         let mut prefixes: HashMap<String, u8> = HashMap::new();

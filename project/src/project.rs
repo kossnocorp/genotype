@@ -1,5 +1,4 @@
-use error::GTProjectError;
-use genotype_config::GtConfig;
+use crate::prelude::internal::*;
 use glob::glob;
 use miette::Result;
 use rayon::Scope;
@@ -9,16 +8,14 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use crate::*;
-
 #[derive(Debug, PartialEq, Clone)]
-pub struct GTProject {
+pub struct GtProject {
     pub root: Arc<PathBuf>,
     pub modules: Vec<GTProjectModule>,
     pub config: GtConfig,
 }
 
-impl GTProject {
+impl GtProject {
     pub fn load(config: GtConfig) -> Result<Self> {
         let src_path = config.root.join(&config.src);
         let src = src_path
@@ -72,7 +69,7 @@ impl GTProject {
         // set? Using HashSet will require Eq which will consequently break tests.
         modules.sort_by(|a, b| a.path.as_path().cmp(&b.path.as_path()));
 
-        Ok(GTProject {
+        Ok(GtProject {
             root: src.clone(),
             modules,
             config,
@@ -138,13 +135,13 @@ mod tests {
 
     #[test]
     fn test_glob() {
-        let project = GTProject::load(GtConfig::from_root("module", "./examples/basic"));
+        let project = GtProject::load(GtConfig::from_root("module", "./examples/basic"));
         assert_eq!(project.unwrap(), basic_project());
     }
 
     #[test]
     fn test_entry() {
-        let project = GTProject::load(GtConfig::from_entry(
+        let project = GtProject::load(GtConfig::from_entry(
             "module",
             "./examples/basic",
             "order.type",
@@ -161,10 +158,10 @@ mod tests {
         )
         .unwrap();
         let config = GtConfig::from_entry("module", "./examples/process", "anonymous.type");
-        let project = GTProject::load(config.clone());
+        let project = GtProject::load(config.clone());
         assert_eq!(
             project.unwrap(),
-            GTProject {
+            GtProject {
                 root: root.clone(),
                 modules: vec![GTProjectModule {
                     path: module_path.clone(),
@@ -354,7 +351,7 @@ mod tests {
         );
     }
 
-    fn basic_project() -> GTProject {
+    fn basic_project() -> GtProject {
         let config = GtConfig::from_root("module", "./examples/basic");
 
         let root = Arc::new(PathBuf::from("./examples/basic").canonicalize().unwrap());
@@ -371,7 +368,7 @@ mod tests {
             GTPModulePath::try_new(root.clone(), &PathBuf::from("./examples/basic/user.type"))
                 .unwrap();
 
-        GTProject {
+        GtProject {
             root: root.clone(),
             modules: vec![
                 GTProjectModule {

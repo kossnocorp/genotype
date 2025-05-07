@@ -51,7 +51,7 @@ pub trait GtlProjectManifest {
         };
 
         Ok(GtlProjectFile {
-            path: config.package_path(Self::FILE_NAME.into()),
+            path: config.out_path.join(Self::FILE_NAME.into()),
             source,
         })
     }

@@ -30,4 +30,5 @@ members = [
   "config",
   "workspace",
   "watcher",
+  "path",
 ]

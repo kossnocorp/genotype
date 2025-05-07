@@ -7,13 +7,13 @@ mod modules;
 #[derive(Debug, PartialEq, Clone)]
 pub struct RsProject<'a> {
     pub modules: Vec<RSProjectModule>,
-    pub project: &'a GTProject,
+    pub project: &'a GtProject,
 }
 
 impl<'a> GtlProject<'a> for RsProject<'a> {
     type Module = RSProjectModule;
 
-    fn generate(project: &'a GTProject) -> Result<Self> {
+    fn generate(project: &'a GtProject) -> Result<Self> {
         let modules = Self::generate_modules(project)?;
         Ok(Self { modules, project })
     }
@@ -45,7 +45,7 @@ mod tests {
     #[test]
     fn test_convert_base() {
         let config = GtConfig::from_root("module", "./examples/basic");
-        let project = GTProject::load(config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         assert_eq!(
             RsProject::generate(&project).unwrap().modules,
@@ -160,7 +160,7 @@ mod tests {
     #[test]
     fn test_convert_glob() {
         let config = GtConfig::from_root("module", "./examples/glob");
-        let project = GTProject::load(config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         assert_eq!(
             RsProject::generate(&project).unwrap().modules,
@@ -327,7 +327,7 @@ mod tests {
     #[test]
     fn test_render() {
         let config = GtConfig::from_root("module", "./examples/basic");
-        let project = GTProject::load(config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         assert_eq!(
             RsProject::generate(&project).unwrap().out().unwrap(),
@@ -385,7 +385,7 @@ pub struct Book {
     #[test]
     fn test_render_nested() {
         let config = GtConfig::from_root("module", "./examples/nested");
-        let project = GTProject::load(config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         assert_eq!(
             RsProject::generate(&project).unwrap().out().unwrap(),
@@ -456,7 +456,7 @@ pub struct Book {
     #[test]
     fn test_render_extensions() {
         let config = GtConfig::from_root("module", "./examples/extensions");
-        let project = GTProject::load(config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         assert_eq!(
             RsProject::generate(&project).unwrap().out().unwrap(),
@@ -558,7 +558,7 @@ pub struct Account {
     #[test]
     fn test_render_dependencies() {
         let config = GtConfig::load(&"./examples/dependencies".into()).unwrap();
-        let project = GTProject::load(config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         assert_eq!(
             RsProject::generate(&project).unwrap().out().unwrap(),

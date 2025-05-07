@@ -4,12 +4,9 @@ use std::{
     sync::Arc,
 };
 
-use genotype_parser::tree::GTPath;
-use miette::Result;
+use crate::prelude::internal::*;
 
-use crate::error::GTProjectError;
-
-pub mod resolve;
+mod resolve;
 pub use resolve::*;
 
 #[derive(Debug, Clone)]

@@ -5,7 +5,7 @@ use genotype_lang_core_project::*;
 use genotype_lang_py_project::*;
 use genotype_lang_rs_project::*;
 use genotype_lang_ts_project::*;
-use genotype_project::GTProject;
+use genotype_project::GtProject;
 use genotype_writer::GTWriter;
 use miette::Result;
 use owo_colors::OwoColorize;
@@ -20,7 +20,7 @@ pub struct GTBuildCommand {
 
 pub fn build_command(args: &GTBuildCommand) -> Result<()> {
     let config = GtConfig::load(&args.path)?;
-    let project = GTProject::load(config)?;
+    let project = GtProject::load(config)?;
 
     let mut langs = vec![];
 
