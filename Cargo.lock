@@ -502,9 +502,12 @@ dependencies = [
  "clap",
  "genotype_config",
  "genotype_lang_core_project",
+ "genotype_lang_py_config",
  "genotype_lang_py_project",
  "genotype_lang_py_tree",
+ "genotype_lang_rs_config",
  "genotype_lang_rs_project",
+ "genotype_lang_ts_config",
  "genotype_lang_ts_project",
  "genotype_project",
  "genotype_writer",
@@ -524,6 +527,7 @@ version = "0.11.0"
 dependencies = [
  "clap",
  "figment",
+ "genotype_lang_core_config",
  "genotype_lang_py_config",
  "genotype_lang_rs_config",
  "genotype_lang_ts_config",
@@ -569,12 +573,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "genotype_lang_core_config"
+version = "0.11.0"
+dependencies = [
+ "pretty_assertions",
+ "serde",
+ "toml",
+]
+
+[[package]]
 name = "genotype_lang_core_project"
 version = "0.11.0"
 dependencies = [
+ "genotype_lang_core_config",
+ "genotype_lang_core_tree",
  "genotype_project",
+ "indexmap",
  "miette",
  "pretty_assertions",
+ "serde_json",
+ "thiserror 1.0.64",
+ "toml",
+ "toml_edit",
 ]
 
 [[package]]
@@ -601,6 +621,7 @@ dependencies = [
 name = "genotype_lang_py_config"
 version = "0.11.0"
 dependencies = [
+ "genotype_lang_core_config",
  "pretty_assertions",
  "serde",
 ]
@@ -610,15 +631,18 @@ name = "genotype_lang_py_project"
 version = "0.11.0"
 dependencies = [
  "genotype_config",
+ "genotype_lang_core_config",
  "genotype_lang_core_project",
  "genotype_lang_core_tree",
  "genotype_lang_py_config",
  "genotype_lang_py_tree",
  "genotype_parser",
  "genotype_project",
+ "indexmap",
  "miette",
  "pretty_assertions",
  "thiserror 1.0.64",
+ "toml_edit",
 ]
 
 [[package]]
@@ -638,9 +662,9 @@ dependencies = [
 name = "genotype_lang_rs_config"
 version = "0.11.0"
 dependencies = [
+ "genotype_lang_core_config",
  "pretty_assertions",
  "serde",
- "toml",
 ]
 
 [[package]]
@@ -655,6 +679,7 @@ name = "genotype_lang_rs_project"
 version = "0.11.0"
 dependencies = [
  "genotype_config",
+ "genotype_lang_core_config",
  "genotype_lang_core_project",
  "genotype_lang_core_tree",
  "genotype_lang_rs_config",
@@ -665,7 +690,6 @@ dependencies = [
  "miette",
  "pretty_assertions",
  "thiserror 1.0.64",
- "toml",
  "toml_edit",
 ]
 
@@ -700,8 +724,9 @@ dependencies = [
 name = "genotype_lang_ts_config"
 version = "0.11.0"
 dependencies = [
+ "genotype_lang_core_config",
  "pretty_assertions",
- "toml",
+ "serde",
 ]
 
 [[package]]
@@ -709,6 +734,7 @@ name = "genotype_lang_ts_project"
 version = "0.11.0"
 dependencies = [
  "genotype_config",
+ "genotype_lang_core_config",
  "genotype_lang_core_project",
  "genotype_lang_core_tree",
  "genotype_lang_ts_config",
@@ -720,7 +746,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 1.0.64",
- "toml",
+ "toml_edit",
 ]
 
 [[package]]
@@ -1516,6 +1542,7 @@ version = "1.0.140"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "20068b6e96dc6c9bd23e01df8827e6c7e1f2fddd43c21810382803c136b99373"
 dependencies = [
+ "indexmap",
  "itoa",
  "memchr",
  "ryu",

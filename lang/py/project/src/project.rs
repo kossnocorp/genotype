@@ -1,83 +1,34 @@
-use genotype_lang_core_project::{
-    module::GTLangProjectModule,
-    project::{GTLangProject, GTLangProjectRender},
-    source::GTLangProjectSource,
-};
-use genotype_lang_core_tree::*;
-use genotype_lang_py_config::PYProjectConfig;
-use genotype_lang_py_tree::*;
-use genotype_project::project::GTProject;
-use miette::Result;
-use std::{collections::HashSet, path::PathBuf};
-
-use crate::module::PYProjectModule;
+use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct PYProject {
-    pub modules: Vec<PYProjectModule>,
-    config: PYProjectConfig,
+pub struct PyProject<'a> {
+    pub modules: Vec<PyProjectModule>,
+    project: &'a GTProject,
 }
 
-impl GTLangProject<PYProjectConfig> for PYProject {
-    fn generate(project: &GTProject, config: PYProjectConfig) -> Result<Self> {
+impl<'a> GtlProject<'a> for PyProject<'a> {
+    type Module = PyProjectModule;
+
+    fn generate(project: &'a GTProject) -> Result<Self> {
         let modules = project
             .modules
             .iter()
-            .map(|module| PYProjectModule::generate(&project, module, &config))
+            .map(|module| PyProjectModule::generate(&project, module))
             .collect::<Result<_, _>>()?;
 
-        Ok(Self { modules, config })
+        Ok(Self { modules, project })
     }
 
-    fn render(&self) -> Result<GTLangProjectRender> {
-        let gitignore = GTLangProjectSource {
-            path: self.config.package_path(".gitignore".into()),
-            code: r#"__pycache__
+    fn out(&self) -> Result<GtlProjectOut> {
+        let gitignore = GtlProjectFile {
+            path: self.project.config.py.package_path(".gitignore".into()),
+            source: r#"__pycache__
 dist"#
                 .into(),
         };
 
-        let dependencies = self
-            .modules
-            .iter()
-            .flat_map(|module| {
-                module
-                    .module
-                    .imports
-                    .iter()
-                    .map(|import| import.dependency.clone())
-            })
-            .collect::<HashSet<_>>();
-
-        let pyproject = GTLangProjectSource {
-            path: self.config.package_path("pyproject.toml".into()),
-            code: format!(
-                r#"[tool.poetry]{}
-packages = [{{ include = "{}" }}]
-
-[tool.poetry.dependencies]
-{}{}
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-"#,
-                if let Some(package) = &self.config.package {
-                    format!("\n{}", package)
-                } else {
-                    "".into()
-                },
-                self.config.module,
-                self.config.lang.version.as_dependency_str(),
-                dependencies.iter().fold("".into(), |acc, dependency| {
-                    if let Some(str) = dependency.external_str() {
-                        format!("{acc}\n{str}")
-                    } else {
-                        acc
-                    }
-                })
-            ),
-        };
+        let pyproject =
+            PyProjectManifest::manifest_file(&self.project.config.py, &self.dependencies())?;
 
         let mut imports = vec![];
         let mut exports = vec![];
@@ -96,21 +47,21 @@ build-backend = "poetry.core.masonry.api"
             ));
         }
 
-        let init = GTLangProjectSource {
-            path: self.config.source_path("__init__.py".into()),
-            code: format!(
+        let init = GtlProjectFile {
+            path: self.project.config.py.src_file_path("__init__.py".into()),
+            source: format!(
                 "{}\n\n\n__all__ = [{}]",
                 imports.join("\n"),
                 exports.join(", ")
             ),
         };
 
-        let py_typed = GTLangProjectSource {
-            path: self.config.source_path("py.typed".into()),
-            code: "".into(),
+        let py_typed = GtlProjectFile {
+            path: self.project.config.py.src_file_path("py.typed".into()),
+            source: "".into(),
         };
 
-        let module_root = self.config.module_root_path();
+        let module_root = self.project.config.py.src_dir_path();
         let mut module_paths: HashSet<PathBuf> = HashSet::new();
 
         for module in self.modules.iter() {
@@ -121,15 +72,13 @@ build-backend = "poetry.core.masonry.api"
             }
         }
 
-        let module_inits = module_paths
-            .into_iter()
-            .map(|module_path| GTLangProjectSource {
-                path: module_path.join("__init__.py"),
-                code: "".into(),
-            });
+        let module_inits = module_paths.into_iter().map(|module_path| GtlProjectFile {
+            path: module_path.join("__init__.py"),
+            source: "".into(),
+        });
 
         let mut render_context = PYRenderContext {
-            config: &self.config.lang,
+            config: &self.project.config.py.lang,
             ..Default::default()
         };
 
@@ -140,9 +89,9 @@ build-backend = "poetry.core.masonry.api"
                 module
                     .module
                     .render(Default::default(), &mut render_context)
-                    .map(|code| GTLangProjectSource {
+                    .map(|code| GtlProjectFile {
                         path: module.path.clone(),
-                        code,
+                        source: code,
                     })
             })
             .collect::<Result<Vec<_>>>()?;
@@ -151,30 +100,29 @@ build-backend = "poetry.core.masonry.api"
         modules.extend(module_inits);
         modules.extend(project_modules);
 
-        Ok(GTLangProjectRender { files: modules })
+        Ok(GtlProjectOut { files: modules })
+    }
+
+    fn modules(&self) -> Vec<Self::Module> {
+        self.modules.clone()
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
-
-    use genotype_config::GTConfig;
-    use genotype_lang_py_tree::*;
-    use pretty_assertions::assert_eq;
-
     use super::*;
+    use genotype_config::GtConfig;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_base() {
-        let config = GTConfig::from_root("module", "./examples/basic");
-        let py_config = config.as_python_project().unwrap();
-        let project = GTProject::load(&config).unwrap();
+        let config = GtConfig::from_root("module", "./examples/basic");
+        let project = GTProject::load(config).unwrap();
 
         assert_eq!(
-            PYProject::generate(&project, py_config).unwrap().modules,
+            PyProject::generate(&project).unwrap().modules,
             vec![
-                PYProjectModule {
+                PyProjectModule {
                     name: "author".into(),
                     path: "libs/py/module/author.py".into(),
                     module: PYModule {
@@ -199,7 +147,7 @@ mod tests {
                         })]
                     },
                 },
-                PYProjectModule {
+                PyProjectModule {
                     name: "book".into(),
                     path: "libs/py/module/book.py".into(),
                     module: PYModule {
@@ -246,14 +194,13 @@ mod tests {
 
     #[test]
     fn test_convert_glob() {
-        let config = GTConfig::from_root("module", "./examples/glob");
-        let py_config = config.as_python_project().unwrap();
-        let project = GTProject::load(&config).unwrap();
+        let config = GtConfig::from_root("module", "./examples/glob");
+        let project = GTProject::load(config).unwrap();
 
         assert_eq!(
-            PYProject::generate(&project, py_config).unwrap().modules,
+            PyProject::generate(&project).unwrap().modules,
             vec![
-                PYProjectModule {
+                PyProjectModule {
                     name: "author".into(),
                     path: "libs/py/module/author.py".into(),
                     module: PYModule {
@@ -286,7 +233,7 @@ mod tests {
                         ]
                     },
                 },
-                PYProjectModule {
+                PyProjectModule {
                     name: "book".into(),
                     path: "libs/py/module/book.py".into(),
                     module: PYModule {
@@ -342,26 +289,22 @@ mod tests {
 
     #[test]
     fn test_render() {
-        let config = GTConfig::from_root("module", "./examples/basic");
-        let py_config = config.as_python_project().unwrap();
-        let project = GTProject::load(&config).unwrap();
+        let config = GtConfig::from_root("module", "./examples/basic");
+        let project = GTProject::load(config).unwrap();
 
         assert_eq!(
-            PYProject::generate(&project, py_config)
-                .unwrap()
-                .render()
-                .unwrap(),
-            GTLangProjectRender {
+            PyProject::generate(&project).unwrap().out().unwrap(),
+            GtlProjectOut {
                 files: vec![
-                    GTLangProjectSource {
+                    GtlProjectFile {
                         path: "libs/py/.gitignore".into(),
-                        code: r#"__pycache__
+                        source: r#"__pycache__
 dist"#
                             .into(),
                     },
-                    GTLangProjectSource {
+                    GtlProjectFile {
                         path: "libs/py/pyproject.toml".into(),
-                        code: r#"[tool.poetry]
+                        source: r#"[tool.poetry]
 packages = [{ include = "module" }]
 
 [tool.poetry.dependencies]
@@ -374,22 +317,22 @@ build-backend = "poetry.core.masonry.api"
 "#
                         .into(),
                     },
-                    GTLangProjectSource {
+                    GtlProjectFile {
                         path: "libs/py/module/py.typed".into(),
-                        code: "".into(),
+                        source: "".into(),
                     },
-                    GTLangProjectSource {
+                    GtlProjectFile {
                         path: "libs/py/module/__init__.py".into(),
-                        code: r#"from .author import Author
+                        source: r#"from .author import Author
 from .book import Book
 
 
 __all__ = ["Author", "Book"]"#
                             .into(),
                     },
-                    GTLangProjectSource {
+                    GtlProjectFile {
                         path: "libs/py/module/author.py".into(),
-                        code: r#"from genotype import Model
+                        source: r#"from genotype import Model
 
 
 class Author(Model):
@@ -397,9 +340,9 @@ class Author(Model):
 "#
                         .into()
                     },
-                    GTLangProjectSource {
+                    GtlProjectFile {
                         path: "libs/py/module/book.py".into(),
-                        code: r#"from .author import Author
+                        source: r#"from .author import Author
 from genotype import Model
 
 
@@ -416,26 +359,22 @@ class Book(Model):
 
     #[test]
     fn test_render_nested() {
-        let config = GTConfig::from_root("module", "./examples/nested");
-        let py_config = config.as_python_project().unwrap();
-        let project = GTProject::load(&config).unwrap();
+        let config = GtConfig::from_root("module", "./examples/nested");
+        let project = GTProject::load(config).unwrap();
 
         assert_eq!(
-            PYProject::generate(&project, py_config)
-                .unwrap()
-                .render()
-                .unwrap(),
-            GTLangProjectRender {
+            PyProject::generate(&project).unwrap().out().unwrap(),
+            GtlProjectOut {
                 files: vec![
-                    GTLangProjectSource {
+                    GtlProjectFile {
                         path: "libs/py/.gitignore".into(),
-                        code: r#"__pycache__
+                        source: r#"__pycache__
 dist"#
                             .into(),
                     },
-                    GTLangProjectSource {
+                    GtlProjectFile {
                         path: "libs/py/pyproject.toml".into(),
-                        code: r#"[tool.poetry]
+                        source: r#"[tool.poetry]
 packages = [{ include = "module" }]
 
 [tool.poetry.dependencies]
@@ -448,26 +387,26 @@ build-backend = "poetry.core.masonry.api"
 "#
                         .into(),
                     },
-                    GTLangProjectSource {
+                    GtlProjectFile {
                         path: "libs/py/module/py.typed".into(),
-                        code: "".into(),
+                        source: "".into(),
                     },
-                    GTLangProjectSource {
+                    GtlProjectFile {
                         path: "libs/py/module/__init__.py".into(),
-                        code: r#"from .inventory import Inventory
+                        source: r#"from .inventory import Inventory
 from .shop.goods.book import Book
 
 
 __all__ = ["Inventory", "Book"]"#
                             .into(),
                     },
-                    GTLangProjectSource {
+                    GtlProjectFile {
                         path: "libs/py/module/shop/goods/__init__.py".into(),
-                        code: "".into(),
+                        source: "".into(),
                     },
-                    GTLangProjectSource {
+                    GtlProjectFile {
                         path: "libs/py/module/inventory.py".into(),
-                        code: r#"from .shop.goods.book import Book
+                        source: r#"from .shop.goods.book import Book
 from genotype import Model
 
 
@@ -476,9 +415,9 @@ class Inventory(Model):
 "#
                         .into()
                     },
-                    GTLangProjectSource {
+                    GtlProjectFile {
                         path: "libs/py/module/shop/goods/book.py".into(),
-                        code: r#"from genotype import Model
+                        source: r#"from genotype import Model
 
 
 class Book(Model):
@@ -493,31 +432,25 @@ class Book(Model):
 
     #[test]
     fn test_render_dependencies() {
-        let config = GTConfig::from_root("module", "./examples/dependencies");
-        let mut py_config = config.as_python_project().unwrap();
-        let project = GTProject::load(&config).unwrap();
+        let mut config = GtConfig::from_root("module", "./examples/dependencies");
+        config.py.common.dependencies =
+            HashMap::from_iter(vec![("genotype_json_types".into(), "genotype_json".into())]);
 
-        py_config.dependencies = Some(HashMap::from_iter(vec![(
-            "genotype_json_types".into(),
-            "genotype_json".into(),
-        )]));
+        let project = GTProject::load(config).unwrap();
 
         assert_eq!(
-            PYProject::generate(&project, py_config)
-                .unwrap()
-                .render()
-                .unwrap(),
-            GTLangProjectRender {
+            PyProject::generate(&project).unwrap().out().unwrap(),
+            GtlProjectOut {
                 files: vec![
-                    GTLangProjectSource {
+                    GtlProjectFile {
                         path: "libs/py/.gitignore".into(),
-                        code: r#"__pycache__
+                        source: r#"__pycache__
 dist"#
                             .into(),
                     },
-                    GTLangProjectSource {
+                    GtlProjectFile {
                         path: "libs/py/pyproject.toml".into(),
-                        code: r#"[tool.poetry]
+                        source: r#"[tool.poetry]
 packages = [{ include = "module" }]
 
 [tool.poetry.dependencies]
@@ -530,21 +463,21 @@ build-backend = "poetry.core.masonry.api"
 "#
                         .into(),
                     },
-                    GTLangProjectSource {
+                    GtlProjectFile {
                         path: "libs/py/module/py.typed".into(),
-                        code: "".into(),
+                        source: "".into(),
                     },
-                    GTLangProjectSource {
+                    GtlProjectFile {
                         path: "libs/py/module/__init__.py".into(),
-                        code: r#"from .prompt import Prompt
+                        source: r#"from .prompt import Prompt
 
 
 __all__ = ["Prompt"]"#
                             .into(),
                     },
-                    GTLangProjectSource {
+                    GtlProjectFile {
                         path: "libs/py/module/prompt.py".into(),
-                        code: r#"from genotype_json import JsonAny
+                        source: r#"from genotype_json import JsonAny
 from genotype import Model
 
 

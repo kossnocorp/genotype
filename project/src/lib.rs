@@ -1,9 +1,11 @@
-pub mod diagnostic;
-pub mod module;
-pub mod project;
-pub mod resolve;
-
+mod diagnostic;
 pub use diagnostic::*;
+
+mod module;
 pub use module::*;
+
+mod project;
 pub use project::*;
+
+mod resolve;
 pub use resolve::*;

@@ -14,21 +14,18 @@ pub struct TSConvertContext {
 }
 
 impl TSConvertContext {
-    pub fn new(
-        resolve: TSConvertResolve,
-        dependencies_config: Option<HashMap<String, String>>,
-    ) -> Self {
+    pub fn new(resolve: TSConvertResolve, dependencies_config: HashMap<String, String>) -> Self {
         Self {
             resolve,
             hoisted: vec![],
             doc: None,
-            dependencies_config: dependencies_config.unwrap_or_default(),
+            dependencies_config,
         }
     }
 }
 
 impl Default for TSConvertContext {
     fn default() -> Self {
-        Self::new(Default::default(), None)
+        Self::new(Default::default(), Default::default())
     }
 }

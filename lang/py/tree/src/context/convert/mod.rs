@@ -12,7 +12,7 @@ pub use mock::*;
 
 pub struct PYConvertContext {
     resolve: PYConvertResolve,
-    config: PYLangConfig,
+    config: PyConfigLang,
     dependencies_config: HashMap<String, String>,
     imports: Vec<PYImport>,
     definitions: Vec<PYDefinition>,
@@ -28,13 +28,13 @@ pub struct PYConvertContext {
 impl PYConvertContext {
     pub fn new(
         resolve: PYConvertResolve,
-        config: PYLangConfig,
-        dependencies_config: Option<HashMap<String, String>>,
+        config: PyConfigLang,
+        dependencies_config: HashMap<String, String>,
     ) -> Self {
         Self {
             resolve,
             config,
-            dependencies_config: dependencies_config.unwrap_or_default(),
+            dependencies_config,
             imports: vec![],
             definitions: vec![],
             defined: vec![],
@@ -176,7 +176,11 @@ impl PYConvertContextConstraint for PYConvertContext {}
 
 impl Default for PYConvertContext {
     fn default() -> Self {
-        Self::new(PYConvertResolve::default(), Default::default(), None)
+        Self::new(
+            PYConvertResolve::default(),
+            Default::default(),
+            Default::default(),
+        )
     }
 }
 
@@ -241,7 +245,7 @@ mod tests {
         resolve
             .imported
             .insert(GTIdentifier((0, 0).into(), "Name".into()));
-        let context = PYConvertContext::new(resolve, Default::default(), None);
+        let context = PYConvertContext::new(resolve, Default::default(), Default::default());
         assert_eq!(
             context.is_forward_identifier(
                 &"Other".into(),

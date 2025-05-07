@@ -13,8 +13,8 @@ impl PYConvertModule {
     pub fn convert(
         module: &GTModule,
         resolve: &PYConvertResolve,
-        config: &PYLangConfig,
-        dependencies_config: Option<HashMap<String, String>>,
+        config: &PyConfigLang,
+        dependencies_config: HashMap<String, String>,
     ) -> Self {
         // [TODO] Get rid of unnecessary clone
         let mut context =
@@ -208,7 +208,7 @@ mod tests {
                 },
                 &resolve,
                 &Default::default(),
-                None
+                Default::default()
             ),
             PYConvertModule(PYModule {
                 doc: None,
@@ -313,7 +313,7 @@ mod tests {
                 },
                 &Default::default(),
                 &Default::default(),
-                None
+                Default::default()
             ),
             PYConvertModule(PYModule {
                 doc: Some(PYDoc("Hello, world!".into())),
@@ -409,7 +409,7 @@ mod tests {
                 },
                 &Default::default(),
                 &Default::default(),
-                None
+                Default::default()
             ),
             PYConvertModule(PYModule {
                 doc: None,

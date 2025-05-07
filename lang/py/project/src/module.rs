@@ -1,36 +1,21 @@
-use std::{
-    collections::HashMap,
-    hash::{Hash, Hasher},
-    path::PathBuf,
-};
-
-use genotype_lang_core_project::module::GTLangProjectModule;
-use genotype_lang_py_config::PYProjectConfig;
-use genotype_lang_py_tree::*;
-use genotype_parser::{tree::GTImportReference, GTIdentifier, GTImportName};
-use genotype_project::{module::GTProjectModule, GTPModuleIdentifierSource, GTProject};
-use miette::Result;
-
-use crate::error::PYProjectError;
+use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct PYProjectModule {
+pub struct PyProjectModule {
     pub name: String,
     pub path: PathBuf,
     pub module: PYModule,
 }
 
-impl GTLangProjectModule<PYProjectConfig> for PYProjectModule {
-    fn generate(
-        project: &GTProject,
-        module: &GTProjectModule,
-        config: &PYProjectConfig,
-    ) -> Result<Self> {
+impl GtlProjectModule for PyProjectModule {
+    type Dependency = PYDependencyIdent;
+
+    fn generate(project: &GTProject, module: &GTProjectModule) -> Result<Self> {
         let relative_path = module
             .path
             .as_path()
             .strip_prefix(project.root.as_path())
-            .map_err(|_| PYProjectError::BuildModulePath(module.path.as_name()))?;
+            .map_err(|_| PyProjectError::BuildModulePath(module.path.as_name()))?;
         let name = py_parse_module_path(
             relative_path
                 .with_extension("")
@@ -39,7 +24,10 @@ impl GTLangProjectModule<PYProjectConfig> for PYProjectModule {
                 .unwrap()
                 .to_string(),
         );
-        let path = config.source_path(relative_path.with_extension("py"));
+        let path = project
+            .config
+            .py
+            .src_file_path(relative_path.with_extension("py"));
 
         let mut resolve = PYConvertResolve::default();
         let mut prefixes: HashMap<String, u8> = HashMap::new();
@@ -106,16 +94,24 @@ impl GTLangProjectModule<PYProjectConfig> for PYProjectModule {
         let module = PYConvertModule::convert(
             &module.module,
             &resolve,
-            &config.lang,
-            config.dependencies.clone(),
+            &project.config.py.lang,
+            project.config.py.common.dependencies.clone(),
         )
         .0;
 
         Ok(Self { name, path, module })
     }
+
+    fn dependencies(&self) -> Vec<Self::Dependency> {
+        self.module
+            .imports
+            .iter()
+            .map(|import| import.dependency.clone())
+            .collect()
+    }
 }
 
-impl Hash for PYProjectModule {
+impl Hash for PyProjectModule {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.path.hash(state);
     }

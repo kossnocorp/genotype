@@ -28,8 +28,12 @@ mod tests {
             GTIdentifier::new((0, 0).into(), "Foo".into()),
             GTIdentifier::new((0, 0).into(), "foo::Bar".into()),
         );
-        let mut context =
-            RSConvertContext::new("module".into(), resolve.clone(), Default::default(), None);
+        let mut context = RSConvertContext::new(
+            "module".into(),
+            resolve.clone(),
+            Default::default(),
+            Default::default(),
+        );
         assert_eq!(
             RSIdentifier("foo::Bar".into()),
             GTIdentifier::new((0, 0).into(), "Foo".into())

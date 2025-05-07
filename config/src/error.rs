@@ -4,33 +4,32 @@ use miette::Diagnostic;
 use thiserror::Error;
 
 #[derive(Error, Diagnostic, Debug, PartialEq)]
-pub enum GTConfigError {
+pub enum GtConfigError {
     #[error(r#"cannot find the config at "{0}""#)]
-    #[diagnostic(code(GTCFG101))]
+    #[diagnostic(code(GTCF101))]
     MissingConfig(PathBuf),
 
     #[error("failed to collect configuration")]
-    #[diagnostic(code(GTCFG200))]
-    FailedToCollect,
+    #[diagnostic(code(GTCF200))]
+    FailedToCollect(#[from] figment::Error),
 
     #[error("failed to construct entry pattern")]
-    #[diagnostic(code(GTCFG301))]
+    #[diagnostic(code(GTCF301))]
     FailedToConstructEntry,
 
     #[error("cannot derive Python package name, please set `python.name` or `name`.")]
-    #[diagnostic(code(GTCFG401))]
+    #[diagnostic(code(GTCF401))]
     PythonMissingPackageName,
 
     #[error(
         "cannot derive Python module name, please set `python.module`, `python.name` or `name`."
     )]
-    #[diagnostic(code(GTCFG402))]
+    #[diagnostic(code(GTCF402))]
     PythonMissingModuleName,
 }
 
-impl From<figment::Error> for GTConfigError {
-    fn from(err: figment::Error) -> Self {
-        eprintln!("=========== figment error: {}", err);
-        GTConfigError::FailedToCollect
-    }
-}
+// impl From<figment::Error> for GtConfigError {
+//     fn from(err: figment::Error) -> Self {
+//         GtConfigError::FailedToCollect(err)
+//     }
+// }

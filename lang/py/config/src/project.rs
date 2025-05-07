@@ -1,27 +1,43 @@
-use std::{collections::HashMap, path::PathBuf};
+use crate::lang::PyConfigLang;
+use genotype_lang_core_config::*;
+use serde::{Deserialize, Serialize};
+use std::path::PathBuf;
 
-use crate::lang::PYLangConfig;
-
-#[derive(Debug, PartialEq, Clone)]
-pub struct PYProjectConfig {
-    pub out: PathBuf,
+#[derive(Default, Debug, Serialize, Deserialize, PartialEq, Clone)]
+pub struct PyConfig {
     pub module: String,
-    pub lang: PYLangConfig,
-    pub package: Option<String>,
-    /// Manually mapped dependencies.
-    pub dependencies: Option<HashMap<String, String>>,
+    #[serde(flatten)]
+    pub lang: PyConfigLang,
+    #[serde(flatten)]
+    pub common: GtlConfigCommon<PyConfigOut>,
 }
 
-impl PYProjectConfig {
-    pub fn package_path(&self, path: PathBuf) -> PathBuf {
-        self.out.join(path)
+impl GtlConfig for PyConfig {
+    type Out = PyConfigOut;
+
+    fn common(&self) -> &GtlConfigCommon<Self::Out> {
+        &self.common
     }
 
-    pub fn module_root_path(&self) -> PathBuf {
-        self.package_path(PathBuf::from(self.module.clone()))
+    fn src_dir_name<'a>(&'a self) -> &'a str {
+        &self.module
     }
+}
 
-    pub fn source_path(&self, path: PathBuf) -> PathBuf {
-        self.module_root_path().join(path)
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[serde(transparent)]
+pub struct PyConfigOut(PathBuf);
+
+impl GtlConfigOut for PyConfigOut {
+    const DEFAULT_OUT: &'static str = "py";
+
+    fn as_path<'a>(&'a self) -> &'a PathBuf {
+        &self.0
+    }
+}
+
+impl Default for PyConfigOut {
+    fn default() -> Self {
+        PyConfigOut(Self::default_out())
     }
 }

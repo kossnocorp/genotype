@@ -10,4 +10,7 @@ pub use project::*;
 mod resolve;
 pub use resolve::*;
 
+mod manifest;
+pub use manifest::*;
+
 pub mod prelude;

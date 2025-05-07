@@ -1,11 +1,14 @@
 use crate::diagnostic::error::GTCliError;
 use clap::Args;
-use genotype_config::{GTConfig, GTConfigPY, GTConfigRS, GTConfigTS};
+use genotype_config::*;
 use inquire::{
     list_option::ListOption, min_length, required, validator::Validation, MultiSelect, Text,
 };
 use miette::Result;
 
+use genotype_lang_py_config::*;
+use genotype_lang_rs_config::*;
+use genotype_lang_ts_config::*;
 use heck::{ToKebabCase, ToSnakeCase};
 use owo_colors::OwoColorize;
 use regex::Regex;
@@ -21,7 +24,7 @@ pub struct GTInitCommand {
 }
 
 pub fn init_command(args: &GTInitCommand) -> Result<()> {
-    let mut config = GTConfig::default();
+    let mut config = GtConfig::default();
 
     let name = configure_name(&mut config)?;
     configure_targers(&mut config, &name)?;
@@ -37,7 +40,7 @@ pub fn init_command(args: &GTInitCommand) -> Result<()> {
     )
     .map_err(|_| GTCliError::FailedWrite("genotype.toml".into()))?;
 
-    let src = root.join(config.src());
+    let src = root.join(config.src);
 
     create_dir_all(src.clone())
         .map_err(|_| GTCliError::FailedCreateDir(src.to_string_lossy().into()))?;
@@ -68,7 +71,7 @@ const GUIDE_FILES: &'static [(&str, &str)] = &[
     ),
 ];
 
-fn configure_name(config: &mut GTConfig) -> Result<String> {
+fn configure_name(config: &mut GtConfig) -> Result<String> {
     let cd_name = std::env::current_dir()
         .map(|path| path.file_name().unwrap().to_string_lossy().to_string())
         .unwrap_or_default();
@@ -85,7 +88,7 @@ fn configure_name(config: &mut GTConfig) -> Result<String> {
     Ok(name)
 }
 
-fn configure_targers(config: &mut GTConfig, name: &String) -> Result<()> {
+fn configure_targers(config: &mut GtConfig, name: &String) -> Result<()> {
     let targets = MultiSelect::new(
         "Choose the languages you want to target:",
         Target::VARIANTS.to_vec(),
@@ -111,8 +114,8 @@ fn configure_targers(config: &mut GTConfig, name: &String) -> Result<()> {
     Ok(())
 }
 
-fn configure_ts(config: &mut GTConfig, name: &String) -> Result<()> {
-    let mut ts = GTConfigTS::default();
+fn configure_ts(config: &mut GtConfig, name: &String) -> Result<()> {
+    let mut ts = TsConfig::default();
 
     let default_name = name.to_kebab_case();
     let name = Text::new("Name the TypeScript package:")
@@ -130,20 +133,20 @@ fn configure_ts(config: &mut GTConfig, name: &String) -> Result<()> {
         .prompt()
         .map_err(|_| GTCliError::FailedReadline("TypeScript package name"))?;
 
-    let package = toml::Value::Table(toml::map::Map::from_iter(vec![
+    let manifest = toml::map::Map::from_iter(vec![
         ("name".into(), toml::Value::String(name.clone())),
         ("version".into(), toml::Value::String("0.1.0".into())),
-    ]));
+    ]);
 
-    ts.package = Some(package);
+    ts.common.manifest = manifest;
 
-    config.ts = Some(ts);
+    config.ts = ts;
 
     Ok(())
 }
 
-fn configure_py(config: &mut GTConfig, name: &String) -> Result<()> {
-    let mut py = GTConfigPY::default();
+fn configure_py(config: &mut GtConfig, name: &String) -> Result<()> {
+    let mut py = PyConfig::default();
 
     let default_name = name.to_kebab_case();
     let name = Text::new("Name the Python package:")
@@ -161,20 +164,20 @@ fn configure_py(config: &mut GTConfig, name: &String) -> Result<()> {
         .prompt()
         .map_err(|_| GTCliError::FailedReadline("Python package name"))?;
 
-    let package = toml::Value::Table(toml::map::Map::from_iter(vec![
+    let manifest = toml::map::Map::from_iter(vec![
         ("name".into(), toml::Value::String(name.clone())),
         ("version".into(), toml::Value::String("0.1.0".into())),
-    ]));
+    ]);
 
-    py.package = Some(package);
+    py.common.manifest = manifest;
 
-    config.python = Some(py);
+    config.py = py;
 
     Ok(())
 }
 
-fn configure_rs(config: &mut GTConfig, name: &String) -> Result<()> {
-    let mut rs = GTConfigRS::default();
+fn configure_rs(config: &mut GtConfig, name: &String) -> Result<()> {
+    let mut rs = RsConfig::default();
 
     let default_name = name.to_snake_case();
     let name = Text::new("Name the Rust crate:")
@@ -192,15 +195,15 @@ fn configure_rs(config: &mut GTConfig, name: &String) -> Result<()> {
         .prompt()
         .map_err(|_| GTCliError::FailedReadline("Rust package name"))?;
 
-    let package = toml::Value::Table(toml::map::Map::from_iter(vec![
+    let manifest = toml::map::Map::from_iter(vec![
         ("name".into(), toml::Value::String(name.clone())),
         ("version".into(), toml::Value::String("0.1.0".into())),
         ("edition".into(), toml::Value::String("2021".into())),
-    ]));
+    ]);
 
-    rs.package = Some(package);
+    rs.common.manifest = manifest;
 
-    config.rust = Some(rs);
+    config.rs = rs;
 
     Ok(())
 }

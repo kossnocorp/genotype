@@ -8,8 +8,8 @@ impl RSConvertModule {
     pub fn convert(
         module: &GTModule,
         resolve: &RSConvertResolve,
-        config: &RSLangConfig,
-        dependecies_config: Option<HashMap<String, String>>,
+        config: &RsConfigLang,
+        dependecies_config: HashMap<String, String>,
     ) -> Result<Self> {
         // [TODO] Get rid of unnecessary clone
         let mut context = RSConvertContext::new(
@@ -219,7 +219,7 @@ mod tests {
                 },
                 &resolve,
                 &Default::default(),
-                None
+                Default::default()
             )
             .unwrap(),
             RSConvertModule(RSModule {
@@ -346,7 +346,7 @@ mod tests {
                 },
                 &Default::default(),
                 &Default::default(),
-                None
+                Default::default()
             )
             .unwrap(),
             RSConvertModule(RSModule {

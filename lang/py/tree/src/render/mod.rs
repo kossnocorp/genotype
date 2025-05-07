@@ -3,13 +3,13 @@ use std::sync::LazyLock;
 
 #[derive(Debug, PartialEq)]
 pub struct PYRenderContext<'a> {
-    pub config: &'a PYLangConfig,
+    pub config: &'a PyConfigLang,
     pub resolve: GtlRenderResolve<'a, PYRenderState, PYRenderContext<'a>>,
 }
 
 impl GtlRenderContext for PYRenderContext<'_> {}
 
-static PY_DEFAULT_CONFIG: LazyLock<PYLangConfig> = LazyLock::new(|| PYLangConfig::default());
+static PY_DEFAULT_CONFIG: LazyLock<PyConfigLang> = LazyLock::new(|| PyConfigLang::default());
 
 impl Default for PYRenderContext<'_> {
     fn default() -> Self {

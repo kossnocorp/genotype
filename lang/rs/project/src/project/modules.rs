@@ -1,17 +1,17 @@
 use crate::prelude::internal::*;
 
-impl RSProject {
-    pub fn modules_source(&self) -> Result<Vec<GTLangProjectSource>> {
+impl RsProject<'_> {
+    pub fn modules_source(&self) -> Result<Vec<GtlProjectFile>> {
         let mut context = RSRenderContext {
-            config: &self.config.lang,
+            config: &self.project.config.rs.lang,
         };
         self.modules
             .iter()
             .map(
                 |module| match module.module.render(Default::default(), &mut context) {
-                    Ok(code) => Ok(GTLangProjectSource {
+                    Ok(code) => Ok(GtlProjectFile {
                         path: module.path.clone(),
-                        code,
+                        source: code,
                     }),
                     Err(err) => Err(err),
                 },
@@ -19,14 +19,11 @@ impl RSProject {
             .collect::<Result<Vec<_>>>()
     }
 
-    pub fn generate_modules(
-        project: &GTProject,
-        config: &RSProjectConfig,
-    ) -> Result<Vec<RSProjectModule>> {
+    pub fn generate_modules(project: &GTProject) -> Result<Vec<RSProjectModule>> {
         let mut modules = project
             .modules
             .iter()
-            .map(|module| RSProjectModule::generate(&project, module, &config))
+            .map(|module| RSProjectModule::generate(&project, module))
             .collect::<Result<Vec<RSProjectModule>, _>>()?;
 
         // Now when we generated modules, we need to go through all structs and resolve their fields

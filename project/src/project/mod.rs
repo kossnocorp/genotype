@@ -1,5 +1,5 @@
 use error::GTProjectError;
-use genotype_config::GTConfig;
+use genotype_config::GtConfig;
 use glob::glob;
 use miette::Result;
 use rayon::Scope;
@@ -15,19 +15,17 @@ use crate::*;
 pub struct GTProject {
     pub root: Arc<PathBuf>,
     pub modules: Vec<GTProjectModule>,
+    pub config: GtConfig,
 }
 
 impl GTProject {
-    pub fn load(config: &GTConfig) -> Result<Self> {
-        let src_path = config.src();
-        let src = config.root().join(&src_path).canonicalize().map_err(|_| {
-            GTProjectError::Canonicalize(format!(
-                "src directory {:?}",
-                config.root().join(src_path)
-            ))
-        })?;
+    pub fn load(config: GtConfig) -> Result<Self> {
+        let src_path = config.root.join(&config.src);
+        let src = src_path
+            .canonicalize()
+            .map_err(|_| GTProjectError::Canonicalize(format!("src directory {:?}", src_path)))?;
         let src = Arc::new(src);
-        let pattern = config.entry_pattern()?;
+        let pattern = config.full_entry()?;
 
         let entry_paths = glob(&pattern).map_err(|_| GTProjectError::Unknown)?;
         let entries: Vec<GTPModulePath> = entry_paths
@@ -77,6 +75,7 @@ impl GTProject {
         Ok(GTProject {
             root: src.clone(),
             modules,
+            config,
         })
     }
 
@@ -139,13 +138,13 @@ mod tests {
 
     #[test]
     fn test_glob() {
-        let project = GTProject::load(&GTConfig::from_root("module", "./examples/basic"));
+        let project = GTProject::load(GtConfig::from_root("module", "./examples/basic"));
         assert_eq!(project.unwrap(), basic_project());
     }
 
     #[test]
     fn test_entry() {
-        let project = GTProject::load(&GTConfig::from_entry(
+        let project = GTProject::load(GtConfig::from_entry(
             "module",
             "./examples/basic",
             "order.type",
@@ -161,11 +160,8 @@ mod tests {
             &PathBuf::from("./examples/process/anonymous.type"),
         )
         .unwrap();
-        let project = GTProject::load(&GTConfig::from_entry(
-            "module",
-            "./examples/process",
-            "anonymous.type",
-        ));
+        let config = GtConfig::from_entry("module", "./examples/process", "anonymous.type");
+        let project = GTProject::load(config.clone());
         assert_eq!(
             project.unwrap(),
             GTProject {
@@ -352,12 +348,15 @@ mod tests {
                         "anonymous.type",
                         read_to_string(&module_path).unwrap(),
                     ),
-                },],
+                }],
+                config
             }
         );
     }
 
     fn basic_project() -> GTProject {
+        let config = GtConfig::from_root("module", "./examples/basic");
+
         let root = Arc::new(PathBuf::from("./examples/basic").canonicalize().unwrap());
         let author_path =
             GTPModulePath::try_new(root.clone(), &PathBuf::from("./examples/basic/author.type"))
@@ -647,6 +646,7 @@ mod tests {
                     source_code: NamedSource::new("user.type", read_to_string(&user_path).unwrap()),
                 },
             ],
+            config,
         }
     }
 }

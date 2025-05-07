@@ -1,149 +1,124 @@
+use genotype_lang_py_config::*;
+use genotype_lang_rs_config::*;
+use genotype_lang_ts_config::*;
+use miette::Result;
+use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
-use genotype_lang_py_config::PYProjectConfig;
-use genotype_lang_rs_config::RSProjectConfig;
-use genotype_lang_ts_config::TSProjectConfig;
-use serde::{Deserialize, Serialize};
+use crate::error::GtConfigError;
 
-use crate::{error::GTConfigError, result::GTConfigResult, GTConfigPY, GTConfigRS, GTConfigTS};
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct GTConfig {
-    /// Project name. If not provided it will be inferred from the root directory.
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+pub struct GtConfig {
+    /// Project name.
     pub name: Option<String>,
     /// Project root directory used to resolve relative paths. It defaults to the current directory.
-    pub root: Option<PathBuf>,
+    #[serde(default = "GtConfig::default_root")]
+    pub root: PathBuf,
     /// Project out directory. It defaults to `./libs` relative to the project's root directory.
-    pub out: Option<PathBuf>,
+    #[serde(default = "GtConfig::default_out")]
+    pub out: PathBuf,
     /// Where the Genotype source files are located. It defaults to `./src` relative to
     /// the project's root directory.
-    pub src: Option<PathBuf>,
+    #[serde(default = "GtConfig::default_src")]
+    pub src: PathBuf,
     /// Project entry pattern. It defaults to `**/*.type` relative to the project's source
     /// directory.
-    pub entry: Option<PathBuf>,
+    #[serde(default = "GtConfig::default_entry")]
+    pub entry: PathBuf,
     /// TypeScript config.
-    pub ts: Option<GTConfigTS>,
+    #[serde(default)]
+    pub ts: TsConfig,
     /// Python config.
-    pub python: Option<GTConfigPY>,
+    #[serde(default)]
+    pub py: PyConfig,
     /// Rust config.
-    pub rust: Option<GTConfigRS>,
+    #[serde(default)]
+    pub rs: RsConfig,
 }
 
-impl GTConfig {
+impl GtConfig {
     pub fn full_out(&self) -> PathBuf {
-        if let Some(out) = &self.out {
-            if out.is_absolute() {
-                out.clone()
-            } else {
-                self.root().join(&out)
-            }
+        if self.out.is_absolute() {
+            self.out.clone()
         } else {
-            self.root().join("libs")
+            self.root.join(&self.out)
         }
     }
 
-    pub fn out(&self) -> PathBuf {
-        if let Some(out) = &self.out {
-            out.clone()
+    pub fn full_entry(&self) -> Result<String> {
+        Ok(if self.entry.is_absolute() {
+            self.entry.clone()
         } else {
-            PathBuf::from("libs")
-        }
-    }
-
-    pub fn root(&self) -> PathBuf {
-        self.root.clone().unwrap_or(".".into())
-    }
-
-    pub fn src(&self) -> PathBuf {
-        self.src.clone().unwrap_or("src".into())
-    }
-
-    pub fn entry(&self) -> PathBuf {
-        self.entry.clone().unwrap_or("**/*.type".into())
-    }
-
-    pub fn entry_pattern(&self) -> GTConfigResult<String> {
-        let entry = self.entry();
-
-        Ok(if entry.is_absolute() {
-            entry
-        } else {
-            self.root().join(self.src()).join(entry)
+            self.root.join(&self.src).join(&self.entry)
         }
         .to_str()
-        .ok_or(GTConfigError::FailedToConstructEntry)?
+        .ok_or(GtConfigError::FailedToConstructEntry)?
         .to_owned())
     }
 
     pub fn ts_enabled(&self) -> bool {
-        self.ts
-            .as_ref()
-            .map_or(false, |config| config.enabled.unwrap_or(false))
-    }
-
-    pub fn as_ts_project(&self) -> TSProjectConfig {
-        GTConfigTS::derive_project(&self.name, self.out(), &self.ts)
+        self.ts.common.enabled
     }
 
     pub fn python_enabled(&self) -> bool {
-        self.python
-            .as_ref()
-            .map_or(false, |config| config.enabled.unwrap_or(false))
-    }
-
-    pub fn as_python_project(&self) -> GTConfigResult<PYProjectConfig> {
-        GTConfigPY::derive_project(&self.name, self.out(), &self.python)
+        self.py.common.enabled
     }
 
     pub fn rust_enabled(&self) -> bool {
-        self.rust
-            .as_ref()
-            .map_or(false, |config| config.enabled.unwrap_or(false))
+        self.rs.common.enabled
     }
 
-    pub fn as_rust_project(&self) -> RSProjectConfig {
-        GTConfigRS::derive_project(&self.name, self.out(), &self.rust)
-    }
-
-    pub fn source_path(&self, path: &PathBuf) -> PathBuf {
-        self.root().join(path)
+    pub fn file_path(&self, path: &PathBuf) -> PathBuf {
+        self.root.join(path)
     }
 
     pub fn from_root(name: &str, root: &str) -> Self {
-        GTConfig {
+        GtConfig {
             name: Some(name.into()),
-            root: Some(root.into()),
-            src: Some(".".into()),
-            ..GTConfig::default()
+            root: root.into(),
+            src: ".".into(),
+            ..GtConfig::default()
         }
     }
 
     pub fn from_entry(name: &str, root: &str, entry: &str) -> Self {
-        GTConfig {
+        GtConfig {
             name: Some(name.into()),
-            root: Some(root.into()),
-            entry: Some(entry.into()),
-            src: Some(".".into()),
-            ..GTConfig::default()
+            root: root.into(),
+            entry: entry.into(),
+            src: ".".into(),
+            ..GtConfig::default()
         }
     }
 
-    pub fn with_rust(&mut self, config: GTConfigRS) {
-        self.rust = Some(config);
+    pub fn default_root() -> PathBuf {
+        PathBuf::from(".")
+    }
+
+    pub fn default_out() -> PathBuf {
+        PathBuf::from("libs")
+    }
+
+    pub fn default_src() -> PathBuf {
+        PathBuf::from("src")
+    }
+
+    pub fn default_entry() -> PathBuf {
+        PathBuf::from("**/*.type")
     }
 }
 
-impl Default for GTConfig {
-    fn default() -> GTConfig {
-        GTConfig {
+impl Default for GtConfig {
+    fn default() -> Self {
+        GtConfig {
             name: None,
-            root: None,
-            out: Some(PathBuf::from("libs")),
-            src: Some(PathBuf::from("src")),
-            entry: Some(PathBuf::from("**/*.type")),
-            ts: None,
-            python: None,
-            rust: None,
+            root: GtConfig::default_root(),
+            out: GtConfig::default_out(),
+            src: GtConfig::default_src(),
+            entry: GtConfig::default_entry(),
+            ts: TsConfig::default(),
+            py: PyConfig::default(),
+            rs: RsConfig::default(),
         }
     }
 }

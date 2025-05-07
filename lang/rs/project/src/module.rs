@@ -8,12 +8,10 @@ pub struct RSProjectModule {
     pub resolve: RSPModuleResolve,
 }
 
-impl GTLangProjectModule<RSProjectConfig> for RSProjectModule {
-    fn generate(
-        project: &GTProject,
-        module: &GTProjectModule,
-        config: &RSProjectConfig,
-    ) -> Result<Self> {
+impl GtlProjectModule for RSProjectModule {
+    type Dependency = RSDependencyIdent;
+
+    fn generate(project: &GTProject, module: &GTProjectModule) -> Result<Self> {
         let relative_path = module
             .path
             .as_path()
@@ -27,7 +25,10 @@ impl GTLangProjectModule<RSProjectConfig> for RSProjectModule {
                 .unwrap()
                 .to_string(),
         );
-        let path = config.source_path(relative_path.with_extension("rs"));
+        let path = project
+            .config
+            .rs
+            .src_file_path(relative_path.with_extension("rs"));
 
         let mut convert_resolve = RSConvertResolve::default();
         let mut prefixes: HashMap<String, u8> = HashMap::new();
@@ -101,8 +102,8 @@ impl GTLangProjectModule<RSProjectConfig> for RSProjectModule {
         let module = RSConvertModule::convert(
             &module.module,
             &convert_resolve,
-            &config.lang,
-            config.dependencies.clone(),
+            &project.config.rs.lang,
+            project.config.rs.common.dependencies.clone(),
         )
         .map_err(|err| err.with_source_code(module.source_code.clone()))?
         .0;
@@ -113,6 +114,14 @@ impl GTLangProjectModule<RSProjectConfig> for RSProjectModule {
             module,
             resolve,
         })
+    }
+
+    fn dependencies(&self) -> Vec<Self::Dependency> {
+        self.module
+            .imports
+            .iter()
+            .map(|import| import.dependency.clone())
+            .collect()
     }
 }
 

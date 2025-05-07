@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct GTLangProjectSource {
+pub struct GtlProjectFile {
     pub path: PathBuf,
-    pub code: String,
+    pub source: String,
 }

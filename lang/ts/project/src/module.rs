@@ -1,17 +1,4 @@
-use std::{
-    collections::HashMap,
-    hash::{Hash, Hasher},
-    path::PathBuf,
-};
-
-use genotype_lang_core_project::module::GTLangProjectModule;
-use genotype_lang_ts_config::TSProjectConfig;
-use genotype_lang_ts_tree::*;
-use genotype_parser::{tree::GTImportReference, GTIdentifier};
-use genotype_project::{module::GTProjectModule, GTPModuleIdentifierSource, GTProject};
-use miette::Result;
-
-use crate::error::TSProjectError;
+use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TSProjectModule {
@@ -19,13 +6,11 @@ pub struct TSProjectModule {
     pub module: TSModule,
 }
 
-impl GTLangProjectModule<TSProjectConfig> for TSProjectModule {
-    fn generate(
-        project: &GTProject,
-        module: &GTProjectModule,
-        config: &TSProjectConfig,
-    ) -> Result<Self> {
-        let path = config.source_path(
+impl GtlProjectModule for TSProjectModule {
+    type Dependency = TSDependencyIdent;
+
+    fn generate(project: &GTProject, module: &GTProjectModule) -> Result<Self> {
+        let path = project.config.ts.src_file_path(
             module
                 .path
                 .as_path()
@@ -77,10 +62,18 @@ impl GTLangProjectModule<TSProjectConfig> for TSProjectModule {
             }
         }
 
-        let module =
-            TSConvertModule::convert(&module.module, resolve, config.dependencies.clone()).0;
+        let module = TSConvertModule::convert(
+            &module.module,
+            resolve,
+            project.config.ts.common.dependencies.clone(),
+        )
+        .0;
 
         Ok(Self { path, module })
+    }
+
+    fn dependencies(&self) -> Vec<Self::Dependency> {
+        vec![]
     }
 }
 

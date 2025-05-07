@@ -1,9 +1,8 @@
-pub mod config;
-pub mod diagnostic;
-pub mod find;
-pub mod lang;
-
+mod config;
 pub use config::*;
-pub use diagnostic::*;
+
+mod error;
+pub use error::*;
+
+mod find;
 pub use find::*;
-pub use lang::*;

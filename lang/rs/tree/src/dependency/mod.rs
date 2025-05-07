@@ -20,15 +20,6 @@ impl RSDependencyIdent {
         }
     }
 
-    pub fn external_str(&self) -> Option<String> {
-        match self {
-            Self::Runtime => Some(r#"genotype_runtime = "0.4""#.into()),
-            Self::Literals => Some(r#"literals = "0.1""#.into()),
-            Self::Serde => Some(r#"serde = { version = "1", features = ["derive"] }"#.into()),
-            _ => None,
-        }
-    }
-
     pub fn external(&self) -> Option<RSDependencyExternal> {
         match self {
             Self::Runtime => Some(RSDependencyExternal {

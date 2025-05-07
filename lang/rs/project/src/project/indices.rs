@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl RSProject {
-    pub fn indices_source(&self) -> Vec<GTLangProjectSource> {
-        let src_root = self.config.src_path();
+impl RsProject<'_> {
+    pub fn indices_source(&self) -> Vec<GtlProjectFile> {
+        let src_root = self.project.config.rs.src_dir_path();
         let mut crate_paths: IndexMap<PathBuf, IndexSet<String>> = IndexMap::new();
 
         for module in self.modules.iter() {
@@ -53,7 +53,7 @@ pub use {module}::*;"#
                     .join("\n");
                 code += "\n";
 
-                GTLangProjectSource { path, code }
+                GtlProjectFile { path, source: code }
             })
             .collect()
     }
