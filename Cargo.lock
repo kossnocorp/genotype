@@ -547,6 +547,7 @@ dependencies = [
  "heck",
  "miette",
  "pretty_assertions",
+ "relative-path",
  "serde",
  "thiserror 1.0.64",
  "toml",
@@ -590,6 +591,7 @@ name = "genotype_lang_core_config"
 version = "0.11.0"
 dependencies = [
  "delegate",
+ "genotype_path",
  "pretty_assertions",
  "serde",
  "toml",
@@ -599,8 +601,10 @@ dependencies = [
 name = "genotype_lang_core_project"
 version = "0.11.0"
 dependencies = [
+ "genotype_config",
  "genotype_lang_core_config",
  "genotype_lang_core_tree",
+ "genotype_path",
  "genotype_project",
  "indexmap",
  "miette",
@@ -806,8 +810,10 @@ dependencies = [
 name = "genotype_path"
 version = "0.11.0"
 dependencies = [
+ "glob",
  "pretty_assertions",
  "relative-path",
+ "serde",
 ]
 
 [[package]]
@@ -818,6 +824,7 @@ dependencies = [
  "genotype_config",
  "genotype_lang_core_config",
  "genotype_parser",
+ "genotype_path",
  "genotype_visitor",
  "glob",
  "miette",
@@ -1514,6 +1521,9 @@ name = "relative-path"
 version = "1.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ba39f3699c378cd8970968dcbff9c43159ea4cfbd88d43c00b22f2ef10a435d2"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "rustc-demangle"

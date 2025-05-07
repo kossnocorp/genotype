@@ -9,14 +9,14 @@ pub trait GtlProjectManifest {
 
     type ManifestDependency: GtlProjectManifestDependency;
 
-    fn manifest_file<Config: GtlConfig>(
-        config: &Config,
+    fn manifest_file(
+        config: &GtConfigLang,
         deps: &Vec<
             <<Self as GtlProjectManifest>::ManifestDependency as GtlProjectManifestDependency>::DependencyIdent,
         >,
     ) -> Result<GtlProjectFile> {
         let mut manifest: DocumentMut =
-            toml_edit::ser::to_document(&config.common().manifest).into_diagnostic()?;
+            toml_edit::ser::to_document(&config.lang.common().manifest).into_diagnostic()?;
 
         let manifest_deps = if let Some(deps) = manifest[Self::DEPENDENCIES_KEY].as_table_mut() {
             deps

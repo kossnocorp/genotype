@@ -24,6 +24,13 @@
       {
         devShells.default =
           with pkgs;
+          let
+            rust = rust-bin.stable.latest.default.override {
+              extensions = [
+                "rust-src"
+              ];
+            };
+          in
           mkShell {
             buildInputs = [
               # Tools
@@ -31,7 +38,7 @@
               just
               entr
               # Rust
-              rust-bin.stable.latest.default
+              rust
               # Cargo
               cargo-watch
               cargo-nextest

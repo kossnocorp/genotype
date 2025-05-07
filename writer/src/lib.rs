@@ -16,7 +16,7 @@ impl GTWriter {
                 .iter()
                 .map(|module| {
                     // [TODO]
-                    let path = config.file_path(&module.path);
+                    let path = config.root_path().join(&module.path);
                     let dir = path.parent().unwrap();
                     create_dir_all(dir)?;
                     write(path, &module.source)

@@ -1,4 +1,5 @@
 use crate::prelude::internal::*;
+use genotype_path::GtRelativePath;
 use glob::glob;
 use miette::Result;
 use rayon::Scope;
@@ -17,15 +18,17 @@ pub struct GtProject {
 
 impl GtProject {
     pub fn load(config: GtConfig) -> Result<Self> {
-        let src_path = config.root.join(&config.src);
+        let src_path = config.src_path();
         let src = src_path
+            .relative_path()
+            .to_path("")
             .canonicalize()
             .map_err(|_| GTProjectError::Canonicalize(format!("src directory {:?}", src_path)))?;
         let src = Arc::new(src);
-        let pattern = config.full_entry()?;
-
-        let entry_paths = glob(&pattern).map_err(|_| GTProjectError::Unknown)?;
-        let entries: Vec<GTPModulePath> = entry_paths
+        let entries: Vec<GTPModulePath> = config
+            .entry_path()
+            .glob()
+            .map_err(|_| GTProjectError::Unknown)?
             .collect::<Result<Vec<_>, _>>()
             .map_err(|_| GTProjectError::Unknown)?
             .iter()
@@ -34,7 +37,7 @@ impl GtProject {
             .map_err(|_| GTProjectError::Unknown)?;
 
         if entries.is_empty() {
-            return Err(GTProjectError::NoEntries(pattern).into());
+            return Err(GTProjectError::NoEntries(config.entry_path().as_str().into()).into());
         }
 
         let processed_paths = Arc::new(Mutex::new(HashSet::new()));

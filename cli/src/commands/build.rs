@@ -44,7 +44,7 @@ pub fn build_command(args: &GTBuildCommand) -> Result<()> {
     println!(
         "{} project to {:?}",
         "Generated".green().bold(),
-        project.config.full_out()
+        project.config.dist_path()
     );
 
     Ok(())

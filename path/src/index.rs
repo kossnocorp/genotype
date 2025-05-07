@@ -1,13 +1,21 @@
-use relative_path::RelativePathBuf;
+use crate::prelude::internal::*;
 
-pub struct GtCwdPath(RelativePathBuf);
+pub trait GtRelativePath {
+    fn new(path: RelativePathBuf) -> Self;
 
-impl GtCwdPath {
-    pub fn new(path: RelativePathBuf) -> Self {
-        Self(path)
+    fn relative_path(&self) -> &RelativePathBuf;
+
+    fn as_str(&self) -> &str {
+        self.relative_path().as_str()
+    }
+}
+
+impl GtRelativePath for RelativePathBuf {
+    fn new(path: RelativePathBuf) -> Self {
+        path
     }
 
-    pub fn to_path(&self) -> RelativePathBuf {
-        self.0.clone()
+    fn relative_path(&self) -> &RelativePathBuf {
+        self
     }
 }
