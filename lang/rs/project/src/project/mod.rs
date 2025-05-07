@@ -7,20 +7,24 @@ mod modules;
 #[derive(Debug, PartialEq, Clone)]
 pub struct RsProject<'a> {
     pub modules: Vec<RSProjectModule>,
-    pub project: &'a GtProject,
+    pub config: &'a GtConfigPkg<'a, RsConfig>,
 }
 
 impl<'a> GtlProject<'a> for RsProject<'a> {
     type Module = RSProjectModule;
 
-    fn generate(project: &'a GtProject) -> Result<Self> {
-        let modules = Self::generate_modules(project)?;
-        Ok(Self { modules, project })
+    type LangConfig = RsConfig;
+
+    fn generate(
+        config: &'a GtConfigPkg<'a, Self::LangConfig>,
+        modules: &Vec<GTProjectModule>,
+    ) -> Result<Self> {
+        let modules = Self::generate_modules(config, modules)?;
+        Ok(Self { modules, config })
     }
 
     fn out(&self) -> Result<GtlProjectOut> {
-        let cargo =
-            RsProjectManifest::manifest_file(&self.project.config.rs, &self.dependencies())?;
+        let cargo = RsProjectManifest::manifest_file(&self.config, &self.dependencies())?;
 
         let mut files = vec![self.gitignore_source(), cargo];
         files.extend(self.indices_source());
@@ -48,7 +52,9 @@ mod tests {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            RsProject::generate(&project).unwrap().modules,
+            RsProject::generate(&project.config.pkg_config_rs(), &project.modules)
+                .unwrap()
+                .modules,
             vec![
                 RSProjectModule {
                     name: "author".into(),
@@ -163,7 +169,9 @@ mod tests {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            RsProject::generate(&project).unwrap().modules,
+            RsProject::generate(&project.config.pkg_config_rs(), &project.modules)
+                .unwrap()
+                .modules,
             vec![
                 RSProjectModule {
                     name: "author".into(),
@@ -330,7 +338,10 @@ mod tests {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            RsProject::generate(&project).unwrap().out().unwrap(),
+            RsProject::generate(&project.config.pkg_config_rs(), &project.modules)
+                .unwrap()
+                .out()
+                .unwrap(),
             GtlProjectOut {
                 files: vec![
                     GtlProjectFile {
@@ -388,7 +399,10 @@ pub struct Book {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            RsProject::generate(&project).unwrap().out().unwrap(),
+            RsProject::generate(&project.config.pkg_config_rs(), &project.modules)
+                .unwrap()
+                .out()
+                .unwrap(),
             GtlProjectOut {
                 files: vec![
                     GtlProjectFile {
@@ -459,7 +473,10 @@ pub struct Book {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            RsProject::generate(&project).unwrap().out().unwrap(),
+            RsProject::generate(&project.config.pkg_config_rs(), &project.modules)
+                .unwrap()
+                .out()
+                .unwrap(),
             GtlProjectOut {
                 files: vec![
                     GtlProjectFile {
@@ -561,7 +578,10 @@ pub struct Account {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            RsProject::generate(&project).unwrap().out().unwrap(),
+            RsProject::generate(&project.config.pkg_config_rs(), &project.modules)
+                .unwrap()
+                .out()
+                .unwrap(),
             GtlProjectOut {
                 files: vec![
                     GtlProjectFile {

@@ -19,6 +19,7 @@ num_cpus = "1.16.0"
 rayon = "1.10.0"
 thiserror = "1.0.64"
 delegate = "0.13.3"
+relative-path = "1.9.3"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

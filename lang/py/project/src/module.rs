@@ -7,10 +7,10 @@ pub struct PyProjectModule {
     pub module: PYModule,
 }
 
-impl GtlProjectModule for PyProjectModule {
+impl<'a> GtlProjectModule<'a, PyConfig> for PyProjectModule {
     type Dependency = PYDependencyIdent;
 
-    fn generate(project: &GtProject, module: &GTProjectModule) -> Result<Self> {
+    fn generate(config: &'a GtConfigPkg<'a, PyConfig>, module: &GTProjectModule) -> Result<Self> {
         let relative_path = module
             .path
             .as_path()
@@ -92,13 +92,7 @@ impl GtlProjectModule for PyProjectModule {
             }
         }
 
-        let module = PYConvertModule::convert(
-            &module.module,
-            &resolve,
-            &project.config.py.lang,
-            project.config.py.common.dependencies.clone(),
-        )
-        .0;
+        let module = PYConvertModule::convert(&module.module, &resolve, &config.target).0;
 
         Ok(Self { name, path, module })
     }

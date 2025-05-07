@@ -1,11 +1,9 @@
-use genotype_lang_core_tree::*;
-use genotype_project::*;
-use miette::Result;
+use crate::prelude::internal::*;
 
-pub trait GtlProjectModule {
+pub trait GtlProjectModule<'a, LangConfig: GtlConfig> {
     type Dependency: GtlDependencyIdent;
 
-    fn generate(project: &GtProject, module: &GTProjectModule) -> Result<Self>
+    fn generate(config: &'a GtConfigPkg<'a, LangConfig>, module: &GTProjectModule) -> Result<Self>
     where
         Self: Sized;
 

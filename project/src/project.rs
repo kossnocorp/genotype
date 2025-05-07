@@ -1,8 +1,10 @@
 use crate::prelude::internal::*;
 use genotype_path::GtRelativePath;
+use genotype_path::*;
 use glob::glob;
 use miette::Result;
 use rayon::Scope;
+use relative_path::RelativePathBuf;
 use std::{
     collections::HashSet,
     path::PathBuf,
@@ -25,14 +27,20 @@ impl GtProject {
             .canonicalize()
             .map_err(|_| GTProjectError::Canonicalize(format!("src directory {:?}", src_path)))?;
         let src = Arc::new(src);
-        let entries: Vec<GTPModulePath> = config
-            .entry_path()
-            .glob()
+        let entries = glob(config.entry_path().as_str())
             .map_err(|_| GTProjectError::Unknown)?
             .collect::<Result<Vec<_>, _>>()
             .map_err(|_| GTProjectError::Unknown)?
-            .iter()
-            .map(|entry| GTPModulePath::try_new(Arc::clone(&src), entry))
+            .into_iter()
+            .map(|path| {
+                RelativePathBuf::from_path(path)
+                    .map_err(|_| GTProjectError::Unknown)
+                    .and_then(|path| {
+                        path.strip_prefix(src_path.relative_path())
+                            .map_err(|_| GTProjectError::Unknown)
+                            .and_then(|path| Ok(GtSrcRelativePath::new(path.into())))
+                    })
+            })
             .collect::<Result<Vec<_>, _>>()
             .map_err(|_| GTProjectError::Unknown)?;
 
@@ -45,11 +53,16 @@ impl GtProject {
             Arc::new(Mutex::new(Vec::new()));
 
         rayon::scope(|scope| {
+            let config = Arc::new(config.clone());
+
             for entry in entries {
+                let config = Arc::clone(&config);
                 let processed_paths = Arc::clone(&processed_paths);
                 let modules = Arc::clone(&modules);
 
-                scope.spawn(|scope| Self::load_module(entry, scope, processed_paths, modules));
+                scope.spawn(|scope| {
+                    Self::load_module(config, entry, scope, processed_paths, modules)
+                });
             }
         });
 
@@ -70,7 +83,7 @@ impl GtProject {
 
         // [TODO] It's needed for tests, hide behind cfg(test), keep or replace with something like
         // set? Using HashSet will require Eq which will consequently break tests.
-        modules.sort_by(|a, b| a.path.as_path().cmp(&b.path.as_path()));
+        modules.sort_by(|a, b| a.path.as_str().cmp(&b.path.as_str()));
 
         Ok(GtProject {
             root: src.clone(),
@@ -80,9 +93,10 @@ impl GtProject {
     }
 
     fn load_module(
-        module_path: GTPModulePath,
+        config: Arc<GtConfig>,
+        module_path: GtSrcRelativePath,
         scope: &Scope<'_>,
-        processed_paths: Arc<Mutex<HashSet<GTPModulePath>>>,
+        processed_paths: Arc<Mutex<HashSet<GtSrcRelativePath>>>,
         modules: Arc<Mutex<Vec<Result<GTProjectModuleParse>>>>,
     ) {
         // Check if the module is already processed to avoid infinite recursion.
@@ -94,16 +108,16 @@ impl GtProject {
             processed.insert(module_path.clone());
         }
 
-        let module_id = module_path.as_id().source_str().to_owned().into();
-        let result = GTProjectModuleParse::try_new(module_id, module_path).and_then(|parse| {
+        let result = GTProjectModuleParse::try_new(&config, module_path).and_then(|parse| {
             parse.deps().and_then(|deps| {
                 // Iterate each module dependency and load it in a thread.
                 for dep in deps {
+                    let config = Arc::clone(&config);
                     let processed_paths = Arc::clone(&processed_paths);
                     let modules = Arc::clone(&modules);
 
                     scope.spawn(|scope| {
-                        Self::load_module(dep, scope, processed_paths, modules);
+                        Self::load_module(config, dep, scope, processed_paths, modules);
                     });
                 }
 
@@ -155,11 +169,7 @@ mod tests {
     #[test]
     fn test_process_anonymous() {
         let root = Arc::new(PathBuf::from("./examples/process").canonicalize().unwrap());
-        let module_path = GTPModulePath::try_new(
-            root.clone(),
-            &PathBuf::from("./examples/process/anonymous.type"),
-        )
-        .unwrap();
+        let module_path: GtSrcRelativePath = "/process/anonymous.type".into();
         let config = GtConfig::from_entry("module", "./examples/process", "anonymous.type");
         let project = GtProject::load(config.clone());
         assert_eq!(
@@ -346,7 +356,7 @@ mod tests {
                     },
                     source_code: NamedSource::new(
                         "anonymous.type",
-                        read_to_string(&module_path).unwrap(),
+                        read_to_string(config.src_path().join(&module_path).as_str()).unwrap(),
                     ),
                 }],
                 config
@@ -358,18 +368,10 @@ mod tests {
         let config = GtConfig::from_root("module", "./examples/basic");
 
         let root = Arc::new(PathBuf::from("./examples/basic").canonicalize().unwrap());
-        let author_path =
-            GTPModulePath::try_new(root.clone(), &PathBuf::from("./examples/basic/author.type"))
-                .unwrap();
-        let book_path =
-            GTPModulePath::try_new(root.clone(), &PathBuf::from("./examples/basic/book.type"))
-                .unwrap();
-        let order_path =
-            GTPModulePath::try_new(root.clone(), &PathBuf::from("./examples/basic/order.type"))
-                .unwrap();
-        let user_path =
-            GTPModulePath::try_new(root.clone(), &PathBuf::from("./examples/basic/user.type"))
-                .unwrap();
+        let author_path: GtSrcRelativePath = "author.type".into();
+        let book_path: GtSrcRelativePath = "book.type".into();
+        let order_path: GtSrcRelativePath = "order.type".into();
+        let user_path: GtSrcRelativePath = "user.type".into();
 
         GtProject {
             root: root.clone(),
@@ -408,7 +410,7 @@ mod tests {
                     },
                     source_code: NamedSource::new(
                         "author.type",
-                        read_to_string(&author_path).unwrap(),
+                        read_to_string(config.src_path().join(&author_path).as_str()).unwrap(),
                     ),
                 },
                 GTProjectModule {
@@ -472,9 +474,7 @@ mod tests {
                     resolve: GTPModuleResolve {
                         paths: HashMap::from_iter([(
                             GTPath::parse((4, 12).into(), "./author").unwrap(),
-                            GTPModulePathResolve {
-                                module_path: author_path.clone(),
-                            },
+                            author_path,
                         )]),
                         identifiers: HashMap::from_iter([(
                             GTIdentifier::new((56, 62).into(), "Author".into()),
@@ -495,7 +495,10 @@ mod tests {
                             },
                         )]),
                     },
-                    source_code: NamedSource::new("book.type", read_to_string(&book_path).unwrap()),
+                    source_code: NamedSource::new(
+                        "book.type",
+                        read_to_string(config.src_path().join(&book_path).as_str()).unwrap(),
+                    ),
                 },
                 GTProjectModule {
                     path: order_path.clone(),
@@ -564,17 +567,10 @@ mod tests {
                     },
                     resolve: GTPModuleResolve {
                         paths: HashMap::from_iter([
-                            (
-                                GTPath::parse((4, 10).into(), "./book").unwrap(),
-                                GTPModulePathResolve {
-                                    module_path: book_path.clone(),
-                                },
-                            ),
+                            (GTPath::parse((4, 10).into(), "./book").unwrap(), book_path),
                             (
                                 GTPath::parse((35, 41).into(), "./user").unwrap(),
-                                GTPModulePathResolve {
-                                    module_path: user_path.clone(),
-                                },
+                                user_path.clone(),
                             ),
                         ]),
                         identifiers: HashMap::from_iter([(
@@ -598,7 +594,7 @@ mod tests {
                     },
                     source_code: NamedSource::new(
                         "order.type",
-                        read_to_string(&order_path).unwrap(),
+                        read_to_string(config.src_path().join(&order_path).as_str()).unwrap(),
                     ),
                 },
                 GTProjectModule {
@@ -643,7 +639,10 @@ mod tests {
                         identifiers: Default::default(),
                         definitions: Default::default(),
                     },
-                    source_code: NamedSource::new("user.type", read_to_string(&user_path).unwrap()),
+                    source_code: NamedSource::new(
+                        "user.type",
+                        read_to_string(config.src_path().join(&user_path).as_str()).unwrap(),
+                    ),
                 },
             ],
             config,

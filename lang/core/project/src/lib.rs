@@ -1,3 +1,5 @@
+use genotype_config::GtConfigPkg;
+use genotype_lang_core_config::GtlConfig;
 use genotype_project::*;
 use indexmap::IndexSet;
 use miette::Result;
@@ -17,9 +19,14 @@ pub use error::*;
 pub mod prelude;
 
 pub trait GtlProject<'a> {
-    type Module: GtlProjectModule;
+    type Module: GtlProjectModule<'a, Self::LangConfig>;
 
-    fn generate(project: &'a GtProject) -> Result<Self>
+    type LangConfig: GtlConfig;
+
+    fn generate(
+        config: &'a GtConfigPkg<'a, Self::LangConfig>,
+        modules: &Vec<GTProjectModule>,
+    ) -> Result<Self>
     where
         Self: Sized;
 
@@ -29,7 +36,8 @@ pub trait GtlProject<'a> {
 
     fn dependencies(
         &'a self,
-    ) -> Vec<<<Self as GtlProject<'a>>::Module as GtlProjectModule>::Dependency> {
+    ) -> Vec<<<Self as GtlProject<'a>>::Module as GtlProjectModule<'a, Self::LangConfig>>::Dependency>
+    {
         self.modules()
             .iter()
             .flat_map(|module| module.dependencies())

@@ -8,6 +8,14 @@ pub trait GtRelativePath {
     fn as_str(&self) -> &str {
         self.relative_path().as_str()
     }
+
+    #[cfg(feature = "parser")]
+    fn join_tree(&self, path: &GTPath) -> Self
+    where
+        Self: Sized,
+    {
+        Self::new(self.relative_path().join(path.source_str()))
+    }
 }
 
 impl GtRelativePath for RelativePathBuf {

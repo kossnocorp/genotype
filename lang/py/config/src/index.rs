@@ -1,7 +1,7 @@
 use crate::lang::PyConfigLang;
 use genotype_lang_core_config::*;
+use relative_path::RelativePathBuf;
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
 
 #[derive(Default, Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct PyConfig {
@@ -9,13 +9,13 @@ pub struct PyConfig {
     #[serde(flatten)]
     pub lang: PyConfigLang,
     #[serde(flatten)]
-    pub common: GtlConfigCommon<PyPackagePath>,
+    pub common: GtlConfigCommon<PyPkgPath>,
 }
 
 impl GtlConfig for PyConfig {
-    type PackagePath = PyPackagePath;
+    type PkgPath = PyPkgPath;
 
-    fn common(&self) -> &GtlConfigCommon<Self::PackagePath> {
+    fn common(&self) -> &GtlConfigCommon<Self::PkgPath> {
         &self.common
     }
 
@@ -26,18 +26,18 @@ impl GtlConfig for PyConfig {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(transparent)]
-pub struct PyPackagePath(PathBuf);
+pub struct PyPkgPath(RelativePathBuf);
 
-impl GtlConfigPackagePathSetting for PyPackagePath {
+impl GtlConfigPkgPathSetting for PyPkgPath {
     const DEFAULT: &'static str = "py";
 
-    fn pathbuf<'a>(&'a self) -> &'a PathBuf {
+    fn relative_path<'a>(&'a self) -> &'a RelativePathBuf {
         &self.0
     }
 }
 
-impl Default for PyPackagePath {
+impl Default for PyPkgPath {
     fn default() -> Self {
-        PyPackagePath(Self::default_pathbuf())
+        PyPkgPath(Self::default_relative_path())
     }
 }

@@ -6,10 +6,13 @@ pub struct TSProjectModule {
     pub module: TSModule,
 }
 
-impl GtlProjectModule for TSProjectModule {
+impl<'a> GtlProjectModule<'a, TsConfig> for TSProjectModule {
     type Dependency = TSDependencyIdent;
 
-    fn generate(project: &GtProject, module: &GTProjectModule) -> Result<Self> {
+    fn generate(
+        config: &'a GtConfigPkg<'a, TsConfig>,
+        module: &GTProjectModule,
+    ) -> Result<Self> {
         let path = project.config.ts.src_path().join(
             module
                 .path
@@ -65,7 +68,7 @@ impl GtlProjectModule for TSProjectModule {
         let module = TSConvertModule::convert(
             &module.module,
             resolve,
-            project.config.ts.common.dependencies.clone(),
+            config.target.common.dependencies.clone(),
         )
         .0;
 

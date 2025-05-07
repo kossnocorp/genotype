@@ -73,25 +73,23 @@ impl TryFrom<&Vec<GTProjectModuleParse>> for GTPResolve {
                     .extend(definitions.clone());
             });
 
-            for local_path in module.1.resolve.deps.iter() {
-                let module_id = if let Some(module_id) = module_paths.get(local_path.source_str()) {
-                    // It's already resolved
-                    module_id.clone()
-                } else if local_path.kind() == GTPathKind::Package {
-                    // It is a package path
-                    let id = GTModuleId(local_path.source_str().to_owned());
-                    module_paths.insert(local_path.source_str().into(), id.clone());
-                    id
-                } else {
-                    // Get the project module path from the local path
-                    let path = module.0.resolve(local_path).map_err(|_| {
-                        GTProjectError::CannotResolve(local_path.source_str().to_owned())
-                    })?;
-                    // [TODO] Get rid of paths in favor of ids and path -> id resolve?
-                    let id = GTModuleId(path.as_id().source_str().to_owned());
-                    module_paths.insert(local_path.source_str().into(), id.clone());
-                    id
-                };
+            for tree_path in module.1.resolve.deps.iter() {
+                let module_id: GTModuleId =
+                    if let Some(module_id) = module_paths.get(tree_path.source_str()) {
+                        // It's already resolved
+                        module_id.clone()
+                    } else if tree_path.kind() == GTPathKind::Package {
+                        // It is a package path
+                        let id = GTModuleId(tree_path.source_str().to_owned());
+                        module_paths.insert(tree_path.source_str().into(), id.clone());
+                        id
+                    } else {
+                        // Get the project module path from the local path
+                        let src_relative_path = module.0.join_tree(tree_path);
+                        let id: GTModuleId = src_relative_path.into();
+                        module_paths.insert(tree_path.source_str().into(), id.clone());
+                        id
+                    };
 
                 if let Some(definitions) = definitions.get(&module_id) {
                     imports

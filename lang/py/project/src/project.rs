@@ -3,15 +3,19 @@ use crate::prelude::internal::*;
 #[derive(Debug, PartialEq, Clone)]
 pub struct PyProject<'a> {
     pub modules: Vec<PyProjectModule>,
-    config: &'a GtConfigLang,
+    config: &'a GtConfigPkg<'a>,
 }
 
 impl<'a> GtlProject<'a> for PyProject<'a> {
     type Module = PyProjectModule;
 
-    fn generate(config: &'a GtConfigLang) -> Result<Self> {
-        let modules = config
-            .modules
+    type LangConfig = PyConfig;
+
+    fn generate(
+        config: &'a GtConfigPkg<'a, Self::LangConfig>,
+        modules: &Vec<GTProjectModule>,
+    ) -> Result<Self> {
+        let modules = modules
             .iter()
             .map(|module| PyProjectModule::generate(&config, module))
             .collect::<Result<_, _>>()?;
@@ -50,7 +54,7 @@ dist"#
         }
 
         let init = GtlProjectFile {
-            path: self.project.config.py.src_file_path("__init__.py".into()),
+            path: self.config.pkg_path().join("__init__.py".into()),
             source: format!(
                 "{}\n\n\n__all__ = [{}]",
                 imports.join("\n"),
@@ -59,7 +63,7 @@ dist"#
         };
 
         let py_typed = GtlProjectFile {
-            path: self.project.config.py.src_file_path("py.typed".into()),
+            path: self.config.pkg_path().join("py.typed".into()),
             source: "".into(),
         };
 
@@ -121,7 +125,9 @@ mod tests {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            PyProject::generate(&project).unwrap().modules,
+            PyProject::generate(&project.config.pkg_config_py(), &project.modules)
+                .unwrap()
+                .modules,
             vec![
                 PyProjectModule {
                     name: "author".into(),
@@ -199,7 +205,9 @@ mod tests {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            PyProject::generate(&project).unwrap().modules,
+            PyProject::generate(&project.config.pkg_config_py(), &project.modules)
+                .unwrap()
+                .modules,
             vec![
                 PyProjectModule {
                     name: "author".into(),
@@ -294,7 +302,10 @@ mod tests {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            PyProject::generate(&project).unwrap().out().unwrap(),
+            PyProject::generate(&project.config.pkg_config_py(), &project.modules)
+                .unwrap()
+                .out()
+                .unwrap(),
             GtlProjectOut {
                 files: vec![
                     GtlProjectFile {
@@ -364,7 +375,10 @@ class Book(Model):
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            PyProject::generate(&project).unwrap().out().unwrap(),
+            PyProject::generate(&project.config.pkg_config_py(), &project.modules)
+                .unwrap()
+                .out()
+                .unwrap(),
             GtlProjectOut {
                 files: vec![
                     GtlProjectFile {
@@ -440,7 +454,10 @@ class Book(Model):
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            PyProject::generate(&project).unwrap().out().unwrap(),
+            PyProject::generate(&project.config.pkg_config_py(), &project.modules)
+                .unwrap()
+                .out()
+                .unwrap(),
             GtlProjectOut {
                 files: vec![
                     GtlProjectFile {

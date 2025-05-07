@@ -1,3 +1,5 @@
+use genotype_config::{GtConfig, GtConfigPkg};
+
 use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone)]
@@ -8,14 +10,14 @@ pub struct RSProjectModule {
     pub resolve: RSPModuleResolve,
 }
 
-impl GtlProjectModule for RSProjectModule {
+impl<'a> GtlProjectModule<'a, RsConfig> for RSProjectModule {
     type Dependency = RSDependencyIdent;
 
-    fn generate(project: &GtProject, module: &GTProjectModule) -> Result<Self> {
+    fn generate(config: &'a GtConfigPkg<'a, RsConfig>, module: &GTProjectModule) -> Result<Self> {
         let relative_path = module
             .path
             .as_path()
-            .strip_prefix(project.root.as_path())
+            .strip_prefix(config.root.as_path())
             .map_err(|_| RSProjectError::BuildModulePath(module.path.as_name()))?;
         let name = rs_parse_module_path(
             relative_path
@@ -25,7 +27,7 @@ impl GtlProjectModule for RSProjectModule {
                 .unwrap()
                 .to_string(),
         );
-        let path = project
+        let path = config
             .config
             .rs
             .src_path()
@@ -103,8 +105,8 @@ impl GtlProjectModule for RSProjectModule {
         let module = RSConvertModule::convert(
             &module.module,
             &convert_resolve,
-            &project.config.rs.lang,
-            project.config.rs.common.dependencies.clone(),
+            &config.config.rs.lang,
+            config.config.rs.common.dependencies.clone(),
         )
         .map_err(|err| err.with_source_code(module.source_code.clone()))?
         .0;

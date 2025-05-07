@@ -232,11 +232,7 @@ mod tests {
 
     #[test]
     fn test_convert_resolve() {
-        let mut context = PYConvertContext::new(
-            Default::default(),
-            PyConfigLang::new(PYVersion::Legacy),
-            Default::default(),
-        );
+        let mut context = PYConvertContext::new(Default::default(), Default::default());
         assert_eq!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "Order".into()),

@@ -44,6 +44,20 @@ impl From<&str> for GtSrcRelativePath {
     }
 }
 
+#[cfg(feature = "parser")]
+impl From<&GtSrcRelativePath> for GTModuleId {
+    fn from(path: &GtSrcRelativePath) -> Self {
+        path.relative_path().normalize().as_str().into()
+    }
+}
+
+#[cfg(feature = "parser")]
+impl From<GtSrcRelativePath> for GTModuleId {
+    fn from(path: GtSrcRelativePath) -> Self {
+        (&path).into()
+    }
+}
+
 /// Entry pattern path relative to the working directory.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
@@ -62,13 +76,5 @@ impl GtRelativePath for GtEntryPath {
 impl From<GtCwdRelativePath> for GtEntryPath {
     fn from(path: GtCwdRelativePath) -> Self {
         Self(path)
-    }
-}
-
-#[cfg(feature = "project")]
-impl GtEntryPath {
-    pub fn glob(&self) -> std::result::Result<glob::Paths, glob::PatternError> {
-        use glob::glob;
-        glob(self.as_str())
     }
 }

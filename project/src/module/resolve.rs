@@ -4,20 +4,18 @@ use genotype_parser::{
     tree::{GTIdentifier, GTImportName, GTImportReference, GTPath},
     GTDefinitionId, GTPathKind,
 };
+use genotype_path::GtRelativePath;
 use miette::Result;
 
 use crate::error::GTProjectError;
 
-use super::{
-    identifier::GTPModuleIdentifierSource, GTPModuleDefinitionResolve, GTPModuleIdentifierResolve,
-    GTPModulePathResolve, GTProjectModuleParse,
-};
+use super::*;
 
 /// Module resolve data. It describes relations between module entities. It allows to
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTPModuleResolve {
     /// Paths resolve.
-    pub paths: HashMap<GTPath, GTPModulePathResolve>,
+    pub paths: HashMap<GTPath, GtSrcRelativePath>,
     /// Identifiers resolve.
     pub identifiers: HashMap<GTIdentifier, GTPModuleIdentifierResolve>,
     /// Definitions resolve.
@@ -30,7 +28,7 @@ impl GTPModuleResolve {
         parse: &GTProjectModuleParse,
     ) -> Result<Self> {
         // Resolve module dependencies by mapping local paths to project module paths
-        let mut paths: HashMap<GTPath, GTPModulePathResolve> = HashMap::new();
+        let mut paths: HashMap<GTPath, GtSrcRelativePath> = HashMap::new();
         for local_path in parse.1.resolve.deps.iter() {
             // Continue if the dependency is already resolved or it is a package path
             if paths.contains_key(local_path) || local_path.kind() == GTPathKind::Package {
@@ -38,11 +36,8 @@ impl GTPModuleResolve {
             }
 
             // Get the project module path from the local path
-            let module_path = parse
-                .0
-                .resolve(local_path)
-                .map_err(|_| GTProjectError::CannotResolve(local_path.source_str().to_owned()))?;
-            paths.insert(local_path.clone(), GTPModulePathResolve { module_path });
+            let module_path = parse.0.join_tree(local_path);
+            paths.insert(local_path.clone(), module_path);
         }
 
         // Resolve module references mapping identifiers to dependencies
@@ -109,7 +104,7 @@ impl GTPModuleResolve {
                             GTImportReference::Glob(_) => {
                                 let module = modules
                                     .iter()
-                                    .find(|module| module.0 == module_resolve.module_path)
+                                    .find(|module| module.0 == **module_resolve)
                                     .unwrap();
                                 module
                                     .1

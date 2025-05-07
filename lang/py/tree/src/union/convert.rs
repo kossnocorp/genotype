@@ -44,8 +44,10 @@ mod tests {
     fn test_convert_resolve() {
         let mut context = PYConvertContext::new(
             PYConvertResolve::default(),
-            PyConfigLang::new(PYVersion::Legacy),
-            Default::default(),
+            PyConfig {
+                lang: PyConfigLang::new(PYVersion::Legacy),
+                ..Default::default()
+            },
         );
         assert_eq!(
             GTUnion {

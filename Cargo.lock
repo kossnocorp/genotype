@@ -593,6 +593,7 @@ dependencies = [
  "delegate",
  "genotype_path",
  "pretty_assertions",
+ "relative-path",
  "serde",
  "toml",
 ]
@@ -641,6 +642,7 @@ version = "0.11.0"
 dependencies = [
  "genotype_lang_core_config",
  "pretty_assertions",
+ "relative-path",
  "serde",
 ]
 
@@ -682,6 +684,7 @@ version = "0.11.0"
 dependencies = [
  "genotype_lang_core_config",
  "pretty_assertions",
+ "relative-path",
  "serde",
 ]
 
@@ -744,6 +747,7 @@ version = "0.11.0"
 dependencies = [
  "genotype_lang_core_config",
  "pretty_assertions",
+ "relative-path",
  "serde",
 ]
 
@@ -810,7 +814,7 @@ dependencies = [
 name = "genotype_path"
 version = "0.11.0"
 dependencies = [
- "glob",
+ "genotype_parser",
  "pretty_assertions",
  "relative-path",
  "serde",
@@ -831,6 +835,7 @@ dependencies = [
  "num_cpus",
  "pretty_assertions",
  "rayon",
+ "relative-path",
  "thiserror 1.0.64",
 ]
 

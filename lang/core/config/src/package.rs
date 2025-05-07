@@ -1,30 +1,17 @@
-use std::path::PathBuf;
+use crate::prelude::internal::*;
 
 /// Out target package setting trait. Its primary purpose is to provide a default path for config
 /// during initialization and parse.
-pub trait GtlConfigPackagePathSetting: Default {
+pub trait GtlConfigPkgPathSetting: Default {
     const DEFAULT: &'static str;
 
-    fn pathbuf<'a>(&'a self) -> &'a PathBuf;
+    fn relative_path<'a>(&'a self) -> &'a RelativePathBuf;
 
-    fn to_path(&self) -> GtlConfigPackagePath {
-        GtlConfigPackagePath(self.pathbuf().clone())
+    fn to_path(&self) -> GtDistRelativePath {
+        GtDistRelativePath::new(self.relative_path().clone())
     }
 
-    fn default_pathbuf() -> PathBuf {
-        PathBuf::from(Self::DEFAULT)
-    }
-}
-
-/// Target out path. It is relative to the dist path, e.g. "ts/src/index.ts".
-pub struct GtlConfigPackagePath(PathBuf);
-
-impl GtlConfigPackagePath {
-    // pub fn new(path: PathBuf) -> Self {
-    //     GtlConfigOutPath(path)
-    // }
-
-    pub fn join(&self, path: PathBuf) -> Self {
-        GtlConfigPackagePath(self.0.join(path))
+    fn default_relative_path() -> RelativePathBuf {
+        Self::DEFAULT.into()
     }
 }

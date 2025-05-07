@@ -7,8 +7,8 @@ pub use error::*;
 mod find;
 pub use find::*;
 
-mod lang;
-pub use lang::*;
+mod pkg;
+pub use pkg::*;
 
 mod paths;
 pub use paths::*;

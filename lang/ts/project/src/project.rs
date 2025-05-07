@@ -3,25 +3,34 @@ use crate::prelude::internal::*;
 #[derive(Debug, PartialEq, Clone)]
 pub struct TsProject<'a> {
     pub modules: Vec<TSProjectModule>,
-    project: &'a GtProject,
+    config: &'a GtConfigPkg<'a, TsConfig>,
 }
 
 impl<'a> GtlProject<'a> for TsProject<'a> {
     type Module = TSProjectModule;
 
-    fn generate(project: &'a GtProject) -> Result<Self> {
-        let modules = project
-            .modules
+    type LangConfig = TsConfig;
+
+    fn generate(
+        config: &'a GtConfigPkg<'a, Self::LangConfig>,
+        modules: &Vec<GTProjectModule>,
+    ) -> Result<Self> {
+        let modules = modules
             .iter()
-            .map(|module| TSProjectModule::generate(&project, module))
+            .map(|module| TSProjectModule::generate(&config, module))
             .collect::<Result<_, _>>()?;
 
-        Ok(Self { modules, project })
+        Ok(Self { modules, config })
     }
 
     fn out(&self) -> Result<GtlProjectOut> {
         let gitignore = GtlProjectFile {
-            path: self.project.config.ts.out_path().join(".gitignore".into()),
+            path: self
+                .project
+                .config
+                .ts
+                .dist_relative_path()
+                .join(".gitignore".into()),
             source: r#"node_modules"#.into(),
         };
 

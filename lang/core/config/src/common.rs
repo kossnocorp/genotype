@@ -1,10 +1,10 @@
-use crate::GtlConfigPackagePathSetting;
+use crate::GtlConfigPkgPathSetting;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use toml::Table;
 
 #[derive(Default, Debug, Serialize, Deserialize, PartialEq, Clone)]
-pub struct GtlConfigCommon<Out: GtlConfigPackagePathSetting> {
+pub struct GtlConfigCommon<Out: GtlConfigPkgPathSetting> {
     /// Whether to enable the target package generation.
     #[serde(default)]
     pub enabled: bool,

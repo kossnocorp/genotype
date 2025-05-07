@@ -8,7 +8,7 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-glob = { version = "0.3.1", optional = true }
+genotype_parser = { version = "0.11.0", path = "../parser", optional = true }
 relative-path = "1.9.3"
 serde = { version = "1.0.219", features = ["derive"] }
 
@@ -17,4 +17,5 @@ pretty_assertions = "1.4.1"
 
 [features]
 default = []
-project = ["dep:glob"]
+project = ["parser"]
+parser = ["genotype_parser"]
