@@ -6,6 +6,7 @@ pub use genotype_lang_core_tree::*;
 pub use genotype_lang_rs_config::RsConfig;
 pub use genotype_lang_rs_tree::*;
 pub use genotype_parser::*;
+pub use genotype_path::*;
 pub use genotype_project::*;
 pub use indexmap::{IndexMap, IndexSet};
 pub use miette::{Diagnostic, IntoDiagnostic, Result};

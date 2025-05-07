@@ -706,6 +706,7 @@ dependencies = [
  "genotype_lang_rs_config",
  "genotype_lang_rs_tree",
  "genotype_parser",
+ "genotype_path",
  "genotype_project",
  "indexmap",
  "miette",
@@ -885,6 +886,7 @@ version = "0.11.0"
 dependencies = [
  "genotype_config",
  "genotype_lang_core_project",
+ "genotype_path",
  "pretty_assertions",
 ]
 

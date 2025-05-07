@@ -1,7 +1,8 @@
 use std::fs::{create_dir_all, write};
 
-use genotype_config::GtConfig;
+use genotype_config::*;
 use genotype_lang_core_project::*;
+use genotype_path::*;
 
 pub struct GTWriter;
 
@@ -16,10 +17,10 @@ impl GTWriter {
                 .iter()
                 .map(|module| {
                     // [TODO]
-                    let path = config.root_path().join(&module.path);
-                    let dir = path.parent().unwrap();
-                    create_dir_all(dir)?;
-                    write(path, &module.source)
+                    // let path = config.root.join(&module.path);
+                    let dir = module.path.relative_path().parent().unwrap();
+                    create_dir_all(dir.to_path(""))?;
+                    write(module.path.relative_path().to_path(""), &module.source)
                 })
                 .collect::<Result<(), _>>()?;
         }
