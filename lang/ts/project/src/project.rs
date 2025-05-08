@@ -35,15 +35,7 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
                 format!(
                     r#"export * from "./{}";
 "#,
-                    module
-                        .path
-                        .strip_prefix(self.project.config.ts.src_path())
-                        // [TODO]
-                        .unwrap()
-                        .as_os_str()
-                        .to_str()
-                        // [TODO]
-                        .unwrap()
+                    module.path.as_str()
                 )
             })
             .collect::<Vec<_>>();

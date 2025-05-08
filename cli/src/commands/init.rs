@@ -1,26 +1,24 @@
 use crate::diagnostic::error::GTCliError;
 use clap::Args;
 use genotype_config::*;
+use genotype_lang_py_config::*;
+use genotype_lang_rs_config::*;
+use genotype_lang_ts_config::*;
+use genotype_path::*;
+use heck::{ToKebabCase, ToSnakeCase};
 use inquire::{
     list_option::ListOption, min_length, required, validator::Validation, MultiSelect, Text,
 };
 use miette::Result;
-
-use genotype_lang_py_config::*;
-use genotype_lang_rs_config::*;
-use genotype_lang_ts_config::*;
-use heck::{ToKebabCase, ToSnakeCase};
 use owo_colors::OwoColorize;
 use regex::Regex;
 use std::fmt::{Display, Formatter};
 use std::fs::{create_dir_all, write};
-use std::path::PathBuf;
 
 #[derive(Args)]
 pub struct GTInitCommand {
-    /// Where to initialize the project, by default it will be the current
-    /// directory.
-    path: Option<PathBuf>,
+    /// Where to initialize the project, by default it will be the current directory.
+    path: Option<GtRootPath>,
 }
 
 pub fn init_command(args: &GTInitCommand) -> Result<()> {
@@ -29,31 +27,32 @@ pub fn init_command(args: &GTInitCommand) -> Result<()> {
     let name = configure_name(&mut config)?;
     configure_targers(&mut config, &name)?;
 
-    let root = args.path.clone().unwrap_or_else(|| PathBuf::from("."));
+    let root = args
+        .path
+        .clone()
+        .unwrap_or_else(|| GtRootPath::new(".".into()));
 
-    create_dir_all(root.clone())
-        .map_err(|_| GTCliError::FailedCreateDir(root.to_string_lossy().into()))?;
+    create_dir_all(root.as_str()).map_err(|_| GTCliError::FailedCreateDir(root.as_str().into()))?;
 
     write(
-        root.join("genotype.toml"),
+        root.join_path(&"genotype.toml".into()).as_str(),
         toml::to_string(&config).map_err(|_| GTCliError::StringifyConfig)?,
     )
     .map_err(|_| GTCliError::FailedWrite("genotype.toml".into()))?;
 
-    let src = root.join(config.src);
+    let src = root.join(&config.src);
 
-    create_dir_all(src.clone())
-        .map_err(|_| GTCliError::FailedCreateDir(src.to_string_lossy().into()))?;
+    create_dir_all(src.as_str()).map_err(|_| GTCliError::FailedCreateDir(src.as_str().into()))?;
 
     for (file, content) in GUIDE_FILES {
-        write(src.join(file), content)
-            .map_err(|_| GTCliError::FailedWrite(src.join(file).to_string_lossy().into()))?;
+        write(src.join_path(&file.into()).as_str(), content)
+            .map_err(|_| GTCliError::FailedWrite(src.join_path(&file.into()).as_str().into()))?;
     }
 
     println!(
         "{generated} project at {path:?}, run `{command}` to build the project",
         generated = "Generated".green().bold(),
-        path = root.to_string_lossy(),
+        path = root.as_str(),
         command = "gt build".yellow().bold()
     );
 

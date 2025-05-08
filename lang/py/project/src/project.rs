@@ -63,19 +63,20 @@ dist"#
             source: "".into(),
         };
 
-        let module_root = self.project.config.py.src_dir_path();
-        let mut module_paths: HashSet<PathBuf> = HashSet::new();
+        // let module_root = self.config.pkg_src_path();
+        let mut module_paths: HashSet<GtPkgSrcRelativePath> = HashSet::new();
 
         for module in self.modules.iter() {
             // [TODo]
-            let module_path = module.path.parent().unwrap();
-            if module_root != module_path {
-                module_paths.insert(module_path.into());
+            if let Some(module_path) = module.path.parent() {
+                module_paths.insert(module_path);
             }
         }
 
         let module_inits = module_paths.into_iter().map(|module_path| GtlProjectFile {
-            path: module_path.join(&"__init__.py".into()),
+            path: self
+                .config
+                .pkg_src_file_path(&module_path.join_path(&"__init__.py".into())),
             source: "".into(),
         });
 

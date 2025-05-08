@@ -23,6 +23,12 @@ impl From<GtCwdRelativePath> for GtRootPath {
     }
 }
 
+impl From<&str> for GtRootPath {
+    fn from(path: &str) -> Self {
+        Self::new(path.into())
+    }
+}
+
 /// Path relative to the project root directory.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]

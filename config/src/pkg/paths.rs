@@ -27,6 +27,6 @@ impl<Lang: GtlConfig> GtConfigPkg<'_, Lang> {
     }
     /// Returns owned package source relative file path, i.e. "src/lib.rs".
     pub fn pkg_relative_src_file_path(&self, path: &RelativePathBuf) -> GtPkgRelativePath {
-        self.pkg_relative_src_path().join_segment(path)
+        self.pkg_relative_src_path().join_path(path)
     }
 }

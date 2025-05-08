@@ -12,6 +12,7 @@ name = "gt"
 path = "src/main.rs"
 
 [dependencies]
+genotype_path = { version = "0.11.0", path = "../path" }
 genotype_project = { version = "0.11.0", path = "../project" }
 genotype_config = { version = "0.11.0", path = "../config" }
 genotype_writer = { version = "0.11.0", path = "../writer" }

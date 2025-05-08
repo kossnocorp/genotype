@@ -520,6 +520,7 @@ dependencies = [
  "genotype_lang_rs_project",
  "genotype_lang_ts_config",
  "genotype_lang_ts_project",
+ "genotype_path",
  "genotype_project",
  "genotype_writer",
  "heck",
