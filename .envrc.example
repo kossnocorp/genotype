@@ -1,4 +1,8 @@
-export TEST_RUN_CLI_PROJECT=../YOUR/PATH/TO/TEST/PROJECT
+# Enable stacktrace
+# export RUST_BACKTRACE=1
+
+# Provide a test project to run on:
+# export TEST_RUN_CLI_PROJECT=../YOUR/PATH/TO/TEST/PROJECT
 
 # If using Nix to set up dev environment:
 # use flake
