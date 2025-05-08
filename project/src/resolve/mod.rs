@@ -85,8 +85,8 @@ impl TryFrom<&Vec<GTProjectModuleParse>> for GTPResolve {
                         id
                     } else {
                         // Get the project module path from the local path
-                        let src_relative_path = module.0.join_tree(tree_path);
-                        let id: GTModuleId = src_relative_path.into();
+                        let module_path = module.0.resolve(tree_path);
+                        let id: GTModuleId = module_path.into();
                         module_paths.insert(tree_path.source_str().into(), id.clone());
                         id
                     };

@@ -1,12 +1,15 @@
 use crate::prelude::internal::*;
 use toml_edit::*;
 
-pub struct PyProjectManifest {}
-
-impl GtlProjectManifest for PyProjectManifest {
+impl<'a> GtlProjectManifest<'a> for PyProject<'a> {
     const FILE_NAME: &'static str = "pyproject.toml";
 
-    type ManifestDependency = PyProjectManifestDependency;
+    type Dependency = PyProjectManifestDependency;
+    type LangConfig = PyConfig;
+
+    fn config(&'a self) -> &'a GtConfigPkg<'a, Self::LangConfig> {
+        &self.config
+    }
 }
 
 pub struct PyProjectManifestDependency {}

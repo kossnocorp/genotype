@@ -24,6 +24,6 @@ mod tests {
         let config = GtConfig {
             ..Default::default()
         };
-        assert_eq!(config.dist_path().as_str(), "");
+        assert_eq!(config.dist_path().as_str(), "dist");
     }
 }

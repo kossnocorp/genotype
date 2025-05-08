@@ -1,5 +1,5 @@
 use genotype_parser::GTModule;
-use genotype_path::GtSrcRelativePath;
+use genotype_path::{GtModulePath, GtSrcRelativePath};
 use genotype_visitor::traverse::GTTraverse;
 use miette::{NamedSource, Result};
 
@@ -19,7 +19,7 @@ use crate::{visitor::GTPResolveVisitor, GTPResolve};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct GtProjectModule {
-    pub path: GtSrcRelativePath,
+    pub path: GtModulePath,
     pub module: GTModule,
     /// Project module resolve.
     pub resolve: GTPModuleResolve,

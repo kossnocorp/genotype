@@ -3,7 +3,7 @@ use crate::prelude::internal::*;
 #[derive(Debug, PartialEq, Clone)]
 pub struct TsProject<'a> {
     pub modules: Vec<TsProjectModule>,
-    config: GtConfigPkg<'a, TsConfig>,
+    pub config: GtConfigPkg<'a, TsConfig>,
 }
 
 impl<'a> GtlProject<'a> for TsProject<'a> {
@@ -45,16 +45,7 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
             source: exports.join(""),
         };
 
-        let package_json =
-            TsProjectManifest::manifest_file_with_edits(&self.config, &vec![], |doc| {
-                doc.insert(
-                    "types",
-                    self.config
-                        .pkg_relative_src_file_path(&"index.ts".into())
-                        .as_str()
-                        .into(),
-                );
-            })?;
+        let package_json = self.generate_manifest(&vec![])?;
 
         let project_modules = self
             .modules
@@ -94,7 +85,7 @@ mod tests {
             TsProject::generate(&project).unwrap().modules,
             vec![
                 TsProjectModule {
-                    path: "libs/ts/src/author.ts".into(),
+                    path: "dist/ts/src/author.ts".into(),
                     module: TSModule {
                         doc: None,
                         imports: vec![],
@@ -113,7 +104,7 @@ mod tests {
                     },
                 },
                 TsProjectModule {
-                    path: "libs/ts/src/book.ts".into(),
+                    path: "dist/ts/src/book.ts".into(),
                     module: TSModule {
                         doc: None,
                         imports: vec![TSImport {
@@ -156,7 +147,7 @@ mod tests {
             TsProject::generate(&project).unwrap().modules,
             vec![
                 TsProjectModule {
-                    path: "libs/ts/src/author.ts".into(),
+                    path: "dist/ts/src/author.ts".into(),
                     module: TSModule {
                         doc: None,
                         imports: vec![],
@@ -181,7 +172,7 @@ mod tests {
                     },
                 },
                 TsProjectModule {
-                    path: "libs/ts/src/book.ts".into(),
+                    path: "dist/ts/src/book.ts".into(),
                     module: TSModule {
                         doc: None,
                         imports: vec![TSImport {
@@ -229,25 +220,25 @@ mod tests {
             GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
-                        path: "libs/ts/.gitignore".into(),
+                        path: "examples/basic/dist/ts/.gitignore".into(),
                         source: "node_modules".into(),
                     },
                     GtlProjectFile {
-                        path: "libs/ts/package.json".into(),
+                        path: "examples/basic/dist/ts/package.json".into(),
                         source: r#"{
   "types": "src/index.ts"
 }"#
                         .into()
                     },
                     GtlProjectFile {
-                        path: "libs/ts/src/index.ts".into(),
+                        path: "examples/basic/dist/ts/src/index.ts".into(),
                         source: r#"export * from "./author.ts";
 export * from "./book.ts";
 "#
                         .into()
                     },
                     GtlProjectFile {
-                        path: "libs/ts/src/author.ts".into(),
+                        path: "examples/basic/dist/ts/src/author.ts".into(),
                         source: r#"export interface Author {
   name: string;
 }
@@ -255,7 +246,7 @@ export * from "./book.ts";
                         .into()
                     },
                     GtlProjectFile {
-                        path: "libs/ts/src/book.ts".into(),
+                        path: "examples/basic/dist/ts/src/book.ts".into(),
                         source: r#"import { Author } from "./author.ts";
 
 export interface Book {
@@ -284,24 +275,24 @@ export interface Book {
             GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
-                        path: "libs/ts/.gitignore".into(),
+                        path: "dist/ts/.gitignore".into(),
                         source: "node_modules".into(),
                     },
                     GtlProjectFile {
-                        path: "libs/ts/package.json".into(),
+                        path: "dist/ts/package.json".into(),
                         source: r#"{
   "types": "src/index.ts"
 }"#
                         .into()
                     },
                     GtlProjectFile {
-                        path: "libs/ts/src/index.ts".into(),
+                        path: "examples/dependencies/dist/ts/src/index.ts".into(),
                         source: r#"export * from "./prompt.ts";
 "#
                         .into()
                     },
                     GtlProjectFile {
-                        path: "libs/ts/src/prompt.ts".into(),
+                        path: "examples/dependencies/dist/ts/src/prompt.ts".into(),
                         source: r#"import { JsonAny } from "@genotype/json";
 
 export interface Prompt {

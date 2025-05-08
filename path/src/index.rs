@@ -21,22 +21,14 @@ pub trait GtRelativePath {
     where
         Self: Sized,
     {
-        Self::new(self.relative_path().strip_extension())
+        Self::new(self.relative_path().with_extension(""))
     }
 
     fn join_path(&self, path: &RelativePathBuf) -> Self
     where
         Self: Sized,
     {
-        Self::new(self.relative_path().join(path))
-    }
-
-    #[cfg(feature = "parser")]
-    fn join_tree(&self, path: &GTPath) -> Self
-    where
-        Self: Sized,
-    {
-        Self::new(self.relative_path().join(path.source_str()))
+        Self::new(self.relative_path().join_normalized(path))
     }
 
     fn parent(&self) -> Option<Self>
@@ -44,7 +36,7 @@ pub trait GtRelativePath {
         Self: Sized,
     {
         if let Some(parent) = self.relative_path().parent() {
-            Some(Self::new(parent))
+            Some(Self::new(parent.into()))
         } else {
             None
         }
@@ -55,15 +47,5 @@ pub trait GtRelativePath {
         Self: Sized + Clone,
     {
         std::iter::successors(self.parent(), Self::parent)
-    }
-}
-
-impl GtRelativePath for RelativePathBuf {
-    fn new(path: RelativePathBuf) -> Self {
-        path
-    }
-
-    fn relative_path(&self) -> &RelativePathBuf {
-        self
     }
 }

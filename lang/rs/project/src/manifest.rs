@@ -1,12 +1,15 @@
 use crate::prelude::internal::*;
 use toml_edit::*;
 
-pub struct RsProjectManifest;
-
-impl GtlProjectManifest for RsProjectManifest {
+impl<'a> GtlProjectManifest<'a> for RsProject<'a> {
     const FILE_NAME: &'static str = "Cargo.toml";
 
-    type ManifestDependency = RsProjectManifestDependency;
+    type Dependency = RsProjectManifestDependency;
+    type LangConfig = RsConfig;
+
+    fn config(&'a self) -> &'a GtConfigPkg<'a, Self::LangConfig> {
+        &self.config
+    }
 }
 
 pub struct RsProjectManifestDependency;

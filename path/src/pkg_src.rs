@@ -30,7 +30,7 @@ pub struct GtPkgSrcRelativePath(RelativePathBuf);
 
 impl GtRelativePath for GtPkgSrcRelativePath {
     fn new(path: RelativePathBuf) -> Self {
-        Self(path)
+        Self(path.normalize())
     }
 
     fn relative_path(&self) -> &RelativePathBuf {

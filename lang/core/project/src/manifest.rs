@@ -2,31 +2,26 @@ use crate::prelude::internal::*;
 use miette::IntoDiagnostic;
 use toml_edit::*;
 
-pub trait GtlProjectManifest {
+pub trait GtlProjectManifest<'a> {
     const FILE_NAME: &'static str;
     const DEPENDENCIES_KEY: &'static str = "dependencies";
-    const MANIFEST_FORMAT: GtlProjectManifestFormat = GtlProjectManifestFormat::Toml;
+    const FORMAT: GtlProjectManifestFormat = GtlProjectManifestFormat::Toml;
 
-    type ManifestDependency: GtlProjectManifestDependency;
+    type Dependency: GtlProjectManifestDependency;
+    type LangConfig: GtlConfig;
 
-    fn manifest_file<Lang: GtlConfig>(
-        config: &GtConfigPkg<'_, Lang>,
-        deps: &Vec<
-            <<Self as GtlProjectManifest>::ManifestDependency as GtlProjectManifestDependency>::DependencyIdent,
+    fn config(&'a self) -> &'a GtConfigPkg<'a, Self::LangConfig>;
+
+    fn alter_manifest_doc(&self, _doc: &mut DocumentMut) {}
+
+    fn generate_manifest(
+        &'a self,
+        deps: &'a Vec<
+            <<Self as GtlProjectManifest<'a>>::Dependency as GtlProjectManifestDependency>::DependencyIdent,
         >,
-    ) -> Result<GtlProjectFile> {
-        Self::manifest_file_with_edits(config, deps, |_| {})
-    }
-
-    fn manifest_file_with_edits<Lang: GtlConfig>(
-        config: &GtConfigPkg<'_, Lang>,
-        deps: &Vec<
-            <<Self as GtlProjectManifest>::ManifestDependency as GtlProjectManifestDependency>::DependencyIdent,
-        >,
-        edit: impl FnOnce(&mut DocumentMut),
     ) -> Result<GtlProjectFile> {
         let mut manifest: DocumentMut =
-            toml_edit::ser::to_document(&config.target.manifest()).into_diagnostic()?;
+            toml_edit::ser::to_document(&self.config().target.manifest()).into_diagnostic()?;
 
         let manifest_deps = if let Some(deps) = manifest[Self::DEPENDENCIES_KEY].as_table_mut() {
             deps
@@ -43,14 +38,14 @@ pub trait GtlProjectManifest {
         };
 
         for dep in deps.iter() {
-            if let Some((key, value)) = Self::ManifestDependency::as_kv(dep) {
+            if let Some((key, value)) = Self::Dependency::as_kv(dep) {
                 manifest_deps.insert(&key, value.into());
             }
         }
 
-        edit(&mut manifest);
+        self.alter_manifest_doc(&mut manifest);
 
-        let source = match Self::MANIFEST_FORMAT {
+        let source = match Self::FORMAT {
             GtlProjectManifestFormat::Toml => manifest.to_string(),
 
             GtlProjectManifestFormat::Json => {
@@ -63,7 +58,7 @@ pub trait GtlProjectManifest {
         };
 
         Ok(GtlProjectFile {
-            path: config.pkg_file_path(&Self::FILE_NAME.into()),
+            path: self.config().pkg_file_path(&Self::FILE_NAME.into()),
             source,
         })
     }

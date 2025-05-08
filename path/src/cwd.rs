@@ -2,7 +2,7 @@ use crate::prelude::internal::*;
 
 pub trait GtCwdRelativeDirPath<ChildPath: GtRelativePath>: GtRelativePath {
     fn join(&self, path: &ChildPath) -> GtCwdRelativePath {
-        GtCwdRelativePath::new(self.relative_path().join(path.relative_path()))
+        GtCwdRelativePath::new(self.relative_path().join_normalized(path.relative_path()))
     }
 }
 
@@ -13,7 +13,7 @@ pub struct GtCwdRelativePath(RelativePathBuf);
 
 impl GtRelativePath for GtCwdRelativePath {
     fn new(path: RelativePathBuf) -> Self {
-        Self(path)
+        Self(path.normalize())
     }
 
     fn relative_path(&self) -> &RelativePathBuf {

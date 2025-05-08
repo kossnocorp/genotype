@@ -22,4 +22,7 @@ pub use pkg::*;
 mod pkg_src;
 pub use pkg_src::*;
 
+mod module;
+pub use module::*;
+
 pub mod prelude;

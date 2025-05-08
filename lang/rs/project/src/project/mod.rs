@@ -22,7 +22,7 @@ impl<'a> GtlProject<'a> for RsProject<'a> {
     }
 
     fn dist(&self) -> Result<GtlProjectDist> {
-        let cargo = RsProjectManifest::manifest_file(&self.config, &self.dependencies())?;
+        let cargo = self.generate_manifest(&self.dependencies())?;
 
         let mut files = vec![self.gitignore_source(), cargo];
         files.extend(self.indices_source());
@@ -53,7 +53,7 @@ mod tests {
             RsProject::generate(&project).unwrap().modules,
             vec![
                 RsProjectModule {
-                    path: "libs/rs/src/author.rs".into(),
+                    path: "dist/rs/src/author.rs".into(),
                     module: RSModule {
                         id: "author".into(),
                         doc: None,
@@ -85,7 +85,7 @@ mod tests {
                     },
                 },
                 RsProjectModule {
-                    path: "libs/rs/src/book.rs".into(),
+                    path: "dist/rs/src/book.rs".into(),
                     module: RSModule {
                         id: "book".into(),
                         doc: None,
@@ -166,7 +166,7 @@ mod tests {
             RsProject::generate(&project).unwrap().modules,
             vec![
                 RsProjectModule {
-                    path: "libs/rs/src/author.rs".into(),
+                    path: "dist/rs/src/author.rs".into(),
                     module: RSModule {
                         id: "author".into(),
                         doc: None,
@@ -225,7 +225,7 @@ mod tests {
                     },
                 },
                 RsProjectModule {
-                    path: "libs/rs/src/book.rs".into(),
+                    path: "dist/rs/src/book.rs".into(),
                     module: RSModule {
                         id: "book".into(),
                         doc: None,
@@ -332,18 +332,18 @@ mod tests {
             GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
-                        path: "libs/rs/.gitignore".into(),
+                        path: "dist/rs/.gitignore".into(),
                         source: r#"target"#.into(),
                     },
                     GtlProjectFile {
-                        path: "libs/rs/Cargo.toml".into(),
+                        path: "dist/rs/Cargo.toml".into(),
                         source: r#"[dependencies]
 serde = { version = "1", features = ["derive"] }
 "#
                         .into()
                     },
                     GtlProjectFile {
-                        path: "libs/rs/src/lib.rs".into(),
+                        path: "dist/rs/src/lib.rs".into(),
                         source: r#"mod author;
 pub use author::*;
 mod book;
@@ -352,7 +352,7 @@ pub use book::*;
                         .into(),
                     },
                     GtlProjectFile {
-                        path: "libs/rs/src/author.rs".into(),
+                        path: "dist/rs/src/author.rs".into(),
                         source: r#"use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -363,7 +363,7 @@ pub struct Author {
                         .into()
                     },
                     GtlProjectFile {
-                        path: "libs/rs/src/book.rs".into(),
+                        path: "dist/rs/src/book.rs".into(),
                         source: r#"use super::author::Author;
 use serde::{Deserialize, Serialize};
 
@@ -390,18 +390,18 @@ pub struct Book {
             GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
-                        path: "libs/rs/.gitignore".into(),
+                        path: "dist/rs/.gitignore".into(),
                         source: r#"target"#.into(),
                     },
                     GtlProjectFile {
-                        path: "libs/rs/Cargo.toml".into(),
+                        path: "dist/rs/Cargo.toml".into(),
                         source: r#"[dependencies]
 serde = { version = "1", features = ["derive"] }
 "#
                         .into(),
                     },
                     GtlProjectFile {
-                        path: "libs/rs/src/lib.rs".into(),
+                        path: "dist/rs/src/lib.rs".into(),
                         source: r#"mod inventory;
 pub use inventory::*;
 mod shop;
@@ -410,21 +410,21 @@ pub use shop::*;
                         .into(),
                     },
                     GtlProjectFile {
-                        path: "libs/rs/src/shop/goods/mod.rs".into(),
+                        path: "dist/rs/src/shop/goods/mod.rs".into(),
                         source: r#"mod book;
 pub use book::*;
 "#
                         .into(),
                     },
                     GtlProjectFile {
-                        path: "libs/rs/src/shop/mod.rs".into(),
+                        path: "dist/rs/src/shop/mod.rs".into(),
                         source: r#"mod goods;
 pub use goods::*;
 "#
                         .into(),
                     },
                     GtlProjectFile {
-                        path: "libs/rs/src/inventory.rs".into(),
+                        path: "dist/rs/src/inventory.rs".into(),
                         source: r#"use super::shop::goods::book::Book;
 use serde::{Deserialize, Serialize};
 
@@ -436,7 +436,7 @@ pub struct Inventory {
                         .into()
                     },
                     GtlProjectFile {
-                        path: "libs/rs/src/shop/goods/book.rs".into(),
+                        path: "dist/rs/src/shop/goods/book.rs".into(),
                         source: r#"use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -461,11 +461,11 @@ pub struct Book {
             GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
-                        path: "libs/rs/.gitignore".into(),
+                        path: "dist/rs/.gitignore".into(),
                         source: r#"target"#.into(),
                     },
                     GtlProjectFile {
-                        path: "libs/rs/Cargo.toml".into(),
+                        path: "dist/rs/Cargo.toml".into(),
                         source: r#"[dependencies]
 literals = "0.1"
 serde = { version = "1", features = ["derive"] }
@@ -473,7 +473,7 @@ serde = { version = "1", features = ["derive"] }
                         .into(),
                     },
                     GtlProjectFile {
-                        path: "libs/rs/src/lib.rs".into(),
+                        path: "dist/rs/src/lib.rs".into(),
                         source: r#"mod admin;
 pub use admin::*;
 mod named;
@@ -484,7 +484,7 @@ pub use user::*;
                         .into(),
                     },
                     GtlProjectFile {
-                        path: "libs/rs/src/admin.rs".into(),
+                        path: "dist/rs/src/admin.rs".into(),
                         source: r#"use literals::literal;
 use serde::{Deserialize, Serialize};
 use crate::named::Name;
@@ -517,7 +517,7 @@ pub enum AdminRole {
                         .into()
                     },
                     GtlProjectFile {
-                        path: "libs/rs/src/named.rs".into(),
+                        path: "dist/rs/src/named.rs".into(),
                         source: r#"use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -530,7 +530,7 @@ pub type Name = String;
                         .into()
                     },
                     GtlProjectFile {
-                        path: "libs/rs/src/user.rs".into(),
+                        path: "dist/rs/src/user.rs".into(),
                         source: r#"use super::named::Name;
 use serde::{Deserialize, Serialize};
 
@@ -563,14 +563,14 @@ pub struct Account {
             GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
-                        path: "libs/rs/.gitignore".into(),
+                        path: "dist/rs/.gitignore".into(),
                         source: r#"target"#.into(),
                     },
                     // [NOTE] The config order is not preserved due to the figment crate missing
                     // the feature for TOML files:
                     // https://github.com/kossnocorp/genotype/issues/36
                     GtlProjectFile {
-                        path: "libs/rs/Cargo.toml".into(),
+                        path: "dist/rs/Cargo.toml".into(),
                         source: r#"[dependencies]
 genotype_json_types = "0.1.0"
 serde = { version = "1", features = ["derive"] }
@@ -583,14 +583,14 @@ version = "0.1.0"
                         .into()
                     },
                     GtlProjectFile {
-                        path: "libs/rs/src/lib.rs".into(),
+                        path: "dist/rs/src/lib.rs".into(),
                         source: r#"mod prompt;
 pub use prompt::*;
 "#
                         .into(),
                     },
                     GtlProjectFile {
-                        path: "libs/rs/src/prompt.rs".into(),
+                        path: "dist/rs/src/prompt.rs".into(),
                         source: r#"use genotype_json_types::JsonAny;
 use serde::{Deserialize, Serialize};
 

@@ -15,7 +15,7 @@ use super::*;
 #[derive(Debug, PartialEq, Clone)]
 pub struct GTPModuleResolve {
     /// Paths resolve.
-    pub paths: HashMap<GTPath, GtSrcRelativePath>,
+    pub paths: HashMap<GTPath, GtModulePath>,
     /// Identifiers resolve.
     pub identifiers: HashMap<GTIdentifier, GTPModuleIdentifierResolve>,
     /// Definitions resolve.
@@ -28,7 +28,7 @@ impl GTPModuleResolve {
         parse: &GTProjectModuleParse,
     ) -> Result<Self> {
         // Resolve module dependencies by mapping local paths to project module paths
-        let mut paths: HashMap<GTPath, GtSrcRelativePath> = HashMap::new();
+        let mut paths: HashMap<GTPath, GtModulePath> = HashMap::new();
         for local_path in parse.1.resolve.deps.iter() {
             // Continue if the dependency is already resolved or it is a package path
             if paths.contains_key(local_path) || local_path.kind() == GTPathKind::Package {
@@ -36,7 +36,7 @@ impl GTPModuleResolve {
             }
 
             // Get the project module path from the local path
-            let module_path = parse.0.join_tree(local_path);
+            let module_path = parse.0.resolve(local_path);
             paths.insert(local_path.clone(), module_path);
         }
 

@@ -36,7 +36,7 @@ pub struct GtRootRelativePath(RelativePathBuf);
 
 impl GtRelativePath for GtRootRelativePath {
     fn new(path: RelativePathBuf) -> Self {
-        Self(path)
+        Self(path.normalize())
     }
 
     fn relative_path(&self) -> &RelativePathBuf {

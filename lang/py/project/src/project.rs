@@ -3,7 +3,7 @@ use crate::prelude::internal::*;
 #[derive(Debug, PartialEq, Clone)]
 pub struct PyProject<'a> {
     pub modules: Vec<PyProjectModule>,
-    config: GtConfigPkg<'a, PyConfig>,
+    pub config: GtConfigPkg<'a, PyConfig>,
 }
 
 impl<'a> GtlProject<'a> for PyProject<'a> {
@@ -30,7 +30,7 @@ dist"#
                 .into(),
         };
 
-        let pyproject = PyProjectManifest::manifest_file(&self.config, &self.dependencies())?;
+        let pyproject = self.generate_manifest(&self.dependencies())?;
 
         let mut imports = vec![];
         let mut exports = vec![];
@@ -50,7 +50,7 @@ dist"#
         }
 
         let init = GtlProjectFile {
-            path: self.config.pkg_file_path(&"__init__.py".into()),
+            path: self.config.pkg_src_file_path(&"__init__.py".into()),
             source: format!(
                 "{}\n\n\n__all__ = [{}]",
                 imports.join("\n"),
@@ -59,7 +59,7 @@ dist"#
         };
 
         let py_typed = GtlProjectFile {
-            path: self.config.pkg_file_path(&"py.typed".into()),
+            path: self.config.pkg_src_file_path(&"py.typed".into()),
             source: "".into(),
         };
 
@@ -126,7 +126,7 @@ mod tests {
             vec![
                 PyProjectModule {
                     name: "author".into(),
-                    path: "libs/py/module/author.py".into(),
+                    path: "author.py".into(),
                     module: PYModule {
                         doc: None,
                         imports: vec![PYImport {
@@ -151,7 +151,7 @@ mod tests {
                 },
                 PyProjectModule {
                     name: "book".into(),
-                    path: "libs/py/module/book.py".into(),
+                    path: "book.py".into(),
                     module: PYModule {
                         doc: None,
                         imports: vec![
@@ -204,7 +204,7 @@ mod tests {
             vec![
                 PyProjectModule {
                     name: "author".into(),
-                    path: "libs/py/module/author.py".into(),
+                    path: "author.py".into(),
                     module: PYModule {
                         doc: None,
                         imports: vec![PYImport {
@@ -237,7 +237,7 @@ mod tests {
                 },
                 PyProjectModule {
                     name: "book".into(),
-                    path: "libs/py/module/book.py".into(),
+                    path: "book.py".into(),
                     module: PYModule {
                         doc: None,
                         imports: vec![
@@ -299,13 +299,13 @@ mod tests {
             GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
-                        path: "libs/py/.gitignore".into(),
+                        path: "examples/basic/dist/py/.gitignore".into(),
                         source: r#"__pycache__
 dist"#
                             .into(),
                     },
                     GtlProjectFile {
-                        path: "libs/py/pyproject.toml".into(),
+                        path: "dist/py/pyproject.toml".into(),
                         source: r#"[tool.poetry]
 packages = [{ include = "module" }]
 
@@ -320,11 +320,11 @@ build-backend = "poetry.core.masonry.api"
                         .into(),
                     },
                     GtlProjectFile {
-                        path: "libs/py/module/py.typed".into(),
+                        path: "examples/basic/dist/py/module/py.typed".into(),
                         source: "".into(),
                     },
                     GtlProjectFile {
-                        path: "libs/py/module/__init__.py".into(),
+                        path: "examples/basic/dist/py/module/__init__.py".into(),
                         source: r#"from .author import Author
 from .book import Book
 
@@ -333,7 +333,7 @@ __all__ = ["Author", "Book"]"#
                             .into(),
                     },
                     GtlProjectFile {
-                        path: "libs/py/module/author.py".into(),
+                        path: "examples/basic/dist/py/module/author.py".into(),
                         source: r#"from genotype import Model
 
 
@@ -343,7 +343,7 @@ class Author(Model):
                         .into()
                     },
                     GtlProjectFile {
-                        path: "libs/py/module/book.py".into(),
+                        path: "examples/basic/dist/py/module/book.py".into(),
                         source: r#"from .author import Author
 from genotype import Model
 
@@ -369,13 +369,13 @@ class Book(Model):
             GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
-                        path: "libs/py/.gitignore".into(),
+                        path: "examples/nested/dist/py/.gitignore".into(),
                         source: r#"__pycache__
 dist"#
                             .into(),
                     },
                     GtlProjectFile {
-                        path: "libs/py/pyproject.toml".into(),
+                        path: "examples/nested/dist/py/pyproject.toml".into(),
                         source: r#"[tool.poetry]
 packages = [{ include = "module" }]
 
@@ -390,11 +390,11 @@ build-backend = "poetry.core.masonry.api"
                         .into(),
                     },
                     GtlProjectFile {
-                        path: "libs/py/module/py.typed".into(),
+                        path: "examples/nested/dist/py/module/py.typed".into(),
                         source: "".into(),
                     },
                     GtlProjectFile {
-                        path: "libs/py/module/__init__.py".into(),
+                        path: "examples/nested/dist/py/module/__init__.py".into(),
                         source: r#"from .inventory import Inventory
 from .shop.goods.book import Book
 
@@ -403,11 +403,11 @@ __all__ = ["Inventory", "Book"]"#
                             .into(),
                     },
                     GtlProjectFile {
-                        path: "libs/py/module/shop/goods/__init__.py".into(),
+                        path: "examples/nested/dist/py/module/shop/goods/__init__.py".into(),
                         source: "".into(),
                     },
                     GtlProjectFile {
-                        path: "libs/py/module/inventory.py".into(),
+                        path: "examples/nested/dist/py/module/inventory.py".into(),
                         source: r#"from .shop.goods.book import Book
 from genotype import Model
 
@@ -418,7 +418,7 @@ class Inventory(Model):
                         .into()
                     },
                     GtlProjectFile {
-                        path: "libs/py/module/shop/goods/book.py".into(),
+                        path: "examples/nested/dist/py/module/shop/goods/book.py".into(),
                         source: r#"from genotype import Model
 
 
@@ -445,13 +445,13 @@ class Book(Model):
             GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
-                        path: "libs/py/.gitignore".into(),
+                        path: "examples/dependencies/dist/py/.gitignore".into(),
                         source: r#"__pycache__
 dist"#
                             .into(),
                     },
                     GtlProjectFile {
-                        path: "libs/py/pyproject.toml".into(),
+                        path: "examples/dependencies/dist/py/pyproject.toml".into(),
                         source: r#"[tool.poetry]
 packages = [{ include = "module" }]
 
@@ -466,11 +466,11 @@ build-backend = "poetry.core.masonry.api"
                         .into(),
                     },
                     GtlProjectFile {
-                        path: "libs/py/module/py.typed".into(),
+                        path: "examples/dependencies/dist/py/module/py.typed".into(),
                         source: "".into(),
                     },
                     GtlProjectFile {
-                        path: "libs/py/module/__init__.py".into(),
+                        path: "examples/dependencies/dist/py/module/__init__.py".into(),
                         source: r#"from .prompt import Prompt
 
 
@@ -478,7 +478,7 @@ __all__ = ["Prompt"]"#
                             .into(),
                     },
                     GtlProjectFile {
-                        path: "libs/py/module/prompt.py".into(),
+                        path: "examples/dependencies/dist/py/module/prompt.py".into(),
                         source: r#"from genotype_json import JsonAny
 from genotype import Model
 

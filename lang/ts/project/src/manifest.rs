@@ -1,12 +1,25 @@
 use crate::prelude::internal::*;
 use toml_edit::*;
 
-pub struct TsProjectManifest;
-
-impl GtlProjectManifest for TsProjectManifest {
+impl<'a> GtlProjectManifest<'a> for TsProject<'a> {
     const FILE_NAME: &'static str = "Cargo.toml";
 
-    type ManifestDependency = TsProjectManifestDependency;
+    type Dependency = TsProjectManifestDependency;
+    type LangConfig = TsConfig;
+
+    fn config(&'a self) -> &'a GtConfigPkg<'a, Self::LangConfig> {
+        &self.config
+    }
+
+    fn alter_manifest_doc(&self, doc: &mut DocumentMut) {
+        doc.insert(
+            "types",
+            self.config
+                .pkg_relative_src_file_path(&"index.ts".into())
+                .as_str()
+                .into(),
+        );
+    }
 }
 
 pub struct TsProjectManifestDependency;
