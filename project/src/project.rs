@@ -19,12 +19,6 @@ pub struct GtProject {
 impl GtProject {
     pub fn load(config: GtConfig) -> Result<Self> {
         let src_path = config.src_path();
-        // let src = src_path
-        //     .relative_path()
-        //     .to_path("")
-        //     .canonicalize()
-        //     .map_err(|_| GTProjectError::Canonicalize(format!("src directory {:?}", src_path)))?;
-        // let src = Arc::new(src);
         let entries = glob(config.entry_path().as_str())
             .map_err(|_| GTProjectError::Unknown)?
             .collect::<Result<Vec<_>, _>>()
@@ -152,11 +146,8 @@ mod tests {
 
     #[test]
     fn test_entry() {
-        let project = GtProject::load(GtConfig::from_entry(
-            "module",
-            "./examples/basic",
-            "order.type",
-        ));
+        let config = GtConfig::from_entry("module", "./examples/basic", "order.type");
+        let project = GtProject::load(config);
         assert_eq!(project.unwrap(), basic_project());
     }
 

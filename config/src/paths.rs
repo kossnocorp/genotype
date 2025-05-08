@@ -10,7 +10,7 @@ impl GtConfig {
     }
 
     pub fn entry_path(&self) -> GtEntryPath {
-        self.src_path().join(&self.entry).into()
+        self.entry.with_parent(self.src_path().relative_path())
     }
 }
 

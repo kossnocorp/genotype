@@ -17,7 +17,7 @@ pub struct GtConfig {
     /// Project entry pattern. It defaults to `**/*.type` relative to the project's source
     /// directory.
     #[serde(default = "GtConfig::default_entry")]
-    pub entry: GtSrcRelativePath,
+    pub entry: GtEntryPath,
     /// TypeScript config.
     #[serde(default)]
     pub ts: TsConfig,
@@ -54,7 +54,7 @@ impl GtConfig {
         GtConfig {
             name: Some(name.into()),
             root: GtRootPath::new(root.into()),
-            entry: entry.into(),
+            entry: GtEntryPath::new(entry.into()),
             src: ".".into(),
             ..GtConfig::default()
         }
@@ -72,8 +72,8 @@ impl GtConfig {
         "src".into()
     }
 
-    pub fn default_entry() -> GtSrcRelativePath {
-        "**/*.type".into()
+    pub fn default_entry() -> GtEntryPath {
+        GtEntryPath::new("**/*.type".into())
     }
 }
 
