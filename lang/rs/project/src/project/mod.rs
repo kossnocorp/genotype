@@ -6,20 +6,18 @@ mod modules;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct RsProject<'a> {
-    pub modules: Vec<RSProjectModule>,
-    pub config: &'a GtConfigPkg<'a, RsConfig>,
+    pub modules: Vec<RsProjectModule>,
+    pub config: GtConfigPkg<'a, RsConfig>,
 }
 
 impl<'a> GtlProject<'a> for RsProject<'a> {
-    type Module = RSProjectModule;
+    type Module = RsProjectModule;
 
     type LangConfig = RsConfig;
 
-    fn generate(
-        config: &'a GtConfigPkg<'a, Self::LangConfig>,
-        modules: &Vec<GTProjectModule>,
-    ) -> Result<Self> {
-        let modules = Self::generate_modules(config, modules)?;
+    fn generate(project: &'a GtProject) -> Result<Self> {
+        let config = project.config.pkg_config_rs();
+        let modules = Self::generate_modules(&config, &project.modules)?;
         Ok(Self { modules, config })
     }
 
@@ -52,12 +50,9 @@ mod tests {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            RsProject::generate(&project.config.pkg_config_rs(), &project.modules)
-                .unwrap()
-                .modules,
+            RsProject::generate(&project).unwrap().modules,
             vec![
-                RSProjectModule {
-                    name: "author".into(),
+                RsProjectModule {
                     path: "libs/rs/src/author.rs".into(),
                     module: RSModule {
                         id: "author".into(),
@@ -89,8 +84,7 @@ mod tests {
                         definitions: Default::default()
                     },
                 },
-                RSProjectModule {
-                    name: "book".into(),
+                RsProjectModule {
                     path: "libs/rs/src/book.rs".into(),
                     module: RSModule {
                         id: "book".into(),
@@ -169,12 +163,9 @@ mod tests {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            RsProject::generate(&project.config.pkg_config_rs(), &project.modules)
-                .unwrap()
-                .modules,
+            RsProject::generate(&project).unwrap().modules,
             vec![
-                RSProjectModule {
-                    name: "author".into(),
+                RsProjectModule {
                     path: "libs/rs/src/author.rs".into(),
                     module: RSModule {
                         id: "author".into(),
@@ -233,8 +224,7 @@ mod tests {
                         )])
                     },
                 },
-                RSProjectModule {
-                    name: "book".into(),
+                RsProjectModule {
                     path: "libs/rs/src/book.rs".into(),
                     module: RSModule {
                         id: "book".into(),
@@ -338,10 +328,7 @@ mod tests {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            RsProject::generate(&project.config.pkg_config_rs(), &project.modules)
-                .unwrap()
-                .out()
-                .unwrap(),
+            RsProject::generate(&project).unwrap().out().unwrap(),
             GtlProjectOut {
                 files: vec![
                     GtlProjectFile {
@@ -399,10 +386,7 @@ pub struct Book {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            RsProject::generate(&project.config.pkg_config_rs(), &project.modules)
-                .unwrap()
-                .out()
-                .unwrap(),
+            RsProject::generate(&project).unwrap().out().unwrap(),
             GtlProjectOut {
                 files: vec![
                     GtlProjectFile {
@@ -473,10 +457,7 @@ pub struct Book {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            RsProject::generate(&project.config.pkg_config_rs(), &project.modules)
-                .unwrap()
-                .out()
-                .unwrap(),
+            RsProject::generate(&project).unwrap().out().unwrap(),
             GtlProjectOut {
                 files: vec![
                     GtlProjectFile {
@@ -578,10 +559,7 @@ pub struct Account {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            RsProject::generate(&project.config.pkg_config_rs(), &project.modules)
-                .unwrap()
-                .out()
-                .unwrap(),
+            RsProject::generate(&project).unwrap().out().unwrap(),
             GtlProjectOut {
                 files: vec![
                     GtlProjectFile {

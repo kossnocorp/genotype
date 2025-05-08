@@ -2,25 +2,15 @@ use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TSProjectModule {
-    pub path: PathBuf,
+    pub path: GtCwdRelativePath,
     pub module: TSModule,
 }
 
-impl<'a> GtlProjectModule<'a, TsConfig> for TSProjectModule {
+impl GtlProjectModule<TsConfig> for TSProjectModule {
     type Dependency = TSDependencyIdent;
 
-    fn generate(
-        config: &'a GtConfigPkg<'a, TsConfig>,
-        module: &GTProjectModule,
-    ) -> Result<Self> {
-        let path = project.config.ts.src_path().join(
-            module
-                .path
-                .as_path()
-                .strip_prefix(project.root.as_path())
-                .map_err(|_| TSProjectError::BuildModulePath(module.path.as_name()))?
-                .with_extension("ts"),
-        );
+    fn generate(config: &GtConfigPkg<'_, TsConfig>, module: &GtProjectModule) -> Result<Self> {
+        let path = config.pkg_src_file_path(module.path.to_pkg_src_relative_path("ts"));
 
         let mut resolve = TSConvertResolve::new();
         let mut prefixes: HashMap<String, u8> = HashMap::new();

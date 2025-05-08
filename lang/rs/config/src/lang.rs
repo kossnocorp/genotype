@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use crate::prelude::internal::*;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct RsConfigLang {

@@ -15,6 +15,16 @@ pub trait GtlProjectManifest {
             <<Self as GtlProjectManifest>::ManifestDependency as GtlProjectManifestDependency>::DependencyIdent,
         >,
     ) -> Result<GtlProjectFile> {
+        Self::manifest_file_with_edits(config, deps, |_| {})
+    }
+
+    fn manifest_file_with_edits<Lang: GtlConfig>(
+        config: &GtConfigPkg<'_, Lang>,
+        deps: &Vec<
+            <<Self as GtlProjectManifest>::ManifestDependency as GtlProjectManifestDependency>::DependencyIdent,
+        >,
+        edit: impl FnOnce(&mut DocumentMut),
+    ) -> Result<GtlProjectFile> {
         let mut manifest: DocumentMut =
             toml_edit::ser::to_document(&config.target.manifest()).into_diagnostic()?;
 
@@ -38,6 +48,8 @@ pub trait GtlProjectManifest {
             }
         }
 
+        edit(&mut manifest);
+
         let source = match Self::MANIFEST_FORMAT {
             GtlProjectManifestFormat::Toml => manifest.to_string(),
 
@@ -51,7 +63,7 @@ pub trait GtlProjectManifest {
         };
 
         Ok(GtlProjectFile {
-            path: config.dist.join(&Self::FILE_NAME.into()),
+            path: config.pkg_file_path(Self::FILE_NAME),
             source,
         })
     }

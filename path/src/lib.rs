@@ -7,6 +7,9 @@ pub use cwd::*;
 mod root;
 pub use root::*;
 
+mod entry;
+pub use entry::*;
+
 mod src;
 pub use src::*;
 
@@ -15,5 +18,8 @@ pub use dist::*;
 
 mod pkg;
 pub use pkg::*;
+
+mod pkg_src;
+pub use pkg_src::*;
 
 pub mod prelude;

@@ -1,37 +1,17 @@
-use genotype_config::{GtConfig, GtConfigPkg};
-
 use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct RSProjectModule {
-    pub name: String,
-    pub path: PathBuf,
+pub struct RsProjectModule {
+    pub path: GtCwdRelativePath,
     pub module: RSModule,
     pub resolve: RSPModuleResolve,
 }
 
-impl<'a> GtlProjectModule<'a, RsConfig> for RSProjectModule {
+impl GtlProjectModule<RsConfig> for RsProjectModule {
     type Dependency = RSDependencyIdent;
 
-    fn generate(config: &'a GtConfigPkg<'a, RsConfig>, module: &GTProjectModule) -> Result<Self> {
-        let relative_path = module
-            .path
-            .as_path()
-            .strip_prefix(config.root.as_path())
-            .map_err(|_| RSProjectError::BuildModulePath(module.path.as_name()))?;
-        let name = rs_parse_module_path(
-            relative_path
-                .with_extension("")
-                .as_os_str()
-                .to_str()
-                .unwrap()
-                .to_string(),
-        );
-        let path = config
-            .config
-            .rs
-            .src_path()
-            .join(relative_path.with_extension("rs"));
+    fn generate(config: &GtConfigPkg<'_, RsConfig>, module: &GtProjectModule) -> Result<Self> {
+        let path = config.pkg_src_file_path(module.path.to_pkg_src_relative_path("rs"));
 
         let mut convert_resolve = RSConvertResolve::default();
         let mut prefixes: HashMap<String, u8> = HashMap::new();
@@ -102,17 +82,11 @@ impl<'a> GtlProjectModule<'a, RsConfig> for RSProjectModule {
         let definitions = module.resolve.definitions.clone();
         let resolve = RSPModuleResolve { definitions };
 
-        let module = RSConvertModule::convert(
-            &module.module,
-            &convert_resolve,
-            &config.config.rs.lang,
-            config.config.rs.common.dependencies.clone(),
-        )
-        .map_err(|err| err.with_source_code(module.source_code.clone()))?
-        .0;
+        let module = RSConvertModule::convert(&module.module, &convert_resolve, &config.target)
+            .map_err(|err| err.with_source_code(module.source_code.clone()))?
+            .0;
 
         Ok(Self {
-            name,
             path,
             module,
             resolve,
@@ -128,7 +102,7 @@ impl<'a> GtlProjectModule<'a, RsConfig> for RSProjectModule {
     }
 }
 
-impl Hash for RSProjectModule {
+impl Hash for RsProjectModule {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.path.hash(state);
     }

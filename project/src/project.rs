@@ -14,7 +14,7 @@ use std::{
 #[derive(Debug, PartialEq, Clone)]
 pub struct GtProject {
     pub root: Arc<PathBuf>,
-    pub modules: Vec<GTProjectModule>,
+    pub modules: Vec<GtProjectModule>,
     pub config: GtConfig,
 }
 
@@ -78,7 +78,7 @@ impl GtProject {
 
         let mut modules = modules_parse
             .iter()
-            .map(|parse| GTProjectModule::try_new(&resolve, &modules_parse, parse.clone()))
+            .map(|parse| GtProjectModule::try_new(&resolve, &modules_parse, parse.clone()))
             .collect::<Result<Vec<_>, _>>()?;
 
         // [TODO] It's needed for tests, hide behind cfg(test), keep or replace with something like
@@ -176,7 +176,7 @@ mod tests {
             project.unwrap(),
             GtProject {
                 root: root.clone(),
-                modules: vec![GTProjectModule {
+                modules: vec![GtProjectModule {
                     path: module_path.clone(),
                     module: GTModule {
                         id: "anonymous".into(),
@@ -376,7 +376,7 @@ mod tests {
         GtProject {
             root: root.clone(),
             modules: vec![
-                GTProjectModule {
+                GtProjectModule {
                     path: author_path.clone(),
                     module: GTModule {
                         id: "author".into(),
@@ -413,7 +413,7 @@ mod tests {
                         read_to_string(config.src_path().join(&author_path).as_str()).unwrap(),
                     ),
                 },
-                GTProjectModule {
+                GtProjectModule {
                     path: book_path.clone(),
                     module: GTModule {
                         id: "book".into(),
@@ -500,7 +500,7 @@ mod tests {
                         read_to_string(config.src_path().join(&book_path).as_str()).unwrap(),
                     ),
                 },
-                GTProjectModule {
+                GtProjectModule {
                     path: order_path.clone(),
                     module: GTModule {
                         id: "order".into(),
@@ -597,7 +597,7 @@ mod tests {
                         read_to_string(config.src_path().join(&order_path).as_str()).unwrap(),
                     ),
                 },
-                GTProjectModule {
+                GtProjectModule {
                     path: user_path.clone(),
                     module: GTModule {
                         id: "user".into(),

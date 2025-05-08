@@ -641,6 +641,7 @@ name = "genotype_lang_py_config"
 version = "0.11.0"
 dependencies = [
  "genotype_lang_core_config",
+ "genotype_path",
  "pretty_assertions",
  "relative-path",
  "serde",
@@ -657,6 +658,7 @@ dependencies = [
  "genotype_lang_py_config",
  "genotype_lang_py_tree",
  "genotype_parser",
+ "genotype_path",
  "genotype_project",
  "indexmap",
  "miette",
@@ -683,6 +685,7 @@ name = "genotype_lang_rs_config"
 version = "0.11.0"
 dependencies = [
  "genotype_lang_core_config",
+ "genotype_path",
  "pretty_assertions",
  "relative-path",
  "serde",
@@ -719,6 +722,7 @@ dependencies = [
 name = "genotype_lang_rs_tree"
 version = "0.11.0"
 dependencies = [
+ "genotype_config",
  "genotype_lang_core_tree",
  "genotype_lang_rs_config",
  "genotype_lang_rs_core",
@@ -747,6 +751,7 @@ name = "genotype_lang_ts_config"
 version = "0.11.0"
 dependencies = [
  "genotype_lang_core_config",
+ "genotype_path",
  "pretty_assertions",
  "relative-path",
  "serde",
@@ -763,6 +768,7 @@ dependencies = [
  "genotype_lang_ts_config",
  "genotype_lang_ts_tree",
  "genotype_parser",
+ "genotype_path",
  "genotype_project",
  "miette",
  "pretty_assertions",

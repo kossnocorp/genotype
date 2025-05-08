@@ -3,7 +3,7 @@ use crate::prelude::internal::*;
 #[derive(Debug, PartialEq, Clone)]
 pub struct PyProject<'a> {
     pub modules: Vec<PyProjectModule>,
-    config: &'a GtConfigPkg<'a>,
+    config: GtConfigPkg<'a, PyConfig>,
 }
 
 impl<'a> GtlProject<'a> for PyProject<'a> {
@@ -11,11 +11,10 @@ impl<'a> GtlProject<'a> for PyProject<'a> {
 
     type LangConfig = PyConfig;
 
-    fn generate(
-        config: &'a GtConfigPkg<'a, Self::LangConfig>,
-        modules: &Vec<GTProjectModule>,
-    ) -> Result<Self> {
-        let modules = modules
+    fn generate(project: &'a GtProject) -> Result<Self> {
+        let config = project.config.pkg_config_py();
+        let modules = project
+            .modules
             .iter()
             .map(|module| PyProjectModule::generate(&config, module))
             .collect::<Result<_, _>>()?;
@@ -25,16 +24,13 @@ impl<'a> GtlProject<'a> for PyProject<'a> {
 
     fn out(&self) -> Result<GtlProjectOut> {
         let gitignore = GtlProjectFile {
-            path: self
-                .project
-                .lang_package_path(GtConfigLangIdent::Py, ".gitignore".into()),
+            path: self.config.pkg_file_path(".gitignore"),
             source: r#"__pycache__
 dist"#
                 .into(),
         };
 
-        let pyproject =
-            PyProjectManifest::manifest_file(&self.project.config.py, &self.dependencies())?;
+        let pyproject = PyProjectManifest::manifest_file(&self.config, &self.dependencies())?;
 
         let mut imports = vec![];
         let mut exports = vec![];
@@ -54,7 +50,7 @@ dist"#
         }
 
         let init = GtlProjectFile {
-            path: self.config.pkg_path().join("__init__.py".into()),
+            path: self.config.pkg_file_path("__init__.py"),
             source: format!(
                 "{}\n\n\n__all__ = [{}]",
                 imports.join("\n"),
@@ -63,7 +59,7 @@ dist"#
         };
 
         let py_typed = GtlProjectFile {
-            path: self.config.pkg_path().join("py.typed".into()),
+            path: self.config.pkg_file_path("py.typed"),
             source: "".into(),
         };
 
@@ -125,9 +121,7 @@ mod tests {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            PyProject::generate(&project.config.pkg_config_py(), &project.modules)
-                .unwrap()
-                .modules,
+            PyProject::generate(&project).unwrap().modules,
             vec![
                 PyProjectModule {
                     name: "author".into(),
@@ -205,9 +199,7 @@ mod tests {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            PyProject::generate(&project.config.pkg_config_py(), &project.modules)
-                .unwrap()
-                .modules,
+            PyProject::generate(&project).unwrap().modules,
             vec![
                 PyProjectModule {
                     name: "author".into(),
@@ -302,10 +294,7 @@ mod tests {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            PyProject::generate(&project.config.pkg_config_py(), &project.modules)
-                .unwrap()
-                .out()
-                .unwrap(),
+            PyProject::generate(&project).unwrap().out().unwrap(),
             GtlProjectOut {
                 files: vec![
                     GtlProjectFile {
@@ -375,10 +364,7 @@ class Book(Model):
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            PyProject::generate(&project.config.pkg_config_py(), &project.modules)
-                .unwrap()
-                .out()
-                .unwrap(),
+            PyProject::generate(&project).unwrap().out().unwrap(),
             GtlProjectOut {
                 files: vec![
                     GtlProjectFile {
@@ -454,10 +440,7 @@ class Book(Model):
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            PyProject::generate(&project.config.pkg_config_py(), &project.modules)
-                .unwrap()
-                .out()
-                .unwrap(),
+            PyProject::generate(&project).unwrap().out().unwrap(),
             GtlProjectOut {
                 files: vec![
                     GtlProjectFile {

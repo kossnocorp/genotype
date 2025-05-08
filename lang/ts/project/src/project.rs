@@ -3,7 +3,7 @@ use crate::prelude::internal::*;
 #[derive(Debug, PartialEq, Clone)]
 pub struct TsProject<'a> {
     pub modules: Vec<TSProjectModule>,
-    config: &'a GtConfigPkg<'a, TsConfig>,
+    config: GtConfigPkg<'a, TsConfig>,
 }
 
 impl<'a> GtlProject<'a> for TsProject<'a> {
@@ -11,11 +11,10 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
 
     type LangConfig = TsConfig;
 
-    fn generate(
-        config: &'a GtConfigPkg<'a, Self::LangConfig>,
-        modules: &Vec<GTProjectModule>,
-    ) -> Result<Self> {
-        let modules = modules
+    fn generate(project: &'a GtProject) -> Result<Self> {
+        let config = project.config.pkg_config_ts();
+        let modules = project
+            .modules
             .iter()
             .map(|module| TSProjectModule::generate(&config, module))
             .collect::<Result<_, _>>()?;
@@ -25,12 +24,7 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
 
     fn out(&self) -> Result<GtlProjectOut> {
         let gitignore = GtlProjectFile {
-            path: self
-                .project
-                .config
-                .ts
-                .dist_relative_path()
-                .join(".gitignore".into()),
+            path: self.config.pkg_file_path(".gitignore".into()),
             source: r#"node_modules"#.into(),
         };
 
@@ -55,39 +49,21 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
             .collect::<Vec<_>>();
 
         let barrel = GtlProjectFile {
-            path: self.project.config.ts.src_path().join("index.ts".into()),
+            path: self.config.pkg_src_file_path("index.ts"),
             source: exports.join(""),
         };
 
-        let package = GtlProjectFile {
-            path: self
-                .project
-                .lang_package_path(GtConfigLangIdent::Ts, "package.json".into()),
+        let package_json =
+            TsProjectManifest::manifest_file_with_edits(&self.config, &vec![], |doc| {
+                doc.insert(
+                    "types",
+                    self.config
+                        .pkg_relative_src_file_path("index.ts")
+                        .as_str()
+                        .into(),
+                );
+            })?;
 
-            source: serde_json::to_string_pretty(&TSPackage {
-                types: self
-                    .project
-                    .config
-                    .ts
-                    .src_path()
-                    .join("index.ts".into())
-                    .as_os_str()
-                    .to_str()
-                    // [TODO]
-                    .unwrap()
-                    .into(),
-                // [TODO] Merge with package?
-                // files: vec![config
-                //     .src
-                //     .as_os_str()
-                //     .to_str()
-                //     // [TODO]
-                //     .unwrap()
-                //     .into()],
-                // manifest: self.config.common.manifest.clone(),
-            })
-            .unwrap(),
-        };
         let project_modules = self
             .modules
             .iter()
@@ -100,7 +76,7 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
             })
             .collect::<Vec<_>>();
 
-        let mut modules = vec![gitignore, package, barrel];
+        let mut modules = vec![gitignore, package_json, barrel];
         modules.extend(project_modules);
 
         Ok(GtlProjectOut { files: modules })

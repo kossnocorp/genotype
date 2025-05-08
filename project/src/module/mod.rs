@@ -18,7 +18,7 @@ pub use resolve::*;
 use crate::{visitor::GTPResolveVisitor, GTPResolve};
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct GTProjectModule {
+pub struct GtProjectModule {
     pub path: GtSrcRelativePath,
     pub module: GTModule,
     /// Project module resolve.
@@ -29,7 +29,7 @@ pub struct GTProjectModule {
     pub source_code: NamedSource<String>,
 }
 
-impl GTProjectModule {
+impl GtProjectModule {
     pub fn try_new(
         project_resolve: &GTPResolve,
         modules: &Vec<GTProjectModuleParse>,
@@ -46,7 +46,7 @@ impl GTProjectModule {
 
         module_resolve.definitions = visitor.drain_definitions();
 
-        Ok(GTProjectModule {
+        Ok(GtProjectModule {
             path: parse.0,
             module: parse.1.module,
             resolve: module_resolve,

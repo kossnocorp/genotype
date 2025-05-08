@@ -9,6 +9,13 @@ pub trait GtRelativePath {
         self.relative_path().as_str()
     }
 
+    fn join_segment<Path: Into<RelativePathBuf>>(&self, path: Path) -> Self
+    where
+        Self: Sized,
+    {
+        Self::new(self.relative_path().join(path.into()))
+    }
+
     #[cfg(feature = "parser")]
     fn join_tree(&self, path: &GTPath) -> Self
     where

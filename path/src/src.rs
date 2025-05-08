@@ -28,6 +28,14 @@ impl From<GtCwdRelativePath> for GtSrcPath {
 #[serde(transparent)]
 pub struct GtSrcRelativePath(RelativePathBuf);
 
+impl GtSrcRelativePath {
+    /// Transforms the src relative path into a package source relative path. It helps targets
+    /// generating the correct path for the package source.
+    pub fn to_pkg_src_relative_path(&self, ext: &'static str) -> GtPkgSrcRelativePath {
+        GtPkgSrcRelativePath::new(self.relative_path().with_extension(ext))
+    }
+}
+
 impl GtRelativePath for GtSrcRelativePath {
     fn new(path: RelativePathBuf) -> Self {
         Self(path)
@@ -55,26 +63,5 @@ impl From<&GtSrcRelativePath> for GTModuleId {
 impl From<GtSrcRelativePath> for GTModuleId {
     fn from(path: GtSrcRelativePath) -> Self {
         (&path).into()
-    }
-}
-
-/// Entry pattern path relative to the working directory.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct GtEntryPath(GtCwdRelativePath);
-
-impl GtRelativePath for GtEntryPath {
-    fn new(path: RelativePathBuf) -> Self {
-        Self(GtCwdRelativePath::new(path))
-    }
-
-    fn relative_path(&self) -> &RelativePathBuf {
-        self.0.relative_path()
-    }
-}
-
-impl From<GtCwdRelativePath> for GtEntryPath {
-    fn from(path: GtCwdRelativePath) -> Self {
-        Self(path)
     }
 }

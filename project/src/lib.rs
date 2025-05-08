@@ -10,7 +10,4 @@ pub use project::*;
 mod resolve;
 pub use resolve::*;
 
-mod path;
-pub use path::*;
-
 pub mod prelude;

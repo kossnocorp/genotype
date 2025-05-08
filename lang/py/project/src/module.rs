@@ -7,15 +7,12 @@ pub struct PyProjectModule {
     pub module: PYModule,
 }
 
-impl<'a> GtlProjectModule<'a, PyConfig> for PyProjectModule {
+impl GtlProjectModule<PyConfig> for PyProjectModule {
     type Dependency = PYDependencyIdent;
 
-    fn generate(config: &'a GtConfigPkg<'a, PyConfig>, module: &GTProjectModule) -> Result<Self> {
-        let relative_path = module
-            .path
-            .as_path()
-            .strip_prefix(project.root.as_path())
-            .map_err(|_| PyProjectError::BuildModulePath(module.path.as_name()))?;
+    fn generate(config: &GtConfigPkg<'_, PyConfig>, module: &GtProjectModule) -> Result<Self> {
+        let path = config.pkg_src_file_path(module.path.to_pkg_src_relative_path("py"));
+
         let name = py_parse_module_path(
             relative_path
                 .with_extension("")
@@ -24,11 +21,6 @@ impl<'a> GtlProjectModule<'a, PyConfig> for PyProjectModule {
                 .unwrap()
                 .to_string(),
         );
-        let path = project
-            .config
-            .py
-            .src_path()
-            .join(relative_path.with_extension("py"));
 
         let mut resolve = PYConvertResolve::default();
         let mut prefixes: HashMap<String, u8> = HashMap::new();

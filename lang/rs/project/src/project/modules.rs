@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
-impl<'a> RsProject<'a> {
-    pub fn modules_source(&'a self) -> Result<Vec<GtlProjectFile>> {
+impl RsProject<'_> {
+    pub fn modules_source(&self) -> Result<Vec<GtlProjectFile>> {
         let mut context = RSRenderContext {
             config: &self.config.target.lang,
         };
@@ -20,13 +20,13 @@ impl<'a> RsProject<'a> {
     }
 
     pub fn generate_modules(
-        config: &'a GtConfigPkg<'a, RsConfig>,
-        modules: &Vec<GTProjectModule>,
-    ) -> Result<Vec<RSProjectModule>> {
+        config: &GtConfigPkg<'_, RsConfig>,
+        modules: &Vec<GtProjectModule>,
+    ) -> Result<Vec<RsProjectModule>> {
         let mut modules = modules
             .iter()
-            .map(|module| RSProjectModule::generate(&config, module))
-            .collect::<Result<Vec<RSProjectModule>, _>>()?;
+            .map(|module| RsProjectModule::generate(&config, module))
+            .collect::<Result<Vec<RsProjectModule>, _>>()?;
 
         // Now when we generated modules, we need to go through all structs and resolve their fields
         // by copying the fields from the referenced struct as Rust doesn't support inheritance in
