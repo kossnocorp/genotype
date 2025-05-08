@@ -17,18 +17,18 @@ impl<'a> GtlProject<'a> for RsProject<'a> {
 
     fn generate(project: &'a GtProject) -> Result<Self> {
         let config = project.config.pkg_config_rs();
-        let modules = Self::generate_modules(&config, &project.modules)?;
+        let modules = Self::generate_modules(&config.target, &project.modules)?;
         Ok(Self { modules, config })
     }
 
-    fn out(&self) -> Result<GtlProjectOut> {
+    fn dist(&self) -> Result<GtlProjectDist> {
         let cargo = RsProjectManifest::manifest_file(&self.config, &self.dependencies())?;
 
         let mut files = vec![self.gitignore_source(), cargo];
         files.extend(self.indices_source());
         files.extend(self.modules_source()?);
 
-        Ok(GtlProjectOut { files })
+        Ok(GtlProjectDist { files })
     }
 
     fn modules(&self) -> Vec<Self::Module> {
@@ -328,8 +328,8 @@ mod tests {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            RsProject::generate(&project).unwrap().out().unwrap(),
-            GtlProjectOut {
+            RsProject::generate(&project).unwrap().dist().unwrap(),
+            GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
                         path: "libs/rs/.gitignore".into(),
@@ -386,8 +386,8 @@ pub struct Book {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            RsProject::generate(&project).unwrap().out().unwrap(),
-            GtlProjectOut {
+            RsProject::generate(&project).unwrap().dist().unwrap(),
+            GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
                         path: "libs/rs/.gitignore".into(),
@@ -457,8 +457,8 @@ pub struct Book {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            RsProject::generate(&project).unwrap().out().unwrap(),
-            GtlProjectOut {
+            RsProject::generate(&project).unwrap().dist().unwrap(),
+            GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
                         path: "libs/rs/.gitignore".into(),
@@ -559,8 +559,8 @@ pub struct Account {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            RsProject::generate(&project).unwrap().out().unwrap(),
-            GtlProjectOut {
+            RsProject::generate(&project).unwrap().dist().unwrap(),
+            GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
                         path: "libs/rs/.gitignore".into(),

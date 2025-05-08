@@ -16,15 +16,15 @@ impl<'a> GtlProject<'a> for PyProject<'a> {
         let modules = project
             .modules
             .iter()
-            .map(|module| PyProjectModule::generate(&config, module))
+            .map(|module| PyProjectModule::generate(&config.target, module))
             .collect::<Result<_, _>>()?;
 
         Ok(Self { modules, config })
     }
 
-    fn out(&self) -> Result<GtlProjectOut> {
+    fn dist(&self) -> Result<GtlProjectDist> {
         let gitignore = GtlProjectFile {
-            path: self.config.pkg_file_path(".gitignore"),
+            path: self.config.pkg_file_path(&".gitignore".into()),
             source: r#"__pycache__
 dist"#
                 .into(),
@@ -50,7 +50,7 @@ dist"#
         }
 
         let init = GtlProjectFile {
-            path: self.config.pkg_file_path("__init__.py"),
+            path: self.config.pkg_file_path(&"__init__.py".into()),
             source: format!(
                 "{}\n\n\n__all__ = [{}]",
                 imports.join("\n"),
@@ -59,7 +59,7 @@ dist"#
         };
 
         let py_typed = GtlProjectFile {
-            path: self.config.pkg_file_path("py.typed"),
+            path: self.config.pkg_file_path(&"py.typed".into()),
             source: "".into(),
         };
 
@@ -75,12 +75,12 @@ dist"#
         }
 
         let module_inits = module_paths.into_iter().map(|module_path| GtlProjectFile {
-            path: module_path.join("__init__.py"),
+            path: module_path.join(&"__init__.py".into()),
             source: "".into(),
         });
 
         let mut render_context = PYRenderContext {
-            config: &self.project.config.py.lang,
+            config: &self.config.target.lang,
             ..Default::default()
         };
 
@@ -92,7 +92,7 @@ dist"#
                     .module
                     .render(Default::default(), &mut render_context)
                     .map(|code| GtlProjectFile {
-                        path: module.path.clone(),
+                        path: self.config.pkg_src_file_path(&module.path),
                         source: code,
                     })
             })
@@ -102,7 +102,7 @@ dist"#
         modules.extend(module_inits);
         modules.extend(project_modules);
 
-        Ok(GtlProjectOut { files: modules })
+        Ok(GtlProjectDist { files: modules })
     }
 
     fn modules(&self) -> Vec<Self::Module> {
@@ -294,8 +294,8 @@ mod tests {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            PyProject::generate(&project).unwrap().out().unwrap(),
-            GtlProjectOut {
+            PyProject::generate(&project).unwrap().dist().unwrap(),
+            GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
                         path: "libs/py/.gitignore".into(),
@@ -364,8 +364,8 @@ class Book(Model):
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            PyProject::generate(&project).unwrap().out().unwrap(),
-            GtlProjectOut {
+            PyProject::generate(&project).unwrap().dist().unwrap(),
+            GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
                         path: "libs/py/.gitignore".into(),
@@ -440,8 +440,8 @@ class Book(Model):
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            PyProject::generate(&project).unwrap().out().unwrap(),
-            GtlProjectOut {
+            PyProject::generate(&project).unwrap().dist().unwrap(),
+            GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
                         path: "libs/py/.gitignore".into(),

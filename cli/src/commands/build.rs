@@ -25,17 +25,17 @@ pub fn build_command(args: &GTBuildCommand) -> Result<()> {
     let mut langs = vec![];
 
     if project.config.ts_enabled() {
-        let ts = TsProject::generate(&project)?.out()?;
+        let ts = TsProject::generate(&project)?.dist()?;
         langs.push(ts);
     }
 
     if project.config.python_enabled() {
-        let py = PyProject::generate(&project)?.out()?;
+        let py = PyProject::generate(&project)?.dist()?;
         langs.push(py);
     }
 
     if project.config.rust_enabled() {
-        let rs = RsProject::generate(&project)?.out()?;
+        let rs = RsProject::generate(&project)?.dist()?;
         langs.push(rs);
     }
 

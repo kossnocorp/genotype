@@ -1,16 +1,16 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct TSProjectModule {
-    pub path: GtCwdRelativePath,
+pub struct TsProjectModule {
+    pub path: GtPkgSrcRelativePath,
     pub module: TSModule,
 }
 
-impl GtlProjectModule<TsConfig> for TSProjectModule {
+impl GtlProjectModule<TsConfig> for TsProjectModule {
     type Dependency = TSDependencyIdent;
 
-    fn generate(config: &GtConfigPkg<'_, TsConfig>, module: &GtProjectModule) -> Result<Self> {
-        let path = config.pkg_src_file_path(module.path.to_pkg_src_relative_path("ts"));
+    fn generate(config: &TsConfig, module: &GtProjectModule) -> Result<Self> {
+        let path = module.path.to_pkg_src_relative_path("ts");
 
         let mut resolve = TSConvertResolve::new();
         let mut prefixes: HashMap<String, u8> = HashMap::new();
@@ -55,12 +55,8 @@ impl GtlProjectModule<TsConfig> for TSProjectModule {
             }
         }
 
-        let module = TSConvertModule::convert(
-            &module.module,
-            resolve,
-            config.target.common.dependencies.clone(),
-        )
-        .0;
+        let module =
+            TSConvertModule::convert(&module.module, resolve, config.common.dependencies.clone()).0;
 
         Ok(Self { path, module })
     }
@@ -70,7 +66,7 @@ impl GtlProjectModule<TsConfig> for TSProjectModule {
     }
 }
 
-impl Hash for TSProjectModule {
+impl Hash for TsProjectModule {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.path.hash(state);
     }

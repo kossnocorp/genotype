@@ -10,7 +10,7 @@ impl RsProject<'_> {
             .map(
                 |module| match module.module.render(Default::default(), &mut context) {
                     Ok(code) => Ok(GtlProjectFile {
-                        path: module.path.clone(),
+                        path: self.config.pkg_src_file_path(&module.path),
                         source: code,
                     }),
                     Err(err) => Err(err),
@@ -20,7 +20,7 @@ impl RsProject<'_> {
     }
 
     pub fn generate_modules(
-        config: &GtConfigPkg<'_, RsConfig>,
+        config: &RsConfig,
         modules: &Vec<GtProjectModule>,
     ) -> Result<Vec<RsProjectModule>> {
         let mut modules = modules

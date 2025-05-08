@@ -8,7 +8,7 @@ pub struct GTWriter;
 
 impl GTWriter {
     pub fn write(
-        projects: &Vec<GtlProjectOut>,
+        projects: &Vec<GtlProjectDist>,
         config: &GtConfig,
     ) -> Result<(), Box<dyn std::error::Error>> {
         for project in projects {

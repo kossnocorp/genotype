@@ -27,6 +27,7 @@ impl From<GtCwdRelativePath> for GtPkgSrcPath {
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct GtPkgSrcRelativePath(RelativePathBuf);
+
 impl GtRelativePath for GtPkgSrcRelativePath {
     fn new(path: RelativePathBuf) -> Self {
         Self(path)

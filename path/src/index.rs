@@ -9,6 +9,13 @@ pub trait GtRelativePath {
         self.relative_path().as_str()
     }
 
+    fn with_extension<Str: AsRef<str>>(&self, ext: Str) -> Self
+    where
+        Self: Sized,
+    {
+        Self::new(self.relative_path().with_extension(ext))
+    }
+
     fn join_segment<Path: Into<RelativePathBuf>>(&self, path: Path) -> Self
     where
         Self: Sized,

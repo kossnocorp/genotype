@@ -2,7 +2,7 @@ use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct RsProjectModule {
-    pub path: GtCwdRelativePath,
+    pub path: GtPkgSrcRelativePath,
     pub module: RSModule,
     pub resolve: RSPModuleResolve,
 }
@@ -10,8 +10,8 @@ pub struct RsProjectModule {
 impl GtlProjectModule<RsConfig> for RsProjectModule {
     type Dependency = RSDependencyIdent;
 
-    fn generate(config: &GtConfigPkg<'_, RsConfig>, module: &GtProjectModule) -> Result<Self> {
-        let path = config.pkg_src_file_path(module.path.to_pkg_src_relative_path("rs"));
+    fn generate(config: &RsConfig, module: &GtProjectModule) -> Result<Self> {
+        let path = module.path.to_pkg_src_relative_path("rs");
 
         let mut convert_resolve = RSConvertResolve::default();
         let mut prefixes: HashMap<String, u8> = HashMap::new();
@@ -82,7 +82,7 @@ impl GtlProjectModule<RsConfig> for RsProjectModule {
         let definitions = module.resolve.definitions.clone();
         let resolve = RSPModuleResolve { definitions };
 
-        let module = RSConvertModule::convert(&module.module, &convert_resolve, &config.target)
+        let module = RSConvertModule::convert(&module.module, &convert_resolve, &config)
             .map_err(|err| err.with_source_code(module.source_code.clone()))?
             .0;
 

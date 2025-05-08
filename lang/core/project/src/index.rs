@@ -9,7 +9,7 @@ pub trait GtlProject<'a> {
     where
         Self: Sized;
 
-    fn out(&self) -> Result<GtlProjectOut>;
+    fn dist(&self) -> Result<GtlProjectDist>;
 
     fn modules(&self) -> Vec<Self::Module>;
 
@@ -27,6 +27,6 @@ pub trait GtlProject<'a> {
 }
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct GtlProjectOut {
+pub struct GtlProjectDist {
     pub files: Vec<GtlProjectFile>,
 }

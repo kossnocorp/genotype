@@ -3,24 +3,16 @@ use crate::prelude::internal::*;
 #[derive(Debug, PartialEq, Clone)]
 pub struct PyProjectModule {
     pub name: String,
-    pub path: PathBuf,
+    pub path: GtPkgSrcRelativePath,
     pub module: PYModule,
 }
 
 impl GtlProjectModule<PyConfig> for PyProjectModule {
     type Dependency = PYDependencyIdent;
 
-    fn generate(config: &GtConfigPkg<'_, PyConfig>, module: &GtProjectModule) -> Result<Self> {
-        let path = config.pkg_src_file_path(module.path.to_pkg_src_relative_path("py"));
-
-        let name = py_parse_module_path(
-            relative_path
-                .with_extension("")
-                .as_os_str()
-                .to_str()
-                .unwrap()
-                .to_string(),
-        );
+    fn generate(config: &PyConfig, module: &GtProjectModule) -> Result<Self> {
+        let path = module.path.to_pkg_src_relative_path("py");
+        let name = py_parse_module_path(path.with_extension("").as_str().into());
 
         let mut resolve = PYConvertResolve::default();
         let mut prefixes: HashMap<String, u8> = HashMap::new();
@@ -84,7 +76,7 @@ impl GtlProjectModule<PyConfig> for PyProjectModule {
             }
         }
 
-        let module = PYConvertModule::convert(&module.module, &resolve, &config.target).0;
+        let module = PYConvertModule::convert(&module.module, &resolve, &config).0;
 
         Ok(Self { name, path, module })
     }

@@ -2,12 +2,12 @@ use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TsProject<'a> {
-    pub modules: Vec<TSProjectModule>,
+    pub modules: Vec<TsProjectModule>,
     config: GtConfigPkg<'a, TsConfig>,
 }
 
 impl<'a> GtlProject<'a> for TsProject<'a> {
-    type Module = TSProjectModule;
+    type Module = TsProjectModule;
 
     type LangConfig = TsConfig;
 
@@ -16,15 +16,15 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
         let modules = project
             .modules
             .iter()
-            .map(|module| TSProjectModule::generate(&config, module))
+            .map(|module| TsProjectModule::generate(&config.target, module))
             .collect::<Result<_, _>>()?;
 
         Ok(Self { modules, config })
     }
 
-    fn out(&self) -> Result<GtlProjectOut> {
+    fn dist(&self) -> Result<GtlProjectDist> {
         let gitignore = GtlProjectFile {
-            path: self.config.pkg_file_path(".gitignore".into()),
+            path: self.config.pkg_file_path(&".gitignore".into()),
             source: r#"node_modules"#.into(),
         };
 
@@ -49,7 +49,7 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
             .collect::<Vec<_>>();
 
         let barrel = GtlProjectFile {
-            path: self.config.pkg_src_file_path("index.ts"),
+            path: self.config.pkg_src_file_path(&"index.ts".into()),
             source: exports.join(""),
         };
 
@@ -58,7 +58,7 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
                 doc.insert(
                     "types",
                     self.config
-                        .pkg_relative_src_file_path("index.ts")
+                        .pkg_relative_src_file_path(&"index.ts".into())
                         .as_str()
                         .into(),
                 );
@@ -68,7 +68,7 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
             .modules
             .iter()
             .map(|module| GtlProjectFile {
-                path: module.path.clone(),
+                path: self.config.pkg_src_file_path(&module.path),
                 source: module
                     .module
                     .render(Default::default(), &mut Default::default())
@@ -79,7 +79,7 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
         let mut modules = vec![gitignore, package_json, barrel];
         modules.extend(project_modules);
 
-        Ok(GtlProjectOut { files: modules })
+        Ok(GtlProjectDist { files: modules })
     }
 
     fn modules(&self) -> Vec<Self::Module> {
@@ -101,7 +101,7 @@ mod tests {
         assert_eq!(
             TsProject::generate(&project).unwrap().modules,
             vec![
-                TSProjectModule {
+                TsProjectModule {
                     path: "libs/ts/src/author.ts".into(),
                     module: TSModule {
                         doc: None,
@@ -120,7 +120,7 @@ mod tests {
                         })]
                     },
                 },
-                TSProjectModule {
+                TsProjectModule {
                     path: "libs/ts/src/book.ts".into(),
                     module: TSModule {
                         doc: None,
@@ -163,7 +163,7 @@ mod tests {
         assert_eq!(
             TsProject::generate(&project).unwrap().modules,
             vec![
-                TSProjectModule {
+                TsProjectModule {
                     path: "libs/ts/src/author.ts".into(),
                     module: TSModule {
                         doc: None,
@@ -188,7 +188,7 @@ mod tests {
                         ]
                     },
                 },
-                TSProjectModule {
+                TsProjectModule {
                     path: "libs/ts/src/book.ts".into(),
                     module: TSModule {
                         doc: None,
@@ -233,8 +233,8 @@ mod tests {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            TsProject::generate(&project).unwrap().out().unwrap(),
-            GtlProjectOut {
+            TsProject::generate(&project).unwrap().dist().unwrap(),
+            GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
                         path: "libs/ts/.gitignore".into(),
@@ -288,8 +288,8 @@ export interface Book {
         let project = GtProject::load(config).unwrap();
 
         assert_eq!(
-            TsProject::generate(&project).unwrap().out().unwrap(),
-            GtlProjectOut {
+            TsProject::generate(&project).unwrap().dist().unwrap(),
+            GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
                         path: "libs/ts/.gitignore".into(),
