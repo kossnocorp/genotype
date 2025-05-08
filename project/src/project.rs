@@ -11,13 +11,13 @@ use std::{
 };
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct GtProject {
+pub struct GtProject<'a> {
     pub modules: Vec<GtProjectModule>,
-    pub config: GtConfig,
+    pub config: &'a GtConfig,
 }
 
-impl GtProject {
-    pub fn load(config: GtConfig) -> Result<Self> {
+impl<'a> GtProject<'a> {
+    pub fn load(config: &'a GtConfig) -> Result<Self> {
         let src_path = config.src_path();
         let entries = glob(config.entry_path().as_str())
             .map_err(|_| GTProjectError::Unknown)?
@@ -140,22 +140,23 @@ mod tests {
 
     #[test]
     fn test_glob() {
-        let project = GtProject::load(GtConfig::from_root("module", "./examples/basic"));
-        assert_eq!(project.unwrap(), basic_project());
+        let config = basic_config();
+        let project = GtProject::load(&config);
+        assert_eq!(project.unwrap(), basic_project(&config));
     }
 
     #[test]
     fn test_entry() {
         let config = GtConfig::from_entry("module", "./examples/basic", "order.type");
-        let project = GtProject::load(config);
-        assert_eq!(project.unwrap(), basic_project());
+        let project = GtProject::load(&config);
+        assert_eq!(project.unwrap(), basic_project(&config));
     }
 
     #[test]
     fn test_process_anonymous() {
         let module_path: GtModulePath = "/process/anonymous.type".into();
         let config = GtConfig::from_entry("module", "./examples/process", "anonymous.type");
-        let project = GtProject::load(config.clone());
+        let project = GtProject::load(&config);
         assert_eq!(
             project.unwrap(),
             GtProject {
@@ -345,14 +346,16 @@ mod tests {
                         .unwrap(),
                     ),
                 }],
-                config
+                config: &config
             }
         );
     }
 
-    fn basic_project() -> GtProject {
-        let config = GtConfig::from_root("module", "./examples/basic");
+    fn basic_config() -> GtConfig {
+        GtConfig::from_root("module", "./examples/basic")
+    }
 
+    fn basic_project<'a>(config: &'a GtConfig) -> GtProject<'a> {
         let author_path: GtModulePath = "author.type".into();
         let book_path: GtModulePath = "book.type".into();
         let order_path: GtModulePath = "order.type".into();
@@ -634,7 +637,7 @@ mod tests {
                     ),
                 },
             ],
-            config,
+            config: &config,
         }
     }
 }

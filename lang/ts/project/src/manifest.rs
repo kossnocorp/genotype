@@ -2,7 +2,8 @@ use crate::prelude::internal::*;
 use toml_edit::*;
 
 impl<'a> GtlProjectManifest<'a> for TsProject<'a> {
-    const FILE_NAME: &'static str = "Cargo.toml";
+    const FILE_NAME: &'static str = "package.json";
+    const FORMAT: GtlProjectManifestFormat = GtlProjectManifestFormat::Json;
 
     type Dependency = TsProjectManifestDependency;
     type LangConfig = TsConfig;
@@ -23,20 +24,6 @@ impl<'a> GtlProjectManifest<'a> for TsProject<'a> {
 }
 
 pub struct TsProjectManifestDependency;
-
-impl TsProjectManifestDependency {
-    fn dependency_value(vetsion: &'static str, features: Vec<&'static str>) -> Value {
-        if features.is_empty() {
-            vetsion.into()
-        } else {
-            let mut table = InlineTable::new();
-            table.insert("vetsion", vetsion.into());
-            let features = Value::Array(Array::from_iter(features));
-            table.insert("features", features);
-            Value::InlineTable(table).into()
-        }
-    }
-}
 
 impl GtlProjectManifestDependency for TsProjectManifestDependency {
     type DependencyIdent = TSDependencyIdent;

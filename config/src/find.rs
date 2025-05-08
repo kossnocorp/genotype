@@ -1,12 +1,8 @@
-use std::path::PathBuf;
-
+use crate::prelude::internal::*;
 use figment::{
     providers::{Env, Format, Serialized, Toml},
     Figment,
 };
-use miette::{IntoDiagnostic, Result};
-
-use crate::{error::GtConfigError, GtConfig};
 
 pub const GTCONFIG_FILE: &str = "genotype.toml";
 
@@ -14,13 +10,22 @@ impl GtConfig {
     pub fn load(path: &PathBuf) -> Result<Self> {
         let file = Self::find(path)?;
 
-        let config: GtConfig = Figment::from(Serialized::defaults(GtConfig::default()))
+        let config_parent = if let Some(parent) = file.parent() {
+            RelativePathBuf::from_path(parent)
+        } else {
+            RelativePathBuf::from_path(".")
+        }
+        .into_diagnostic()?;
+
+        let mut config: GtConfig = Figment::from(Serialized::defaults(GtConfig::default()))
             // [TODO] Integrate with CLI:
             // .merge(Serialized::defaults(GTConfig::parse()))
             .merge(Toml::file(file))
             .merge(Env::prefixed("GT_"))
             .extract()
             .into_diagnostic()?;
+
+        config.root = GtRootPath::new(config_parent.join_normalized(config.root.relative_path()));
 
         Ok(config)
     }

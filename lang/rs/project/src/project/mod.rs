@@ -38,22 +38,20 @@ impl<'a> GtlProject<'a> for RsProject<'a> {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashSet;
-
     use super::*;
-    use genotype_config::GtConfig;
     use pretty_assertions::assert_eq;
+    use std::collections::HashSet;
 
     #[test]
     fn test_convert_base() {
         let config = GtConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
             RsProject::generate(&project).unwrap().modules,
             vec![
                 RsProjectModule {
-                    path: "dist/rs/src/author.rs".into(),
+                    path: "author.rs".into(),
                     module: RSModule {
                         id: "author".into(),
                         doc: None,
@@ -85,7 +83,7 @@ mod tests {
                     },
                 },
                 RsProjectModule {
-                    path: "dist/rs/src/book.rs".into(),
+                    path: "book.rs".into(),
                     module: RSModule {
                         id: "book".into(),
                         doc: None,
@@ -160,13 +158,13 @@ mod tests {
     #[test]
     fn test_convert_glob() {
         let config = GtConfig::from_root("module", "./examples/glob");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
             RsProject::generate(&project).unwrap().modules,
             vec![
                 RsProjectModule {
-                    path: "dist/rs/src/author.rs".into(),
+                    path: "author.rs".into(),
                     module: RSModule {
                         id: "author".into(),
                         doc: None,
@@ -225,7 +223,7 @@ mod tests {
                     },
                 },
                 RsProjectModule {
-                    path: "dist/rs/src/book.rs".into(),
+                    path: "book.rs".into(),
                     module: RSModule {
                         id: "book".into(),
                         doc: None,
@@ -325,25 +323,25 @@ mod tests {
     #[test]
     fn test_render() {
         let config = GtConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
             RsProject::generate(&project).unwrap().dist().unwrap(),
             GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
-                        path: "dist/rs/.gitignore".into(),
+                        path: "examples/basic/dist/rs/.gitignore".into(),
                         source: r#"target"#.into(),
                     },
                     GtlProjectFile {
-                        path: "dist/rs/Cargo.toml".into(),
+                        path: "examples/basic/dist/rs/Cargo.toml".into(),
                         source: r#"[dependencies]
 serde = { version = "1", features = ["derive"] }
 "#
                         .into()
                     },
                     GtlProjectFile {
-                        path: "dist/rs/src/lib.rs".into(),
+                        path: "examples/basic/dist/rs/src/lib.rs".into(),
                         source: r#"mod author;
 pub use author::*;
 mod book;
@@ -352,7 +350,7 @@ pub use book::*;
                         .into(),
                     },
                     GtlProjectFile {
-                        path: "dist/rs/src/author.rs".into(),
+                        path: "examples/basic/dist/rs/src/author.rs".into(),
                         source: r#"use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -363,7 +361,7 @@ pub struct Author {
                         .into()
                     },
                     GtlProjectFile {
-                        path: "dist/rs/src/book.rs".into(),
+                        path: "examples/basic/dist/rs/src/book.rs".into(),
                         source: r#"use super::author::Author;
 use serde::{Deserialize, Serialize};
 
@@ -383,25 +381,25 @@ pub struct Book {
     #[test]
     fn test_render_nested() {
         let config = GtConfig::from_root("module", "./examples/nested");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
             RsProject::generate(&project).unwrap().dist().unwrap(),
             GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
-                        path: "dist/rs/.gitignore".into(),
+                        path: "examples/nested/dist/rs/.gitignore".into(),
                         source: r#"target"#.into(),
                     },
                     GtlProjectFile {
-                        path: "dist/rs/Cargo.toml".into(),
+                        path: "examples/nested/dist/rs/Cargo.toml".into(),
                         source: r#"[dependencies]
 serde = { version = "1", features = ["derive"] }
 "#
                         .into(),
                     },
                     GtlProjectFile {
-                        path: "dist/rs/src/lib.rs".into(),
+                        path: "examples/nested/dist/rs/src/lib.rs".into(),
                         source: r#"mod inventory;
 pub use inventory::*;
 mod shop;
@@ -410,21 +408,21 @@ pub use shop::*;
                         .into(),
                     },
                     GtlProjectFile {
-                        path: "dist/rs/src/shop/goods/mod.rs".into(),
+                        path: "examples/nested/dist/rs/src/shop/goods/mod.rs".into(),
                         source: r#"mod book;
 pub use book::*;
 "#
                         .into(),
                     },
                     GtlProjectFile {
-                        path: "dist/rs/src/shop/mod.rs".into(),
+                        path: "examples/nested/dist/rs/src/shop/mod.rs".into(),
                         source: r#"mod goods;
 pub use goods::*;
 "#
                         .into(),
                     },
                     GtlProjectFile {
-                        path: "dist/rs/src/inventory.rs".into(),
+                        path: "examples/nested/dist/rs/src/inventory.rs".into(),
                         source: r#"use super::shop::goods::book::Book;
 use serde::{Deserialize, Serialize};
 
@@ -436,7 +434,7 @@ pub struct Inventory {
                         .into()
                     },
                     GtlProjectFile {
-                        path: "dist/rs/src/shop/goods/book.rs".into(),
+                        path: "examples/nested/dist/rs/src/shop/goods/book.rs".into(),
                         source: r#"use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -454,18 +452,18 @@ pub struct Book {
     #[test]
     fn test_render_extensions() {
         let config = GtConfig::from_root("module", "./examples/extensions");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
             RsProject::generate(&project).unwrap().dist().unwrap(),
             GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
-                        path: "dist/rs/.gitignore".into(),
+                        path: "examples/extensions/dist/rs/.gitignore".into(),
                         source: r#"target"#.into(),
                     },
                     GtlProjectFile {
-                        path: "dist/rs/Cargo.toml".into(),
+                        path: "examples/extensions/dist/rs/Cargo.toml".into(),
                         source: r#"[dependencies]
 literals = "0.1"
 serde = { version = "1", features = ["derive"] }
@@ -473,7 +471,7 @@ serde = { version = "1", features = ["derive"] }
                         .into(),
                     },
                     GtlProjectFile {
-                        path: "dist/rs/src/lib.rs".into(),
+                        path: "examples/extensions/dist/rs/src/lib.rs".into(),
                         source: r#"mod admin;
 pub use admin::*;
 mod named;
@@ -484,7 +482,7 @@ pub use user::*;
                         .into(),
                     },
                     GtlProjectFile {
-                        path: "dist/rs/src/admin.rs".into(),
+                        path: "examples/extensions/dist/rs/src/admin.rs".into(),
                         source: r#"use literals::literal;
 use serde::{Deserialize, Serialize};
 use crate::named::Name;
@@ -517,7 +515,7 @@ pub enum AdminRole {
                         .into()
                     },
                     GtlProjectFile {
-                        path: "dist/rs/src/named.rs".into(),
+                        path: "examples/extensions/dist/rs/src/named.rs".into(),
                         source: r#"use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -530,7 +528,7 @@ pub type Name = String;
                         .into()
                     },
                     GtlProjectFile {
-                        path: "dist/rs/src/user.rs".into(),
+                        path: "examples/extensions/dist/rs/src/user.rs".into(),
                         source: r#"use super::named::Name;
 use serde::{Deserialize, Serialize};
 
@@ -556,21 +554,21 @@ pub struct Account {
     #[test]
     fn test_render_dependencies() {
         let config = GtConfig::load(&"./examples/dependencies".into()).unwrap();
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
             RsProject::generate(&project).unwrap().dist().unwrap(),
             GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
-                        path: "dist/rs/.gitignore".into(),
+                        path: "examples/dependencies/dist/rs/.gitignore".into(),
                         source: r#"target"#.into(),
                     },
                     // [NOTE] The config order is not preserved due to the figment crate missing
                     // the feature for TOML files:
                     // https://github.com/kossnocorp/genotype/issues/36
                     GtlProjectFile {
-                        path: "dist/rs/Cargo.toml".into(),
+                        path: "examples/dependencies/dist/rs/Cargo.toml".into(),
                         source: r#"[dependencies]
 genotype_json_types = "0.1.0"
 serde = { version = "1", features = ["derive"] }
@@ -583,14 +581,14 @@ version = "0.1.0"
                         .into()
                     },
                     GtlProjectFile {
-                        path: "dist/rs/src/lib.rs".into(),
+                        path: "examples/dependencies/dist/rs/src/lib.rs".into(),
                         source: r#"mod prompt;
 pub use prompt::*;
 "#
                         .into(),
                     },
                     GtlProjectFile {
-                        path: "dist/rs/src/prompt.rs".into(),
+                        path: "examples/dependencies/dist/rs/src/prompt.rs".into(),
                         source: r#"use genotype_json_types::JsonAny;
 use serde::{Deserialize, Serialize};
 

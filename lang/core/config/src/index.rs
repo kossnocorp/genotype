@@ -26,12 +26,4 @@ pub trait GtlConfig: Default {
     fn manifest(&self) -> &Table {
         &self.common().manifest
     }
-
-    // fn dist_relative_path(&self) -> GtDistRelativePath {
-    //     self.common().out.to_path()
-    // }
-
-    // fn src_path(&self) -> GtDistRelativePath {
-    //     self.dist_relative_path().join(self.src_dir_name().into())
-    // }
 }

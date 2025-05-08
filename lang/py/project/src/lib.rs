@@ -4,8 +4,8 @@ pub use error::*;
 mod module;
 pub use module::*;
 
-mod project;
-pub use project::*;
+mod index;
+pub use index::*;
 
 mod manifest;
 pub use manifest::*;

@@ -13,7 +13,9 @@ impl<Lang: GtlConfig> GtConfigPkg<'_, Lang> {
 
     /// Returns owned package source path, i.e. "dist/rs/src".
     pub fn pkg_src_path(&self) -> GtPkgSrcPath {
-        self.dist.join(self.target.dist_relative_pkg_path()).into()
+        self.pkg_path()
+            .join(&self.target.src_dir_name().into())
+            .into()
     }
 
     /// Returns owned package src file path, i.e. "dist/rs/src/lib.rs".

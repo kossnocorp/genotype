@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use crate::prelude::internal::*;
 use toml_edit::*;
 
@@ -9,6 +11,21 @@ impl<'a> GtlProjectManifest<'a> for PyProject<'a> {
 
     fn config(&'a self) -> &'a GtConfigPkg<'a, Self::LangConfig> {
         &self.config
+    }
+
+    fn base_manifest(&self) -> DocumentMut {
+        DocumentMut::from_str(
+            r#"[tool.poetry]
+packages = [{ include = "module" }]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+[build-system]
+requires = ["poetry-core"]\
+build-backend = "poetry.core.masonry.api"
+"#,
+        )
     }
 }
 

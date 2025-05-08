@@ -50,12 +50,13 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
         let project_modules = self
             .modules
             .iter()
-            .map(|module| GtlProjectFile {
-                path: self.config.pkg_src_file_path(&module.path),
-                source: module
+            .map(|module| {
+                let path = self.config.pkg_src_file_path(&module.path);
+                let source = module
                     .module
                     .render(Default::default(), &mut Default::default())
-                    .unwrap(),
+                    .unwrap();
+                GtlProjectFile { path, source }
             })
             .collect::<Vec<_>>();
 
@@ -79,13 +80,13 @@ mod tests {
     #[test]
     fn test_convert_base() {
         let config = GtConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
             TsProject::generate(&project).unwrap().modules,
             vec![
                 TsProjectModule {
-                    path: "dist/ts/src/author.ts".into(),
+                    path: "author.ts".into(),
                     module: TSModule {
                         doc: None,
                         imports: vec![],
@@ -104,7 +105,7 @@ mod tests {
                     },
                 },
                 TsProjectModule {
-                    path: "dist/ts/src/book.ts".into(),
+                    path: "book.ts".into(),
                     module: TSModule {
                         doc: None,
                         imports: vec![TSImport {
@@ -141,13 +142,13 @@ mod tests {
     #[test]
     fn test_convert_glob() {
         let config = GtConfig::from_root("module", "./examples/glob");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
             TsProject::generate(&project).unwrap().modules,
             vec![
                 TsProjectModule {
-                    path: "dist/ts/src/author.ts".into(),
+                    path: "author.ts".into(),
                     module: TSModule {
                         doc: None,
                         imports: vec![],
@@ -172,7 +173,7 @@ mod tests {
                     },
                 },
                 TsProjectModule {
-                    path: "dist/ts/src/book.ts".into(),
+                    path: "book.ts".into(),
                     module: TSModule {
                         doc: None,
                         imports: vec![TSImport {
@@ -213,7 +214,7 @@ mod tests {
     #[test]
     fn test_render() {
         let config = GtConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
             TsProject::generate(&project).unwrap().dist().unwrap(),
@@ -268,18 +269,18 @@ export interface Book {
             "genotype_json_types".into(),
             "@genotype/json".into(),
         )]);
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
             TsProject::generate(&project).unwrap().dist().unwrap(),
             GtlProjectDist {
                 files: vec![
                     GtlProjectFile {
-                        path: "dist/ts/.gitignore".into(),
+                        path: "examples/dependencies/dist/ts/.gitignore".into(),
                         source: "node_modules".into(),
                     },
                     GtlProjectFile {
-                        path: "dist/ts/package.json".into(),
+                        path: "examples/dependencies/dist/ts/package.json".into(),
                         source: r#"{
   "types": "src/index.ts"
 }"#

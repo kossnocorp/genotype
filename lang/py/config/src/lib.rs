@@ -1,3 +1,6 @@
+mod module;
+pub use module::*;
+
 mod lang;
 pub use lang::*;
 

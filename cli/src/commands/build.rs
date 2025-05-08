@@ -20,7 +20,7 @@ pub struct GTBuildCommand {
 
 pub fn build_command(args: &GTBuildCommand) -> Result<()> {
     let config = GtConfig::load(&args.path)?;
-    let project = GtProject::load(config)?;
+    let project = GtProject::load(&config)?;
 
     let mut langs = vec![];
 

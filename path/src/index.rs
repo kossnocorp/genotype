@@ -17,13 +17,6 @@ pub trait GtRelativePath {
         Self::new(self.relative_path().with_extension(ext))
     }
 
-    fn strip_extension(&self) -> Self
-    where
-        Self: Sized,
-    {
-        Self::new(self.relative_path().with_extension(""))
-    }
-
     fn join_path(&self, path: &RelativePathBuf) -> Self
     where
         Self: Sized,

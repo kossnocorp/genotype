@@ -2,7 +2,8 @@ use crate::prelude::internal::*;
 
 #[derive(Default, Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct PyConfig {
-    pub module: String,
+    #[serde(default)]
+    pub module: PyModuleName,
     #[serde(flatten)]
     pub lang: PyConfigLang,
     #[serde(flatten)]
@@ -17,6 +18,6 @@ impl GtlConfig for PyConfig {
     }
 
     fn src_dir_name<'a>(&'a self) -> &'a str {
-        &self.module
+        self.module.as_str()
     }
 }

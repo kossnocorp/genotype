@@ -63,7 +63,6 @@ dist"#
             source: "".into(),
         };
 
-        // let module_root = self.config.pkg_src_path();
         let mut module_paths: HashSet<GtPkgSrcRelativePath> = HashSet::new();
 
         for module in self.modules.iter() {
@@ -119,7 +118,7 @@ mod tests {
     #[test]
     fn test_convert_base() {
         let config = GtConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
             PyProject::generate(&project).unwrap().modules,
@@ -197,7 +196,7 @@ mod tests {
     #[test]
     fn test_convert_glob() {
         let config = GtConfig::from_root("module", "./examples/glob");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
             PyProject::generate(&project).unwrap().modules,
@@ -292,7 +291,7 @@ mod tests {
     #[test]
     fn test_render() {
         let config = GtConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
             PyProject::generate(&project).unwrap().dist().unwrap(),
@@ -305,7 +304,7 @@ dist"#
                             .into(),
                     },
                     GtlProjectFile {
-                        path: "dist/py/pyproject.toml".into(),
+                        path: "examples/basic/dist/py/pyproject.toml".into(),
                         source: r#"[tool.poetry]
 packages = [{ include = "module" }]
 
@@ -362,7 +361,7 @@ class Book(Model):
     #[test]
     fn test_render_nested() {
         let config = GtConfig::from_root("module", "./examples/nested");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
             PyProject::generate(&project).unwrap().dist().unwrap(),
@@ -438,7 +437,7 @@ class Book(Model):
         config.py.common.dependencies =
             HashMap::from_iter(vec![("genotype_json_types".into(), "genotype_json".into())]);
 
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load(&config).unwrap();
 
         assert_eq!(
             PyProject::generate(&project).unwrap().dist().unwrap(),

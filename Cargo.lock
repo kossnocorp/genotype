@@ -774,7 +774,6 @@ dependencies = [
  "miette",
  "pretty_assertions",
  "serde",
- "serde_json",
  "thiserror 1.0.64",
  "toml_edit",
 ]
