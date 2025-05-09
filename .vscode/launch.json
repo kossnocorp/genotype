@@ -8,6 +8,17 @@
       "args": ["--extensionDevelopmentPath=${workspaceRoot}/vscode"],
       "outFiles": ["${workspaceRoot}/vscode/out/**/*.js"],
       "autoAttachChildProcesses": true
+    },
+    {
+      "name": "Debug GT CLI",
+      "type": "lldb",
+      "request": "launch",
+      "preLaunchTask": "Build CLI",
+      "program": "${workspaceFolder}/target/debug/gt",
+      "args": ["build", "${env:TEST_RUN_CLI_PROJECT}"],
+      "cwd": "${workspaceFolder}",
+      "terminal": "integrated",
+      "sourceLanguages": ["rust"]
     }
   ]
 }
