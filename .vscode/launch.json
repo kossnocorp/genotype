@@ -10,7 +10,7 @@
       "autoAttachChildProcesses": true
     },
     {
-      "name": "Debug GT CLI",
+      "name": "Debug CLI",
       "type": "lldb",
       "request": "launch",
       "preLaunchTask": "Build CLI",
