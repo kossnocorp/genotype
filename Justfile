@@ -2,7 +2,7 @@ test:
   cargo nextest run
 
 test-watch:
-  cargo watch -s 'cargo nextest run --no-fail-fast'
+  cargo watch -s 'cargo nextest run'
 
 test-run-cli:
   cargo run --bin gt -- build ${TEST_RUN_CLI_PROJECT}

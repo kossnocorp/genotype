@@ -68,6 +68,10 @@ dist"#
         for module in self.modules.iter() {
             // [TODo]
             if let Some(module_path) = module.path.parent() {
+                if module_path == ".".into() {
+                    continue;
+                }
+
                 module_paths.insert(module_path);
             }
         }
