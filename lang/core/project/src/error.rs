@@ -3,6 +3,10 @@ use thiserror::Error;
 
 #[derive(Error, Diagnostic, Debug, PartialEq, Clone)]
 pub enum GtlProjectError {
+    #[error("Failed to parse {0} TOML")]
+    #[diagnostic(code(GTRSP301))]
+    ManifestTomlParse(&'static str, #[source] toml_edit::TomlError),
+
     #[error("Failed to merge dependencies in the manifest {0}")]
     #[diagnostic(code(GTRSP302))]
     ManifestDepsMerge(&'static str),

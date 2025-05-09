@@ -10,7 +10,7 @@ pub enum PyProjectError {
     #[diagnostic(code(GTRSP301))]
     ManifestBaseParse(#[source] toml_edit::TomlError),
 
-    #[error("Failed to merge base manifest with config-specified: {")]
+    #[error("Failed to merge base manifest with config-specified")]
     #[diagnostic(code(GTRSP302))]
     ManifestMerge(#[source] toml_edit::TomlError),
 

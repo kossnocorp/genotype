@@ -154,7 +154,7 @@ mod tests {
 
     #[test]
     fn test_process_anonymous() {
-        let module_path: GtModulePath = "/process/anonymous.type".into();
+        let module_path: GtModulePath = "anonymous.type".into();
         let config = GtConfig::from_entry("module", "./examples/process", "anonymous.type");
         let project = GtProject::load(&config);
         assert_eq!(

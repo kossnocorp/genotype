@@ -12,14 +12,16 @@ impl<'a> GtlProjectManifest<'a> for TsProject<'a> {
         &self.config
     }
 
-    fn alter_manifest_doc(&self, doc: &mut DocumentMut) {
-        doc.insert(
-            "types",
-            self.config
-                .pkg_relative_src_file_path(&"index.ts".into())
-                .as_str()
-                .into(),
-        );
+    fn base_manifest(&self) -> String {
+        let types = self
+            .config
+            .pkg_relative_src_file_path(&"index.ts".into())
+            .as_str()
+            .to_owned();
+        format!(
+            r#"types = "{types}"
+"#
+        )
     }
 }
 

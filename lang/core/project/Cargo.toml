@@ -16,7 +16,7 @@ genotype_lang_core_tree = { version = "0.11.0", path = "../../core/tree" }
 miette = "7.2.0"
 thiserror = "1.0.64"
 indexmap = "2.6.0"
-toml_edit = "0.22.26"
+toml_edit = { version = "0.22.26", features = ["serde"] }
 toml = { version = "0.8.19", features = ["preserve_order"] }
 serde_json = { version = "1.0.140", features = ["preserve_order"] }
 

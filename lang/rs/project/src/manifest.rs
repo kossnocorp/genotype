@@ -10,6 +10,15 @@ impl<'a> GtlProjectManifest<'a> for RsProject<'a> {
     fn config(&'a self) -> &'a GtConfigPkg<'a, Self::LangConfig> {
         &self.config
     }
+
+    fn base_manifest(&self) -> String {
+        format!(
+            r#"[package]
+edition = "2024"
+
+"#
+        )
+    }
 }
 
 pub struct RsProjectManifestDependency;

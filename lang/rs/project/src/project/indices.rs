@@ -1,5 +1,3 @@
-use std::iter::Successors;
-
 use crate::prelude::internal::*;
 
 impl RsProject<'_> {
@@ -9,32 +7,23 @@ impl RsProject<'_> {
         for module in self.modules.iter() {
             let mut module_path = module.path.clone();
             loop {
-                let cur_path = module_path.parent();
                 let name = module_path.module_name();
-
-                let key = if let Some(ref path) = cur_path {
-                    path.clone()
-                } else {
-                    "".into()
-                };
+                let parent_path = module_path.parent().unwrap_or_else(|| "".into());
 
                 crate_paths
-                    .entry(key)
+                    .entry(parent_path.clone())
                     .and_modify(|paths| {
                         paths.insert(name.clone());
                     })
                     .or_insert_with(|| IndexSet::from_iter(vec![name]));
 
-                match cur_path {
-                    Some(ref path) => {
-                        module_path = path.clone();
-                    }
-                    None => break,
+                if parent_path == "".into() {
+                    break;
                 }
+
+                module_path = parent_path;
             }
         }
-
-        println!("crate_paths: {crate_paths:?}");
 
         crate_paths
             .into_iter()
@@ -79,24 +68,6 @@ trait Module: GtRelativePath {
             .unwrap_or_default()
             .into()
     }
-
-    // fn modules_hierarchy(&self) -> Successors<Self, fn(&Self) -> Option<Self>>
-    // where
-    //     Self: Sized + Clone,
-    // {
-    //     std::iter::successors(Some(self.clone()), Self::parent)
-    // }
 }
 
-impl Module for GtPkgSrcRelativePath {
-    // fn module_name(&self) -> String {
-    //     self.strip_extension().as_str().into()
-    // }
-
-    // fn module_names_hierarchy(&self) -> Successors<Self, fn(&Self) -> Option<Self>>
-    // where
-    //     Self: Sized,
-    // {
-    //     std::iter::successors(self.parent(), Self::parent).map(|path| path.strip_extension())
-    // }
-}
+impl Module for GtPkgSrcRelativePath {}

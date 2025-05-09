@@ -1,10 +1,9 @@
-use std::str::FromStr;
-
 use crate::prelude::internal::*;
 use toml_edit::*;
 
 impl<'a> GtlProjectManifest<'a> for PyProject<'a> {
     const FILE_NAME: &'static str = "pyproject.toml";
+    const MANIFEST_DEPENDENCIES_KEY: &'static str = "tool.poetry.dependencies";
 
     type Dependency = PyProjectManifestDependency;
     type LangConfig = PyConfig;
@@ -13,23 +12,22 @@ impl<'a> GtlProjectManifest<'a> for PyProject<'a> {
         &self.config
     }
 
-    fn base_manifest(&self) -> Result<DocumentMut> {
-        let source = format!(
+    fn base_manifest(&self) -> String {
+        let module = self.config.target.module.as_str();
+        let version = self.config.target.lang.version.version_str();
+
+        format!(
             r#"[tool.poetry]
-packages = [{{ include = "module" }}]
+packages = [{{ include = "{module}" }}]
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "{version}"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 "#
-        );
-        DocumentMut::from_str(&source)
-            .map_err(|err| PyProjectError::ManifestBaseParse(err))
-            .into_diagnostic()
-            .map_err(|err| err.with_source_code(source))
+        )
     }
 }
 

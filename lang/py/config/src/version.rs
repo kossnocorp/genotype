@@ -9,10 +9,10 @@ pub enum PYVersion {
 }
 
 impl PYVersion {
-    pub fn as_dependency_str(&self) -> &str {
+    pub fn version_str(&self) -> &str {
         match self {
-            Self::Legacy => r#"python = "^3.8""#,
-            Self::Latest => r#"python = "^3.12""#,
+            Self::Legacy => "^3.8",
+            Self::Latest => "^3.12",
         }
     }
 }

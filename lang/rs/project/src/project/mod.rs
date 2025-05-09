@@ -335,8 +335,12 @@ mod tests {
                     },
                     GtlProjectFile {
                         path: "examples/basic/dist/rs/Cargo.toml".into(),
-                        source: r#"[dependencies]
+                        source: r#"[package]
+edition = "2024"
+
+[dependencies]
 serde = { version = "1", features = ["derive"] }
+
 "#
                         .into()
                     },
@@ -393,8 +397,12 @@ pub struct Book {
                     },
                     GtlProjectFile {
                         path: "examples/nested/dist/rs/Cargo.toml".into(),
-                        source: r#"[dependencies]
+                        source: r#"[package]
+edition = "2024"
+
+[dependencies]
 serde = { version = "1", features = ["derive"] }
+
 "#
                         .into(),
                     },
@@ -464,9 +472,13 @@ pub struct Book {
                     },
                     GtlProjectFile {
                         path: "examples/extensions/dist/rs/Cargo.toml".into(),
-                        source: r#"[dependencies]
+                        source: r#"[package]
+edition = "2024"
+
+[dependencies]
 literals = "0.1"
 serde = { version = "1", features = ["derive"] }
+
 "#
                         .into(),
                     },
@@ -569,14 +581,14 @@ pub struct Account {
                     // https://github.com/kossnocorp/genotype/issues/36
                     GtlProjectFile {
                         path: "examples/dependencies/dist/rs/Cargo.toml".into(),
-                        source: r#"[dependencies]
-genotype_json_types = "0.1.0"
-serde = { version = "1", features = ["derive"] }
-
-[package]
+                        source: r#"[package]
 edition = "2021"
 name = "genotype_example_package"
 version = "0.1.0"
+[dependencies]
+genotype_json_types = "0.1.0"
+serde = { version = "1", features = ["derive"] }
+
 "#
                         .into()
                     },

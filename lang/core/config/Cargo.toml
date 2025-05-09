@@ -12,6 +12,7 @@ genotype_path = { version = "0.11.0", path = "../../../path" }
 delegate = "0.13.3"
 serde = { version = "1.0.210", features = ["derive"] }
 toml = { version = "0.8.19" }
+toml_edit = { version = "0.22.26", features = ["serde"] }
 relative-path = "1.9.3"
 
 [dev-dependencies]
