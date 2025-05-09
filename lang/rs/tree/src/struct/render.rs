@@ -46,7 +46,7 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "pub struct Name;"
+            "pub struct Name {}"
         );
     }
 
@@ -132,7 +132,7 @@ mod tests {
             .render(Default::default(), &mut Default::default())
             .unwrap(),
             r#"/// Hello, world!
-pub struct Name;"#
+pub struct Name {}"#
         );
     }
 

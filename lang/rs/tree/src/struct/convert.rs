@@ -68,7 +68,7 @@ impl RSConvert<RSStruct> for GTLiteral {
             doc,
             attributes: vec![RSAttribute(format!("literal({literal})"))],
             name,
-            fields: vec![].into(),
+            fields: RSStructFields::Unit,
         })
     }
 }
@@ -99,7 +99,7 @@ impl RSConvert<RSStruct> for GTBranded {
                 .render_derive(RSContextRenderDeriveMode::Struct)
                 .into()],
             name,
-            fields: RSStructFields::Tuple(vec![descriptor]),
+            fields: RSStructFields::Newtype(vec![descriptor]),
         })
     }
 }
@@ -300,7 +300,7 @@ mod tests {
                 doc: None,
                 attributes: vec![RSAttribute("literal(true)".into())],
                 name: "True".into(),
-                fields: RSStructFields::Resolved(vec![])
+                fields: RSStructFields::Unit
             },
         );
     }
@@ -318,7 +318,7 @@ mod tests {
                 doc: None,
                 attributes: vec![RSAttribute("literal(1)".into())],
                 name: "Version".into(),
-                fields: RSStructFields::Resolved(vec![])
+                fields: RSStructFields::Unit
             },
         );
     }
@@ -337,7 +337,7 @@ mod tests {
                 doc: None,
                 attributes: vec![RSAttribute("literal(1)".into())],
                 name: "UserV1".into(),
-                fields: RSStructFields::Resolved(vec![])
+                fields: RSStructFields::Unit
             },
         );
     }
@@ -354,7 +354,7 @@ mod tests {
                 doc: None,
                 attributes: vec![RSAttribute("literal(false)".into())],
                 name: "False".into(),
-                fields: RSStructFields::Resolved(vec![])
+                fields: RSStructFields::Unit
             },
         );
         assert_eq!(
@@ -376,7 +376,7 @@ mod tests {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![RSAttribute("literal(false)".into())],
                 name: "False".into(),
-                fields: RSStructFields::Resolved(vec![])
+                fields: RSStructFields::Unit
             },
         );
     }
@@ -392,7 +392,7 @@ mod tests {
                 doc: None,
                 attributes: vec![RSAttribute("literal(1.23456)".into())],
                 name: "Lit1_23456".into(),
-                fields: RSStructFields::Resolved(vec![])
+                fields: RSStructFields::Unit
             },
         );
     }
@@ -408,7 +408,7 @@ mod tests {
                 doc: None,
                 attributes: vec![RSAttribute("literal(true)".into())],
                 name: "True".into(),
-                fields: RSStructFields::Resolved(vec![])
+                fields: RSStructFields::Unit
             },
         );
     }
@@ -426,7 +426,7 @@ mod tests {
                 doc: None,
                 attributes: vec![RSAttribute("literal(1)".into())],
                 name: "Version".into(),
-                fields: RSStructFields::Resolved(vec![])
+                fields: RSStructFields::Unit
             },
         );
     }
@@ -445,7 +445,7 @@ mod tests {
                 doc: None,
                 attributes: vec![RSAttribute("literal(1)".into())],
                 name: "UserV1".into(),
-                fields: RSStructFields::Resolved(vec![])
+                fields: RSStructFields::Unit
             },
         );
     }
@@ -462,7 +462,7 @@ mod tests {
                 doc: None,
                 attributes: vec![RSAttribute("literal(false)".into())],
                 name: "False".into(),
-                fields: RSStructFields::Resolved(vec![])
+                fields: RSStructFields::Unit
             },
         );
         assert_eq!(
@@ -484,7 +484,7 @@ mod tests {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![RSAttribute("literal(false)".into())],
                 name: "False".into(),
-                fields: RSStructFields::Resolved(vec![])
+                fields: RSStructFields::Unit
             },
         );
     }

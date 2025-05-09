@@ -11,9 +11,9 @@ impl<'a> GtlRender<'a> for RSStructFields {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         match self {
-            RSStructFields::Tuple(descriptors) => {
+            RSStructFields::Newtype(descriptors) => {
                 if descriptors.len() == 0 {
-                    return Ok(";".into());
+                    return Ok("()".into());
                 }
 
                 let descriptors = descriptors
@@ -31,7 +31,7 @@ impl<'a> GtlRender<'a> for RSStructFields {
 
             RSStructFields::Resolved(fields) => {
                 if fields.len() == 0 {
-                    return Ok(";".into());
+                    return Ok(" {}".into());
                 }
 
                 let fields = fields
@@ -49,6 +49,8 @@ impl<'a> GtlRender<'a> for RSStructFields {
                     indent = state.indent_str()
                 ))
             }
+
+            RSStructFields::Unit => Ok(";".into()),
 
             RSStructFields::Unresolved(span, _, _) => {
                 Err(RSError::UnresolvedStructFields(span.clone()).into())
@@ -94,7 +96,7 @@ mod tests {
             RSStructFields::Resolved(vec![])
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            ";"
+            " {}"
         );
     }
 
@@ -128,9 +130,9 @@ mod tests {
     }
 
     #[test]
-    fn test_render_tuple() {
+    fn test_render_newtype() {
         assert_eq!(
-            RSStructFields::Tuple(vec![
+            RSStructFields::Newtype(vec![
                 RSDescriptor::Primitive(RSPrimitive::String),
                 RSDescriptor::Primitive(RSPrimitive::IntSize),
             ])
@@ -141,9 +143,19 @@ mod tests {
     }
 
     #[test]
-    fn test_render_empty_tuple() {
+    fn test_render_empty_newtype() {
         assert_eq!(
-            RSStructFields::Tuple(vec![])
+            RSStructFields::Newtype(vec![])
+                .render(Default::default(), &mut Default::default())
+                .unwrap(),
+            "()"
+        );
+    }
+
+    #[test]
+    fn test_render_unit() {
+        assert_eq!(
+            RSStructFields::Unit
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             ";"

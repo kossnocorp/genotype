@@ -5,7 +5,7 @@ impl RSTraverse for RSStructFields {
         visitor.visit_struct_fields(self);
 
         match self {
-            RSStructFields::Tuple(descriptors) => {
+            RSStructFields::Newtype(descriptors) => {
                 for descriptor in descriptors {
                     descriptor.traverse(visitor);
                 }
@@ -26,6 +26,8 @@ impl RSTraverse for RSStructFields {
                     field.traverse(visitor);
                 }
             }
+
+            RSStructFields::Unit => {}
         }
     }
 }

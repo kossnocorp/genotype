@@ -18,9 +18,13 @@ pub enum RSProjectError {
     #[diagnostic(code(GTRSP203))]
     CyclicExtensions(#[label(collection, "these structs reference each other")] Vec<GTSpan>),
 
-    #[error("Tuple structs can't be extended with")]
+    #[error("Newtypes structs can't be extended with")]
     #[diagnostic(code(GTRSP204))]
     TupleStructExtension(#[label("this struct extensions")] GTSpan),
+
+    #[error("Unit structs can't be extended with")]
+    #[diagnostic(code(GTRSP205))]
+    UnitStructExtension(#[label("this struct extensions")] GTSpan),
 
     #[error("Failed to parse the [rust.package]")]
     #[diagnostic(code(GTRSP301))]

@@ -86,8 +86,13 @@ impl RsProject<'_> {
                                             Ok(resolved_fields.clone())
                                         }
 
-                                        RSStructFields::Tuple(_) => {
+                                        RSStructFields::Newtype(_) => {
                                             Err(RSProjectError::TupleStructExtension(span.clone())
+                                                .into())
+                                        }
+
+                                        RSStructFields::Unit => {
+                                            Err(RSProjectError::UnitStructExtension(span.clone())
                                                 .into())
                                         }
 
@@ -155,12 +160,10 @@ impl RsProject<'_> {
                                         Ok(references)
                                     }
 
-                                    RSStructFields::Tuple(_) | RSStructFields::Resolved(_) => {
-                                        Err(RSProjectError::FailedExtensionsResolve(
-                                            span.clone(),
-                                            "Definition is already resolved".into(),
-                                        ))
-                                    }
+                                    _ => Err(RSProjectError::FailedExtensionsResolve(
+                                        span.clone(),
+                                        "Definition is already resolved".into(),
+                                    )),
                                 }
                             } else {
                                 Err(RSProjectError::FailedExtensionsResolve(

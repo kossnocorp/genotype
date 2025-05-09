@@ -1,5 +1,4 @@
 use crate::prelude::internal::*;
-use heck::ToPascalCase;
 use std::collections::HashSet;
 
 impl RSConvert<RSEnum> for GTUnion {

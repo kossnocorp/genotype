@@ -159,7 +159,7 @@ mod tests {
                 doc: None,
                 attributes: vec!["derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into()],
                 name: "BookId".into(),
-                fields: RSStructFields::Tuple(vec![RSDescriptor::Primitive(RSPrimitive::Int32),])
+                fields: RSStructFields::Newtype(vec![RSDescriptor::Primitive(RSPrimitive::Int32),])
                     .into(),
             }),
         );

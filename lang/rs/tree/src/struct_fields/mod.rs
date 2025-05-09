@@ -4,7 +4,8 @@ mod render;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum RSStructFields {
-    Tuple(Vec<RSDescriptor>),
+    Unit,
+    Newtype(Vec<RSDescriptor>),
     Resolved(Vec<RSField>),
     Unresolved(GTSpan, Vec<RSReference>, Vec<RSField>),
 }
