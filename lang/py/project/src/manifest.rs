@@ -13,19 +13,23 @@ impl<'a> GtlProjectManifest<'a> for PyProject<'a> {
         &self.config
     }
 
-    fn base_manifest(&self) -> DocumentMut {
-        DocumentMut::from_str(
+    fn base_manifest(&self) -> Result<DocumentMut> {
+        let source = format!(
             r#"[tool.poetry]
-packages = [{ include = "module" }]
+packages = [{{ include = "module" }}]
 
 [tool.poetry.dependencies]
 python = "^3.12"
 
 [build-system]
-requires = ["poetry-core"]\
+requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-"#,
-        )
+"#
+        );
+        DocumentMut::from_str(&source)
+            .map_err(|err| PyProjectError::ManifestBaseParse(err))
+            .into_diagnostic()
+            .map_err(|err| err.with_source_code(source))
     }
 }
 

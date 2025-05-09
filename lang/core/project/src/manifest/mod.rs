@@ -2,6 +2,9 @@ use crate::prelude::internal::*;
 use miette::IntoDiagnostic;
 use serde_json::to_string_pretty;
 use toml_edit::*;
+use toml_merge::TomlMerge;
+
+mod toml_merge;
 
 pub trait GtlProjectManifest<'a> {
     const FILE_NAME: &'static str;
@@ -15,8 +18,8 @@ pub trait GtlProjectManifest<'a> {
 
     fn alter_manifest_doc(&self, _doc: &mut DocumentMut) {}
 
-    fn base_manifest(&self) -> DocumentMut {
-        DocumentMut::new()
+    fn base_manifest(&self) -> Result<DocumentMut> {
+        Ok(DocumentMut::new())
     }
 
     fn generate_manifest(
@@ -25,7 +28,10 @@ pub trait GtlProjectManifest<'a> {
             <<Self as GtlProjectManifest<'a>>::Dependency as GtlProjectManifestDependency>::DependencyIdent,
         >,
     ) -> Result<GtlProjectFile> {
-        let mut manifest = self.base_manifest();
+        let manifest = self.base_manifest()?;
+        let config_manifest: DocumentMut =
+            toml_edit::ser::to_document(&self.config().target.manifest()).into_diagnostic()?;
+        let mut manifest = manifest.merge(&config_manifest)?;
 
         // let manifest_deps = if let Some(deps) = manifest[Self::DEPENDENCIES_KEY].as_table_mut() {
         //     deps
@@ -42,9 +48,6 @@ pub trait GtlProjectManifest<'a> {
         // };
 
         {
-            let config_manifest: DocumentMut =
-                toml_edit::ser::to_document(&self.config().target.manifest()).into_diagnostic()?;
-
             for (key, item) in config_manifest.iter() {
                 if key == Self::DEPENDENCIES_KEY {
                     let deps = manifest
