@@ -19,7 +19,7 @@ members = [
   "lang/rs/config",
   "lang/rs/runtime/literals",
   "lang/rs/runtime/core",
-  "json/types/libs/rs",
+  "json/types/dist/rs",
   "json/converter",
   "lsp",
   "parser",

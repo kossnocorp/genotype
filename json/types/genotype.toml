@@ -14,7 +14,6 @@ files = ["src", "README.md"]
 [rs]
 enabled = true
 
-[rs.manifest]
 [rs.manifest.package]
 name = "genotype_json_types"
 version = "0.1.0"
