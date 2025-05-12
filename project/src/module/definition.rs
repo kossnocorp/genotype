@@ -2,11 +2,12 @@ use std::collections::HashSet;
 
 use genotype_parser::*;
 
-/// Project module definition resolve data.
+/// Definition resolve data in the context of the current module. It contains lists all the module
+/// definition references and the definition dependencies.
 #[derive(Default, Debug, PartialEq, Clone)]
-pub struct GTPModuleDefinitionResolve {
-    /// Definition references.
+pub struct GtProjectModuleDefinitionResolve {
+    /// All definition references in the module.
     pub references: HashSet<GTReferenceId>,
-    /// Definition dependencies.
+    /// Identfiers the definition depends on.
     pub deps: HashSet<GTIdentifier>,
 }

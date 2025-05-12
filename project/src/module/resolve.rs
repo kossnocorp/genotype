@@ -19,7 +19,7 @@ pub struct GTPModuleResolve {
     /// Identifiers resolve.
     pub identifiers: HashMap<GTIdentifier, GTPModuleIdentifierResolve>,
     /// Definitions resolve.
-    pub definitions: HashMap<GTDefinitionId, GTPModuleDefinitionResolve>,
+    pub definitions: HashMap<GTDefinitionId, GtProjectModuleDefinitionResolve>,
 }
 
 impl GTPModuleResolve {

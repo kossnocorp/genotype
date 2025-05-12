@@ -476,7 +476,7 @@ mod tests {
                         )]),
                         definitions: HashMap::from_iter([(
                             GTDefinitionId("author".into(), "Author".into()),
-                            GTPModuleDefinitionResolve {
+                            GtProjectModuleDefinitionResolve {
                                 references: HashSet::from_iter([GTReferenceId(
                                     "book".into(),
                                     (56, 62).into(),
@@ -574,7 +574,7 @@ mod tests {
                         )]),
                         definitions: HashMap::from_iter([(
                             GTDefinitionId("book".into(), "Book".into()),
-                            GTPModuleDefinitionResolve {
+                            GtProjectModuleDefinitionResolve {
                                 references: HashSet::from_iter([GTReferenceId(
                                     "order".into(),
                                     (57, 61).into(),

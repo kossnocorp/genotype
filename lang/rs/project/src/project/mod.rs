@@ -141,7 +141,7 @@ mod tests {
                     resolve: RSPModuleResolve {
                         definitions: HashMap::from_iter(vec![(
                             GTDefinitionId("author".into(), "Author".into()),
-                            GTPModuleDefinitionResolve {
+                            GtProjectModuleDefinitionResolve {
                                 references: HashSet::from_iter(vec![GTReferenceId(
                                     "book".into(),
                                     (56, 62).into()
@@ -212,7 +212,7 @@ mod tests {
                     resolve: RSPModuleResolve {
                         definitions: HashMap::from_iter(vec![(
                             GTDefinitionId("author".into(), "AuthorName".into()),
-                            GTPModuleDefinitionResolve {
+                            GtProjectModuleDefinitionResolve {
                                 references: HashSet::from_iter(vec![GTReferenceId(
                                     "author".into(),
                                     (19, 29).into()
@@ -295,7 +295,7 @@ mod tests {
                         definitions: HashMap::from_iter(vec![
                             (
                                 GTDefinitionId("author".into(), "AuthorName".into()),
-                                GTPModuleDefinitionResolve {
+                                GtProjectModuleDefinitionResolve {
                                     references: HashSet::from_iter(vec![GTReferenceId(
                                         "book".into(),
                                         (72, 82).into()
@@ -305,7 +305,7 @@ mod tests {
                             ),
                             (
                                 GTDefinitionId("author".into(), "Author".into()),
-                                GTPModuleDefinitionResolve {
+                                GtProjectModuleDefinitionResolve {
                                     references: HashSet::from_iter(vec![GTReferenceId(
                                         "book".into(),
                                         (51, 57).into()

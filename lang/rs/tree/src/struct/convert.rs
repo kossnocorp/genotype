@@ -18,6 +18,8 @@ impl RSConvert<RSStruct> for GTObject {
             .map(|p| p.convert(context))
             .collect::<Result<Vec<_>>>()?;
 
+        // If object has extension, we need to set fields to unresolved as Rust has no inheritance
+        // and we need to copy fields from the parent struct after all the modules are known.
         let fields = if self.extensions.len() > 0 {
             let references = self
                 .extensions
