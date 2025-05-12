@@ -1,6 +1,6 @@
 [package]
 name = "genotype_lang_py_project"
-version = "0.11.0"
+version = "0.12.0"
 edition = "2021"
 description = "Genotype language Python target project crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
@@ -8,15 +8,15 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_path = { version = "0.11.0", path = "../../../path" }
-genotype_config = { version = "0.11.0", path = "../../../config" }
-genotype_parser = { version = "0.11.0", path = "../../../parser" }
-genotype_project = { version = "0.11.0", path = "../../../project" }
-genotype_lang_core_config = { version = "0.11.0", path = "../../core/config" }
-genotype_lang_core_tree = { version = "0.11.0", path = "../../core/tree" }
-genotype_lang_core_project = { version = "0.11.0", path = "../../core/project" }
-genotype_lang_py_tree = { version = "0.11.0", path = "../tree" }
-genotype_lang_py_config = { version = "0.11.0", path = "../config" }
+genotype_path = { version = "0.12.0", path = "../../../path" }
+genotype_config = { version = "0.12.0", path = "../../../config" }
+genotype_parser = { version = "0.12.0", path = "../../../parser" }
+genotype_project = { version = "0.12.0", path = "../../../project" }
+genotype_lang_core_config = { version = "0.12.0", path = "../../core/config" }
+genotype_lang_core_tree = { version = "0.12.0", path = "../../core/tree" }
+genotype_lang_core_project = { version = "0.12.0", path = "../../core/project" }
+genotype_lang_py_tree = { version = "0.12.0", path = "../tree" }
+genotype_lang_py_config = { version = "0.12.0", path = "../config" }
 miette = "7.2.0"
 thiserror = "1.0.64"
 indexmap = "2.6.0"
