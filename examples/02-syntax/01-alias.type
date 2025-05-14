@@ -1,3 +1,5 @@
 Age = int
 
 AnotherAge = Age
+
+snake_case = int

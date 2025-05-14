@@ -2,7 +2,7 @@ module = { SOI ~ (module_doc)* ~ (import | alias)* ~ EOI }
 
 alias = { line_doc* ~ attribute* ~ name ~ "=" ~ descriptor }
 
-name = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC)* }
+name = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 
 // Descriptors
 

@@ -11,9 +11,13 @@ Hello = {
 Empty = {}
 
 Empty = {
-  
+
 }
 
 Hello = { name: string }
 
 Hello = { name: string, age: int }
+
+PascalCase = {
+  snake_case: int
+}
