@@ -43,7 +43,7 @@ impl RsProject<'_> {
                     .iter()
                     .map(|module| {
                         format!(
-                            r#"mod {module};
+                            r#"pub(crate) mod {module};
 pub use {module}::*;"#
                         )
                     })

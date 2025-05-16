@@ -346,9 +346,9 @@ serde = { version = "1", features = ["derive"] }
                     },
                     GtlProjectFile {
                         path: "examples/basic/dist/rs/src/lib.rs".into(),
-                        source: r#"mod author;
+                        source: r#"pub(crate) mod author;
 pub use author::*;
-mod book;
+pub(crate) mod book;
 pub use book::*;
 "#
                         .into(),
@@ -408,23 +408,23 @@ serde = { version = "1", features = ["derive"] }
                     },
                     GtlProjectFile {
                         path: "examples/nested/dist/rs/src/lib.rs".into(),
-                        source: r#"mod inventory;
+                        source: r#"pub(crate) mod inventory;
 pub use inventory::*;
-mod shop;
+pub(crate) mod shop;
 pub use shop::*;
 "#
                         .into(),
                     },
                     GtlProjectFile {
                         path: "examples/nested/dist/rs/src/shop/goods/mod.rs".into(),
-                        source: r#"mod book;
+                        source: r#"pub(crate) mod book;
 pub use book::*;
 "#
                         .into(),
                     },
                     GtlProjectFile {
                         path: "examples/nested/dist/rs/src/shop/mod.rs".into(),
-                        source: r#"mod goods;
+                        source: r#"pub(crate) mod goods;
 pub use goods::*;
 "#
                         .into(),
@@ -484,11 +484,11 @@ serde = { version = "1", features = ["derive"] }
                     },
                     GtlProjectFile {
                         path: "examples/extensions/dist/rs/src/lib.rs".into(),
-                        source: r#"mod admin;
+                        source: r#"pub(crate) mod admin;
 pub use admin::*;
-mod named;
+pub(crate) mod named;
 pub use named::*;
-mod user;
+pub(crate) mod user;
 pub use user::*;
 "#
                         .into(),
@@ -594,7 +594,7 @@ serde = { version = "1", features = ["derive"] }
                     },
                     GtlProjectFile {
                         path: "examples/dependencies/dist/rs/src/lib.rs".into(),
-                        source: r#"mod prompt;
+                        source: r#"pub(crate) mod prompt;
 pub use prompt::*;
 "#
                         .into(),
