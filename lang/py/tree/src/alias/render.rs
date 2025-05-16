@@ -14,7 +14,7 @@ impl<'a> GtlRender<'a> for PYAlias {
         let descriptor = self.descriptor.render(state, context)?;
 
         let alias = if let PYVersion::Legacy = context.config.version {
-            format!("{name}: TypeAlias = {descriptor}")
+            format!("{name} = {descriptor}")
         } else {
             format!("type {name} = {descriptor}")
         };
@@ -65,7 +65,7 @@ mod tests {
                 }
             )
             .unwrap(),
-            "Name: TypeAlias = str"
+            "Name = str"
         );
     }
 

@@ -41,15 +41,12 @@ impl PYConvert<PYDefinition> for GTAlias {
 
                 let references = context.pop_references_scope();
 
-                PYDefinition::Alias(
-                    PYAlias {
-                        doc,
-                        name,
-                        descriptor,
-                        references,
-                    }
-                    .resolve(context),
-                )
+                PYDefinition::Alias(PYAlias {
+                    doc,
+                    name,
+                    descriptor,
+                    references,
+                })
             }
         }
     }
@@ -256,10 +253,7 @@ mod tests {
                 references: vec![],
             })
         );
-        assert_eq!(
-            context.as_dependencies(),
-            vec![(PYDependencyIdent::Typing, "TypeAlias".into()),]
-        );
+        assert_eq!(context.as_dependencies(), vec![]);
     }
 
     #[test]
