@@ -7,7 +7,7 @@ publish-py:
   cd dist/py && poetry publish --build
 
 publish-ts:
-  cd libs/ts && pnpm publish
+  cd dist/ts && pnpm publish
 
 publish-rs:
-  cd libs/rs && cargo publish
+  cd dist/rs && cargo publish
