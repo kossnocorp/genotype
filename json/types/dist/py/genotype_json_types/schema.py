@@ -1,4 +1,4 @@
-from typing import Union, TypeAlias, Optional, Literal, Dict, List
+from typing import Union, Optional, Literal, Dict, List
 from genotype import Model
 
 
@@ -27,7 +27,7 @@ class GtjSchemaLiteral(GtjSchemaBase, Model):
     const: Union[None, bool, float, str]
 
 
-GtjSchemaAny: TypeAlias = Union[GtjSchemaNull, GtjSchemaBoolean, GtjSchemaNumber, GtjSchemaString, "GtjSchemaObject", "GtjSchemaArray", "GtjSchemaUnion", "GtjSchemaTuple", GtjSchemaLiteral]
+GtjSchemaAny = Union[GtjSchemaNull, GtjSchemaBoolean, GtjSchemaNumber, GtjSchemaString, "GtjSchemaObject", "GtjSchemaArray", "GtjSchemaUnion", "GtjSchemaTuple", GtjSchemaLiteral]
 
 
 class GtjSchemaObject(GtjSchemaBase, Model):

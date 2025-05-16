@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use literals::literal;
+use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

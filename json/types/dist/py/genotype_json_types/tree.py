@@ -1,4 +1,4 @@
-from typing import Union, TypeAlias, Optional, Literal, List
+from typing import Union, Optional, Literal, List
 from genotype import Model
 
 
@@ -28,10 +28,10 @@ class GtjLiteral(GtjBase, Model):
     value: Union[str, float, bool, None]
 
 
-GtjLiteralType: TypeAlias = Union[Literal["string"], Literal["number"], Literal["boolean"], Literal["null"]]
+GtjLiteralType = Union[Literal["string"], Literal["number"], Literal["boolean"], Literal["null"]]
 
 
-GtjAny: TypeAlias = Union[GtjNull, GtjBoolean, GtjNumber, GtjString, "GtjObject", "GtjArray", "GtjUnion", "GtjTuple", GtjLiteral]
+GtjAny = Union[GtjNull, GtjBoolean, GtjNumber, GtjString, "GtjObject", "GtjArray", "GtjUnion", "GtjTuple", GtjLiteral]
 
 
 class GtjObject(GtjBase, Model):

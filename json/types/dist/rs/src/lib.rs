@@ -1,4 +1,4 @@
-mod schema;
+pub(crate) mod schema;
 pub use schema::*;
-mod tree;
+pub(crate) mod tree;
 pub use tree::*;

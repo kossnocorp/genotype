@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use literals::literal;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
