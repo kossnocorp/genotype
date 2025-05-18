@@ -1,0 +1,4 @@
+{
+  "name": "Genotype",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu"
+}
