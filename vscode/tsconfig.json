@@ -3,7 +3,7 @@
     "module": "CommonJS",
     "target": "ES2024",
     "lib": ["ES2024"],
-    "outDir": "out",
+    "outDir": "dist",
     "rootDir": "src",
     "sourceMap": true
   },

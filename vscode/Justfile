@@ -13,9 +13,9 @@ build-extension-watch:
   pnpm exec tsc --watch
 
 version version:
-  npm version {{version}}
-  cd client && npm version {{version}}
-  cd server && npm version {{version}}
+  pnpm version {{version}}
+  cd client && pnpm version {{version}}
+  cd server && pnpm version {{version}}
 
 publish: build
-	npx @vscode/vsce publish
+	pnpx @vscode/vsce publish

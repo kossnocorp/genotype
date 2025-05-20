@@ -1,4 +1,4 @@
-# Genotype language support
+# VS Code Genotype Language Support
 
 🚧 Work in progress
 

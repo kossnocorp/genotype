@@ -5,12 +5,13 @@
       "name": "VS Code extension",
       "type": "extensionHost",
       "request": "launch",
+      "preLaunchTask": "Build VS Code extension",
       "args": ["--extensionDevelopmentPath=${workspaceRoot}/vscode"],
-      "outFiles": ["${workspaceRoot}/vscode/out/**/*.js"],
+      "outFiles": ["${workspaceRoot}/vscode/dist/**/*.js"],
       "autoAttachChildProcesses": true
     },
     {
-      "name": "Debug CLI",
+      "name": "CLI",
       "type": "lldb",
       "request": "launch",
       "preLaunchTask": "Build CLI",

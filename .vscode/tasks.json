@@ -2,6 +2,19 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "Build VS Code extension",
+      "type": "shell",
+      "command": "just",
+      "args": ["build"],
+      "options": {
+        "cwd": "${workspaceFolder}/vscode"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
       "label": "Build CLI",
       "type": "shell",
       "command": "cargo",

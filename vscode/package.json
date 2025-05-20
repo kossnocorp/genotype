@@ -11,9 +11,9 @@
   "engines": {
     "vscode": "^1.90.0"
   },
-  "main": "./out/extension.js",
+  "main": "./dist/extension.js",
   "files": [
-    "out",
+    "dist",
     "syntaxes",
     "language-configuration.json",
     "package.json",
@@ -64,8 +64,8 @@
     "vscode-languageclient": "^9.0.1"
   },
   "devDependencies": {
-    "@types/node": "^22.10.5",
-    "@types/vscode": "^1.96.0",
-    "typescript": "^5.7.2"
+    "@types/node": "^22.15.18",
+    "@types/vscode": "^1.100.0",
+    "typescript": "^5.8.3"
   }
 }
