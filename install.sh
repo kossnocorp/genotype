@@ -12,7 +12,22 @@ if ! command -v cargo-binstall >/dev/null 2>&1; then
     curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
 fi
 
-cargo binstall just
-cargo binstall cargo-nextest
-cargo binstall cargo-watch
-cargo binstall cargo-release
+cargo binstall \
+    fnm \
+    bacon \
+    just \
+    cargo-nextest \
+    cargo-watch \
+    cargo-release \
+    toml2json \
+
+fnm install
+
+pnpm install
+
+if ! command -v uv >/dev/null 2>&1; then
+    echo "Installing uv..."
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+fi
+
+uv python install

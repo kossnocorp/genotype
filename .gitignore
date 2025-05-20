@@ -3,5 +3,7 @@ node_modules
 /tmp
 .envrc
 .direnv
+# Node.js
+.pnpm-store
 # Python
 .venv
