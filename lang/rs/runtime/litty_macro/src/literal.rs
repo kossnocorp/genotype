@@ -27,62 +27,38 @@ pub fn macro_attribute(attr: TokenStream, input: TokenStream) -> TokenStream {
 
                 match &literal {
                     Lit::Str(lit_str) => struct_lit_trait_code(LitDef {
-                        literal_type: quote! { str },
+                        literal_type: quote! { &'static str },
                         literal: lit_str.value(),
                         trait_ident: quote! { LitStr },
                         struct_ident: &item.ident,
                     }),
 
-                    Lit::Bool(lit_bool) => {
-                        let hasher_code = std_hasher(&literal);
-                        let serde_code = bool_serde_code(lit_bool.value(), item.ident.clone());
-                        let hash_code = hash_trait_code(hasher_code, &item.ident);
-                        let debug_code = debug_trait_code(&literal, &item.ident);
+                    Lit::Bool(lit_bool) => struct_lit_trait_code(LitDef {
+                        literal_type: quote! { bool },
+                        literal: lit_bool.value(),
+                        trait_ident: quote! { LitBool },
+                        struct_ident: &item.ident,
+                    }),
 
-                        quote! {
-                            #serde_code
-
-                            #hash_code
-
-                            #debug_code
-                        }
-                    }
-
-                    Lit::Int(lit_int) => {
-                        let hasher_code = std_hasher(&literal);
-                        let serde_code =
-                            int_serde_code(lit_int.base10_digits(), item.ident.clone());
-                        let hash_code = hash_trait_code(hasher_code, &item.ident);
-                        let debug_code = debug_trait_code(&literal, &item.ident);
-
-                        quote! {
-                            #serde_code
-
-                            #hash_code
-
-                            #debug_code
-                        }
-                    }
-
-                    Lit::Float(lit_float) => {
-                        let literal: f64 = lit_float
+                    Lit::Int(lit_int) => struct_lit_trait_code(LitDef {
+                        literal_type: quote! { i64 },
+                        literal: lit_int
                             .base10_digits()
-                            .parse()
-                            .expect("Invalid f64 literal");
+                            .parse::<i64>()
+                            .expect("Invalid i64 literal"),
+                        trait_ident: quote! { LitInt },
+                        struct_ident: &item.ident,
+                    }),
 
-                        let hasher_code = float_hasher(&literal);
-                        let serde_code = float_serde_code(&literal, item.ident.clone());
-                        let hash_code = hash_trait_code(hasher_code, &item.ident);
-                        let debug_code = debug_trait_code(&literal, &item.ident);
-
-                        quote! {
-                            #serde_code
-
-                            #hash_code
-
-                            #debug_code
-                        }
-                    }
+                    Lit::Float(lit_float) => struct_lit_trait_code(LitDef {
+                        literal_type: quote! { f64 },
+                        literal: lit_float
+                            .base10_digits()
+                            .parse::<f64>()
+                            .expect("Invalid f64 literal"),
+                        trait_ident: quote! { LitFloat },
+                        struct_ident: &item.ident,
+                    }),
 
                     _ => panic!(
                     "The #[literal] attribute only supports string, bool, int or float literals"
@@ -375,78 +351,6 @@ fn null_serde_code(target: syn::Ident) -> proc_macro2::TokenStream {
     )
 }
 
-fn bool_serde_code(literal: bool, target: syn::Ident) -> proc_macro2::TokenStream {
-    serde_code(
-        &literal,
-        &target,
-        SerdeConsts {
-            serialize_call: quote! { serialize_bool(#literal) },
-            deserialize: "deserialize_bool".into(),
-            visit_fns: vec![serde_visit_code(
-                &literal,
-                &target,
-                SerdeVisitConsts {
-                    visit: "visit_bool".into(),
-                    visit_arg: quote! { bool },
-                    visit_unexpected: "Bool".into(),
-                },
-            )],
-        },
-    )
-}
-
-fn int_serde_code(literal: &str, target: syn::Ident) -> proc_macro2::TokenStream {
-    let literal: i64 = literal.parse().expect("Invalid i64 literal");
-    serde_code(
-        &literal,
-        &target,
-        SerdeConsts {
-            serialize_call: quote! { serialize_i64(#literal) },
-            deserialize: "deserialize_i64",
-            visit_fns: vec![
-                serde_visit_code(
-                    &literal,
-                    &target,
-                    SerdeVisitConsts {
-                        visit: "visit_u64",
-                        visit_arg: quote! { u64 },
-                        visit_unexpected: "Unsigned",
-                    },
-                ),
-                serde_visit_code(
-                    &literal,
-                    &target,
-                    SerdeVisitConsts {
-                        visit: "visit_i64",
-                        visit_arg: quote! { i64 },
-                        visit_unexpected: "Signed",
-                    },
-                ),
-            ],
-        },
-    )
-}
-
-fn float_serde_code(literal: &f64, target: syn::Ident) -> proc_macro2::TokenStream {
-    serde_code(
-        &literal,
-        &target,
-        SerdeConsts {
-            serialize_call: quote! { serialize_f64(#literal) },
-            deserialize: "deserialize_f64",
-            visit_fns: vec![serde_visit_code(
-                &literal,
-                &target,
-                SerdeVisitConsts {
-                    visit: "visit_f64",
-                    visit_arg: quote! { f64 },
-                    visit_unexpected: "Float",
-                },
-            )],
-        },
-    )
-}
-
 struct SerdeConsts {
     pub serialize_call: proc_macro2::TokenStream,
     pub deserialize: &'static str,
@@ -519,76 +423,6 @@ where
     )
 }
 
-struct SerdeVisitConsts {
-    pub visit: &'static str,
-    pub visit_arg: proc_macro2::TokenStream,
-    pub visit_unexpected: &'static str,
-}
-
-fn serde_visit_code<L>(
-    literal: &L,
-    target: &syn::Ident,
-    consts: SerdeVisitConsts,
-) -> proc_macro2::TokenStream
-where
-    L: ToTokens,
-{
-    let visit = syn::Ident::new(&consts.visit, target.span());
-    let visit_arg = consts.visit_arg;
-    let visit_unexpected = syn::Ident::new(&consts.visit_unexpected, target.span());
-
-    quote! {
-        fn #visit<E>(self, s: #visit_arg) -> Result<Self::Value, E>
-        where
-            E: serde::de::Error,
-        {
-            if s == #literal as #visit_arg {
-                Ok(#target)
-            } else {
-                Err(serde::de::Error::invalid_value(
-                    serde::de::Unexpected::#visit_unexpected(s.into()), &self
-                ))
-            }
-        }
-    }
-}
-
-fn std_hasher<L>(literal: &L) -> proc_macro2::TokenStream
-where
-    L: ToTokens,
-{
-    quote! { #literal.hash(state) }
-}
-
-fn float_hasher(literal: &f64) -> proc_macro2::TokenStream {
-    quote! {
-        let mut bits = #literal.to_bits();
-
-        // Treat all NaN values the same
-        if #literal.is_nan() {
-            bits = f64::NAN.to_bits();
-        } else if bits == (-0.0f64).to_bits() {
-            // Normalize -0.0 to 0.0
-            bits = 0.0f64.to_bits();
-        }
-
-        bits.hash(state);
-    }
-}
-
-fn hash_trait_code(
-    hasher: proc_macro2::TokenStream,
-    target: &syn::Ident,
-) -> proc_macro2::TokenStream {
-    quote! {
-        impl std::hash::Hash for #target {
-            fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-                #hasher
-            }
-        }
-    }
-}
-
 fn debug_trait_code<L>(literal: &L, target: &syn::Ident) -> proc_macro2::TokenStream
 where
     L: ToTokens,
@@ -622,7 +456,7 @@ where
 
     quote! {
     impl litty::#trait_ident for #struct_ident {
-        const LIT: &'static #literal_type = #literal;
+        const LIT: #literal_type = #literal;
     }
 
     impl serde::Serialize for #struct_ident {
