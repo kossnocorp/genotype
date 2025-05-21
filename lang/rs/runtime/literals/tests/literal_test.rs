@@ -121,7 +121,7 @@ fn test_clone() {
 }
 
 #[test]
-fn test_enum() {
+fn test_enum_structs() {
     #[derive(PartialEq, Debug, Serialize, Deserialize)]
     #[serde(untagged)]
     pub enum ABC {
@@ -141,4 +141,20 @@ fn test_enum() {
 
     assert_eq!(serde_json::to_string_pretty(&ABC::B(B)).unwrap(), r#""b""#);
     assert_eq!(serde_json::from_str::<ABC>(r#""b""#).unwrap(), ABC::B(B));
+}
+
+#[test]
+fn test_enum_variants() {
+    #[literal]
+    pub enum ABC {
+        #[literal("a")]
+        A,
+        #[literal("b")]
+        B,
+        #[literal("c")]
+        C,
+    }
+
+    assert_eq!(serde_json::to_string_pretty(&ABC::B).unwrap(), r#""b""#);
+    assert_eq!(serde_json::from_str::<ABC>(r#""b""#).unwrap(), ABC::B);
 }
