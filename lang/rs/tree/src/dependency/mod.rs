@@ -4,7 +4,7 @@ use crate::prelude::internal::*;
 pub enum RSDependencyIdent {
     Local(RSPath),
     Runtime,
-    Literals,
+    Litty,
     Serde,
     Std(String),
 }
@@ -14,7 +14,7 @@ impl RSDependencyIdent {
         match self {
             Self::Local(path) => path.1.clone(),
             Self::Runtime => "genotype_runtime".into(),
-            Self::Literals => "literals".into(),
+            Self::Litty => "literals".into(),
             Self::Serde => "serde".into(),
             Self::Std(path) => format!("std::{path}"),
         }
@@ -27,9 +27,9 @@ impl RSDependencyIdent {
                 version: "0.4".into(),
                 features: vec![],
             }),
-            Self::Literals => Some(RSDependencyExternal {
-                name: "literals".into(),
-                version: "0.1".into(),
+            Self::Litty => Some(RSDependencyExternal {
+                name: "litty".into(),
+                version: "0.2".into(),
                 features: vec![],
             }),
             Self::Serde => Some(RSDependencyExternal {

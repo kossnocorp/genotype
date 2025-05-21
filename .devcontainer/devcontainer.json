@@ -5,7 +5,10 @@
     "vscode": {
       "extensions": [
         "rust-lang.rust-analyzer",
-        "vadimcn.vscode-lldb"
+        "vadimcn.vscode-lldb",
+        "pest.pest-ide-tools",
+        "tamasfe.even-better-toml",
+        "nefrob.vscode-just-syntax"
       ]
     }
   }

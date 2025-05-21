@@ -51,7 +51,7 @@ impl RSConvert<RSStruct> for GTObject {
 
 impl RSConvert<RSStruct> for GTLiteral {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSStruct> {
-        context.add_import(RSDependencyIdent::Literals, "literal".into());
+        context.add_import(RSDependencyIdent::Litty, "literal".into());
 
         let doc = context.consume_doc();
         let name = if let Some(name) = context.claim_alias() {
@@ -361,7 +361,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![(RSDependencyIdent::Literals, "literal".into())]
+            vec![(RSDependencyIdent::Litty, "literal".into())]
         );
     }
 
@@ -469,7 +469,7 @@ mod tests {
         );
         assert_eq!(
             context.as_dependencies(),
-            vec![(RSDependencyIdent::Literals, "literal".into())]
+            vec![(RSDependencyIdent::Litty, "literal".into())]
         );
     }
 

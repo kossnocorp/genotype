@@ -476,7 +476,7 @@ pub struct Book {
 edition = "2024"
 
 [dependencies]
-literals = "0.1"
+litty = "0.2"
 serde = { version = "1", features = ["derive"] }
 
 "#
@@ -495,7 +495,7 @@ pub use user::*;
                     },
                     GtlProjectFile {
                         path: "examples/extensions/dist/rs/src/admin.rs".into(),
-                        source: r#"use literals::literal;
+                        source: r#"use litty::literal;
 use serde::{Deserialize, Serialize};
 use crate::named::Name;
 

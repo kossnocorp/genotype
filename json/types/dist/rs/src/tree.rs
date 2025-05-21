@@ -1,4 +1,4 @@
-use literals::literal;
+use litty::literal;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

@@ -1,4 +1,4 @@
-use litty::literal;
+use litty_macro::literal;
 use pretty_assertions::assert_eq;
 use serde::{Deserialize, Serialize};
 use std::hash::Hash;

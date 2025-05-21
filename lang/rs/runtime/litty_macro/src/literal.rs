@@ -10,63 +10,91 @@ pub fn macro_attribute(attr: TokenStream, input: TokenStream) -> TokenStream {
             let attr_tokens = proc_macro2::TokenStream::from(attr.clone());
             let attr_str = attr_tokens.to_string().trim().to_string();
 
-            let (serde_code, hash_code, debug_code) = if attr_str == "null" {
+            let traits_code = if attr_str == "null" {
                 let serde_code = null_serde_code(item.ident.clone());
                 let hash_code = quote! {};
                 let debug_code = debug_trait_code(&"null", &item.ident);
 
-                (serde_code, hash_code, debug_code)
+                quote! {
+                    #serde_code
+
+                    #hash_code
+
+                    #debug_code
+                }
             } else {
                 let literal = parse_macro_input!(attr as Lit);
 
-                let (hasher_code, serde_code) = match &literal {
-                    Lit::Str(lit_str) => (
-                        std_hasher(&literal),
-                        str_serde_code(lit_str.value(), item.ident.clone()),
-                    ),
+                match &literal {
+                    Lit::Str(lit_str) => struct_lit_trait_code(LitDef {
+                        literal_type: quote! { str },
+                        literal: lit_str.value(),
+                        trait_ident: quote! { LitStr },
+                        struct_ident: &item.ident,
+                    }),
 
-                    Lit::Bool(lit_bool) => (
-                        std_hasher(&literal),
-                        bool_serde_code(lit_bool.value(), item.ident.clone()),
-                    ),
+                    Lit::Bool(lit_bool) => {
+                        let hasher_code = std_hasher(&literal);
+                        let serde_code = bool_serde_code(lit_bool.value(), item.ident.clone());
+                        let hash_code = hash_trait_code(hasher_code, &item.ident);
+                        let debug_code = debug_trait_code(&literal, &item.ident);
 
-                    Lit::Int(lit_int) => (
-                        std_hasher(&literal),
-                        int_serde_code(lit_int.base10_digits(), item.ident.clone()),
-                    ),
+                        quote! {
+                            #serde_code
+
+                            #hash_code
+
+                            #debug_code
+                        }
+                    }
+
+                    Lit::Int(lit_int) => {
+                        let hasher_code = std_hasher(&literal);
+                        let serde_code =
+                            int_serde_code(lit_int.base10_digits(), item.ident.clone());
+                        let hash_code = hash_trait_code(hasher_code, &item.ident);
+                        let debug_code = debug_trait_code(&literal, &item.ident);
+
+                        quote! {
+                            #serde_code
+
+                            #hash_code
+
+                            #debug_code
+                        }
+                    }
 
                     Lit::Float(lit_float) => {
                         let literal: f64 = lit_float
                             .base10_digits()
                             .parse()
                             .expect("Invalid f64 literal");
-                        (
-                            float_hasher(&literal),
-                            float_serde_code(&literal, item.ident.clone()),
-                        )
+
+                        let hasher_code = float_hasher(&literal);
+                        let serde_code = float_serde_code(&literal, item.ident.clone());
+                        let hash_code = hash_trait_code(hasher_code, &item.ident);
+                        let debug_code = debug_trait_code(&literal, &item.ident);
+
+                        quote! {
+                            #serde_code
+
+                            #hash_code
+
+                            #debug_code
+                        }
                     }
 
                     _ => panic!(
                     "The #[literal] attribute only supports string, bool, int or float literals"
                 ),
-                };
-
-                let hash_code = hash_trait_code(hasher_code, &item.ident);
-
-                let debug_code = debug_trait_code(&literal, &item.ident);
-
-                (serde_code, hash_code, debug_code)
+                }
             };
 
             quote! {
                 #[derive(Clone, Default, Eq, PartialEq)]
                 #item
 
-                #serde_code
-
-                #hash_code
-
-                #debug_code
+                #traits_code
             }
         }
 
@@ -347,26 +375,6 @@ fn null_serde_code(target: syn::Ident) -> proc_macro2::TokenStream {
     )
 }
 
-fn str_serde_code(literal: String, target: syn::Ident) -> proc_macro2::TokenStream {
-    serde_code(
-        &literal,
-        &target,
-        SerdeConsts {
-            serialize_call: quote! { serialize_str(#literal) },
-            deserialize: "deserialize_str".into(),
-            visit_fns: vec![serde_visit_code(
-                &literal,
-                &target,
-                SerdeVisitConsts {
-                    visit: "visit_str".into(),
-                    visit_arg: quote! { &str },
-                    visit_unexpected: "Str".into(),
-                },
-            )],
-        },
-    )
-}
-
 fn bool_serde_code(literal: bool, target: syn::Ident) -> proc_macro2::TokenStream {
     serde_code(
         &literal,
@@ -591,5 +599,65 @@ where
                 write!(f, "{:?}", #literal)
             }
         }
+    }
+}
+
+struct LitDef<'a, L: ToTokens> {
+    literal_type: proc_macro2::TokenStream,
+    literal: L,
+    trait_ident: proc_macro2::TokenStream,
+    struct_ident: &'a syn::Ident,
+}
+
+fn struct_lit_trait_code<L>(def: LitDef<L>) -> proc_macro2::TokenStream
+where
+    L: ToTokens,
+{
+    let LitDef {
+        literal_type,
+        literal,
+        trait_ident,
+        struct_ident,
+    } = def;
+
+    quote! {
+    impl litty::#trait_ident for #struct_ident {
+        const LIT: &'static #literal_type = #literal;
+    }
+
+    impl serde::Serialize for #struct_ident {
+        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: serde::Serializer,
+        {
+            use litty::#trait_ident;
+            Self::lit_serialize(serializer)
+        }
+    }
+
+    impl<'de> serde::Deserialize<'de> for #struct_ident {
+        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+        where
+            D: serde::Deserializer<'de>,
+        {
+            use litty::#trait_ident;
+            Self::lit_deserialize(deserializer)?;
+            Ok(Self)
+        }
+    }
+
+    impl std::hash::Hash for #struct_ident {
+        fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+            use litty::#trait_ident;
+            Self::lit_hash(state)
+        }
+    }
+
+    impl std::fmt::Debug for #struct_ident {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            use litty::#trait_ident;
+            Self::lit_fmt(f)
+        }
+    }
     }
 }

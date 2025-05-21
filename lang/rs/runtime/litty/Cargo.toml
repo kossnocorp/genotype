@@ -1,21 +1,16 @@
 [package]
-name = "literals"
-version = "0.1.0"
+name = "litty"
+version = "0.2.0"
 edition = "2021"
 description = "Literals for Rust"
 authors = ["Sasha Koss <koss@nocorp.me>"]
 license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
-[lib]
-proc-macro = true
-
 [dev-dependencies]
 pretty_assertions = "1.4.1"
 serde_json = "1.0.132"
 
 [dependencies]
-proc-macro2 = "1.0.89"
-quote = "1.0.37"
 serde = { version = "1.0.210", features = ["derive"] }
-syn = { version = "2.0.87", features = ["full"] }
+litty_macro = { version = "0.2.0", path = "../litty_macro" }

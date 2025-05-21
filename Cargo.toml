@@ -17,7 +17,7 @@ members = [
   "lang/rs/tree",
   "lang/rs/project",
   "lang/rs/config",
-  "lang/rs/runtime/literals",
+  "lang/rs/runtime/litty",
   "lang/rs/runtime/core",
   "json/types/dist/rs",
   "json/converter",
