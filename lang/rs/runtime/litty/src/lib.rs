@@ -1,3 +1,6 @@
+mod null;
+pub use crate::null::*;
+
 mod str;
 pub use crate::str::*;
 

@@ -11,21 +11,14 @@ pub fn macro_attribute(attr: TokenStream, input: TokenStream) -> TokenStream {
             let attr_str = attr_tokens.to_string().trim().to_string();
 
             let traits_code = if attr_str == "null" {
-                let serde_code = null_serde_code(item.ident.clone());
-                let hash_code = quote! {};
-                let debug_code = debug_trait_code(&"null", &item.ident);
-
-                quote! {
-                    #serde_code
-
-                    #hash_code
-
-                    #debug_code
-                }
+                struct_lit_trait_code(LitDef {
+                    literal_type: quote! { () },
+                    literal: quote! { () },
+                    trait_ident: quote! { LitNull },
+                    struct_ident: &item.ident,
+                })
             } else {
-                let literal = parse_macro_input!(attr as Lit);
-
-                match &literal {
+                match &parse_macro_input!(attr as Lit) {
                     Lit::Str(lit_str) => struct_lit_trait_code(LitDef {
                         literal_type: quote! { &'static str },
                         literal: lit_str.value(),
@@ -330,110 +323,6 @@ pub fn macro_attribute(attr: TokenStream, input: TokenStream) -> TokenStream {
     };
 
     TokenStream::from(expanded)
-}
-
-fn null_serde_code(target: syn::Ident) -> proc_macro2::TokenStream {
-    serde_code(
-        &"null",
-        &target,
-        SerdeConsts {
-            serialize_call: quote! { serialize_unit() },
-            deserialize: "deserialize_unit".into(),
-            visit_fns: vec![quote! {
-                fn visit_unit<E>(self) -> Result<Self::Value, E>
-                where
-                    E: serde::de::Error,
-                {
-                    Ok(Null)
-                }
-            }],
-        },
-    )
-}
-
-struct SerdeConsts {
-    pub serialize_call: proc_macro2::TokenStream,
-    pub deserialize: &'static str,
-    pub visit_fns: Vec<proc_macro2::TokenStream>,
-}
-
-fn serde_code<L>(literal: &L, target: &syn::Ident, consts: SerdeConsts) -> proc_macro2::TokenStream
-where
-    L: ToTokens,
-{
-    let serialize_call = consts.serialize_call;
-    let serialize_code = quote! {
-        impl serde::Serialize for #target {
-            fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-            where
-                S: serde::Serializer,
-            {
-                serializer.#serialize_call
-            }
-        }
-    };
-
-    let deserialize = syn::Ident::new(&consts.deserialize, target.span());
-    let (visitor, visitor_ident) = serde_visitor_code(&target, literal, consts.visit_fns);
-    let deserialize_code = quote! {
-        impl<'de> serde::Deserialize<'de> for #target {
-            fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-            where
-                D: serde::Deserializer<'de>,
-            {
-                deserializer.#deserialize(#visitor_ident)
-            }
-        }
-
-        #visitor
-    };
-
-    quote! {
-        #serialize_code
-
-        #deserialize_code
-    }
-}
-
-fn serde_visitor_code<L>(
-    target: &syn::Ident,
-    literal: &L,
-    visit_fns: Vec<proc_macro2::TokenStream>,
-) -> (proc_macro2::TokenStream, syn::Ident)
-where
-    L: ToTokens,
-{
-    let visitor = syn::Ident::new(&format!("{target}Visitor"), target.span());
-
-    (
-        quote! {
-            pub struct #visitor;
-
-            impl<'de> serde::de::Visitor<'de> for #visitor {
-                type Value = #target;
-
-                fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-                    write!(formatter,  "a literal {}", #literal)
-                }
-
-                #(#visit_fns)*
-            }
-        },
-        visitor,
-    )
-}
-
-fn debug_trait_code<L>(literal: &L, target: &syn::Ident) -> proc_macro2::TokenStream
-where
-    L: ToTokens,
-{
-    quote! {
-        impl std::fmt::Debug for #target {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                write!(f, "{:?}", #literal)
-            }
-        }
-    }
 }
 
 struct LitDef<'a, L: ToTokens> {
