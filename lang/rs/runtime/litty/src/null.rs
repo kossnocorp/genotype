@@ -56,6 +56,39 @@ mod tests {
     use std::fmt::Debug;
     use std::hash::{DefaultHasher, Hash};
 
+    #[test]
+    fn test_null_hash() {
+        let mut hasher = DefaultHasher::new();
+        Null.hash(&mut hasher);
+        let hash1 = hasher.finish();
+
+        let mut hasher = DefaultHasher::new();
+        Null.hash(&mut hasher);
+        let hash2 = hasher.finish();
+
+        assert_eq!(hash1, hash2);
+    }
+
+    #[test]
+    fn test_default() {
+        let _null: Null = Default::default();
+    }
+
+    #[test]
+    fn test_null_eq() {
+        assert!(Null == Null);
+    }
+
+    #[test]
+    fn test_debug() {
+        assert_eq!(format!("{:?}", Null), "null");
+    }
+
+    #[test]
+    fn test_clone() {
+        let _null = Null.clone();
+    }
+
     #[derive(Default, PartialEq, Eq, Clone)]
     struct Null;
 
@@ -96,38 +129,5 @@ mod tests {
     fn test_null_serde() {
         assert_eq!(serde_json::to_string_pretty(&Null).unwrap(), "null");
         assert_eq!(serde_json::from_str::<Null>("null").unwrap(), Null);
-    }
-
-    #[test]
-    fn test_null_hash() {
-        let mut hasher = DefaultHasher::new();
-        Null.hash(&mut hasher);
-        let hash1 = hasher.finish();
-
-        let mut hasher = DefaultHasher::new();
-        Null.hash(&mut hasher);
-        let hash2 = hasher.finish();
-
-        assert_eq!(hash1, hash2);
-    }
-
-    #[test]
-    fn test_default() {
-        let _null: Null = Default::default();
-    }
-
-    #[test]
-    fn test_null_eq() {
-        assert!(Null == Null);
-    }
-
-    #[test]
-    fn test_debug() {
-        assert_eq!(format!("{:?}", Null), "null");
-    }
-
-    #[test]
-    fn test_clone() {
-        let _null = Null.clone();
     }
 }

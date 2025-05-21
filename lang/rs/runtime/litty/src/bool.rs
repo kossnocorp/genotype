@@ -60,44 +60,6 @@ mod tests {
     use std::fmt::Debug;
     use std::hash::DefaultHasher;
 
-    #[derive(Default, PartialEq, Eq, Clone)]
-    struct True;
-
-    impl LitBool for True {
-        const LIT: bool = true;
-    }
-
-    impl Serialize for True {
-        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where
-            S: serde::Serializer,
-        {
-            Self::lit_serialize(serializer)
-        }
-    }
-
-    impl<'de> Deserialize<'de> for True {
-        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-        where
-            D: serde::Deserializer<'de>,
-        {
-            Self::lit_deserialize(deserializer)?;
-            Ok(Self)
-        }
-    }
-
-    impl Hash for True {
-        fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-            Self::lit_hash(state)
-        }
-    }
-
-    impl Debug for True {
-        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-            Self::lit_fmt(f)
-        }
-    }
-
     #[test]
     fn test_bool_serde() {
         assert_eq!(serde_json::to_string_pretty(&True).unwrap(), "true");
@@ -135,5 +97,43 @@ mod tests {
     #[test]
     fn test_clone() {
         let _true = True.clone();
+    }
+
+    #[derive(Default, PartialEq, Eq, Clone)]
+    struct True;
+
+    impl LitBool for True {
+        const LIT: bool = true;
+    }
+
+    impl Serialize for True {
+        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: serde::Serializer,
+        {
+            Self::lit_serialize(serializer)
+        }
+    }
+
+    impl<'de> Deserialize<'de> for True {
+        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+        where
+            D: serde::Deserializer<'de>,
+        {
+            Self::lit_deserialize(deserializer)?;
+            Ok(Self)
+        }
+    }
+
+    impl Hash for True {
+        fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+            Self::lit_hash(state)
+        }
+    }
+
+    impl Debug for True {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            Self::lit_fmt(f)
+        }
     }
 }

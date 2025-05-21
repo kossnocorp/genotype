@@ -72,44 +72,6 @@ mod tests {
     use std::fmt::Debug;
     use std::hash::DefaultHasher;
 
-    #[derive(Default, PartialEq, Eq, Clone)]
-    struct Pi;
-
-    impl LitFloat for Pi {
-        const LIT: f64 = 3.14159;
-    }
-
-    impl Serialize for Pi {
-        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where
-            S: serde::Serializer,
-        {
-            Self::lit_serialize(serializer)
-        }
-    }
-
-    impl<'de> Deserialize<'de> for Pi {
-        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-        where
-            D: serde::Deserializer<'de>,
-        {
-            Self::lit_deserialize(deserializer)?;
-            Ok(Self)
-        }
-    }
-
-    impl Hash for Pi {
-        fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-            Self::lit_hash(state)
-        }
-    }
-
-    impl Debug for Pi {
-        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-            Self::lit_fmt(f)
-        }
-    }
-
     #[test]
     fn test_float_serde() {
         assert_eq!(serde_json::to_string_pretty(&Pi).unwrap(), "3.14159");
@@ -147,5 +109,43 @@ mod tests {
     #[test]
     fn test_clone() {
         let _pi = Pi.clone();
+    }
+
+    #[derive(Default, PartialEq, Eq, Clone)]
+    struct Pi;
+
+    impl LitFloat for Pi {
+        const LIT: f64 = 3.14159;
+    }
+
+    impl Serialize for Pi {
+        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: serde::Serializer,
+        {
+            Self::lit_serialize(serializer)
+        }
+    }
+
+    impl<'de> Deserialize<'de> for Pi {
+        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+        where
+            D: serde::Deserializer<'de>,
+        {
+            Self::lit_deserialize(deserializer)?;
+            Ok(Self)
+        }
+    }
+
+    impl Hash for Pi {
+        fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+            Self::lit_hash(state)
+        }
+    }
+
+    impl Debug for Pi {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            Self::lit_fmt(f)
+        }
     }
 }

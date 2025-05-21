@@ -71,6 +71,45 @@ mod tests {
     use std::fmt::Debug;
     use std::hash::DefaultHasher;
 
+    #[test]
+    fn test_int_serde() {
+        assert_eq!(serde_json::to_string_pretty(&FortyTwo).unwrap(), "42");
+        assert_eq!(serde_json::from_str::<FortyTwo>("42").unwrap(), FortyTwo);
+    }
+
+    #[test]
+    fn test_int_hash() {
+        let mut hasher = DefaultHasher::new();
+        FortyTwo.hash(&mut hasher);
+        let hash1 = hasher.finish();
+
+        let mut hasher = DefaultHasher::new();
+        FortyTwo.hash(&mut hasher);
+        let hash2 = hasher.finish();
+
+        assert_eq!(hash1, hash2);
+    }
+
+    #[test]
+    fn test_default() {
+        let _forty_two: FortyTwo = Default::default();
+    }
+
+    #[test]
+    fn test_int_eq() {
+        assert!(FortyTwo == FortyTwo);
+    }
+
+    #[test]
+    fn test_debug() {
+        assert_eq!(format!("{:?}", FortyTwo), "42");
+    }
+
+    #[test]
+    fn test_clone() {
+        let _forty_two = FortyTwo.clone();
+    }
+
     #[derive(Default, PartialEq, Eq, Clone)]
     struct FortyTwo;
 
@@ -107,50 +146,5 @@ mod tests {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             Self::lit_fmt(f)
         }
-    }
-
-    #[test]
-    fn test_int_serde() {
-        assert_eq!(
-            serde_json::to_string_pretty(&FortyTwo).unwrap(),
-            "42"
-        );
-        assert_eq!(
-            serde_json::from_str::<FortyTwo>("42").unwrap(),
-            FortyTwo
-        );
-    }
-
-    #[test]
-    fn test_int_hash() {
-        let mut hasher = DefaultHasher::new();
-        FortyTwo.hash(&mut hasher);
-        let hash1 = hasher.finish();
-
-        let mut hasher = DefaultHasher::new();
-        FortyTwo.hash(&mut hasher);
-        let hash2 = hasher.finish();
-
-        assert_eq!(hash1, hash2);
-    }
-
-    #[test]
-    fn test_default() {
-        let _forty_two: FortyTwo = Default::default();
-    }
-
-    #[test]
-    fn test_int_eq() {
-        assert!(FortyTwo == FortyTwo);
-    }
-
-    #[test]
-    fn test_debug() {
-        assert_eq!(format!("{:?}", FortyTwo), "42");
-    }
-
-    #[test]
-    fn test_clone() {
-        let _forty_two = FortyTwo.clone();
     }
 }
