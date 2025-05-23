@@ -4,6 +4,9 @@
     "vadimcn.vscode-lldb",
     "pest.pest-ide-tools",
     "tamasfe.even-better-toml",
-    "nefrob.vscode-just-syntax"
+    "nefrob.vscode-just-syntax",
+    "docker.docker",
+    "esbenp.prettier-vscode",
+    "hverlin.mise-vscode"
   ]
 }

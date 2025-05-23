@@ -1,0 +1,7 @@
+[tool.uv.workspace]
+members = [
+  "lang/py/runtime",
+  # [TODO] Add uv support and enable:
+  # https://github.com/kossnocorp/genotype/issues/48
+  # "json/types/dist/py"
+]

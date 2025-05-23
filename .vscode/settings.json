@@ -1,4 +1,7 @@
 {
   "rust-analyzer.cargo.features": "all",
-  "nixEnvSelector.nixFile": "${workspaceFolder}/flake.nix"
+  "nixEnvSelector.nixFile": "${workspaceFolder}/flake.nix",
+  "debug.javascript.defaultRuntimeExecutable": {
+    "pwa-node": "/home/vscode/.local/share/mise/shims/node"
+  }
 }

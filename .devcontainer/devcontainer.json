@@ -1,6 +1,12 @@
 {
   "name": "Genotype",
-  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+
+  "build": { "dockerfile": "Dockerfile", "context": ".." },
+
+  "onCreateCommand": "./.devcontainer/scripts/on-create.sh",
+  "postCreateCommand": "./.devcontainer/scripts/post-create.sh",
+  "updateContentCommand": "./.devcontainer/scripts/on-update.sh",
+
   "customizations": {
     "vscode": {
       "extensions": [
@@ -8,8 +14,19 @@
         "vadimcn.vscode-lldb",
         "pest.pest-ide-tools",
         "tamasfe.even-better-toml",
-        "nefrob.vscode-just-syntax"
-      ]
+        "nefrob.vscode-just-syntax",
+        "docker.docker",
+        "esbenp.prettier-vscode",
+        "hverlin.mise-vscode"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "fish",
+        "terminal.integrated.profiles.linux": {
+          "fish": {
+            "path": "/usr/bin/fish"
+          }
+        }
+      }
     }
   }
 }

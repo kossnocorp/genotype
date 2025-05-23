@@ -1,0 +1,16 @@
+[tools]
+# Stack
+rust = { version = "latest", channel = "stable", components = "rustfmt,clippy" }
+node = { version = "latest", postinstall = 'corepack enable' }
+python = "latest"
+uv = "latest"
+# Tools
+cargo-binstall = "latest"
+"cargo:just" = "latest"
+"cargo:toml2json" = "latest"
+"cargo:bacon" = "latest"
+"cargo:cargo-nextest" = "latest"
+
+[settings]
+experimental = true
+python.uv_venv_auto = true
