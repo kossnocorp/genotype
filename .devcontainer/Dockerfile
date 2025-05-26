@@ -29,3 +29,8 @@ RUN curl https://mise.run | sh \
         && PATH="$HOME/.local/bin:$PATH" \
         && mise use -g usage \
         && mise completion fish > ~/.config/fish/completions/mise.fish
+
+# Tools
+
+RUN sudo apt-get update \
+        && sudo apt-get install -y neovim
