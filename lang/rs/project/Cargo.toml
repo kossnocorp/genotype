@@ -1,6 +1,6 @@
 [package]
 name = "genotype_lang_rs_project"
-version = "0.12.0"
+version = "0.13.0"
 edition = "2021"
 description = "Genotype language Rust target project crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
@@ -8,15 +8,15 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_path = { version = "0.12.0", path = "../../../path" }
-genotype_config = { version = "0.12.0", path = "../../../config" }
-genotype_parser = { version = "0.12.0", path = "../../../parser" }
-genotype_project = { version = "0.12.0", path = "../../../project" }
-genotype_lang_core_config = { version = "0.12.0", path = "../../core/config" }
-genotype_lang_core_tree = { version = "0.12.0", path = "../../core/tree" }
-genotype_lang_core_project = { version = "0.12.0", path = "../../core/project" }
-genotype_lang_rs_tree = { version = "0.12.0", path = "../tree" }
-genotype_lang_rs_config = { version = "0.12.0", path = "../config" }
+genotype_path = { version = "0.13.0", path = "../../../path" }
+genotype_config = { version = "0.13.0", path = "../../../config" }
+genotype_parser = { version = "0.13.0", path = "../../../parser" }
+genotype_project = { version = "0.13.0", path = "../../../project" }
+genotype_lang_core_config = { version = "0.13.0", path = "../../core/config" }
+genotype_lang_core_tree = { version = "0.13.0", path = "../../core/tree" }
+genotype_lang_core_project = { version = "0.13.0", path = "../../core/project" }
+genotype_lang_rs_tree = { version = "0.13.0", path = "../tree" }
+genotype_lang_rs_config = { version = "0.13.0", path = "../config" }
 miette = "7.2.0"
 thiserror = "1.0.64"
 indexmap = "2.6.0"
@@ -24,4 +24,4 @@ toml_edit = { version = "0.22.26", features = ["serde"] }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
-genotype_config = { version = "0.12.0", path = "../../../config" }
+genotype_config = { version = "0.13.0", path = "../../../config" }

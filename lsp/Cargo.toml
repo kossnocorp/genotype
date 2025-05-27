@@ -1,6 +1,6 @@
 [package]
 name = "genotype_lsp"
-version = "0.12.0"
+version = "0.13.0"
 edition = "2021"
 description = "Genotype language LSP server"
 authors = ["Sasha Koss <koss@nocorp.me>"]

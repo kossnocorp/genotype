@@ -1,6 +1,6 @@
 [package]
 name = "genotype_path"
-version = "0.12.0"
+version = "0.13.0"
 edition = "2021"
 description = "Genotype language path crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
@@ -8,7 +8,7 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_parser = { version = "0.12.0", path = "../parser", optional = true }
+genotype_parser = { version = "0.13.0", path = "../parser", optional = true }
 relative-path = { version = "1.9.3", features = ["serde"] }
 serde = { version = "1.0.219", features = ["derive"] }
 

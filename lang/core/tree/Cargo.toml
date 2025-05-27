@@ -1,6 +1,6 @@
 [package]
 name = "genotype_lang_core_tree"
-version = "0.12.0"
+version = "0.13.0"
 edition = "2021"
 description = "Genotype language target crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
