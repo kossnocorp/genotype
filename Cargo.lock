@@ -561,7 +561,7 @@ dependencies = [
  "genotype_json_types",
  "genotype_parser",
  "heck",
- "litty",
+ "litty 0.2.0",
  "miette",
  "pretty_assertions",
  "serde",
@@ -571,9 +571,9 @@ dependencies = [
 
 [[package]]
 name = "genotype_json_types"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
- "literals",
+ "litty 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
 ]
 
@@ -1142,37 +1142,47 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4ee93343901ab17bd981295f2cf0026d4ad018c7c31ba84549a4ddbb47a45104"
 
 [[package]]
-name = "literals"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c15206e229138be74537dfa6c12e886cc6c3128b3c666dd46ed4742e69ca0a02"
+name = "litty"
+version = "0.2.0"
 dependencies = [
- "proc-macro2",
- "quote",
+ "litty_macro 0.2.0",
+ "pretty_assertions",
  "serde",
- "syn",
+ "serde_json",
 ]
 
 [[package]]
 name = "litty"
 version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f1adaf3c9f44eaf4e8f51d824720465599b9804fe9eeabc2cb9f30dda9d021a1"
 dependencies = [
- "litty_macro",
- "pretty_assertions",
+ "litty_macro 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
- "serde_json",
 ]
 
 [[package]]
 name = "litty_macro"
 version = "0.2.0"
 dependencies = [
- "litty",
+ "litty 0.2.0",
  "pretty_assertions",
  "proc-macro2",
  "quote",
  "serde",
  "serde_json",
+ "syn",
+]
+
+[[package]]
+name = "litty_macro"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "43ca1bfd11968d73426a57a148cbea4d5e8f54c2275a0eb8aa14a19a3e5f1894"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "serde",
  "syn",
 ]
 

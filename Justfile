@@ -31,3 +31,6 @@ publish:
 publish-litty:
   cargo release publish --package litty_macro --execute
   cargo release publish --package litty --execute
+
+publish-json-types:
+  cargo release publish --package genotype_json_types --execute

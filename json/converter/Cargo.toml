@@ -9,7 +9,7 @@ repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
 genotype_parser = { version = "0.12.0", path = "../../parser" }
-genotype_json_types = { version = "0.2.0", path = "../types/dist/rs" }
+genotype_json_types = { version = "0.3.0", path = "../types/dist/rs" }
 litty = { version = "0.2.0", path = "../../lang/rs/runtime/litty" }
 miette = { version = "7.2.0", features = ["fancy"] }
 serde = { version = "1.0.219", features = ["derive"] }

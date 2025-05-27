@@ -3,9 +3,9 @@ edition = "2021"
 description = "Genotype language JSON types"
 license = "MIT"
 name = "genotype_json_types"
-version = "0.2.0"
+version = "0.3.0"
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
-literals = "0.1"
+litty = "0.2"
 
