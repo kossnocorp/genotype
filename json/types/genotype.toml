@@ -20,6 +20,8 @@ version = "0.3.0"
 edition = "2021"
 description = "Genotype language JSON types"
 license = "MIT"
+authors = ["Sasha Koss <koss@nocorp.me>"]
+repository = "https://github.com/kossnocorp/genotype"
 
 [py]
 enabled = true

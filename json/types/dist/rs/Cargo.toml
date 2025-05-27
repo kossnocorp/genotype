@@ -1,8 +1,10 @@
 [package]
 edition = "2021"
+authors = ["Sasha Koss <koss@nocorp.me>"]
 description = "Genotype language JSON types"
 license = "MIT"
 name = "genotype_json_types"
+repository = "https://github.com/kossnocorp/genotype"
 version = "0.3.0"
 
 [dependencies]
