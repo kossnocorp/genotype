@@ -146,6 +146,7 @@ fn test_enum_structs() {
 #[test]
 fn test_enum_variants() {
     #[literal]
+    #[derive(Debug, PartialEq)]
     pub enum ABC {
         #[literal("a")]
         A,
@@ -157,4 +158,60 @@ fn test_enum_variants() {
 
     assert_eq!(serde_json::to_string_pretty(&ABC::B).unwrap(), r#""b""#);
     assert_eq!(serde_json::from_str::<ABC>(r#""b""#).unwrap(), ABC::B);
+}
+
+#[test]
+fn test_enum_variants_debug() {
+    #[literal]
+    #[derive(Debug, PartialEq)]
+    pub enum ABC {
+        #[literal("a")]
+        A,
+        B,
+        C(String, usize),
+        D {
+            x: usize,
+            y: usize,
+        },
+    }
+
+    assert_eq!(format!("{:?}", ABC::A), r#""a""#);
+    assert_eq!(format!("{:?}", ABC::B), "B");
+    assert_eq!(
+        format!("{:?}", ABC::C("test".to_string(), 42)),
+        "C(\"test\", 42)"
+    );
+    assert_eq!(format!("{:?}", ABC::D { x: 1, y: 2 }), "D { x: 1, y: 2 }");
+}
+
+#[test]
+fn test_enum_variants_hash() {
+    #[literal]
+    #[derive(Debug, PartialEq, Eq, Hash)]
+    pub enum ABC {
+        #[literal("a")]
+        A,
+        B,
+        C(String, usize),
+        D {
+            x: usize,
+            y: usize,
+        },
+    }
+
+    let mut hasher = DefaultHasher::new();
+    ABC::A.hash(&mut hasher);
+    let a_hash1 = hasher.finish();
+
+    let mut hasher = DefaultHasher::new();
+    ABC::A.hash(&mut hasher);
+    let a_hash2 = hasher.finish();
+
+    assert_eq!(a_hash1, a_hash2);
+
+    let mut hasher = DefaultHasher::new();
+    ABC::B.hash(&mut hasher);
+    let b_hash = hasher.finish();
+
+    assert_ne!(a_hash1, b_hash);
 }

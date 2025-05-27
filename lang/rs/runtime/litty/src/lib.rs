@@ -14,4 +14,5 @@ mod float;
 pub use float::*;
 
 mod r#enum;
-pub use r#enum::*;
+
+pub use litty_macro::literal;

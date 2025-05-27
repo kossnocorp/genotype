@@ -1,6 +1,6 @@
 use proc_macro::TokenStream;
 use quote::{quote, ToTokens};
-use syn::{parse_macro_input, Lit};
+use syn::{parse_macro_input, Ident, Lit};
 
 pub fn macro_attribute(attr: TokenStream, input: TokenStream) -> TokenStream {
     let item = parse_macro_input!(input);
@@ -18,45 +18,7 @@ pub fn macro_attribute(attr: TokenStream, input: TokenStream) -> TokenStream {
                     struct_ident: &item.ident,
                 })
             } else {
-                match &parse_macro_input!(attr as Lit) {
-                    Lit::Str(lit_str) => struct_lit_trait_code(LitDef {
-                        literal_type: quote! { &'static str },
-                        literal: lit_str.value(),
-                        trait_ident: quote! { LitStr },
-                        struct_ident: &item.ident,
-                    }),
-
-                    Lit::Bool(lit_bool) => struct_lit_trait_code(LitDef {
-                        literal_type: quote! { bool },
-                        literal: lit_bool.value(),
-                        trait_ident: quote! { LitBool },
-                        struct_ident: &item.ident,
-                    }),
-
-                    Lit::Int(lit_int) => struct_lit_trait_code(LitDef {
-                        literal_type: quote! { i64 },
-                        literal: lit_int
-                            .base10_digits()
-                            .parse::<i64>()
-                            .expect("Invalid i64 literal"),
-                        trait_ident: quote! { LitInt },
-                        struct_ident: &item.ident,
-                    }),
-
-                    Lit::Float(lit_float) => struct_lit_trait_code(LitDef {
-                        literal_type: quote! { f64 },
-                        literal: lit_float
-                            .base10_digits()
-                            .parse::<f64>()
-                            .expect("Invalid f64 literal"),
-                        trait_ident: quote! { LitFloat },
-                        struct_ident: &item.ident,
-                    }),
-
-                    _ => panic!(
-                    "The #[literal] attribute only supports string, bool, int or float literals"
-                ),
-                }
+                lit_trait_code(&item.ident, &parse_macro_input!(attr as Lit))
             };
 
             quote! {
@@ -68,252 +30,300 @@ pub fn macro_attribute(attr: TokenStream, input: TokenStream) -> TokenStream {
         }
 
         syn::Item::Enum(mut item) => {
-            // Check if there're any literal variants
-            let has_variant_attrs = item.variants.iter().any(|v| {
-                v.attrs
-                    .iter()
-                    .any(|a| a.path().segments.iter().any(|s| s.ident == "literal"))
-            });
+            let enum_ident = &item.ident;
 
-            if has_variant_attrs {
-                // Extract literals from variant attributes
-                let mut variant_literals = Vec::new();
+            // These simultaneously indicate if Debug and Hash traits are needed and store
+            // the variants for them. The trait variants are being collected while processing
+            // the enum variants.
+            let mut debug_variants: Option<proc_macro2::TokenStream> = None;
+            let mut hash_variants: Option<proc_macro2::TokenStream> = None;
 
-                for variant in &mut item.variants {
-                    // Find literal attributes
-                    let mut found_literal = None;
-                    let literal_attrs: Vec<_> = variant
-                        .attrs
-                        .iter()
-                        .enumerate()
-                        .filter(|(_, a)| a.path().segments.iter().any(|s| s.ident == "literal"))
-                        .collect();
-
-                    if let Some((_, attr)) = literal_attrs.first() {
-                        // Parse the literal from the attribute
-                        if let Ok(meta) = attr.meta.require_list() {
-                            if let Ok(lit) = syn::parse2::<Lit>(meta.tokens.clone()) {
-                                found_literal = Some(lit);
-                            }
-                        }
-
-                        // Store the variant name and its literal value
-                        if let Some(lit) = found_literal.clone() {
-                            variant_literals.push((variant.ident.clone(), lit));
+            // Find what extra traits we need to implement (Debug, Hash).
+            for attr in &mut item.attrs {
+                match &mut attr.meta {
+                    syn::Meta::List(syn::MetaList { path, tokens, .. }) => {
+                        if path.is_ident("derive".into()) {
+                            // Remove and register Debug and Hash traits
+                            *tokens = {
+                                let mut iter = tokens.clone().into_iter().peekable();
+                                let mut traits_tokens = proc_macro2::TokenStream::new();
+                                while let Some(token) = iter.next() {
+                                    if let proc_macro2::TokenTree::Ident(ident) = &token {
+                                        if ident == "Debug" {
+                                            debug_variants = Some(quote! {});
+                                            // Skip following comma, if any
+                                            if let Some(proc_macro2::TokenTree::Punct(p)) =
+                                                iter.peek()
+                                            {
+                                                if p.as_char() == ',' {
+                                                    iter.next();
+                                                }
+                                            }
+                                            continue;
+                                        } else if ident == "Hash" {
+                                            hash_variants = Some(quote! {});
+                                            // Skip following comma, if any
+                                            if let Some(proc_macro2::TokenTree::Punct(punct)) =
+                                                iter.peek()
+                                            {
+                                                if punct.as_char() == ',' {
+                                                    iter.next();
+                                                }
+                                            }
+                                            continue;
+                                        }
+                                    }
+                                    traits_tokens.extend(std::iter::once(token));
+                                }
+                                traits_tokens
+                            };
                         }
                     }
-
-                    // Remove literal attributes from variants (from end to avoid invalidating indices)
-                    let indices: Vec<_> = literal_attrs.iter().map(|(i, _)| *i).collect();
-                    for &idx in indices.iter().rev() {
-                        variant.attrs.remove(idx);
-                    }
+                    _ => {}
                 }
+            }
 
-                // Generate code for enum with literal variants
-                let enum_name = &item.ident;
+            let mut traits_code = quote! {};
 
-                // Generate serialization impl
-                let serialize_match_arms = variant_literals.iter().map(|(variant_name, literal)| {
-                    match literal {
-                        Lit::Str(s) => {
-                            let value = s.value();
-                            quote! {
-                                #enum_name::#variant_name => serializer.serialize_str(#value)
+            // Iterate each variant
+            for variant in &mut item.variants {
+                let variant_ident = &variant.ident;
+                let variant_name = variant_ident.to_string();
+                let mut lit: Option<Lit> = None;
+
+                // Process attributes
+                variant.attrs.retain(|attr| {
+                    // Extract and remove literal attribute
+                    if let syn::Meta::List(syn::MetaList { path, tokens, .. }) = &attr.meta {
+                        let is_literal = path
+                            .segments
+                            .iter()
+                            .last()
+                            .map_or(false, |s| s.ident == "literal");
+                        if is_literal {
+                            lit = if let Ok(lit) = syn::parse2::<Lit>(tokens.clone()) {
+                                Some(lit)
+                            } else {
+                                None
+                            };
+
+                            return false;
+                        }
+                    }
+
+                    // Keep other attributes
+                    true
+                });
+
+                let variant_traits_code = if let Some(lit) = lit {
+                    let lit_name = enum_ident.to_string() + variant_ident.to_string().as_str();
+                    let lit_ident = Ident::new(&lit_name, variant.ident.span());
+                    let trait_ident = lit_trait_ident(&lit);
+
+                    // Generate the literal struct
+                    let lit_struct = quote! {
+                        #[derive(Clone, Default, Eq, PartialEq)]
+                        struct #lit_ident;
+                    };
+
+                    // Generate the literal traits
+                    let literal_traits = lit_trait_code(&lit_ident, &lit);
+
+                    // Add serde attributes
+                    let ser_str = format!("<{lit_name} as litty::{trait_ident}>::lit_serialize");
+                    let de_str = format!("<{lit_name} as litty::{trait_ident}>::lit_deserialize");
+                    variant.attrs.push(syn::parse_quote! {
+                        #[serde(
+                            serialize_with = #ser_str,
+                            deserialize_with = #de_str
+                        )]
+                    });
+
+                    // Register the literal debug variant
+                    if let Some(variants) = &mut debug_variants {
+                        variants.extend(quote! {
+                            #enum_ident::#variant_ident => { #lit_ident.fmt(f) },
+                        });
+                    }
+
+                    // Register the literal hash variant
+                    if let Some(variants) = &mut hash_variants {
+                        variants.extend(quote! {
+                            #enum_ident::#variant_ident => { #lit_ident.hash(state) },
+                        });
+                    }
+
+                    quote! {
+                        #lit_struct
+
+                        #literal_traits
+                    }
+                } else {
+                    match &variant.fields {
+                        // Unit variant (e.g. Variant)
+                        syn::Fields::Unit => {
+                            // Register the unit variant debug variant
+                            if let Some(variants) = &mut debug_variants {
+                                variants.extend(quote! {
+                                    #enum_ident::#variant_ident => { write!(f, #variant_name) },
+                                });
                             }
-                        },
-                        Lit::Bool(b) => {
-                            let value = b.value();
-                            quote! {
-                                #enum_name::#variant_name => serializer.serialize_bool(#value)
+
+                            // Register the unit variant hash variant
+                            if let Some(variants) = &mut hash_variants {
+                                variants.extend(quote! {
+                                    #enum_ident::#variant_ident => {},
+                                });
                             }
-                        },
-                        Lit::Int(i) => {
-                            let value = i.base10_digits();
-                            quote! {
-                                #enum_name::#variant_name => serializer.serialize_i64(#value.parse::<i64>().unwrap())
+                        }
+
+                        // Named variant (e.g. Variant { str: String })
+                        syn::Fields::Named(fields) => {
+                            let field_idents = fields
+                                .named
+                                .iter()
+                                .map(|field| {
+                                    field
+                                        .clone()
+                                        .ident
+                                        .expect("Named field should have an identifier")
+                                })
+                                .collect::<Vec<_>>();
+
+                            let mut fields_code = quote! {};
+                            for ident in &field_idents {
+                                fields_code.extend(quote! { #ident, });
                             }
-                        },
-                        Lit::Float(f) => {
-                            let value = f.base10_digits();
-                            quote! {
-                                #enum_name::#variant_name => serializer.serialize_f64(#value.parse::<f64>().unwrap())
+
+                            // Register the named variant debug variant
+                            if let Some(variants) = &mut debug_variants {
+                                let write_str = format!(
+                                    "{variant_name} {{{{ {} }}}}",
+                                    field_idents
+                                        .iter()
+                                        .map(|ident| { format!("{ident}: {}", "{:?}") })
+                                        .collect::<Vec<_>>()
+                                        .join(", ")
+                                );
+
+                                variants.extend(quote! {
+                                    #enum_ident::#variant_ident { #fields_code } => { write!(f, #write_str,  #fields_code) },
+                                });
                             }
-                        },
-                        _ => quote! {
-                            #enum_name::#variant_name => panic!("Unsupported literal type for variant")
-                        },
-                    }
-                }).collect::<Vec<_>>();
 
-                // Generate match arms for different visitor types
-                let str_match_arms = variant_literals
-                    .iter()
-                    .filter_map(|(variant_name, literal)| {
-                        if let Lit::Str(s) = literal {
-                            let value = s.value();
-                            Some(quote! {
-                                if v == #value {
-                                    return Ok(#enum_name::#variant_name);
+                            // Register the named variant hash variant
+                            if let Some(variants) = &mut hash_variants {
+                                let mut fields_hash_code = quote! {};
+                                for ident in &field_idents {
+                                    fields_hash_code.extend(quote! {
+                                        #ident.hash(state);
+                                    });
                                 }
-                            })
-                        } else {
-                            None
-                        }
-                    })
-                    .collect::<Vec<_>>();
 
-                let bool_match_arms = variant_literals
-                    .iter()
-                    .filter_map(|(variant_name, literal)| {
-                        if let Lit::Bool(b) = literal {
-                            let value = b.value();
-                            Some(quote! {
-                                if v == #value {
-                                    return Ok(#enum_name::#variant_name);
+                                variants.extend(quote! {
+                                    #enum_ident::#variant_ident { #fields_code } => {
+                                        #fields_hash_code
+                                    },
+                                });
+                            }
+                        }
+
+                        // Tuple variant (e.g. Variant(String) })
+                        syn::Fields::Unnamed(fields) => {
+                            let field_idents = fields
+                                .unnamed
+                                .iter()
+                                .enumerate()
+                                .map(|(i, _)| {
+                                    Ident::new(&format!("field_{}", i), variant.ident.span())
+                                })
+                                .collect::<Vec<_>>();
+
+                            let mut fields_code = quote! {};
+                            for field in &field_idents {
+                                fields_code.extend(quote! { #field, });
+                            }
+
+                            // Register the named variant debug variant
+                            if let Some(variants) = &mut debug_variants {
+                                let write_str = format!(
+                                    "{variant_name}({})",
+                                    field_idents
+                                        .iter()
+                                        .map(|_| { "{:?}" })
+                                        .collect::<Vec<_>>()
+                                        .join(", ")
+                                );
+
+                                variants.extend(quote! {
+                                    #enum_ident::#variant_ident(#fields_code) => { write!(f, #write_str, #fields_code) },
+                                });
+                            }
+
+                            // Register the named variant hash variant
+                            if let Some(variants) = &mut hash_variants {
+                                let mut fields_hash_code = quote! {};
+                                for field_ident in &field_idents {
+                                    fields_hash_code.extend(quote! {
+                                        #field_ident.hash(state);
+                                    });
                                 }
-                            })
-                        } else {
-                            None
+
+                                variants.extend(quote! {
+                                    #enum_ident::#variant_ident(#fields_code) => {
+                                        #fields_hash_code
+                                    },
+                                });
+                            }
                         }
-                    })
-                    .collect::<Vec<_>>();
-
-                let int_match_arms = variant_literals
-                    .iter()
-                    .filter_map(|(variant_name, literal)| {
-                        if let Lit::Int(i) = literal {
-                            let value = i.base10_digits();
-                            Some(quote! {
-                                if v.to_string() == #value {
-                                    return Ok(#enum_name::#variant_name);
-                                }
-                            })
-                        } else {
-                            None
-                        }
-                    })
-                    .collect::<Vec<_>>();
-
-                let float_match_arms = variant_literals
-                    .iter()
-                    .filter_map(|(variant_name, literal)| {
-                        if let Lit::Float(f) = literal {
-                            let value = f.base10_digits();
-                            Some(quote! {
-                                if (v - #value.parse::<f64>().unwrap()).abs() < std::f64::EPSILON {
-                                    return Ok(#enum_name::#variant_name);
-                                }
-                            })
-                        } else {
-                            None
-                        }
-                    })
-                    .collect::<Vec<_>>();
-
-                // Generate visitor functions for different types
-                let str_visitor = quote! {
-                    fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
-                    where
-                        E: serde::de::Error,
-                    {
-                        #(#str_match_arms)*
-                        Err(serde::de::Error::custom(format!("Unknown variant: {}", v)))
                     }
+
+                    quote! {}
                 };
 
-                let bool_visitor = quote! {
-                    fn visit_bool<E>(self, v: bool) -> Result<Self::Value, E>
-                    where
-                        E: serde::de::Error,
-                    {
-                        #(#bool_match_arms)*
-                        Err(serde::de::Error::custom(format!("Unknown variant: {}", v)))
-                    }
-                };
+                traits_code.extend(variant_traits_code);
+            }
 
-                let int_visitor = quote! {
-                    fn visit_i64<E>(self, v: i64) -> Result<Self::Value, E>
-                    where
-                        E: serde::de::Error,
-                    {
-                        #(#int_match_arms)*
-                        Err(serde::de::Error::custom(format!("Unknown variant: {}", v)))
-                    }
-
-                    fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
-                    where
-                        E: serde::de::Error,
-                    {
-                        #(#int_match_arms)*
-                        Err(serde::de::Error::custom(format!("Unknown variant: {}", v)))
-                    }
-                };
-
-                let float_visitor = quote! {
-                    fn visit_f64<E>(self, v: f64) -> Result<Self::Value, E>
-                    where
-                        E: serde::de::Error,
-                    {
-                        #(#float_match_arms)*
-                        Err(serde::de::Error::custom(format!("Unknown variant: {}", v)))
-                    }
-                };
-
-                // Create combined visitor structure
-                let visitor_ident =
-                    syn::Ident::new(&format!("{}Visitor", enum_name), enum_name.span());
-                let visitor_struct = quote! {
-                    struct #visitor_ident;
-
-                    impl<'de> serde::de::Visitor<'de> for #visitor_ident {
-                        type Value = #enum_name;
-
-                        fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-                            write!(formatter, "a literal matching one of the enum variants")
-                        }
-
-                        #str_visitor
-                        #bool_visitor
-                        #int_visitor
-                        #float_visitor
-                    }
-                };
-
-                // Generate final code with all implementations
+            // Implement Debug
+            let debug_code = if let Some(variants) = debug_variants {
                 quote! {
-                    #[derive(Clone, PartialEq, Eq, Debug)]
-                    #item
-
-                    impl serde::Serialize for #enum_name {
-                        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-                        where
-                            S: serde::Serializer,
-                        {
+                    impl std::fmt::Debug for #enum_ident {
+                        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                             match self {
-                                #(#serialize_match_arms),*
+                                #variants
                             }
                         }
                     }
-
-                    impl<'de> serde::Deserialize<'de> for #enum_name {
-                        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-                        where
-                            D: serde::Deserializer<'de>,
-                        {
-                            deserializer.deserialize_any(#visitor_ident)
-                        }
-                    }
-
-                    #visitor_struct
                 }
             } else {
-                // Regular enum handling
+                quote! {}
+            };
+
+            // Implement Hash
+            let hash_code = if let Some(variants) = hash_variants {
                 quote! {
-                    #[derive(Serialize, Deserialize)]
-                    #[serde(untagged)]
-                    #item
+                    impl std::hash::Hash for #enum_ident {
+                        fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+                            match self {
+                                #variants
+                            }
+                        }
+                    }
                 }
+            } else {
+                quote! {}
+            };
+
+            quote! {
+                #[derive(Serialize, Deserialize)]
+                #[serde(untagged)]
+                #item
+
+                #hash_code
+
+                #debug_code
+
+                #traits_code
             }
         }
 
@@ -323,6 +333,57 @@ pub fn macro_attribute(attr: TokenStream, input: TokenStream) -> TokenStream {
     };
 
     TokenStream::from(expanded)
+}
+
+fn lit_trait_code(struct_ident: &Ident, lit: &Lit) -> proc_macro2::TokenStream {
+    let trait_ident = lit_trait_ident(lit);
+    match lit {
+        Lit::Str(lit_str) => struct_lit_trait_code(LitDef {
+            literal_type: quote! { &'static str },
+            literal: lit_str.value(),
+            trait_ident,
+            struct_ident,
+        }),
+
+        Lit::Bool(lit_bool) => struct_lit_trait_code(LitDef {
+            literal_type: quote! { bool },
+            literal: lit_bool.value(),
+            trait_ident,
+            struct_ident,
+        }),
+
+        Lit::Int(lit_int) => struct_lit_trait_code(LitDef {
+            literal_type: quote! { i64 },
+            literal: lit_int
+                .base10_digits()
+                .parse::<i64>()
+                .expect("Invalid i64 literal"),
+            trait_ident,
+            struct_ident,
+        }),
+
+        Lit::Float(lit_float) => struct_lit_trait_code(LitDef {
+            literal_type: quote! { f64 },
+            literal: lit_float
+                .base10_digits()
+                .parse::<f64>()
+                .expect("Invalid f64 literal"),
+            trait_ident,
+            struct_ident,
+        }),
+
+        _ => panic!("The #[literal] attribute only supports string, bool, int or float literals"),
+    }
+}
+
+fn lit_trait_ident(lit: &Lit) -> proc_macro2::TokenStream {
+    match lit {
+        Lit::Str(_) => quote! { LitStr },
+        Lit::Bool(_) => quote! { LitBool },
+        Lit::Int(_) => quote! { LitInt },
+        Lit::Float(_) => quote! { LitFloat },
+        _ => panic!("The #[literal] attribute only supports string, bool, int or float literals"),
+    }
 }
 
 struct LitDef<'a, L: ToTokens> {
@@ -353,8 +414,7 @@ where
         where
             S: serde::Serializer,
         {
-            use litty::#trait_ident;
-            Self::lit_serialize(serializer)
+            <Self as litty::#trait_ident>::lit_serialize(serializer)
         }
     }
 
