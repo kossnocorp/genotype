@@ -14,7 +14,7 @@ impl RSDependencyIdent {
         match self {
             Self::Local(path) => path.1.clone(),
             Self::Runtime => "genotype_runtime".into(),
-            Self::Litty => "literals".into(),
+            Self::Litty => "litty".into(),
             Self::Serde => "serde".into(),
             Self::Std(path) => format!("std::{path}"),
         }
