@@ -27,3 +27,7 @@ version version:
 
 publish:
   cargo release publish --exclude litty --exclude litty_macro --exclude genotype_runtime --exclude genotype_json_types --execute
+
+publish-litty:
+  cargo release publish --package litty_macro --execute
+  cargo release publish --package litty --execute

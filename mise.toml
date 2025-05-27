@@ -10,6 +10,7 @@ cargo-binstall = "latest"
 "cargo:toml2json" = "latest"
 "cargo:bacon" = "latest"
 "cargo:cargo-nextest" = "latest"
+"cargo:cargo-release" = "latest"
 
 [settings]
 experimental = true
