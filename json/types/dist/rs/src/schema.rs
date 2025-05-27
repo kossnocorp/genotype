@@ -18,13 +18,17 @@ pub enum GtjSchemaAny {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtjSchemaBase {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtjSchemaNull {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     pub r#type: GtjSchemaNullTypeNull,
 }
@@ -34,7 +38,9 @@ pub struct GtjSchemaNullTypeNull;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtjSchemaBoolean {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     pub r#type: GtjSchemaBooleanTypeBoolean,
 }
@@ -44,7 +50,9 @@ pub struct GtjSchemaBooleanTypeBoolean;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtjSchemaNumber {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     pub r#type: GtjSchemaNumberTypeNumber,
 }
@@ -54,7 +62,9 @@ pub struct GtjSchemaNumberTypeNumber;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtjSchemaString {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     pub r#type: GtjSchemaStringTypeString,
 }
@@ -64,12 +74,16 @@ pub struct GtjSchemaStringTypeString;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtjSchemaObject {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     pub r#type: GtjSchemaObjectTypeObject,
     pub properties: BTreeMap<String, GtjSchemaAny>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub required: Option<Vec<String>>,
     #[serde(rename = "additionalProperties")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub additional_properties: Option<bool>,
 }
 
@@ -78,7 +92,9 @@ pub struct GtjSchemaObjectTypeObject;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtjSchemaArray {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     pub r#type: GtjSchemaArrayTypeArray,
     pub items: GtjSchemaAny,
@@ -89,7 +105,9 @@ pub struct GtjSchemaArrayTypeArray;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtjSchemaUnion {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     #[serde(rename = "anyOf")]
     pub any_of: Vec<GtjSchemaAny>,
@@ -97,7 +115,9 @@ pub struct GtjSchemaUnion {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtjSchemaTuple {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     pub r#type: GtjSchemaTupleTypeArray,
     #[serde(rename = "prefixItems")]
@@ -109,7 +129,9 @@ pub struct GtjSchemaTupleTypeArray;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtjSchemaLiteral {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     pub r#const: GtjSchemaLiteralConst,
 }

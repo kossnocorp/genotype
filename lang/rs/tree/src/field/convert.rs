@@ -11,7 +11,7 @@ impl RSConvert<RSField> for GTProperty {
         let name = self.name.convert(context)?;
 
         // Allows for renaming fields
-        let attributes = context.drain_field_attributes();
+        let mut attributes = context.drain_field_attributes();
 
         context.enter_parent(RSContextParent::Field(name.clone()));
 
@@ -19,6 +19,9 @@ impl RSConvert<RSField> for GTProperty {
         let descriptor = if self.required {
             descriptor
         } else {
+            attributes.push(RSAttribute(
+                r#"serde(default, skip_serializing_if = "Option::is_none")"#.into(),
+            ));
             RSOption::new(descriptor).into()
         };
 
@@ -55,7 +58,9 @@ mod tests {
             .unwrap(),
             RSField {
                 doc: None,
-                attributes: vec![],
+                attributes: vec![
+                    r#"serde(default, skip_serializing_if = "Option::is_none")"#.into()
+                ],
                 name: "name".into(),
                 descriptor: RSOption::new(RSPrimitive::String.into()).into(),
             }
@@ -78,7 +83,10 @@ mod tests {
             .unwrap(),
             RSField {
                 doc: None,
-                attributes: vec![RSAttribute(r#"serde(rename = "helloWorld")"#.into())],
+                attributes: vec![
+                    r#"serde(rename = "helloWorld")"#.into(),
+                    r#"serde(default, skip_serializing_if = "Option::is_none")"#.into()
+                ],
                 name: "hello_world".into(),
                 descriptor: RSOption::new(RSPrimitive::String.into()).into(),
             }

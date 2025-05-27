@@ -17,13 +17,17 @@ pub enum GtjAny {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtjBase {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtjNull {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc: Option<String>,
     pub r#type: GtjNullTypeNull,
 }
@@ -33,7 +37,9 @@ pub struct GtjNullTypeNull;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtjBoolean {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc: Option<String>,
     pub r#type: GtjBooleanTypeBoolean,
 }
@@ -43,7 +49,9 @@ pub struct GtjBooleanTypeBoolean;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtjNumber {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc: Option<String>,
     pub r#type: GtjNumberTypeNumber,
 }
@@ -53,7 +61,9 @@ pub struct GtjNumberTypeNumber;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtjString {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc: Option<String>,
     pub r#type: GtjStringTypeString,
 }
@@ -63,7 +73,9 @@ pub struct GtjStringTypeString;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtjObject {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc: Option<String>,
     pub r#type: GtjObjectTypeObject,
     pub properties: Vec<GtjProperty>,
@@ -76,6 +88,7 @@ pub struct GtjObjectTypeObject;
 pub struct GtjProperty {
     pub r#type: GtjPropertyTypeProperty,
     pub name: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc: Option<String>,
     pub descriptor: GtjAny,
     pub required: bool,
@@ -86,7 +99,9 @@ pub struct GtjPropertyTypeProperty;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtjArray {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc: Option<String>,
     pub r#type: GtjArrayTypeArray,
     pub descriptor: GtjAny,
@@ -97,7 +112,9 @@ pub struct GtjArrayTypeArray;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtjUnion {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc: Option<String>,
     pub r#type: GtjUnionTypeUnion,
     pub descriptors: Vec<GtjAny>,
@@ -108,7 +125,9 @@ pub struct GtjUnionTypeUnion;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtjTuple {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc: Option<String>,
     pub r#type: GtjTupleTypeTuple,
     pub descriptors: Vec<GtjAny>,
@@ -119,7 +138,9 @@ pub struct GtjTupleTypeTuple;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtjLiteral {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc: Option<String>,
     pub r#type: GtjLiteralTypeLiteral,
     pub value: GtjLiteralValue,

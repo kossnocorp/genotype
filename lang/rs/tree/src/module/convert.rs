@@ -265,7 +265,10 @@ mod tests {
                             },
                             RSField {
                                 doc: None,
-                                attributes: vec![],
+                                attributes: vec![
+                                    r#"serde(default, skip_serializing_if = "Option::is_none")"#
+                                        .into()
+                                ],
                                 name: "age".into(),
                                 descriptor: RSOption::new(RSPrimitive::Int32.into()).into(),
                             }

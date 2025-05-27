@@ -273,9 +273,7 @@ mod tests {
                                 },
                                 RSField {
                                     doc: None,
-                                    attributes: vec![RSAttribute(
-                                        r#"serde(rename = "authorName")"#.into()
-                                    )],
+                                    attributes: vec![r#"serde(rename = "authorName")"#.into(),],
                                     name: "author_name".into(),
                                     descriptor: RSReference {
                                         id: GTReferenceId("book".into(), (72, 82).into()),
@@ -503,6 +501,7 @@ use crate::named::Name;
 pub struct Admin {
     pub name: Name,
     pub email: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub age: Option<i64>,
     pub role: AdminRole,
 }
@@ -548,6 +547,7 @@ use serde::{Deserialize, Serialize};
 pub struct User {
     pub name: Name,
     pub email: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub age: Option<i64>,
 }
 
