@@ -9,3 +9,5 @@ Book = {
 }
 
 Author = ../../author/Author
+
+Authors = [../../author/Author]

@@ -48,10 +48,10 @@ impl GTObject {
 
 #[cfg(test)]
 mod tests {
+    use indexmap::IndexSet;
     use miette::NamedSource;
     use pest::Parser;
     use pretty_assertions::assert_eq;
-    use std::collections::HashSet;
 
     use crate::*;
 
@@ -98,7 +98,7 @@ mod tests {
         let parse = GTModule::parse("module".into(), source_code).unwrap();
         assert_eq!(
             parse.resolve.deps,
-            HashSet::from_iter(vec![
+            IndexSet::<_, std::collections::hash_map::RandomState>::from_iter(vec![
                 GTPath::parse((32, 36).into(), "book").unwrap(),
                 GTPath::parse((64, 75).into(), "./misc/user").unwrap(),
             ])
@@ -118,7 +118,7 @@ mod tests {
         let parse = GTModule::parse("module".into(), source_code).unwrap();
         assert_eq!(
             parse.resolve.deps,
-            HashSet::from_iter(vec![
+            IndexSet::<_, std::collections::hash_map::RandomState>::from_iter(vec![
                 GTPath::parse((32, 36).into(), "book").unwrap(),
                 GTPath::parse((64, 85).into(), "./misc/user").unwrap(),
             ])

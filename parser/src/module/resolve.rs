@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use indexmap::IndexSet;
 
 use super::{GTIdentifier, GTPath};
 
@@ -6,9 +6,9 @@ use super::{GTIdentifier, GTPath};
 /// connecting modules in a project.
 #[derive(Default, Debug, PartialEq, Clone)]
 pub struct GTModuleResolve {
-    pub deps: HashSet<GTPath>,
+    pub deps: IndexSet<GTPath>,
     pub exports: Vec<GTIdentifier>,
-    pub references: HashSet<GTIdentifier>,
+    pub references: IndexSet<GTIdentifier>,
 }
 
 impl GTModuleResolve {

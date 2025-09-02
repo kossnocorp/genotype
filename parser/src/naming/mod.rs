@@ -43,7 +43,7 @@ impl GTNamingContext {
     }
 
     /// Claims the name from the stack. The name is built by joining the names in the stack.
-    fn stack_name(&self, entity_name: &str) -> String {
+    fn stack_name(&self, _entity_name: &str) -> String {
         // Collect the names in the stack until the first named one or the end of the stack.
         let mut stack = vec![];
         for name in self.stack.iter().rev() {

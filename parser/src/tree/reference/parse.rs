@@ -1,7 +1,7 @@
 use pest::iterators::Pair;
 
 use crate::{
-    parser::Rule, tree::GTIdentifier, GTContext, GTReferenceDefinitionId, GTReferenceId, GTSpan,
+    GTContext, GTReferenceDefinitionId, GTReferenceId, GTSpan, parser::Rule, tree::GTIdentifier,
 };
 
 use super::GTReference;
@@ -22,8 +22,7 @@ impl GTReference {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashSet;
-
+    use indexmap::IndexSet;
     use miette::NamedSource;
     use pretty_assertions::assert_eq;
 
@@ -41,7 +40,7 @@ mod tests {
               name: Name
               user: User
             }
-            
+
             Name = string"#
                     .into(),
             ),
@@ -49,7 +48,7 @@ mod tests {
         .unwrap();
         assert_eq!(
             parse.resolve.references,
-            HashSet::from_iter(vec![
+            IndexSet::<_, std::collections::hash_map::RandomState>::from_iter(vec![
                 GTIdentifier::new((58, 62).into(), "Name".into()),
                 GTIdentifier::new((83, 87).into(), "User".into())
             ])

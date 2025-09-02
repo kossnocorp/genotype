@@ -2415,17 +2415,69 @@ mod tests {
                             },
                         ),
                     },
+                    GTAlias {
+                        id: GTDefinitionId(
+                            GTModuleId(
+                                "module",
+                            ),
+                            "Authors",
+                        ),
+                        span: GTSpan(
+                            187,
+                            218,
+                        ),
+                        doc: None,
+                        attributes: [],
+                        name: GTIdentifier(
+                            GTSpan(
+                                187,
+                                194,
+                            ),
+                            "Authors",
+                        ),
+                        descriptor: Array(
+                            GTArray {
+                                span: GTSpan(
+                                    197,
+                                    218,
+                                ),
+                                descriptor: InlineImport(
+                                    GTInlineImport {
+                                        span: GTSpan(
+                                            198,
+                                            217,
+                                        ),
+                                        name: GTIdentifier(
+                                            GTSpan(
+                                                211,
+                                                217,
+                                            ),
+                                            "Author",
+                                        ),
+                                        path: GTPath(
+                                            GTSpan(
+                                                198,
+                                                210,
+                                            ),
+                                            Unresolved,
+                                            "../../author",
+                                        ),
+                                    },
+                                ),
+                            },
+                        ),
+                    },
                 ],
             },
             resolve: GTModuleResolve {
                 deps: {
                     GTPath(
                         GTSpan(
-                            166,
-                            178,
+                            4,
+                            10,
                         ),
                         Unresolved,
-                        "../../author",
+                        "author",
                     ),
                     GTPath(
                         GTSpan(
@@ -2434,14 +2486,6 @@ mod tests {
                         ),
                         Unresolved,
                         "../../author",
-                    ),
-                    GTPath(
-                        GTSpan(
-                            4,
-                            10,
-                        ),
-                        Unresolved,
-                        "author",
                     ),
                     GTPath(
                         GTSpan(
@@ -2455,6 +2499,22 @@ mod tests {
                         GTSpan(
                             119,
                             131,
+                        ),
+                        Unresolved,
+                        "../../author",
+                    ),
+                    GTPath(
+                        GTSpan(
+                            166,
+                            178,
+                        ),
+                        Unresolved,
+                        "../../author",
+                    ),
+                    GTPath(
+                        GTSpan(
+                            198,
+                            210,
                         ),
                         Unresolved,
                         "../../author",
@@ -2474,6 +2534,13 @@ mod tests {
                             163,
                         ),
                         "Author",
+                    ),
+                    GTIdentifier(
+                        GTSpan(
+                            187,
+                            194,
+                        ),
+                        "Authors",
                     ),
                 ],
                 references: {
@@ -2815,15 +2882,15 @@ mod tests {
                 references: {
                     GTIdentifier(
                         GTSpan(
-                            94,
-                            98,
+                            58,
+                            62,
                         ),
                         "Base",
                     ),
                     GTIdentifier(
                         GTSpan(
-                            58,
-                            62,
+                            94,
+                            98,
                         ),
                         "Base",
                     ),

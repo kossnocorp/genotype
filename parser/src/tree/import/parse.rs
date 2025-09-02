@@ -91,8 +91,7 @@ enum ParseState {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashSet;
-
+    use indexmap::IndexSet;
     use miette::NamedSource;
     use pest::Parser;
     use pretty_assertions::assert_eq;
@@ -127,7 +126,7 @@ mod tests {
         let parse = GTModule::parse("module".into(), source_code).unwrap();
         assert_eq!(
             parse.resolve.deps,
-            HashSet::from_iter(vec![
+            IndexSet::<_, std::collections::hash_map::RandomState>::from_iter(vec![
                 GTPath::parse((4, 10).into(), "author").unwrap(),
                 GTPath::parse((29, 36).into(), "../user").unwrap(),
                 GTPath::parse((58, 70).into(), "./misc/order").unwrap()
@@ -147,7 +146,7 @@ mod tests {
         let parse = GTModule::parse("module".into(), source_code).unwrap();
         assert_eq!(
             parse.resolve.deps,
-            HashSet::from_iter(vec![
+            IndexSet::<_, std::collections::hash_map::RandomState>::from_iter(vec![
                 GTPath::parse((4, 12).into(), "author").unwrap(),
                 GTPath::parse((31, 46).into(), "../user").unwrap(),
                 GTPath::parse((68, 84).into(), "./misc/order").unwrap(),

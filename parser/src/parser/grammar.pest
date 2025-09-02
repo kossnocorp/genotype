@@ -8,7 +8,9 @@ name = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 
 descriptor = @{ "|"? ~ WHITESPACE* ~ descriptor_inner ~ (WHITESPACE* ~ "|" ~ WHITESPACE* ~ descriptor_inner)* }
 
-descriptor_inner = !{ literal | inline_import | primitive | branded | any | object | array | tuple | record | alias | name }
+// NOTE: Order matters! prefer structural containers before inline imports
+// to avoid ambiguity when parsing nested descriptors (e.g. arrays).
+descriptor_inner = !{ literal | primitive | branded | any | object | array | tuple | record | inline_import | alias | name }
 
 primitive = { primitive_index | "null" }
 
