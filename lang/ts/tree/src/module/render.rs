@@ -3,7 +3,7 @@ use crate::prelude::internal::*;
 impl<'a> GtlRender<'a> for TSModule {
     type RenderState = TSRenderState;
 
-    type RenderContext = TSRenderContext;
+    type RenderContext = TSRenderContext<'a>;
 
     fn render(
         &self,
@@ -58,11 +58,11 @@ mod tests {
                 doc: None,
                 imports: vec![
                     TSImport {
-                        path: "../path/to/module.ts".into(),
+                        path: "../path/to/module".into(),
                         reference: TSImportReference::Default("Name".into()),
                     },
                     TSImport {
-                        path: "../path/to/module.ts".into(),
+                        path: "../path/to/module".into(),
                         reference: TSImportReference::Named(vec![
                             TSImportName::Name("Name".into()),
                             TSImportName::Alias("Name".into(), "Alias".into()),
@@ -98,8 +98,8 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"import Name from "../path/to/module.ts";
-import { Name, Name as Alias } from "../path/to/module.ts";
+            r#"import Name from "../path/to/module.js";
+import { Name, Name as Alias } from "../path/to/module.js";
 
 export type Name = string;
 
@@ -117,7 +117,7 @@ export interface Name {
             TSModule {
                 doc: Some(TSDoc("Hello, world!".into())),
                 imports: vec![TSImport {
-                    path: "../path/to/module.ts".into(),
+                    path: "../path/to/module".into(),
                     reference: TSImportReference::Default("Name".into()),
                 },],
                 definitions: vec![TSDefinition::Alias(TSAlias {
@@ -130,7 +130,7 @@ export interface Name {
             .unwrap(),
             r#"/** Hello, world! */
 
-import Name from "../path/to/module.ts";
+import Name from "../path/to/module.js";
 
 export type Name = string;
 "#

@@ -4,6 +4,9 @@ use crate::prelude::internal::*;
 pub struct TsConfig {
     #[serde(flatten)]
     pub common: GtlConfigCommon<TsPkgPath>,
+
+        #[serde(flatten)]
+    pub lang: TsConfigLang,
 }
 
 impl GtlConfig for TsConfig {

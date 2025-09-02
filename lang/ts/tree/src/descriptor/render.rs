@@ -3,7 +3,7 @@ use crate::prelude::internal::*;
 impl<'a> GtlRender<'a> for TSDescriptor {
     type RenderState = TSRenderState;
 
-    type RenderContext = TSRenderContext;
+    type RenderContext = TSRenderContext<'a>;
 
     fn render(
         &self,
@@ -47,12 +47,12 @@ mod tests {
     fn test_render_inline_import() {
         assert_eq!(
             TSDescriptor::InlineImport(TSInlineImport {
-                path: "../path/to/module.ts".into(),
+                path: "../path/to/module".into(),
                 name: "Name".into(),
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"import("../path/to/module.ts").Name"#
+            r#"import("../path/to/module.js").Name"#
         );
     }
 

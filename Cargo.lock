@@ -784,6 +784,7 @@ name = "genotype_lang_ts_tree"
 version = "0.13.0"
 dependencies = [
  "genotype_lang_core_tree",
+ "genotype_lang_ts_config",
  "genotype_parser",
  "heck",
  "miette",

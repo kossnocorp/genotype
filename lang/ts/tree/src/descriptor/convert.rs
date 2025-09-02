@@ -105,7 +105,7 @@ mod tests {
             })
             .convert(&mut Default::default()),
             TSDescriptor::InlineImport(TSInlineImport {
-                path: "./path/to/module.ts".into(),
+                path: "./path/to/module".into(),
                 name: "Name".into()
             })
         );

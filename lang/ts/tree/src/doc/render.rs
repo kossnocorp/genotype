@@ -20,7 +20,7 @@ impl TSDoc {
 impl<'a> GtlRender<'a> for TSDoc {
     type RenderState = TSRenderState;
 
-    type RenderContext = TSRenderContext;
+    type RenderContext = TSRenderContext<'a>;
 
     fn render(
         &self,

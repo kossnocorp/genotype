@@ -1,13 +1,20 @@
 use crate::prelude::internal::*;
+use std::sync::LazyLock;
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct TSRenderContext {}
+pub struct TSRenderContext<'a> {
+    pub config: &'a TsConfigLang,
+}
 
-impl<'a> GtlRenderContext for TSRenderContext {}
+impl<'a> GtlRenderContext for TSRenderContext<'_> {}
 
-impl Default for TSRenderContext {
+static TS_DEFAULT_CONFIG: LazyLock<TsConfigLang> = LazyLock::new(|| TsConfigLang::default());
+
+impl Default for TSRenderContext<'_> {
     fn default() -> Self {
-        Self {}
+        Self {
+            config: &TS_DEFAULT_CONFIG,
+        }
     }
 }
 

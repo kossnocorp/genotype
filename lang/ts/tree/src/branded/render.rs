@@ -4,7 +4,7 @@ use heck::ToLowerCamelCase;
 impl<'a> GtlRender<'a> for TSBranded {
     type RenderState = TSRenderState;
 
-    type RenderContext = TSRenderContext;
+    type RenderContext = TSRenderContext<'a>;
 
     fn render(
         &self,

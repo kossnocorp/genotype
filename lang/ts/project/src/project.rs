@@ -35,7 +35,7 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
                 format!(
                     r#"export * from "./{}";
 "#,
-                    module.path.as_str()
+                    self.config.target.lang.format_module_path(&module.path)
                 )
             })
             .collect::<Vec<_>>();
@@ -109,7 +109,7 @@ mod tests {
                     module: TSModule {
                         doc: None,
                         imports: vec![TSImport {
-                            path: "./author.ts".into(),
+                            path: "./author".into(),
                             reference: TSImportReference::Named(vec![TSImportName::Name(
                                 "Author".into()
                             )]),
@@ -177,7 +177,7 @@ mod tests {
                     module: TSModule {
                         doc: None,
                         imports: vec![TSImport {
-                            path: "./author.ts".into(),
+                            path: "./author".into(),
                             reference: TSImportReference::Glob("author".into()),
                         }],
                         definitions: vec![TSDefinition::Interface(TSInterface {
@@ -233,8 +233,8 @@ mod tests {
                     },
                     GtlProjectFile {
                         path: "examples/basic/dist/ts/src/index.ts".into(),
-                        source: r#"export * from "./author.ts";
-export * from "./book.ts";
+                        source: r#"export * from "./author.js";
+export * from "./book.js";
 "#
                         .into()
                     },
@@ -248,7 +248,7 @@ export * from "./book.ts";
                     },
                     GtlProjectFile {
                         path: "examples/basic/dist/ts/src/book.ts".into(),
-                        source: r#"import { Author } from "./author.ts";
+                        source: r#"import { Author } from "./author.js";
 
 export interface Book {
   title: string;
@@ -288,7 +288,7 @@ export interface Book {
                     },
                     GtlProjectFile {
                         path: "examples/dependencies/dist/ts/src/index.ts".into(),
-                        source: r#"export * from "./prompt.ts";
+                        source: r#"export * from "./prompt.js";
 "#
                         .into()
                     },

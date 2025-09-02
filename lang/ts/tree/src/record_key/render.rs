@@ -3,7 +3,7 @@ use crate::prelude::internal::*;
 impl<'a> GtlRender<'a> for TSRecordKey {
     type RenderState = TSRenderState;
 
-    type RenderContext = TSRenderContext;
+    type RenderContext = TSRenderContext<'a>;
 
     fn render(
         &self,

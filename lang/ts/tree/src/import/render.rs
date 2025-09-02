@@ -3,7 +3,7 @@ use crate::prelude::internal::*;
 impl<'a> GtlRender<'a> for TSImport {
     type RenderState = TSRenderState;
 
-    type RenderContext = TSRenderContext;
+    type RenderContext = TSRenderContext<'a>;
 
     fn render(
         &self,
@@ -26,12 +26,12 @@ mod tests {
     fn test_render_default() {
         assert_eq!(
             TSImport {
-                path: "../path/to/module.ts".into(),
+                path: "../path/to/module".into(),
                 reference: TSImportReference::Default("Name".into()),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"import Name from "../path/to/module.ts";"#
+            r#"import Name from "../path/to/module.js";"#
         );
     }
 
@@ -39,12 +39,12 @@ mod tests {
     fn test_render_glob() {
         assert_eq!(
             TSImport {
-                path: "../path/to/module.ts".into(),
+                path: "../path/to/module".into(),
                 reference: TSImportReference::Glob("name".into()),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"import * as name from "../path/to/module.ts";"#
+            r#"import * as name from "../path/to/module.js";"#
         );
     }
 
@@ -52,7 +52,7 @@ mod tests {
     fn test_render_named() {
         assert_eq!(
             TSImport {
-                path: "../path/to/module.ts".into(),
+                path: "../path/to/module".into(),
                 reference: TSImportReference::Named(vec![
                     TSImportName::Name("Name".into()),
                     TSImportName::Alias("Name".into(), "Alias".into()),
@@ -60,7 +60,7 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"import { Name, Name as Alias } from "../path/to/module.ts";"#
+            r#"import { Name, Name as Alias } from "../path/to/module.js";"#
         );
     }
 }

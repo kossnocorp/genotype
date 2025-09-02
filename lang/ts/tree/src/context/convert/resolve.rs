@@ -19,7 +19,6 @@ impl TSConvertContext {
                 .unwrap_or(path)
                 .source_str()
                 .to_owned()
-                + ".ts"
         }
     }
 

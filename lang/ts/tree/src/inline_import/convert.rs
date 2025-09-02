@@ -24,7 +24,7 @@ mod tests {
             }
             .convert(&mut Default::default()),
             TSInlineImport {
-                path: "./path/to/module.ts".into(),
+                path: "./path/to/module".into(),
                 name: "Name".into(),
             }
         );
