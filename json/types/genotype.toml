@@ -17,7 +17,7 @@ enabled = true
 [rs.manifest.package]
 name = "genotype_json_types"
 version = "0.3.0"
-edition = "2021"
+edition = "2024"
 description = "Genotype language JSON types"
 license = "MIT"
 authors = ["Sasha Koss <koss@nocorp.me>"]

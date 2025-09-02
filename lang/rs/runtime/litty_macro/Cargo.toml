@@ -1,7 +1,7 @@
 [package]
 name = "litty_macro"
 version = "0.2.0"
-edition = "2021"
+edition = "2024"
 description = "Macro crate for Litty, literals for Rust"
 authors = ["Sasha Koss <koss@nocorp.me>"]
 license = "MIT"

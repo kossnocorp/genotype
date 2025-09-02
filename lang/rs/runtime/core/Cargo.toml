@@ -1,7 +1,7 @@
 [package]
 name = "genotype_runtime"
 version = "0.4.0"
-edition = "2021"
+edition = "2024"
 description = "Genotype runtime"
 authors = ["Sasha Koss <koss@nocorp.me>"]
 license = "MIT"

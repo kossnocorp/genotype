@@ -1,7 +1,7 @@
 [package]
 name = "litty"
 version = "0.2.0"
-edition = "2021"
+edition = "2024"
 description = "Literals for Rust"
 authors = ["Sasha Koss <koss@nocorp.me>"]
 license = "MIT"

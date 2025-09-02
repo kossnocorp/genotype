@@ -1,5 +1,5 @@
 [package]
-edition = "2021"
+edition = "2024"
 authors = ["Sasha Koss <koss@nocorp.me>"]
 description = "Genotype language JSON types"
 license = "MIT"
@@ -10,4 +10,3 @@ version = "0.3.0"
 [dependencies]
 serde = { version = "1", features = ["derive"] }
 litty = "0.2"
-

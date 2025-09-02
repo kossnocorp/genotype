@@ -582,7 +582,7 @@ pub struct Account {
                     GtlProjectFile {
                         path: "examples/dependencies/dist/rs/Cargo.toml".into(),
                         source: r#"[package]
-edition = "2021"
+edition = "2024"
 name = "genotype_example_package"
 version = "0.1.0"
 [dependencies]

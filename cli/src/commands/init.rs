@@ -197,7 +197,7 @@ fn configure_rs(config: &mut GtConfig, name: &String) -> Result<()> {
     let manifest = toml::map::Map::from_iter(vec![
         ("name".into(), toml::Value::String(name.clone())),
         ("version".into(), toml::Value::String("0.1.0".into())),
-        ("edition".into(), toml::Value::String("2021".into())),
+        ("edition".into(), toml::Value::String("2024".into())),
     ]);
 
     rs.common.manifest = manifest;

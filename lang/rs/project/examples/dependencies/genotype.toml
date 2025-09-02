@@ -6,7 +6,7 @@ enabled = true
 [rs.manifest.package]
 name = "genotype_example_package"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [rs.manifest.dependencies]
 genotype_json_types = "0.1.0"
