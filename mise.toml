@@ -4,6 +4,7 @@ rust = { version = "latest", channel = "stable", components = "rustfmt,clippy" }
 node = { version = "latest", postinstall = 'corepack enable' }
 python = "latest"
 uv = "latest"
+
 # Tools
 cargo-binstall = "latest"
 "cargo:just" = "latest"
@@ -11,6 +12,7 @@ cargo-binstall = "latest"
 "cargo:bacon" = "latest"
 "cargo:cargo-nextest" = "latest"
 "cargo:cargo-release" = "latest"
+"cargo:cargo-insta" = "latest"
 
 [settings]
 experimental = true
