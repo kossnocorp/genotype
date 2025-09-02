@@ -3728,6 +3728,54 @@ mod tests {
                             },
                         ),
                     },
+                    GTAlias {
+                        id: GTDefinitionId(
+                            GTModuleId(
+                                "module",
+                            ),
+                            "WithComments",
+                        ),
+                        span: GTSpan(
+                            63,
+                            150,
+                        ),
+                        doc: None,
+                        attributes: [],
+                        name: GTIdentifier(
+                            GTSpan(
+                                63,
+                                75,
+                            ),
+                            "WithComments",
+                        ),
+                        descriptor: Union(
+                            GTUnion {
+                                span: GTSpan(
+                                    103,
+                                    150,
+                                ),
+                                descriptors: [
+                                    Literal(
+                                        String(
+                                            GTSpan(
+                                                105,
+                                                112,
+                                            ),
+                                            "Hello",
+                                        ),
+                                    ),
+                                    Primitive(
+                                        String(
+                                            GTSpan(
+                                                144,
+                                                150,
+                                            ),
+                                        ),
+                                    ),
+                                ],
+                            },
+                        ),
+                    },
                 ],
             },
             resolve: GTModuleResolve {
@@ -3746,6 +3794,13 @@ mod tests {
                             36,
                         ),
                         "Multiline",
+                    ),
+                    GTIdentifier(
+                        GTSpan(
+                            63,
+                            75,
+                        ),
+                        "WithComments",
                     ),
                 ],
                 references: {},

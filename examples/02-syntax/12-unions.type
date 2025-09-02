@@ -3,3 +3,9 @@ Hello = "Sasha" | "world"
 Multiline =
   | "Hello"
   | string
+
+WithComments =
+  // This is a comment
+  | "Hello"
+  // This is a comment too
+  | string

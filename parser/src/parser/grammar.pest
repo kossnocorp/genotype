@@ -6,7 +6,13 @@ name = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 
 // Descriptors
 
-descriptor = @{ "|"? ~ WHITESPACE* ~ descriptor_inner ~ (WHITESPACE* ~ "|" ~ WHITESPACE* ~ descriptor_inner)* }
+descriptor = @{
+    (WHITESPACE | COMMENT)*
+    ~ "|"?
+    ~ (WHITESPACE | COMMENT)*
+    ~ descriptor_inner
+    ~ ((WHITESPACE | COMMENT)* ~ "|" ~ (WHITESPACE | COMMENT)* ~ descriptor_inner)*
+}
 
 // NOTE: Order matters! prefer structural containers before inline imports
 // to avoid ambiguity when parsing nested descriptors (e.g. arrays).
