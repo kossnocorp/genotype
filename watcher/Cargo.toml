@@ -1,6 +1,6 @@
 [package]
 name = "genotype_watcher"
-version = "0.13.0"
+version = "0.14.0"
 edition = "2024"
 description = "Genotype language file system watcher"
 authors = ["Sasha Koss <koss@nocorp.me>"]

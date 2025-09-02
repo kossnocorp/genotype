@@ -1,6 +1,6 @@
 [package]
 name = "genotype_workspace"
-version = "0.13.0"
+version = "0.14.0"
 edition = "2024"
 description = "Genotype language workspace"
 authors = ["Sasha Koss <koss@nocorp.me>"]
@@ -8,8 +8,8 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_parser = { version = "0.13.0", path = "../parser" }
-genotype_config = { version = "0.13.0", path = "../config" }
+genotype_parser = { version = "0.14.0", path = "../parser" }
+genotype_config = { version = "0.14.0", path = "../config" }
 miette = "7.2.0"
 thiserror = "1.0.64"
 num_cpus = "1.16.0"

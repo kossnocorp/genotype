@@ -1,6 +1,6 @@
 [package]
 name = "genotype_lang_core_project"
-version = "0.13.0"
+version = "0.14.0"
 edition = "2024"
 description = "Genotype language target project crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
@@ -8,11 +8,11 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_path = { version = "0.13.0", path = "../../../path" }
-genotype_project = { version = "0.13.0", path = "../../../project" }
-genotype_config = { version = "0.13.0", path = "../../../config" }
-genotype_lang_core_config = { version = "0.13.0", path = "../../core/config" }
-genotype_lang_core_tree = { version = "0.13.0", path = "../../core/tree" }
+genotype_path = { version = "0.14.0", path = "../../../path" }
+genotype_project = { version = "0.14.0", path = "../../../project" }
+genotype_config = { version = "0.14.0", path = "../../../config" }
+genotype_lang_core_config = { version = "0.14.0", path = "../../core/config" }
+genotype_lang_core_tree = { version = "0.14.0", path = "../../core/tree" }
 miette = "7.2.0"
 thiserror = "1.0.64"
 indexmap = "2.6.0"

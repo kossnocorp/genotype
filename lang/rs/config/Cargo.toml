@@ -1,6 +1,6 @@
 [package]
 name = "genotype_lang_rs_config"
-version = "0.13.0"
+version = "0.14.0"
 edition = "2024"
 description = "Genotype language Rust target config crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
@@ -8,8 +8,8 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_path = { version = "0.13.0", path = "../../../path" }
-genotype_lang_core_config = { version = "0.13.0", path = "../../core/config" }
+genotype_path = { version = "0.14.0", path = "../../../path" }
+genotype_lang_core_config = { version = "0.14.0", path = "../../core/config" }
 serde = { version = "1.0.210", features = ["derive"] }
 relative-path = { version = "1.9.3", features = ["serde"] }
 
