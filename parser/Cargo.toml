@@ -8,14 +8,14 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-miette = { version = "7.2.0", features = ["fancy"] }
+miette = { version = "7.6.0", features = ["fancy", "serde"] }
 pest = { version = "2.8.6", features = ["miette-error"] }
 pest_derive = "2.8.6"
 thiserror = "1.0.64"
 heck = "0.5.0"
 serde = { version = "1.0.219", features = ["derive"] }
-indexmap = "2.11.0"
+indexmap = { version = "2.11.0", features = ["serde"] }
 
 [dev-dependencies]
-insta = "1.43.1"
+insta = { version = "1.43.1", features = ["ron"] }
 pretty_assertions = "1.4.1"

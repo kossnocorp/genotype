@@ -1,9 +1,11 @@
+use serde::Serialize;
+
 use crate::GTSpan;
 
 mod parse;
 
 /// Unique module identifier.
-#[derive(Debug, Eq, PartialEq, Hash, Clone)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize)]
 pub struct GTIdentifier(
     /// Identifier position in the source code.
     pub GTSpan,

@@ -1,10 +1,12 @@
+use serde::Serialize;
+
 use crate::GTSpan;
 
 use super::GTModuleId;
 
 /// Unique project reference id. It allows to identify specific reference in
 /// a module or project.
-#[derive(Debug, Eq, PartialEq, Hash, Clone)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize)]
 pub struct GTReferenceId(
     /// Module id that **contains** the reference.
     pub GTModuleId,

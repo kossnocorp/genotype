@@ -1,8 +1,10 @@
+use serde::Serialize;
+
 use super::{GTIdentifier, GTLiteral};
 
 mod parse;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub enum GTAttributeValue {
     Literal(GTLiteral),
     Identifier(GTIdentifier),

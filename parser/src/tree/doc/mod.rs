@@ -1,8 +1,10 @@
+use serde::Serialize;
+
 use crate::GTSpan;
 
 mod parse;
 
-#[derive(Debug, Eq, PartialEq, Hash, Clone)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize)]
 pub struct GTDoc(pub GTSpan, pub String);
 
 impl GTDoc {

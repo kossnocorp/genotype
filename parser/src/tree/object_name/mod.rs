@@ -1,7 +1,9 @@
+use serde::Serialize;
+
 use crate::*;
 
 /// A name assigned to an object. It can be explicitely named,
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub enum GTObjectName {
     /// Explicately given name.
     Named(GTIdentifier),
@@ -32,7 +34,7 @@ impl From<String> for GTObjectName {
 }
 
 /// The kind of parent that builds the object name.
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub enum GTObjectNameParent {
     /// An alias parent.
     Alias(GTIdentifier),

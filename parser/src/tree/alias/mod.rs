@@ -1,10 +1,12 @@
+use serde::Serialize;
+
 use crate::GTSpan;
 
 use super::*;
 
 mod parse;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GTAlias {
     pub id: GTDefinitionId,
     pub span: GTSpan,

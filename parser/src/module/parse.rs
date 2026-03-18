@@ -1,10 +1,11 @@
 use miette::{NamedSource, Result};
 use pest::iterators::Pair;
+use serde::Serialize;
 
 use crate::*;
 
 /// Module parse result. It contains the module tree and resolve data.
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GTModuleParse {
     /// Module tree.
     pub module: GTModule,
@@ -13,6 +14,7 @@ pub struct GTModuleParse {
     pub resolve: GTModuleResolve,
     /// Module source code.
     /// [TODO] After implementing workspace, find a better place for it.
+    #[serde(serialize_with = "crate::miette_serde::serialize_named_source")]
     #[deprecated]
     pub source_code: NamedSource<String>,
 }

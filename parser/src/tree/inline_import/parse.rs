@@ -1,10 +1,10 @@
 use pest::iterators::Pair;
 
 use crate::{
-    GTContext,
     diagnostic::error::GTParseError,
     parser::Rule,
     tree::{identifier::GTIdentifier, path::GTPath},
+    GTContext,
 };
 
 use super::GTInlineImport;

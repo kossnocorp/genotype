@@ -1,5 +1,7 @@
 use std::hash::Hash;
 
+use serde::Serialize;
+
 use crate::GTSpan;
 
 use super::GTPathModuleId;
@@ -7,7 +9,7 @@ use super::GTPathModuleId;
 mod parse;
 
 /// Unique module path reference. It defines a particular path reference in the source code.
-#[derive(Debug, Eq, Hash, Clone)]
+#[derive(Debug, Eq, Hash, Clone, Serialize)]
 pub struct GTPath(
     /// Where the path is defined in the source code.
     pub GTSpan,

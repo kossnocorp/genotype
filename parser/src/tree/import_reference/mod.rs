@@ -1,8 +1,10 @@
+use serde::Serialize;
+
 use crate::GTSpan;
 
 use super::{identifier::GTIdentifier, import_name::GTImportName};
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub enum GTImportReference {
     Glob(GTSpan),
     Names(GTSpan, Vec<GTImportName>),

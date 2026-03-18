@@ -1,7 +1,7 @@
 use pest::iterators::Pair;
 
 use crate::{
-    GTContext, GTReferenceDefinitionId, GTReferenceId, GTSpan, parser::Rule, tree::GTIdentifier,
+    parser::Rule, tree::GTIdentifier, GTContext, GTReferenceDefinitionId, GTReferenceId, GTSpan,
 };
 
 use super::GTReference;
