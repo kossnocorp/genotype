@@ -9,23 +9,31 @@ impl PYConvert<PYAny> for GTAny {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTAny((0, 0).into()).convert(&mut PYConvertContext::default()),
-            PYAny
+            @"PYAny"
         );
     }
 
     #[test]
     fn test_convert_resolve() {
         let mut context = PYConvertContext::default();
-        assert_eq!(GTAny((0, 0).into(),).convert(&mut context), PYAny);
-        assert_eq!(
+        assert_ron_snapshot!(
+            GTAny((0, 0).into(),).convert(&mut context),
+            @"PYAny"
+        );
+
+        assert_ron_snapshot!(
             context.as_dependencies(),
-            vec![(PYDependencyIdent::Typing, "Any".into())]
+            @r#"
+        [
+          (Typing, PYIdentifier("Any")),
+        ]
+        "#
         );
     }
 }

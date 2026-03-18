@@ -26,11 +26,11 @@ impl<'a> GtlRender<'a> for TSAlias {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             TSAlias {
                 doc: None,
                 name: "Name".into(),
@@ -38,13 +38,13 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "export type Name = string;"
+            @"export type Name = string;"
         );
     }
 
     #[test]
     fn test_render_doc() {
-        assert_eq!(
+        assert_snapshot!(
             TSAlias {
                 doc: Some(TSDoc("Hello, world!".into())),
                 name: "Name".into(),
@@ -52,8 +52,10 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"/** Hello, world! */
-export type Name = string;"#
+            @"
+        /** Hello, world! */
+        export type Name = string;
+        "
         );
     }
 }

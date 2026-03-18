@@ -19,6 +19,8 @@ indexmap = { version = "2.6.0", features = ["serde"] }
 toml_edit = { version = "0.22.26", features = ["serde"] }
 toml = { version = "0.8.19", features = ["preserve_order"] }
 serde_json = { version = "1.0.140", features = ["preserve_order"] }
+serde = { version = "1.0.210", features = ["derive"] }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
+insta = { version = "1.46.3", features = ["ron"] }

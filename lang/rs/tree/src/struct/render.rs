@@ -32,11 +32,11 @@ impl<'a> GtlRender<'a> for RSStruct {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_empty() {
-        assert_eq!(
+        assert_snapshot!(
             RSStruct {
                 id: GTDefinitionId("module".into(), "Name".into()),
                 doc: None,
@@ -46,13 +46,13 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "pub struct Name {}"
+            @"pub struct Name {}"
         );
     }
 
     #[test]
     fn test_render_properties() {
-        assert_eq!(
+        assert_snapshot!(
             RSStruct {
                 id: GTDefinitionId("module".into(), "Name".into()),
                 doc: None,
@@ -76,16 +76,18 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"pub struct Name {
-    pub name: String,
-    pub age: isize,
-}"#
+            @"
+        pub struct Name {
+            pub name: String,
+            pub age: isize,
+        }
+        "
         );
     }
 
     #[test]
     fn test_render_indent() {
-        assert_eq!(
+        assert_snapshot!(
             RSStruct {
                 id: GTDefinitionId("module".into(), "Person".into()),
                 doc: None,
@@ -112,16 +114,18 @@ mod tests {
                 &mut Default::default()
             )
             .unwrap(),
-            r#"    pub struct Name {
-        pub name: String,
-        pub age: isize,
-    }"#
+            @"
+        pub struct Name {
+            pub name: String,
+            pub age: isize,
+        }
+        "
         );
     }
 
     #[test]
     fn test_render_doc_empty() {
-        assert_eq!(
+        assert_snapshot!(
             RSStruct {
                 id: GTDefinitionId("module".into(), "Name".into()),
                 doc: Some("Hello, world!".into()),
@@ -131,14 +135,16 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"/// Hello, world!
-pub struct Name {}"#
+            @"
+        /// Hello, world!
+        pub struct Name {}
+        "
         );
     }
 
     #[test]
     fn test_render_doc_fields() {
-        assert_eq!(
+        assert_snapshot!(
             RSStruct {
                 id: GTDefinitionId("module".into(), "Name".into()),
                 doc: Some("Hello, world!".into()),
@@ -154,10 +160,12 @@ pub struct Name {}"#
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"/// Hello, world!
-pub struct Name {
-    pub name: String,
-}"#
+            @"
+        /// Hello, world!
+        pub struct Name {
+            pub name: String,
+        }
+        "
         );
     }
 }

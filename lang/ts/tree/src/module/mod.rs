@@ -4,7 +4,7 @@ mod convert;
 pub use convert::*;
 mod render;
 
-#[derive(Default, Debug, PartialEq, Clone)]
+#[derive(Default, Debug, PartialEq, Clone, Serialize)]
 pub struct TSModule {
     pub doc: Option<TSDoc>,
     pub imports: Vec<TSImport>,

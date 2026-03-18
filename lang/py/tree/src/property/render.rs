@@ -32,11 +32,11 @@ impl<'a> GtlRender<'a> for PYProperty {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_primitive() {
-        assert_eq!(
+        assert_snapshot!(
             PYProperty {
                 doc: None,
                 name: "name".into(),
@@ -45,9 +45,9 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "name: str"
+            @"name: str"
         );
-        assert_eq!(
+        assert_snapshot!(
             PYProperty {
                 doc: None,
                 name: "name".into(),
@@ -56,13 +56,13 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "name: Name"
+            @"name: Name"
         );
     }
 
     #[test]
     fn test_render_indent() {
-        assert_eq!(
+        assert_snapshot!(
             PYProperty {
                 doc: None,
                 name: "name".into(),
@@ -74,13 +74,13 @@ mod tests {
                 &mut Default::default()
             )
             .unwrap(),
-            "    name: str"
+            @"    name: str"
         );
     }
 
     #[test]
     fn test_render_required() {
-        assert_eq!(
+        assert_snapshot!(
             PYProperty {
                 doc: None,
                 name: "name".into(),
@@ -89,13 +89,13 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "name: Optional[str] = None"
+            @"name: Optional[str] = None"
         );
     }
 
     #[test]
     fn test_render_doc() {
-        assert_eq!(
+        assert_snapshot!(
             PYProperty {
                 doc: Some(PYDoc("Hello, world!".into())),
                 name: "name".into(),
@@ -104,8 +104,10 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"name: Optional[str] = None
-"""Hello, world!""""#
+            @r#"
+        name: Optional[str] = None
+        """Hello, world!"""
+        "#
         );
     }
 }

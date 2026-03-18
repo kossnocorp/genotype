@@ -25,11 +25,11 @@ impl TSConvert<TSProperty> for GTProperty {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTProperty {
                 span: (0, 0).into(),
                 doc: None,
@@ -39,18 +39,20 @@ mod tests {
                 required: true,
             }
             .convert(&mut Default::default()),
-            TSProperty {
-                doc: None,
-                name: "name".into(),
-                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
-                required: true,
-            }
+            @r#"
+        TSProperty(
+          doc: None,
+          name: TSKey("name"),
+          descriptor: Primitive(String),
+          required: true,
+        )
+        "#
         );
     }
 
     #[test]
     fn test_convert_doc() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTProperty {
                 span: (0, 0).into(),
                 doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
@@ -60,18 +62,20 @@ mod tests {
                 required: true,
             }
             .convert(&mut Default::default()),
-            TSProperty {
-                doc: Some(TSDoc("Hello, world!".into())),
-                name: "name".into(),
-                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
-                required: true,
-            }
+            @r#"
+        TSProperty(
+          doc: Some(TSDoc("Hello, world!")),
+          name: TSKey("name"),
+          descriptor: Primitive(String),
+          required: true,
+        )
+        "#
         );
     }
 
     #[test]
     fn test_convert_optional() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTProperty {
                 span: (0, 0).into(),
                 doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
@@ -81,15 +85,19 @@ mod tests {
                 required: false,
             }
             .convert(&mut Default::default()),
-            TSProperty {
-                doc: Some(TSDoc("Hello, world!".into())),
-                name: "name".into(),
-                descriptor: TSUnion {
-                    descriptors: vec![TSPrimitive::String.into(), TSPrimitive::Undefined.into()]
-                }
-                .into(),
-                required: false,
-            }
+            @r#"
+        TSProperty(
+          doc: Some(TSDoc("Hello, world!")),
+          name: TSKey("name"),
+          descriptor: Union(TSUnion(
+            descriptors: [
+              Primitive(String),
+              Primitive(Undefined),
+            ],
+          )),
+          required: false,
+        )
+        "#
         );
     }
 }

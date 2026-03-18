@@ -18,7 +18,7 @@ impl GtjTreeConvert<GTDescriptor> for GtjString {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
@@ -27,22 +27,11 @@ mod tests {
             name: None,
             doc: None,
         };
-        assert_eq!(
-            GTPrimitive::String(Default::default()),
-            string.to_tree_with_context(&mut Default::default()),
-        );
-    }
 
-    #[test]
-    fn test_convert_descriptor() {
-        let string = GtjString {
-            r#type: GtjStringTypeString,
-            name: None,
-            doc: None,
-        };
-        assert_eq!(
-            GTDescriptor::Primitive(GTPrimitive::String(Default::default())),
-            string.to_tree_with_context(&mut Default::default()),
-        );
+        let descriptor_tree: GTDescriptor = string.to_tree_with_context(&mut Default::default());
+        assert_ron_snapshot!(descriptor_tree, @"Primitive(String(GTSpan(0, 0)))");
+
+        let string_tree: GTPrimitive = string.to_tree_with_context(&mut Default::default());
+        assert_ron_snapshot!(string_tree, @"String(GTSpan(0, 0))");
     }
 }

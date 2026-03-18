@@ -36,11 +36,11 @@ impl<'a> GtlRender<'a> for RSEnum {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             RSEnum {
                 id: GTDefinitionId("module".into(), "Union".into()),
                 doc: None,
@@ -63,16 +63,18 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"pub enum Union {
-    String(String),
-    Int(isize),
-}"#
+            @"
+        pub enum Union {
+            String(String),
+            Int(isize),
+        }
+        "
         );
     }
 
     #[test]
     fn test_render_indent() {
-        assert_eq!(
+        assert_snapshot!(
             RSEnum {
                 id: GTDefinitionId("module".into(), "Union".into()),
                 doc: None,
@@ -98,16 +100,18 @@ mod tests {
                 &mut Default::default()
             )
             .unwrap(),
-            r#"    pub enum Union {
-        String(String),
-        Int(isize),
-    }"#
+            @"
+        pub enum Union {
+            String(String),
+            Int(isize),
+        }
+        "
         );
     }
 
     #[test]
     fn test_render_attributes() {
-        assert_eq!(
+        assert_snapshot!(
             RSEnum {
                 id: GTDefinitionId("module".into(), "Union".into()),
                 doc: None,
@@ -130,17 +134,19 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"#[derive(Deserialize, Serialize)]
-pub enum Union {
-    String(String),
-    Int(isize),
-}"#
+            @"
+        #[derive(Deserialize, Serialize)]
+        pub enum Union {
+            String(String),
+            Int(isize),
+        }
+        "
         );
     }
 
     #[test]
     fn test_render_doc() {
-        assert_eq!(
+        assert_snapshot!(
             RSEnum {
                 id: GTDefinitionId("module".into(), "Union".into()),
                 doc: Some("Hello, world!".into()),
@@ -163,17 +169,19 @@ pub enum Union {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"/// Hello, world!
-pub enum Union {
-    String(String),
-    Int(isize),
-}"#
+            @"
+        /// Hello, world!
+        pub enum Union {
+            String(String),
+            Int(isize),
+        }
+        "
         );
     }
 
     #[test]
     fn test_render_mixed() {
-        assert_eq!(
+        assert_snapshot!(
             RSEnum {
                 id: GTDefinitionId("module".into(), "Union".into()),
                 doc: Some("Hello, world!".into()),
@@ -199,12 +207,14 @@ pub enum Union {
                 &mut Default::default()
             )
             .unwrap(),
-            r#"    /// Hello, world!
-    #[derive(Deserialize, Serialize)]
-    pub enum Union {
-        String(String),
-        Int(isize),
-    }"#
+            @"
+        /// Hello, world!
+        #[derive(Deserialize, Serialize)]
+        pub enum Union {
+            String(String),
+            Int(isize),
+        }
+        "
         );
     }
 }

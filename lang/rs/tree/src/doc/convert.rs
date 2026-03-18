@@ -12,15 +12,15 @@ impl RSConvert<RSDoc> for GTDoc {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
-            RSDoc::new("Hello, world!", false),
+        assert_ron_snapshot!(
             GTDoc((0, 0).into(), "Hello, world!".into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
+            @r#"RSDoc("Hello, world!", false)"#
         );
     }
 }

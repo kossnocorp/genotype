@@ -18,17 +18,17 @@ impl<'a> GtlRender<'a> for TSArray {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_array() {
-        assert_eq!(
+        assert_snapshot!(
             TSArray {
                 descriptor: TSDescriptor::Primitive(TSPrimitive::String)
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "Array<string>"
+            @"Array<string>"
         );
     }
 }

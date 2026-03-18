@@ -31,7 +31,7 @@ impl GtjTreeConvert<GTDescriptor> for GtjArray {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
@@ -45,34 +45,22 @@ mod tests {
             name: None,
             doc: None,
         };
-        assert_eq!(
-            GTArray {
-                span: Default::default(),
-                descriptor: GTPrimitive::Null(Default::default()).into()
-            },
-            array.to_tree_with_context(&mut Default::default()),
-        );
-    }
 
-    #[test]
-    fn test_convert_descriptor() {
-        let array = GtjArray {
-            r#type: GtjArrayTypeArray,
-            descriptor: GtjAny::GtjNull(GtjNull {
-                r#type: GtjNullTypeNull,
-                name: None,
-                doc: None,
-            }),
-            name: None,
-            doc: None,
-        };
-        assert_eq!(
-            GTDescriptor::Array(Box::new(GTArray {
-                span: Default::default(),
-                descriptor: GTPrimitive::Null(Default::default()).into()
-            })),
-            array.to_tree_with_context(&mut Default::default())
-        );
+        let descriptor_tree: GTDescriptor = array.to_tree_with_context(&mut Default::default());
+        assert_ron_snapshot!(descriptor_tree, @"
+        Array(GTArray(
+          span: GTSpan(0, 0),
+          descriptor: Primitive(Null(GTSpan(0, 0))),
+        ))
+        ");
+
+        let array_tree: GTArray = array.to_tree_with_context(&mut Default::default());
+        assert_ron_snapshot!(array_tree, @"
+        GTArray(
+          span: GTSpan(0, 0),
+          descriptor: Primitive(Null(GTSpan(0, 0))),
+        )
+        ");
     }
 
     #[test]
@@ -90,22 +78,19 @@ mod tests {
             name: None,
             doc: None,
         };
-        assert_eq!(
-            GTDescriptor::Array(Box::new(GTArray {
-                span: Default::default(),
-                descriptor: GTObject {
-                    span: Default::default(),
-                    name: GTObjectName::Named(GTIdentifier(
-                        Default::default(),
-                        "RootElement".into()
-                    )),
-                    extensions: vec![],
-                    properties: vec![],
-                }
-                .into()
-            })),
-            array.to_tree_with_context(&mut context),
-        );
+
+        let tree: GTDescriptor = array.to_tree_with_context(&mut context);
+        assert_ron_snapshot!(tree, @r#"
+        Array(GTArray(
+          span: GTSpan(0, 0),
+          descriptor: Object(GTObject(
+            span: GTSpan(0, 0),
+            name: Named(GTIdentifier(GTSpan(0, 0), "RootElement")),
+            extensions: [],
+            properties: [],
+          )),
+        ))
+        "#);
     }
 
     #[test]
@@ -139,42 +124,36 @@ mod tests {
             name: None,
             doc: None,
         };
-        assert_eq!(
-            GTDescriptor::Array(Box::new(GTArray {
-                span: Default::default(),
-                descriptor: GTArray {
-                    span: Default::default(),
-                    descriptor: GTObject {
-                        span: Default::default(),
-                        name: GTObjectName::Named(GTIdentifier(
-                            Default::default(),
-                            "RootElementElement".into()
-                        )),
-                        extensions: vec![],
-                        properties: vec![GTProperty {
-                            span: Default::default(),
-                            descriptor: GTObject {
-                                span: Default::default(),
-                                name: GTObjectName::Named(GTIdentifier(
-                                    Default::default(),
-                                    "RootElementElementWorld".into()
-                                )),
-                                extensions: vec![],
-                                properties: vec![],
-                            }
-                            .into(),
-                            attributes: Default::default(),
-                            required: false,
-                            name: GTKey(Default::default(), "world".into()),
-                            doc: None,
-                        }],
-                    }
-                    .into()
-                }
-                .into()
-            })),
-            array.to_tree_with_context(&mut context),
-        );
+
+        let tree: GTArray = array.to_tree_with_context(&mut context);
+        assert_ron_snapshot!(tree, @r#"
+        GTArray(
+          span: GTSpan(0, 0),
+          descriptor: Array(GTArray(
+            span: GTSpan(0, 0),
+            descriptor: Object(GTObject(
+              span: GTSpan(0, 0),
+              name: Named(GTIdentifier(GTSpan(0, 0), "RootElementElement")),
+              extensions: [],
+              properties: [
+                GTProperty(
+                  span: GTSpan(0, 0),
+                  doc: None,
+                  attributes: [],
+                  name: GTKey(GTSpan(0, 0), "world"),
+                  descriptor: Object(GTObject(
+                    span: GTSpan(0, 0),
+                    name: Named(GTIdentifier(GTSpan(0, 0), "RootElementElementWorld")),
+                    extensions: [],
+                    properties: [],
+                  )),
+                  required: false,
+                ),
+              ],
+            )),
+          )),
+        )
+        "#);
     }
 
     #[test]
@@ -192,22 +171,19 @@ mod tests {
             name: Some("Hello".into()),
             doc: None,
         };
-        assert_eq!(
-            GTDescriptor::Array(Box::new(GTArray {
-                span: Default::default(),
-                descriptor: GTObject {
-                    span: Default::default(),
-                    name: GTObjectName::Named(GTIdentifier(
-                        Default::default(),
-                        "HelloElement".into()
-                    )),
-                    extensions: vec![],
-                    properties: vec![],
-                }
-                .into()
-            })),
-            array.to_tree_with_context(&mut context),
-        );
+
+        let tree: GTArray = array.to_tree_with_context(&mut context);
+        assert_ron_snapshot!(tree, @r#"
+        GTArray(
+          span: GTSpan(0, 0),
+          descriptor: Object(GTObject(
+            span: GTSpan(0, 0),
+            name: Named(GTIdentifier(GTSpan(0, 0), "HelloElement")),
+            extensions: [],
+            properties: [],
+          )),
+        )
+        "#);
     }
 
     #[test]
@@ -241,38 +217,35 @@ mod tests {
             name: Some("Hello".into()),
             doc: None,
         };
-        assert_eq!(
-            GTDescriptor::Array(Box::new(GTArray {
-                span: Default::default(),
-                descriptor: GTArray {
-                    span: Default::default(),
-                    descriptor: GTObject {
-                        span: Default::default(),
-                        name: GTObjectName::Named(GTIdentifier(Default::default(), "Hey".into())),
-                        extensions: vec![],
-                        properties: vec![GTProperty {
-                            span: Default::default(),
-                            descriptor: GTObject {
-                                span: Default::default(),
-                                name: GTObjectName::Named(GTIdentifier(
-                                    Default::default(),
-                                    "HeyWorld".into()
-                                )),
-                                extensions: vec![],
-                                properties: vec![],
-                            }
-                            .into(),
-                            attributes: Default::default(),
-                            required: false,
-                            name: GTKey(Default::default(), "world".into()),
-                            doc: None,
-                        }],
-                    }
-                    .into()
-                }
-                .into()
-            })),
-            array.to_tree_with_context(&mut context),
-        );
+
+        let tree: GTArray = array.to_tree_with_context(&mut context);
+        assert_ron_snapshot!(tree, @r#"
+        GTArray(
+          span: GTSpan(0, 0),
+          descriptor: Array(GTArray(
+            span: GTSpan(0, 0),
+            descriptor: Object(GTObject(
+              span: GTSpan(0, 0),
+              name: Named(GTIdentifier(GTSpan(0, 0), "Hey")),
+              extensions: [],
+              properties: [
+                GTProperty(
+                  span: GTSpan(0, 0),
+                  doc: None,
+                  attributes: [],
+                  name: GTKey(GTSpan(0, 0), "world"),
+                  descriptor: Object(GTObject(
+                    span: GTSpan(0, 0),
+                    name: Named(GTIdentifier(GTSpan(0, 0), "HeyWorld")),
+                    extensions: [],
+                    properties: [],
+                  )),
+                  required: false,
+                ),
+              ],
+            )),
+          )),
+        )
+        "#);
     }
 }

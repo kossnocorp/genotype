@@ -36,7 +36,7 @@ impl GtjTreeConvert<GTDescriptor> for GtjTuple {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
@@ -46,13 +46,22 @@ mod tests {
             name: None,
             doc: None,
         };
-        assert_eq!(
-            GTTuple {
-                span: Default::default(),
-                descriptors: vec![]
-            },
-            tuple.to_tree_with_context(&mut Default::default()),
-        );
+
+        let descriptor_tree: GTDescriptor = tuple.to_tree_with_context(&mut Default::default());
+        assert_ron_snapshot!(descriptor_tree, @"
+        Tuple(GTTuple(
+          span: GTSpan(0, 0),
+          descriptors: [],
+        ))
+        ");
+
+        let tuple_tree: GTTuple = tuple.to_tree_with_context(&mut Default::default());
+        assert_ron_snapshot!(tuple_tree, @"
+        GTTuple(
+          span: GTSpan(0, 0),
+          descriptors: [],
+        )
+        ");
     }
 
     #[test]
@@ -67,13 +76,16 @@ mod tests {
             name: None,
             doc: None,
         };
-        assert_eq!(
-            GTDescriptor::Tuple(GTTuple {
-                span: Default::default(),
-                descriptors: vec![GTPrimitive::Null(Default::default()).into()]
-            }),
-            tuple.to_tree_with_context(&mut Default::default())
-        );
+
+        let tuple_tree: GTTuple = tuple.to_tree_with_context(&mut Default::default());
+        assert_ron_snapshot!(tuple_tree, @"
+        GTTuple(
+          span: GTSpan(0, 0),
+          descriptors: [
+            Primitive(Null(GTSpan(0, 0))),
+          ],
+        )
+        ");
     }
 
     #[test]
@@ -91,22 +103,21 @@ mod tests {
             name: None,
             doc: None,
         };
-        assert_eq!(
-            GTDescriptor::Tuple(GTTuple {
-                span: Default::default(),
-                descriptors: vec![GTObject {
-                    span: Default::default(),
-                    name: GTObjectName::Named(GTIdentifier(
-                        Default::default(),
-                        "RootElement".into()
-                    )),
-                    extensions: vec![],
-                    properties: vec![],
-                }
-                .into()]
-            }),
-            tuple.to_tree_with_context(&mut context),
-        );
+
+        let tuple_tree: GTTuple = tuple.to_tree_with_context(&mut context);
+        assert_ron_snapshot!(tuple_tree, @r#"
+        GTTuple(
+          span: GTSpan(0, 0),
+          descriptors: [
+            Object(GTObject(
+              span: GTSpan(0, 0),
+              name: Named(GTIdentifier(GTSpan(0, 0), "RootElement")),
+              extensions: [],
+              properties: [],
+            )),
+          ],
+        )
+        "#);
     }
 
     #[test]
@@ -140,42 +151,40 @@ mod tests {
             name: None,
             doc: None,
         };
-        assert_eq!(
-            GTDescriptor::Tuple(GTTuple {
-                span: Default::default(),
-                descriptors: vec![GTTuple {
-                    span: Default::default(),
-                    descriptors: vec![GTObject {
-                        span: Default::default(),
-                        name: GTObjectName::Named(GTIdentifier(
-                            Default::default(),
-                            "RootElementElement".into()
-                        )),
-                        extensions: vec![],
-                        properties: vec![GTProperty {
-                            span: Default::default(),
-                            descriptor: GTObject {
-                                span: Default::default(),
-                                name: GTObjectName::Named(GTIdentifier(
-                                    Default::default(),
-                                    "RootElementElementWorld".into()
-                                )),
-                                extensions: vec![],
-                                properties: vec![],
-                            }
-                            .into(),
-                            attributes: Default::default(),
-                            required: false,
-                            name: GTKey(Default::default(), "world".into()),
-                            doc: None,
-                        }],
-                    }
-                    .into()]
-                }
-                .into()]
-            }),
-            tuple.to_tree_with_context(&mut context),
-        );
+
+        let tuple_tree: GTTuple = tuple.to_tree_with_context(&mut context);
+        assert_ron_snapshot!(tuple_tree, @r#"
+        GTTuple(
+          span: GTSpan(0, 0),
+          descriptors: [
+            Tuple(GTTuple(
+              span: GTSpan(0, 0),
+              descriptors: [
+                Object(GTObject(
+                  span: GTSpan(0, 0),
+                  name: Named(GTIdentifier(GTSpan(0, 0), "RootElementElement")),
+                  extensions: [],
+                  properties: [
+                    GTProperty(
+                      span: GTSpan(0, 0),
+                      doc: None,
+                      attributes: [],
+                      name: GTKey(GTSpan(0, 0), "world"),
+                      descriptor: Object(GTObject(
+                        span: GTSpan(0, 0),
+                        name: Named(GTIdentifier(GTSpan(0, 0), "RootElementElementWorld")),
+                        extensions: [],
+                        properties: [],
+                      )),
+                      required: false,
+                    ),
+                  ],
+                )),
+              ],
+            )),
+          ],
+        )
+        "#);
     }
 
     #[test]
@@ -193,19 +202,21 @@ mod tests {
             name: Some("World".into()),
             doc: None,
         };
-        assert_eq!(
-            GTDescriptor::Tuple(GTTuple {
-                span: Default::default(),
-                descriptors: vec![GTObject {
-                    span: Default::default(),
-                    name: GTObjectName::Named(GTIdentifier(Default::default(), "Hello".into())),
-                    extensions: vec![],
-                    properties: vec![],
-                }
-                .into()]
-            }),
-            tuple.to_tree_with_context(&mut context),
-        );
+
+        let tuple_tree: GTTuple = tuple.to_tree_with_context(&mut context);
+        assert_ron_snapshot!(tuple_tree, @r#"
+        GTTuple(
+          span: GTSpan(0, 0),
+          descriptors: [
+            Object(GTObject(
+              span: GTSpan(0, 0),
+              name: Named(GTIdentifier(GTSpan(0, 0), "Hello")),
+              extensions: [],
+              properties: [],
+            )),
+          ],
+        )
+        "#);
     }
 
     #[test]
@@ -239,41 +250,39 @@ mod tests {
             name: Some("Hello".into()),
             doc: None,
         };
-        assert_eq!(
-            GTDescriptor::Tuple(GTTuple {
-                span: Default::default(),
-                descriptors: vec![GTTuple {
-                    span: Default::default(),
-                    descriptors: vec![GTObject {
-                        span: Default::default(),
-                        name: GTObjectName::Named(GTIdentifier(
-                            Default::default(),
-                            "HiElement".into()
-                        )),
-                        extensions: vec![],
-                        properties: vec![GTProperty {
-                            span: Default::default(),
-                            descriptor: GTObject {
-                                span: Default::default(),
-                                name: GTObjectName::Named(GTIdentifier(
-                                    Default::default(),
-                                    "HiElementWorld".into()
-                                )),
-                                extensions: vec![],
-                                properties: vec![],
-                            }
-                            .into(),
-                            attributes: Default::default(),
-                            required: false,
-                            name: GTKey(Default::default(), "world".into()),
-                            doc: None,
-                        }],
-                    }
-                    .into()]
-                }
-                .into()]
-            }),
-            tuple.to_tree_with_context(&mut context),
-        );
+
+        let tuple_tree: GTTuple = tuple.to_tree_with_context(&mut context);
+        assert_ron_snapshot!(tuple_tree, @r#"
+        GTTuple(
+          span: GTSpan(0, 0),
+          descriptors: [
+            Tuple(GTTuple(
+              span: GTSpan(0, 0),
+              descriptors: [
+                Object(GTObject(
+                  span: GTSpan(0, 0),
+                  name: Named(GTIdentifier(GTSpan(0, 0), "HiElement")),
+                  extensions: [],
+                  properties: [
+                    GTProperty(
+                      span: GTSpan(0, 0),
+                      doc: None,
+                      attributes: [],
+                      name: GTKey(GTSpan(0, 0), "world"),
+                      descriptor: Object(GTObject(
+                        span: GTSpan(0, 0),
+                        name: Named(GTIdentifier(GTSpan(0, 0), "HiElementWorld")),
+                        extensions: [],
+                        properties: [],
+                      )),
+                      required: false,
+                    ),
+                  ],
+                )),
+              ],
+            )),
+          ],
+        )
+        "#);
     }
 }

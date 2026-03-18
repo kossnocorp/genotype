@@ -10,22 +10,22 @@ impl PYConvert<PYKey> for GTKey {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
-            PYKey("foo".into()),
+        assert_ron_snapshot!(
             GTKey::new((0, 0).into(), "foo".into()).convert(&mut PYConvertContext::default()),
+            @r#"PYKey("foo")"#
         );
     }
 
     #[test]
     fn test_convert_aliased() {
         let mut context = PYConvertContext::default();
-        assert_eq!(
-            PYKey("foo_bar".into()),
+        assert_ron_snapshot!(
             GTKey::new((0, 0).into(), "fooBar".into()).convert(&mut context),
+            @r#"PYKey("foo_bar")"#
         );
     }
 }

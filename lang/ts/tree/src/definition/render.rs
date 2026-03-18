@@ -22,11 +22,11 @@ impl<'a> GtlRender<'a> for TSDefinition {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_alias() {
-        assert_eq!(
+        assert_snapshot!(
             TSDefinition::Alias(TSAlias {
                 doc: None,
                 name: "Name".into(),
@@ -34,13 +34,13 @@ mod tests {
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "export type Name = string;"
+            @"export type Name = string;"
         );
     }
 
     #[test]
     fn test_render_interface() {
-        assert_eq!(
+        assert_snapshot!(
             TSDefinition::Interface(TSInterface {
                 doc: None,
                 name: "Name".into(),
@@ -62,16 +62,18 @@ mod tests {
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"export interface Name {
-  name: string;
-  age?: number;
-}"#
+            @"
+        export interface Name {
+          name: string;
+          age?: number;
+        }
+        "
         );
     }
 
     #[test]
     fn test_render_branded() {
-        assert_eq!(
+        assert_snapshot!(
             TSDefinition::Branded(TSBranded {
                 doc: None,
                 name: "Version".into(),
@@ -79,14 +81,16 @@ mod tests {
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"export type Version = number & { [versionBrand]: true };
-declare const versionBrand: unique symbol;"#
+            @"
+        export type Version = number & { [versionBrand]: true };
+        declare const versionBrand: unique symbol;
+        "
         );
     }
 
     #[test]
     fn test_render_embed() {
-        assert_eq!(
+        assert_snapshot!(
             TSDefinition::Embed(TSEmbedDefinition {
                 name: "Name".into(),
                 embed: r#"const hello = {
@@ -96,9 +100,11 @@ declare const versionBrand: unique symbol;"#
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"const hello = {
-  name: "World"
-};"#
+            @r#"
+        const hello = {
+          name: "World"
+        };
+        "#
         );
     }
 }

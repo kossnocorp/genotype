@@ -53,12 +53,12 @@ impl TSConvert<TSDescriptor> for GTDescriptor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_alias() {
         let mut context = Default::default();
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Alias(Box::new(GTAlias {
                 id: GTDefinitionId("module".into(), "Name".into()),
                 span: (0, 0).into(),
@@ -68,52 +68,60 @@ mod tests {
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }))
             .convert(&mut context),
-            TSDescriptor::Reference("Name".into())
+            @r#"Reference(TSReference(TSIdentifier("Name")))"#
         );
         let hoisted = context.drain_hoisted();
-        assert_eq!(
+        assert_ron_snapshot!(
             hoisted,
-            vec![TSDefinition::Alias(TSAlias {
-                doc: None,
-                name: "Name".into(),
-                descriptor: TSDescriptor::Primitive(TSPrimitive::Boolean),
-            }),]
+            @r#"
+        [
+          Alias(TSAlias(
+            doc: None,
+            name: TSIdentifier("Name"),
+            descriptor: Primitive(Boolean),
+          )),
+        ]
+        "#
         );
     }
 
     #[test]
     fn test_convert_array() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Array(Box::new(GTArray {
                 span: (0, 0).into(),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }))
             .convert(&mut Default::default()),
-            TSDescriptor::Array(Box::new(TSArray {
-                descriptor: TSDescriptor::Primitive(TSPrimitive::Boolean)
-            }))
+            @"
+        Array(TSArray(
+          descriptor: Primitive(Boolean),
+        ))
+        "
         );
     }
 
     #[test]
     fn test_convert_inline_import() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::InlineImport(GTInlineImport {
                 span: (0, 0).into(),
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 name: GTIdentifier::new((0, 0).into(), "Name".into())
             })
             .convert(&mut Default::default()),
-            TSDescriptor::InlineImport(TSInlineImport {
-                path: "./path/to/module".into(),
-                name: "Name".into()
-            })
+            @r#"
+        InlineImport(TSInlineImport(
+          path: TSPath("./path/to/module"),
+          name: TSIdentifier("Name"),
+        ))
+        "#
         );
     }
 
     #[test]
     fn test_convert_object() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Object(GTObject {
                 span: (0, 0).into(),
                 name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
@@ -138,31 +146,32 @@ mod tests {
                 ]
             })
             .convert(&mut Default::default()),
-            TSDescriptor::Object(TSObject {
-                properties: vec![
-                    TSProperty {
-                        doc: None,
-                        name: "name".into(),
-                        descriptor: TSPrimitive::String.into(),
-                        required: true,
-                    },
-                    TSProperty {
-                        doc: None,
-                        name: "age".into(),
-                        descriptor: TSUnion {
-                            descriptors: vec![
-                                TSPrimitive::Number.into(),
-                                TSPrimitive::Undefined.into()
-                            ]
-                        }
-                        .into(),
-                        required: false,
-                    }
-                ]
-            })
+            @r#"
+        Object(TSObject(
+          properties: [
+            TSProperty(
+              doc: None,
+              name: TSKey("name"),
+              descriptor: Primitive(String),
+              required: true,
+            ),
+            TSProperty(
+              doc: None,
+              name: TSKey("age"),
+              descriptor: Union(TSUnion(
+                descriptors: [
+                  Primitive(Number),
+                  Primitive(Undefined),
+                ],
+              )),
+              required: false,
+            ),
+          ],
+        ))
+        "#
         );
 
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Object(GTObject {
                 span: (0, 0).into(),
                 name: GTIdentifier::new((0, 0).into(), "Book".into()).into(),
@@ -189,35 +198,38 @@ mod tests {
                 },]
             })
             .convert(&mut Default::default()),
-            TSDescriptor::Intersection(TSIntersection {
-                descriptors: vec![
-                    TSObject {
-                        properties: vec![TSProperty {
-                            doc: None,
-                            name: "title".into(),
-                            descriptor: TSPrimitive::String.into(),
-                            required: true,
-                        },]
-                    }
-                    .into(),
-                    "Good".into()
-                ]
-            })
+            @r#"
+        Intersection(TSIntersection(
+          descriptors: [
+            Object(TSObject(
+              properties: [
+                TSProperty(
+                  doc: None,
+                  name: TSKey("title"),
+                  descriptor: Primitive(String),
+                  required: true,
+                ),
+              ],
+            )),
+            Reference(TSReference(TSIdentifier("Good"))),
+          ],
+        ))
+        "#
         );
     }
 
     #[test]
     fn test_convert_primitive() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Primitive(GTPrimitive::Boolean((0, 0).into()))
                 .convert(&mut Default::default()),
-            TSDescriptor::Primitive(TSPrimitive::Boolean)
+            @"Primitive(Boolean)"
         );
     }
 
     #[test]
     fn test_convert_reference() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Reference(GTReference {
                 span: (0, 0).into(),
                 id: GTReferenceId("module".into(), (0, 0).into()),
@@ -228,13 +240,13 @@ mod tests {
                 identifier: GTIdentifier::new((0, 0).into(), "Name".into())
             })
             .convert(&mut Default::default()),
-            TSDescriptor::Reference("Name".into())
+            @r#"Reference(TSReference(TSIdentifier("Name")))"#
         );
     }
 
     #[test]
     fn test_convert_tuple() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Tuple(GTTuple {
                 span: (0, 0).into(),
                 descriptors: vec![
@@ -243,18 +255,20 @@ mod tests {
                 ]
             })
             .convert(&mut Default::default()),
-            TSDescriptor::Tuple(TSTuple {
-                descriptors: vec![
-                    TSDescriptor::Primitive(TSPrimitive::Boolean),
-                    TSDescriptor::Primitive(TSPrimitive::String),
-                ]
-            })
+            @"
+        Tuple(TSTuple(
+          descriptors: [
+            Primitive(Boolean),
+            Primitive(String),
+          ],
+        ))
+        "
         );
     }
 
     #[test]
     fn test_convert_union() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Union(GTUnion {
                 span: (0, 0).into(),
                 descriptors: vec![
@@ -263,43 +277,47 @@ mod tests {
                 ]
             })
             .convert(&mut Default::default()),
-            TSDescriptor::Union(TSUnion {
-                descriptors: vec![
-                    TSDescriptor::Primitive(TSPrimitive::Boolean),
-                    TSDescriptor::Primitive(TSPrimitive::String),
-                ]
-            })
+            @"
+        Union(TSUnion(
+          descriptors: [
+            Primitive(Boolean),
+            Primitive(String),
+          ],
+        ))
+        "
         );
     }
 
     #[test]
     fn test_convert_record() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Record(Box::new(GTRecord {
                 span: (0, 0).into(),
                 key: GTRecordKey::String((0, 0).into()),
                 descriptor: GTPrimitive::String((0, 0).into()).into(),
             }))
             .convert(&mut Default::default()),
-            TSDescriptor::Record(Box::new(TSRecord {
-                key: TSRecordKey::String,
-                descriptor: TSDescriptor::Primitive(TSPrimitive::String)
-            }))
+            @"
+        Record(TSRecord(
+          key: String,
+          descriptor: Primitive(String),
+        ))
+        "
         );
     }
 
     #[test]
     fn test_convert_any() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Any(GTAny((0, 0).into())).convert(&mut Default::default()),
-            TSDescriptor::Any(TSAny)
+            @"Any(TSAny)"
         );
     }
 
     #[test]
     fn test_convert_branded() {
         let mut context = Default::default();
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Branded(GTBranded {
                 span: (0, 0).into(),
                 id: GTDefinitionId("module".into(), "UserId".into()),
@@ -307,16 +325,20 @@ mod tests {
                 primitive: GTPrimitive::String((0, 0).into()).into(),
             })
             .convert(&mut context),
-            TSDescriptor::Reference("UserId".into())
+            @r#"Reference(TSReference(TSIdentifier("UserId")))"#
         );
         let hoisted = context.drain_hoisted();
-        assert_eq!(
+        assert_ron_snapshot!(
             hoisted,
-            vec![TSDefinition::Branded(TSBranded {
-                doc: None,
-                name: "UserId".into(),
-                primitive: TSPrimitive::String,
-            })]
+            @r#"
+        [
+          Branded(TSBranded(
+            doc: None,
+            name: TSIdentifier("UserId"),
+            primitive: String,
+          )),
+        ]
+        "#
         );
     }
 }

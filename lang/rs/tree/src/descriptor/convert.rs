@@ -67,12 +67,12 @@ impl RSConvert<RSDescriptor> for GTRecordKey {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_descriptor_alias() {
         let mut context = RSConvertContext::empty("module".into());
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Alias(Box::new(GTAlias {
                 id: GTDefinitionId("module".into(), "Name".into()),
                 span: (0, 1).into(),
@@ -83,44 +83,51 @@ mod tests {
             }))
             .convert(&mut context)
             .unwrap(),
-            RSReference {
-                id: GTReferenceId("module".into(), (0, 1).into()),
-                identifier: "Name".into(),
-                definition_id: GTDefinitionId("module".into(), "Name".into())
-            }
-            .into()
+            @r#"
+        Reference(RSReference(
+          id: GTReferenceId(GTModuleId("module"), GTSpan(0, 1)),
+          identifier: RSIdentifier("Name"),
+          definition_id: GTDefinitionId(GTModuleId("module"), "Name"),
+        ))
+        "#
         );
         let hoisted = context.drain_hoisted();
-        assert_eq!(
+        assert_ron_snapshot!(
             hoisted,
-            vec![RSDefinition::Alias(RSAlias {
-                id: GTDefinitionId("module".into(), "Name".into()),
-                doc: None,
-                name: "Name".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
-            })]
+            @r#"
+        [
+          Alias(RSAlias(
+            id: GTDefinitionId(GTModuleId("module"), "Name"),
+            doc: None,
+            name: RSIdentifier("Name"),
+            descriptor: Primitive(Boolean),
+          )),
+        ]
+        "#
         );
     }
 
     #[test]
     fn test_convert_descriptor_array() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Array(Box::new(GTArray {
                 span: (0, 0).into(),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }))
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
-            RSDescriptor::Vec(Box::new(RSVec {
-                descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean)
-            }))
+            @"
+        Vec(RSVec(
+          descriptor: Primitive(Boolean),
+        ))
+        "
         );
     }
 
     #[test]
     fn test_convert_descriptor_inline_import() {
         let mut context = RSConvertContext::empty("module".into());
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::InlineImport(GTInlineImport {
                 span: (0, 0).into(),
                 path: GTPath::new(
@@ -132,17 +139,19 @@ mod tests {
             })
             .convert(&mut context)
             .unwrap(),
-            RSDescriptor::InlineUse(RSInlineUse {
-                path: RSPath("path/to/module".into(), "super::path::to::module".into()),
-                name: "Name".into()
-            })
+            @r#"
+        InlineUse(RSInlineUse(
+          path: RSPath(GTModuleId("path/to/module"), "super::path::to::module"),
+          name: RSIdentifier("Name"),
+        ))
+        "#
         );
     }
 
     #[test]
     fn test_convert_descriptor_object() {
         let mut context = RSConvertContext::empty("module".into());
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Object(GTObject {
                 span: (0, 1).into(),
                 name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
@@ -168,57 +177,63 @@ mod tests {
             })
             .convert(&mut context)
             .unwrap(),
-            RSDescriptor::Reference(
-                RSReference {
-                    id: GTReferenceId("module".into(), (0, 1).into()),
-                    identifier: "Person".into(),
-                    definition_id: GTDefinitionId("module".into(), "Person".into())
-                }
-                .into()
-            )
+            @r#"
+        Reference(RSReference(
+          id: GTReferenceId(GTModuleId("module"), GTSpan(0, 1)),
+          identifier: RSIdentifier("Person"),
+          definition_id: GTDefinitionId(GTModuleId("module"), "Person"),
+        ))
+        "#
         );
         let hoisted = context.drain_hoisted();
-        assert_eq!(
+        assert_ron_snapshot!(
             hoisted,
-            vec![RSDefinition::Struct(RSStruct {
-                id: GTDefinitionId("module".into(), "Person".into()),
+            @r#"
+        [
+          Struct(RSStruct(
+            id: GTDefinitionId(GTModuleId("module"), "Person"),
+            doc: None,
+            attributes: [
+              RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            ],
+            name: RSIdentifier("Person"),
+            fields: Resolved([
+              RSField(
                 doc: None,
-                attributes: vec!["derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into()],
-                name: "Person".into(),
-                fields: vec![
-                    RSField {
-                        doc: None,
-                        attributes: vec![],
-                        name: "name".into(),
-                        descriptor: RSPrimitive::String.into(),
-                    },
-                    RSField {
-                        doc: None,
-                        attributes: vec![
-                            r#"serde(default, skip_serializing_if = "Option::is_none")"#.into()
-                        ],
-                        name: "age".into(),
-                        descriptor: RSOption::new(RSPrimitive::Int32.into()).into(),
-                    }
-                ]
-                .into(),
-            })]
+                attributes: [],
+                name: RSFieldName("name"),
+                descriptor: Primitive(String),
+              ),
+              RSField(
+                doc: None,
+                attributes: [
+                  RSAttribute("serde(default, skip_serializing_if = \"Option::is_none\")"),
+                ],
+                name: RSFieldName("age"),
+                descriptor: Option(RSOption(
+                  descriptor: Primitive(Int32),
+                )),
+              ),
+            ]),
+          )),
+        ]
+        "#
         );
     }
 
     #[test]
     fn test_convert_descriptor_primitive() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Primitive(GTPrimitive::Boolean((0, 0).into()))
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSDescriptor::Primitive(RSPrimitive::Boolean)
+            @"Primitive(Boolean)"
         );
     }
 
     #[test]
     fn test_convert_descriptor_reference() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Reference(GTReference {
                 span: (0, 1).into(),
                 id: GTReferenceId("module".into(), (0, 1).into()),
@@ -230,18 +245,19 @@ mod tests {
             })
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
-            RSReference {
-                id: GTReferenceId("module".into(), (0, 1).into()),
-                identifier: "Name".into(),
-                definition_id: GTDefinitionId("module".into(), "Name".into())
-            }
-            .into()
+            @r#"
+        Reference(RSReference(
+          id: GTReferenceId(GTModuleId("module"), GTSpan(0, 1)),
+          identifier: RSIdentifier("Name"),
+          definition_id: GTDefinitionId(GTModuleId("module"), "Name"),
+        ))
+        "#
         );
     }
 
     #[test]
     fn test_convert_descriptor_tuple() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Tuple(GTTuple {
                 span: (0, 0).into(),
                 descriptors: vec![
@@ -251,12 +267,14 @@ mod tests {
             })
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
-            RSDescriptor::Tuple(RSTuple {
-                descriptors: vec![
-                    RSDescriptor::Primitive(RSPrimitive::Boolean),
-                    RSDescriptor::Primitive(RSPrimitive::String),
-                ]
-            })
+            @"
+        Tuple(RSTuple(
+          descriptors: [
+            Primitive(Boolean),
+            Primitive(String),
+          ],
+        ))
+        "
         );
     }
 
@@ -264,7 +282,7 @@ mod tests {
     fn test_convert_descriptor_union() {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Alias("Union".into()));
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Union(GTUnion {
                 span: (0, 1).into(),
                 descriptors: vec![
@@ -274,45 +292,44 @@ mod tests {
             })
             .convert(&mut context)
             .unwrap(),
-            RSDescriptor::Reference(
-                RSReference {
-                    id: GTReferenceId("module".into(), (0, 1).into()),
-                    identifier: "Union".into(),
-                    definition_id: GTDefinitionId("module".into(), "Union".into())
-                }
-                .into()
-            )
+            @r#"
+        Reference(RSReference(
+          id: GTReferenceId(GTModuleId("module"), GTSpan(0, 1)),
+          identifier: RSIdentifier("Union"),
+          definition_id: GTDefinitionId(GTModuleId("module"), "Union"),
+        ))
+        "#
         );
         let hoisted = context.drain_hoisted();
-        assert_eq!(
+        assert_ron_snapshot!(
             hoisted,
-            vec![RSDefinition::Enum(RSEnum {
-                id: GTDefinitionId("module".into(), "Union".into()),
+            @r#"
+        [
+          Enum(RSEnum(
+            id: GTDefinitionId(GTModuleId("module"), "Union"),
+            doc: None,
+            attributes: [
+              RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+              RSAttribute("serde(untagged)"),
+            ],
+            name: RSIdentifier("Union"),
+            variants: [
+              RSEnumVariant(
                 doc: None,
-                attributes: vec![
-                    "derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into(),
-                    "serde(untagged)".into(),
-                ],
-                name: "Union".into(),
-                variants: vec![
-                    RSEnumVariant {
-                        doc: None,
-                        name: "Boolean".into(),
-                        attributes: vec![],
-                        descriptor: RSEnumVariantDescriptor::Descriptor(
-                            RSDescriptor::Primitive(RSPrimitive::Boolean).into()
-                        ),
-                    },
-                    RSEnumVariant {
-                        doc: None,
-                        name: "String".into(),
-                        attributes: vec![],
-                        descriptor: RSEnumVariantDescriptor::Descriptor(
-                            RSDescriptor::Primitive(RSPrimitive::String).into()
-                        ),
-                    }
-                ],
-            })]
+                attributes: [],
+                name: RSIdentifier("Boolean"),
+                descriptor: Descriptor(Primitive(Boolean)),
+              ),
+              RSEnumVariant(
+                doc: None,
+                attributes: [],
+                name: RSIdentifier("String"),
+                descriptor: Descriptor(Primitive(String)),
+              ),
+            ],
+          )),
+        ]
+        "#
         );
     }
 
@@ -320,101 +337,101 @@ mod tests {
 
     #[test]
     fn test_convert_record_key() {
-        assert_eq!(
-            RSDescriptor::Primitive(RSPrimitive::String),
+        assert_ron_snapshot!(
             GTRecordKey::String((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
+            @"Primitive(String)"
         );
-        assert_eq!(
-            RSDescriptor::Primitive(RSPrimitive::Int8),
+        assert_ron_snapshot!(
             GTRecordKey::Int8((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
+            @"Primitive(Int8)"
         );
-        assert_eq!(
-            RSDescriptor::Primitive(RSPrimitive::Int16),
+        assert_ron_snapshot!(
             GTRecordKey::Int16((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
+            @"Primitive(Int16)"
         );
-        assert_eq!(
-            RSDescriptor::Primitive(RSPrimitive::Int32),
+        assert_ron_snapshot!(
             GTRecordKey::Int32((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
+            @"Primitive(Int32)"
         );
-        assert_eq!(
-            RSDescriptor::Primitive(RSPrimitive::Int64),
+        assert_ron_snapshot!(
             GTRecordKey::Int64((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
+            @"Primitive(Int64)"
         );
-        assert_eq!(
-            RSDescriptor::Primitive(RSPrimitive::Int128),
+        assert_ron_snapshot!(
             GTRecordKey::Int128((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
+            @"Primitive(Int128)"
         );
-        assert_eq!(
-            RSDescriptor::Primitive(RSPrimitive::IntSize),
+        assert_ron_snapshot!(
             GTRecordKey::IntSize((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
+            @"Primitive(IntSize)"
         );
-        assert_eq!(
-            RSDescriptor::Primitive(RSPrimitive::IntU8),
+        assert_ron_snapshot!(
             GTRecordKey::IntU8((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
+            @"Primitive(IntU8)"
         );
-        assert_eq!(
-            RSDescriptor::Primitive(RSPrimitive::IntU16),
+        assert_ron_snapshot!(
             GTRecordKey::IntU16((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
+            @"Primitive(IntU16)"
         );
-        assert_eq!(
-            RSDescriptor::Primitive(RSPrimitive::IntU32),
+        assert_ron_snapshot!(
             GTRecordKey::IntU32((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
+            @"Primitive(IntU32)"
         );
-        assert_eq!(
-            RSDescriptor::Primitive(RSPrimitive::IntU64),
+        assert_ron_snapshot!(
             GTRecordKey::IntU64((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
+            @"Primitive(IntU64)"
         );
-        assert_eq!(
-            RSDescriptor::Primitive(RSPrimitive::IntU128),
+        assert_ron_snapshot!(
             GTRecordKey::IntU128((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
+            @"Primitive(IntU128)"
         );
-        assert_eq!(
-            RSDescriptor::Primitive(RSPrimitive::IntUSize),
+        assert_ron_snapshot!(
             GTRecordKey::IntUSize((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
+            @"Primitive(IntUSize)"
         );
-        assert_eq!(
-            RSDescriptor::Primitive(RSPrimitive::Float32),
+        assert_ron_snapshot!(
             GTRecordKey::Float32((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
+            @"Primitive(Float32)"
         );
-        assert_eq!(
-            RSDescriptor::Primitive(RSPrimitive::Float64),
+        assert_ron_snapshot!(
             GTRecordKey::Float64((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
+            @"Primitive(Float64)"
         );
-        assert_eq!(
-            RSDescriptor::Primitive(RSPrimitive::Boolean),
+        assert_ron_snapshot!(
             GTRecordKey::Boolean((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
+            @"Primitive(Boolean)"
         );
     }
 }

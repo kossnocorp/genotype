@@ -28,21 +28,24 @@ impl<'a> GtlRender<'a> for TSObject {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_empty() {
-        assert_eq!(
+        assert_snapshot!(
             TSObject { properties: vec![] }
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "{\n}"
+            @"
+        {
+        }
+        "
         );
     }
 
     #[test]
     fn test_render_properties() {
-        assert_eq!(
+        assert_snapshot!(
             TSObject {
                 properties: vec![
                     TSProperty {
@@ -61,13 +64,18 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "{\n  name: string,\n  age?: number\n}"
+            @"
+        {
+          name: string,
+          age?: number
+        }
+        "
         );
     }
 
     #[test]
     fn test_render_indent() {
-        assert_eq!(
+        assert_snapshot!(
             TSObject {
                 properties: vec![
                     TSProperty {
@@ -89,7 +97,12 @@ mod tests {
                 &mut Default::default()
             )
             .unwrap(),
-            "{\n    name: string,\n    age?: number\n  }"
+            @"
+        {
+            name: string,
+            age?: number
+          }
+        "
         );
     }
 }

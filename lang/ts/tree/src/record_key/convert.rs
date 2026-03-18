@@ -34,25 +34,25 @@ impl TSConvert<TSRecordKey> for GTRecordKey {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
-            TSRecordKey::String,
+        assert_ron_snapshot!(
             GTRecordKey::String((0, 0).into()).convert(&mut Default::default()),
+            @"String"
         );
-        assert_eq!(
-            TSRecordKey::Number,
+        assert_ron_snapshot!(
             GTRecordKey::Int32((0, 0).into()).convert(&mut Default::default()),
+            @"Number"
         );
-        assert_eq!(
-            TSRecordKey::Number,
+        assert_ron_snapshot!(
             GTRecordKey::Float64((0, 0).into()).convert(&mut Default::default()),
+            @"Number"
         );
-        assert_eq!(
-            TSRecordKey::Boolean,
+        assert_ron_snapshot!(
             GTRecordKey::Boolean((0, 0).into()).convert(&mut Default::default()),
+            @"Boolean"
         );
     }
 }

@@ -24,15 +24,11 @@ impl RSConvert<RSPath> for GTPath {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_base() {
-        assert_eq!(
-            RSPath(
-                GTModuleId("module/path".into()),
-                "super::path::to::module".into()
-            ),
+        assert_ron_snapshot!(
             GTPath::new(
                 (0, 0).into(),
                 GTPathModuleId::Resolved("module/path".into()),
@@ -40,13 +36,13 @@ mod tests {
             )
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
+            @r#"RSPath(GTModuleId("module/path"), "super::path::to::module")"#,
         );
     }
 
     #[test]
     fn test_convert_absolute() {
-        assert_eq!(
-            RSPath(GTModuleId("module/path".into()), "path::to::module".into()),
+        assert_ron_snapshot!(
             GTPath::new(
                 (0, 0).into(),
                 GTPathModuleId::Resolved("module/path".into()),
@@ -54,16 +50,13 @@ mod tests {
             )
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
+            @r#"RSPath(GTModuleId("module/path"), "path::to::module")"#,
         );
     }
 
     #[test]
     fn test_convert_up() {
-        assert_eq!(
-            RSPath(
-                GTModuleId("module/path".into()),
-                "super::super::path::to::module".into()
-            ),
+        assert_ron_snapshot!(
             GTPath::new(
                 (0, 0).into(),
                 GTPathModuleId::Resolved("module/path".into()),
@@ -71,6 +64,7 @@ mod tests {
             )
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
+            @r#"RSPath(GTModuleId("module/path"), "super::super::path::to::module")"#,
         );
     }
 
@@ -95,11 +89,7 @@ mod tests {
             Default::default(),
             Default::default(),
         );
-        assert_eq!(
-            RSPath(
-                GTModuleId("module/path".into()),
-                "super::path::to::another::module".into()
-            ),
+        assert_ron_snapshot!(
             GTPath::new(
                 (0, 0).into(),
                 GTPathModuleId::Resolved("module/path".into()),
@@ -107,6 +97,7 @@ mod tests {
             )
             .convert(&mut context)
             .unwrap(),
+            @r#"RSPath(GTModuleId("module/path"), "super::path::to::another::module")"#,
         );
     }
 }

@@ -20,7 +20,7 @@ impl GtjSchemaConvert<GtjSchemaAny> for GtjNumber {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
@@ -29,13 +29,23 @@ mod tests {
             doc: Some("Hello, world!".into()),
             r#type: GtjNumberTypeNumber,
         };
-        assert_eq!(
-            GtjSchemaNumber {
-                r#type: GtjSchemaNumberTypeNumber,
-                title: Some("hello".into()),
-                description: Some("Hello, world!".into()),
-            },
-            number.to_schema(),
-        );
+
+        let any_schema: GtjSchemaAny = number.to_schema();
+        assert_ron_snapshot!(any_schema, @r#"
+        GtjSchemaNumber(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          type: "number",
+        )
+        "#);
+
+        let number_schema: GtjSchemaNumber = number.to_schema();
+        assert_ron_snapshot!(number_schema, @r#"
+        GtjSchemaNumber(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          type: "number",
+        )
+        "#);
     }
 }

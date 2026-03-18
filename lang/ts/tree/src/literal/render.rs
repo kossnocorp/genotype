@@ -29,85 +29,85 @@ impl<'a> GtlRender<'a> for TSLiteral {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_null() {
-        assert_eq!(
+        assert_snapshot!(
             TSLiteral::Null
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "null"
+            @"null"
         );
     }
 
     #[test]
     fn test_render_boolean() {
-        assert_eq!(
+        assert_snapshot!(
             TSLiteral::Boolean(true)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "true"
+            @"true"
         );
-        assert_eq!(
+        assert_snapshot!(
             TSLiteral::Boolean(false)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "false"
+            @"false"
         );
     }
 
     #[test]
     fn test_render_integer() {
-        assert_eq!(
+        assert_snapshot!(
             TSLiteral::Integer(1)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "1"
+            @"1"
         );
-        assert_eq!(
+        assert_snapshot!(
             TSLiteral::Integer(-1)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "-1"
+            @"-1"
         );
     }
 
     #[test]
     fn test_render_float() {
-        assert_eq!(
+        assert_snapshot!(
             TSLiteral::Float(1.0)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "1.0"
+            @"1.0"
         );
-        assert_eq!(
+        assert_snapshot!(
             TSLiteral::Float(-1.1)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "-1.1"
+            @"-1.1"
         );
-        assert_eq!(
+        assert_snapshot!(
             TSLiteral::Float(1.23456789)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "1.23456789"
+            @"1.23456789"
         );
     }
 
     #[test]
     fn test_render_string() {
-        assert_eq!(
+        assert_snapshot!(
             TSLiteral::String("Hi!".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "\"Hi!\""
+            @r#""Hi!""#
         );
-        assert_eq!(
+        assert_snapshot!(
             TSLiteral::String("Hello, \"world\"!\\".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "\"Hello, \\\"world\\\"!\\\\\""
+            @r#""Hello, \"world\"!\\""#
         );
     }
 }

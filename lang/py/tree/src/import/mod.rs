@@ -3,7 +3,7 @@ use crate::prelude::internal::*;
 mod convert;
 mod render;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct PYImport {
     pub dependency: PYDependencyIdent,
     pub reference: PYImportReference,

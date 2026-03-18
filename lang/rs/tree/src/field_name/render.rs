@@ -17,25 +17,25 @@ impl<'a> GtlRender<'a> for RSFieldName {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             RSFieldName("foo".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "foo"
+            @"foo"
         );
     }
 
     #[test]
     fn test_render_keyword() {
-        assert_eq!(
+        assert_snapshot!(
             RSFieldName("type".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "r#type"
+            @"r#type"
         );
     }
 }

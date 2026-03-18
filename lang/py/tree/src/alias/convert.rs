@@ -55,11 +55,12 @@ impl PYConvert<PYDefinition> for GTAlias {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use insta::assert_ron_snapshot;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_alias() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "Name".into()),
                 span: (0, 0).into(),
@@ -69,18 +70,20 @@ mod tests {
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }
             .convert(&mut PYConvertContext::default()),
-            PYDefinition::Alias(PYAlias {
-                doc: None,
-                name: "Name".into(),
-                descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
-                references: vec![],
-            }),
+            @r#"
+        Alias(PYAlias(
+          doc: None,
+          name: PYIdentifier("Name"),
+          descriptor: Primitive(Boolean),
+          references: [],
+        ))
+        "#
         );
     }
 
     #[test]
     fn test_convert_class() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "Book".into()),
                 span: (0, 0).into(),
@@ -112,32 +115,34 @@ mod tests {
                 })
             }
             .convert(&mut PYConvertContext::default()),
-            PYDefinition::Class(PYClass {
-                doc: None,
-                name: "Book".into(),
-                extensions: vec![],
-                properties: vec![
-                    PYProperty {
-                        doc: None,
-                        name: "title".into(),
-                        descriptor: PYDescriptor::Primitive(PYPrimitive::String),
-                        required: true,
-                    },
-                    PYProperty {
-                        doc: None,
-                        name: "author".into(),
-                        descriptor: PYDescriptor::Primitive(PYPrimitive::String),
-                        required: true,
-                    }
-                ],
-                references: vec![],
-            }),
+            @r#"
+        Class(PYClass(
+          doc: None,
+          name: PYIdentifier("Book"),
+          extensions: [],
+          properties: [
+            PYProperty(
+              doc: None,
+              name: PYKey("title"),
+              descriptor: Primitive(String),
+              required: true,
+            ),
+            PYProperty(
+              doc: None,
+              name: PYKey("author"),
+              descriptor: Primitive(String),
+              required: true,
+            ),
+          ],
+          references: [],
+        ))
+        "#
         );
     }
 
     #[test]
     fn test_convert_branded() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "UserId".into()),
                 span: (0, 0).into(),
@@ -152,18 +157,21 @@ mod tests {
                 })
             }
             .convert(&mut PYConvertContext::default()),
-            PYDefinition::Newtype(PYNewtype {
-                doc: None,
-                name: "UserId".into(),
-                primitive: PYPrimitive::String,
-            })
+            @r#"
+        Newtype(PYNewtype(
+          doc: None,
+          name: PYIdentifier("UserId"),
+          primitive: String,
+        ))
+        "#
         );
     }
 
     #[test]
     fn test_convert_hoisted() {
         let mut context = PYConvertContext::default();
-        assert_eq!(
+
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "Book".into()),
                 span: (0, 0).into(),
@@ -195,35 +203,48 @@ mod tests {
                 })
             }
             .convert(&mut context),
-            PYDefinition::Alias(PYAlias {
-                doc: None,
-                name: "Book".into(),
-                descriptor: PYUnion {
-                    descriptors: vec![
-                        PYReference::new("BookObj".into(), true).into(),
-                        PYPrimitive::String.into(),
-                    ],
-                    discriminator: None
-                }
-                .into(),
-                references: vec![PYIdentifier("BookObj".into()),],
-            })
+            @r#"
+        Alias(PYAlias(
+          doc: None,
+          name: PYIdentifier("Book"),
+          descriptor: Union(PYUnion(
+            descriptors: [
+              Reference(PYReference(
+                identifier: PYIdentifier("BookObj"),
+                forward: true,
+              )),
+              Primitive(String),
+            ],
+            discriminator: None,
+          )),
+          references: [
+            PYIdentifier("BookObj"),
+          ],
+        ))
+        "#
         );
+
         let hoisted = context.drain_hoisted();
-        assert_eq!(
+        assert_ron_snapshot!(
             hoisted,
-            vec![PYDefinition::Class(PYClass {
+            @r#"
+        [
+          Class(PYClass(
+            doc: None,
+            name: PYIdentifier("BookObj"),
+            extensions: [],
+            properties: [
+              PYProperty(
                 doc: None,
-                name: "BookObj".into(),
-                extensions: vec![],
-                properties: vec![PYProperty {
-                    doc: None,
-                    name: "author".into(),
-                    descriptor: PYDescriptor::Primitive(PYPrimitive::String),
-                    required: true,
-                }],
-                references: vec![],
-            })]
+                name: PYKey("author"),
+                descriptor: Primitive(String),
+                required: true,
+              ),
+            ],
+            references: [],
+          )),
+        ]
+        "#
         );
     }
 
@@ -236,7 +257,8 @@ mod tests {
                 ..Default::default()
             },
         );
-        assert_eq!(
+
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "Order".into()),
                 span: (0, 0).into(),
@@ -246,20 +268,24 @@ mod tests {
                 descriptor: GTPrimitive::String((0, 0).into()).into(),
             }
             .convert(&mut context),
-            PYDefinition::Alias(PYAlias {
-                doc: None,
-                name: "Name".into(),
-                descriptor: PYPrimitive::String.into(),
-                references: vec![],
-            })
+            @r#"
+        Alias(PYAlias(
+          doc: None,
+          name: PYIdentifier("Name"),
+          descriptor: Primitive(String),
+          references: [],
+        ))
+        "#
         );
+
         assert_eq!(context.as_dependencies(), vec![]);
     }
 
     #[test]
     fn test_forward_alias() {
         let mut context = PYConvertContext::default();
-        assert_eq!(
+
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "Name".into()),
                 span: (0, 0).into(),
@@ -269,13 +295,16 @@ mod tests {
                 descriptor: GTPrimitive::String((0, 0).into()).into(),
             }
             .convert(&mut context),
-            PYDefinition::Alias(PYAlias {
-                doc: None,
-                name: "Name".into(),
-                descriptor: PYPrimitive::String.into(),
-                references: vec![],
-            })
+            @r#"
+        Alias(PYAlias(
+          doc: None,
+          name: PYIdentifier("Name"),
+          descriptor: Primitive(String),
+          references: [],
+        ))
+        "#
         );
+
         assert!(context.is_forward_identifier(
             &"Hello".into(),
             &GTIdentifier::new((0, 0).into(), "Hello".into())
@@ -289,7 +318,8 @@ mod tests {
     #[test]
     fn test_forward_class() {
         let mut context = PYConvertContext::default();
-        assert_eq!(
+
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "Name".into()),
                 span: (0, 0).into(),
@@ -305,17 +335,17 @@ mod tests {
                 .into(),
             }
             .convert(&mut context),
-            PYDefinition::Class(
-                PYClass {
-                    doc: None,
-                    name: "Name".into(),
-                    extensions: vec![],
-                    properties: vec![],
-                    references: vec![],
-                }
-                .into()
-            )
+            @r#"
+        Class(PYClass(
+          doc: None,
+          name: PYIdentifier("Name"),
+          extensions: [],
+          properties: [],
+          references: [],
+        ))
+        "#
         );
+
         assert!(context.is_forward_identifier(
             &"Hello".into(),
             &GTIdentifier::new((0, 0).into(), "Hello".into())
@@ -328,7 +358,7 @@ mod tests {
 
     #[test]
     fn test_convert_discriminator() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "Message".into()),
                 span: (0, 0).into(),
@@ -374,25 +404,35 @@ mod tests {
                 })
             }
             .convert(&mut PYConvertContext::default()),
-            PYDefinition::Alias(PYAlias {
-                doc: None,
-                name: "Message".into(),
-                descriptor: PYUnion {
-                    descriptors: vec![
-                        PYReference::new("Reply".into(), true).into(),
-                        PYReference::new("DM".into(), true).into(),
-                    ],
-                    discriminator: Some("type".into())
-                }
-                .into(),
-                references: vec![PYIdentifier("Reply".into()), PYIdentifier("DM".into()),],
-            }),
+            @r#"
+        Alias(PYAlias(
+          doc: None,
+          name: PYIdentifier("Message"),
+          descriptor: Union(PYUnion(
+            descriptors: [
+              Reference(PYReference(
+                identifier: PYIdentifier("Reply"),
+                forward: true,
+              )),
+              Reference(PYReference(
+                identifier: PYIdentifier("DM"),
+                forward: true,
+              )),
+            ],
+            discriminator: Some("type"),
+          )),
+          references: [
+            PYIdentifier("Reply"),
+            PYIdentifier("DM"),
+          ],
+        ))
+        "#
         );
     }
 
     #[test]
     fn test_convert_doc_alias() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "Name".into()),
                 span: (0, 0).into(),
@@ -402,12 +442,14 @@ mod tests {
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }
             .convert(&mut PYConvertContext::default()),
-            PYDefinition::Alias(PYAlias {
-                doc: Some(PYDoc("Hello, world!".into())),
-                name: "Name".into(),
-                descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
-                references: vec![],
-            }),
+            @r#"
+        Alias(PYAlias(
+          doc: Some(PYDoc("Hello, world!")),
+          name: PYIdentifier("Name"),
+          descriptor: Primitive(Boolean),
+          references: [],
+        ))
+        "#
         );
     }
 }

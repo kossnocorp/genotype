@@ -9,13 +9,13 @@ impl TSConvert<TSIdentifier> for GTIdentifier {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_base() {
-        assert_eq!(
-            TSIdentifier("Foo".into()),
+        assert_ron_snapshot!(
             GTIdentifier::new((0, 0).into(), "Foo".into()).convert(&mut Default::default()),
+            @r#"TSIdentifier("Foo")"#
         );
     }
 
@@ -26,10 +26,10 @@ mod tests {
             GTIdentifier::new((0, 0).into(), "Foo".into()),
             GTIdentifier::new((0, 0).into(), "foo.Bar".into()),
         );
-        assert_eq!(
-            TSIdentifier("foo.Bar".into()),
+        assert_ron_snapshot!(
             GTIdentifier::new((0, 0).into(), "Foo".into())
                 .convert(&mut TSConvertContext::new(resolve, Default::default())),
+            @r#"TSIdentifier("foo.Bar")"#
         );
     }
 }

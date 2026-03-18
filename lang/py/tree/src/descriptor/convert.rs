@@ -43,12 +43,12 @@ impl PYConvert<PYDescriptor> for GTDescriptor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_alias() {
         let mut context = PYConvertContext::default();
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Alias(Box::new(GTAlias {
                 id: GTDefinitionId("module".into(), "Name".into()),
                 span: (0, 0).into(),
@@ -58,59 +58,76 @@ mod tests {
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }))
             .convert(&mut context),
-            PYReference::new("Name".into(), true).into()
+            @r#"
+        Reference(PYReference(
+          identifier: PYIdentifier("Name"),
+          forward: true,
+        ))
+        "#
         );
         let hoisted = context.drain_hoisted();
-        assert_eq!(
+        assert_ron_snapshot!(
             hoisted,
-            vec![PYDefinition::Alias(PYAlias {
-                doc: None,
-                name: "Name".into(),
-                descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
-                references: vec![],
-            })]
+            @r#"
+        [
+          Alias(PYAlias(
+            doc: None,
+            name: PYIdentifier("Name"),
+            descriptor: Primitive(Boolean),
+            references: [],
+          )),
+        ]
+        "#
         );
     }
 
     #[test]
     fn test_convert_array() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Array(Box::new(GTArray {
                 span: (0, 0).into(),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }))
             .convert(&mut PYConvertContext::default()),
-            PYDescriptor::List(Box::new(PYList {
-                descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean)
-            }))
+            @"
+        List(PYList(
+          descriptor: Primitive(Boolean),
+        ))
+        "
         );
     }
 
     #[test]
     fn test_convert_inline_import() {
         let mut context = PYConvertContext::default();
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::InlineImport(GTInlineImport {
                 span: (0, 0).into(),
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 name: GTIdentifier::new((0, 0).into(), "Name".into())
             })
             .convert(&mut context),
-            PYDescriptor::Reference(PYReference::new("Name".into(), false))
+            @r#"
+        Reference(PYReference(
+          identifier: PYIdentifier("Name"),
+          forward: false,
+        ))
+        "#
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             context.as_dependencies(),
-            vec![(
-                PYDependencyIdent::Path(".path.to.module".into()),
-                "Name".into()
-            ),]
+            @r#"
+        [
+          (Path(PYPath(".path.to.module")), PYIdentifier("Name")),
+        ]
+        "#
         );
     }
 
     #[test]
     fn test_convert_object() {
         let mut context = PYConvertContext::default();
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Object(GTObject {
                 span: (0, 0).into(),
                 name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
@@ -135,46 +152,55 @@ mod tests {
                 ],
             })
             .convert(&mut context),
-            PYDescriptor::Reference(PYReference::new("Person".into(), true))
+            @r#"
+        Reference(PYReference(
+          identifier: PYIdentifier("Person"),
+          forward: true,
+        ))
+        "#
         );
         let hoisted = context.drain_hoisted();
-        assert_eq!(
+        assert_ron_snapshot!(
             hoisted,
-            vec![PYDefinition::Class(PYClass {
+            @r#"
+        [
+          Class(PYClass(
+            doc: None,
+            name: PYIdentifier("Person"),
+            extensions: [],
+            properties: [
+              PYProperty(
                 doc: None,
-                name: "Person".into(),
-                extensions: vec![],
-                properties: vec![
-                    PYProperty {
-                        doc: None,
-                        name: "name".into(),
-                        descriptor: PYPrimitive::String.into(),
-                        required: true,
-                    },
-                    PYProperty {
-                        doc: None,
-                        name: "age".into(),
-                        descriptor: PYPrimitive::Int.into(),
-                        required: false,
-                    }
-                ],
-                references: vec![],
-            })]
+                name: PYKey("name"),
+                descriptor: Primitive(String),
+                required: true,
+              ),
+              PYProperty(
+                doc: None,
+                name: PYKey("age"),
+                descriptor: Primitive(Int),
+                required: false,
+              ),
+            ],
+            references: [],
+          )),
+        ]
+        "#
         );
     }
 
     #[test]
     fn test_convert_primitive() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Primitive(GTPrimitive::Boolean((0, 0).into()))
                 .convert(&mut PYConvertContext::default()),
-            PYDescriptor::Primitive(PYPrimitive::Boolean)
+            @"Primitive(Boolean)"
         );
     }
 
     #[test]
     fn test_convert_reference() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Reference(
                 GTReference {
                     span: (0, 0).into(),
@@ -188,13 +214,18 @@ mod tests {
                 .into()
             )
             .convert(&mut PYConvertContext::default()),
-            PYReference::new("Name".into(), true).into()
+            @r#"
+        Reference(PYReference(
+          identifier: PYIdentifier("Name"),
+          forward: true,
+        ))
+        "#
         );
     }
 
     #[test]
     fn test_convert_tuple() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Tuple(GTTuple {
                 span: (0, 0).into(),
                 descriptors: vec![
@@ -203,18 +234,20 @@ mod tests {
                 ]
             })
             .convert(&mut PYConvertContext::default()),
-            PYDescriptor::Tuple(PYTuple {
-                descriptors: vec![
-                    PYDescriptor::Primitive(PYPrimitive::Boolean),
-                    PYDescriptor::Primitive(PYPrimitive::String),
-                ]
-            })
+            @"
+        Tuple(PYTuple(
+          descriptors: [
+            Primitive(Boolean),
+            Primitive(String),
+          ],
+        ))
+        "
         );
     }
 
     #[test]
     fn test_convert_union() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Union(GTUnion {
                 span: (0, 0).into(),
                 descriptors: vec![
@@ -223,20 +256,22 @@ mod tests {
                 ]
             })
             .convert(&mut PYConvertContext::default()),
-            PYDescriptor::Union(PYUnion {
-                descriptors: vec![
-                    PYDescriptor::Primitive(PYPrimitive::Boolean),
-                    PYDescriptor::Primitive(PYPrimitive::String),
-                ],
-                discriminator: None
-            })
+            @"
+        Union(PYUnion(
+          descriptors: [
+            Primitive(Boolean),
+            Primitive(String),
+          ],
+          discriminator: None,
+        ))
+        "
         );
     }
 
     #[test]
     fn test_convert_branded() {
         let mut context = PYConvertContext::default();
-        assert_eq!(
+        assert_ron_snapshot!(
             GTDescriptor::Branded(GTBranded {
                 span: (0, 0).into(),
                 id: GTDefinitionId("module".into(), "UserId".into()),
@@ -244,16 +279,25 @@ mod tests {
                 primitive: GTPrimitive::String((0, 0).into()).into(),
             })
             .convert(&mut context),
-            PYDescriptor::Reference(PYReference::new("UserId".into(), true))
+            @r#"
+        Reference(PYReference(
+          identifier: PYIdentifier("UserId"),
+          forward: true,
+        ))
+        "#
         );
         let hoisted = context.drain_hoisted();
-        assert_eq!(
+        assert_ron_snapshot!(
             hoisted,
-            vec![PYDefinition::Newtype(PYNewtype {
-                doc: None,
-                name: "UserId".into(),
-                primitive: PYPrimitive::String,
-            })]
+            @r#"
+        [
+          Newtype(PYNewtype(
+            doc: None,
+            name: PYIdentifier("UserId"),
+            primitive: String,
+          )),
+        ]
+        "#
         );
     }
 }

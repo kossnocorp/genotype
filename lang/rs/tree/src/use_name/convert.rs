@@ -17,24 +17,24 @@ impl RSConvert<RSUseName> for GTImportName {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_name() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTImportName::Name(
                 (0, 0).into(),
                 GTIdentifier::new((0, 0).into(), "Name".into())
             )
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
-            RSUseName::Name("Name".into()),
+            @r#"Name(RSIdentifier("Name"))"#
         );
     }
 
     #[test]
     fn test_convert_alias() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTImportName::Alias(
                 (0, 0).into(),
                 GTIdentifier::new((0, 0).into(), "Name".into()),
@@ -42,7 +42,7 @@ mod tests {
             )
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
-            RSUseName::Alias("Name".into(), "Alias".into()),
+            @r#"Alias(RSIdentifier("Name"), RSIdentifier("Alias"))"#
         );
     }
 }

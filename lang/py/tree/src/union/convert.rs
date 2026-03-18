@@ -17,11 +17,11 @@ impl PYConvert<PYUnion> for GTUnion {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTUnion {
                 span: (0, 0).into(),
                 descriptors: vec![
@@ -30,13 +30,15 @@ mod tests {
                 ]
             }
             .convert(&mut PYConvertContext::default()),
-            PYUnion {
-                descriptors: vec![
-                    PYDescriptor::Primitive(PYPrimitive::Boolean),
-                    PYDescriptor::Primitive(PYPrimitive::String),
-                ],
-                discriminator: None
-            }
+            @"
+        PYUnion(
+          descriptors: [
+            Primitive(Boolean),
+            Primitive(String),
+          ],
+          discriminator: None,
+        )
+        "
         );
     }
 
@@ -49,20 +51,28 @@ mod tests {
                 ..Default::default()
             },
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             GTUnion {
                 span: (0, 0).into(),
                 descriptors: vec![GTPrimitive::String((0, 0).into()).into()],
             }
             .convert(&mut context),
-            PYUnion {
-                descriptors: vec![PYPrimitive::String.into()],
-                discriminator: None
-            }
+            @"
+        PYUnion(
+          descriptors: [
+            Primitive(String),
+          ],
+          discriminator: None,
+        )
+        "
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             context.as_dependencies(),
-            vec![(PYDependencyIdent::Typing, "Union".into())]
+            @r#"
+        [
+          (Typing, PYIdentifier("Union")),
+        ]
+        "#
         );
     }
 }

@@ -34,7 +34,7 @@ fn module_name(path: &GTPath) -> PYIdentifier {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_glob() {
@@ -44,23 +44,25 @@ mod tests {
             "module".into(),
         );
         let mut context = PYConvertContext::default();
-        assert_eq!(
+        assert_ron_snapshot!(
             GTImport {
                 span: (0, 0).into(),
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 reference: GTImportReference::Glob((0, 0).into())
             }
             .convert(&mut context),
-            PYImport {
-                reference: PYImportReference::Default(Some("module".into())),
-                dependency: PYDependencyIdent::Path(".path.to.module".into())
-            }
+            @r#"
+        PYImport(
+          dependency: Path(PYPath(".path.to.module")),
+          reference: Default(Some(PYIdentifier("module"))),
+        )
+        "#
         );
     }
 
     #[test]
     fn test_convert_names() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTImport {
                 span: (0, 0).into(),
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
@@ -80,29 +82,35 @@ mod tests {
                 )
             }
             .convert(&mut PYConvertContext::default()),
-            PYImport {
-                reference: PYImportReference::Named(vec![
-                    PYImportName::Name("Name".into()),
-                    PYImportName::Alias("Name".into(), "Alias".into())
-                ]),
-                dependency: PYDependencyIdent::Path(".path.to.module".into())
-            }
+            @r#"
+        PYImport(
+          dependency: Path(PYPath(".path.to.module")),
+          reference: Named([
+            Name(PYIdentifier("Name")),
+            Alias(PYIdentifier("Name"), PYIdentifier("Alias")),
+          ]),
+        )
+        "#
         );
     }
 
     #[test]
     fn test_convert_name() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTImport {
                 span: (0, 0).into(),
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 reference: GTIdentifier::new((0, 0).into(), "Name".into()).into()
             }
             .convert(&mut PYConvertContext::default()),
-            PYImport {
-                reference: PYImportReference::Named(vec![PYImportName::Name("Name".into())]),
-                dependency: PYDependencyIdent::Path(".path.to.module".into())
-            }
+            @r#"
+        PYImport(
+          dependency: Path(PYPath(".path.to.module")),
+          reference: Named([
+            Name(PYIdentifier("Name")),
+          ]),
+        )
+        "#
         );
     }
 }

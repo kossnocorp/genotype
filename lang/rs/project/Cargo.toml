@@ -21,7 +21,9 @@ miette = { version = "7.6.0", features = ["fancy", "serde"] }
 thiserror = "1.0.64"
 indexmap = { version = "2.6.0", features = ["serde"] }
 toml_edit = { version = "0.22.26", features = ["serde"] }
+serde = { version = "1.0.210", features = ["derive"] }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
+insta = { version = "1.46.3", features = ["ron"] }
 genotype_config = { version = "0.14.0", path = "../../../config" }

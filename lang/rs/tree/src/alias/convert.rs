@@ -52,11 +52,11 @@ impl RSConvert<RSDefinition> for GTAlias {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_alias() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "Name".into()),
                 span: (0, 0).into(),
@@ -67,18 +67,20 @@ mod tests {
             }
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
-            RSDefinition::Alias(RSAlias {
-                id: GTDefinitionId("module".into(), "Name".into()),
-                doc: None,
-                name: "Name".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
-            }),
+            @r#"
+        Alias(RSAlias(
+          id: GTDefinitionId(GTModuleId("module"), "Name"),
+          doc: None,
+          name: RSIdentifier("Name"),
+          descriptor: Primitive(Boolean),
+        ))
+        "#,
         );
     }
 
     #[test]
     fn test_convert_struct() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "Book".into()),
                 span: (0, 0).into(),
@@ -111,33 +113,36 @@ mod tests {
             }
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
-            RSDefinition::Struct(RSStruct {
-                id: GTDefinitionId("module".into(), "Book".into()),
-                doc: None,
-                attributes: vec!["derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into()],
-                name: "Book".into(),
-                fields: vec![
-                    RSField {
-                        doc: None,
-                        attributes: vec![],
-                        name: "title".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                    },
-                    RSField {
-                        doc: None,
-                        attributes: vec![],
-                        name: "author".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                    }
-                ]
-                .into(),
-            }),
+            @r#"
+        Struct(RSStruct(
+          id: GTDefinitionId(GTModuleId("module"), "Book"),
+          doc: None,
+          attributes: [
+            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+          ],
+          name: RSIdentifier("Book"),
+          fields: Resolved([
+            RSField(
+              doc: None,
+              attributes: [],
+              name: RSFieldName("title"),
+              descriptor: Primitive(String),
+            ),
+            RSField(
+              doc: None,
+              attributes: [],
+              name: RSFieldName("author"),
+              descriptor: Primitive(String),
+            ),
+          ]),
+        ))
+        "#,
         );
     }
 
     #[test]
     fn test_convert_branded() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "BookId".into()),
                 span: (0, 0).into(),
@@ -154,21 +159,26 @@ mod tests {
             }
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
-            RSDefinition::Struct(RSStruct {
-                id: GTDefinitionId("module".into(), "BookId".into()),
-                doc: None,
-                attributes: vec!["derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into()],
-                name: "BookId".into(),
-                fields: RSStructFields::Newtype(vec![RSDescriptor::Primitive(RSPrimitive::Int32),])
-                    .into(),
-            }),
+            @r#"
+        Struct(RSStruct(
+          id: GTDefinitionId(GTModuleId("module"), "BookId"),
+          doc: None,
+          attributes: [
+            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+          ],
+          name: RSIdentifier("BookId"),
+          fields: Newtype([
+            Primitive(Int32),
+          ]),
+        ))
+        "#,
         );
     }
 
     #[test]
     fn test_convert_hoisted() {
         let mut context = RSConvertContext::empty("module".into());
-        assert_eq!(
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "Book".into()),
                 span: (0, 0).into(),
@@ -201,59 +211,65 @@ mod tests {
             }
             .convert(&mut context)
             .unwrap(),
-            RSDefinition::Enum(RSEnum {
-                id: GTDefinitionId("module".into(), "Book".into()),
-                doc: None,
-                attributes: vec![
-                    "derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into(),
-                    r#"serde(untagged)"#.into(),
-                ],
-                name: "Book".into(),
-                variants: vec![
-                    RSEnumVariant {
-                        doc: None,
-                        name: "BookObj".into(),
-                        attributes: vec![],
-                        descriptor: RSEnumVariantDescriptor::Descriptor(
-                            RSReference {
-                                id: GTReferenceId("module".into(), (0, 0).into()),
-                                identifier: "BookObj".into(),
-                                definition_id: GTDefinitionId("module".into(), "BookObj".into())
-                            }
-                            .into()
-                        ),
-                    },
-                    RSEnumVariant {
-                        doc: None,
-                        name: "String".into(),
-                        attributes: vec![],
-                        descriptor: RSEnumVariantDescriptor::Descriptor(RSPrimitive::String.into()),
-                    }
-                ]
-            })
+            @r#"
+        Enum(RSEnum(
+          id: GTDefinitionId(GTModuleId("module"), "Book"),
+          doc: None,
+          attributes: [
+            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RSAttribute("serde(untagged)"),
+          ],
+          name: RSIdentifier("Book"),
+          variants: [
+            RSEnumVariant(
+              doc: None,
+              attributes: [],
+              name: RSIdentifier("BookObj"),
+              descriptor: Descriptor(Reference(RSReference(
+                id: GTReferenceId(GTModuleId("module"), GTSpan(0, 0)),
+                identifier: RSIdentifier("BookObj"),
+                definition_id: GTDefinitionId(GTModuleId("module"), "BookObj"),
+              ))),
+            ),
+            RSEnumVariant(
+              doc: None,
+              attributes: [],
+              name: RSIdentifier("String"),
+              descriptor: Descriptor(Primitive(String)),
+            ),
+          ],
+        ))
+        "#
         );
         let hoisted = context.drain_hoisted();
-        assert_eq!(
+        assert_ron_snapshot!(
             hoisted,
-            vec![RSDefinition::Struct(RSStruct {
-                id: GTDefinitionId("module".into(), "BookObj".into()),
+            @r#"
+        [
+          Struct(RSStruct(
+            id: GTDefinitionId(GTModuleId("module"), "BookObj"),
+            doc: None,
+            attributes: [
+              RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            ],
+            name: RSIdentifier("BookObj"),
+            fields: Resolved([
+              RSField(
                 doc: None,
-                attributes: vec!["derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into(),],
-                name: "BookObj".into(),
-                fields: vec![RSField {
-                    doc: None,
-                    attributes: vec![],
-                    name: "author".into(),
-                    descriptor: RSDescriptor::Primitive(RSPrimitive::String),
-                }]
-                .into(),
-            })]
+                attributes: [],
+                name: RSFieldName("author"),
+                descriptor: Primitive(String),
+              ),
+            ]),
+          )),
+        ]
+        "#
         );
     }
 
     #[test]
     fn test_convert_doc_alias() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "Name".into()),
                 span: (0, 0).into(),
@@ -264,12 +280,14 @@ mod tests {
             }
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
-            RSDefinition::Alias(RSAlias {
-                id: GTDefinitionId("module".into(), "Name".into()),
-                doc: Some("Hello, world!".into()),
-                name: "Name".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
-            }),
+            @r#"
+        Alias(RSAlias(
+          id: GTDefinitionId(GTModuleId("module"), "Name"),
+          doc: Some(RSDoc("Hello, world!", false)),
+          name: RSIdentifier("Name"),
+          descriptor: Primitive(Boolean),
+        ))
+        "#,
         );
     }
 }

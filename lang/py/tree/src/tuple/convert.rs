@@ -16,11 +16,11 @@ impl PYConvert<PYTuple> for GTTuple {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTTuple {
                 span: (0, 0).into(),
                 descriptors: vec![
@@ -29,12 +29,14 @@ mod tests {
                 ]
             }
             .convert(&mut PYConvertContext::default()),
-            PYTuple {
-                descriptors: vec![
-                    PYDescriptor::Primitive(PYPrimitive::Boolean),
-                    PYDescriptor::Primitive(PYPrimitive::String),
-                ]
-            }
+            @"
+        PYTuple(
+          descriptors: [
+            Primitive(Boolean),
+            Primitive(String),
+          ],
+        )
+        "
         );
     }
 
@@ -47,19 +49,27 @@ mod tests {
                 ..Default::default()
             },
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             GTTuple {
                 span: (0, 0).into(),
                 descriptors: vec![GTPrimitive::String((0, 0).into()).into()],
             }
             .convert(&mut context),
-            PYTuple {
-                descriptors: vec![PYPrimitive::String.into()],
-            }
+            @"
+        PYTuple(
+          descriptors: [
+            Primitive(String),
+          ],
+        )
+        "
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             context.as_dependencies(),
-            vec![(PYDependencyIdent::Typing, "Tuple".into())]
+            @r#"
+        [
+          (Typing, PYIdentifier("Tuple")),
+        ]
+        "#
         );
     }
 }

@@ -9,6 +9,8 @@ repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
 miette = { version = "7.6.0", features = ["fancy", "serde"] }
+serde = { version = "1.0.210", features = ["derive"] }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
+insta = { version = "1.46.3", features = ["ron"] }

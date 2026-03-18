@@ -20,39 +20,39 @@ impl<'a> GtlRender<'a> for PYPrimitive {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_primitive() {
-        assert_eq!(
+        assert_snapshot!(
             PYPrimitive::Boolean
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "bool"
+            @"bool"
         );
-        assert_eq!(
+        assert_snapshot!(
             PYPrimitive::String
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "str"
+            @"str"
         );
-        assert_eq!(
+        assert_snapshot!(
             PYPrimitive::Int
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "int"
+            @"int"
         );
-        assert_eq!(
+        assert_snapshot!(
             PYPrimitive::Float
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "float"
+            @"float"
         );
-        assert_eq!(
+        assert_snapshot!(
             PYPrimitive::None
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "None"
+            @"None"
         );
     }
 }

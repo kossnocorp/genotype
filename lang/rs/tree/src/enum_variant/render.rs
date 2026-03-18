@@ -31,11 +31,11 @@ impl<'a> GtlRender<'a> for RSEnumVariant {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             RSEnumVariant {
                 doc: None,
                 attributes: vec![],
@@ -44,13 +44,13 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "Variant(bool),"
+            @"Variant(bool),"
         );
     }
 
     #[test]
     fn test_render_indent() {
-        assert_eq!(
+        assert_snapshot!(
             RSEnumVariant {
                 doc: None,
                 attributes: vec![],
@@ -62,13 +62,13 @@ mod tests {
                 &mut Default::default()
             )
             .unwrap(),
-            "    Variant(bool),"
+            @"    Variant(bool),"
         );
     }
 
     #[test]
     fn test_render_attributes() {
-        assert_eq!(
+        assert_snapshot!(
             RSEnumVariant {
                 doc: None,
                 attributes: vec![RSAttribute(r#"serde(rename = "variant")"#.into())],
@@ -77,14 +77,16 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"#[serde(rename = "variant")]
-Variant(bool),"#
+            @r#"
+        #[serde(rename = "variant")]
+        Variant(bool),
+        "#
         );
     }
 
     #[test]
     fn test_render_doc() {
-        assert_eq!(
+        assert_snapshot!(
             RSEnumVariant {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
@@ -93,14 +95,16 @@ Variant(bool),"#
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"/// Hello, world!
-Variant(bool),"#
+            @"
+        /// Hello, world!
+        Variant(bool),
+        "
         );
     }
 
     #[test]
     fn test_render_mixed() {
-        assert_eq!(
+        assert_snapshot!(
             RSEnumVariant {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![RSAttribute(r#"serde(rename = "variant")"#.into())],
@@ -112,9 +116,11 @@ Variant(bool),"#
                 &mut Default::default()
             )
             .unwrap(),
-            r#"    /// Hello, world!
-    #[serde(rename = "variant")]
-    Variant(bool),"#
+            @r#"
+        /// Hello, world!
+        #[serde(rename = "variant")]
+        Variant(bool),
+        "#
         );
     }
 }

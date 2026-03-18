@@ -6,5 +6,6 @@ pub use genotype_path::*;
 pub use genotype_project::*;
 pub use indexmap::IndexSet;
 pub use miette::{Diagnostic, IntoDiagnostic, Result};
+pub use serde::Serialize;
 pub use thiserror::Error;
 pub use toml_edit::*;

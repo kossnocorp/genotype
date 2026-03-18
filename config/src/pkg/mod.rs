@@ -1,3 +1,5 @@
+use serde::Serialize;
+
 use crate::prelude::internal::*;
 
 mod paths;
@@ -16,7 +18,7 @@ impl<'a> GtConfig {
     }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GtConfigPkg<'a, LangConfig: GtlConfig> {
     /// Dist directory relative to the working directory.
     pub dist: GtDistPath,

@@ -23,27 +23,27 @@ impl<'a> GtlRender<'a> for PYReference {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             PYReference::new("Foo".into(), false)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "Foo"
+            @"Foo"
         );
     }
 
     #[test]
     fn test_render_forward() {
-        assert_eq!(
+        assert_snapshot!(
             PYReference::new("Foo".into(), true)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "Foo"
+            @"Foo"
         );
-        assert_eq!(
+        assert_snapshot!(
             PYReference::new("Foo".into(), true)
                 .render(
                     Default::default(),
@@ -53,7 +53,7 @@ mod tests {
                     }
                 )
                 .unwrap(),
-            "\"Foo\""
+            @r#""Foo""#
         );
     }
 }

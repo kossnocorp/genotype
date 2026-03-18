@@ -51,18 +51,19 @@ impl GtlCodegen for PyCodegen {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_register_import() {
         let mut codegen = PyCodegen::default();
         codegen.register_import(PYImport::new("dependency".into(), "Name".into()));
         codegen.register_import(PYImport::new("another".into(), "AlsoName".into()));
-        assert_eq!(
+        assert_snapshot!(
             codegen.render_module().unwrap(),
-            r#"from dependency import Name
-from another import AlsoName
-"#
+            @"
+        from dependency import Name
+        from another import AlsoName
+        "
         );
     }
 
@@ -78,10 +79,9 @@ from another import AlsoName
             }
             .into(),
         );
-        assert_eq!(
+        assert_snapshot!(
             codegen.render_module().unwrap(),
-            r#"type Name = Any
-"#
+            @"type Name = Any"
         );
     }
 
@@ -90,8 +90,8 @@ from another import AlsoName
         let mut codegen = PyCodegen::default();
         let primitive = GTDescriptor::Primitive(GTPrimitive::String(Default::default()));
         let result = codegen.inject_descriptor(primitive).unwrap();
-        assert_eq!(result, "str");
-        assert_eq!(codegen.render_module().unwrap(), "\n");
+        assert_snapshot!(result, @"str");
+        assert_snapshot!(codegen.render_module().unwrap(), @"");
     }
 
     #[test]
@@ -106,11 +106,10 @@ from another import AlsoName
             descriptor: GTPrimitive::String(Default::default()).into(),
         }));
         let result = codegen.inject_descriptor(alias).unwrap();
-        assert_eq!(result, "Hello");
-        assert_eq!(
+        assert_snapshot!(result, "Hello");
+        assert_snapshot!(
             codegen.render_module().unwrap(),
-            r#"type Hello = str
-"#
+            @"type Hello = str"
         );
     }
 
@@ -126,14 +125,15 @@ from another import AlsoName
             descriptor: GTLiteral::String(Default::default(), "hello".into()).into(),
         }));
         let result = codegen.inject_descriptor(alias).unwrap();
-        assert_eq!(result, "Hello");
-        assert_eq!(
+        assert_snapshot!(result, @"Hello");
+        assert_snapshot!(
             codegen.render_module().unwrap(),
-            r#"from typing import Literal
+            @r#"
+        from typing import Literal
 
 
-type Hello = Literal["hello"]
-"#
+        type Hello = Literal["hello"]
+        "#
         );
     }
 }

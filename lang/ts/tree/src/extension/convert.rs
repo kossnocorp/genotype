@@ -11,14 +11,12 @@ impl TSConvert<TSExtension> for GTExtension {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use insta::assert_ron_snapshot;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
-            TSExtension {
-                reference: "Name".into()
-            },
+        assert_ron_snapshot!(
             GTExtension {
                 span: (0, 0).into(),
                 reference: GTReference {
@@ -32,6 +30,11 @@ mod tests {
                 }
             }
             .convert(&mut Default::default()),
+            @r#"
+        TSExtension(
+          reference: TSReference(TSIdentifier("Name")),
+        )
+        "#,
         );
     }
 }

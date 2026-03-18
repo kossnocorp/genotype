@@ -13,3 +13,4 @@ genotype_parser = { version = "0.14.0", path = "../parser" }
 [dev-dependencies]
 miette = { version = "7.6.0", features = ["fancy", "serde"] }
 pretty_assertions = "1.4.1"
+insta = { version = "1.46.3", features = ["ron"] }

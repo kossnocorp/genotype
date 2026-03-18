@@ -25,21 +25,21 @@ impl<'a> GtlRender<'a> for PYDoc {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_simple() {
-        assert_eq!(
+        assert_snapshot!(
             PYDoc("Hello, world!".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            r#""""Hello, world!""""#
+            @r#""""Hello, world!""""#
         );
     }
 
     #[test]
     fn test_render_multiline() {
-        assert_eq!(
+        assert_snapshot!(
             PYDoc(
                 r#"Hello,
 cruel
@@ -48,15 +48,17 @@ world!"#
             )
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#""""Hello,
-cruel
-world!""""#
+            @r#"
+        """Hello,
+        cruel
+        world!"""
+        "#
         );
     }
 
     #[test]
     fn test_render_indent() {
-        assert_eq!(
+        assert_snapshot!(
             PYDoc(
                 r#"Hello,
 cruel
@@ -68,9 +70,11 @@ world!"#
                 &mut Default::default()
             )
             .unwrap(),
-            r#"    """Hello,
-    cruel
-    world!""""#
+            @r#"
+        """Hello,
+        cruel
+        world!"""
+        "#
         );
     }
 }

@@ -1,7 +1,9 @@
+use serde::Serialize;
+
 use crate::GtlRenderState;
 
-/// Embed respresenting litral lines of code embeded into language tree.
-#[derive(Default, Debug, PartialEq, Clone)]
+/// Embed representing literal lines of code embedded into language tree.
+#[derive(Default, Debug, PartialEq, Clone, Serialize)]
 pub struct GtlEmbed(pub Vec<GtlEmbedLine>);
 
 impl GtlEmbed {
@@ -37,7 +39,7 @@ impl From<Vec<&str>> for GtlEmbed {
     }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GtlEmbedLine(pub String);
 
 impl GtlEmbedLine {
@@ -55,7 +57,7 @@ impl From<&str> for GtlEmbedLine {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[derive(Clone, Copy)]
     struct MockState(usize);
@@ -76,10 +78,12 @@ mod tests {
             GtlEmbedLine("hello".into()),
             GtlEmbedLine("world".into()),
         ]);
-        assert_eq!(
+        assert_snapshot!(
             embed.render(MockState(0)),
-            r"hello
-world"
+            @"
+        hello
+        world
+        "
         )
     }
 
@@ -89,10 +93,12 @@ world"
             GtlEmbedLine("hello".into()),
             GtlEmbedLine("world".into()),
         ]);
-        assert_eq!(
+        assert_snapshot!(
             embed.render(MockState(2)),
-            r"    hello
-    world"
+            @"
+        hello
+        world
+        "
         )
     }
 }

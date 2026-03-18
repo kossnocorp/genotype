@@ -30,38 +30,38 @@ impl<'a> GtlRender<'a> for TSImportReference {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_default() {
-        assert_eq!(
+        assert_snapshot!(
             TSImportReference::Default("Name".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "Name"
+            @"Name"
         );
     }
 
     #[test]
     fn test_render_glob() {
-        assert_eq!(
+        assert_snapshot!(
             TSImportReference::Glob("name".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "* as name"
+            @"* as name"
         );
     }
 
     #[test]
     fn test_render_named() {
-        assert_eq!(
+        assert_snapshot!(
             TSImportReference::Named(vec![
                 TSImportName::Name("Name".into()),
                 TSImportName::Alias("Name".into(), "Alias".into()),
             ])
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "{ Name, Name as Alias }"
+            @"{ Name, Name as Alias }"
         );
     }
 }

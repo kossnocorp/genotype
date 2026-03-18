@@ -15,30 +15,30 @@ impl TSConvert<TSImportName> for GTImportName {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_name() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTImportName::Name(
                 (0, 0).into(),
                 GTIdentifier::new((0, 0).into(), "Name".into())
             )
             .convert(&mut Default::default()),
-            TSImportName::Name("Name".into()),
+            @r#"Name(TSIdentifier("Name"))"#,
         );
     }
 
     #[test]
     fn test_convert_alias() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTImportName::Alias(
                 (0, 0).into(),
                 GTIdentifier::new((0, 0).into(), "Name".into()),
                 GTIdentifier::new((0, 0).into(), "Alias".into())
             )
             .convert(&mut Default::default()),
-            TSImportName::Alias("Name".into(), "Alias".into()),
+            @r#"Alias(TSIdentifier("Name"), TSIdentifier("Alias"))"#,
         );
     }
 }

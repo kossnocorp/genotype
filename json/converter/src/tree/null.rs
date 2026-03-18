@@ -18,7 +18,7 @@ impl GtjTreeConvert<GTDescriptor> for GtjNull {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
@@ -27,22 +27,11 @@ mod tests {
             name: None,
             doc: None,
         };
-        assert_eq!(
-            GTPrimitive::Null(Default::default()),
-            null.to_tree_with_context(&mut Default::default()),
-        );
-    }
 
-    #[test]
-    fn test_convert_descriptor() {
-        let null = GtjNull {
-            r#type: GtjNullTypeNull,
-            name: None,
-            doc: None,
-        };
-        assert_eq!(
-            GTDescriptor::Primitive(GTPrimitive::Null(Default::default())),
-            null.to_tree_with_context(&mut Default::default()),
-        );
+        let descriptor_tree: GTDescriptor = null.to_tree_with_context(&mut Default::default());
+        assert_ron_snapshot!(descriptor_tree, @"Primitive(Null(GTSpan(0, 0)))");
+
+        let null_tree: GTPrimitive = null.to_tree_with_context(&mut Default::default());
+        assert_ron_snapshot!(null_tree, @"Null(GTSpan(0, 0))");
     }
 }

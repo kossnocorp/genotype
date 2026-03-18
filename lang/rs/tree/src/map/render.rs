@@ -19,18 +19,18 @@ impl<'a> GtlRender<'a> for RSMap {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             RSMap {
                 key: RSPrimitive::String.into(),
                 descriptor: RSPrimitive::IntSize.into(),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "BTreeMap<String, isize>"
+            @"BTreeMap<String, isize>"
         );
     }
 }

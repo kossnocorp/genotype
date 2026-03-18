@@ -17,40 +17,34 @@ impl<'a> GtlRender<'a> for PYEmbedDefinition {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             PYEmbedDefinition {
                 name: "Name".into(),
-                embed: r#"class Hello:
-    name = "World""#
-                    .into()
+                embed: r#"class Hello:\n    name = "World""#.into()
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"class Hello:
-    name = "World""#
+            @r#"class Hello:\n    name = "World""#
         );
     }
 
     #[test]
     fn test_render_indent() {
-        assert_eq!(
+        assert_snapshot!(
             PYEmbedDefinition {
                 name: "Name".into(),
-                embed: r#"class Hello:
-    name = "World""#
-                    .into()
+                embed: r#"class Hello:\n    name = "World""#.into()
             }
             .render(
                 PYRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),
-            r#"    class Hello:
-        name = "World""#
+            @r#"    class Hello:\n    name = "World""#
         );
     }
 }

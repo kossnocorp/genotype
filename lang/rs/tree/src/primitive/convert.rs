@@ -28,111 +28,111 @@ impl RSConvert<RSPrimitive> for GTPrimitive {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTPrimitive::Boolean((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSPrimitive::Boolean
+            @"Boolean"
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             GTPrimitive::String((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSPrimitive::String
+            @"String"
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             GTPrimitive::Int8((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSPrimitive::Int8
+            @"Int8"
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             GTPrimitive::Int16((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSPrimitive::Int16
+            @"Int16"
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             GTPrimitive::Int32((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSPrimitive::Int32
+            @"Int32"
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             GTPrimitive::Int64((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSPrimitive::Int64
+            @"Int64"
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             GTPrimitive::Int128((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSPrimitive::Int128
+            @"Int128"
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             GTPrimitive::IntSize((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSPrimitive::IntSize
+            @"IntSize"
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             GTPrimitive::IntU8((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSPrimitive::IntU8
+            @"IntU8"
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             GTPrimitive::IntU16((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSPrimitive::IntU16
+            @"IntU16"
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             GTPrimitive::IntU32((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSPrimitive::IntU32
+            @"IntU32"
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             GTPrimitive::IntU64((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSPrimitive::IntU64
+            @"IntU64"
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             GTPrimitive::IntU128((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSPrimitive::IntU128
+            @"IntU128"
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             GTPrimitive::IntUSize((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSPrimitive::IntUSize
+            @"IntUSize"
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             GTPrimitive::Float32((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSPrimitive::Float32
+            @"Float32"
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             GTPrimitive::Float64((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSPrimitive::Float64
+            @"Float64"
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             GTPrimitive::Null((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSPrimitive::Unit
+            @"Unit"
         );
     }
 }

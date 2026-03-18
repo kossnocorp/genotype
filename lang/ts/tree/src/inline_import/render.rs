@@ -20,18 +20,18 @@ impl<'a> GtlRender<'a> for TSInlineImport {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             TSInlineImport {
                 path: "./path/to/module".into(),
                 name: "Name".into(),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"import("./path/to/module.js").Name"#
+            @r#"import("./path/to/module.js").Name"#
         );
     }
 }

@@ -17,5 +17,5 @@ serde = { version = "1.0.219", features = ["derive"] }
 indexmap = { version = "2.11.0", features = ["serde"] }
 
 [dev-dependencies]
-insta = { version = "1.43.1", features = ["ron"] }
 pretty_assertions = "1.4.1"
+insta = { version = "1.46.3", features = ["ron"] }

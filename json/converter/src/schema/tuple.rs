@@ -25,7 +25,7 @@ impl GtjSchemaConvert<GtjSchemaAny> for GtjTuple {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
@@ -39,18 +39,33 @@ mod tests {
                 r#type: GtjBooleanTypeBoolean,
             })],
         };
-        assert_eq!(
-            GtjSchemaTuple {
-                r#type: GtjSchemaTupleTypeArray,
-                title: Some("hello".into()),
-                description: Some("Hello, world!".into()),
-                prefix_items: vec![GtjSchemaAny::GtjSchemaBoolean(GtjSchemaBoolean {
-                    r#type: GtjSchemaBooleanTypeBoolean,
-                    title: None,
-                    description: None,
-                })],
-            },
-            tuple.to_schema(),
-        );
+
+        let any_schema: GtjSchemaAny = tuple.to_schema();
+        assert_ron_snapshot!(any_schema, @r#"
+        GtjSchemaTuple(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          type: "array",
+          prefixItems: [
+            GtjSchemaBoolean(
+              type: "boolean",
+            ),
+          ],
+        )
+        "#);
+
+        let tuple_schema: GtjSchemaTuple = tuple.to_schema();
+        assert_ron_snapshot!(tuple_schema, @r#"
+        GtjSchemaTuple(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          type: "array",
+          prefixItems: [
+            GtjSchemaBoolean(
+              type: "boolean",
+            ),
+          ],
+        )
+        "#);
     }
 }

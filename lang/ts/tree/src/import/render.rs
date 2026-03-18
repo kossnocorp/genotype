@@ -20,37 +20,37 @@ impl<'a> GtlRender<'a> for TSImport {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_default() {
-        assert_eq!(
+        assert_snapshot!(
             TSImport {
                 path: "../path/to/module".into(),
                 reference: TSImportReference::Default("Name".into()),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"import Name from "../path/to/module.js";"#
+            @r#"import Name from "../path/to/module.js";"#
         );
     }
 
     #[test]
     fn test_render_glob() {
-        assert_eq!(
+        assert_snapshot!(
             TSImport {
                 path: "../path/to/module".into(),
                 reference: TSImportReference::Glob("name".into()),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"import * as name from "../path/to/module.js";"#
+            @r#"import * as name from "../path/to/module.js";"#
         );
     }
 
     #[test]
     fn test_render_named() {
-        assert_eq!(
+        assert_snapshot!(
             TSImport {
                 path: "../path/to/module".into(),
                 reference: TSImportReference::Named(vec![
@@ -60,7 +60,7 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"import { Name, Name as Alias } from "../path/to/module.js";"#
+            @r#"import { Name, Name as Alias } from "../path/to/module.js";"#
         );
     }
 }

@@ -23,11 +23,11 @@ impl<'a> GtlRender<'a> for RSTuple {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_tuple() {
-        assert_eq!(
+        assert_snapshot!(
             RSTuple {
                 descriptors: vec![
                     RSDescriptor::Primitive(RSPrimitive::String),
@@ -36,19 +36,19 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "(String, isize)"
+            @"(String, isize)"
         );
     }
 
     #[test]
     fn test_render_empty_tuple() {
-        assert_eq!(
+        assert_snapshot!(
             RSTuple {
                 descriptors: vec![]
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "()"
+            @"()"
         );
     }
 }

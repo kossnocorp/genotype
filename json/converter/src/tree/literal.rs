@@ -27,7 +27,7 @@ impl GtjTreeConvert<GTDescriptor> for GtjLiteral {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_null() {
@@ -37,9 +37,11 @@ mod tests {
             doc: None,
             value: GtjLiteralValue::Null(()),
         };
-        assert_eq!(
-            GTLiteral::Null(Default::default()),
-            literal.to_tree_with_context(&mut Default::default()),
-        );
+
+        let descriptor_tree: GTDescriptor = literal.to_tree_with_context(&mut Default::default());
+        assert_ron_snapshot!(descriptor_tree, @"Literal(Null(GTSpan(0, 0)))");
+
+        let literal_tree: GTLiteral = literal.to_tree_with_context(&mut Default::default());
+        assert_ron_snapshot!(literal_tree, @"Null(GTSpan(0, 0))");
     }
 }

@@ -18,11 +18,12 @@ impl PYConvert<PYNewtype> for GTBranded {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use insta::assert_ron_snapshot;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTBranded {
                 span: (0, 0).into(),
                 id: GTDefinitionId("module".into(), "UserId".into()),
@@ -30,18 +31,20 @@ mod tests {
                 primitive: GTPrimitive::String((0, 0).into()).into(),
             }
             .convert(&mut PYConvertContext::default()),
-            PYNewtype {
-                doc: None,
-                name: "UserId".into(),
-                primitive: PYPrimitive::String,
-            }
+            @r#"
+        PYNewtype(
+          doc: None,
+          name: PYIdentifier("UserId"),
+          primitive: String,
+        )
+        "#
         );
     }
 
     #[test]
     fn test_convert_resolve() {
         let mut context = PYConvertContext::default();
-        assert_eq!(
+        assert_ron_snapshot!(
             GTBranded {
                 span: (0, 0).into(),
                 id: GTDefinitionId("module".into(), "UserId".into()),
@@ -49,15 +52,21 @@ mod tests {
                 primitive: GTPrimitive::String((0, 0).into()).into(),
             }
             .convert(&mut context),
-            PYNewtype {
-                doc: None,
-                name: "UserId".into(),
-                primitive: PYPrimitive::String,
-            }
+            @r#"
+        PYNewtype(
+          doc: None,
+          name: PYIdentifier("UserId"),
+          primitive: String,
+        )
+        "#
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             context.as_dependencies(),
-            vec![(PYDependencyIdent::Typing, "NewType".into())]
+            @r#"
+        [
+          (Typing, PYIdentifier("NewType")),
+        ]
+        "#
         );
     }
 
@@ -65,7 +74,7 @@ mod tests {
     fn test_convert_doc() {
         let mut context = PYConvertContext::default();
         context.provide_doc(Some(PYDoc("Hello, world!".into())));
-        assert_eq!(
+        assert_ron_snapshot!(
             GTBranded {
                 span: (0, 0).into(),
                 id: GTDefinitionId("module".into(), "UserId".into()),
@@ -73,11 +82,13 @@ mod tests {
                 primitive: GTPrimitive::String((0, 0).into()).into(),
             }
             .convert(&mut context),
-            PYNewtype {
-                doc: Some(PYDoc("Hello, world!".into())),
-                name: "UserId".into(),
-                primitive: PYPrimitive::String,
-            }
+            @r#"
+        PYNewtype(
+          doc: Some(PYDoc("Hello, world!")),
+          name: PYIdentifier("UserId"),
+          primitive: String,
+        )
+        "#
         );
     }
 }

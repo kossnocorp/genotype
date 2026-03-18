@@ -46,21 +46,21 @@ impl<'a> GtlRender<'a> for TSDoc {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_simple() {
-        assert_eq!(
+        assert_snapshot!(
             TSDoc("Hello, world!".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "/** Hello, world! */"
+            @"/** Hello, world! */"
         );
     }
 
     #[test]
     fn test_render_multiline() {
-        assert_eq!(
+        assert_snapshot!(
             TSDoc(
                 r#"Hello,
 cruel
@@ -69,15 +69,17 @@ world!"#
             )
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"/** Hello,
- * cruel
- * world! */"#
+            @"
+        /** Hello,
+         * cruel
+         * world! */
+        "
         );
     }
 
     #[test]
     fn test_render_indent() {
-        assert_eq!(
+        assert_snapshot!(
             TSDoc(
                 r#"Hello,
 cruel
@@ -89,15 +91,17 @@ world!"#
                 &mut Default::default()
             )
             .unwrap(),
-            r#"  /** Hello,
-   * cruel
-   * world! */"#
+            @"
+        /** Hello,
+         * cruel
+         * world! */
+        "
         );
     }
 
     #[test]
     fn test_with_doc_some() {
-        assert_eq!(
+        assert_snapshot!(
             TSDoc::with_doc(
                 &Some(TSDoc("Hello, world!".into())),
                 Default::default(),
@@ -106,14 +110,16 @@ world!"#
                 false
             )
             .unwrap(),
-            r#"/** Hello, world! */
-type Name = string;"#
+            @"
+        /** Hello, world! */
+        type Name = string;
+        "
         );
     }
 
     #[test]
     fn test_with_doc_none() {
-        assert_eq!(
+        assert_snapshot!(
             TSDoc::with_doc(
                 &None,
                 Default::default(),
@@ -122,13 +128,13 @@ type Name = string;"#
                 false
             )
             .unwrap(),
-            r#"type Name = string;"#
+            @"type Name = string;"
         );
     }
 
     #[test]
     fn test_with_doc_padded_some() {
-        assert_eq!(
+        assert_snapshot!(
             TSDoc::with_doc(
                 &Some(TSDoc("Hello, world!".into())),
                 Default::default(),
@@ -137,15 +143,17 @@ type Name = string;"#
                 true
             )
             .unwrap(),
-            r#"/** Hello, world! */
+            @"
+        /** Hello, world! */
 
-type Name = string;"#
+        type Name = string;
+        "
         );
     }
 
     #[test]
     fn test_with_doc_padded_none() {
-        assert_eq!(
+        assert_snapshot!(
             TSDoc::with_doc(
                 &None,
                 Default::default(),
@@ -154,7 +162,7 @@ type Name = string;"#
                 true
             )
             .unwrap(),
-            r#"type Name = string;"#
+            @"type Name = string;"
         );
     }
 }

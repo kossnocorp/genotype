@@ -20,7 +20,7 @@ impl GtjSchemaConvert<GtjSchemaAny> for GtjBoolean {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
@@ -29,13 +29,23 @@ mod tests {
             doc: Some("Hello, world!".into()),
             r#type: GtjBooleanTypeBoolean,
         };
-        assert_eq!(
-            GtjSchemaBoolean {
-                r#type: GtjSchemaBooleanTypeBoolean,
-                title: Some("hello".into()),
-                description: Some("Hello, world!".into()),
-            },
-            boolean.to_schema(),
-        );
+
+        let any_schema: GtjSchemaAny = boolean.to_schema();
+        assert_ron_snapshot!(any_schema, @r#"
+        GtjSchemaBoolean(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          type: "boolean",
+        )
+        "#);
+
+        let boolean_schema: GtjSchemaBoolean = boolean.to_schema();
+        assert_ron_snapshot!(boolean_schema, @r#"
+        GtjSchemaBoolean(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          type: "boolean",
+        )
+        "#);
     }
 }

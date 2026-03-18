@@ -12,19 +12,21 @@ impl PYConvert<PYList> for GTArray {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTArray {
                 span: (0, 0).into(),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }
             .convert(&mut PYConvertContext::default()),
-            PYList {
-                descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean)
-            }
+            @"
+        PYList(
+          descriptor: Primitive(Boolean),
+        )
+        "
         );
     }
 
@@ -37,19 +39,25 @@ mod tests {
                 ..Default::default()
             },
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             GTArray {
                 span: (0, 0).into(),
                 descriptor: GTPrimitive::String((0, 0).into()).into(),
             }
             .convert(&mut context),
-            PYList {
-                descriptor: PYPrimitive::String.into(),
-            }
+            @"
+        PYList(
+          descriptor: Primitive(String),
+        )
+        "
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             context.as_dependencies(),
-            vec![(PYDependencyIdent::Typing, "List".into())]
+            @r#"
+        [
+          (Typing, PYIdentifier("List")),
+        ]
+        "#
         );
     }
 }

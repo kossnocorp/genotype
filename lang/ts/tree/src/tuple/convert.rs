@@ -15,11 +15,11 @@ impl TSConvert<TSTuple> for GTTuple {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTTuple {
                 span: (0, 0).into(),
                 descriptors: vec![
@@ -28,12 +28,14 @@ mod tests {
                 ]
             }
             .convert(&mut Default::default()),
-            TSTuple {
-                descriptors: vec![
-                    TSDescriptor::Primitive(TSPrimitive::Boolean),
-                    TSDescriptor::Primitive(TSPrimitive::String),
-                ]
-            }
+            @"
+        TSTuple(
+          descriptors: [
+            Primitive(Boolean),
+            Primitive(String),
+          ],
+        )
+        "
         );
     }
 }

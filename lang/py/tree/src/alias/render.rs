@@ -31,11 +31,11 @@ impl<'a> GtlRender<'a> for PYAlias {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             PYAlias {
                 doc: None,
                 name: "Name".into(),
@@ -44,13 +44,13 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "type Name = str"
+            @"type Name = str"
         );
     }
 
     #[test]
     fn test_render_legacy() {
-        assert_eq!(
+        assert_snapshot!(
             PYAlias {
                 doc: None,
                 name: "Name".into(),
@@ -65,13 +65,13 @@ mod tests {
                 }
             )
             .unwrap(),
-            "Name = str"
+            @"Name = str"
         );
     }
 
     #[test]
     fn test_render_doc() {
-        assert_eq!(
+        assert_snapshot!(
             PYAlias {
                 doc: Some(PYDoc("Hello, world!".into())),
                 name: "Name".into(),
@@ -80,8 +80,10 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"type Name = str
-"""Hello, world!""""#
+            @r#"
+        type Name = str
+        """Hello, world!"""
+        "#
         );
     }
 }

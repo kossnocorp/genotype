@@ -11,19 +11,21 @@ impl TSConvert<TSArray> for GTArray {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTArray {
                 span: (0, 0).into(),
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }
             .convert(&mut Default::default()),
-            TSArray {
-                descriptor: TSDescriptor::Primitive(TSPrimitive::Boolean)
-            }
+            @"
+        TSArray(
+          descriptor: Primitive(Boolean),
+        )
+        "
         );
     }
 }

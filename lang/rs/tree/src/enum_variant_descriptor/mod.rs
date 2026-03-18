@@ -2,10 +2,10 @@ use crate::prelude::internal::*;
 
 mod render;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub enum RSEnumVariantDescriptor {
     Descriptor(RSDescriptor),
-    // [TODO] Add inline stuct and Vec<RSDescriptor>
+    // [TODO] Add inline struct and Vec<RSDescriptor>
 }
 
 impl From<RSDescriptor> for RSEnumVariantDescriptor {

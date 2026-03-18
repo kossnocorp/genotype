@@ -15,7 +15,7 @@ impl PYContextResolve for PYProperty {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_resolve() {
@@ -27,7 +27,7 @@ mod tests {
             required: true,
         };
         alias.resolve(&mut context);
-        assert_eq!(context.as_imports(), vec![]);
+        assert_ron_snapshot!(context.as_imports(), @"[]");
     }
 
     #[test]
@@ -40,9 +40,13 @@ mod tests {
             required: false,
         };
         alias.resolve(&mut context);
-        assert_eq!(
+        assert_ron_snapshot!(
             context.as_imports(),
-            vec![(PYDependencyIdent::Typing, "Optional".into())]
+            @r#"
+        [
+          (Typing, PYIdentifier("Optional")),
+        ]
+        "#
         );
     }
 }

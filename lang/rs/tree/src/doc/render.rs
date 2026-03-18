@@ -28,31 +28,31 @@ impl<'a> GtlRender<'a> for RSDoc {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_simple() {
-        assert_eq!(
+        assert_snapshot!(
             RSDoc::new("Hello, world!", false)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            r#"/// Hello, world!"#
+            @"/// Hello, world!"
         );
     }
 
     #[test]
     fn test_render_module() {
-        assert_eq!(
+        assert_snapshot!(
             RSDoc::new("Hello, world!", true)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            r#"//! Hello, world!"#
+            @"//! Hello, world!"
         );
     }
 
     #[test]
     fn test_render_multiline() {
-        assert_eq!(
+        assert_snapshot!(
             RSDoc::new(
                 r#"Hello,
 cruel
@@ -61,15 +61,17 @@ world!"#,
             )
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"/// Hello,
-/// cruel
-/// world!"#
+            @"
+        /// Hello,
+        /// cruel
+        /// world!
+        "
         );
     }
 
     #[test]
     fn test_render_indent() {
-        assert_eq!(
+        assert_snapshot!(
             RSDoc::new(
                 r#"Hello,
 cruel
@@ -81,9 +83,11 @@ world!"#,
                 &mut Default::default()
             )
             .unwrap(),
-            r#"    /// Hello,
-    /// cruel
-    /// world!"#
+            @"
+        /// Hello,
+        /// cruel
+        /// world!
+        "
         );
     }
 }

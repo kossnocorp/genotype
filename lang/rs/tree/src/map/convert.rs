@@ -16,11 +16,11 @@ impl RSConvert<RSMap> for GTRecord {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTRecord {
                 span: (0, 0).into(),
                 key: GTRecordKey::String((0, 0).into()),
@@ -28,17 +28,19 @@ mod tests {
             }
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
-            RSMap {
-                key: RSPrimitive::String.into(),
-                descriptor: RSPrimitive::String.into(),
-            }
+            @"
+        RSMap(
+          key: Primitive(String),
+          descriptor: Primitive(String),
+        )
+        "
         );
     }
 
     #[test]
     fn test_convert_import() {
         let mut context = RSConvertContext::empty("module".into());
-        assert_eq!(
+        assert_ron_snapshot!(
             GTRecord {
                 span: (0, 0).into(),
                 key: GTRecordKey::String((0, 0).into()),
@@ -46,17 +48,20 @@ mod tests {
             }
             .convert(&mut context)
             .unwrap(),
-            RSMap {
-                key: RSPrimitive::String.into(),
-                descriptor: RSPrimitive::String.into(),
-            }
+            @"
+        RSMap(
+          key: Primitive(String),
+          descriptor: Primitive(String),
+        )
+        "
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             context.as_dependencies(),
-            vec![(
-                RSDependencyIdent::Std("collections".into()),
-                "BTreeMap".into()
-            ),]
+            @r#"
+        [
+          (Std("collections"), RSIdentifier("BTreeMap")),
+        ]
+        "#
         );
     }
 }

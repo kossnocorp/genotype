@@ -25,11 +25,11 @@ impl<'a> GtlRender<'a> for TSProperty {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_primitive() {
-        assert_eq!(
+        assert_snapshot!(
             TSProperty {
                 doc: None,
                 name: "name".into(),
@@ -38,9 +38,9 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "name: string"
+            @"name: string"
         );
-        assert_eq!(
+        assert_snapshot!(
             TSProperty {
                 doc: None,
                 name: "name".into(),
@@ -49,13 +49,13 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "name: Name"
+            @"name: Name"
         );
     }
 
     #[test]
     fn test_render_indent() {
-        assert_eq!(
+        assert_snapshot!(
             TSProperty {
                 doc: None,
                 name: "name".into(),
@@ -67,13 +67,13 @@ mod tests {
                 &mut Default::default()
             )
             .unwrap(),
-            "  name: string"
+            @"  name: string"
         );
     }
 
     #[test]
     fn test_render_required() {
-        assert_eq!(
+        assert_snapshot!(
             TSProperty {
                 doc: None,
                 name: "name".into(),
@@ -82,13 +82,13 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "name?: string"
+            @"name?: string"
         );
     }
 
     #[test]
     fn test_render_doc() {
-        assert_eq!(
+        assert_snapshot!(
             TSProperty {
                 doc: Some(TSDoc("Hello, world!".into())),
                 name: "name".into(),
@@ -97,8 +97,10 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"/** Hello, world! */
-name: string"#
+            @"
+        /** Hello, world! */
+        name: string
+        "
         );
     }
 }

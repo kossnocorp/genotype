@@ -9,15 +9,16 @@ impl TSConvert<TSPath> for GTPath {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use insta::assert_ron_snapshot;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_base() {
-        assert_eq!(
-            TSPath("./path/to/module".into()),
+        assert_ron_snapshot!(
             GTPath::parse((0, 0).into(), "./path/to/module")
                 .unwrap()
                 .convert(&mut Default::default()),
+            @r#"TSPath("./path/to/module")"#
         );
     }
 
@@ -28,11 +29,11 @@ mod tests {
             GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
             GTPath::parse((0, 0).into(), "./path/to/module/index").unwrap(),
         );
-        assert_eq!(
-            TSPath("./path/to/module/index".into()),
+        assert_ron_snapshot!(
             GTPath::parse((0, 0).into(), "./path/to/module")
                 .unwrap()
                 .convert(&mut TSConvertContext::new(resolve, Default::default())),
+            @r#"TSPath("./path/to/module/index")"#
         );
     }
 }

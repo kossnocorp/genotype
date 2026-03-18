@@ -52,11 +52,11 @@ impl<'a> GtlRender<'a> for TSInterface {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_empty() {
-        assert_eq!(
+        assert_snapshot!(
             TSInterface {
                 doc: None,
                 name: "Name".into(),
@@ -65,13 +65,16 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "export interface Name {\n}"
+            @"
+        export interface Name {
+        }
+        "
         );
     }
 
     #[test]
     fn test_render_properties() {
-        assert_eq!(
+        assert_snapshot!(
             TSInterface {
                 doc: None,
                 name: "Name".into(),
@@ -93,16 +96,18 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"export interface Name {
-  name: string;
-  age?: number;
-}"#
+            @"
+        export interface Name {
+          name: string;
+          age?: number;
+        }
+        "
         );
     }
 
     #[test]
     fn test_render_indent() {
-        assert_eq!(
+        assert_snapshot!(
             TSInterface {
                 doc: None,
                 name: "Name".into(),
@@ -127,16 +132,18 @@ mod tests {
                 &mut Default::default()
             )
             .unwrap(),
-            r#"  export interface Name {
-    name: string;
-    age?: number;
-  }"#
+            @"
+        export interface Name {
+          name: string;
+          age?: number;
+        }
+        "
         );
     }
 
     #[test]
     fn test_render_extensions() {
-        assert_eq!(
+        assert_snapshot!(
             TSInterface {
                 doc: None,
                 name: "Name".into(),
@@ -150,15 +157,17 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"export interface Name extends Hello, World {
-  name: string;
-}"#
+            @"
+        export interface Name extends Hello, World {
+          name: string;
+        }
+        "
         );
     }
 
     #[test]
     fn test_render_doc() {
-        assert_eq!(
+        assert_snapshot!(
             TSInterface {
                 doc: Some(TSDoc("Hello, world!".into())),
                 name: "Name".into(),
@@ -167,9 +176,11 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"/** Hello, world! */
-export interface Name {
-}"#
+            @"
+        /** Hello, world! */
+        export interface Name {
+        }
+        "
         );
     }
 }

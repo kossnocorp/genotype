@@ -18,17 +18,17 @@ impl<'a> GtlRender<'a> for RSOption {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             RSOption {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::String)
             }
             .render(RSRenderState::default(), &mut Default::default())
             .unwrap(),
-            "Option<String>"
+            @"Option<String>"
         );
     }
 }

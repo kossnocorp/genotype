@@ -11,14 +11,11 @@ impl PYConvert<PYExtension> for GTExtension {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
-            PYExtension {
-                reference: PYReference::new("Name".into(), true)
-            },
+        assert_ron_snapshot!(
             GTExtension {
                 span: (0, 0).into(),
                 reference: GTReference {
@@ -33,6 +30,14 @@ mod tests {
                 .into()
             }
             .convert(&mut PYConvertContext::default()),
+            @r#"
+        PYExtension(
+          reference: PYReference(
+            identifier: PYIdentifier("Name"),
+            forward: true,
+          ),
+        )
+        "#,
         );
     }
 }

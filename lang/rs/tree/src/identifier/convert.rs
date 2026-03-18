@@ -9,15 +9,16 @@ impl RSConvert<RSIdentifier> for GTIdentifier {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use insta::assert_ron_snapshot;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_base() {
-        assert_eq!(
-            RSIdentifier("Foo".into()),
+        assert_ron_snapshot!(
             GTIdentifier::new((0, 0).into(), "Foo".into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
+            @r#"RSIdentifier("Foo")"#
         );
     }
 
@@ -34,11 +35,11 @@ mod tests {
             Default::default(),
             Default::default(),
         );
-        assert_eq!(
-            RSIdentifier("foo::Bar".into()),
+        assert_ron_snapshot!(
             GTIdentifier::new((0, 0).into(), "Foo".into())
                 .convert(&mut context)
                 .unwrap(),
+            @r#"RSIdentifier("foo::Bar")"#
         );
     }
 }

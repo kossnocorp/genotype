@@ -15,35 +15,36 @@ impl PYConvert<PYPath> for GTPath {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use insta::assert_ron_snapshot;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_base() {
-        assert_eq!(
-            PYPath(".path.to.module".into()),
+        assert_ron_snapshot!(
             GTPath::parse((0, 0).into(), "./path/to/module")
                 .unwrap()
                 .convert(&mut PYConvertContext::default()),
+            @r#"PYPath(".path.to.module")"#
         );
     }
 
     #[test]
     fn test_convert_absolute() {
-        assert_eq!(
-            PYPath("module.path".into()),
+        assert_ron_snapshot!(
             GTPath::parse((0, 0).into(), "module/path")
                 .unwrap()
                 .convert(&mut PYConvertContext::default()),
+            @r#"PYPath("module.path")"#
         );
     }
 
     #[test]
     fn test_convert_up() {
-        assert_eq!(
-            PYPath("..path.to.module".into()),
+        assert_ron_snapshot!(
             GTPath::parse((0, 0).into(), "../path/to/module")
                 .unwrap()
                 .convert(&mut PYConvertContext::default()),
+            @r#"PYPath("..path.to.module")"#
         );
     }
 
@@ -55,11 +56,11 @@ mod tests {
             GTPath::parse((0, 0).into(), "./path/to/another/module").unwrap(),
         );
         let mut context = PYConvertContext::new(resolve, Default::default());
-        assert_eq!(
-            PYPath(".path.to.another.module".into()),
+        assert_ron_snapshot!(
             GTPath::parse((0, 0).into(), "./path/to/module")
                 .unwrap()
                 .convert(&mut context),
+            @r#"PYPath(".path.to.another.module")"#
         );
     }
 }

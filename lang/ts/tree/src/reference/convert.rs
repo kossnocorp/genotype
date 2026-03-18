@@ -9,12 +9,11 @@ impl TSConvert<TSReference> for GTReference {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
-            TSReference("Name".into()),
+        assert_ron_snapshot!(
             GTReference {
                 span: (0, 0).into(),
                 id: GTReferenceId("module".into(), (0, 0).into()),
@@ -25,6 +24,7 @@ mod tests {
                 identifier: GTIdentifier::new((0, 0).into(), "Name".into())
             }
             .convert(&mut Default::default()),
+            @r#"TSReference(TSIdentifier("Name"))"#,
         );
     }
 }

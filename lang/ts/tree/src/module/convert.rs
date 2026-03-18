@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 use std::collections::HashMap;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct TSConvertModule(pub TSModule);
 
 impl TSConvertModule {
@@ -44,7 +44,7 @@ impl TSConvertModule {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
@@ -54,7 +54,7 @@ mod tests {
             "module".into(),
         );
 
-        assert_eq!(
+        assert_ron_snapshot!(
             TSConvertModule::convert(
                 &GTModule {
                     id: "module".into(),
@@ -201,90 +201,93 @@ mod tests {
                 resolve,
                 Default::default()
             ),
-            TSConvertModule(TSModule {
-                doc: None,
-                imports: vec![
-                    TSImport {
-                        path: "./path/to/module".into(),
-                        reference: TSImportReference::Glob("module".into())
-                    },
-                    TSImport {
-                        path: "./path/to/module".into(),
-                        reference: TSImportReference::Named(vec![
-                            TSImportName::Name("Name".into()),
-                            TSImportName::Alias("Name".into(), "Alias".into())
-                        ])
-                    }
-                ],
-                definitions: vec![
-                    TSDefinition::Interface(TSInterface {
-                        doc: None,
-                        name: "User".into(),
-                        extensions: vec![],
-                        properties: vec![
-                            TSProperty {
-                                doc: None,
-                                name: "name".into(),
-                                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
-                                required: true,
-                            },
-                            TSProperty {
-                                doc: None,
-                                name: "age".into(),
-                                descriptor: TSUnion {
-                                    descriptors: vec![
-                                        TSPrimitive::Number.into(),
-                                        TSPrimitive::Undefined.into()
-                                    ]
-                                }
-                                .into(),
-                                required: false,
-                            }
-                        ]
-                    }),
-                    TSDefinition::Interface(TSInterface {
-                        doc: None,
-                        name: "Order".into(),
-                        extensions: vec![],
-                        properties: vec![TSProperty {
-                            doc: None,
-                            name: "book".into(),
-                            descriptor: TSDescriptor::Reference("Book".into()),
-                            required: true,
-                        }]
-                    }),
-                    TSDefinition::Interface(TSInterface {
-                        doc: None,
-                        name: "Book".into(),
-                        extensions: vec![],
-                        properties: vec![
-                            TSProperty {
-                                doc: None,
-                                name: "title".into(),
-                                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
-                                required: true,
-                            },
-                            TSProperty {
-                                doc: None,
-                                name: "author".into(),
-                                descriptor: TSDescriptor::Reference("Author".into()),
-                                required: true,
-                            }
-                        ]
-                    }),
-                    TSDefinition::Alias(TSAlias {
-                        doc: None,
-                        name: "Name".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
-                    }),
-                ]
-            })
+            @r#"
+        TSConvertModule(TSModule(
+          doc: None,
+          imports: [
+            TSImport(
+              path: TSPath("./path/to/module"),
+              reference: Glob("module"),
+            ),
+            TSImport(
+              path: TSPath("./path/to/module"),
+              reference: Named([
+                Name(TSIdentifier("Name")),
+                Alias(TSIdentifier("Name"), TSIdentifier("Alias")),
+              ]),
+            ),
+          ],
+          definitions: [
+            Interface(TSInterface(
+              doc: None,
+              name: TSIdentifier("User"),
+              extensions: [],
+              properties: [
+                TSProperty(
+                  doc: None,
+                  name: TSKey("name"),
+                  descriptor: Primitive(String),
+                  required: true,
+                ),
+                TSProperty(
+                  doc: None,
+                  name: TSKey("age"),
+                  descriptor: Union(TSUnion(
+                    descriptors: [
+                      Primitive(Number),
+                      Primitive(Undefined),
+                    ],
+                  )),
+                  required: false,
+                ),
+              ],
+            )),
+            Interface(TSInterface(
+              doc: None,
+              name: TSIdentifier("Order"),
+              extensions: [],
+              properties: [
+                TSProperty(
+                  doc: None,
+                  name: TSKey("book"),
+                  descriptor: Reference(TSReference(TSIdentifier("Book"))),
+                  required: true,
+                ),
+              ],
+            )),
+            Interface(TSInterface(
+              doc: None,
+              name: TSIdentifier("Book"),
+              extensions: [],
+              properties: [
+                TSProperty(
+                  doc: None,
+                  name: TSKey("title"),
+                  descriptor: Primitive(String),
+                  required: true,
+                ),
+                TSProperty(
+                  doc: None,
+                  name: TSKey("author"),
+                  descriptor: Reference(TSReference(TSIdentifier("Author"))),
+                  required: true,
+                ),
+              ],
+            )),
+            Alias(TSAlias(
+              doc: None,
+              name: TSIdentifier("Name"),
+              descriptor: Primitive(String),
+            )),
+          ],
+        ))
+        "#
         );
     }
 
     #[test]
     fn test_convert_doc() {
-        assert_eq!(
+        assert_ron_snapshot!(
             TSConvertModule::convert(
                 &GTModule {
                     id: "module".into(),
@@ -295,11 +298,13 @@ mod tests {
                 TSConvertResolve::new(),
                 Default::default()
             ),
-            TSConvertModule(TSModule {
-                doc: Some(TSDoc("@file Hello, world!".into())),
-                imports: vec![],
-                definitions: vec![]
-            })
+            @r#"
+        TSConvertModule(TSModule(
+          doc: Some(TSDoc("@file Hello, world!")),
+          imports: [],
+          definitions: [],
+        ))
+        "#
         );
     }
 }

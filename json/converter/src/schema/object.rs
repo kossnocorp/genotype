@@ -35,10 +35,8 @@ impl GtjSchemaConvert<GtjSchemaAny> for GtjObject {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::BTreeMap;
-
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
@@ -60,23 +58,41 @@ mod tests {
                 }
             }],
         };
-        assert_eq!(
-            GtjSchemaObject {
-                r#type: GtjSchemaObjectTypeObject,
-                title: Some("hello".into()),
-                description: Some("Hello, world!".into()),
-                properties: BTreeMap::from_iter(vec![(
-                    "foo".into(),
-                    GtjSchemaAny::GtjSchemaBoolean(GtjSchemaBoolean {
-                        r#type: GtjSchemaBooleanTypeBoolean,
-                        title: None,
-                        description: None,
-                    })
-                )]),
-                required: Some(vec!["foo".into()]),
-                additional_properties: Some(false)
-            },
-            object.to_schema(),
-        );
+
+        let any_schema: GtjSchemaAny = object.to_schema();
+        assert_ron_snapshot!(any_schema, @r#"
+        GtjSchemaObject(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          type: "object",
+          properties: {
+            "foo": GtjSchemaBoolean(
+              type: "boolean",
+            ),
+          },
+          required: Some([
+            "foo",
+          ]),
+          additionalProperties: Some(false),
+        )
+        "#);
+
+        let object_schema: GtjSchemaObject = object.to_schema();
+        assert_ron_snapshot!(object_schema, @r#"
+        GtjSchemaObject(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          type: "object",
+          properties: {
+            "foo": GtjSchemaBoolean(
+              type: "boolean",
+            ),
+          },
+          required: Some([
+            "foo",
+          ]),
+          additionalProperties: Some(false),
+        )
+        "#);
     }
 }

@@ -23,11 +23,11 @@ impl<'a> GtlRender<'a> for PYNewtype {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             PYNewtype {
                 doc: None,
                 name: "UserId".into(),
@@ -35,13 +35,13 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"UserId = NewType("UserId", str)"#
+            @r#"UserId = NewType("UserId", str)"#
         );
     }
 
     #[test]
     fn test_render_doc() {
-        assert_eq!(
+        assert_snapshot!(
             PYNewtype {
                 doc: Some(PYDoc("Hello, world!".into())),
                 name: "UserId".into(),
@@ -49,8 +49,10 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"UserId = NewType("UserId", str)
-"""Hello, world!""""#
+            @r#"
+        UserId = NewType("UserId", str)
+        """Hello, world!"""
+        "#
         );
     }
 }
