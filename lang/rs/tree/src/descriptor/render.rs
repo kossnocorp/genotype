@@ -27,39 +27,39 @@ impl<'a> GtlRender<'a> for RSDescriptor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_array() {
-        assert_eq!(
+        assert_snapshot!(
             RSDescriptor::Vec(Box::new(RSVec {
                 descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize)
             }))
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "Vec<isize>"
+            @"Vec<isize>"
         );
     }
 
     #[test]
     fn test_render_primitive() {
-        assert_eq!(
+        assert_snapshot!(
             RSDescriptor::Primitive(RSPrimitive::Boolean)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "bool"
+            @"bool"
         );
-        assert_eq!(
+        assert_snapshot!(
             RSDescriptor::Primitive(RSPrimitive::String)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "String"
+            @"String"
         );
     }
 
     #[test]
     fn test_render_reference() {
-        assert_eq!(
+        assert_snapshot!(
             RSDescriptor::Reference(RSReference {
                 id: GTReferenceId("module".into(), (0, 0).into()),
                 identifier: "Name".into(),
@@ -67,26 +67,26 @@ mod tests {
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "Name"
+            @"Name"
         );
     }
 
     #[test]
     fn test_render_inline_use() {
-        assert_eq!(
+        assert_snapshot!(
             RSDescriptor::InlineUse(RSInlineUse {
                 path: RSPath("path/to/module".into(), "self::path::to::module".into()),
                 name: "Name".into()
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "self::path::to::module::Name"
+            @"self::path::to::module::Name"
         );
     }
 
     #[test]
     fn test_render_tuple() {
-        assert_eq!(
+        assert_snapshot!(
             RSDescriptor::Tuple(RSTuple {
                 descriptors: vec![
                     RSDescriptor::Primitive(RSPrimitive::IntSize),
@@ -95,42 +95,42 @@ mod tests {
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "(isize, String)"
+            @"(isize, String)"
         );
     }
 
     #[test]
     fn test_render_map() {
-        assert_eq!(
+        assert_snapshot!(
             RSDescriptor::Map(Box::new(RSMap {
                 key: RSPrimitive::String.into(),
                 descriptor: RSPrimitive::IntSize.into(),
             }))
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "BTreeMap<String, isize>"
+            @"BTreeMap<String, isize>"
         );
     }
 
     #[test]
     fn test_render_option() {
-        assert_eq!(
+        assert_snapshot!(
             RSDescriptor::Option(Box::new(RSOption::new(RSDescriptor::Primitive(
                 RSPrimitive::String
             ))))
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "Option<String>"
+            @"Option<String>"
         );
     }
 
     #[test]
     fn test_render_any() {
-        assert_eq!(
+        assert_snapshot!(
             RSDescriptor::Any(RSAny)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "Any"
+            @"Any"
         );
     }
 }

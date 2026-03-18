@@ -17,16 +17,17 @@ impl<'a> GtlRender<'a> for PYExtension {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             PYExtension {
                 reference: PYReference::new("Foo".into(), false)
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "Foo"
+            @"Foo"
         );
     }
 }

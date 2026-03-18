@@ -135,12 +135,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "base64"
-version = "0.13.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9e1b586273c5702936fe7b7d6896644d8be71e6314cfe09d3167c95f712589e8"
-
-[[package]]
 name = "bitflags"
 version = "1.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -151,6 +145,9 @@ name = "bitflags"
 version = "2.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b048fb63fd8b5923fc5aa7b340d8e156aec7ec02f0c78fa8a6ddc2613f6f71de"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "block-buffer"
@@ -387,8 +384,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.59.0",
+ "windows-sys 0.60.2",
 ]
+
+[[package]]
+name = "fastrand"
+version = "2.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "37909eebbb50d72f9059c3b6d82c0463f2ff062c9e95845c43a6c9c0355411be"
 
 [[package]]
 name = "figment"
@@ -549,6 +552,7 @@ dependencies = [
  "genotype_writer",
  "heck",
  "inquire",
+ "insta",
  "miette",
  "owo-colors",
  "pretty_assertions",
@@ -570,6 +574,7 @@ dependencies = [
  "genotype_lang_ts_config",
  "genotype_path",
  "heck",
+ "insta",
  "miette",
  "pretty_assertions",
  "relative-path",
@@ -585,6 +590,7 @@ dependencies = [
  "genotype_json_types",
  "genotype_parser",
  "heck",
+ "insta",
  "litty 0.2.0",
  "miette",
  "pretty_assertions",
@@ -607,6 +613,7 @@ version = "0.14.0"
 dependencies = [
  "genotype_lang_core_tree",
  "genotype_parser",
+ "insta",
  "miette",
  "pretty_assertions",
 ]
@@ -617,6 +624,7 @@ version = "0.14.0"
 dependencies = [
  "delegate",
  "genotype_path",
+ "insta",
  "pretty_assertions",
  "relative-path",
  "serde",
@@ -634,8 +642,10 @@ dependencies = [
  "genotype_path",
  "genotype_project",
  "indexmap",
+ "insta",
  "miette",
  "pretty_assertions",
+ "serde",
  "serde_json",
  "thiserror 1.0.64",
  "toml",
@@ -646,8 +656,10 @@ dependencies = [
 name = "genotype_lang_core_tree"
 version = "0.14.0"
 dependencies = [
+ "insta",
  "miette",
  "pretty_assertions",
+ "serde",
 ]
 
 [[package]]
@@ -658,6 +670,7 @@ dependencies = [
  "genotype_lang_core_tree",
  "genotype_lang_py_tree",
  "genotype_parser",
+ "insta",
  "miette",
  "pretty_assertions",
 ]
@@ -668,6 +681,7 @@ version = "0.14.0"
 dependencies = [
  "genotype_lang_core_config",
  "genotype_path",
+ "insta",
  "pretty_assertions",
  "relative-path",
  "serde",
@@ -687,8 +701,10 @@ dependencies = [
  "genotype_path",
  "genotype_project",
  "indexmap",
+ "insta",
  "miette",
  "pretty_assertions",
+ "serde",
  "thiserror 1.0.64",
  "toml_edit",
 ]
@@ -702,8 +718,10 @@ dependencies = [
  "genotype_parser",
  "heck",
  "indexmap",
+ "insta",
  "miette",
  "pretty_assertions",
+ "serde",
 ]
 
 [[package]]
@@ -712,6 +730,7 @@ version = "0.14.0"
 dependencies = [
  "genotype_lang_core_config",
  "genotype_path",
+ "insta",
  "pretty_assertions",
  "relative-path",
  "serde",
@@ -721,6 +740,7 @@ dependencies = [
 name = "genotype_lang_rs_core"
 version = "0.14.0"
 dependencies = [
+ "insta",
  "pretty_assertions",
 ]
 
@@ -738,8 +758,10 @@ dependencies = [
  "genotype_path",
  "genotype_project",
  "indexmap",
+ "insta",
  "miette",
  "pretty_assertions",
+ "serde",
  "thiserror 1.0.64",
  "toml_edit",
 ]
@@ -754,8 +776,10 @@ dependencies = [
  "genotype_lang_rs_core",
  "genotype_parser",
  "heck",
+ "insta",
  "miette",
  "pretty_assertions",
+ "serde",
  "thiserror 1.0.64",
  "unicode-xid",
 ]
@@ -768,6 +792,7 @@ dependencies = [
  "genotype_lang_core_tree",
  "genotype_lang_ts_tree",
  "genotype_parser",
+ "insta",
  "miette",
  "pretty_assertions",
 ]
@@ -778,6 +803,7 @@ version = "0.14.0"
 dependencies = [
  "genotype_lang_core_config",
  "genotype_path",
+ "insta",
  "pretty_assertions",
  "relative-path",
  "serde",
@@ -796,6 +822,7 @@ dependencies = [
  "genotype_parser",
  "genotype_path",
  "genotype_project",
+ "insta",
  "miette",
  "pretty_assertions",
  "serde",
@@ -811,8 +838,10 @@ dependencies = [
  "genotype_lang_ts_config",
  "genotype_parser",
  "heck",
+ "insta",
  "miette",
  "pretty_assertions",
+ "serde",
  "thiserror 1.0.64",
 ]
 
@@ -822,6 +851,7 @@ version = "0.14.0"
 dependencies = [
  "async-lsp",
  "futures",
+ "insta",
  "pretty_assertions",
  "tokio",
  "tokio-util",
@@ -850,6 +880,7 @@ name = "genotype_path"
 version = "0.14.0"
 dependencies = [
  "genotype_parser",
+ "insta",
  "pretty_assertions",
  "relative-path",
  "serde",
@@ -866,11 +897,13 @@ dependencies = [
  "genotype_path",
  "genotype_visitor",
  "glob",
+ "insta",
  "miette",
  "num_cpus",
  "pretty_assertions",
  "rayon",
  "relative-path",
+ "serde",
  "thiserror 1.0.64",
 ]
 
@@ -878,6 +911,7 @@ dependencies = [
 name = "genotype_runtime"
 version = "0.4.0"
 dependencies = [
+ "insta",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -888,6 +922,7 @@ name = "genotype_visitor"
 version = "0.14.0"
 dependencies = [
  "genotype_parser",
+ "insta",
  "miette",
  "pretty_assertions",
 ]
@@ -896,6 +931,7 @@ dependencies = [
 name = "genotype_watcher"
 version = "0.14.0"
 dependencies = [
+ "insta",
  "pretty_assertions",
 ]
 
@@ -906,6 +942,7 @@ dependencies = [
  "genotype_config",
  "genotype_parser",
  "indexmap",
+ "insta",
  "miette",
  "num_cpus",
  "pretty_assertions",
@@ -921,7 +958,20 @@ dependencies = [
  "genotype_config",
  "genotype_lang_core_project",
  "genotype_path",
+ "insta",
  "pretty_assertions",
+]
+
+[[package]]
+name = "getrandom"
+version = "0.3.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "899def5c37c4fd7b2664648c28120ecec138e4d395b459e5ca34f9cce2dd77fd"
+dependencies = [
+ "cfg-if",
+ "libc",
+ "r-efi",
+ "wasip2",
 ]
 
 [[package]]
@@ -1129,15 +1179,16 @@ dependencies = [
 
 [[package]]
 name = "insta"
-version = "1.43.1"
+version = "1.46.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "154934ea70c58054b556dd430b99a98c2a7ff5309ac9891597e339b5c28f4371"
+checksum = "e82db8c87c7f1ccecb34ce0c24399b8a73081427f3c7c50a5d597925356115e4"
 dependencies = [
  "console",
  "once_cell",
  "ron",
  "serde",
  "similar",
+ "tempfile",
 ]
 
 [[package]]
@@ -1192,6 +1243,7 @@ checksum = "4ee93343901ab17bd981295f2cf0026d4ad018c7c31ba84549a4ddbb47a45104"
 name = "litty"
 version = "0.2.0"
 dependencies = [
+ "insta",
  "litty_macro 0.2.0",
  "pretty_assertions",
  "serde",
@@ -1212,6 +1264,7 @@ dependencies = [
 name = "litty_macro"
 version = "0.2.0"
 dependencies = [
+ "insta",
  "litty 0.2.0",
  "pretty_assertions",
  "proc-macro2",
@@ -1539,6 +1592,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "r-efi"
+version = "5.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "69cdb34c158ceb288df11e18b4bd39de994f6657d83847bdffdbd7f346754b0f"
+
+[[package]]
 name = "rayon"
 version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1607,13 +1666,16 @@ dependencies = [
 
 [[package]]
 name = "ron"
-version = "0.7.1"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "88073939a61e5b7680558e6be56b419e208420c2adb92be54921fa6b72283f1a"
+checksum = "fd490c5b18261893f14449cbd28cb9c0b637aebf161cd77900bfdedaff21ec32"
 dependencies = [
- "base64",
- "bitflags 1.3.2",
+ "bitflags 2.6.0",
+ "once_cell",
  "serde",
+ "serde_derive",
+ "typeid",
+ "unicode-ident",
 ]
 
 [[package]]
@@ -1645,7 +1707,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.12.1",
- "windows-sys 0.59.0",
+ "windows-sys 0.60.2",
 ]
 
 [[package]]
@@ -1847,6 +1909,19 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "tempfile"
+version = "3.27.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
+dependencies = [
+ "fastrand",
+ "getrandom",
+ "once_cell",
+ "rustix 1.1.4",
+ "windows-sys 0.60.2",
 ]
 
 [[package]]
@@ -2094,6 +2169,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "typeid"
+version = "1.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bc7d623258602320d5c55d1bc22793b57daff0ec7efc270ea7d55ce1d5f5471c"
+
+[[package]]
 name = "typenum"
 version = "1.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2201,6 +2282,15 @@ name = "wasi"
 version = "0.11.0+wasi-snapshot-preview1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
+
+[[package]]
+name = "wasip2"
+version = "1.0.2+wasi-0.2.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9517f9239f02c069db75e65f174b3da828fe5f5b945c4dd26bd25d89c03ebcf5"
+dependencies = [
+ "wit-bindgen",
+]
 
 [[package]]
 name = "winapi"
@@ -2460,6 +2550,12 @@ checksum = "d9fb597c990f03753e08d3c29efbfcf2019a003b4bf4ba19225c158e1549f0f3"
 dependencies = [
  "memchr",
 ]
+
+[[package]]
+name = "wit-bindgen"
+version = "0.51.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d7249219f66ced02969388cf2bb044a09756a083d0fab1e566056b04d9fbcaa5"
 
 [[package]]
 name = "write16"

@@ -27,25 +27,25 @@ impl PYConvert<PYDictKey> for GTRecordKey {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
-            PYDictKey::String,
+        assert_ron_snapshot!(
             GTRecordKey::String((0, 0).into()).convert(&mut PYConvertContext::default()),
+            @"String"
         );
-        assert_eq!(
-            PYDictKey::Int,
+        assert_ron_snapshot!(
             GTRecordKey::Int32((0, 0).into()).convert(&mut PYConvertContext::default()),
+            @"Int"
         );
-        assert_eq!(
-            PYDictKey::Float,
+        assert_ron_snapshot!(
             GTRecordKey::Float64((0, 0).into()).convert(&mut PYConvertContext::default()),
+            @"Float"
         );
-        assert_eq!(
-            PYDictKey::Boolean,
+        assert_ron_snapshot!(
             GTRecordKey::Boolean((0, 0).into()).convert(&mut PYConvertContext::default()),
+            @"Boolean"
         );
     }
 }

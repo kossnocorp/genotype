@@ -20,7 +20,7 @@ impl GtjSchemaConvert<GtjSchemaAny> for GtjNull {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
@@ -29,13 +29,23 @@ mod tests {
             doc: Some("Hello, world!".into()),
             r#type: GtjNullTypeNull,
         };
-        assert_eq!(
-            GtjSchemaNull {
-                r#type: GtjSchemaNullTypeNull,
-                title: Some("hello".into()),
-                description: Some("Hello, world!".into()),
-            },
-            null.to_schema(),
-        );
+
+        let any_schema: GtjSchemaAny = null.to_schema();
+        assert_ron_snapshot!(any_schema, @r#"
+        GtjSchemaNull(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          type: "null",
+        )
+        "#);
+
+        let null_schema: GtjSchemaNull = null.to_schema();
+        assert_ron_snapshot!(null_schema, @r#"
+        GtjSchemaNull(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          type: "null",
+        )
+        "#);
     }
 }

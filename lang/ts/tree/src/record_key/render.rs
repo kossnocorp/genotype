@@ -21,27 +21,27 @@ impl<'a> GtlRender<'a> for TSRecordKey {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             TSRecordKey::String
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "string"
+            @"string"
         );
-        assert_eq!(
+        assert_snapshot!(
             TSRecordKey::Number
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "number"
+            @"number"
         );
-        assert_eq!(
+        assert_snapshot!(
             TSRecordKey::Boolean
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "boolean"
+            @"boolean"
         );
     }
 }

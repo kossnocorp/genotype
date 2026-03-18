@@ -11,11 +11,11 @@ impl RSConvert<RSInlineUse> for GTInlineImport {
 #[cfg(test)]
 mod tesrs {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTInlineImport {
                 span: (0, 0).into(),
                 path: GTPath::new(
@@ -27,10 +27,12 @@ mod tesrs {
             }
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
-            RSInlineUse {
-                path: RSPath("module/path".into(), "super::path::to::module".into()),
-                name: "Name".into(),
-            }
+            @r#"
+        RSInlineUse(
+          path: RSPath(GTModuleId("module/path"), "super::path::to::module"),
+          name: RSIdentifier("Name"),
+        )
+        "#
         );
     }
 }

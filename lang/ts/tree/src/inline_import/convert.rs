@@ -12,21 +12,23 @@ impl TSConvert<TSInlineImport> for GTInlineImport {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTInlineImport {
                 span: (0, 0).into(),
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
             }
             .convert(&mut Default::default()),
-            TSInlineImport {
-                path: "./path/to/module".into(),
-                name: "Name".into(),
-            }
+            @r#"
+        TSInlineImport(
+          path: TSPath("./path/to/module"),
+          name: TSIdentifier("Name"),
+        )
+        "#
         );
     }
 }

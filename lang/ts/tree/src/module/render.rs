@@ -49,11 +49,11 @@ impl GtlRenderModule for TSModule {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             TSModule {
                 doc: None,
                 imports: vec![
@@ -98,22 +98,23 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"import Name from "../path/to/module.js";
-import { Name, Name as Alias } from "../path/to/module.js";
+            @r#"
+        import Name from "../path/to/module.js";
+        import { Name, Name as Alias } from "../path/to/module.js";
 
-export type Name = string;
+        export type Name = string;
 
-export interface Name {
-  name: string;
-  age?: number;
-}
-"#
+        export interface Name {
+          name: string;
+          age?: number;
+        }
+        "#
         );
     }
 
     #[test]
     fn test_render_doc() {
-        assert_eq!(
+        assert_snapshot!(
             TSModule {
                 doc: Some(TSDoc("Hello, world!".into())),
                 imports: vec![TSImport {
@@ -128,12 +129,13 @@ export interface Name {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"/** Hello, world! */
+            @r#"
+        /** Hello, world! */
 
-import Name from "../path/to/module.js";
+        import Name from "../path/to/module.js";
 
-export type Name = string;
-"#
+        export type Name = string;
+        "#
         );
     }
 }

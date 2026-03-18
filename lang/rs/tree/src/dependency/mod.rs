@@ -1,6 +1,6 @@
 use crate::prelude::internal::*;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize)]
 pub enum RSDependencyIdent {
     Local(RSPath),
     Runtime,

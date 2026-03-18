@@ -17,11 +17,11 @@ impl<'a> GtlRender<'a> for TSEmbedDefinition {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             TSEmbedDefinition {
                 name: "Name".into(),
                 embed: r#"const hello = {
@@ -31,15 +31,17 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"const hello = {
-  name: "World"
-};"#
+            @r#"
+        const hello = {
+          name: "World"
+        };
+        "#
         );
     }
 
     #[test]
     fn test_render_indent() {
-        assert_eq!(
+        assert_snapshot!(
             TSEmbedDefinition {
                 name: "Name".into(),
                 embed: r#"const hello = {
@@ -52,9 +54,11 @@ mod tests {
                 &mut Default::default()
             )
             .unwrap(),
-            r#"  const hello = {
-    name: "World"
-  };"#
+            @r#"
+        const hello = {
+          name: "World"
+        };
+        "#
         );
     }
 }

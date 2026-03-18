@@ -21,11 +21,11 @@ impl<'a> GtlRender<'a> for RSDefinition {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_alias() {
-        assert_eq!(
+        assert_snapshot!(
             RSDefinition::Alias(RSAlias {
                 id: GTDefinitionId("module".into(), "Name".into()),
                 doc: None,
@@ -34,13 +34,13 @@ mod tests {
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "pub type Name = String;"
+            @"pub type Name = String;"
         );
     }
 
     #[test]
     fn test_render_struct() {
-        assert_eq!(
+        assert_snapshot!(
             RSDefinition::Struct(RSStruct {
                 id: GTDefinitionId("module".into(), "Name".into()),
                 doc: None,
@@ -64,16 +64,18 @@ mod tests {
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"pub struct Name {
-    pub name: String,
-    pub age: isize,
-}"#
+            @"
+        pub struct Name {
+            pub name: String,
+            pub age: isize,
+        }
+        "
         );
     }
 
     #[test]
     fn test_render_enum() {
-        assert_eq!(
+        assert_snapshot!(
             RSDefinition::Enum(RSEnum {
                 id: GTDefinitionId("module".into(), "ValuesUnion".into()),
                 doc: None,
@@ -100,10 +102,12 @@ mod tests {
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"pub enum ValuesUnion {
-    Boolean(bool),
-    String(String),
-}"#
+            @"
+        pub enum ValuesUnion {
+            Boolean(bool),
+            String(String),
+        }
+        "
         );
     }
 }

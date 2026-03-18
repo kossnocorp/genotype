@@ -53,11 +53,11 @@ impl GtlRenderModule for RSModule {}
 mod tests {
     use super::*;
     use genotype_parser::GTDefinitionId;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             RSModule {
                 id: "module".into(),
                 doc: None,
@@ -112,22 +112,23 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"use self::path::to::module;
-use self::path::to::module::{Name, Name as Alias};
+            @"
+        use self::path::to::module;
+        use self::path::to::module::{Name, Name as Alias};
 
-pub type Name = String;
+        pub type Name = String;
 
-pub struct Name {
-    pub name: String,
-    pub age: isize,
-}
-"#
+        pub struct Name {
+            pub name: String,
+            pub age: isize,
+        }
+        "
         );
     }
 
     #[test]
     fn test_render_doc() {
-        assert_eq!(
+        assert_snapshot!(
             RSModule {
                 id: "module".into(),
                 doc: Some(RSDoc::new("Hello, world!", true)),
@@ -147,12 +148,13 @@ pub struct Name {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"//! Hello, world!
+            @"
+        //! Hello, world!
 
-use self::path::to::module;
+        use self::path::to::module;
 
-pub type Name = String;
-"#
+        pub type Name = String;
+        "
         );
     }
 }

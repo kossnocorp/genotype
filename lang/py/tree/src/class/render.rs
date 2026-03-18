@@ -78,11 +78,11 @@ impl<'a> PYClass {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_empty() {
-        assert_eq!(
+        assert_snapshot!(
             PYClass {
                 doc: None,
                 name: "Name".into(),
@@ -92,14 +92,16 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"class Name(Model):
-    pass"#
+            @"
+        class Name(Model):
+            pass
+        "
         );
     }
 
     #[test]
     fn test_render_properties() {
-        assert_eq!(
+        assert_snapshot!(
             PYClass {
                 doc: None,
                 name: "Name".into(),
@@ -122,15 +124,17 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"class Name(Model):
-    name: str
-    age: Optional[int] = None"#
+            @"
+        class Name(Model):
+            name: str
+            age: Optional[int] = None
+        "
         );
     }
 
     #[test]
     fn test_render_indent() {
-        assert_eq!(
+        assert_snapshot!(
             PYClass {
                 doc: None,
                 name: "Name".into(),
@@ -156,15 +160,17 @@ mod tests {
                 &mut Default::default()
             )
             .unwrap(),
-            r#"    class Name(Model):
-        name: str
-        age: Optional[int] = None"#
+            @"
+        class Name(Model):
+            name: str
+            age: Optional[int] = None
+        "
         );
     }
 
     #[test]
     fn test_render_extensions() {
-        assert_eq!(
+        assert_snapshot!(
             PYClass {
                 doc: None,
                 name: "Name".into(),
@@ -182,14 +188,16 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"class Name(Hello, World, Model):
-    name: str"#
+            @"
+        class Name(Hello, World, Model):
+            name: str
+        "
         );
     }
 
     #[test]
     fn test_render_doc_empty() {
-        assert_eq!(
+        assert_snapshot!(
             PYClass {
                 doc: Some(PYDoc("Hello, world!".into())),
                 name: "Name".into(),
@@ -199,16 +207,18 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"class Name(Model):
-    """Hello, world!"""
+            @r#"
+        class Name(Model):
+            """Hello, world!"""
 
-    pass"#
+            pass
+        "#
         );
     }
 
     #[test]
     fn test_render_doc_properties() {
-        assert_eq!(
+        assert_snapshot!(
             PYClass {
                 doc: Some(PYDoc("Hello, world!".into())),
                 name: "Name".into(),
@@ -223,10 +233,12 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"class Name(Model):
-    """Hello, world!"""
+            @r#"
+        class Name(Model):
+            """Hello, world!"""
 
-    name: str"#
+            name: str
+        "#
         );
     }
 }

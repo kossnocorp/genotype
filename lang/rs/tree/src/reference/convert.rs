@@ -6,7 +6,7 @@ impl RSConvert<RSReference> for GTReference {
         let definition_id = match &self.definition_id {
             GTReferenceDefinitionId::Resolved(id) => id.clone(),
             GTReferenceDefinitionId::Unresolved => {
-                return Err(RSConverterError::UnresolvedReference(self.span.clone()).into())
+                return Err(RSConverterError::UnresolvedReference(self.span.clone()).into());
             }
         };
 
@@ -21,18 +21,13 @@ impl RSConvert<RSReference> for GTReference {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
         let mut context = RSConvertContext::empty("module".into());
         context.push_defined(&"Name".into());
-        assert_eq!(
-            RSReference {
-                id: GTReferenceId("module".into(), (1, 8).into()),
-                identifier: "Name".into(),
-                definition_id: GTDefinitionId("module".into(), "Name".into())
-            },
+        assert_ron_snapshot!(
             GTReference {
                 span: (0, 0).into(),
                 id: GTReferenceId("module".into(), (1, 8).into()),
@@ -44,6 +39,13 @@ mod tests {
             }
             .convert(&mut context)
             .unwrap(),
+            @r#"
+        RSReference(
+          id: GTReferenceId(GTModuleId("module"), GTSpan(1, 8)),
+          identifier: RSIdentifier("Name"),
+          definition_id: GTDefinitionId(GTModuleId("module"), "Name"),
+        )
+        "#,
         );
     }
 }

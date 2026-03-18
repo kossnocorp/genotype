@@ -27,7 +27,7 @@ impl TSConvert<TSImport> for GTImport {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_glob() {
@@ -36,23 +36,25 @@ mod tests {
             GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
             "module".into(),
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             GTImport {
                 span: (0, 0).into(),
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 reference: GTImportReference::Glob((0, 0).into())
             }
             .convert(&mut TSConvertContext::new(resolve, Default::default())),
-            TSImport {
-                path: "./path/to/module".into(),
-                reference: TSImportReference::Glob("module".into())
-            }
+            @r#"
+        TSImport(
+          path: TSPath("./path/to/module"),
+          reference: Glob("module"),
+        )
+        "#
         );
     }
 
     #[test]
     fn test_convert_names() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTImport {
                 span: (0, 0).into(),
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
@@ -72,29 +74,35 @@ mod tests {
                 )
             }
             .convert(&mut Default::default()),
-            TSImport {
-                path: "./path/to/module".into(),
-                reference: TSImportReference::Named(vec![
-                    TSImportName::Name("Name".into()),
-                    TSImportName::Alias("Name".into(), "Alias".into())
-                ])
-            }
+            @r#"
+        TSImport(
+          path: TSPath("./path/to/module"),
+          reference: Named([
+            Name(TSIdentifier("Name")),
+            Alias(TSIdentifier("Name"), TSIdentifier("Alias")),
+          ]),
+        )
+        "#
         );
     }
 
     #[test]
     fn test_convert_name() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTImport {
                 span: (0, 0).into(),
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 reference: GTIdentifier::new((0, 0).into(), "Name".into()).into()
             }
             .convert(&mut Default::default()),
-            TSImport {
-                path: "./path/to/module".into(),
-                reference: TSImportReference::Named(vec![TSImportName::Name("Name".into())])
-            }
+            @r#"
+        TSImport(
+          path: TSPath("./path/to/module"),
+          reference: Named([
+            Name(TSIdentifier("Name")),
+          ]),
+        )
+        "#
         );
     }
 }

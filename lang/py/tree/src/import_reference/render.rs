@@ -33,44 +33,44 @@ impl<'a> GtlRender<'a> for PYImportReference {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_default() {
-        assert_eq!(
+        assert_snapshot!(
             PYImportReference::Default(Some("Name".into()))
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "Name"
+            @"Name"
         );
-        assert_eq!(
+        assert_snapshot!(
             PYImportReference::Default(None)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            ""
+            @""
         );
     }
 
     #[test]
     fn test_render_glob() {
-        assert_eq!(
+        assert_snapshot!(
             PYImportReference::Glob
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "*"
+            @"*"
         );
     }
 
     #[test]
     fn test_render_named() {
-        assert_eq!(
+        assert_snapshot!(
             PYImportReference::Named(vec![
                 PYImportName::Name("Name".into()),
                 PYImportName::Alias("Name".into(), "Alias".into()),
             ])
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "Name, Name as Alias"
+            @"Name, Name as Alias"
         );
     }
 }

@@ -27,7 +27,7 @@ impl GtjTreeConvert<GTProperty> for GtjProperty {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
@@ -42,17 +42,18 @@ mod tests {
             }),
             required: false,
         };
-        assert_eq!(
-            GTProperty {
-                span: Default::default(),
-                descriptor: GTPrimitive::Null(Default::default()).into(),
-                attributes: Default::default(),
-                required: false,
-                name: GTKey(Default::default(), "hello".into()),
-                doc: None,
-            },
-            property.to_tree_with_context(&mut Default::default()),
-        );
+
+        let property_tree: GTProperty = property.to_tree_with_context(&mut Default::default());
+        assert_ron_snapshot!(property_tree, @r#"
+        GTProperty(
+          span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
+          name: GTKey(GTSpan(0, 0), "hello"),
+          descriptor: Primitive(Null(GTSpan(0, 0))),
+          required: false,
+        )
+        "#);
 
         let property = GtjProperty {
             r#type: GtjPropertyTypeProperty,
@@ -65,16 +66,17 @@ mod tests {
             }),
             required: true,
         };
-        assert_eq!(
-            GTProperty {
-                span: Default::default(),
-                descriptor: GTPrimitive::Number(Default::default()).into(),
-                attributes: Default::default(),
-                required: true,
-                name: GTKey(Default::default(), "world".into()),
-                doc: Some(GTDoc(Default::default(), "Hello, world!".into())),
-            },
-            property.to_tree_with_context(&mut Default::default()),
-        );
+
+        let property_tree: GTProperty = property.to_tree_with_context(&mut Default::default());
+        assert_ron_snapshot!(property_tree, @r#"
+        GTProperty(
+          span: GTSpan(0, 0),
+          doc: Some(GTDoc(GTSpan(0, 0), "Hello, world!")),
+          attributes: [],
+          name: GTKey(GTSpan(0, 0), "world"),
+          descriptor: Primitive(Number(GTSpan(0, 0))),
+          required: true,
+        )
+        "#);
     }
 }

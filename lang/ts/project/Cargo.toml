@@ -24,3 +24,4 @@ thiserror = "1.0.64"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
+insta = { version = "1.46.3", features = ["ron"] }

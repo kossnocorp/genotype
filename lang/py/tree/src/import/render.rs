@@ -32,46 +32,46 @@ impl<'a> GtlRender<'a> for PYImport {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_default() {
-        assert_eq!(
+        assert_snapshot!(
             PYImport {
                 reference: PYImportReference::Default(Some("name".into())),
                 dependency: PYDependencyIdent::Path(".path.to.module".into())
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"import .path.to.module as name"#
+            @"import .path.to.module as name"
         );
-        assert_eq!(
+        assert_snapshot!(
             PYImport {
                 reference: PYImportReference::Default(None),
                 dependency: PYDependencyIdent::Path(".path.to.module".into())
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"import .path.to.module"#
+            @"import .path.to.module"
         );
     }
 
     #[test]
     fn test_render_glob() {
-        assert_eq!(
+        assert_snapshot!(
             PYImport {
                 reference: PYImportReference::Glob,
                 dependency: PYDependencyIdent::Path(".path.to.module".into())
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"from .path.to.module import *"#
+            @"from .path.to.module import *"
         );
     }
 
     #[test]
     fn test_render_named() {
-        assert_eq!(
+        assert_snapshot!(
             PYImport {
                 reference: PYImportReference::Named(vec![
                     PYImportName::Name("Name".into()),
@@ -81,7 +81,7 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"from .path.to.module import Name, Name as Alias"#
+            @"from .path.to.module import Name, Name as Alias"
         );
     }
 }

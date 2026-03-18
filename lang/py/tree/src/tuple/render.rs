@@ -35,11 +35,11 @@ impl<'a> GtlRender<'a> for PYTuple {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_tuple() {
-        assert_eq!(
+        assert_snapshot!(
             PYTuple {
                 descriptors: vec![
                     PYDescriptor::Primitive(PYPrimitive::String),
@@ -48,25 +48,25 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "tuple[str, int]"
+            @"tuple[str, int]"
         );
     }
 
     #[test]
     fn test_render_empty_tuple() {
-        assert_eq!(
+        assert_snapshot!(
             PYTuple {
                 descriptors: vec![]
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "tuple[()]"
+            @"tuple[()]"
         );
     }
 
     #[test]
     fn test_render_legacy() {
-        assert_eq!(
+        assert_snapshot!(
             PYTuple {
                 descriptors: vec![]
             }
@@ -78,7 +78,7 @@ mod tests {
                 }
             )
             .unwrap(),
-            "Tuple[()]"
+            @"Tuple[()]"
         );
     }
 }

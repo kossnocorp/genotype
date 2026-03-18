@@ -26,7 +26,7 @@ pub trait GtlProject<'a> {
     }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GtlProjectDist {
     pub files: Vec<GtlProjectFile>,
 }

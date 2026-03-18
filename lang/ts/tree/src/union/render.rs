@@ -22,11 +22,11 @@ impl<'a> GtlRender<'a> for TSUnion {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_union() {
-        assert_eq!(
+        assert_snapshot!(
             TSUnion {
                 descriptors: vec![
                     TSDescriptor::Primitive(TSPrimitive::String),
@@ -35,7 +35,7 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "string | number"
+            @"string | number"
         );
     }
 }

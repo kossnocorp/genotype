@@ -17,15 +17,15 @@ impl<'a> GtlRender<'a> for TSKey {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             TSKey("foo".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "foo"
+            @"foo"
         );
     }
 }

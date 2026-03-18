@@ -36,7 +36,7 @@ impl GtjTreeConvert<GTDescriptor> for GtjUnion {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
@@ -46,13 +46,22 @@ mod tests {
             name: None,
             doc: None,
         };
-        assert_eq!(
-            GTUnion {
-                span: Default::default(),
-                descriptors: vec![]
-            },
-            union.to_tree_with_context(&mut Default::default()),
-        );
+
+        let descriptor_tree: GTDescriptor = union.to_tree_with_context(&mut Default::default());
+        assert_ron_snapshot!(descriptor_tree, @"
+        Union(GTUnion(
+          span: GTSpan(0, 0),
+          descriptors: [],
+        ))
+        ");
+
+        let union_tree: GTUnion = union.to_tree_with_context(&mut Default::default());
+        assert_ron_snapshot!(union_tree, @"
+        GTUnion(
+          span: GTSpan(0, 0),
+          descriptors: [],
+        )
+        ");
     }
 
     #[test]
@@ -67,13 +76,16 @@ mod tests {
             name: None,
             doc: None,
         };
-        assert_eq!(
-            GTDescriptor::Union(GTUnion {
-                span: Default::default(),
-                descriptors: vec![GTPrimitive::Null(Default::default()).into()]
-            }),
-            union.to_tree_with_context(&mut Default::default())
-        );
+
+        let union_tree: GTUnion = union.to_tree_with_context(&mut Default::default());
+        assert_ron_snapshot!(union_tree, @"
+        GTUnion(
+          span: GTSpan(0, 0),
+          descriptors: [
+            Primitive(Null(GTSpan(0, 0))),
+          ],
+        )
+        ");
     }
 
     #[test]
@@ -91,22 +103,21 @@ mod tests {
             name: None,
             doc: None,
         };
-        assert_eq!(
-            GTDescriptor::Union(GTUnion {
-                span: Default::default(),
-                descriptors: vec![GTObject {
-                    span: Default::default(),
-                    name: GTObjectName::Named(GTIdentifier(
-                        Default::default(),
-                        "RootMember".into()
-                    )),
-                    extensions: vec![],
-                    properties: vec![],
-                }
-                .into()]
-            }),
-            union.to_tree_with_context(&mut context),
-        );
+
+        let union_tree: GTUnion = union.to_tree_with_context(&mut context);
+        assert_ron_snapshot!(union_tree, @r#"
+        GTUnion(
+          span: GTSpan(0, 0),
+          descriptors: [
+            Object(GTObject(
+              span: GTSpan(0, 0),
+              name: Named(GTIdentifier(GTSpan(0, 0), "RootMember")),
+              extensions: [],
+              properties: [],
+            )),
+          ],
+        )
+        "#);
     }
 
     #[test]
@@ -140,42 +151,40 @@ mod tests {
             name: None,
             doc: None,
         };
-        assert_eq!(
-            GTDescriptor::Union(GTUnion {
-                span: Default::default(),
-                descriptors: vec![GTUnion {
-                    span: Default::default(),
-                    descriptors: vec![GTObject {
-                        span: Default::default(),
-                        name: GTObjectName::Named(GTIdentifier(
-                            Default::default(),
-                            "RootMemberMember".into()
-                        )),
-                        extensions: vec![],
-                        properties: vec![GTProperty {
-                            span: Default::default(),
-                            descriptor: GTObject {
-                                span: Default::default(),
-                                name: GTObjectName::Named(GTIdentifier(
-                                    Default::default(),
-                                    "RootMemberMemberWorld".into()
-                                )),
-                                extensions: vec![],
-                                properties: vec![],
-                            }
-                            .into(),
-                            attributes: Default::default(),
-                            required: false,
-                            name: GTKey(Default::default(), "world".into()),
-                            doc: None,
-                        }],
-                    }
-                    .into()]
-                }
-                .into()]
-            }),
-            union.to_tree_with_context(&mut context),
-        );
+
+        let union_tree: GTUnion = union.to_tree_with_context(&mut context);
+        assert_ron_snapshot!(union_tree, @r#"
+        GTUnion(
+          span: GTSpan(0, 0),
+          descriptors: [
+            Union(GTUnion(
+              span: GTSpan(0, 0),
+              descriptors: [
+                Object(GTObject(
+                  span: GTSpan(0, 0),
+                  name: Named(GTIdentifier(GTSpan(0, 0), "RootMemberMember")),
+                  extensions: [],
+                  properties: [
+                    GTProperty(
+                      span: GTSpan(0, 0),
+                      doc: None,
+                      attributes: [],
+                      name: GTKey(GTSpan(0, 0), "world"),
+                      descriptor: Object(GTObject(
+                        span: GTSpan(0, 0),
+                        name: Named(GTIdentifier(GTSpan(0, 0), "RootMemberMemberWorld")),
+                        extensions: [],
+                        properties: [],
+                      )),
+                      required: false,
+                    ),
+                  ],
+                )),
+              ],
+            )),
+          ],
+        )
+        "#);
     }
 
     #[test]
@@ -193,19 +202,21 @@ mod tests {
             name: Some("World".into()),
             doc: None,
         };
-        assert_eq!(
-            GTDescriptor::Union(GTUnion {
-                span: Default::default(),
-                descriptors: vec![GTObject {
-                    span: Default::default(),
-                    name: GTObjectName::Named(GTIdentifier(Default::default(), "Hello".into())),
-                    extensions: vec![],
-                    properties: vec![],
-                }
-                .into()]
-            }),
-            union.to_tree_with_context(&mut context),
-        );
+
+        let union_tree: GTUnion = union.to_tree_with_context(&mut context);
+        assert_ron_snapshot!(union_tree, @r#"
+        GTUnion(
+          span: GTSpan(0, 0),
+          descriptors: [
+            Object(GTObject(
+              span: GTSpan(0, 0),
+              name: Named(GTIdentifier(GTSpan(0, 0), "Hello")),
+              extensions: [],
+              properties: [],
+            )),
+          ],
+        )
+        "#);
     }
 
     #[test]
@@ -239,41 +250,39 @@ mod tests {
             name: Some("Hello".into()),
             doc: None,
         };
-        assert_eq!(
-            GTDescriptor::Union(GTUnion {
-                span: Default::default(),
-                descriptors: vec![GTUnion {
-                    span: Default::default(),
-                    descriptors: vec![GTObject {
-                        span: Default::default(),
-                        name: GTObjectName::Named(GTIdentifier(
-                            Default::default(),
-                            "HiMember".into()
-                        )),
-                        extensions: vec![],
-                        properties: vec![GTProperty {
-                            span: Default::default(),
-                            descriptor: GTObject {
-                                span: Default::default(),
-                                name: GTObjectName::Named(GTIdentifier(
-                                    Default::default(),
-                                    "HiMemberWorld".into()
-                                )),
-                                extensions: vec![],
-                                properties: vec![],
-                            }
-                            .into(),
-                            attributes: Default::default(),
-                            required: false,
-                            name: GTKey(Default::default(), "world".into()),
-                            doc: None,
-                        }],
-                    }
-                    .into()]
-                }
-                .into()]
-            }),
-            union.to_tree_with_context(&mut context),
-        );
+
+        let union_tree: GTUnion = union.to_tree_with_context(&mut context);
+        assert_ron_snapshot!(union_tree, @r#"
+        GTUnion(
+          span: GTSpan(0, 0),
+          descriptors: [
+            Union(GTUnion(
+              span: GTSpan(0, 0),
+              descriptors: [
+                Object(GTObject(
+                  span: GTSpan(0, 0),
+                  name: Named(GTIdentifier(GTSpan(0, 0), "HiMember")),
+                  extensions: [],
+                  properties: [
+                    GTProperty(
+                      span: GTSpan(0, 0),
+                      doc: None,
+                      attributes: [],
+                      name: GTKey(GTSpan(0, 0), "world"),
+                      descriptor: Object(GTObject(
+                        span: GTSpan(0, 0),
+                        name: Named(GTIdentifier(GTSpan(0, 0), "HiMemberWorld")),
+                        extensions: [],
+                        properties: [],
+                      )),
+                      required: false,
+                    ),
+                  ],
+                )),
+              ],
+            )),
+          ],
+        )
+        "#);
     }
 }

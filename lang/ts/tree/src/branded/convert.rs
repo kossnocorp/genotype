@@ -17,11 +17,11 @@ impl TSConvert<TSBranded> for GTBranded {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTBranded {
                 span: (0, 0).into(),
                 id: GTDefinitionId("module".into(), "UserId".into()),
@@ -29,11 +29,13 @@ mod tests {
                 primitive: GTPrimitive::String((0, 0).into()).into(),
             }
             .convert(&mut Default::default()),
-            TSBranded {
-                doc: None,
-                name: "UserId".into(),
-                primitive: TSPrimitive::String,
-            }
+            @r#"
+        TSBranded(
+          doc: None,
+          name: TSIdentifier("UserId"),
+          primitive: String,
+        )
+        "#
         );
     }
 
@@ -41,7 +43,7 @@ mod tests {
     fn test_doc() {
         let mut context = TSConvertContext::new(TSConvertResolve::new(), Default::default());
         context.provide_doc(Some("This is a user ID.".into()));
-        assert_eq!(
+        assert_ron_snapshot!(
             GTBranded {
                 span: (0, 0).into(),
                 id: GTDefinitionId("module".into(), "UserId".into()),
@@ -49,11 +51,13 @@ mod tests {
                 primitive: GTPrimitive::String((0, 0).into()).into(),
             }
             .convert(&mut context),
-            TSBranded {
-                doc: Some("This is a user ID.".into()),
-                name: "UserId".into(),
-                primitive: TSPrimitive::String,
-            }
+            @r#"
+        TSBranded(
+          doc: Some(TSDoc("This is a user ID.")),
+          name: TSIdentifier("UserId"),
+          primitive: String,
+        )
+        "#
         );
     }
 }

@@ -17,18 +17,18 @@ impl<'a> GtlRender<'a> for RSPath {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             RSPath(
                 GTModuleId("path/to/module".into()),
                 "self::path::to::module".into()
             )
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "self::path::to::module"
+            @"self::path::to::module"
         );
     }
 }

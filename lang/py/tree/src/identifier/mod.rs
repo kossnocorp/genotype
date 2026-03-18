@@ -3,7 +3,7 @@ use crate::prelude::internal::*;
 mod convert;
 mod render;
 
-#[derive(Debug, Eq, PartialEq, Hash, Clone, PartialOrd, Ord)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, PartialOrd, Ord, Serialize)]
 pub struct PYIdentifier(pub String);
 
 impl GtlDependencyRef for PYIdentifier {}

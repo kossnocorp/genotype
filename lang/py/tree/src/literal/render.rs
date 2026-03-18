@@ -31,85 +31,85 @@ impl<'a> GtlRender<'a> for PYLiteral {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_none() {
-        assert_eq!(
+        assert_snapshot!(
             PYLiteral::None
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "Literal[None]"
+            @"Literal[None]"
         );
     }
 
     #[test]
     fn test_render_boolean() {
-        assert_eq!(
+        assert_snapshot!(
             PYLiteral::Boolean(true)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "Literal[True]"
+            @"Literal[True]"
         );
-        assert_eq!(
+        assert_snapshot!(
             PYLiteral::Boolean(false)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "Literal[False]"
+            @"Literal[False]"
         );
     }
 
     #[test]
     fn test_render_integer() {
-        assert_eq!(
+        assert_snapshot!(
             PYLiteral::Integer(1)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "Literal[1]"
+            @"Literal[1]"
         );
-        assert_eq!(
+        assert_snapshot!(
             PYLiteral::Integer(-1)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "Literal[-1]"
+            @"Literal[-1]"
         );
     }
 
     #[test]
     fn test_render_float() {
-        assert_eq!(
+        assert_snapshot!(
             PYLiteral::Float(1.0)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "Literal[1.0]"
+            @"Literal[1.0]"
         );
-        assert_eq!(
+        assert_snapshot!(
             PYLiteral::Float(-1.1)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "Literal[-1.1]"
+            @"Literal[-1.1]"
         );
-        assert_eq!(
+        assert_snapshot!(
             PYLiteral::Float(1.23456789)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "Literal[1.23456789]"
+            @"Literal[1.23456789]"
         );
     }
 
     #[test]
     fn test_render_string() {
-        assert_eq!(
+        assert_snapshot!(
             PYLiteral::String("Hi!".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "Literal[\"Hi!\"]"
+            @r#"Literal["Hi!"]"#
         );
-        assert_eq!(
+        assert_snapshot!(
             PYLiteral::String("Hello, \"world\"!\\".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "Literal[\"Hello, \\\"world\\\"!\\\\\"]"
+            @r#"Literal["Hello, \"world\"!\\"]"#
         );
     }
 }

@@ -20,15 +20,15 @@ impl<'a> GtlRender<'a> for TSPath {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn render_basic() {
-        assert_eq!(
+        assert_snapshot!(
             TSPath("./path/to/module".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "./path/to/module.js"
+            @"./path/to/module.js"
         );
     }
 
@@ -44,21 +44,21 @@ mod tests {
             },
             ..Default::default()
         };
-        assert_eq!(
+        assert_snapshot!(
             TSPath("./path/to/module".into())
                 .render(Default::default(), &mut ctx)
                 .unwrap(),
-            "./path/to/module.ts"
+            @"./path/to/module.ts"
         );
     }
 
     #[test]
     fn render_external() {
-        assert_eq!(
+        assert_snapshot!(
             TSPath("path/to/module".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "path/to/module"
+            @"path/to/module"
         );
     }
 }

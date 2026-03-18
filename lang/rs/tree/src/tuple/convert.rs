@@ -20,11 +20,11 @@ impl RSConvert<RSTuple> for GTTuple {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTTuple {
                 span: (0, 0).into(),
                 descriptors: vec![
@@ -34,12 +34,14 @@ mod tests {
             }
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
-            RSTuple {
-                descriptors: vec![
-                    RSDescriptor::Primitive(RSPrimitive::Boolean),
-                    RSDescriptor::Primitive(RSPrimitive::String),
-                ]
-            }
+            @"
+        RSTuple(
+          descriptors: [
+            Primitive(Boolean),
+            Primitive(String),
+          ],
+        )
+        "
         );
     }
 }

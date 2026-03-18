@@ -10,25 +10,29 @@ impl RSConvert<RSAny> for GTAny {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTAny((0, 0).into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSAny
+            @"RSAny"
         );
     }
 
     #[test]
     fn test_convert_resolve() {
         let mut context = RSConvertContext::empty("module".into());
-        assert_eq!(GTAny((0, 0).into(),).convert(&mut context).unwrap(), RSAny);
-        assert_eq!(
+        assert_ron_snapshot!(GTAny((0, 0).into(),).convert(&mut context).unwrap(), @"RSAny");
+        assert_ron_snapshot!(
             context.as_dependencies(),
-            vec![(RSDependencyIdent::Runtime, "Any".into())]
+            @r#"
+        [
+          (Runtime, RSIdentifier("Any")),
+        ]
+        "#
         );
     }
 }

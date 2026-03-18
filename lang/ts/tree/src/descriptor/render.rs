@@ -29,36 +29,36 @@ impl<'a> GtlRender<'a> for TSDescriptor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_array() {
-        assert_eq!(
+        assert_snapshot!(
             TSDescriptor::Array(Box::new(TSArray {
                 descriptor: TSDescriptor::Primitive(TSPrimitive::Number)
             }))
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "Array<number>"
+            @"Array<number>"
         );
     }
 
     #[test]
     fn test_render_inline_import() {
-        assert_eq!(
+        assert_snapshot!(
             TSDescriptor::InlineImport(TSInlineImport {
                 path: "../path/to/module".into(),
                 name: "Name".into(),
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"import("../path/to/module.js").Name"#
+            @r#"import("../path/to/module.js").Name"#
         );
     }
 
     #[test]
     fn test_render_intersection() {
-        assert_eq!(
+        assert_snapshot!(
             TSDescriptor::Intersection(TSIntersection {
                 descriptors: vec![
                     TSObject {
@@ -75,15 +75,17 @@ mod tests {
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"{
-  hello: string
-} & World"#
+            @"
+        {
+          hello: string
+        } & World
+        "
         );
     }
 
     #[test]
     fn test_render_object() {
-        assert_eq!(
+        assert_snapshot!(
             TSDescriptor::Object(TSObject {
                 properties: vec![
                     TSProperty {
@@ -102,42 +104,44 @@ mod tests {
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"{
-  name: string,
-  age?: number
-}"#
+            @"
+        {
+          name: string,
+          age?: number
+        }
+        "
         );
     }
 
     #[test]
     fn test_render_primitive() {
-        assert_eq!(
+        assert_snapshot!(
             TSDescriptor::Primitive(TSPrimitive::Boolean)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "boolean"
+            @"boolean"
         );
-        assert_eq!(
+        assert_snapshot!(
             TSDescriptor::Primitive(TSPrimitive::String)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "string"
+            @"string"
         );
     }
 
     #[test]
     fn test_render_reference() {
-        assert_eq!(
+        assert_snapshot!(
             TSDescriptor::Reference("Name".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "Name"
+            @"Name"
         );
     }
 
     #[test]
     fn test_render_tuple() {
-        assert_eq!(
+        assert_snapshot!(
             TSDescriptor::Tuple(TSTuple {
                 descriptors: vec![
                     TSDescriptor::Primitive(TSPrimitive::Number),
@@ -146,13 +150,13 @@ mod tests {
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "[number, string]"
+            @"[number, string]"
         );
     }
 
     #[test]
     fn test_render_union() {
-        assert_eq!(
+        assert_snapshot!(
             TSDescriptor::Union(TSUnion {
                 descriptors: vec![
                     TSDescriptor::Primitive(TSPrimitive::String),
@@ -161,30 +165,30 @@ mod tests {
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "string | number"
+            @"string | number"
         );
     }
 
     #[test]
     fn test_render_record() {
-        assert_eq!(
+        assert_snapshot!(
             TSDescriptor::Record(Box::new(TSRecord {
                 key: TSRecordKey::String,
                 descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
             }))
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "Record<string, number>"
+            @"Record<string, number>"
         );
     }
 
     #[test]
     fn test_render_any() {
-        assert_eq!(
+        assert_snapshot!(
             TSDescriptor::Any(TSAny)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "any"
+            @"any"
         );
     }
 }

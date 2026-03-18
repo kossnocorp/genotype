@@ -35,3 +35,4 @@ toml = { version = "0.8.19", features = ["preserve_order"] }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
+insta = { version = "1.46.3", features = ["ron"] }

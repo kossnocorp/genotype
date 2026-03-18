@@ -1,7 +1,9 @@
+use crate::prelude::internal::*;
+
 mod convert;
 mod render;
 
-#[derive(Debug, Eq, PartialEq, Hash, Clone)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize)]
 pub struct TSPath(pub String);
 
 impl TSPath {

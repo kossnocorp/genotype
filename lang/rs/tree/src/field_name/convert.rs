@@ -20,42 +20,46 @@ impl RSConvert<RSFieldName> for GTKey {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
-            RSFieldName("foo".into()),
+        assert_ron_snapshot!(
             GTKey::new((0, 0).into(), "foo".into())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
+            @r#"RSFieldName("foo")"#
         );
     }
 
     #[test]
     fn test_convert_aliased() {
         let mut context = RSConvertContext::empty("module".into());
-        assert_eq!(
-            RSFieldName("foo_bar".into()),
+        assert_ron_snapshot!(
             GTKey::new((0, 0).into(), "fooBar".into())
                 .convert(&mut context)
                 .unwrap(),
+            @r#"RSFieldName("foo_bar")"#
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             context.drain_field_attributes(),
-            vec![RSAttribute(r#"serde(rename = "fooBar")"#.into())]
+            @r#"
+        [
+          RSAttribute("serde(rename = \"fooBar\")"),
+        ]
+        "#
         )
     }
 
     #[test]
     fn test_convert_keyword() {
         let mut context = RSConvertContext::empty("module".into());
-        assert_eq!(
+        assert_ron_snapshot!(
             GTKey::new((0, 0).into(), "type".into())
                 .convert(&mut context)
                 .unwrap(),
-            RSFieldName("type".into()),
+            @r#"RSFieldName("type")"#
         );
-        assert_eq!(context.drain_field_attributes(), vec![])
+        assert_ron_snapshot!(context.drain_field_attributes(), @"[]")
     }
 }

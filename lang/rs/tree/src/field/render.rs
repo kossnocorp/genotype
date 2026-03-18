@@ -33,11 +33,11 @@ impl<'a> GtlRender<'a> for RSField {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_primitive() {
-        assert_eq!(
+        assert_snapshot!(
             RSField {
                 doc: None,
                 attributes: vec![],
@@ -46,9 +46,9 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "pub name: String"
+            @"pub name: String"
         );
-        assert_eq!(
+        assert_snapshot!(
             RSField {
                 doc: None,
                 attributes: vec![],
@@ -62,13 +62,13 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "pub name: Name"
+            @"pub name: Name"
         );
     }
 
     #[test]
     fn test_render_indent() {
-        assert_eq!(
+        assert_snapshot!(
             RSField {
                 doc: None,
                 attributes: vec![],
@@ -80,13 +80,13 @@ mod tests {
                 &mut Default::default()
             )
             .unwrap(),
-            "    pub name: String"
+            @"    pub name: String"
         );
     }
 
     #[test]
     fn test_render_doc() {
-        assert_eq!(
+        assert_snapshot!(
             RSField {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
@@ -95,10 +95,12 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"/// Hello, world!
-pub name: String"#
+            @"
+        /// Hello, world!
+        pub name: String
+        "
         );
-        assert_eq!(
+        assert_snapshot!(
             RSField {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
@@ -110,14 +112,16 @@ pub name: String"#
                 &mut Default::default()
             )
             .unwrap(),
-            r#"    /// Hello, world!
-    pub name: String"#
+            @"
+        /// Hello, world!
+        pub name: String
+        "
         );
     }
 
     #[test]
     fn test_render_attributes() {
-        assert_eq!(
+        assert_snapshot!(
             RSField {
                 doc: None,
                 attributes: vec![RSAttribute("derive(Clone)".into())],
@@ -126,10 +130,12 @@ pub name: String"#
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "#[derive(Clone)]
-pub name: String"
+            @"
+        #[derive(Clone)]
+        pub name: String
+        "
         );
-        assert_eq!(
+        assert_snapshot!(
             RSField {
                 doc: None,
                 attributes: vec![RSAttribute("derive(Clone)".into())],
@@ -141,10 +147,12 @@ pub name: String"
                 &mut Default::default()
             )
             .unwrap(),
-            "    #[derive(Clone)]
-    pub name: String"
+            @"
+        #[derive(Clone)]
+        pub name: String
+        "
         );
-        assert_eq!(
+        assert_snapshot!(
             RSField {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![RSAttribute("derive(Clone)".into())],
@@ -156,9 +164,11 @@ pub name: String"
                 &mut Default::default()
             )
             .unwrap(),
-            "    /// Hello, world!
-    #[derive(Clone)]
-    pub name: String"
+            @"
+        /// Hello, world!
+        #[derive(Clone)]
+        pub name: String
+        "
         );
     }
 }

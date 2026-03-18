@@ -15,7 +15,7 @@ impl PYContextResolve for PYTuple {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_resolve() {
@@ -24,7 +24,7 @@ mod tests {
             descriptors: vec![PYPrimitive::String.into()],
         };
         tuple.resolve(&mut context);
-        assert_eq!(context.as_imports(), vec![]);
+        assert_ron_snapshot!(context.as_imports(), @"[]");
     }
 
     #[test]
@@ -34,9 +34,13 @@ mod tests {
             descriptors: vec![PYPrimitive::String.into()],
         };
         tuple.resolve(&mut context);
-        assert_eq!(
+        assert_ron_snapshot!(
             context.as_imports(),
-            vec![(PYDependencyIdent::Typing, "Tuple".into())],
+            @r#"
+        [
+          (Typing, PYIdentifier("Tuple")),
+        ]
+        "#
         );
     }
 }

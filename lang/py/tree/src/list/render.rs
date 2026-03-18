@@ -24,23 +24,23 @@ impl<'a> GtlRender<'a> for PYList {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_array() {
-        assert_eq!(
+        assert_snapshot!(
             PYList {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String)
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "list[str]"
+            @"list[str]"
         );
     }
 
     #[test]
     fn test_render_legacy() {
-        assert_eq!(
+        assert_snapshot!(
             PYList {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::String)
             }
@@ -52,7 +52,7 @@ mod tests {
                 }
             )
             .unwrap(),
-            "List[str]"
+            @"List[str]"
         );
     }
 }

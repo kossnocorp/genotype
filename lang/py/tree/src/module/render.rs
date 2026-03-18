@@ -57,11 +57,11 @@ impl GtlRenderModule for PYModule {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             PYModule {
                 doc: None,
                 imports: vec![
@@ -108,23 +108,24 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"import .path.to.module as name
-from .path.to.module import Name, Name as Alias
+            @"
+        import .path.to.module as name
+        from .path.to.module import Name, Name as Alias
 
 
-type Name = str
+        type Name = str
 
 
-class Name(Model):
-    name: str
-    age: Optional[int] = None
-"#
+        class Name(Model):
+            name: str
+            age: Optional[int] = None
+        "
         );
     }
 
     #[test]
     fn test_render_doc() {
-        assert_eq!(
+        assert_snapshot!(
             PYModule {
                 doc: Some(PYDoc("Hello, world!".into())),
                 imports: vec![PYImport {
@@ -140,14 +141,15 @@ class Name(Model):
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#""""Hello, world!"""
+            @r#"
+        """Hello, world!"""
 
 
-import .path.to.module as name
+        import .path.to.module as name
 
 
-type Name = str
-"#
+        type Name = str
+        "#
         );
     }
 }

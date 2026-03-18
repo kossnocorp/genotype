@@ -20,14 +20,13 @@ impl PYConvert<PYReference> for GTInlineImport {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_reference() {
         let mut context = PYConvertContext::default();
         context.push_defined(&"Name".into());
-        assert_eq!(
-            PYReference::new("Name".into(), false),
+        assert_ron_snapshot!(
             GTReference {
                 span: (0, 0).into(),
                 id: GTReferenceId("module".into(), (0, 0).into()),
@@ -38,14 +37,19 @@ mod tests {
                 identifier: GTIdentifier::new((0, 0).into(), "Name".into())
             }
             .convert(&mut context),
+            @r#"
+        PYReference(
+          identifier: PYIdentifier("Name"),
+          forward: false,
+        )
+        "#,
         );
     }
 
     #[test]
     fn test_convert_reference_forward() {
         let mut context = PYConvertContext::default();
-        assert_eq!(
-            PYReference::new("Name".into(), true),
+        assert_ron_snapshot!(
             GTReference {
                 span: (0, 0).into(),
                 id: GTReferenceId("module".into(), (0, 0).into()),
@@ -56,27 +60,39 @@ mod tests {
                 identifier: GTIdentifier::new((0, 0).into(), "Name".into())
             }
             .convert(&mut context),
+            @r#"
+        PYReference(
+          identifier: PYIdentifier("Name"),
+          forward: true,
+        )
+        "#,
         );
     }
 
     #[test]
     fn test_convert_inline_import() {
         let mut context = PYConvertContext::default();
-        assert_eq!(
+        assert_ron_snapshot!(
             GTInlineImport {
                 span: (0, 0).into(),
                 path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
             }
             .convert(&mut context),
-            PYReference::new("Name".into(), false),
+            @r#"
+        PYReference(
+          identifier: PYIdentifier("Name"),
+          forward: false,
+        )
+        "#,
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             context.as_dependencies(),
-            vec![(
-                PYDependencyIdent::Path(".path.to.module".into()),
-                "Name".into()
-            )]
+            @r#"
+        [
+          (Path(PYPath(".path.to.module")), PYIdentifier("Name")),
+        ]
+        "#
         );
     }
 }

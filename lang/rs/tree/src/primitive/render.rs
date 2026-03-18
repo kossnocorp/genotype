@@ -36,111 +36,111 @@ impl<'a> GtlRender<'a> for RSPrimitive {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_primitive() {
-        assert_eq!(
+        assert_snapshot!(
             RSPrimitive::Unit
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "()"
+            @"()"
         );
-        assert_eq!(
+        assert_snapshot!(
             RSPrimitive::Boolean
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "bool"
+            @"bool"
         );
-        assert_eq!(
+        assert_snapshot!(
             RSPrimitive::String
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "String"
+            @"String"
         );
-        assert_eq!(
+        assert_snapshot!(
             RSPrimitive::Int8
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "i8"
+            @"i8"
         );
-        assert_eq!(
+        assert_snapshot!(
             RSPrimitive::Int16
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "i16"
+            @"i16"
         );
-        assert_eq!(
+        assert_snapshot!(
             RSPrimitive::Int32
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "i32"
+            @"i32"
         );
-        assert_eq!(
+        assert_snapshot!(
             RSPrimitive::Int64
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "i64"
+            @"i64"
         );
-        assert_eq!(
+        assert_snapshot!(
             RSPrimitive::Int128
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "i128"
+            @"i128"
         );
-        assert_eq!(
+        assert_snapshot!(
             RSPrimitive::IntSize
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "isize"
+            @"isize"
         );
-        assert_eq!(
+        assert_snapshot!(
             RSPrimitive::IntU8
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "u8"
+            @"u8"
         );
-        assert_eq!(
+        assert_snapshot!(
             RSPrimitive::IntU16
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "u16"
+            @"u16"
         );
-        assert_eq!(
+        assert_snapshot!(
             RSPrimitive::IntU32
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "u32"
+            @"u32"
         );
-        assert_eq!(
+        assert_snapshot!(
             RSPrimitive::IntU64
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "u64"
+            @"u64"
         );
-        assert_eq!(
+        assert_snapshot!(
             RSPrimitive::IntU128
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "u128"
+            @"u128"
         );
-        assert_eq!(
+        assert_snapshot!(
             RSPrimitive::IntUSize
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "usize"
+            @"usize"
         );
-        assert_eq!(
+        assert_snapshot!(
             RSPrimitive::Float32
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "f32"
+            @"f32"
         );
-        assert_eq!(
+        assert_snapshot!(
             RSPrimitive::Float64
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "f64"
+            @"f64"
         );
     }
 }

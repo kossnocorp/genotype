@@ -15,11 +15,11 @@ impl PYConvert<PYProperty> for GTProperty {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTProperty {
                 span: (0, 0).into(),
                 doc: None,
@@ -29,12 +29,14 @@ mod tests {
                 required: false,
             }
             .convert(&mut PYConvertContext::default()),
-            PYProperty {
-                doc: None,
-                name: "name".into(),
-                descriptor: PYDescriptor::Primitive(PYPrimitive::String),
-                required: false,
-            }
+            @r#"
+        PYProperty(
+          doc: None,
+          name: PYKey("name"),
+          descriptor: Primitive(String),
+          required: false,
+        )
+        "#
         );
     }
 
@@ -47,7 +49,7 @@ mod tests {
                 ..Default::default()
             },
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             GTProperty {
                 doc: None,
                 span: (0, 0).into(),
@@ -57,16 +59,22 @@ mod tests {
                 required: false,
             }
             .convert(&mut context),
-            PYProperty {
-                doc: None,
-                name: "name".into(),
-                descriptor: PYPrimitive::String.into(),
-                required: false,
-            }
+            @r#"
+        PYProperty(
+          doc: None,
+          name: PYKey("name"),
+          descriptor: Primitive(String),
+          required: false,
+        )
+        "#
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             context.as_dependencies(),
-            vec![(PYDependencyIdent::Typing, "Optional".into())]
+            @r#"
+        [
+          (Typing, PYIdentifier("Optional")),
+        ]
+        "#
         );
     }
 }

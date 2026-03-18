@@ -25,11 +25,11 @@ impl<'a> GtlRender<'a> for RSAlias {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             RSAlias {
                 id: GTDefinitionId("module".into(), "Name".into()),
                 doc: None,
@@ -38,13 +38,13 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "pub type Name = String;"
+            @"pub type Name = String;"
         );
     }
 
     #[test]
     fn test_render_doc() {
-        assert_eq!(
+        assert_snapshot!(
             RSAlias {
                 id: GTDefinitionId("module".into(), "Name".into()),
                 doc: Some("Hello, world!".into()),
@@ -53,8 +53,10 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"/// Hello, world!
-pub type Name = String;"#
+            @"
+        /// Hello, world!
+        pub type Name = String;
+        "
         );
     }
 }

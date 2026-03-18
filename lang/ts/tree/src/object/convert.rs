@@ -15,11 +15,11 @@ impl TSConvert<TSObject> for GTObject {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTObject {
                 span: (0, 0).into(),
                 name: GTIdentifier::new((0, 0).into(), "Person".into()).into(),
@@ -44,28 +44,29 @@ mod tests {
                 ]
             }
             .convert(&mut Default::default()),
-            TSObject {
-                properties: vec![
-                    TSProperty {
-                        doc: None,
-                        name: "name".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
-                        required: true,
-                    },
-                    TSProperty {
-                        doc: None,
-                        name: "age".into(),
-                        descriptor: TSUnion {
-                            descriptors: vec![
-                                TSPrimitive::Number.into(),
-                                TSPrimitive::Undefined.into()
-                            ]
-                        }
-                        .into(),
-                        required: false,
-                    }
-                ]
-            }
+            @r#"
+        TSObject(
+          properties: [
+            TSProperty(
+              doc: None,
+              name: TSKey("name"),
+              descriptor: Primitive(String),
+              required: true,
+            ),
+            TSProperty(
+              doc: None,
+              name: TSKey("age"),
+              descriptor: Union(TSUnion(
+                descriptors: [
+                  Primitive(Number),
+                  Primitive(Undefined),
+                ],
+              )),
+              required: false,
+            ),
+          ],
+        )
+        "#
         );
     }
 }

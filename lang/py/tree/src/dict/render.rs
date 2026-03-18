@@ -25,24 +25,24 @@ impl<'a> GtlRender<'a> for PYDict {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             PYDict {
                 key: PYDictKey::String,
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "dict[str, int]"
+            @"dict[str, int]"
         );
     }
 
     #[test]
     fn test_render_legacy() {
-        assert_eq!(
+        assert_snapshot!(
             PYDict {
                 key: PYDictKey::String,
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
@@ -55,7 +55,7 @@ mod tests {
                 }
             )
             .unwrap(),
-            "Dict[str, int]"
+            @"Dict[str, int]"
         );
     }
 }

@@ -25,7 +25,7 @@ impl GtjSchemaConvert<GtjSchemaAny> for GtjLiteral {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_null() {
@@ -35,14 +35,24 @@ mod tests {
             doc: Some("Hello, world!".into()),
             value: GtjLiteralValue::Null(()),
         };
-        assert_eq!(
-            GtjSchemaLiteral {
-                title: Some("hello".into()),
-                description: Some("Hello, world!".into()),
-                r#const: GtjSchemaLiteralConst::Null(()),
-            },
-            literal.to_schema(),
-        );
+
+        let any_schema: GtjSchemaAny = literal.to_schema();
+        assert_ron_snapshot!(any_schema, @r#"
+        GtjSchemaLiteral(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          const: (),
+        )
+        "#);
+
+        let literal_schema: GtjSchemaLiteral = literal.to_schema();
+        assert_ron_snapshot!(literal_schema, @r#"
+        GtjSchemaLiteral(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          const: (),
+        )
+        "#);
     }
 
     #[test]
@@ -53,14 +63,24 @@ mod tests {
             doc: Some("Hello, world!".into()),
             value: GtjLiteralValue::Boolean(true),
         };
-        assert_eq!(
-            GtjSchemaLiteral {
-                title: Some("hello".into()),
-                description: Some("Hello, world!".into()),
-                r#const: GtjSchemaLiteralConst::Boolean(true),
-            },
-            literal.to_schema(),
-        );
+
+        let any_schema: GtjSchemaAny = literal.to_schema();
+        assert_ron_snapshot!(any_schema, @r#"
+        GtjSchemaLiteral(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          const: true,
+        )
+        "#);
+
+        let literal_schema: GtjSchemaLiteral = literal.to_schema();
+        assert_ron_snapshot!(literal_schema, @r#"
+        GtjSchemaLiteral(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          const: true,
+        )
+        "#);
     }
 
     #[test]
@@ -71,14 +91,24 @@ mod tests {
             doc: Some("Hello, world!".into()),
             value: GtjLiteralValue::Number(42.0),
         };
-        assert_eq!(
-            GtjSchemaLiteral {
-                title: Some("hello".into()),
-                description: Some("Hello, world!".into()),
-                r#const: GtjSchemaLiteralConst::Number(42.0),
-            },
-            literal.to_schema(),
-        );
+
+        let any_schema: GtjSchemaAny = literal.to_schema();
+        assert_ron_snapshot!(any_schema, @r#"
+        GtjSchemaLiteral(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          const: 42.0,
+        )
+        "#);
+
+        let literal_schema: GtjSchemaLiteral = literal.to_schema();
+        assert_ron_snapshot!(literal_schema, @r#"
+        GtjSchemaLiteral(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          const: 42.0,
+        )
+        "#);
     }
 
     #[test]
@@ -89,13 +119,23 @@ mod tests {
             doc: Some("Hello, world!".into()),
             value: GtjLiteralValue::String("Hello".into()),
         };
-        assert_eq!(
-            GtjSchemaLiteral {
-                title: Some("hello".into()),
-                description: Some("Hello, world!".into()),
-                r#const: GtjSchemaLiteralConst::String("Hello".into()),
-            },
-            literal.to_schema(),
-        );
+
+        let any_schema: GtjSchemaAny = literal.to_schema();
+        assert_ron_snapshot!(any_schema, @r#"
+        GtjSchemaLiteral(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          const: "Hello",
+        )
+        "#);
+
+        let literal_schema: GtjSchemaLiteral = literal.to_schema();
+        assert_ron_snapshot!(literal_schema, @r#"
+        GtjSchemaLiteral(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          const: "Hello",
+        )
+        "#);
     }
 }

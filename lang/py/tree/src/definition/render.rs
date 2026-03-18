@@ -22,11 +22,11 @@ impl<'a> GtlRender<'a> for PYDefinition {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_alias() {
-        assert_eq!(
+        assert_snapshot!(
             PYDefinition::Alias(PYAlias {
                 doc: None,
                 name: "Name".into(),
@@ -35,13 +35,13 @@ mod tests {
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "type Name = str"
+            @"type Name = str"
         );
     }
 
     #[test]
     fn test_render_class() {
-        assert_eq!(
+        assert_snapshot!(
             PYDefinition::Class(PYClass {
                 doc: None,
                 name: "Name".into(),
@@ -64,15 +64,17 @@ mod tests {
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"class Name(Model):
-    name: str
-    age: Optional[int] = None"#
+            @"
+        class Name(Model):
+            name: str
+            age: Optional[int] = None
+        "
         );
     }
 
     #[test]
     fn test_render_branded() {
-        assert_eq!(
+        assert_snapshot!(
             PYDefinition::Newtype(PYNewtype {
                 doc: None,
                 name: "UserId".into(),
@@ -80,23 +82,21 @@ mod tests {
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"UserId = NewType("UserId", str)"#
+            @r#"UserId = NewType("UserId", str)"#
         );
     }
 
     #[test]
     fn test_render_embed() {
-        assert_eq!(
+        assert_snapshot!(
             PYDefinition::Embed(PYEmbedDefinition {
                 name: "Name".into(),
-                embed: r#"class Hello:
-    name = "World""#
+                embed: r#"class Hello:\n    name = "World""#
                     .into()
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"class Hello:
-    name = "World""#
+            @r#"class Hello:\n    name = "World""#
         );
     }
 }

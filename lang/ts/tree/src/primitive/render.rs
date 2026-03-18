@@ -25,45 +25,45 @@ impl<'a> GtlRender<'a> for TSPrimitive {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_primitive() {
-        assert_eq!(
+        assert_snapshot!(
             TSPrimitive::String
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "string"
+            @"string"
         );
-        assert_eq!(
+        assert_snapshot!(
             TSPrimitive::Number
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "number"
+            @"number"
         );
-        assert_eq!(
+        assert_snapshot!(
             TSPrimitive::BigInt
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "bigint"
+            @"bigint"
         );
-        assert_eq!(
+        assert_snapshot!(
             TSPrimitive::Boolean
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "boolean"
+            @"boolean"
         );
-        assert_eq!(
+        assert_snapshot!(
             TSPrimitive::Null
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "null"
+            @"null"
         );
-        assert_eq!(
+        assert_snapshot!(
             TSPrimitive::Undefined
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "undefined"
+            @"undefined"
         );
     }
 }

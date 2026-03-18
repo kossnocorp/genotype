@@ -1,8 +1,9 @@
 mod convert;
 pub use convert::*;
+use serde::Serialize;
 mod render;
 
-#[derive(Debug, Eq, PartialEq, Hash, Clone)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize)]
 pub struct PYPath(pub String);
 
 impl From<&str> for PYPath {

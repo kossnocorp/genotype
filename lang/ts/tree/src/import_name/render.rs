@@ -26,25 +26,25 @@ impl<'a> GtlRender<'a> for TSImportName {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_name() {
-        assert_eq!(
+        assert_snapshot!(
             TSImportName::Name("Name".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "Name"
+            @"Name"
         );
     }
 
     #[test]
     fn test_render_alias() {
-        assert_eq!(
+        assert_snapshot!(
             TSImportName::Alias("Name".into(), "Alias".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "Name as Alias"
+            @"Name as Alias"
         );
     }
 }

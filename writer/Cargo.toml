@@ -14,3 +14,4 @@ genotype_path = { version = "0.14.0", path = "../path" }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
+insta = { version = "1.46.3", features = ["ron"] }

@@ -19,10 +19,8 @@ impl GtjSchemaConvert<GtjSchemaAny> for GtjAny {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::BTreeMap;
-
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_null() {
@@ -31,14 +29,13 @@ mod tests {
             doc: Some("Hello, world!".into()),
             r#type: GtjNullTypeNull,
         });
-        assert_eq!(
-            GtjSchemaAny::GtjSchemaNull(GtjSchemaNull {
-                r#type: GtjSchemaNullTypeNull,
-                title: Some("hello".into()),
-                description: Some("Hello, world!".into()),
-            }),
-            null.to_schema(),
-        );
+        assert_ron_snapshot!(null.to_schema(), @r#"
+        GtjSchemaNull(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          type: "null",
+        )
+        "#);
     }
 
     #[test]
@@ -48,14 +45,13 @@ mod tests {
             doc: Some("Hello, world!".into()),
             r#type: GtjBooleanTypeBoolean,
         });
-        assert_eq!(
-            GtjSchemaAny::GtjSchemaBoolean(GtjSchemaBoolean {
-                r#type: GtjSchemaBooleanTypeBoolean,
-                title: Some("hello".into()),
-                description: Some("Hello, world!".into()),
-            }),
-            boolean.to_schema(),
-        );
+        assert_ron_snapshot!(boolean.to_schema(), @r#"
+        GtjSchemaBoolean(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          type: "boolean",
+        )
+        "#);
     }
 
     #[test]
@@ -65,14 +61,13 @@ mod tests {
             doc: Some("Hello, world!".into()),
             r#type: GtjNumberTypeNumber,
         });
-        assert_eq!(
-            GtjSchemaAny::GtjSchemaNumber(GtjSchemaNumber {
-                r#type: GtjSchemaNumberTypeNumber,
-                title: Some("hello".into()),
-                description: Some("Hello, world!".into()),
-            }),
-            number.to_schema(),
-        );
+        assert_ron_snapshot!(number.to_schema(), @r#"
+        GtjSchemaNumber(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          type: "number",
+        )
+        "#);
     }
 
     #[test]
@@ -82,14 +77,13 @@ mod tests {
             doc: Some("Hello, world!".into()),
             r#type: GtjStringTypeString,
         });
-        assert_eq!(
-            GtjSchemaAny::GtjSchemaString(GtjSchemaString {
-                r#type: GtjSchemaStringTypeString,
-                title: Some("hello".into()),
-                description: Some("Hello, world!".into()),
-            }),
-            string.to_schema(),
-        );
+        assert_ron_snapshot!(string.to_schema(), @r#"
+        GtjSchemaString(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          type: "string",
+        )
+        "#);
     }
 
     #[test]
@@ -110,24 +104,22 @@ mod tests {
                 required: true,
             }],
         });
-        assert_eq!(
-            GtjSchemaAny::GtjSchemaObject(GtjSchemaObject {
-                r#type: GtjSchemaObjectTypeObject,
-                title: Some("hello".into()),
-                description: Some("Hello, world!".into()),
-                properties: BTreeMap::from_iter(vec![(
-                    "foo".into(),
-                    GtjSchemaAny::GtjSchemaBoolean(GtjSchemaBoolean {
-                        r#type: GtjSchemaBooleanTypeBoolean,
-                        title: None,
-                        description: None,
-                    }),
-                )]),
-                required: Some(vec!["foo".into()]),
-                additional_properties: Some(false),
-            }),
-            object.to_schema(),
-        );
+        assert_ron_snapshot!(object.to_schema(), @r#"
+        GtjSchemaObject(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          type: "object",
+          properties: {
+            "foo": GtjSchemaBoolean(
+              type: "boolean",
+            ),
+          },
+          required: Some([
+            "foo",
+          ]),
+          additionalProperties: Some(false),
+        )
+        "#);
     }
 
     #[test]
@@ -142,19 +134,16 @@ mod tests {
                 r#type: GtjNullTypeNull,
             }),
         }));
-        assert_eq!(
-            GtjSchemaAny::GtjSchemaArray(Box::new(GtjSchemaArray {
-                r#type: GtjSchemaArrayTypeArray,
-                title: Some("hello".into()),
-                description: Some("Hello, world!".into()),
-                items: GtjSchemaAny::GtjSchemaNull(GtjSchemaNull {
-                    r#type: GtjSchemaNullTypeNull,
-                    title: None,
-                    description: None,
-                }),
-            })),
-            array.to_schema(),
-        );
+        assert_ron_snapshot!(array.to_schema(), @r#"
+        GtjSchemaArray(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          type: "array",
+          items: GtjSchemaNull(
+            type: "null",
+          ),
+        )
+        "#);
     }
 
     #[test]
@@ -176,25 +165,20 @@ mod tests {
                 }),
             ],
         });
-        assert_eq!(
-            GtjSchemaAny::GtjSchemaUnion(GtjSchemaUnion {
-                title: Some("hello".into()),
-                description: Some("Hello, world!".into()),
-                any_of: vec![
-                    GtjSchemaAny::GtjSchemaNull(GtjSchemaNull {
-                        r#type: GtjSchemaNullTypeNull,
-                        title: None,
-                        description: None,
-                    }),
-                    GtjSchemaAny::GtjSchemaBoolean(GtjSchemaBoolean {
-                        r#type: GtjSchemaBooleanTypeBoolean,
-                        title: None,
-                        description: None,
-                    }),
-                ],
-            }),
-            union.to_schema(),
-        );
+        assert_ron_snapshot!(union.to_schema(), @r#"
+        GtjSchemaUnion(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          anyOf: [
+            GtjSchemaNull(
+              type: "null",
+            ),
+            GtjSchemaBoolean(
+              type: "boolean",
+            ),
+          ],
+        )
+        "#);
     }
 
     #[test]
@@ -205,14 +189,13 @@ mod tests {
             r#type: GtjLiteralTypeLiteral,
             value: GtjLiteralValue::Boolean(true),
         });
-        assert_eq!(
-            GtjSchemaAny::GtjSchemaLiteral(GtjSchemaLiteral {
-                title: Some("hello".into()),
-                description: Some("Hello, world!".into()),
-                r#const: GtjSchemaLiteralConst::Boolean(true),
-            }),
-            literal.to_schema(),
-        );
+        assert_ron_snapshot!(literal.to_schema(), @r#"
+        GtjSchemaLiteral(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          const: true,
+        )
+        "#);
     }
 
     #[test]
@@ -227,18 +210,17 @@ mod tests {
                 r#type: GtjBooleanTypeBoolean,
             })],
         });
-        assert_eq!(
-            GtjSchemaAny::GtjSchemaTuple(GtjSchemaTuple {
-                r#type: GtjSchemaTupleTypeArray,
-                title: Some("hello".into()),
-                description: Some("Hello, world!".into()),
-                prefix_items: vec![GtjSchemaAny::GtjSchemaBoolean(GtjSchemaBoolean {
-                    r#type: GtjSchemaBooleanTypeBoolean,
-                    title: None,
-                    description: None,
-                })],
-            }),
-            tuple.to_schema(),
-        );
+        assert_ron_snapshot!(tuple.to_schema(), @r#"
+        GtjSchemaTuple(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          type: "array",
+          prefixItems: [
+            GtjSchemaBoolean(
+              type: "boolean",
+            ),
+          ],
+        )
+        "#);
     }
 }

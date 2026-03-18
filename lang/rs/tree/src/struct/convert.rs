@@ -34,9 +34,11 @@ impl RSConvert<RSStruct> for GTObject {
         let r#struct = RSStruct {
             id,
             doc,
-            attributes: vec![context
-                .render_derive(RSContextRenderDeriveMode::Struct)
-                .into()],
+            attributes: vec![
+                context
+                    .render_derive(RSContextRenderDeriveMode::Struct)
+                    .into(),
+            ],
             name,
             fields,
         };
@@ -97,9 +99,11 @@ impl RSConvert<RSStruct> for GTBranded {
         Ok(RSStruct {
             id,
             doc,
-            attributes: vec![context
-                .render_derive(RSContextRenderDeriveMode::Struct)
-                .into()],
+            attributes: vec![
+                context
+                    .render_derive(RSContextRenderDeriveMode::Struct)
+                    .into(),
+            ],
             name,
             fields: RSStructFields::Newtype(vec![descriptor]),
         })
@@ -109,11 +113,11 @@ impl RSConvert<RSStruct> for GTBranded {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_object() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTObject {
                 span: (0, 0).into(),
                 name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
@@ -139,37 +143,41 @@ mod tests {
             }
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
-            RSStruct {
-                id: GTDefinitionId("module".into(), "Person".into()),
-                doc: None,
-                attributes: vec!["derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into()],
-                name: "Person".into(),
-                fields: vec![
-                    RSField {
-                        doc: None,
-                        attributes: vec![],
-                        name: "name".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::String).into(),
-                    },
-                    RSField {
-                        doc: None,
-                        attributes: vec![
-                            r#"serde(default, skip_serializing_if = "Option::is_none")"#.into()
-                        ],
-                        name: "age".into(),
-                        descriptor: RSOption::new(RSDescriptor::Primitive(RSPrimitive::Int32))
-                            .into(),
-                    }
-                ]
-                .into(),
-            }
+            @r#"
+        RSStruct(
+          id: GTDefinitionId(GTModuleId("module"), "Person"),
+          doc: None,
+          attributes: [
+            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+          ],
+          name: RSIdentifier("Person"),
+          fields: Resolved([
+            RSField(
+              doc: None,
+              attributes: [],
+              name: RSFieldName("name"),
+              descriptor: Primitive(String),
+            ),
+            RSField(
+              doc: None,
+              attributes: [
+                RSAttribute("serde(default, skip_serializing_if = \"Option::is_none\")"),
+              ],
+              name: RSFieldName("age"),
+              descriptor: Option(RSOption(
+                descriptor: Primitive(Int32),
+              )),
+            ),
+          ]),
+        )
+        "#
         );
     }
 
     #[test]
     fn test_convert_object_import() {
         let mut context = RSConvertContext::empty("module".into());
-        assert_eq!(
+        assert_ron_snapshot!(
             GTObject {
                 span: (0, 0).into(),
                 name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
@@ -178,20 +186,26 @@ mod tests {
             }
             .convert(&mut context)
             .unwrap(),
-            RSStruct {
-                id: GTDefinitionId("module".into(), "Person".into()),
-                doc: None,
-                attributes: vec!["derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into()],
-                name: "Person".into(),
-                fields: vec![].into(),
-            }
+            @r#"
+        RSStruct(
+          id: GTDefinitionId(GTModuleId("module"), "Person"),
+          doc: None,
+          attributes: [
+            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+          ],
+          name: RSIdentifier("Person"),
+          fields: Resolved([]),
+        )
+        "#
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             context.as_dependencies(),
-            vec![
-                (RSDependencyIdent::Serde, "Deserialize".into()),
-                (RSDependencyIdent::Serde, "Serialize".into())
-            ]
+            @r#"
+        [
+          (Serde, RSIdentifier("Deserialize")),
+          (Serde, RSIdentifier("Serialize")),
+        ]
+        "#
         );
     }
 
@@ -199,7 +213,7 @@ mod tests {
     fn test_convert_object_doc() {
         let mut context = RSConvertContext::empty("module".into());
         context.provide_doc(Some("Hello, world!".into()));
-        assert_eq!(
+        assert_ron_snapshot!(
             GTObject {
                 span: (0, 0).into(),
                 name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
@@ -208,20 +222,24 @@ mod tests {
             }
             .convert(&mut context)
             .unwrap(),
-            RSStruct {
-                id: GTDefinitionId("module".into(), "Person".into()),
-                doc: Some("Hello, world!".into()),
-                attributes: vec!["derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into()],
-                name: "Person".into(),
-                fields: vec![].into(),
-            }
+            @r#"
+        RSStruct(
+          id: GTDefinitionId(GTModuleId("module"), "Person"),
+          doc: Some(RSDoc("Hello, world!", false)),
+          attributes: [
+            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+          ],
+          name: RSIdentifier("Person"),
+          fields: Resolved([]),
+        )
+        "#
         );
     }
 
     #[test]
     fn test_convert_object_unresolved() {
         let mut context = RSConvertContext::empty("module".into());
-        assert_eq!(
+        assert_ron_snapshot!(
             GTObject {
                 span: (1, 8).into(),
                 name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
@@ -259,55 +277,60 @@ mod tests {
             }
             .convert(&mut context)
             .unwrap(),
-            RSStruct {
-                id: GTDefinitionId("module".into(), "Person".into()),
-                doc: None,
-                attributes: vec!["derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into()],
-                name: "Person".into(),
-                fields: RSStructFields::Unresolved(
-                    (1, 8).into(),
-                    vec![RSReference {
-                        id: GTReferenceId("module".into(), (2, 9).into()),
-                        identifier: "Model".into(),
-                        definition_id: GTDefinitionId("module".into(), "Model".into())
-                    }],
-                    vec![
-                        RSField {
-                            doc: None,
-                            attributes: vec![],
-                            name: "name".into(),
-                            descriptor: RSDescriptor::Primitive(RSPrimitive::String).into(),
-                        },
-                        RSField {
-                            doc: None,
-                            attributes: vec![
-                                r#"serde(default, skip_serializing_if = "Option::is_none")"#.into()
-                            ],
-                            name: "age".into(),
-                            descriptor: RSOption::new(RSDescriptor::Primitive(
-                                RSPrimitive::IntSize
-                            ))
-                            .into(),
-                        }
-                    ]
-                )
-            }
+            @r#"
+        RSStruct(
+          id: GTDefinitionId(GTModuleId("module"), "Person"),
+          doc: None,
+          attributes: [
+            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+          ],
+          name: RSIdentifier("Person"),
+          fields: Unresolved(GTSpan(1, 8), [
+            RSReference(
+              id: GTReferenceId(GTModuleId("module"), GTSpan(2, 9)),
+              identifier: RSIdentifier("Model"),
+              definition_id: GTDefinitionId(GTModuleId("module"), "Model"),
+            ),
+          ], [
+            RSField(
+              doc: None,
+              attributes: [],
+              name: RSFieldName("name"),
+              descriptor: Primitive(String),
+            ),
+            RSField(
+              doc: None,
+              attributes: [
+                RSAttribute("serde(default, skip_serializing_if = \"Option::is_none\")"),
+              ],
+              name: RSFieldName("age"),
+              descriptor: Option(RSOption(
+                descriptor: Primitive(IntSize),
+              )),
+            ),
+          ]),
+        )
+        "#
         );
     }
 
     #[test]
     fn test_convert_literal() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTLiteral::Boolean((0, 0).into(), true)
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSStruct {
-                id: GTDefinitionId("module".into(), "True".into()),
-                doc: None,
-                attributes: vec![RSAttribute("literal(true)".into())],
-                name: "True".into(),
-                fields: RSStructFields::Unit
-            },
+            @r#"
+        RSStruct(
+          id: GTDefinitionId(GTModuleId("module"), "True"),
+          doc: None,
+          attributes: [
+            RSAttribute("literal(true)"),
+          ],
+          name: RSIdentifier("True"),
+          fields: Unit,
+        )
+        "#
         );
     }
 
@@ -315,17 +338,21 @@ mod tests {
     fn test_convert_literal_name_from_alias() {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Alias("Version".into()));
-        assert_eq!(
+        assert_ron_snapshot!(
             GTLiteral::Integer((0, 0).into(), 1)
                 .convert(&mut context)
                 .unwrap(),
-            RSStruct {
-                id: GTDefinitionId("module".into(), "Version".into()),
-                doc: None,
-                attributes: vec![RSAttribute("literal(1)".into())],
-                name: "Version".into(),
-                fields: RSStructFields::Unit
-            },
+            @r#"
+        RSStruct(
+          id: GTDefinitionId(GTModuleId("module"), "Version"),
+          doc: None,
+          attributes: [
+            RSAttribute("literal(1)"),
+          ],
+          name: RSIdentifier("Version"),
+          fields: Unit,
+        )
+        "#
         );
     }
 
@@ -334,38 +361,50 @@ mod tests {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Definition("User".into()));
         context.enter_parent(RSContextParent::Field("v".into()));
-        assert_eq!(
+        assert_ron_snapshot!(
             GTLiteral::Integer((0, 0).into(), 1)
                 .convert(&mut context)
                 .unwrap(),
-            RSStruct {
-                id: GTDefinitionId("module".into(), "UserV1".into()),
-                doc: None,
-                attributes: vec![RSAttribute("literal(1)".into())],
-                name: "UserV1".into(),
-                fields: RSStructFields::Unit
-            },
+            @r#"
+        RSStruct(
+          id: GTDefinitionId(GTModuleId("module"), "UserV1"),
+          doc: None,
+          attributes: [
+            RSAttribute("literal(1)"),
+          ],
+          name: RSIdentifier("UserV1"),
+          fields: Unit,
+        )
+        "#
         );
     }
 
     #[test]
     fn test_convert_literal_import() {
         let mut context = RSConvertContext::empty("module".into());
-        assert_eq!(
+        assert_ron_snapshot!(
             GTLiteral::Boolean((0, 0).into(), false)
                 .convert(&mut context)
                 .unwrap(),
-            RSStruct {
-                id: GTDefinitionId("module".into(), "False".into()),
-                doc: None,
-                attributes: vec![RSAttribute("literal(false)".into())],
-                name: "False".into(),
-                fields: RSStructFields::Unit
-            },
+            @r#"
+        RSStruct(
+          id: GTDefinitionId(GTModuleId("module"), "False"),
+          doc: None,
+          attributes: [
+            RSAttribute("literal(false)"),
+          ],
+          name: RSIdentifier("False"),
+          fields: Unit,
+        )
+        "#
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             context.as_dependencies(),
-            vec![(RSDependencyIdent::Litty, "literal".into())]
+            @r#"
+        [
+          (Litty, RSIdentifier("literal")),
+        ]
+        "#
         );
     }
 
@@ -373,49 +412,61 @@ mod tests {
     fn test_convert_literal_doc() {
         let mut context = RSConvertContext::empty("module".into());
         context.provide_doc(Some("Hello, world!".into()));
-        assert_eq!(
+        assert_ron_snapshot!(
             GTLiteral::Boolean((0, 0).into(), false)
                 .convert(&mut context)
                 .unwrap(),
-            RSStruct {
-                id: GTDefinitionId("module".into(), "False".into()),
-                doc: Some("Hello, world!".into()),
-                attributes: vec![RSAttribute("literal(false)".into())],
-                name: "False".into(),
-                fields: RSStructFields::Unit
-            },
+            @r#"
+        RSStruct(
+          id: GTDefinitionId(GTModuleId("module"), "False"),
+          doc: Some(RSDoc("Hello, world!", false)),
+          attributes: [
+            RSAttribute("literal(false)"),
+          ],
+          name: RSIdentifier("False"),
+          fields: Unit,
+        )
+        "#
         );
     }
 
     #[test]
     fn test_convert_literal_float() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTLiteral::Float(Default::default(), 1.23456)
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSStruct {
-                id: GTDefinitionId("module".into(), "Lit1_23456".into()),
-                doc: None,
-                attributes: vec![RSAttribute("literal(1.23456)".into())],
-                name: "Lit1_23456".into(),
-                fields: RSStructFields::Unit
-            },
+            @r#"
+        RSStruct(
+          id: GTDefinitionId(GTModuleId("module"), "Lit1_23456"),
+          doc: None,
+          attributes: [
+            RSAttribute("literal(1.23456)"),
+          ],
+          name: RSIdentifier("Lit1_23456"),
+          fields: Unit,
+        )
+        "#
         );
     }
 
     #[test]
     fn test_convert_branded() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTLiteral::Boolean((0, 0).into(), true)
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
-            RSStruct {
-                id: GTDefinitionId("module".into(), "True".into()),
-                doc: None,
-                attributes: vec![RSAttribute("literal(true)".into())],
-                name: "True".into(),
-                fields: RSStructFields::Unit
-            },
+            @r#"
+        RSStruct(
+          id: GTDefinitionId(GTModuleId("module"), "True"),
+          doc: None,
+          attributes: [
+            RSAttribute("literal(true)"),
+          ],
+          name: RSIdentifier("True"),
+          fields: Unit,
+        )
+        "#
         );
     }
 
@@ -423,17 +474,21 @@ mod tests {
     fn test_convert_branded_name_from_alias() {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Alias("Version".into()));
-        assert_eq!(
+        assert_ron_snapshot!(
             GTLiteral::Integer((0, 0).into(), 1)
                 .convert(&mut context)
                 .unwrap(),
-            RSStruct {
-                id: GTDefinitionId("module".into(), "Version".into()),
-                doc: None,
-                attributes: vec![RSAttribute("literal(1)".into())],
-                name: "Version".into(),
-                fields: RSStructFields::Unit
-            },
+            @r#"
+        RSStruct(
+          id: GTDefinitionId(GTModuleId("module"), "Version"),
+          doc: None,
+          attributes: [
+            RSAttribute("literal(1)"),
+          ],
+          name: RSIdentifier("Version"),
+          fields: Unit,
+        )
+        "#
         );
     }
 
@@ -442,38 +497,50 @@ mod tests {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Definition("User".into()));
         context.enter_parent(RSContextParent::Field("v".into()));
-        assert_eq!(
+        assert_ron_snapshot!(
             GTLiteral::Integer((0, 0).into(), 1)
                 .convert(&mut context)
                 .unwrap(),
-            RSStruct {
-                id: GTDefinitionId("module".into(), "UserV1".into()),
-                doc: None,
-                attributes: vec![RSAttribute("literal(1)".into())],
-                name: "UserV1".into(),
-                fields: RSStructFields::Unit
-            },
+            @r#"
+        RSStruct(
+          id: GTDefinitionId(GTModuleId("module"), "UserV1"),
+          doc: None,
+          attributes: [
+            RSAttribute("literal(1)"),
+          ],
+          name: RSIdentifier("UserV1"),
+          fields: Unit,
+        )
+        "#
         );
     }
 
     #[test]
     fn test_convert_branded_import() {
         let mut context = RSConvertContext::empty("module".into());
-        assert_eq!(
+        assert_ron_snapshot!(
             GTLiteral::Boolean((0, 0).into(), false)
                 .convert(&mut context)
                 .unwrap(),
-            RSStruct {
-                id: GTDefinitionId("module".into(), "False".into()),
-                doc: None,
-                attributes: vec![RSAttribute("literal(false)".into())],
-                name: "False".into(),
-                fields: RSStructFields::Unit
-            },
+            @r#"
+        RSStruct(
+          id: GTDefinitionId(GTModuleId("module"), "False"),
+          doc: None,
+          attributes: [
+            RSAttribute("literal(false)"),
+          ],
+          name: RSIdentifier("False"),
+          fields: Unit,
+        )
+        "#
         );
-        assert_eq!(
+        assert_ron_snapshot!(
             context.as_dependencies(),
-            vec![(RSDependencyIdent::Litty, "literal".into())]
+            @r#"
+        [
+          (Litty, RSIdentifier("literal")),
+        ]
+        "#
         );
     }
 
@@ -481,17 +548,21 @@ mod tests {
     fn test_convert_branded_doc() {
         let mut context = RSConvertContext::empty("module".into());
         context.provide_doc(Some("Hello, world!".into()));
-        assert_eq!(
+        assert_ron_snapshot!(
             GTLiteral::Boolean((0, 0).into(), false)
                 .convert(&mut context)
                 .unwrap(),
-            RSStruct {
-                id: GTDefinitionId("module".into(), "False".into()),
-                doc: Some("Hello, world!".into()),
-                attributes: vec![RSAttribute("literal(false)".into())],
-                name: "False".into(),
-                fields: RSStructFields::Unit
-            },
+            @r#"
+        RSStruct(
+          id: GTDefinitionId(GTModuleId("module"), "False"),
+          doc: Some(RSDoc("Hello, world!", false)),
+          attributes: [
+            RSAttribute("literal(false)"),
+          ],
+          name: RSIdentifier("False"),
+          fields: Unit,
+        )
+        "#
         );
     }
 }

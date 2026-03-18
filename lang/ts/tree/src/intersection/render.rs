@@ -22,11 +22,11 @@ impl<'a> GtlRender<'a> for TSIntersection {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_union() {
-        assert_eq!(
+        assert_snapshot!(
             TSIntersection {
                 descriptors: vec![
                     TSObject {
@@ -43,9 +43,11 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"{
-  hello: string
-} & World"#
+            @"
+        {
+          hello: string
+        } & World
+        "
         );
     }
 }

@@ -17,17 +17,17 @@ impl<'a> GtlRender<'a> for TSExtension {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             TSExtension {
                 reference: "Foo".into()
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "Foo"
+            @"Foo"
         );
     }
 }

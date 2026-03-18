@@ -24,7 +24,7 @@ impl GtjSchemaConvert<GtjSchemaAny> for GtjUnion {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
@@ -38,17 +38,31 @@ mod tests {
                 r#type: GtjBooleanTypeBoolean,
             })],
         };
-        assert_eq!(
-            GtjSchemaUnion {
-                title: Some("hello".into()),
-                description: Some("Hello, world!".into()),
-                any_of: vec![GtjSchemaAny::GtjSchemaBoolean(GtjSchemaBoolean {
-                    r#type: GtjSchemaBooleanTypeBoolean,
-                    title: None,
-                    description: None,
-                })],
-            },
-            union.to_schema(),
-        );
+
+        let any_schema: GtjSchemaAny = union.to_schema();
+        assert_ron_snapshot!(any_schema, @r#"
+        GtjSchemaUnion(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          anyOf: [
+            GtjSchemaBoolean(
+              type: "boolean",
+            ),
+          ],
+        )
+        "#);
+
+        let union_schema: GtjSchemaUnion = union.to_schema();
+        assert_ron_snapshot!(union_schema, @r#"
+        GtjSchemaUnion(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          anyOf: [
+            GtjSchemaBoolean(
+              type: "boolean",
+            ),
+          ],
+        )
+        "#);
     }
 }

@@ -1,6 +1,6 @@
 use crate::prelude::internal::*;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct TsProject<'a> {
     pub modules: Vec<TsProjectModule>,
     pub config: GtConfigPkg<'a, TsConfig>,
@@ -75,68 +75,77 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
 mod tests {
     use super::*;
     use genotype_config::GtConfig;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_base() {
         let config = GtConfig::from_root("module", "./examples/basic");
         let project = GtProject::load(&config).unwrap();
 
-        assert_eq!(
-            TsProject::generate(&project).unwrap().modules,
-            vec![
-                TsProjectModule {
-                    path: "author.ts".into(),
-                    module: TSModule {
-                        doc: None,
-                        imports: vec![],
-                        definitions: vec![TSDefinition::Interface(TSInterface {
-                            doc: None,
-
-                            name: "Author".into(),
-                            extensions: vec![],
-                            properties: vec![TSProperty {
-                                doc: None,
-                                name: "name".into(),
-                                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
-                                required: true,
-                            }],
-                        })]
-                    },
-                },
-                TsProjectModule {
-                    path: "book.ts".into(),
-                    module: TSModule {
-                        doc: None,
-                        imports: vec![TSImport {
-                            path: "./author".into(),
-                            reference: TSImportReference::Named(vec![TSImportName::Name(
-                                "Author".into()
-                            )]),
-                        }],
-                        definitions: vec![TSDefinition::Interface(TSInterface {
-                            doc: None,
-                            name: "Book".into(),
-                            extensions: vec![],
-                            properties: vec![
-                                TSProperty {
-                                    doc: None,
-                                    name: "title".into(),
-                                    descriptor: TSDescriptor::Primitive(TSPrimitive::String),
-                                    required: true,
-                                },
-                                TSProperty {
-                                    doc: None,
-                                    name: "author".into(),
-                                    descriptor: TSDescriptor::Reference("Author".into()),
-                                    required: true,
-                                },
-                            ],
-                        })],
-                    },
-                },
-            ]
-        )
+        assert_ron_snapshot!(
+          TsProject::generate(&project).unwrap().modules,
+          @r#"
+        [
+          TsProjectModule(
+            path: "author.ts",
+            module: TSModule(
+              doc: None,
+              imports: [],
+              definitions: [
+                Interface(TSInterface(
+                  doc: None,
+                  name: TSIdentifier("Author"),
+                  extensions: [],
+                  properties: [
+                    TSProperty(
+                      doc: None,
+                      name: TSKey("name"),
+                      descriptor: Primitive(String),
+                      required: true,
+                    ),
+                  ],
+                )),
+              ],
+            ),
+          ),
+          TsProjectModule(
+            path: "book.ts",
+            module: TSModule(
+              doc: None,
+              imports: [
+                TSImport(
+                  path: TSPath("./author"),
+                  reference: Named([
+                    Name(TSIdentifier("Author")),
+                  ]),
+                ),
+              ],
+              definitions: [
+                Interface(TSInterface(
+                  doc: None,
+                  name: TSIdentifier("Book"),
+                  extensions: [],
+                  properties: [
+                    TSProperty(
+                      doc: None,
+                      name: TSKey("title"),
+                      descriptor: Primitive(String),
+                      required: true,
+                    ),
+                    TSProperty(
+                      doc: None,
+                      name: TSKey("author"),
+                      descriptor: Reference(TSReference(TSIdentifier("Author"))),
+                      required: true,
+                    ),
+                  ],
+                )),
+              ],
+            ),
+          ),
+        ]
+        "#
+        );
     }
 
     #[test]
@@ -144,71 +153,79 @@ mod tests {
         let config = GtConfig::from_root("module", "./examples/glob");
         let project = GtProject::load(&config).unwrap();
 
-        assert_eq!(
-            TsProject::generate(&project).unwrap().modules,
-            vec![
-                TsProjectModule {
-                    path: "author.ts".into(),
-                    module: TSModule {
-                        doc: None,
-                        imports: vec![],
-                        definitions: vec![
-                            TSDefinition::Interface(TSInterface {
-                                doc: None,
-                                name: "Author".into(),
-                                extensions: vec![],
-                                properties: vec![TSProperty {
-                                    doc: None,
-                                    name: "name".into(),
-                                    descriptor: TSDescriptor::Reference("AuthorName".into()),
-                                    required: true,
-                                }],
-                            }),
-                            TSDefinition::Alias(TSAlias {
-                                doc: None,
-                                name: "AuthorName".into(),
-                                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
-                            })
-                        ]
-                    },
-                },
-                TsProjectModule {
-                    path: "book.ts".into(),
-                    module: TSModule {
-                        doc: None,
-                        imports: vec![TSImport {
-                            path: "./author".into(),
-                            reference: TSImportReference::Glob("author".into()),
-                        }],
-                        definitions: vec![TSDefinition::Interface(TSInterface {
-                            doc: None,
-                            name: "Book".into(),
-                            extensions: vec![],
-                            properties: vec![
-                                TSProperty {
-                                    doc: None,
-                                    name: "title".into(),
-                                    descriptor: TSDescriptor::Primitive(TSPrimitive::String),
-                                    required: true,
-                                },
-                                TSProperty {
-                                    doc: None,
-                                    name: "author".into(),
-                                    descriptor: TSDescriptor::Reference("author.Author".into()),
-                                    required: true,
-                                },
-                                TSProperty {
-                                    doc: None,
-                                    name: "authorName".into(),
-                                    descriptor: TSDescriptor::Reference("author.AuthorName".into()),
-                                    required: true,
-                                },
-                            ],
-                        })],
-                    },
-                },
-            ]
-        )
+        assert_ron_snapshot!(
+          TsProject::generate(&project).unwrap().modules,
+          @r#"
+        [
+          TsProjectModule(
+            path: "author.ts",
+            module: TSModule(
+              doc: None,
+              imports: [],
+              definitions: [
+                Interface(TSInterface(
+                  doc: None,
+                  name: TSIdentifier("Author"),
+                  extensions: [],
+                  properties: [
+                    TSProperty(
+                      doc: None,
+                      name: TSKey("name"),
+                      descriptor: Reference(TSReference(TSIdentifier("AuthorName"))),
+                      required: true,
+                    ),
+                  ],
+                )),
+                Alias(TSAlias(
+                  doc: None,
+                  name: TSIdentifier("AuthorName"),
+                  descriptor: Primitive(String),
+                )),
+              ],
+            ),
+          ),
+          TsProjectModule(
+            path: "book.ts",
+            module: TSModule(
+              doc: None,
+              imports: [
+                TSImport(
+                  path: TSPath("./author"),
+                  reference: Glob("author"),
+                ),
+              ],
+              definitions: [
+                Interface(TSInterface(
+                  doc: None,
+                  name: TSIdentifier("Book"),
+                  extensions: [],
+                  properties: [
+                    TSProperty(
+                      doc: None,
+                      name: TSKey("title"),
+                      descriptor: Primitive(String),
+                      required: true,
+                    ),
+                    TSProperty(
+                      doc: None,
+                      name: TSKey("author"),
+                      descriptor: Reference(TSReference(TSIdentifier("author.Author"))),
+                      required: true,
+                    ),
+                    TSProperty(
+                      doc: None,
+                      name: TSKey("authorName"),
+                      descriptor: Reference(TSReference(TSIdentifier("author.AuthorName"))),
+                      required: true,
+                    ),
+                  ],
+                )),
+              ],
+            ),
+          ),
+        ]
+        "#
+        );
     }
 
     #[test]
@@ -216,50 +233,35 @@ mod tests {
         let config = GtConfig::from_root("module", "./examples/basic");
         let project = GtProject::load(&config).unwrap();
 
-        assert_eq!(
-            TsProject::generate(&project).unwrap().dist().unwrap(),
-            GtlProjectDist {
-                files: vec![
-                    GtlProjectFile {
-                        path: "examples/basic/dist/ts/.gitignore".into(),
-                        source: "node_modules".into(),
-                    },
-                    GtlProjectFile {
-                        path: "examples/basic/dist/ts/package.json".into(),
-                        source: r#"{
-  "types": "src/index.ts"
-}"#
-                        .into()
-                    },
-                    GtlProjectFile {
-                        path: "examples/basic/dist/ts/src/index.ts".into(),
-                        source: r#"export * from "./author.js";
-export * from "./book.js";
-"#
-                        .into()
-                    },
-                    GtlProjectFile {
-                        path: "examples/basic/dist/ts/src/author.ts".into(),
-                        source: r#"export interface Author {
-  name: string;
-}
-"#
-                        .into()
-                    },
-                    GtlProjectFile {
-                        path: "examples/basic/dist/ts/src/book.ts".into(),
-                        source: r#"import { Author } from "./author.js";
-
-export interface Book {
-  title: string;
-  author: Author;
-}
-"#
-                        .into()
-                    }
-                ]
-            }
+        assert_ron_snapshot!(
+          TsProject::generate(&project).unwrap().dist().unwrap(),
+          @r#"
+        GtlProjectDist(
+          files: [
+            GtlProjectFile(
+              path: "examples/basic/dist/ts/.gitignore",
+              source: "node_modules",
+            ),
+            GtlProjectFile(
+              path: "examples/basic/dist/ts/package.json",
+              source: "{\n  \"types\": \"src/index.ts\"\n}",
+            ),
+            GtlProjectFile(
+              path: "examples/basic/dist/ts/src/index.ts",
+              source: "export * from \"./author.js\";\nexport * from \"./book.js\";\n",
+            ),
+            GtlProjectFile(
+              path: "examples/basic/dist/ts/src/author.ts",
+              source: "export interface Author {\n  name: string;\n}\n",
+            ),
+            GtlProjectFile(
+              path: "examples/basic/dist/ts/src/book.ts",
+              source: "import { Author } from \"./author.js\";\n\nexport interface Book {\n  title: string;\n  author: Author;\n}\n",
+            ),
+          ],
         )
+        "#
+        );
     }
 
     #[test]
@@ -271,40 +273,30 @@ export interface Book {
         )]);
         let project = GtProject::load(&config).unwrap();
 
-        assert_eq!(
-            TsProject::generate(&project).unwrap().dist().unwrap(),
-            GtlProjectDist {
-                files: vec![
-                    GtlProjectFile {
-                        path: "examples/dependencies/dist/ts/.gitignore".into(),
-                        source: "node_modules".into(),
-                    },
-                    GtlProjectFile {
-                        path: "examples/dependencies/dist/ts/package.json".into(),
-                        source: r#"{
-  "types": "src/index.ts"
-}"#
-                        .into()
-                    },
-                    GtlProjectFile {
-                        path: "examples/dependencies/dist/ts/src/index.ts".into(),
-                        source: r#"export * from "./prompt.js";
-"#
-                        .into()
-                    },
-                    GtlProjectFile {
-                        path: "examples/dependencies/dist/ts/src/prompt.ts".into(),
-                        source: r#"import { JsonAny } from "@genotype/json";
-
-export interface Prompt {
-  content: string;
-  output: JsonAny;
-}
-"#
-                        .into()
-                    },
-                ]
-            }
+        assert_ron_snapshot!(
+          TsProject::generate(&project).unwrap().dist().unwrap(),
+          @r#"
+        GtlProjectDist(
+          files: [
+            GtlProjectFile(
+              path: "examples/dependencies/dist/ts/.gitignore",
+              source: "node_modules",
+            ),
+            GtlProjectFile(
+              path: "examples/dependencies/dist/ts/package.json",
+              source: "{\n  \"types\": \"src/index.ts\"\n}",
+            ),
+            GtlProjectFile(
+              path: "examples/dependencies/dist/ts/src/index.ts",
+              source: "export * from \"./prompt.js\";\n",
+            ),
+            GtlProjectFile(
+              path: "examples/dependencies/dist/ts/src/prompt.ts",
+              source: "import { JsonAny } from \"@genotype/json\";\n\nexport interface Prompt {\n  content: string;\n  output: JsonAny;\n}\n",
+            ),
+          ],
         )
+        "#
+        );
     }
 }

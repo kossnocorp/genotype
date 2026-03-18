@@ -36,58 +36,58 @@ impl<'a> GtlRender<'a> for RSUseReference {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_module() {
-        assert_eq!(
+        assert_snapshot!(
             RSUseReference::Module
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            ""
+            @""
         );
     }
 
     #[test]
     fn test_render_glob() {
-        assert_eq!(
+        assert_snapshot!(
             RSUseReference::Glob
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "*"
+            @"*"
         );
     }
 
     #[test]
     fn test_render_named() {
-        assert_eq!(
+        assert_snapshot!(
             RSUseReference::Named(vec![
                 RSUseName::Name("Name".into()),
                 RSUseName::Alias("Name".into(), "Alias".into()),
             ])
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "{Name, Name as Alias}"
+            @"{Name, Name as Alias}"
         );
     }
 
     #[test]
     fn test_render_named_solo() {
-        assert_eq!(
+        assert_snapshot!(
             RSUseReference::Named(vec![RSUseName::Name("Name".into()),])
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "Name"
+            @"Name"
         );
     }
 
     #[test]
     fn test_render_named_solo_alias() {
-        assert_eq!(
+        assert_snapshot!(
             RSUseReference::Named(vec![RSUseName::Alias("Name".into(), "Alias".into()),])
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "{Name as Alias}"
+            @"{Name as Alias}"
         );
     }
 }

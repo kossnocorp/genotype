@@ -19,21 +19,21 @@ impl<'a> GtlRender<'a> for RSEnumVariantDescriptor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_descriptor() {
-        assert_eq!(
+        assert_snapshot!(
             RSEnumVariantDescriptor::Descriptor(RSDescriptor::Primitive(RSPrimitive::Boolean))
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "bool"
+            @"bool"
         );
-        assert_eq!(
+        assert_snapshot!(
             RSEnumVariantDescriptor::Descriptor(RSDescriptor::Primitive(RSPrimitive::String))
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "String"
+            @"String"
         );
     }
 }

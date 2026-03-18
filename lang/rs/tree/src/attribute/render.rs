@@ -17,28 +17,28 @@ impl<'a> GtlRender<'a> for RSAttribute {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             RSAttribute("derive".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "#[derive]"
+            @"#[derive]"
         );
     }
 
     #[test]
     fn test_render_indent() {
-        assert_eq!(
+        assert_snapshot!(
             RSAttribute("derive".into())
                 .render(
                     RSRenderState::default().indent_inc(),
                     &mut Default::default()
                 )
                 .unwrap(),
-            "    #[derive]"
+            @"    #[derive]"
         );
     }
 }

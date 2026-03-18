@@ -18,7 +18,7 @@ impl GtjTreeConvert<GTDescriptor> for GtjBoolean {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
@@ -27,22 +27,11 @@ mod tests {
             name: None,
             doc: None,
         };
-        assert_eq!(
-            GTPrimitive::Boolean(Default::default()),
-            boolean.to_tree_with_context(&mut Default::default()),
-        );
-    }
 
-    #[test]
-    fn test_convert_descriptor() {
-        let boolean = GtjBoolean {
-            r#type: GtjBooleanTypeBoolean,
-            name: None,
-            doc: None,
-        };
-        assert_eq!(
-            GTDescriptor::Primitive(GTPrimitive::Boolean(Default::default())),
-            boolean.to_tree_with_context(&mut Default::default())
-        );
+        let descriptor_tree: GTDescriptor = boolean.to_tree_with_context(&mut Default::default());
+        assert_ron_snapshot!(descriptor_tree, @"Primitive(Boolean(GTSpan(0, 0)))");
+
+        let boolean_tree: GTPrimitive = boolean.to_tree_with_context(&mut Default::default());
+        assert_ron_snapshot!(boolean_tree, @"Boolean(GTSpan(0, 0))");
     }
 }

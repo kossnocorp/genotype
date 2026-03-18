@@ -9,14 +9,14 @@ impl PYConvert<PYIdentifier> for GTIdentifier {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_base() {
-        assert_eq!(
-            PYIdentifier("Foo".into()),
+        assert_ron_snapshot!(
             GTIdentifier::new((0, 0).into(), "Foo".into())
                 .convert(&mut PYConvertContext::default()),
+            @r#"PYIdentifier("Foo")"#
         );
     }
 
@@ -28,9 +28,9 @@ mod tests {
             GTIdentifier::new((0, 0).into(), "foo.Bar".into()),
         );
         let mut context = PYConvertContext::new(resolve.clone(), Default::default());
-        assert_eq!(
-            PYIdentifier("foo.Bar".into()),
+        assert_ron_snapshot!(
             GTIdentifier::new((0, 0).into(), "Foo".into()).convert(&mut context),
+            @r#"PYIdentifier("foo.Bar")"#
         );
     }
 }

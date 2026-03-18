@@ -38,11 +38,11 @@ impl<'a> GtlRender<'a> for TSBranded {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_primitive() {
-        assert_eq!(
+        assert_snapshot!(
             TSBranded {
                 doc: None,
                 name: "Version".into(),
@@ -50,14 +50,16 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"export type Version = number & { [versionBrand]: true };
-declare const versionBrand: unique symbol;"#
+            @"
+        export type Version = number & { [versionBrand]: true };
+        declare const versionBrand: unique symbol;
+        "
         );
     }
 
     #[test]
     fn test_render_doc() {
-        assert_eq!(
+        assert_snapshot!(
             TSBranded {
                 doc: Some(TSDoc("Object version.".into())),
                 name: "Version".into(),
@@ -65,15 +67,17 @@ declare const versionBrand: unique symbol;"#
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"/** Object version. */
-export type Version = number & { [versionBrand]: true };
-declare const versionBrand: unique symbol;"#
+            @"
+        /** Object version. */
+        export type Version = number & { [versionBrand]: true };
+        declare const versionBrand: unique symbol;
+        "
         );
     }
 
     #[test]
     fn test_render_indent() {
-        assert_eq!(
+        assert_snapshot!(
             TSBranded {
                 doc: Some(TSDoc("Object version.".into())),
                 name: "Version".into(),
@@ -84,9 +88,11 @@ declare const versionBrand: unique symbol;"#
                 &mut Default::default()
             )
             .unwrap(),
-            r#"  /** Object version. */
-  export type Version = number & { [versionBrand]: true };
-  declare const versionBrand: unique symbol;"#
+            @"
+        /** Object version. */
+        export type Version = number & { [versionBrand]: true };
+        declare const versionBrand: unique symbol;
+        "
         );
     }
 }

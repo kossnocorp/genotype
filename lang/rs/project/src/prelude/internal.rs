@@ -10,6 +10,6 @@ pub use genotype_path::*;
 pub use genotype_project::*;
 pub use indexmap::{IndexMap, IndexSet};
 pub use miette::{Diagnostic, IntoDiagnostic, Result};
+pub use serde::Serialize;
 pub use std::collections::HashMap;
 pub use std::hash::{Hash, Hasher};
-pub use std::path::PathBuf;

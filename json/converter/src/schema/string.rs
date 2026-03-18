@@ -20,7 +20,7 @@ impl GtjSchemaConvert<GtjSchemaAny> for GtjString {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
@@ -29,13 +29,23 @@ mod tests {
             doc: Some("Hello, world!".into()),
             r#type: GtjStringTypeString,
         };
-        assert_eq!(
-            GtjSchemaString {
-                r#type: GtjSchemaStringTypeString,
-                title: Some("hello".into()),
-                description: Some("Hello, world!".into()),
-            },
-            string.to_schema(),
-        );
+
+        let any_schema: GtjSchemaAny = string.to_schema();
+        assert_ron_snapshot!(any_schema, @r#"
+        GtjSchemaString(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          type: "string",
+        )
+        "#);
+
+        let string_schema: GtjSchemaString = string.to_schema();
+        assert_ron_snapshot!(string_schema, @r#"
+        GtjSchemaString(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          type: "string",
+        )
+        "#);
     }
 }

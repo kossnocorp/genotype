@@ -41,11 +41,11 @@ impl<'a> GtlRender<'a> for PYUnion {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_union() {
-        assert_eq!(
+        assert_snapshot!(
             PYUnion {
                 descriptors: vec![
                     PYDescriptor::Primitive(PYPrimitive::String),
@@ -55,13 +55,13 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "str | int"
+            @"str | int"
         );
     }
 
     #[test]
     fn test_render_legacy() {
-        assert_eq!(
+        assert_snapshot!(
             PYUnion {
                 descriptors: vec![
                     PYDescriptor::Primitive(PYPrimitive::String),
@@ -77,13 +77,13 @@ mod tests {
                 }
             )
             .unwrap(),
-            "Union[str, int]"
+            @"Union[str, int]"
         );
     }
 
     #[test]
     fn test_render_discriminator() {
-        assert_eq!(
+        assert_snapshot!(
             PYUnion {
                 descriptors: vec![
                     PYDescriptor::Primitive(PYPrimitive::String),
@@ -93,13 +93,13 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"Annotated[str | int, Field(json_schema_extra={'discriminator': 'type'})]"#
+            @"Annotated[str | int, Field(json_schema_extra={'discriminator': 'type'})]"
         );
     }
 
     #[test]
     fn test_render_discriminator_legacy() {
-        assert_eq!(
+        assert_snapshot!(
             PYUnion {
                 descriptors: vec![
                     PYDescriptor::Primitive(PYPrimitive::String),
@@ -115,7 +115,7 @@ mod tests {
                 }
             )
             .unwrap(),
-            r#"Annotated[Union[str, int], Field(json_schema_extra={'discriminator': 'type'})]"#
+            @"Annotated[Union[str, int], Field(json_schema_extra={'discriminator': 'type'})]"
         );
     }
 }

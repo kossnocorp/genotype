@@ -22,33 +22,33 @@ impl<'a> GtlRender<'a> for PYDictKey {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
-        assert_eq!(
+        assert_snapshot!(
             PYDictKey::Boolean
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "bool"
+            @"bool"
         );
-        assert_eq!(
+        assert_snapshot!(
             PYDictKey::String
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "str"
+            @"str"
         );
-        assert_eq!(
+        assert_snapshot!(
             PYDictKey::Int
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "int"
+            @"int"
         );
-        assert_eq!(
+        assert_snapshot!(
             PYDictKey::Float
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "float"
+            @"float"
         );
     }
 }

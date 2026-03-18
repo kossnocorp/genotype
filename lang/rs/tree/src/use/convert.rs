@@ -29,7 +29,7 @@ impl RSConvert<RSUse> for GTImport {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_glob() {
@@ -39,7 +39,7 @@ mod tests {
             "module".into(),
         );
         let mut context = RSConvertContext::empty("module".into());
-        assert_eq!(
+        assert_ron_snapshot!(
             GTImport {
                 span: (0, 0).into(),
                 path: GTPath::new(
@@ -51,19 +51,18 @@ mod tests {
             }
             .convert(&mut context)
             .unwrap(),
-            RSUse {
-                reference: RSUseReference::Module,
-                dependency: RSDependencyIdent::Local(RSPath(
-                    "module/path".into(),
-                    "super::path::to::module".into()
-                ))
-            }
+            @r#"
+        RSUse(
+          dependency: Local(RSPath(GTModuleId("module/path"), "super::path::to::module")),
+          reference: Module,
+        )
+        "#
         );
     }
 
     #[test]
     fn test_convert_names() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTImport {
                 span: (0, 0).into(),
                 path: GTPath::new(
@@ -88,22 +87,21 @@ mod tests {
             }
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
-            RSUse {
-                reference: RSUseReference::Named(vec![
-                    RSUseName::Name("Name".into()),
-                    RSUseName::Alias("Name".into(), "Alias".into())
-                ]),
-                dependency: RSDependencyIdent::Local(RSPath(
-                    "module/path".into(),
-                    "super::path::to::module".into()
-                ))
-            }
+            @r#"
+        RSUse(
+          dependency: Local(RSPath(GTModuleId("module/path"), "super::path::to::module")),
+          reference: Named([
+            Name(RSIdentifier("Name")),
+            Alias(RSIdentifier("Name"), RSIdentifier("Alias")),
+          ]),
+        )
+        "#
         );
     }
 
     #[test]
     fn test_convert_name() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTImport {
                 span: (0, 0).into(),
                 path: GTPath::new(
@@ -115,13 +113,14 @@ mod tests {
             }
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
-            RSUse {
-                reference: RSUseReference::Named(vec![RSUseName::Name("Name".into())]),
-                dependency: RSDependencyIdent::Local(RSPath(
-                    "module/path".into(),
-                    "super::path::to::module".into()
-                ))
-            }
+            @r#"
+        RSUse(
+          dependency: Local(RSPath(GTModuleId("module/path"), "super::path::to::module")),
+          reference: Named([
+            Name(RSIdentifier("Name")),
+          ]),
+        )
+        "#
         );
     }
 }

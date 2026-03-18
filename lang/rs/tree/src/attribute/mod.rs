@@ -1,6 +1,8 @@
+use crate::prelude::internal::*;
+
 mod render;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct RSAttribute(pub String);
 
 impl From<&str> for RSAttribute {

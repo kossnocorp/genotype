@@ -38,12 +38,11 @@ impl TSConvert<TSDefinition> for GTAlias {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
-    use std::vec;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_alias() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "Name".into()),
                 span: (0, 0).into(),
@@ -53,17 +52,19 @@ mod tests {
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }
             .convert(&mut Default::default()),
-            TSDefinition::Alias(TSAlias {
-                doc: None,
-                name: "Name".into(),
-                descriptor: TSDescriptor::Primitive(TSPrimitive::Boolean),
-            }),
+            @r#"
+        Alias(TSAlias(
+          doc: None,
+          name: TSIdentifier("Name"),
+          descriptor: Primitive(Boolean),
+        ))
+        "#,
         );
     }
 
     #[test]
     fn test_convert_interface() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "Book".into()),
                 span: (0, 0).into(),
@@ -95,31 +96,33 @@ mod tests {
                 })
             }
             .convert(&mut Default::default()),
-            TSDefinition::Interface(TSInterface {
-                doc: None,
-                name: "Book".into(),
-                extensions: vec![],
-                properties: vec![
-                    TSProperty {
-                        doc: None,
-                        name: "title".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
-                        required: true,
-                    },
-                    TSProperty {
-                        doc: None,
-                        name: "author".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
-                        required: true,
-                    }
-                ]
-            }),
+            @r#"
+        Interface(TSInterface(
+          doc: None,
+          name: TSIdentifier("Book"),
+          extensions: [],
+          properties: [
+            TSProperty(
+              doc: None,
+              name: TSKey("title"),
+              descriptor: Primitive(String),
+              required: true,
+            ),
+            TSProperty(
+              doc: None,
+              name: TSKey("author"),
+              descriptor: Primitive(String),
+              required: true,
+            ),
+          ],
+        ))
+        "#,
         );
     }
 
     #[test]
     fn test_convert_branded() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "BookId".into()),
                 span: (0, 0).into(),
@@ -134,17 +137,19 @@ mod tests {
                 })
             }
             .convert(&mut Default::default()),
-            TSDefinition::Branded(TSBranded {
-                doc: None,
-                name: "BookId".into(),
-                primitive: TSPrimitive::String,
-            }),
+            @r#"
+        Branded(TSBranded(
+          doc: None,
+          name: TSIdentifier("BookId"),
+          primitive: String,
+        ))
+        "#,
         );
     }
 
     #[test]
     fn test_convert_extensions() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "Book".into()),
                 span: (0, 0).into(),
@@ -178,20 +183,28 @@ mod tests {
                 })
             }
             .convert(&mut Default::default()),
-            TSDefinition::Interface(TSInterface {
-                doc: None,
-                name: "Book".into(),
-                extensions: vec!["Good".into()],
-                properties: vec![TSProperty {
-                    doc: None,
-                    name: "author".into(),
-                    descriptor: TSDescriptor::Primitive(TSPrimitive::String),
-                    required: true,
-                }]
-            }),
+            @r#"
+        Interface(TSInterface(
+          doc: None,
+          name: TSIdentifier("Book"),
+          extensions: [
+            TSExtension(
+              reference: TSReference(TSIdentifier("Good")),
+            ),
+          ],
+          properties: [
+            TSProperty(
+              doc: None,
+              name: TSKey("author"),
+              descriptor: Primitive(String),
+              required: true,
+            ),
+          ],
+        ))
+        "#,
         );
 
-        assert_eq!(
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "Book".into()),
                 span: (0, 0).into(),
@@ -237,37 +250,38 @@ mod tests {
                 })
             }
             .convert(&mut Default::default()),
-            TSDefinition::Alias(TSAlias {
-                doc: None,
-                name: "Book".into(),
-                descriptor: TSUnion {
-                    descriptors: vec![
-                        TSIntersection {
-                            descriptors: vec![
-                                TSObject {
-                                    properties: vec![TSProperty {
-                                        doc: None,
-                                        name: "author".into(),
-                                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
-                                        required: true,
-                                    }]
-                                }
-                                .into(),
-                                "Good".into()
-                            ],
-                        }
-                        .into(),
-                        TSPrimitive::String.into(),
-                    ]
-                }
-                .into(),
-            }),
+            @r#"
+        Alias(TSAlias(
+          doc: None,
+          name: TSIdentifier("Book"),
+          descriptor: Union(TSUnion(
+            descriptors: [
+              Intersection(TSIntersection(
+                descriptors: [
+                  Object(TSObject(
+                    properties: [
+                      TSProperty(
+                        doc: None,
+                        name: TSKey("author"),
+                        descriptor: Primitive(String),
+                        required: true,
+                      ),
+                    ],
+                  )),
+                  Reference(TSReference(TSIdentifier("Good"))),
+                ],
+              )),
+              Primitive(String),
+            ],
+          )),
+        ))
+        "#,
         );
     }
 
     #[test]
     fn test_convert_doc_interface() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "Book".into()),
                 span: (0, 0).into(),
@@ -282,18 +296,20 @@ mod tests {
                 })
             }
             .convert(&mut Default::default()),
-            TSDefinition::Interface(TSInterface {
-                doc: Some(TSDoc("Hello, world!".into())),
-                name: "Book".into(),
-                extensions: vec![],
-                properties: vec![]
-            }),
+            @r#"
+        Interface(TSInterface(
+          doc: Some(TSDoc("Hello, world!")),
+          name: TSIdentifier("Book"),
+          extensions: [],
+          properties: [],
+        ))
+        "#,
         );
     }
 
     #[test]
     fn test_convert_doc_alias() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "Name".into()),
                 span: (0, 0).into(),
@@ -303,17 +319,19 @@ mod tests {
                 descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
             }
             .convert(&mut Default::default()),
-            TSDefinition::Alias(TSAlias {
-                doc: Some(TSDoc("Hello, world!".into())),
-                name: "Name".into(),
-                descriptor: TSDescriptor::Primitive(TSPrimitive::Boolean),
-            }),
+            @r#"
+        Alias(TSAlias(
+          doc: Some(TSDoc("Hello, world!")),
+          name: TSIdentifier("Name"),
+          descriptor: Primitive(Boolean),
+        ))
+        "#,
         );
     }
 
     #[test]
     fn test_convert_doc_branded() {
-        assert_eq!(
+        assert_ron_snapshot!(
             GTAlias {
                 id: GTDefinitionId("module".into(), "BookId".into()),
                 span: (0, 0).into(),
@@ -328,11 +346,13 @@ mod tests {
                 })
             }
             .convert(&mut Default::default()),
-            TSDefinition::Branded(TSBranded {
-                doc: Some(TSDoc("Hello, world!".into())),
-                name: "BookId".into(),
-                primitive: TSPrimitive::String,
-            }),
+            @r#"
+        Branded(TSBranded(
+          doc: Some(TSDoc("Hello, world!")),
+          name: TSIdentifier("BookId"),
+          primitive: String,
+        ))
+        "#,
         );
     }
 }

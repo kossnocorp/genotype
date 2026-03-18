@@ -9,10 +9,10 @@ impl TSConvert<TSAny> for GTAny {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(GTAny((0, 0).into()).convert(&mut Default::default()), TSAny);
+        assert_ron_snapshot!(GTAny((0, 0).into()).convert(&mut Default::default()), @"TSAny");
     }
 }

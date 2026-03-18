@@ -40,12 +40,12 @@ impl RSConvert<RSField> for GTProperty {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
         let mut context = RSConvertContext::empty("module".into());
-        assert_eq!(
+        assert_ron_snapshot!(
             GTProperty {
                 span: (0, 0).into(),
                 doc: None,
@@ -56,21 +56,25 @@ mod tests {
             }
             .convert(&mut context)
             .unwrap(),
-            RSField {
-                doc: None,
-                attributes: vec![
-                    r#"serde(default, skip_serializing_if = "Option::is_none")"#.into()
-                ],
-                name: "name".into(),
-                descriptor: RSOption::new(RSPrimitive::String.into()).into(),
-            }
+            @r#"
+        RSField(
+          doc: None,
+          attributes: [
+            RSAttribute("serde(default, skip_serializing_if = \"Option::is_none\")"),
+          ],
+          name: RSFieldName("name"),
+          descriptor: Option(RSOption(
+            descriptor: Primitive(String),
+          )),
+        )
+        "#
         );
     }
 
     #[test]
     fn test_convert_rename_attribute() {
         let mut context = RSConvertContext::empty("module".into());
-        assert_eq!(
+        assert_ron_snapshot!(
             GTProperty {
                 doc: None,
                 span: (0, 0).into(),
@@ -81,15 +85,19 @@ mod tests {
             }
             .convert(&mut context)
             .unwrap(),
-            RSField {
-                doc: None,
-                attributes: vec![
-                    r#"serde(rename = "helloWorld")"#.into(),
-                    r#"serde(default, skip_serializing_if = "Option::is_none")"#.into()
-                ],
-                name: "hello_world".into(),
-                descriptor: RSOption::new(RSPrimitive::String.into()).into(),
-            }
+            @r#"
+        RSField(
+          doc: None,
+          attributes: [
+            RSAttribute("serde(rename = \"helloWorld\")"),
+            RSAttribute("serde(default, skip_serializing_if = \"Option::is_none\")"),
+          ],
+          name: RSFieldName("hello_world"),
+          descriptor: Option(RSOption(
+            descriptor: Primitive(String),
+          )),
+        )
+        "#
         );
     }
 }

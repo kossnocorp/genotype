@@ -26,49 +26,49 @@ impl<'a> GtlRender<'a> for PYDescriptor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_array() {
-        assert_eq!(
+        assert_snapshot!(
             PYDescriptor::List(Box::new(PYList {
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Int)
             }))
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "list[int]"
+            @"list[int]"
         );
     }
 
     #[test]
     fn test_render_primitive() {
-        assert_eq!(
+        assert_snapshot!(
             PYDescriptor::Primitive(PYPrimitive::Boolean)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "bool"
+            @"bool"
         );
-        assert_eq!(
+        assert_snapshot!(
             PYDescriptor::Primitive(PYPrimitive::String)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "str"
+            @"str"
         );
     }
 
     #[test]
     fn test_render_reference() {
-        assert_eq!(
+        assert_snapshot!(
             PYDescriptor::Reference(PYReference::new("Name".into(), false))
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "Name"
+            @"Name"
         );
     }
 
     #[test]
     fn test_render_tuple() {
-        assert_eq!(
+        assert_snapshot!(
             PYDescriptor::Tuple(PYTuple {
                 descriptors: vec![
                     PYDescriptor::Primitive(PYPrimitive::Int),
@@ -77,13 +77,13 @@ mod tests {
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "tuple[int, str]"
+            @"tuple[int, str]"
         );
     }
 
     #[test]
     fn test_render_union() {
-        assert_eq!(
+        assert_snapshot!(
             PYDescriptor::Union(PYUnion {
                 descriptors: vec![
                     PYDescriptor::Primitive(PYPrimitive::String),
@@ -93,30 +93,30 @@ mod tests {
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "str | int"
+            @"str | int"
         );
     }
 
     #[test]
     fn test_render_dict() {
-        assert_eq!(
+        assert_snapshot!(
             PYDescriptor::Dict(Box::new(PYDict {
                 key: PYDictKey::String,
                 descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
             }))
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "dict[str, int]"
+            @"dict[str, int]"
         );
     }
 
     #[test]
     fn test_render_any() {
-        assert_eq!(
+        assert_snapshot!(
             PYDescriptor::Any(PYAny)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "Any"
+            @"Any"
         );
     }
 }

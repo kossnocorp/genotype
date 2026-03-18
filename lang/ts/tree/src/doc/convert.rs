@@ -9,13 +9,13 @@ impl TSConvert<TSDoc> for GTDoc {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
-            TSDoc("Hello, world!".into()),
+        assert_ron_snapshot!(
             GTDoc((0, 0).into(), "Hello, world!".into()).convert(&mut Default::default()),
+            @r#"TSDoc("Hello, world!")"#
         );
     }
 }

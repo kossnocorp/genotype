@@ -9,13 +9,13 @@ impl TSConvert<TSKey> for GTKey {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
-        assert_eq!(
-            TSKey("foo".into()),
+        assert_ron_snapshot!(
             GTKey::new((0, 0).into(), "foo".into()).convert(&mut Default::default()),
+            @r#"TSKey("foo")"#
         );
     }
 }

@@ -62,11 +62,11 @@ impl<'a> GtlRender<'a> for RSStructFields {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_fields() {
-        assert_eq!(
+        assert_snapshot!(
             RSStructFields::Resolved(vec![
                 RSField {
                     doc: None,
@@ -83,26 +83,28 @@ mod tests {
             ])
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#" {
-    pub name: String,
-    pub age: isize,
-}"#
+            @"
+         {
+            pub name: String,
+            pub age: isize,
+        }
+        "
         );
     }
 
     #[test]
     fn test_render_empty() {
-        assert_eq!(
+        assert_snapshot!(
             RSStructFields::Resolved(vec![])
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            " {}"
+            @" {}"
         );
     }
 
     #[test]
     fn test_render_indent() {
-        assert_eq!(
+        assert_snapshot!(
             RSStructFields::Resolved(vec![
                 RSField {
                     doc: None,
@@ -122,43 +124,45 @@ mod tests {
                 &mut Default::default()
             )
             .unwrap(),
-            r#" {
-        pub name: String,
-        pub age: isize,
-    }"#
+            @"
+        {
+               pub name: String,
+               pub age: isize,
+           }
+        "
         );
     }
 
     #[test]
     fn test_render_newtype() {
-        assert_eq!(
+        assert_snapshot!(
             RSStructFields::Newtype(vec![
                 RSDescriptor::Primitive(RSPrimitive::String),
                 RSDescriptor::Primitive(RSPrimitive::IntSize),
             ])
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            "(pub String, pub isize);"
+            @"(pub String, pub isize);"
         );
     }
 
     #[test]
     fn test_render_empty_newtype() {
-        assert_eq!(
+        assert_snapshot!(
             RSStructFields::Newtype(vec![])
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            "()"
+            @"()"
         );
     }
 
     #[test]
     fn test_render_unit() {
-        assert_eq!(
+        assert_snapshot!(
             RSStructFields::Unit
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
-            ";"
+            @";"
         );
     }
 }

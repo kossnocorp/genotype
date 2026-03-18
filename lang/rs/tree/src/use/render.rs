@@ -24,11 +24,11 @@ impl<'a> GtlRender<'a> for RSUse {
 mod tests {
     use super::*;
     use genotype_parser::GTModuleId;
-    use pretty_assertions::assert_eq;
+    use insta::assert_snapshot;
 
     #[test]
     fn test_render_module() {
-        assert_eq!(
+        assert_snapshot!(
             RSUse {
                 reference: RSUseReference::Module,
                 dependency: RSDependencyIdent::Local(RSPath(
@@ -38,13 +38,13 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"use self::path::to::module;"#
+            @"use self::path::to::module;"
         );
     }
 
     #[test]
     fn test_render_glob() {
-        assert_eq!(
+        assert_snapshot!(
             RSUse {
                 reference: RSUseReference::Glob,
                 dependency: RSDependencyIdent::Local(RSPath(
@@ -54,13 +54,13 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"use self::path::to::module::*;"#
+            @"use self::path::to::module::*;"
         );
     }
 
     #[test]
     fn test_render_named() {
-        assert_eq!(
+        assert_snapshot!(
             RSUse {
                 reference: RSUseReference::Named(vec![
                     RSUseName::Name("Name".into()),
@@ -73,7 +73,7 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            r#"use self::path::to::module::{Name, Name as Alias};"#
+            @"use self::path::to::module::{Name, Name as Alias};"
         );
     }
 }
