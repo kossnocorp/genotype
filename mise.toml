@@ -19,6 +19,7 @@ opencode = "latest"
 [settings]
 experimental = true
 python.uv_venv_auto = true
+idiomatic_version_file_enable_tools = ["rust"] # Use rust-toolchain.toml
 
 [env]
 _.file = "./.env"
