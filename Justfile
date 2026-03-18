@@ -11,7 +11,7 @@ build:
   cargo build
 
 build-watch:
-  cargo watch -x build
+  bacon
 
 build-json-types:
   cargo run --bin gt -- build json/types
