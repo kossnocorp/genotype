@@ -1,6 +1,4 @@
-use crate::{GTDefinitionId, GTIdentifier};
-
-use super::GTContext;
+use crate::prelude::internal::*;
 
 impl GTContext {
     pub fn get_definition_id(&self, name: &GTIdentifier) -> GTDefinitionId {

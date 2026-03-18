@@ -1,8 +1,4 @@
-use serde::Serialize;
-
-use crate::GTSpan;
-
-use super::{descriptor::GTDescriptor, doc::GTDoc, key::GTKey, GTAttribute};
+use crate::prelude::internal::*;
 
 mod parse;
 

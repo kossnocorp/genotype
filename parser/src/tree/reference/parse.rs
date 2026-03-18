@@ -1,10 +1,4 @@
-use pest::iterators::Pair;
-
-use crate::{
-    GTContext, GTReferenceDefinitionId, GTReferenceId, GTSpan, parser::Rule, tree::GTIdentifier,
-};
-
-use super::GTReference;
+use crate::prelude::internal::*;
 
 impl GTReference {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> Self {

@@ -1,8 +1,4 @@
-use serde::Serialize;
-
-use crate::GTSpan;
-
-use super::{GTAttributeAssignment, GTAttributeDescriptor, GTAttributeName};
+use crate::prelude::internal::*;
 
 mod parse;
 

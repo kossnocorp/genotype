@@ -1,8 +1,4 @@
-use pest::iterators::Pair;
-
-use crate::parser::Rule;
-
-use super::GTAny;
+use crate::prelude::internal::*;
 
 impl From<Pair<'_, Rule>> for GTAny {
     fn from(pair: Pair<'_, Rule>) -> Self {

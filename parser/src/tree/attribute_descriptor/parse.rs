@@ -1,8 +1,4 @@
-use pest::iterators::Pair;
-
-use crate::*;
-
-use super::GTAttributeDescriptor;
+use crate::prelude::internal::*;
 
 impl GTAttributeDescriptor {
     pub fn parse(pair: Pair<'_, Rule>) -> GTNodeParseResult<Self> {

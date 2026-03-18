@@ -1,8 +1,4 @@
-use pest::iterators::Pair;
-
-use crate::*;
-
-use super::GTExtension;
+use crate::prelude::internal::*;
 
 impl GTExtension {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {

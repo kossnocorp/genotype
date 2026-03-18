@@ -1,11 +1,4 @@
-use crate::diagnostic::error::GTParseError;
-use parser::Rule;
-use pest::iterators::{Pair, Pairs};
-use tree::GTDescriptor;
-
-use crate::*;
-
-use super::GTRecord;
+use crate::prelude::internal::*;
 
 impl GTRecord {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> Result<Self, GTParseError> {

@@ -1,8 +1,4 @@
-use serde::Serialize;
-
-use crate::GTSpan;
-
-use super::GTModuleId;
+use crate::prelude::internal::*;
 
 /// Unique project reference id. It allows to identify specific reference in
 /// a module or project.

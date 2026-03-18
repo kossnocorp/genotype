@@ -1,13 +1,4 @@
-use pest::iterators::Pair;
-
-use crate::{
-    GTContext,
-    diagnostic::error::GTParseError,
-    parser::Rule,
-    tree::{identifier::GTIdentifier, path::GTPath},
-};
-
-use super::GTInlineImport;
+use crate::prelude::internal::*;
 
 impl GTInlineImport {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> Result<Self, GTParseError> {
@@ -26,13 +17,9 @@ impl GTInlineImport {
 
 #[cfg(test)]
 mod tests {
-    use indexmap::IndexSet;
+    use super::*;
     use insta::assert_ron_snapshot;
-    use miette::NamedSource;
-    use pest::Parser;
     use pretty_assertions::assert_eq;
-
-    use crate::*;
 
     #[test]
     fn test_parse() {

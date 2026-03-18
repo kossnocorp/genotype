@@ -1,10 +1,4 @@
-use std::fmt::Display;
-
-use serde::Serialize;
-
-use crate::diagnostic::span::GTSpan;
-
-use super::GTDescriptor;
+use crate::prelude::internal::*;
 
 mod parse;
 

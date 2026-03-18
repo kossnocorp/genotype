@@ -1,8 +1,4 @@
-use miette::{NamedSource, Result};
-use pest::iterators::Pair;
-use serde::Serialize;
-
-use crate::*;
+use crate::prelude::internal::*;
 
 /// Module parse result. It contains the module tree and resolve data.
 #[derive(Debug, PartialEq, Clone, Serialize)]

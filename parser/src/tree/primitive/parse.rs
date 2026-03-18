@@ -1,8 +1,4 @@
-use pest::iterators::Pair;
-
-use crate::{diagnostic::error::GTParseError, parser::Rule, GTNode};
-
-use super::GTPrimitive;
+use crate::prelude::internal::*;
 
 impl TryFrom<Pair<'_, Rule>> for GTPrimitive {
     type Error = GTParseError;

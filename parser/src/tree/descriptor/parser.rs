@@ -1,8 +1,4 @@
-use pest::iterators::Pair;
-
-use crate::{parser::Rule, GTNode, GTNodeParseResult, GTParseError, GTSpan};
-
-use super::*;
+use crate::prelude::internal::*;
 
 impl GTDescriptor {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {

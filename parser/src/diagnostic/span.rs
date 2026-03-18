@@ -1,8 +1,6 @@
-use miette::SourceSpan;
-use pest::Span;
-use serde::{Deserialize, Serialize};
+use crate::prelude::internal::*;
 
-#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Deserialize)]
+#[derive(Debug, Eq, PartialEq, Hash, Copy, Clone, Serialize, Deserialize)]
 pub struct GTSpan(pub usize, pub usize);
 
 impl GTSpan {

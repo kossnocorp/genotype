@@ -1,8 +1,4 @@
-use pest::iterators::Pair;
-
-use crate::parser::Rule;
-
-use super::GTKey;
+use crate::prelude::internal::*;
 
 impl GTKey {
     pub fn parse(pair: Pair<'_, Rule>) -> Self {

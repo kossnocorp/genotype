@@ -1,8 +1,4 @@
-use pest::iterators::{Pair, Pairs};
-
-use crate::*;
-
-use super::GTAlias;
+use crate::prelude::internal::*;
 
 impl GTAlias {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {

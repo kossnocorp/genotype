@@ -1,7 +1,4 @@
-use indexmap::IndexSet;
-use serde::Serialize;
-
-use super::{GTIdentifier, GTPath};
+use crate::prelude::internal::*;
 
 /// Module resolve data. It contains module meta information used to build the dependency graph
 /// connecting modules in a project.

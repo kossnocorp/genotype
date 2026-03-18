@@ -1,6 +1,4 @@
-use serde::Serialize;
-
-use crate::*;
+use crate::prelude::internal::*;
 
 /// A name assigned to an object. It can be explicitely named,
 #[derive(Debug, PartialEq, Clone, Serialize)]
