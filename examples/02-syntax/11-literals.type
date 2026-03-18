@@ -1,33 +1,33 @@
-CommentBase = {
+CommentBase: {
   v: 2
   text: string
 }
 
-UserComment = {
+UserComment: {
   ...CommentBase
   type: "user"
   userId: string
   published: boolean
 }
 
-SystemComment = {
+SystemComment: {
   ...CommentBase
   type: "system"
   published: true
 }
 
-False = false
+False: false
 
-Float = 1.000_123
+Float: 1.000_123
 
-Number = 1_234_567
+Number: 1_234_567
 
-String = "Hello, \"world\"! \\"
+String: "Hello, \"world\"! \\"
 
-NegativeInt = -1
+NegativeInt: -1
 
-NegativeFloat = -1.0
+NegativeFloat: -1.0
 
-LargeFloat = 1e6
+LargeFloat: 1e6
 
-SmallFloat = 3.5e-4
+SmallFloat: 3.5e-4

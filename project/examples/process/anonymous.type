@@ -1,4 +1,4 @@
-Order = {
+Order: {
   delivery: {
     address: {
       street: string,
@@ -7,7 +7,7 @@ Order = {
   }
 }
 
-Email = string | {
+Email: string | {
   name: string,
   email: string,
 }

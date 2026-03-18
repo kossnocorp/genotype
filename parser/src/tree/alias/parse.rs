@@ -121,52 +121,60 @@ enum ParseState {
 #[cfg(test)]
 mod tests {
     use crate::*;
+    use insta::assert_ron_snapshot;
     use miette::NamedSource;
     use pest::Parser;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_parse() {
-        let mut pairs = GenotypeParser::parse(Rule::alias, "Hello = { world: string }").unwrap();
-        assert_eq!(
+        let mut pairs = GenotypeParser::parse(Rule::alias, "Hello: { world: string }").unwrap();
+        assert_ron_snapshot!(
             GTAlias::parse(pairs.next().unwrap(), &mut GTContext::new("module".into())).unwrap(),
-            GTAlias {
-                id: GTDefinitionId("module".into(), "Hello".into()),
-                span: (0, 25).into(),
-                name: GTIdentifier::new((0, 5).into(), "Hello".into()),
+            @r#"
+        GTAlias(
+          id: GTDefinitionId(GTModuleId("module"), "Hello"),
+          span: GTSpan(0, 24),
+          doc: None,
+          attributes: [],
+          name: GTIdentifier(GTSpan(0, 5), "Hello"),
+          descriptor: Object(GTObject(
+            span: GTSpan(7, 24),
+            name: Named(GTIdentifier(GTSpan(0, 5), "Hello")),
+            extensions: [],
+            properties: [
+              GTProperty(
+                span: GTSpan(9, 22),
                 doc: None,
-                attributes: vec![],
-                descriptor: GTObject {
-                    span: (8, 25).into(),
-                    name: GTIdentifier::new((0, 5).into(), "Hello".into()).into(),
-                    extensions: vec![],
-                    properties: vec![GTProperty {
-                        span: (10, 23).into(),
-                        doc: None,
-                        attributes: vec![],
-                        name: GTKey((10, 15).into(), "world".into()),
-                        descriptor: GTPrimitive::String((17, 23).into()).into(),
-                        required: true,
-                    }]
-                }
-                .into()
-            }
+                attributes: [],
+                name: GTKey(GTSpan(9, 14), "world"),
+                descriptor: Primitive(String(GTSpan(16, 22))),
+                required: true,
+              ),
+            ],
+          )),
+        )
+        "#
         );
     }
 
     #[test]
     fn test_parse_exports() {
-        let source_code = NamedSource::new("module.type", "Hello = string".into());
+        let source_code = NamedSource::new("module.type", "Hello: string".into());
         let parse = GTModule::parse("module".into(), source_code).unwrap();
-        assert_eq!(
+        assert_ron_snapshot!(
             parse.resolve.exports,
-            vec![GTIdentifier::new((0, 5).into(), "Hello".into())]
+            @r#"
+        [
+          GTIdentifier(GTSpan(0, 5), "Hello"),
+        ]
+        "#
         );
     }
 
     #[test]
     fn test_parse_parent() {
-        let mut pairs = GenotypeParser::parse(Rule::alias, "Hello = { world: string }").unwrap();
+        let mut pairs = GenotypeParser::parse(Rule::alias, "Hello: { world: string }").unwrap();
         let parents = vec![GTContextParent::Alias(GTIdentifier::new(
             (0, 5).into(),
             "Hello".into(),

@@ -10,7 +10,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GtProject<'a> {
     pub modules: Vec<GtProjectModule>,
     pub config: &'a GtConfig,
@@ -129,27 +129,597 @@ impl<'a> GtProject<'a> {
 
 #[cfg(test)]
 mod tests {
-    use std::{collections::HashMap, fs::read_to_string};
-
-    use crate::{GTPModuleIdentifierSource, GTPModuleResolve};
-
     use super::*;
-    use genotype_parser::*;
-    use miette::NamedSource;
-    use pretty_assertions::assert_eq;
+    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_glob() {
         let config = basic_config();
         let project = GtProject::load(&config);
-        assert_eq!(project.unwrap(), basic_project(&config));
+        assert_ron_snapshot!(project.unwrap(), @r#"
+        GtProject(
+          modules: [
+            GtProjectModule(
+              path: "author.type",
+              module: GTModule(
+                id: GTModuleId("author"),
+                doc: None,
+                imports: [],
+                aliases: [
+                  GTAlias(
+                    id: GTDefinitionId(GTModuleId("author"), "Author"),
+                    span: GTSpan(0, 26),
+                    doc: None,
+                    attributes: [],
+                    name: GTIdentifier(GTSpan(0, 6), "Author"),
+                    descriptor: Object(GTObject(
+                      span: GTSpan(8, 26),
+                      name: Named(GTIdentifier(GTSpan(0, 6), "Author")),
+                      extensions: [],
+                      properties: [
+                        GTProperty(
+                          span: GTSpan(12, 24),
+                          doc: None,
+                          attributes: [],
+                          name: GTKey(GTSpan(12, 16), "name"),
+                          descriptor: Primitive(String(GTSpan(18, 24))),
+                          required: true,
+                        ),
+                      ],
+                    )),
+                  ),
+                ],
+              ),
+              resolve: GTPModuleResolve(
+                paths: {},
+                identifiers: {},
+                definitions: {},
+              ),
+              source_code: NamedSource(
+                name: "author.type",
+                source: "Author: {\n  name: string\n}",
+                language: None,
+              ),
+            ),
+            GtProjectModule(
+              path: "book.type",
+              module: GTModule(
+                id: GTModuleId("book"),
+                doc: None,
+                imports: [
+                  GTImport(
+                    span: GTSpan(0, 19),
+                    path: GTPath(GTSpan(4, 12), Resolved(GTModuleId("author")), "./author"),
+                    reference: Name(GTSpan(13, 19), GTIdentifier(GTSpan(13, 19), "Author")),
+                  ),
+                ],
+                aliases: [
+                  GTAlias(
+                    id: GTDefinitionId(GTModuleId("book"), "Book"),
+                    span: GTSpan(21, 63),
+                    doc: None,
+                    attributes: [],
+                    name: GTIdentifier(GTSpan(21, 25), "Book"),
+                    descriptor: Object(GTObject(
+                      span: GTSpan(27, 63),
+                      name: Named(GTIdentifier(GTSpan(21, 25), "Book")),
+                      extensions: [],
+                      properties: [
+                        GTProperty(
+                          span: GTSpan(31, 44),
+                          doc: None,
+                          attributes: [],
+                          name: GTKey(GTSpan(31, 36), "title"),
+                          descriptor: Primitive(String(GTSpan(38, 44))),
+                          required: true,
+                        ),
+                        GTProperty(
+                          span: GTSpan(47, 61),
+                          doc: None,
+                          attributes: [],
+                          name: GTKey(GTSpan(47, 53), "author"),
+                          descriptor: Reference(GTReference(
+                            span: GTSpan(55, 61),
+                            id: GTReferenceId(GTModuleId("book"), GTSpan(55, 61)),
+                            definition_id: Resolved(GTDefinitionId(GTModuleId("author"), "Author")),
+                            identifier: GTIdentifier(GTSpan(55, 61), "Author"),
+                          )),
+                          required: true,
+                        ),
+                      ],
+                    )),
+                  ),
+                ],
+              ),
+              resolve: GTPModuleResolve(
+                paths: {
+                  GTPath(GTSpan(4, 12), Unresolved, "./author"): "author.type",
+                },
+                identifiers: {
+                  GTIdentifier(GTSpan(55, 61), "Author"): GTPModuleIdentifierResolve(
+                    source: External(GTPath(GTSpan(4, 12), Unresolved, "./author")),
+                  ),
+                },
+                definitions: {
+                  GTDefinitionId(GTModuleId("author"), "Author"): GtProjectModuleDefinitionResolve(
+                    references: [
+                      GTReferenceId(GTModuleId("book"), GTSpan(55, 61)),
+                    ],
+                    deps: [],
+                  ),
+                },
+              ),
+              source_code: NamedSource(
+                name: "book.type",
+                source: "use ./author/Author\n\nBook: {\n  title: string\n  author: Author\n}",
+                language: None,
+              ),
+            ),
+            GtProjectModule(
+              path: "order.type",
+              module: GTModule(
+                id: GTModuleId("order"),
+                doc: None,
+                imports: [
+                  GTImport(
+                    span: GTSpan(0, 15),
+                    path: GTPath(GTSpan(4, 10), Resolved(GTModuleId("book")), "./book"),
+                    reference: Name(GTSpan(11, 15), GTIdentifier(GTSpan(11, 15), "Book")),
+                  ),
+                ],
+                aliases: [
+                  GTAlias(
+                    id: GTDefinitionId(GTModuleId("order"), "Order"),
+                    span: GTSpan(17, 63),
+                    doc: None,
+                    attributes: [],
+                    name: GTIdentifier(GTSpan(17, 22), "Order"),
+                    descriptor: Object(GTObject(
+                      span: GTSpan(24, 63),
+                      name: Named(GTIdentifier(GTSpan(17, 22), "Order")),
+                      extensions: [],
+                      properties: [
+                        GTProperty(
+                          span: GTSpan(28, 45),
+                          doc: None,
+                          attributes: [],
+                          name: GTKey(GTSpan(28, 32), "user"),
+                          descriptor: InlineImport(GTInlineImport(
+                            span: GTSpan(34, 45),
+                            name: GTIdentifier(GTSpan(41, 45), "User"),
+                            path: GTPath(GTSpan(34, 40), Resolved(GTModuleId("user")), "./user"),
+                          )),
+                          required: true,
+                        ),
+                        GTProperty(
+                          span: GTSpan(48, 61),
+                          doc: None,
+                          attributes: [],
+                          name: GTKey(GTSpan(48, 53), "books"),
+                          descriptor: Array(GTArray(
+                            span: GTSpan(55, 61),
+                            descriptor: Reference(GTReference(
+                              span: GTSpan(56, 60),
+                              id: GTReferenceId(GTModuleId("order"), GTSpan(56, 60)),
+                              definition_id: Resolved(GTDefinitionId(GTModuleId("book"), "Book")),
+                              identifier: GTIdentifier(GTSpan(56, 60), "Book"),
+                            )),
+                          )),
+                          required: true,
+                        ),
+                      ],
+                    )),
+                  ),
+                ],
+              ),
+              resolve: GTPModuleResolve(
+                paths: {
+                  GTPath(GTSpan(4, 10), Unresolved, "./book"): "book.type",
+                  GTPath(GTSpan(34, 40), Unresolved, "./user"): "user.type",
+                },
+                identifiers: {
+                  GTIdentifier(GTSpan(56, 60), "Book"): GTPModuleIdentifierResolve(
+                    source: External(GTPath(GTSpan(4, 10), Unresolved, "./book")),
+                  ),
+                },
+                definitions: {
+                  GTDefinitionId(GTModuleId("book"), "Book"): GtProjectModuleDefinitionResolve(
+                    references: [
+                      GTReferenceId(GTModuleId("order"), GTSpan(56, 60)),
+                    ],
+                    deps: [],
+                  ),
+                },
+              ),
+              source_code: NamedSource(
+                name: "order.type",
+                source: "use ./book/Book\n\nOrder: {\n  user: ./user/User\n  books: [Book]\n}",
+                language: None,
+              ),
+            ),
+            GtProjectModule(
+              path: "user.type",
+              module: GTModule(
+                id: GTModuleId("user"),
+                doc: None,
+                imports: [],
+                aliases: [
+                  GTAlias(
+                    id: GTDefinitionId(GTModuleId("user"), "User"),
+                    span: GTSpan(0, 40),
+                    doc: None,
+                    attributes: [],
+                    name: GTIdentifier(GTSpan(0, 4), "User"),
+                    descriptor: Object(GTObject(
+                      span: GTSpan(6, 40),
+                      name: Named(GTIdentifier(GTSpan(0, 4), "User")),
+                      extensions: [],
+                      properties: [
+                        GTProperty(
+                          span: GTSpan(10, 23),
+                          doc: None,
+                          attributes: [],
+                          name: GTKey(GTSpan(10, 15), "email"),
+                          descriptor: Primitive(String(GTSpan(17, 23))),
+                          required: true,
+                        ),
+                        GTProperty(
+                          span: GTSpan(26, 38),
+                          doc: None,
+                          attributes: [],
+                          name: GTKey(GTSpan(26, 30), "name"),
+                          descriptor: Primitive(String(GTSpan(32, 38))),
+                          required: true,
+                        ),
+                      ],
+                    )),
+                  ),
+                ],
+              ),
+              resolve: GTPModuleResolve(
+                paths: {},
+                identifiers: {},
+                definitions: {},
+              ),
+              source_code: NamedSource(
+                name: "user.type",
+                source: "User: {\n  email: string\n  name: string\n}",
+                language: None,
+              ),
+            ),
+          ],
+          config: GtConfig(
+            name: Some("module"),
+            root: "examples/basic",
+            out: "dist",
+            src: "",
+            entry: "**/*.type",
+            ts: {
+              "enabled": false,
+              "out": "ts",
+              "manifest": {},
+              "dependencies": {},
+              "tsconfig": TsConfigLangTsconfig(
+                allowImportingTsExtensions: false,
+              ),
+            },
+            py: {
+              "module": PyModuleName("module"),
+              "version": latest,
+              "enabled": false,
+              "out": "py",
+              "manifest": {},
+              "dependencies": {},
+            },
+            rs: {
+              "derive": [
+                "Debug",
+                "Clone",
+                "PartialEq",
+              ],
+              "enabled": false,
+              "out": "rs",
+              "manifest": {},
+              "dependencies": {},
+            },
+          ),
+        )
+        "#);
     }
 
     #[test]
     fn test_entry() {
         let config = GtConfig::from_entry("module", "./examples/basic", "order.type");
         let project = GtProject::load(&config);
-        assert_eq!(project.unwrap(), basic_project(&config));
+        assert_ron_snapshot!(project.unwrap(), @r#"
+        GtProject(
+          modules: [
+            GtProjectModule(
+              path: "author.type",
+              module: GTModule(
+                id: GTModuleId("author"),
+                doc: None,
+                imports: [],
+                aliases: [
+                  GTAlias(
+                    id: GTDefinitionId(GTModuleId("author"), "Author"),
+                    span: GTSpan(0, 26),
+                    doc: None,
+                    attributes: [],
+                    name: GTIdentifier(GTSpan(0, 6), "Author"),
+                    descriptor: Object(GTObject(
+                      span: GTSpan(8, 26),
+                      name: Named(GTIdentifier(GTSpan(0, 6), "Author")),
+                      extensions: [],
+                      properties: [
+                        GTProperty(
+                          span: GTSpan(12, 24),
+                          doc: None,
+                          attributes: [],
+                          name: GTKey(GTSpan(12, 16), "name"),
+                          descriptor: Primitive(String(GTSpan(18, 24))),
+                          required: true,
+                        ),
+                      ],
+                    )),
+                  ),
+                ],
+              ),
+              resolve: GTPModuleResolve(
+                paths: {},
+                identifiers: {},
+                definitions: {},
+              ),
+              source_code: NamedSource(
+                name: "author.type",
+                source: "Author: {\n  name: string\n}",
+                language: None,
+              ),
+            ),
+            GtProjectModule(
+              path: "book.type",
+              module: GTModule(
+                id: GTModuleId("book"),
+                doc: None,
+                imports: [
+                  GTImport(
+                    span: GTSpan(0, 19),
+                    path: GTPath(GTSpan(4, 12), Resolved(GTModuleId("author")), "./author"),
+                    reference: Name(GTSpan(13, 19), GTIdentifier(GTSpan(13, 19), "Author")),
+                  ),
+                ],
+                aliases: [
+                  GTAlias(
+                    id: GTDefinitionId(GTModuleId("book"), "Book"),
+                    span: GTSpan(21, 63),
+                    doc: None,
+                    attributes: [],
+                    name: GTIdentifier(GTSpan(21, 25), "Book"),
+                    descriptor: Object(GTObject(
+                      span: GTSpan(27, 63),
+                      name: Named(GTIdentifier(GTSpan(21, 25), "Book")),
+                      extensions: [],
+                      properties: [
+                        GTProperty(
+                          span: GTSpan(31, 44),
+                          doc: None,
+                          attributes: [],
+                          name: GTKey(GTSpan(31, 36), "title"),
+                          descriptor: Primitive(String(GTSpan(38, 44))),
+                          required: true,
+                        ),
+                        GTProperty(
+                          span: GTSpan(47, 61),
+                          doc: None,
+                          attributes: [],
+                          name: GTKey(GTSpan(47, 53), "author"),
+                          descriptor: Reference(GTReference(
+                            span: GTSpan(55, 61),
+                            id: GTReferenceId(GTModuleId("book"), GTSpan(55, 61)),
+                            definition_id: Resolved(GTDefinitionId(GTModuleId("author"), "Author")),
+                            identifier: GTIdentifier(GTSpan(55, 61), "Author"),
+                          )),
+                          required: true,
+                        ),
+                      ],
+                    )),
+                  ),
+                ],
+              ),
+              resolve: GTPModuleResolve(
+                paths: {
+                  GTPath(GTSpan(4, 12), Unresolved, "./author"): "author.type",
+                },
+                identifiers: {
+                  GTIdentifier(GTSpan(55, 61), "Author"): GTPModuleIdentifierResolve(
+                    source: External(GTPath(GTSpan(4, 12), Unresolved, "./author")),
+                  ),
+                },
+                definitions: {
+                  GTDefinitionId(GTModuleId("author"), "Author"): GtProjectModuleDefinitionResolve(
+                    references: [
+                      GTReferenceId(GTModuleId("book"), GTSpan(55, 61)),
+                    ],
+                    deps: [],
+                  ),
+                },
+              ),
+              source_code: NamedSource(
+                name: "book.type",
+                source: "use ./author/Author\n\nBook: {\n  title: string\n  author: Author\n}",
+                language: None,
+              ),
+            ),
+            GtProjectModule(
+              path: "order.type",
+              module: GTModule(
+                id: GTModuleId("order"),
+                doc: None,
+                imports: [
+                  GTImport(
+                    span: GTSpan(0, 15),
+                    path: GTPath(GTSpan(4, 10), Resolved(GTModuleId("book")), "./book"),
+                    reference: Name(GTSpan(11, 15), GTIdentifier(GTSpan(11, 15), "Book")),
+                  ),
+                ],
+                aliases: [
+                  GTAlias(
+                    id: GTDefinitionId(GTModuleId("order"), "Order"),
+                    span: GTSpan(17, 63),
+                    doc: None,
+                    attributes: [],
+                    name: GTIdentifier(GTSpan(17, 22), "Order"),
+                    descriptor: Object(GTObject(
+                      span: GTSpan(24, 63),
+                      name: Named(GTIdentifier(GTSpan(17, 22), "Order")),
+                      extensions: [],
+                      properties: [
+                        GTProperty(
+                          span: GTSpan(28, 45),
+                          doc: None,
+                          attributes: [],
+                          name: GTKey(GTSpan(28, 32), "user"),
+                          descriptor: InlineImport(GTInlineImport(
+                            span: GTSpan(34, 45),
+                            name: GTIdentifier(GTSpan(41, 45), "User"),
+                            path: GTPath(GTSpan(34, 40), Resolved(GTModuleId("user")), "./user"),
+                          )),
+                          required: true,
+                        ),
+                        GTProperty(
+                          span: GTSpan(48, 61),
+                          doc: None,
+                          attributes: [],
+                          name: GTKey(GTSpan(48, 53), "books"),
+                          descriptor: Array(GTArray(
+                            span: GTSpan(55, 61),
+                            descriptor: Reference(GTReference(
+                              span: GTSpan(56, 60),
+                              id: GTReferenceId(GTModuleId("order"), GTSpan(56, 60)),
+                              definition_id: Resolved(GTDefinitionId(GTModuleId("book"), "Book")),
+                              identifier: GTIdentifier(GTSpan(56, 60), "Book"),
+                            )),
+                          )),
+                          required: true,
+                        ),
+                      ],
+                    )),
+                  ),
+                ],
+              ),
+              resolve: GTPModuleResolve(
+                paths: {
+                  GTPath(GTSpan(34, 40), Unresolved, "./user"): "user.type",
+                  GTPath(GTSpan(4, 10), Unresolved, "./book"): "book.type",
+                },
+                identifiers: {
+                  GTIdentifier(GTSpan(56, 60), "Book"): GTPModuleIdentifierResolve(
+                    source: External(GTPath(GTSpan(4, 10), Unresolved, "./book")),
+                  ),
+                },
+                definitions: {
+                  GTDefinitionId(GTModuleId("book"), "Book"): GtProjectModuleDefinitionResolve(
+                    references: [
+                      GTReferenceId(GTModuleId("order"), GTSpan(56, 60)),
+                    ],
+                    deps: [],
+                  ),
+                },
+              ),
+              source_code: NamedSource(
+                name: "order.type",
+                source: "use ./book/Book\n\nOrder: {\n  user: ./user/User\n  books: [Book]\n}",
+                language: None,
+              ),
+            ),
+            GtProjectModule(
+              path: "user.type",
+              module: GTModule(
+                id: GTModuleId("user"),
+                doc: None,
+                imports: [],
+                aliases: [
+                  GTAlias(
+                    id: GTDefinitionId(GTModuleId("user"), "User"),
+                    span: GTSpan(0, 40),
+                    doc: None,
+                    attributes: [],
+                    name: GTIdentifier(GTSpan(0, 4), "User"),
+                    descriptor: Object(GTObject(
+                      span: GTSpan(6, 40),
+                      name: Named(GTIdentifier(GTSpan(0, 4), "User")),
+                      extensions: [],
+                      properties: [
+                        GTProperty(
+                          span: GTSpan(10, 23),
+                          doc: None,
+                          attributes: [],
+                          name: GTKey(GTSpan(10, 15), "email"),
+                          descriptor: Primitive(String(GTSpan(17, 23))),
+                          required: true,
+                        ),
+                        GTProperty(
+                          span: GTSpan(26, 38),
+                          doc: None,
+                          attributes: [],
+                          name: GTKey(GTSpan(26, 30), "name"),
+                          descriptor: Primitive(String(GTSpan(32, 38))),
+                          required: true,
+                        ),
+                      ],
+                    )),
+                  ),
+                ],
+              ),
+              resolve: GTPModuleResolve(
+                paths: {},
+                identifiers: {},
+                definitions: {},
+              ),
+              source_code: NamedSource(
+                name: "user.type",
+                source: "User: {\n  email: string\n  name: string\n}",
+                language: None,
+              ),
+            ),
+          ],
+          config: GtConfig(
+            name: Some("module"),
+            root: "examples/basic",
+            out: "dist",
+            src: "",
+            entry: "order.type",
+            ts: {
+              "enabled": false,
+              "out": "ts",
+              "manifest": {},
+              "dependencies": {},
+              "tsconfig": TsConfigLangTsconfig(
+                allowImportingTsExtensions: false,
+              ),
+            },
+            py: {
+              "module": PyModuleName("module"),
+              "version": latest,
+              "enabled": false,
+              "out": "py",
+              "manifest": {},
+              "dependencies": {},
+            },
+            rs: {
+              "derive": [
+                "Debug",
+                "Clone",
+                "PartialEq",
+              ],
+              "enabled": false,
+              "out": "rs",
+              "manifest": {},
+              "dependencies": {},
+            },
+          ),
+        )
+        "#);
     }
 
     #[test]
@@ -157,487 +727,172 @@ mod tests {
         let module_path: GtModulePath = "anonymous.type".into();
         let config = GtConfig::from_entry("module", "./examples/process", "anonymous.type");
         let project = GtProject::load(&config);
-        assert_eq!(
+        assert_ron_snapshot!(
             project.unwrap(),
-            GtProject {
-                modules: vec![GtProjectModule {
-                    path: module_path.clone(),
-                    module: GTModule {
-                        id: "anonymous".into(),
-                        doc: None,
-                        imports: vec![],
-                        aliases: vec![
-                            GTAlias {
-                                id: GTDefinitionId("anonymous".into(), "Order".into()),
-                                span: (0, 91).into(),
+            @r#"
+        GtProject(
+          modules: [
+            GtProjectModule(
+              path: "anonymous.type",
+              module: GTModule(
+                id: GTModuleId("anonymous"),
+                doc: None,
+                imports: [],
+                aliases: [
+                  GTAlias(
+                    id: GTDefinitionId(GTModuleId("anonymous"), "Order"),
+                    span: GTSpan(0, 90),
+                    doc: None,
+                    attributes: [],
+                    name: GTIdentifier(GTSpan(0, 5), "Order"),
+                    descriptor: Object(GTObject(
+                      span: GTSpan(7, 90),
+                      name: Named(GTIdentifier(GTSpan(0, 5), "Order")),
+                      extensions: [],
+                      properties: [
+                        GTProperty(
+                          span: GTSpan(11, 88),
+                          doc: None,
+                          attributes: [],
+                          name: GTKey(GTSpan(11, 19), "delivery"),
+                          descriptor: Object(GTObject(
+                            span: GTSpan(21, 88),
+                            name: Alias(GTIdentifier(GTSpan(21, 88), "OrderDelivery"), Property(GTIdentifier(GTSpan(0, 5), "Order"), [
+                              GTKey(GTSpan(11, 19), "delivery"),
+                            ])),
+                            extensions: [],
+                            properties: [
+                              GTProperty(
+                                span: GTSpan(27, 84),
                                 doc: None,
-                                attributes: vec![],
-                                name: GTIdentifier::new((0, 5).into(), "Order".into()),
-                                descriptor: GTObject {
-                                    span: (8, 91).into(),
-                                    name: GTIdentifier::new((0, 5).into(), "Order".into()).into(),
-                                    extensions: vec![],
-                                    properties: vec![GTProperty {
-                                        span: (12, 89).into(),
-                                        doc: None,
-                                        attributes: vec![],
-                                        name: GTKey::new((12, 20).into(), "delivery".into()),
-                                        descriptor: GTObject {
-                                            span: (22, 89).into(),
-                                            name: GTObjectName::Alias(
-                                                GTIdentifier::new(
-                                                    (22, 89).into(),
-                                                    "OrderDelivery".into()
-                                                ),
-                                                GTObjectNameParent::Property(
-                                                    GTIdentifier::new(
-                                                        (0, 5).into(),
-                                                        "Order".into()
-                                                    ),
-                                                    vec![GTKey::new(
-                                                        (12, 20).into(),
-                                                        "delivery".into()
-                                                    )]
-                                                ),
-                                            ),
-                                            extensions: vec![],
-                                            properties: vec![GTProperty {
-                                                span: (28, 85).into(),
-                                                doc: None,
-                                                attributes: vec![],
-                                                name: GTKey::new((28, 35).into(), "address".into()),
-                                                descriptor: GTObject {
-                                                    span: (37, 85).into(),
-                                                    name: GTObjectName::Alias(
-                                                        GTIdentifier::new(
-                                                            (37, 85).into(),
-                                                            "OrderDeliveryAddress".into()
-                                                        ),
-                                                        GTObjectNameParent::Property(
-                                                            GTIdentifier::new(
-                                                                (0, 5).into(),
-                                                                "Order".into()
-                                                            ),
-                                                            vec![
-                                                                GTKey::new(
-                                                                    (12, 20).into(),
-                                                                    "delivery".into()
-                                                                ),
-                                                                GTKey::new(
-                                                                    (28, 35).into(),
-                                                                    "address".into()
-                                                                )
-                                                            ]
-                                                        ),
-                                                    ),
-                                                    extensions: vec![],
-                                                    properties: vec![
-                                                        GTProperty {
-                                                            span: (45, 59).into(),
-                                                            doc: None,
-                                                            attributes: vec![],
-                                                            name: GTKey::new(
-                                                                (45, 51).into(),
-                                                                "street".into()
-                                                            ),
-                                                            descriptor: GTPrimitive::String(
-                                                                (53, 59).into()
-                                                            )
-                                                            .into(),
-                                                            required: true,
-                                                        },
-                                                        GTProperty {
-                                                            span: (67, 79).into(),
-                                                            doc: None,
-                                                            attributes: vec![],
-                                                            name: GTKey::new(
-                                                                (67, 71).into(),
-                                                                "city".into()
-                                                            ),
-                                                            descriptor: GTPrimitive::String(
-                                                                (73, 79).into()
-                                                            )
-                                                            .into(),
-                                                            required: true,
-                                                        }
-                                                    ],
-                                                }
-                                                .into(),
-                                                required: true,
-                                            }],
-                                        }
-                                        .into(),
-                                        required: true,
-                                    }],
-                                }
-                                .into(),
-                            },
-                            GTAlias {
-                                id: GTDefinitionId("anonymous".into(), "Email".into()),
-                                span: (93, 146).into(),
-                                doc: None,
-                                attributes: vec![],
-                                name: GTIdentifier::new((93, 98).into(), "Email".into()),
-                                descriptor: GTUnion {
-                                    span: (101, 146).into(),
-                                    descriptors: vec![
-                                        GTPrimitive::String((101, 107).into()).into(),
-                                        GTObject {
-                                            span: (110, 146).into(),
-                                            name: GTObjectName::Alias(
-                                                GTIdentifier::new(
-                                                    (110, 146).into(),
-                                                    "EmailObj".into()
-                                                ),
-                                                GTObjectNameParent::Alias(GTIdentifier::new(
-                                                    (93, 98).into(),
-                                                    "Email".into()
-                                                ),),
-                                            ),
-                                            extensions: vec![],
-                                            properties: vec![
-                                                GTProperty {
-                                                    span: (114, 126).into(),
-                                                    doc: None,
-                                                    attributes: vec![],
-                                                    name: GTKey::new(
-                                                        (114, 118).into(),
-                                                        "name".into()
-                                                    ),
-                                                    descriptor: GTPrimitive::String(
-                                                        (120, 126).into()
-                                                    )
-                                                    .into(),
-                                                    required: true,
-                                                },
-                                                GTProperty {
-                                                    span: (130, 143).into(),
-                                                    doc: None,
-                                                    attributes: vec![],
-                                                    name: GTKey::new(
-                                                        (130, 135).into(),
-                                                        "email".into()
-                                                    ),
-                                                    descriptor: GTPrimitive::String(
-                                                        (137, 143).into()
-                                                    )
-                                                    .into(),
-                                                    required: true,
-                                                }
-                                            ],
-                                        }
-                                        .into(),
-                                    ]
-                                }
-                                .into()
-                            }
-                        ],
-                    },
-                    resolve: GTPModuleResolve {
-                        paths: Default::default(),
-                        identifiers: Default::default(),
-                        definitions: Default::default(),
-                    },
-                    source_code: NamedSource::new(
-                        "anonymous.type",
-                        read_to_string(
-                            config.src_path().join(&module_path.clone().into()).as_str()
-                        )
-                        .unwrap(),
-                    ),
-                }],
-                config: &config
-            }
+                                attributes: [],
+                                name: GTKey(GTSpan(27, 34), "address"),
+                                descriptor: Object(GTObject(
+                                  span: GTSpan(36, 84),
+                                  name: Alias(GTIdentifier(GTSpan(36, 84), "OrderDeliveryAddress"), Property(GTIdentifier(GTSpan(0, 5), "Order"), [
+                                    GTKey(GTSpan(11, 19), "delivery"),
+                                    GTKey(GTSpan(27, 34), "address"),
+                                  ])),
+                                  extensions: [],
+                                  properties: [
+                                    GTProperty(
+                                      span: GTSpan(44, 58),
+                                      doc: None,
+                                      attributes: [],
+                                      name: GTKey(GTSpan(44, 50), "street"),
+                                      descriptor: Primitive(String(GTSpan(52, 58))),
+                                      required: true,
+                                    ),
+                                    GTProperty(
+                                      span: GTSpan(66, 78),
+                                      doc: None,
+                                      attributes: [],
+                                      name: GTKey(GTSpan(66, 70), "city"),
+                                      descriptor: Primitive(String(GTSpan(72, 78))),
+                                      required: true,
+                                    ),
+                                  ],
+                                )),
+                                required: true,
+                              ),
+                            ],
+                          )),
+                          required: true,
+                        ),
+                      ],
+                    )),
+                  ),
+                  GTAlias(
+                    id: GTDefinitionId(GTModuleId("anonymous"), "Email"),
+                    span: GTSpan(92, 144),
+                    doc: None,
+                    attributes: [],
+                    name: GTIdentifier(GTSpan(92, 97), "Email"),
+                    descriptor: Union(GTUnion(
+                      span: GTSpan(99, 144),
+                      descriptors: [
+                        Primitive(String(GTSpan(99, 105))),
+                        Object(GTObject(
+                          span: GTSpan(108, 144),
+                          name: Alias(GTIdentifier(GTSpan(108, 144), "EmailObj"), Alias(GTIdentifier(GTSpan(92, 97), "Email"))),
+                          extensions: [],
+                          properties: [
+                            GTProperty(
+                              span: GTSpan(112, 124),
+                              doc: None,
+                              attributes: [],
+                              name: GTKey(GTSpan(112, 116), "name"),
+                              descriptor: Primitive(String(GTSpan(118, 124))),
+                              required: true,
+                            ),
+                            GTProperty(
+                              span: GTSpan(128, 141),
+                              doc: None,
+                              attributes: [],
+                              name: GTKey(GTSpan(128, 133), "email"),
+                              descriptor: Primitive(String(GTSpan(135, 141))),
+                              required: true,
+                            ),
+                          ],
+                        )),
+                      ],
+                    )),
+                  ),
+                ],
+              ),
+              resolve: GTPModuleResolve(
+                paths: {},
+                identifiers: {},
+                definitions: {},
+              ),
+              source_code: NamedSource(
+                name: "anonymous.type",
+                source: "Order: {\n  delivery: {\n    address: {\n      street: string,\n      city: string\n    }\n  }\n}\n\nEmail: string | {\n  name: string,\n  email: string,\n}\n\n",
+                language: None,
+              ),
+            ),
+          ],
+          config: GtConfig(
+            name: Some("module"),
+            root: "examples/process",
+            out: "dist",
+            src: "",
+            entry: "anonymous.type",
+            ts: {
+              "enabled": false,
+              "out": "ts",
+              "manifest": {},
+              "dependencies": {},
+              "tsconfig": TsConfigLangTsconfig(
+                allowImportingTsExtensions: false,
+              ),
+            },
+            py: {
+              "module": PyModuleName("module"),
+              "version": latest,
+              "enabled": false,
+              "out": "py",
+              "manifest": {},
+              "dependencies": {},
+            },
+            rs: {
+              "derive": [
+                "Debug",
+                "Clone",
+                "PartialEq",
+              ],
+              "enabled": false,
+              "out": "rs",
+              "manifest": {},
+              "dependencies": {},
+            },
+          ),
+        )
+        "#
         );
     }
 
     fn basic_config() -> GtConfig {
         GtConfig::from_root("module", "./examples/basic")
-    }
-
-    fn basic_project<'a>(config: &'a GtConfig) -> GtProject<'a> {
-        let author_path: GtModulePath = "author.type".into();
-        let book_path: GtModulePath = "book.type".into();
-        let order_path: GtModulePath = "order.type".into();
-        let user_path: GtModulePath = "user.type".into();
-
-        GtProject {
-            modules: vec![
-                GtProjectModule {
-                    path: author_path.clone(),
-                    module: GTModule {
-                        id: "author".into(),
-                        doc: None,
-                        imports: vec![],
-                        aliases: vec![GTAlias {
-                            id: GTDefinitionId("author".into(), "Author".into()),
-                            span: (0, 27).into(),
-                            doc: None,
-                            attributes: vec![],
-                            name: GTIdentifier::new((0, 6).into(), "Author".into()),
-                            descriptor: GTDescriptor::Object(GTObject {
-                                span: (9, 27).into(),
-                                name: GTIdentifier::new((0, 6).into(), "Author".into()).into(),
-                                extensions: vec![],
-                                properties: vec![GTProperty {
-                                    span: (13, 25).into(),
-                                    doc: None,
-                                    attributes: vec![],
-                                    name: GTKey::new((13, 17).into(), "name".into()),
-                                    descriptor: GTPrimitive::String((19, 25).into()).into(),
-                                    required: true,
-                                }],
-                            }),
-                        }],
-                    },
-                    resolve: GTPModuleResolve {
-                        paths: Default::default(),
-                        identifiers: Default::default(),
-                        definitions: HashMap::from_iter([]),
-                    },
-                    source_code: NamedSource::new(
-                        "author.type",
-                        read_to_string(
-                            config.src_path().join(&author_path.clone().into()).as_str(),
-                        )
-                        .unwrap(),
-                    ),
-                },
-                GtProjectModule {
-                    path: book_path.clone(),
-                    module: GTModule {
-                        id: "book".into(),
-                        doc: None,
-                        imports: vec![GTImport {
-                            span: (0, 19).into(),
-                            path: GTPath::new(
-                                (4, 12).into(),
-                                GTPathModuleId::Resolved(GTModuleId("author".into())),
-                                "./author".into(),
-                            ),
-                            reference: GTImportReference::Name(
-                                (13, 19).into(),
-                                GTIdentifier::new((13, 19).into(), "Author".into()),
-                            ),
-                        }],
-                        aliases: vec![GTAlias {
-                            id: GTDefinitionId("book".into(), "Book".into()),
-                            span: (21, 64).into(),
-                            doc: None,
-                            attributes: vec![],
-                            name: GTIdentifier::new((21, 25).into(), "Book".into()),
-                            descriptor: GTDescriptor::Object(GTObject {
-                                span: (28, 64).into(),
-                                name: GTIdentifier::new((21, 25).into(), "Book".into()).into(),
-                                extensions: vec![],
-                                properties: vec![
-                                    GTProperty {
-                                        span: (32, 45).into(),
-                                        doc: None,
-                                        attributes: vec![],
-                                        name: GTKey::new((32, 37).into(), "title".into()),
-                                        descriptor: GTPrimitive::String((39, 45).into()).into(),
-                                        required: true,
-                                    },
-                                    GTProperty {
-                                        span: (48, 62).into(),
-                                        doc: None,
-                                        attributes: vec![],
-                                        name: GTKey::new((48, 54).into(), "author".into()),
-                                        descriptor: GTDescriptor::Reference(GTReference {
-                                            span: (56, 62).into(),
-                                            id: GTReferenceId("book".into(), (56, 62).into()),
-                                            definition_id: GTReferenceDefinitionId::Resolved(
-                                                GTDefinitionId("author".into(), "Author".into()),
-                                            ),
-                                            identifier: GTIdentifier::new(
-                                                (56, 62).into(),
-                                                "Author".into(),
-                                            ),
-                                        }),
-                                        required: true,
-                                    },
-                                ],
-                            }),
-                        }],
-                    },
-                    resolve: GTPModuleResolve {
-                        paths: HashMap::from_iter([(
-                            GTPath::parse((4, 12).into(), "./author").unwrap(),
-                            author_path,
-                        )]),
-                        identifiers: HashMap::from_iter([(
-                            GTIdentifier::new((56, 62).into(), "Author".into()),
-                            GTPModuleIdentifierResolve {
-                                source: GTPModuleIdentifierSource::External(
-                                    GTPath::parse((4, 12).into(), "./author").unwrap(),
-                                ),
-                            },
-                        )]),
-                        definitions: HashMap::from_iter([(
-                            GTDefinitionId("author".into(), "Author".into()),
-                            GtProjectModuleDefinitionResolve {
-                                references: HashSet::from_iter([GTReferenceId(
-                                    "book".into(),
-                                    (56, 62).into(),
-                                )]),
-                                deps: Default::default(),
-                            },
-                        )]),
-                    },
-                    source_code: NamedSource::new(
-                        "book.type",
-                        read_to_string(config.src_path().join(&book_path.clone().into()).as_str())
-                            .unwrap(),
-                    ),
-                },
-                GtProjectModule {
-                    path: order_path.clone(),
-                    module: GTModule {
-                        id: "order".into(),
-                        doc: None,
-                        imports: vec![GTImport {
-                            span: (0, 15).into(),
-                            path: GTPath::new(
-                                (4, 10).into(),
-                                GTPathModuleId::Resolved("book".into()),
-                                "./book".into(),
-                            ),
-                            reference: GTImportReference::Name(
-                                (11, 15).into(),
-                                GTIdentifier::new((11, 15).into(), "Book".into()),
-                            ),
-                        }],
-                        aliases: vec![GTAlias {
-                            id: GTDefinitionId("order".into(), "Order".into()),
-                            span: (17, 64).into(),
-                            doc: None,
-                            attributes: vec![],
-                            name: GTIdentifier::new((17, 22).into(), "Order".into()),
-                            descriptor: GTDescriptor::Object(GTObject {
-                                span: (25, 64).into(),
-                                name: GTIdentifier::new((17, 22).into(), "Order".into()).into(),
-                                extensions: vec![],
-                                properties: vec![
-                                    GTProperty {
-                                        span: (29, 46).into(),
-                                        doc: None,
-                                        attributes: vec![],
-                                        name: GTKey::new((29, 33).into(), "user".into()),
-                                        descriptor: GTDescriptor::InlineImport(GTInlineImport {
-                                            span: (35, 46).into(),
-                                            path: GTPath::parse((35, 41).into(), "./user").unwrap(),
-                                            name: GTIdentifier::new((42, 46).into(), "User".into()),
-                                        }),
-                                        required: true,
-                                    },
-                                    GTProperty {
-                                        span: (49, 62).into(),
-                                        doc: None,
-                                        attributes: vec![],
-                                        name: GTKey::new((49, 54).into(), "books".into()),
-                                        descriptor: GTDescriptor::Array(Box::new(GTArray {
-                                            span: (56, 62).into(),
-                                            descriptor: GTDescriptor::Reference(GTReference {
-                                                span: (57, 61).into(),
-                                                id: GTReferenceId("order".into(), (57, 61).into()),
-                                                definition_id: GTReferenceDefinitionId::Resolved(
-                                                    GTDefinitionId("book".into(), "Book".into()),
-                                                ),
-                                                identifier: GTIdentifier::new(
-                                                    (57, 61).into(),
-                                                    "Book".into(),
-                                                ),
-                                            }),
-                                        })),
-                                        required: true,
-                                    },
-                                ],
-                            }),
-                        }],
-                    },
-                    resolve: GTPModuleResolve {
-                        paths: HashMap::from_iter([
-                            (GTPath::parse((4, 10).into(), "./book").unwrap(), book_path),
-                            (
-                                GTPath::parse((35, 41).into(), "./user").unwrap(),
-                                user_path.clone(),
-                            ),
-                        ]),
-                        identifiers: HashMap::from_iter([(
-                            GTIdentifier::new((57, 61).into(), "Book".into()),
-                            GTPModuleIdentifierResolve {
-                                source: GTPModuleIdentifierSource::External(
-                                    GTPath::parse((4, 10).into(), "./book").unwrap(),
-                                ),
-                            },
-                        )]),
-                        definitions: HashMap::from_iter([(
-                            GTDefinitionId("book".into(), "Book".into()),
-                            GtProjectModuleDefinitionResolve {
-                                references: HashSet::from_iter([GTReferenceId(
-                                    "order".into(),
-                                    (57, 61).into(),
-                                )]),
-                                deps: Default::default(),
-                            },
-                        )]),
-                    },
-                    source_code: NamedSource::new(
-                        "order.type",
-                        read_to_string(config.src_path().join(&order_path.into()).as_str())
-                            .unwrap(),
-                    ),
-                },
-                GtProjectModule {
-                    path: user_path.clone(),
-                    module: GTModule {
-                        id: "user".into(),
-                        doc: None,
-                        imports: vec![],
-                        aliases: vec![GTAlias {
-                            id: GTDefinitionId("user".into(), "User".into()),
-                            span: (0, 41).into(),
-                            doc: None,
-                            attributes: vec![],
-                            name: GTIdentifier::new((0, 4).into(), "User".into()),
-                            descriptor: GTDescriptor::Object(GTObject {
-                                span: (7, 41).into(),
-                                name: GTIdentifier::new((0, 4).into(), "User".into()).into(),
-                                extensions: vec![],
-                                properties: vec![
-                                    GTProperty {
-                                        span: (11, 24).into(),
-                                        doc: None,
-                                        attributes: vec![],
-                                        name: GTKey::new((11, 16).into(), "email".into()),
-                                        descriptor: GTPrimitive::String((18, 24).into()).into(),
-                                        required: true,
-                                    },
-                                    GTProperty {
-                                        span: (27, 39).into(),
-                                        doc: None,
-                                        attributes: vec![],
-                                        name: GTKey::new((27, 31).into(), "name".into()),
-                                        descriptor: GTPrimitive::String((33, 39).into()).into(),
-                                        required: true,
-                                    },
-                                ],
-                            }),
-                        }],
-                    },
-                    resolve: GTPModuleResolve {
-                        paths: Default::default(),
-                        identifiers: Default::default(),
-                        definitions: Default::default(),
-                    },
-                    source_code: NamedSource::new(
-                        "user.type",
-                        read_to_string(config.src_path().join(&user_path.into()).as_str()).unwrap(),
-                    ),
-                },
-            ],
-            config: &config,
-        }
     }
 }

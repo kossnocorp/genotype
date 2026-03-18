@@ -4,7 +4,7 @@ use std::{
     path::{Component, Path, PathBuf},
 };
 
-use crate::{parser::Rule, GTNode, GTNodeParseResult, GTParseError, GTPathModuleId, GTSpan};
+use crate::{GTNode, GTNodeParseResult, GTParseError, GTPathModuleId, GTSpan, parser::Rule};
 
 use super::GTPath;
 
@@ -91,6 +91,7 @@ impl TryFrom<Pair<'_, Rule>> for GTPath {
 #[cfg(test)]
 mod tests {
     use crate::*;
+    use insta::assert_ron_snapshot;
     use miette::NamedSource;
     use pest::Parser;
     use pretty_assertions::assert_eq;
@@ -158,90 +159,82 @@ mod tests {
             r#"use author/./*
             use ../user/../user/User
             use ./././misc/order/{Order, SomethingElse}
-            
-            Order = {
+
+            Order: {
                 book: book/Book
                 user: ./misc/../misc/./user/User
             }"#
             .into(),
         );
         let parse = GTModule::parse("module".into(), source_code.clone()).unwrap();
-        assert_eq!(
+        assert_ron_snapshot!(
             parse.module,
-            GTModule {
-                id: "module".into(),
-                doc: None,
-                imports: vec![
-                    GTImport {
-                        span: (0, 14).into(),
-                        path: GTPath::parse((4, 12).into(), "author").unwrap(),
-                        reference: GTImportReference::Glob((13, 14).into()),
-                    },
-                    GTImport {
-                        span: (27, 51).into(),
-                        path: GTPath::parse((31, 46).into(), "../user").unwrap(),
-                        reference: GTImportReference::Name(
-                            (47, 51).into(),
-                            GTIdentifier::new((47, 51).into(), "User".into())
-                        ),
-                    },
-                    GTImport {
-                        span: (64, 107).into(),
-                        path: GTPath::parse((68, 84).into(), "./misc/order").unwrap(),
-                        reference: GTImportReference::Names(
-                            (85, 107).into(),
-                            vec![
-                                GTImportName::Name(
-                                    (86, 91).into(),
-                                    GTIdentifier::new((86, 91).into(), "Order".into())
-                                ),
-                                GTImportName::Name(
-                                    (93, 106).into(),
-                                    GTIdentifier::new((93, 106).into(), "SomethingElse".into()),
-                                ),
-                            ],
-                        ),
-                    },
-                ],
-                aliases: vec![GTAlias {
-                    id: GTDefinitionId("module".into(), "Order".into()),
-                    span: (133, 237).into(),
+            @r#"
+        GTModule(
+          id: GTModuleId("module"),
+          doc: None,
+          imports: [
+            GTImport(
+              span: GTSpan(0, 14),
+              path: GTPath(GTSpan(4, 12), Unresolved, "author"),
+              reference: Glob(GTSpan(13, 14)),
+            ),
+            GTImport(
+              span: GTSpan(27, 51),
+              path: GTPath(GTSpan(31, 46), Unresolved, "../user"),
+              reference: Name(GTSpan(47, 51), GTIdentifier(GTSpan(47, 51), "User")),
+            ),
+            GTImport(
+              span: GTSpan(64, 107),
+              path: GTPath(GTSpan(68, 84), Unresolved, "./misc/order"),
+              reference: Names(GTSpan(85, 107), [
+                Name(GTSpan(86, 91), GTIdentifier(GTSpan(86, 91), "Order")),
+                Name(GTSpan(93, 106), GTIdentifier(GTSpan(93, 106), "SomethingElse")),
+              ]),
+            ),
+          ],
+          aliases: [
+            GTAlias(
+              id: GTDefinitionId(GTModuleId("module"), "Order"),
+              span: GTSpan(121, 224),
+              doc: None,
+              attributes: [],
+              name: GTIdentifier(GTSpan(121, 126), "Order"),
+              descriptor: Object(GTObject(
+                span: GTSpan(128, 224),
+                name: Named(GTIdentifier(GTSpan(121, 126), "Order")),
+                extensions: [],
+                properties: [
+                  GTProperty(
+                    span: GTSpan(146, 161),
                     doc: None,
-                    attributes: vec![],
-                    name: GTIdentifier::new((133, 138).into(), "Order".into()),
-                    descriptor: GTDescriptor::Object(GTObject {
-                        span: (141, 237).into(),
-                        name: GTIdentifier::new((133, 138).into(), "Order".into()).into(),
-                        extensions: vec![],
-                        properties: vec![
-                            GTProperty {
-                                span: (159, 174).into(),
-                                doc: None,
-                                attributes: vec![],
-                                name: GTKey::new((159, 163).into(), "book".into()),
-                                descriptor: GTDescriptor::InlineImport(GTInlineImport {
-                                    span: (165, 174).into(),
-                                    name: GTIdentifier::new((170, 174).into(), "Book".into()),
-                                    path: GTPath::parse((165, 169).into(), "book").unwrap(),
-                                },),
-                                required: true,
-                            },
-                            GTProperty {
-                                span: (191, 223).into(),
-                                doc: None,
-                                attributes: vec![],
-                                name: GTKey::new((191, 195).into(), "user".into()),
-                                descriptor: GTDescriptor::InlineImport(GTInlineImport {
-                                    span: (197, 223).into(),
-                                    name: GTIdentifier::new((219, 223).into(), "User".into()),
-                                    path: GTPath::parse((197, 218).into(), "./misc/user").unwrap(),
-                                },),
-                                required: true,
-                            },
-                        ],
-                    },),
-                },],
-            }
+                    attributes: [],
+                    name: GTKey(GTSpan(146, 150), "book"),
+                    descriptor: InlineImport(GTInlineImport(
+                      span: GTSpan(152, 161),
+                      name: GTIdentifier(GTSpan(157, 161), "Book"),
+                      path: GTPath(GTSpan(152, 156), Unresolved, "book"),
+                    )),
+                    required: true,
+                  ),
+                  GTProperty(
+                    span: GTSpan(178, 210),
+                    doc: None,
+                    attributes: [],
+                    name: GTKey(GTSpan(178, 182), "user"),
+                    descriptor: InlineImport(GTInlineImport(
+                      span: GTSpan(184, 210),
+                      name: GTIdentifier(GTSpan(206, 210), "User"),
+                      path: GTPath(GTSpan(184, 205), Unresolved, "./misc/user"),
+                    )),
+                    required: true,
+                  ),
+                ],
+              )),
+            ),
+          ],
+        )
+        "#
         );
     }
 }

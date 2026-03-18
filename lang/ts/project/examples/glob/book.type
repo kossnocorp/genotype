@@ -1,6 +1,6 @@
 use ./author/*
 
-Book = {
+Book: {
   title: string
   author: Author
   authorName: AuthorName

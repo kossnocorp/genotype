@@ -4,11 +4,11 @@
 // Basic comment
 
 /// Alias comment
-Hello = /* Inline comment */ string
+Hello: /* Inline comment */ string
 
 /// Multiline...
 /// ...alias comment
-Hello = {
+Hello: {
   /// Property comment
   name: string
   /// Multiline...
@@ -16,4 +16,4 @@ Hello = {
   age: int
 }
 
-Hello = string // Trailing comment
+Hello: string // Trailing comment

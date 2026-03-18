@@ -1,4 +1,4 @@
-User = {
+User: {
   email: string
   name: string
 }

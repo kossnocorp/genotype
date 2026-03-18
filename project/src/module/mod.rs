@@ -14,10 +14,11 @@ pub use parse::*;
 
 mod resolve;
 pub use resolve::*;
+use serde::Serialize;
 
-use crate::{visitor::GTPResolveVisitor, GTPResolve};
+use crate::{GTPResolve, visitor::GTPResolveVisitor};
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GtProjectModule {
     pub path: GtModulePath,
     pub module: GTModule,
@@ -25,6 +26,7 @@ pub struct GtProjectModule {
     pub resolve: GTPModuleResolve,
     /// Module source code.
     /// [TODO] After implementing workspace, find a better place for it.
+    #[serde(serialize_with = "genotype_parser::miette_serde::serialize_named_source")]
     #[deprecated]
     pub source_code: NamedSource<String>,
 }

@@ -1,6 +1,6 @@
 use genotype_json_types/JsonAny
 
-Prompt = {
+Prompt: {
   content: string,
   output: JsonAny
 }

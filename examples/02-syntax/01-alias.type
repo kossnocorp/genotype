@@ -1,5 +1,5 @@
-Age = int
+Age: int
 
-AnotherAge = Age
+AnotherAge: Age
 
-snake_case = int
+snake_case: int

@@ -1,23 +1,23 @@
-Hello = {
+Hello: {
   name: string
 }
 
-Hello = {
+Hello: {
   name: string
   age: int
   flag: boolean
 }
 
-Empty = {}
+Empty: {}
 
-Empty = {
+Empty: {
 
 }
 
-Hello = { name: string }
+Hello: { name: string }
 
-Hello = { name: string, age: int }
+Hello: { name: string, age: int }
 
-PascalCase = {
+PascalCase: {
   snake_case: int
 }
