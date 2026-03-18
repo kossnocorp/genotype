@@ -1,3 +1,3 @@
-Hello = number
+Hello: number
 
-World = { [number]: string }
+World: { [number]: string }

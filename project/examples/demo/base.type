@@ -1,8 +1,8 @@
-Name = {
+Name: {
   first: string,
   last?: string
 }
 
-Age = int
+Age: int
 
-Money = float
+Money: float

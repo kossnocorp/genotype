@@ -1,14 +1,14 @@
-Base = {
+Base: {
   name: string,
   age: int
 }
 
-Processor = {
+Processor: {
   ...Base,
   cores: int
 }
 
-User = {
+User: {
   ...Base,
   email: string
 }

@@ -49,6 +49,7 @@ impl GTObject {
 #[cfg(test)]
 mod tests {
     use indexmap::IndexSet;
+    use insta::assert_ron_snapshot;
     use miette::NamedSource;
     use pest::Parser;
     use pretty_assertions::assert_eq;
@@ -89,19 +90,21 @@ mod tests {
     fn test_parse_deps_base() {
         let source_code = NamedSource::new(
             "module.type",
-            r#"Order = {
+            r#"Order: {
                 book: book/Book
                 user: ./misc/user/User
             }"#
             .into(),
         );
         let parse = GTModule::parse("module".into(), source_code).unwrap();
-        assert_eq!(
+        assert_ron_snapshot!(
             parse.resolve.deps,
-            IndexSet::<_, std::collections::hash_map::RandomState>::from_iter(vec![
-                GTPath::parse((32, 36).into(), "book").unwrap(),
-                GTPath::parse((64, 75).into(), "./misc/user").unwrap(),
-            ])
+            @r#"
+        [
+          GTPath(GTSpan(31, 35), Unresolved, "book"),
+          GTPath(GTSpan(63, 74), Unresolved, "./misc/user"),
+        ]
+        "#
         );
     }
 
@@ -109,19 +112,21 @@ mod tests {
     fn test_parse_deps_normalize() {
         let source_code = NamedSource::new(
             "module.type",
-            r#"Order = {
+            r#"Order: {
                 book: book/Book
                 user: ./misc/../misc/./user/User
             }"#
             .into(),
         );
         let parse = GTModule::parse("module".into(), source_code).unwrap();
-        assert_eq!(
+        assert_ron_snapshot!(
             parse.resolve.deps,
-            IndexSet::<_, std::collections::hash_map::RandomState>::from_iter(vec![
-                GTPath::parse((32, 36).into(), "book").unwrap(),
-                GTPath::parse((64, 85).into(), "./misc/user").unwrap(),
-            ])
+            @r#"
+        [
+          GTPath(GTSpan(31, 35), Unresolved, "book"),
+          GTPath(GTSpan(63, 84), Unresolved, "./misc/user"),
+        ]
+        "#
         );
     }
 

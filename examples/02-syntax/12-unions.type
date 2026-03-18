@@ -1,10 +1,10 @@
-Hello = "Sasha" | "world"
+Hello: "Sasha" | "world"
 
-Multiline =
+Multiline:
   | "Hello"
   | string
 
-WithComments =
+WithComments:
   // This is a comment
   | "Hello"
   // This is a comment too

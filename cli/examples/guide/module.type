@@ -1,8 +1,8 @@
-FullName = {
+FullName: {
   firstName: string,
   lastName: string,
 }
 
-Email = @string
+Email: @string
 
-Zip = @string
+Zip: @string

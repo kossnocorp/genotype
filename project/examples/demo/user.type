@@ -1,6 +1,6 @@
 use ./base/*
 
-User = {
+User: {
   name: Name
   email: string
 }

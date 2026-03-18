@@ -1,9 +1,9 @@
-OrgId = @int
+OrgId: @int
 
-UserId = @string
+UserId: @string
 
-Const = @float
+Const: @float
 
-Yes = @boolean
+Yes: @boolean
 
-Nope = @null
+Nope: @null

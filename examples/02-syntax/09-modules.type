@@ -2,12 +2,12 @@ use author/*
 use ../../author/{Author, Genre, Something as Else}
 use author/Author
 
-Book = {
+Book: {
   title: string
   author: ../../author/Author
   genre: Genre
 }
 
-Author = ../../author/Author
+Author: ../../author/Author
 
-Authors = [../../author/Author]
+Authors: [../../author/Author]

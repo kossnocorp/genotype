@@ -1,22 +1,22 @@
-Message = Reply | DM
+Message: Reply | DM
 
-Reply = {
+Reply: {
   #[tag]
   type: "reply",
   message: string
 }
 
-DM = {
+DM: {
   #[tag]
   type: "dm",
   message: string
 }
 
 #[hello = "world"]
-Assignment = 123
+Assignment: 123
 
 #[hello("cruel", "world")]
-Arguments = true
+Arguments: true
 
 #[hello(which = "cruel", what = "world")]
-Properties = true
+Properties: true

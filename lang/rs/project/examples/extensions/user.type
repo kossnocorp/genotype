@@ -1,11 +1,11 @@
 use ./named/Named
 
-User = {
+User: {
   ...Named,
   ...Account,
   age?: int,
 }
 
-Account = {
-  email: string 
+Account: {
+  email: string
 }

@@ -1,9 +1,9 @@
-String = string
+String: string
 
-Int = int
+Int: int
 
-Float = float
+Float: float
 
-Boolean = boolean
+Boolean: boolean
 
-Null = null
+Null: null

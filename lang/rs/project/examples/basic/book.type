@@ -1,6 +1,6 @@
 use ./author/Author
 
-Book = {
+Book: {
   title: string
   author: Author
 }

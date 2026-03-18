@@ -1,4 +1,4 @@
-Book = {
+Book: {
   title: string
   tags: [string]
 }

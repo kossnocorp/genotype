@@ -1,4 +1,4 @@
-use pest::{iterators::Pairs, Parser};
+use pest::{Parser, iterators::Pairs};
 use pest_derive::Parser;
 
 #[derive(Parser)]
@@ -106,7 +106,7 @@ mod tests {
 
     #[test]
     fn test_name() {
-        parse_code(r#"HelloV1 = "hello-1""#);
+        parse_code(r#"HelloV1: "hello-1""#);
     }
 
     fn parse_file(file: &str) {

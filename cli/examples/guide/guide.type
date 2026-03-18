@@ -6,7 +6,7 @@
 
 /// Comments before types and fields prefixed with `///` are treated as
 /// documentation comments for the type or field.
-User = {
+User: {
   /// Full user name field
   name: /* Inline comments... */ string,
   // ...just like `//` comments are allowed too, but won't be included in
@@ -20,9 +20,9 @@ User = {
 
 // You can define type aliases for all kinds of types, for example, primitives
 // such as string, int, float, boolean, and null:
-Nothing = boolean
+Nothing: boolean
 
-Account = {
+Account: {
   /// You can define nested object types:
   name: {
     first: string,
@@ -38,14 +38,14 @@ Account = {
   },
 }
 
-Order = {
+Order: {
   /// You can reference other types, including the ones defined inline:
   address: Address,
   /// ...or the ones defined later:
   cart: Card,
 }
 
-Card = {
+Card: {
   /// Btw, this is how you define arrays:
   items: [Item],
 
@@ -60,26 +60,26 @@ Card = {
 }
 
 /// You can reuse types...
-ItemBase = {
+ItemBase: {
   title: string,
   price: float,
 }
 
-ItemBook = {
+ItemBook: {
   // ...by extending other types:
   ...ItemBase,
   isbn: string,
 }
 
-ItemGame = {
+ItemGame: {
   ...ItemBase,
   platform: string,
 }
 
 /// You can union types:
-Item = ItemBook | ItemGame
+Item: ItemBook | ItemGame
 
-Payload = {
+Payload: {
   /// You can use literal types to define constants:
   version: 1,
   /// And branded types to define unique identifiers:
@@ -87,12 +87,12 @@ Payload = {
 }
 
 /// There's also a special type any that will translate into any JSON value:
-JSON = any
+JSON: any
 
 // Genotype features module system, so you can import types from other files:
 // use ./module/FullName
 
-Contact = {
+Contact: {
   /// And use them in your types:
   // name: FullName,
   /// You can also import types inline:
@@ -107,19 +107,19 @@ use ./module/*
 
 // ...in the target language it will be translated to corresponding imports,
 // e.g. `use super::module` and `module::Zip` in Rust:
-ZipAlias = Zip
+ZipAlias: Zip
 
 // Finally, it's worth mentioning that Genotype supports annotating types and
 // fields with attributes, which can be used to add metadata.
 
 #[discriminator = "type"]
-Animal = Dog | Cat
+Animal: Dog | Cat
 
-Dog = {
+Dog: {
   type: "dog",
 }
 
-Cat = {
+Cat: {
   type: "cat",
 }
 

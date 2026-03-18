@@ -34,7 +34,7 @@ Structure = {
 // Module-level doc comments starts with //!.
 
 /// Structures can also be annoted with doc comments.
-User = {
+User: {
   /// As well as properties.
   name: string
 
@@ -82,7 +82,7 @@ More = {
 }
 
 // You can write properties on the same line delimited by a comma:
-User = { name: string, age: number }
+User: { name: string, age: number }
 
 // Enums are defined by listing all possible values:
 Color = "red" | "green" | "blue"
@@ -92,7 +92,7 @@ Day = 0 | 1 | 2 | 3 | 4 | 5 | 6
 List = [string]
 Age = number
 
-// ...it will translate to simple type alias in TypeScript and newtype in Rust. 
+// ...it will translate to simple type alias in TypeScript and newtype in Rust.
 // [TODO] Replace in Rust?
 
 // [TODO] Add opaque type that translate to newtype in Rust and branded string
@@ -105,7 +105,7 @@ UserMap = { []: User }
 UserMap = { [number]: User }
 // You can use string, number and float as keys.
 
-User = {
+User: {
   name: string
   #[validate: "email"]
   email: string

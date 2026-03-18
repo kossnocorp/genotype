@@ -1,6 +1,6 @@
 use ./base/*
 
-Author = {
+Author: {
   name: Name
   age?: Age
 }

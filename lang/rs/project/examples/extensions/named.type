@@ -1,5 +1,5 @@
-Named = {
+Named: {
   name: Name
 }
 
-Name = string
+Name: string
