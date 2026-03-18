@@ -13,6 +13,7 @@ cargo-binstall = "latest"
 "cargo:cargo-nextest" = "latest"
 "cargo:cargo-release" = "latest"
 "cargo:cargo-insta" = "latest"
+"cargo:just-lsp" = "latest"
 opencode = "latest"
 
 [settings]
