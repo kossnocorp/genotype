@@ -1,10 +1,12 @@
+use serde::Serialize;
+
 use crate::GTSpan;
 
 use super::GTAttributeValue;
 
 mod parse;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GTAttributeAssignment {
     pub span: GTSpan,
     pub value: GTAttributeValue,

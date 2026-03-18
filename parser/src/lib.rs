@@ -3,6 +3,8 @@ pub mod module;
 pub mod parser;
 pub mod tree;
 
+mod miette_serde;
+
 pub use diagnostic::*;
 pub use module::*;
 pub use parser::*;

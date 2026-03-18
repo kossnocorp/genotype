@@ -1,8 +1,10 @@
+use serde::Serialize;
+
 use super::*;
 
 mod parser;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub enum GTDescriptor {
     Alias(Box<GTAlias>),
     Array(Box<GTArray>),
