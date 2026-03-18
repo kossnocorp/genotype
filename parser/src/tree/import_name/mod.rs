@@ -1,8 +1,4 @@
-use serde::Serialize;
-
-use crate::GTSpan;
-
-use super::identifier::GTIdentifier;
+use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub enum GTImportName {

@@ -1,8 +1,4 @@
-use pest::iterators::Pair;
-
-use crate::parser::Rule;
-
-use super::GTIdentifier;
+use crate::prelude::internal::*;
 
 impl From<Pair<'_, Rule>> for GTIdentifier {
     fn from(pair: Pair<'_, Rule>) -> Self {

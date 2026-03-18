@@ -1,6 +1,4 @@
-use serde::Serialize;
-
-use crate::GTSpan;
+use crate::prelude::internal::*;
 
 mod parse;
 

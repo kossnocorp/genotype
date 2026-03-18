@@ -1,6 +1,4 @@
-use serde::Serialize;
-
-use super::{GTDefinitionId, GTIdentifier};
+use crate::prelude::internal::*;
 
 #[derive(Default, Debug, Eq, PartialEq, Hash, Clone, Serialize)]
 pub struct GTModuleId(

@@ -1,6 +1,4 @@
-use serde::Serialize;
-
-use super::GTModuleId;
+use crate::prelude::internal::*;
 
 /// Project definition id. It allows to reference and identify entities in
 /// the Genotype tree and target trees.

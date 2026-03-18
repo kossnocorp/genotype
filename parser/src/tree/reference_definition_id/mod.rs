@@ -1,8 +1,4 @@
-use std::hash::Hash;
-
-use serde::Serialize;
-
-use super::GTDefinitionId;
+use crate::prelude::internal::*;
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize)]
 pub enum GTReferenceDefinitionId {

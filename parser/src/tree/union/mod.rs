@@ -1,8 +1,4 @@
-use serde::Serialize;
-
-use crate::GTSpan;
-
-use super::descriptor::GTDescriptor;
+use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GTUnion {

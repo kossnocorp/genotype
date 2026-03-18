@@ -1,10 +1,4 @@
-use pest::iterators::Pair;
-
-use crate::{
-    parser::Rule, GTContext, GTNode, GTNodeParseResult, GTParseError, GTPrimitive, GTSpan,
-};
-
-use super::GTBranded;
+use crate::prelude::internal::*;
 
 impl GTBranded {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {

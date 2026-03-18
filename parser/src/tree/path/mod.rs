@@ -1,10 +1,4 @@
-use std::hash::Hash;
-
-use serde::Serialize;
-
-use crate::GTSpan;
-
-use super::GTPathModuleId;
+use crate::prelude::internal::*;
 
 mod parse;
 

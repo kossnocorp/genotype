@@ -1,8 +1,4 @@
-use pest::iterators::Pair;
-
-use crate::*;
-
-use super::GTObject;
+use crate::prelude::internal::*;
 
 impl GTObject {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
@@ -48,10 +44,8 @@ impl GTObject {
 
 #[cfg(test)]
 mod tests {
-    use indexmap::IndexSet;
+    use super::*;
     use insta::assert_ron_snapshot;
-    use miette::NamedSource;
-    use pest::Parser;
     use pretty_assertions::assert_eq;
 
     use crate::*;

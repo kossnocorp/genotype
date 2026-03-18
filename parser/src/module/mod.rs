@@ -1,11 +1,10 @@
-use crate::*;
+use crate::prelude::internal::*;
 
 mod parse;
-mod resolve;
+pub use parse::*;
 
-pub use parse::GTModuleParse;
+mod resolve;
 pub use resolve::*;
-use serde::Serialize;
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GTModule {

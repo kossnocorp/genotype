@@ -1,11 +1,4 @@
-use crate::diagnostic::error::GTParseError;
-use parser::Rule;
-use pest::iterators::Pair;
-use tree::GTDescriptor;
-
-use crate::*;
-
-use super::GTTuple;
+use crate::prelude::internal::*;
 
 impl GTTuple {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> Result<Self, GTParseError> {

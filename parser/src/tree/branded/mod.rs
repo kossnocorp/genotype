@@ -1,8 +1,4 @@
-use serde::Serialize;
-
-use crate::diagnostic::span::GTSpan;
-
-use super::{GTDefinitionId, GTIdentifier, GTPrimitive};
+use crate::prelude::internal::*;
 
 mod parse;
 

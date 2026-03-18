@@ -1,8 +1,4 @@
-use serde::Serialize;
-
-use crate::GTSpan;
-
-use super::{property::GTProperty, GTExtension, GTObjectName};
+use crate::prelude::internal::*;
 
 mod parse;
 

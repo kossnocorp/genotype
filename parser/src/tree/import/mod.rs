@@ -1,8 +1,4 @@
-use serde::Serialize;
-
-use crate::GTSpan;
-
-use super::{import_reference::GTImportReference, path::GTPath};
+use crate::prelude::internal::*;
 
 mod parse;
 

@@ -1,6 +1,4 @@
-use serde::Serialize;
-
-use super::{GTIdentifier, GTLiteral};
+use crate::prelude::internal::*;
 
 mod parse;
 

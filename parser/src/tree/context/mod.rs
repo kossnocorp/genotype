@@ -1,8 +1,4 @@
-use std::collections::HashSet;
-
-use crate::GTModuleResolve;
-
-use super::{GTIdentifier, GTKey, GTModuleId};
+use crate::prelude::internal::*;
 
 mod ids;
 mod naming;
@@ -23,7 +19,7 @@ pub struct GTContext {
 /// It allows building object names from the parents.
 #[derive(Debug, PartialEq, Clone)]
 pub enum GTContextParent {
-    /// An explicitely named alias parent.
+    /// An explicitly named alias parent.
     Alias(GTIdentifier),
     /// An anonymous parent, i.e. an union or a nested object.
     Anonymous,
