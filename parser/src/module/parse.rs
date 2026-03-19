@@ -1371,6 +1371,74 @@ mod tests {
                   ],
                 )),
               ),
+              GTAlias(
+                id: GTDefinitionId(GTModuleId("module"), "ObjectUnion"),
+                span: GTSpan(149, 204),
+                doc: None,
+                attributes: [],
+                name: GTIdentifier(GTSpan(149, 160), "ObjectUnion"),
+                descriptor: Union(GTUnion(
+                  span: GTSpan(164, 204),
+                  descriptors: [
+                    Reference(GTReference(
+                      span: GTSpan(166, 181),
+                      id: GTReferenceId(GTModuleId("module"), GTSpan(166, 181)),
+                      definition_id: Unresolved,
+                      identifier: GTIdentifier(GTSpan(166, 181), "ObjectUnionUser"),
+                    )),
+                    Reference(GTReference(
+                      span: GTSpan(186, 204),
+                      id: GTReferenceId(GTModuleId("module"), GTSpan(186, 204)),
+                      definition_id: Unresolved,
+                      identifier: GTIdentifier(GTSpan(186, 204), "ObjectUnionAccount"),
+                    )),
+                  ],
+                )),
+              ),
+              GTAlias(
+                id: GTDefinitionId(GTModuleId("module"), "ObjectUnionUser"),
+                span: GTSpan(206, 241),
+                doc: None,
+                attributes: [],
+                name: GTIdentifier(GTSpan(206, 221), "ObjectUnionUser"),
+                descriptor: Object(GTObject(
+                  span: GTSpan(223, 241),
+                  name: Named(GTIdentifier(GTSpan(206, 221), "ObjectUnionUser")),
+                  extensions: [],
+                  properties: [
+                    GTProperty(
+                      span: GTSpan(227, 239),
+                      doc: None,
+                      attributes: [],
+                      name: GTKey(GTSpan(227, 231), "kind"),
+                      descriptor: Literal(String(GTSpan(233, 239), "user")),
+                      required: true,
+                    ),
+                  ],
+                )),
+              ),
+              GTAlias(
+                id: GTDefinitionId(GTModuleId("module"), "ObjectUnionAccount"),
+                span: GTSpan(243, 284),
+                doc: None,
+                attributes: [],
+                name: GTIdentifier(GTSpan(243, 261), "ObjectUnionAccount"),
+                descriptor: Object(GTObject(
+                  span: GTSpan(263, 284),
+                  name: Named(GTIdentifier(GTSpan(243, 261), "ObjectUnionAccount")),
+                  extensions: [],
+                  properties: [
+                    GTProperty(
+                      span: GTSpan(267, 282),
+                      doc: None,
+                      attributes: [],
+                      name: GTKey(GTSpan(267, 271), "kind"),
+                      descriptor: Literal(String(GTSpan(273, 282), "account")),
+                      required: true,
+                    ),
+                  ],
+                )),
+              ),
             ],
           ),
           resolve: GTModuleResolve(
@@ -1379,12 +1447,18 @@ mod tests {
               GTIdentifier(GTSpan(0, 5), "Hello"),
               GTIdentifier(GTSpan(26, 35), "Multiline"),
               GTIdentifier(GTSpan(61, 73), "WithComments"),
+              GTIdentifier(GTSpan(149, 160), "ObjectUnion"),
+              GTIdentifier(GTSpan(206, 221), "ObjectUnionUser"),
+              GTIdentifier(GTSpan(243, 261), "ObjectUnionAccount"),
             ],
-            references: [],
+            references: [
+              GTIdentifier(GTSpan(166, 181), "ObjectUnionUser"),
+              GTIdentifier(GTSpan(186, 204), "ObjectUnionAccount"),
+            ],
           ),
           source_code: NamedSource(
             name: "../examples/02-syntax/12-unions.type",
-            source: "Hello: \"Sasha\" | \"world\"\n\nMultiline:\n  | \"Hello\"\n  | string\n\nWithComments:\n  // This is a comment\n  | \"Hello\"\n  // This is a comment too\n  | string",
+            source: "Hello: \"Sasha\" | \"world\"\n\nMultiline:\n  | \"Hello\"\n  | string\n\nWithComments:\n  // This is a comment\n  | \"Hello\"\n  // This is a comment too\n  | string\n\nObjectUnion:\n  | ObjectUnionUser\n  | ObjectUnionAccount\n\nObjectUnionUser: {\n  kind: \"user\"\n}\n\nObjectUnionAccount: {\n  kind: \"account\"\n}",
             language: None,
           ),
         )

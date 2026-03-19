@@ -20,5 +20,6 @@ unicode-xid = "0.2.6"
 serde = { version = "1.0.210", features = ["derive"] }
 
 [dev-dependencies]
+genotype_test = { version = "0.14.0", path = "../../../pkgs/test" }
 pretty_assertions = "1.4.1"
 insta = { version = "1.46.3", features = ["ron"] }
