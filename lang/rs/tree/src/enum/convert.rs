@@ -15,11 +15,13 @@ impl RSConvert<RSEnum> for GTUnion {
 
         let mut variant_names: HashSet<RSIdentifier> = HashSet::new();
 
-        let variants = self
+        let mut variants = self
             .descriptors
             .iter()
             .map(|descriptor| convert_variant(descriptor, &mut variant_names, context))
             .collect::<Result<Vec<_>>>()?;
+
+        trim_variant_names(&name, &mut variants, &mut variant_names);
 
         let r#enum = RSEnum {
             id,
@@ -47,17 +49,17 @@ fn convert_variant(
     variant_names: &mut HashSet<RSIdentifier>,
     context: &mut RSConvertContext,
 ) -> Result<RSEnumVariant> {
-    let name = name_descriptor(descriptor, context)?;
-    let name = ensure_unique_name(name, variant_names);
+    let variant_name = name_variant_descriptor(descriptor, context)?;
+    let variant_name = ensure_unique_variant_name(variant_name, variant_names);
 
-    context.enter_parent(RSContextParent::EnumVariant(name.clone()));
+    context.enter_parent(RSContextParent::EnumVariant(variant_name.clone()));
 
     let descriptor = RSEnumVariantDescriptor::Descriptor(descriptor.convert(context)?);
 
     let enum_variant = RSEnumVariant {
         doc: None,
         attributes: vec![],
-        name,
+        name: variant_name,
         descriptor,
     };
 
@@ -65,14 +67,33 @@ fn convert_variant(
     Ok(enum_variant)
 }
 
-fn ensure_unique_name(
-    name: RSIdentifier,
+fn trim_variant_names(
+    enum_name: &RSIdentifier,
+    variants: &mut Vec<RSEnumVariant>,
+    variant_names: &mut HashSet<RSIdentifier>,
+) {
+    for variant in variants.iter_mut() {
+        if variant.name.0.starts_with(&enum_name.0) {
+            if let Some(trimmed_name) = variant.name.0.strip_prefix(&enum_name.0) {
+                let trimmed_name = RSIdentifier(trimmed_name.into());
+                if !variant_names.contains(&trimmed_name) {
+                    variant_names.remove(&variant.name);
+                    variant_names.insert(trimmed_name.clone());
+                    variant.name = trimmed_name;
+                }
+            }
+        }
+    }
+}
+
+fn ensure_unique_variant_name(
+    variant_name: RSIdentifier,
     variant_names: &mut HashSet<RSIdentifier>,
 ) -> RSIdentifier {
-    let name = if !variant_names.contains(&name) {
-        name
+    let name = if !variant_names.contains(&variant_name) {
+        variant_name
     } else {
-        enumerated_name(&name, variant_names)
+        enumerated_name(&variant_name, variant_names)
     };
 
     variant_names.insert(name.clone());
@@ -91,7 +112,7 @@ fn enumerated_name(name: &RSIdentifier, variant_names: &HashSet<RSIdentifier>) -
     }
 }
 
-fn name_descriptor(
+fn name_variant_descriptor(
     descriptor: &GTDescriptor,
     context: &mut RSConvertContext,
 ) -> Result<RSIdentifier> {
@@ -135,7 +156,7 @@ fn name_descriptor(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
+    use genotype_test::prelude::*;
 
     #[test]
     fn test_convert() {
@@ -664,6 +685,119 @@ mod tests {
                 id: GTReferenceId(GTModuleId("module"), GTSpan(0, 2)),
                 identifier: RSIdentifier("Version1"),
                 definition_id: GTDefinitionId(GTModuleId("module"), "Version1"),
+              ))),
+            ),
+          ],
+        )
+        "#
+        );
+    }
+
+    #[test]
+    fn test_trimmed_variant_names() {
+        let mut context = RSConvertContext::empty("module".into());
+        context.enter_parent(RSContextParent::Alias("ServerMessage".into()));
+
+        let union = unwrap_named::<GTUnion>(
+            "ServerMessage",
+            r#"
+            ServerMessage: ServerMessagePing | ServerMessagePong
+            ServerMessagePing: { kind: "ping" }
+            ServerMessagePong: { kind: "pong" }
+            "#,
+        );
+        assert_ron_snapshot!(
+            union.convert(&mut context).unwrap(),
+            @r#"
+        RSEnum(
+          id: GTDefinitionId(GTModuleId("module"), "ServerMessage"),
+          doc: None,
+          attributes: [
+            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RSAttribute("serde(untagged)"),
+          ],
+          name: RSIdentifier("ServerMessage"),
+          variants: [
+            RSEnumVariant(
+              doc: None,
+              attributes: [],
+              name: RSIdentifier("Ping"),
+              descriptor: Descriptor(Reference(RSReference(
+                id: GTReferenceId(GTModuleId("module"), GTSpan(28, 45)),
+                identifier: RSIdentifier("ServerMessagePing"),
+                definition_id: GTDefinitionId(GTModuleId("module"), "ServerMessagePing"),
+              ))),
+            ),
+            RSEnumVariant(
+              doc: None,
+              attributes: [],
+              name: RSIdentifier("Pong"),
+              descriptor: Descriptor(Reference(RSReference(
+                id: GTReferenceId(GTModuleId("module"), GTSpan(48, 65)),
+                identifier: RSIdentifier("ServerMessagePong"),
+                definition_id: GTDefinitionId(GTModuleId("module"), "ServerMessagePong"),
+              ))),
+            ),
+          ],
+        )
+        "#
+        );
+    }
+
+    #[test]
+    fn test_trimmed_variant_names_conflicts() {
+        let mut context = RSConvertContext::empty("module".into());
+        context.enter_parent(RSContextParent::Alias("ServerMessage".into()));
+
+        let union = unwrap_named::<GTUnion>(
+            "ServerMessage",
+            r#"
+            ServerMessage: ServerMessagePing | ServerMessagePong | Ping
+            ServerMessagePing: { kind: "ping" }
+            ServerMessagePong: { kind: "pong" }
+            Ping: string
+            "#,
+        );
+        assert_ron_snapshot!(
+            union.convert(&mut context).unwrap(),
+            @r#"
+        RSEnum(
+          id: GTDefinitionId(GTModuleId("module"), "ServerMessage"),
+          doc: None,
+          attributes: [
+            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RSAttribute("serde(untagged)"),
+          ],
+          name: RSIdentifier("ServerMessage"),
+          variants: [
+            RSEnumVariant(
+              doc: None,
+              attributes: [],
+              name: RSIdentifier("ServerMessagePing"),
+              descriptor: Descriptor(Reference(RSReference(
+                id: GTReferenceId(GTModuleId("module"), GTSpan(28, 45)),
+                identifier: RSIdentifier("ServerMessagePing"),
+                definition_id: GTDefinitionId(GTModuleId("module"), "ServerMessagePing"),
+              ))),
+            ),
+            RSEnumVariant(
+              doc: None,
+              attributes: [],
+              name: RSIdentifier("Pong"),
+              descriptor: Descriptor(Reference(RSReference(
+                id: GTReferenceId(GTModuleId("module"), GTSpan(48, 65)),
+                identifier: RSIdentifier("ServerMessagePong"),
+                definition_id: GTDefinitionId(GTModuleId("module"), "ServerMessagePong"),
+              ))),
+            ),
+            RSEnumVariant(
+              doc: None,
+              attributes: [],
+              name: RSIdentifier("Ping"),
+              descriptor: Descriptor(Reference(RSReference(
+                id: GTReferenceId(GTModuleId("module"), GTSpan(68, 72)),
+                identifier: RSIdentifier("Ping"),
+                definition_id: GTDefinitionId(GTModuleId("module"), "Ping"),
               ))),
             ),
           ],

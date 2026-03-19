@@ -9,3 +9,15 @@ WithComments:
   | "Hello"
   // This is a comment too
   | string
+
+ObjectUnion:
+  | ObjectUnionUser
+  | ObjectUnionAccount
+
+ObjectUnionUser: {
+  kind: "user"
+}
+
+ObjectUnionAccount: {
+  kind: "account"
+}

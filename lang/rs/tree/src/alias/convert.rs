@@ -224,7 +224,7 @@ mod tests {
             RSEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("BookObj"),
+              name: RSIdentifier("Obj"),
               descriptor: Descriptor(Reference(RSReference(
                 id: GTReferenceId(GTModuleId("module"), GTSpan(0, 0)),
                 identifier: RSIdentifier("BookObj"),
