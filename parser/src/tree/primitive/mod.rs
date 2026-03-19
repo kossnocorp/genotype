@@ -24,6 +24,31 @@ pub enum GTPrimitive {
     Null(GTSpan),
 }
 
+impl GTPrimitive {
+    pub fn span(&self) -> GTSpan {
+        match self {
+            GTPrimitive::Boolean(span) => *span,
+            GTPrimitive::String(span) => *span,
+            GTPrimitive::Number(span) => *span,
+            GTPrimitive::Int8(span) => *span,
+            GTPrimitive::Int16(span) => *span,
+            GTPrimitive::Int32(span) => *span,
+            GTPrimitive::Int64(span) => *span,
+            GTPrimitive::Int128(span) => *span,
+            GTPrimitive::IntSize(span) => *span,
+            GTPrimitive::IntU8(span) => *span,
+            GTPrimitive::IntU16(span) => *span,
+            GTPrimitive::IntU32(span) => *span,
+            GTPrimitive::IntU64(span) => *span,
+            GTPrimitive::IntU128(span) => *span,
+            GTPrimitive::IntUSize(span) => *span,
+            GTPrimitive::Float32(span) => *span,
+            GTPrimitive::Float64(span) => *span,
+            GTPrimitive::Null(span) => *span,
+        }
+    }
+}
+
 impl Display for GTPrimitive {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {

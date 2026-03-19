@@ -31,4 +31,5 @@ members = [
   "workspace",
   "watcher",
   "path",
+  "pkgs/test",
 ]

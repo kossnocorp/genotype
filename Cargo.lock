@@ -775,6 +775,7 @@ dependencies = [
  "genotype_lang_rs_config",
  "genotype_lang_rs_core",
  "genotype_parser",
+ "genotype_test",
  "heck",
  "insta",
  "miette",
@@ -916,6 +917,20 @@ dependencies = [
  "pretty_assertions",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "genotype_test"
+version = "0.14.0"
+dependencies = [
+ "genotype_parser",
+ "genotype_path",
+ "genotype_project",
+ "genotype_visitor",
+ "insta",
+ "miette",
+ "pretty_assertions",
+ "relative-path",
 ]
 
 [[package]]

@@ -4,3 +4,9 @@ mod parse;
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GTAny(pub GTSpan);
+
+impl GTAny {
+    pub fn span(&self) -> GTSpan {
+        self.0
+    }
+}

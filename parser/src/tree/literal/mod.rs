@@ -12,7 +12,7 @@ pub enum GTLiteral {
 }
 
 impl GTLiteral {
-    pub fn to_span(&self) -> GTSpan {
+    pub fn span(&self) -> GTSpan {
         match self {
             GTLiteral::Null(span) => span,
             GTLiteral::String(span, _) => span,

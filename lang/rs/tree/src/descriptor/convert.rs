@@ -12,7 +12,7 @@ impl RSConvert<RSDescriptor> for GTDescriptor {
             GTDescriptor::InlineImport(import) => import.convert(context)?.into(),
 
             GTDescriptor::Literal(literal) => context
-                .hoist(|context| Ok((literal.convert(context)?, literal.to_span())))?
+                .hoist(|context| Ok((literal.convert(context)?, literal.span())))?
                 .into(),
 
             GTDescriptor::Object(object) => context

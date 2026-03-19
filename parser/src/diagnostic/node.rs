@@ -1,5 +1,6 @@
 use crate::prelude::internal::*;
 
+/// Genotype node identifier. Used for error reporting and diagnostics.
 #[derive(Debug, PartialEq)]
 pub enum GTNode {
     Alias,
@@ -12,12 +13,16 @@ pub enum GTNode {
     Descriptor,
     Extension,
     Import,
+    InlineImport,
     Literal,
     Module,
     Object,
     ObjectName,
     Path,
     Primitive,
+    Reference,
+    Tuple,
+    Union,
     Property,
     Record,
     RecordKey,
@@ -37,12 +42,16 @@ impl GTNode {
             Self::Descriptor => "descriptor",
             Self::Extension => "extension",
             Self::Import => "import",
+            Self::InlineImport => "inline import",
             Self::Literal => "literal",
             Self::Module => "module",
             Self::Object => "object",
             Self::ObjectName => "object name",
             Self::Path => "path",
             Self::Primitive => "primitive",
+            Self::Reference => "reference",
+            Self::Tuple => "tuple",
+            Self::Union => "union",
             Self::Property => "property",
             Self::Record => "record",
             Self::RecordKey => "record key",
