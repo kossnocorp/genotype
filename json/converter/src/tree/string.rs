@@ -5,7 +5,12 @@ use crate::{GtjTreeConvert, GtjTreeConvertContext};
 
 impl GtjTreeConvert<GTPrimitive> for GtjString {
     fn to_tree_with_context(&self, _context: &mut GtjTreeConvertContext) -> GTPrimitive {
-        GTPrimitive::String(Default::default())
+        GTPrimitive {
+            span: Default::default(),
+            doc: None,
+            attributes: vec![],
+            kind: GTPrimitiveKind::String,
+        }
     }
 }
 
@@ -29,9 +34,23 @@ mod tests {
         };
 
         let descriptor_tree: GTDescriptor = string.to_tree_with_context(&mut Default::default());
-        assert_ron_snapshot!(descriptor_tree, @"Primitive(String(GTSpan(0, 0)))");
+        assert_ron_snapshot!(descriptor_tree, @"
+        Primitive(GTPrimitive(
+          span: GTSpan(0, 0),
+          kind: String,
+          doc: None,
+          attributes: [],
+        ))
+        ");
 
         let string_tree: GTPrimitive = string.to_tree_with_context(&mut Default::default());
-        assert_ron_snapshot!(string_tree, @"String(GTSpan(0, 0))");
+        assert_ron_snapshot!(string_tree, @"
+        GTPrimitive(
+          span: GTSpan(0, 0),
+          kind: String,
+          doc: None,
+          attributes: [],
+        )
+        ");
     }
 }

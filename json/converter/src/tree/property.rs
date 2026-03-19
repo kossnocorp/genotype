@@ -50,7 +50,12 @@ mod tests {
           doc: None,
           attributes: [],
           name: GTKey(GTSpan(0, 0), "hello"),
-          descriptor: Primitive(Number(GTSpan(0, 0))),
+          descriptor: Primitive(GTPrimitive(
+            span: GTSpan(0, 0),
+            kind: Number,
+            doc: None,
+            attributes: [],
+          )),
           required: false,
         )
         "#);
@@ -74,7 +79,12 @@ mod tests {
           doc: Some(GTDoc(GTSpan(0, 0), "Hello, world!")),
           attributes: [],
           name: GTKey(GTSpan(0, 0), "world"),
-          descriptor: Primitive(Number(GTSpan(0, 0))),
+          descriptor: Primitive(GTPrimitive(
+            span: GTSpan(0, 0),
+            kind: Number,
+            doc: None,
+            attributes: [],
+          )),
           required: true,
         )
         "#);

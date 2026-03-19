@@ -63,10 +63,7 @@ impl GTObject {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
-    use pretty_assertions::assert_eq;
-
-    use crate::*;
+    use crate::test::*;
 
     #[test]
     fn test_parse() {
@@ -81,21 +78,30 @@ mod tests {
             claimed_names: Default::default(),
             annotation: None,
         };
-        assert_eq!(
+        assert_ron_snapshot!(
             GTObject::parse(pairs.next().unwrap(), &mut context).unwrap(),
-            GTObject {
-                span: (0, 17).into(),
-                name: GTObjectName::Named(GTIdentifier::new((0, 5).into(), "Hello".into())),
-                extensions: vec![],
-                properties: vec![GTProperty {
-                    span: (2, 15).into(),
-                    doc: None,
-                    attributes: vec![],
-                    name: GTKey((2, 7).into(), "hello".into()),
-                    descriptor: GTPrimitive::String((9, 15).into()).into(),
-                    required: true,
-                }]
-            }
+            @r#"
+        GTObject(
+          span: GTSpan(0, 17),
+          name: Named(GTIdentifier(GTSpan(0, 5), "Hello")),
+          extensions: [],
+          properties: [
+            GTProperty(
+              span: GTSpan(2, 15),
+              doc: None,
+              attributes: [],
+              name: GTKey(GTSpan(2, 7), "hello"),
+              descriptor: Primitive(GTPrimitive(
+                span: GTSpan(9, 15),
+                kind: String,
+                doc: None,
+                attributes: [],
+              )),
+              required: true,
+            ),
+          ],
+        )
+        "#
         );
     }
 
@@ -156,24 +162,30 @@ mod tests {
             claimed_names: Default::default(),
             annotation: None,
         };
-        assert_eq!(
+        assert_ron_snapshot!(
             GTObject::parse(pairs.next().unwrap(), &mut context).unwrap(),
-            GTObject {
-                span: (0, 17).into(),
-                name: GTObjectName::Alias(
-                    GTIdentifier::new((0, 17).into(), "HelloObj".into()),
-                    GTObjectNameParent::Alias(GTIdentifier::new((0, 5).into(), "Hello".into()))
-                ),
-                extensions: vec![],
-                properties: vec![GTProperty {
-                    span: (2, 15).into(),
-                    doc: None,
-                    attributes: vec![],
-                    name: GTKey((2, 7).into(), "hello".into()),
-                    descriptor: GTPrimitive::String((9, 15).into()).into(),
-                    required: true,
-                }]
-            }
+            @r#"
+        GTObject(
+          span: GTSpan(0, 17),
+          name: Alias(GTIdentifier(GTSpan(0, 17), "HelloObj"), Alias(GTIdentifier(GTSpan(0, 5), "Hello"))),
+          extensions: [],
+          properties: [
+            GTProperty(
+              span: GTSpan(2, 15),
+              doc: None,
+              attributes: [],
+              name: GTKey(GTSpan(2, 7), "hello"),
+              descriptor: Primitive(GTPrimitive(
+                span: GTSpan(9, 15),
+                kind: String,
+                doc: None,
+                attributes: [],
+              )),
+              required: true,
+            ),
+          ],
+        )
+        "#
         );
     }
 }

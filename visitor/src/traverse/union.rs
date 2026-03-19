@@ -18,12 +18,13 @@ mod tests {
     use super::*;
     use crate::visitor::mock::*;
     use genotype_parser::tree::*;
+    use genotype_test::*;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
-        let primitive = GTDescriptor::Primitive(GTPrimitive::String((0, 0).into()));
+        let primitive = GTDescriptor::Primitive(GtFactory::primitive_string());
         let union = GTUnion {
             span: (0, 0).into(),
             descriptors: vec![primitive.clone()],
@@ -36,7 +37,7 @@ mod tests {
                 GTMockVisited::Descriptor(descriptor.clone()),
                 GTMockVisited::Union(union.clone()),
                 GTMockVisited::Descriptor(primitive),
-                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
+                GTMockVisited::Primitive(GtFactory::primitive_string()),
             ]
         );
     }

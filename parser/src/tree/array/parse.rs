@@ -14,27 +14,32 @@ impl GTArray {
 
 #[cfg(test)]
 mod tests {
-    use pest::Parser;
-    use pretty_assertions::assert_eq;
-
-    use crate::*;
+    use super::*;
+    use crate::test::*;
 
     #[test]
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::array, "[string]").unwrap();
-        assert_eq!(
+        assert_ron_snapshot!(
             GTArray::parse(pairs.next().unwrap(), &mut GTContext::new("module".into())).unwrap(),
-            GTArray {
-                span: (0, 8).into(),
-                descriptor: GTDescriptor::Primitive(GTPrimitive::String((1, 7).into())),
-            }
+            @"
+        GTArray(
+          span: GTSpan(0, 8),
+          descriptor: Primitive(GTPrimitive(
+            span: GTSpan(1, 7),
+            kind: String,
+            doc: None,
+            attributes: [],
+          )),
+        )
+        "
         );
     }
 
     #[test]
     fn test_error() {
         let mut pairs = GenotypeParser::parse(Rule::literal_boolean, "false").unwrap();
-        assert_eq!(
+        assert_equal!(
             GTArray::parse(pairs.next().unwrap(), &mut GTContext::new("module".into()))
                 .unwrap_err(),
             GTParseError::Internal((0, 5).into(), GTNode::Array)

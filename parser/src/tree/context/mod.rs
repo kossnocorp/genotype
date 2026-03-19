@@ -12,7 +12,7 @@ pub struct GTContext {
     pub module_id: GTModuleId,
     pub resolve: GTModuleResolve,
     pub parents: Vec<GTContextParent>,
-    /// A set of taken definition names. It allows to generate unique syntetic
+    /// A set of taken definition names. It allows to generate unique synthetic
     /// names.
     // [TODO] Use `GTNamingContext` instead of `claimed_names` in the future.
     pub claimed_names: HashSet<String>,

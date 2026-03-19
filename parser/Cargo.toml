@@ -19,3 +19,7 @@ indexmap = { version = "2.11.0", features = ["serde"] }
 [dev-dependencies]
 pretty_assertions = "1.4.1"
 insta = { version = "1.46.3", features = ["ron"] }
+
+[features]
+default = []
+test = []

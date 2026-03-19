@@ -5,7 +5,12 @@ use crate::{GtjTreeConvert, GtjTreeConvertContext};
 
 impl GtjTreeConvert<GTPrimitive> for GtjBoolean {
     fn to_tree_with_context(&self, _context: &mut GtjTreeConvertContext) -> GTPrimitive {
-        GTPrimitive::Boolean(Default::default())
+        GTPrimitive {
+            span: Default::default(),
+            doc: None,
+            attributes: vec![],
+            kind: GTPrimitiveKind::Boolean,
+        }
     }
 }
 
@@ -29,9 +34,23 @@ mod tests {
         };
 
         let descriptor_tree: GTDescriptor = boolean.to_tree_with_context(&mut Default::default());
-        assert_ron_snapshot!(descriptor_tree, @"Primitive(Boolean(GTSpan(0, 0)))");
+        assert_ron_snapshot!(descriptor_tree, @"
+        Primitive(GTPrimitive(
+          span: GTSpan(0, 0),
+          kind: Boolean,
+          doc: None,
+          attributes: [],
+        ))
+        ");
 
         let boolean_tree: GTPrimitive = boolean.to_tree_with_context(&mut Default::default());
-        assert_ron_snapshot!(boolean_tree, @"Boolean(GTSpan(0, 0))");
+        assert_ron_snapshot!(boolean_tree, @"
+        GTPrimitive(
+          span: GTSpan(0, 0),
+          kind: Boolean,
+          doc: None,
+          attributes: [],
+        )
+        ");
     }
 }

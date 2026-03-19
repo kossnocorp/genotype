@@ -17,3 +17,4 @@ miette = { version = "7.6.0", features = ["fancy", "serde"] }
 [dev-dependencies]
 pretty_assertions = "1.4.1"
 insta = { version = "1.46.3", features = ["ron"] }
+genotype_test = { version = "0.14.0", path = "../../../pkgs/test" }

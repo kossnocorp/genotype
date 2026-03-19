@@ -51,22 +51,27 @@ enum ParseState {
 
 #[cfg(test)]
 mod tests {
-    use pest::Parser;
-    use pretty_assertions::assert_eq;
-
-    use crate::*;
+    use super::*;
+    use crate::test::*;
 
     #[test]
     fn test_parse_default() {
         let mut pairs = GenotypeParser::parse(Rule::record, "{ []: string }").unwrap();
         let mut context = GTContext::new("module".into());
-        assert_eq!(
+        assert_ron_snapshot!(
             GTRecord::parse(pairs.next().unwrap(), &mut context).unwrap(),
-            GTRecord {
-                span: (0, 14).into(),
-                key: GTRecordKey::String((2, 4).into()),
-                descriptor: GTPrimitive::String((6, 12).into()).into(),
-            }
+            @r"
+        GTRecord(
+          span: GTSpan(0, 14),
+          key: String(GTSpan(2, 4)),
+          descriptor: Primitive(GTPrimitive(
+            span: GTSpan(6, 12),
+            kind: String,
+            doc: None,
+            attributes: [],
+          )),
+        )
+        "
         );
     }
 
@@ -74,13 +79,20 @@ mod tests {
     fn test_parse_typed() {
         let mut pairs = GenotypeParser::parse(Rule::record, "{ [int]: string }").unwrap();
         let mut context = GTContext::new("module".into());
-        assert_eq!(
+        assert_ron_snapshot!(
             GTRecord::parse(pairs.next().unwrap(), &mut context).unwrap(),
-            GTRecord {
-                span: (0, 17).into(),
-                key: GTRecordKey::Int64((2, 7).into()),
-                descriptor: GTPrimitive::String((9, 15).into()).into(),
-            }
+            @r"
+        GTRecord(
+          span: GTSpan(0, 17),
+          key: Int64(GTSpan(2, 7)),
+          descriptor: Primitive(GTPrimitive(
+            span: GTSpan(9, 15),
+            kind: String,
+            doc: None,
+            attributes: [],
+          )),
+        )
+        "
         );
     }
 }

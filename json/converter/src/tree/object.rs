@@ -116,7 +116,12 @@ mod tests {
               doc: None,
               attributes: [],
               name: GTKey(GTSpan(0, 0), "null"),
-              descriptor: Primitive(Number(GTSpan(0, 0))),
+              descriptor: Primitive(GTPrimitive(
+                span: GTSpan(0, 0),
+                kind: Number,
+                doc: None,
+                attributes: [],
+              )),
               required: true,
             ),
           ],

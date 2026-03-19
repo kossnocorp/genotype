@@ -17,3 +17,6 @@ pub mod naming;
 pub use naming::*;
 
 pub mod prelude;
+
+#[cfg(any(test, feature = "test"))]
+pub mod test;

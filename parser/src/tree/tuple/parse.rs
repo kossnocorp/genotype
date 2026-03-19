@@ -19,24 +19,34 @@ impl GTTuple {
 
 #[cfg(test)]
 mod tests {
-    use pest::Parser;
-    use pretty_assertions::assert_eq;
-
-    use crate::*;
+    use super::*;
+    use crate::test::*;
 
     #[test]
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::tuple, "(string, int)").unwrap();
         let mut context = GTContext::new("module".into());
-        assert_eq!(
+        assert_ron_snapshot!(
             GTTuple::parse(pairs.next().unwrap(), &mut context).unwrap(),
-            GTTuple {
-                span: (0, 13).into(),
-                descriptors: vec![
-                    GTDescriptor::Primitive(GTPrimitive::String((1, 7).into())),
-                    GTDescriptor::Primitive(GTPrimitive::Int64((9, 12).into())),
-                ],
-            }
+            @"
+        GTTuple(
+          span: GTSpan(0, 13),
+          descriptors: [
+            Primitive(GTPrimitive(
+              span: GTSpan(1, 7),
+              kind: String,
+              doc: None,
+              attributes: [],
+            )),
+            Primitive(GTPrimitive(
+              span: GTSpan(9, 12),
+              kind: Int64,
+              doc: None,
+              attributes: [],
+            )),
+          ],
+        )
+        "
         );
     }
 }

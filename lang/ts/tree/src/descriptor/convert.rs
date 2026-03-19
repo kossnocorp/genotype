@@ -53,7 +53,7 @@ impl TSConvert<TSDescriptor> for GTDescriptor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
+    use genotype_test::*;
 
     #[test]
     fn test_convert_alias() {
@@ -65,7 +65,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
+                descriptor: GtFactory::primitive_boolean().into(),
             }))
             .convert(&mut context),
             @r#"Reference(TSReference(TSIdentifier("Name")))"#
@@ -90,7 +90,7 @@ mod tests {
         assert_ron_snapshot!(
             GTDescriptor::Array(Box::new(GTArray {
                 span: (0, 0).into(),
-                descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
+                descriptor: GtFactory::primitive_boolean().into(),
             }))
             .convert(&mut Default::default()),
             @"
@@ -132,7 +132,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "name".into()),
-                        descriptor: GTPrimitive::String((0, 0).into()).into(),
+                        descriptor: GtFactory::primitive_string().into(),
                         required: true,
                     },
                     GTProperty {
@@ -140,7 +140,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "age".into()),
-                        descriptor: GTPrimitive::Int32((0, 0).into()).into(),
+                        descriptor: GtFactory::primitive_i32().into(),
                         required: false,
                     }
                 ]
@@ -193,7 +193,7 @@ mod tests {
                     doc: None,
                     attributes: vec![],
                     name: GTKey::new((0, 0).into(), "title".into()),
-                    descriptor: GTPrimitive::String((0, 0).into()).into(),
+                    descriptor: GtFactory::primitive_string().into(),
                     required: true,
                 },]
             })
@@ -221,7 +221,7 @@ mod tests {
     #[test]
     fn test_convert_primitive() {
         assert_ron_snapshot!(
-            GTDescriptor::Primitive(GTPrimitive::Boolean((0, 0).into()))
+            GTDescriptor::Primitive(GtFactory::primitive_boolean())
                 .convert(&mut Default::default()),
             @"Primitive(Boolean)"
         );
@@ -250,8 +250,8 @@ mod tests {
             GTDescriptor::Tuple(GTTuple {
                 span: (0, 0).into(),
                 descriptors: vec![
-                    GTPrimitive::Boolean((0, 0).into()).into(),
-                    GTPrimitive::String((0, 0).into()).into(),
+                    GtFactory::primitive_boolean().into(),
+                    GtFactory::primitive_string().into(),
                 ]
             })
             .convert(&mut Default::default()),
@@ -272,8 +272,8 @@ mod tests {
             GTDescriptor::Union(GTUnion {
                 span: (0, 0).into(),
                 descriptors: vec![
-                    GTPrimitive::Boolean((0, 0).into()).into(),
-                    GTPrimitive::String((0, 0).into()).into(),
+                    GtFactory::primitive_boolean().into(),
+                    GtFactory::primitive_string().into(),
                 ]
             })
             .convert(&mut Default::default()),
@@ -294,7 +294,7 @@ mod tests {
             GTDescriptor::Record(Box::new(GTRecord {
                 span: (0, 0).into(),
                 key: GTRecordKey::String((0, 0).into()),
-                descriptor: GTPrimitive::String((0, 0).into()).into(),
+                descriptor: GtFactory::primitive_string().into(),
             }))
             .convert(&mut Default::default()),
             @"
@@ -322,7 +322,7 @@ mod tests {
                 span: (0, 0).into(),
                 id: GTDefinitionId("module".into(), "UserId".into()),
                 name: GTIdentifier::new((0, 0).into(), "UserId".into()),
-                primitive: GTPrimitive::String((0, 0).into()).into(),
+                primitive: GtFactory::primitive_string().into(),
             })
             .convert(&mut context),
             @r#"Reference(TSReference(TSIdentifier("UserId")))"#

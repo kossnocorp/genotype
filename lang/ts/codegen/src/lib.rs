@@ -45,16 +45,16 @@ impl GtlCodegen for TsCodegen {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use genotype_test::*;
 
     #[test]
     fn test_register_import() {
         let mut codegen = TsCodegen::default();
         codegen.register_import(TSImport::new("dependency".into(), "Name".into()));
         codegen.register_import(TSImport::new("another".into(), "AlsoName".into()));
-        assert_eq!(
+        assert_snapshot!(
             codegen.render_module().unwrap(),
-            r#"import { Name } from "dependency";
+            @r#"import { Name } from "dependency";
 import { AlsoName } from "another";
 "#
         );
@@ -71,20 +71,26 @@ import { AlsoName } from "another";
             }
             .into(),
         );
-        assert_eq!(
+        assert_snapshot!(
             codegen.render_module().unwrap(),
-            r#"export type Name = any;
-"#
+            @r#"export type Name = any;
+        "#
         );
     }
 
     #[test]
     fn test_inject_descriptor() {
         let mut codegen = TsCodegen::default();
-        let primitive = GTDescriptor::Primitive(GTPrimitive::String(Default::default()));
+        let primitive = GTDescriptor::Primitive(GtFactory::primitive_string());
         let result = codegen.inject_descriptor(primitive).unwrap();
-        assert_eq!(result, "string");
-        assert_eq!(codegen.render_module().unwrap(), "");
+        assert_snapshot!(
+            result,
+            @"string"
+        );
+        assert_snapshot!(
+            codegen.render_module().unwrap(),
+            @""
+        );
     }
 
     #[test]
@@ -96,14 +102,17 @@ import { AlsoName } from "another";
             doc: None,
             attributes: vec![],
             name: GTIdentifier::new(Default::default(), "Hello".into()),
-            descriptor: GTPrimitive::String(Default::default()).into(),
+            descriptor: GtFactory::primitive_string().into(),
         }));
         let result = codegen.inject_descriptor(alias).unwrap();
-        assert_eq!(result, "Hello");
-        assert_eq!(
+        assert_snapshot!(
+            result,
+            @"Hello"
+        );
+        assert_snapshot!(
             codegen.render_module().unwrap(),
-            r#"export type Hello = string;
-"#
+            @r#"export type Hello = string;
+        "#
         );
     }
 }

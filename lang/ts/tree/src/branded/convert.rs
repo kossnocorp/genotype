@@ -17,18 +17,20 @@ impl TSConvert<TSBranded> for GTBranded {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
+    use crate::test::*;
+    use genotype_test::*;
 
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTBranded {
-                span: (0, 0).into(),
-                id: GTDefinitionId("module".into(), "UserId".into()),
-                name: GTIdentifier::new((0, 0).into(), "UserId".into()),
-                primitive: GTPrimitive::String((0, 0).into()).into(),
-            }
-            .convert(&mut Default::default()),
+            convert_to_ts(
+                GTBranded {
+                    span: (0, 0).into(),
+                    id: GTDefinitionId("module".into(), "UserId".into()),
+                    name: GTIdentifier::new((0, 0).into(), "UserId".into()),
+                    primitive: GtFactory::primitive_string().into(),
+                }
+            ),
             @r#"
         TSBranded(
           doc: None,
@@ -41,16 +43,18 @@ mod tests {
 
     #[test]
     fn test_doc() {
-        let mut context = TSConvertContext::new(TSConvertResolve::new(), Default::default());
-        context.provide_doc(Some("This is a user ID.".into()));
         assert_ron_snapshot!(
-            GTBranded {
-                span: (0, 0).into(),
-                id: GTDefinitionId("module".into(), "UserId".into()),
-                name: GTIdentifier::new((0, 0).into(), "UserId".into()),
-                primitive: GTPrimitive::String((0, 0).into()).into(),
-            }
-            .convert(&mut context),
+            convert_to_ts_with(
+                GTBranded {
+                    span: (0, 0).into(),
+                    id: GTDefinitionId("module".into(), "UserId".into()),
+                    name: GTIdentifier::new((0, 0).into(), "UserId".into()),
+                    primitive: GtFactory::primitive_string().into(),
+                },
+                |context| {
+                    context.provide_doc(Some("This is a user ID.".into()));
+                },
+            ),
             @r#"
         TSBranded(
           doc: Some(TSDoc("This is a user ID.")),

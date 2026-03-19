@@ -31,7 +31,14 @@ mod tests {
             doc: None,
         };
         let tree: GTDescriptor = boolean.to_tree_with_context(&mut Default::default());
-        assert_ron_snapshot!(tree, @"Primitive(Boolean(GTSpan(0, 0)))");
+        assert_ron_snapshot!(tree, @"
+        Primitive(GTPrimitive(
+          span: GTSpan(0, 0),
+          kind: Boolean,
+          doc: None,
+          attributes: [],
+        ))
+        ");
     }
 
     #[test]
@@ -43,7 +50,14 @@ mod tests {
         };
 
         let tree: GTDescriptor = number.to_tree_with_context(&mut Default::default());
-        assert_ron_snapshot!(tree, @"Primitive(Number(GTSpan(0, 0)))");
+        assert_ron_snapshot!(tree, @"
+        Primitive(GTPrimitive(
+          span: GTSpan(0, 0),
+          kind: Number,
+          doc: None,
+          attributes: [],
+        ))
+        ");
     }
 
     #[test]
@@ -55,7 +69,14 @@ mod tests {
         };
 
         let tree: GTDescriptor = string.to_tree_with_context(&mut Default::default());
-        assert_ron_snapshot!(tree, @"Primitive(String(GTSpan(0, 0)))");
+        assert_ron_snapshot!(tree, @"
+        Primitive(GTPrimitive(
+          span: GTSpan(0, 0),
+          kind: String,
+          doc: None,
+          attributes: [],
+        ))
+        ");
     }
 
     #[test]
@@ -75,7 +96,12 @@ mod tests {
         assert_ron_snapshot!(tree, @"
         Array(GTArray(
           span: GTSpan(0, 0),
-          descriptor: Primitive(Number(GTSpan(0, 0))),
+          descriptor: Primitive(GTPrimitive(
+            span: GTSpan(0, 0),
+            kind: Number,
+            doc: None,
+            attributes: [],
+          )),
         ))
         ");
     }

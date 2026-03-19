@@ -25,6 +25,7 @@ mod tests {
     use super::*;
     use crate::visitor::mock::*;
     use genotype_parser::tree::*;
+    use genotype_test::*;
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -47,7 +48,7 @@ mod tests {
             doc: None,
             attributes: vec![],
             name: GTKey((0, 0).into(), "key".into()),
-            descriptor: GTPrimitive::String((0, 0).into()).into(),
+            descriptor: GtFactory::primitive_string().into(),
             required: true,
         };
         let name_identifier = GTIdentifier::new((0, 0).into(), "Name".into());
@@ -70,7 +71,7 @@ mod tests {
                 GTMockVisited::Property(property.clone()),
                 GTMockVisited::Key(property.name.clone()),
                 GTMockVisited::Descriptor(property.descriptor.clone()),
-                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
+                GTMockVisited::Primitive(GtFactory::primitive_string()),
             ]
         );
     }

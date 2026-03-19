@@ -7,7 +7,7 @@ impl GTBranded {
             .into_inner()
             .next()
             .ok_or_else(|| GTParseError::Internal(span.clone(), GTNode::Array))?;
-        let primitive: GTPrimitive = pair.try_into()?;
+        let primitive = GTPrimitive::parse(pair, context)?;
         let name = context.get_name(&span, &primitive.to_string());
         let id = context.get_definition_id(&name);
 
@@ -22,22 +22,28 @@ impl GTBranded {
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
-    use pest::Parser;
-    use pretty_assertions::assert_eq;
+    use super::*;
+    use crate::test::*;
 
     #[test]
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::branded, "@int").unwrap();
         let mut context = GTContext::new("module".into());
-        assert_eq!(
+        assert_ron_snapshot!(
             GTBranded::parse(pairs.next().unwrap(), &mut context).unwrap(),
-            GTBranded {
-                span: GTSpan(0, 4),
-                id: GTDefinitionId("module".into(), "I64".into()),
-                name: GTIdentifier::new(GTSpan(0, 4), "I64".into()),
-                primitive: GTPrimitive::Int64(GTSpan(1, 4)),
-            }
+            @r#"
+        GTBranded(
+          span: GTSpan(0, 4),
+          id: GTDefinitionId(GTModuleId("module"), "I64"),
+          name: GTIdentifier(GTSpan(0, 4), "I64"),
+          primitive: GTPrimitive(
+            span: GTSpan(1, 4),
+            kind: Int64,
+            doc: None,
+            attributes: [],
+          ),
+        )
+        "#
         );
     }
 
@@ -49,14 +55,21 @@ mod tests {
             GTSpan(0, 3),
             "Id".into(),
         )));
-        assert_eq!(
+        assert_ron_snapshot!(
             GTBranded::parse(pairs.next().unwrap(), &mut context).unwrap(),
-            GTBranded {
-                span: GTSpan(0, 4),
-                id: GTDefinitionId("module".into(), "Id".into()),
-                name: GTIdentifier::new(GTSpan(0, 3), "Id".into()),
-                primitive: GTPrimitive::Int64(GTSpan(1, 4)),
-            }
+            @r#"
+        GTBranded(
+          span: GTSpan(0, 4),
+          id: GTDefinitionId(GTModuleId("module"), "Id"),
+          name: GTIdentifier(GTSpan(0, 3), "Id"),
+          primitive: GTPrimitive(
+            span: GTSpan(1, 4),
+            kind: Int64,
+            doc: None,
+            attributes: [],
+          ),
+        )
+        "#
         );
     }
 
@@ -69,14 +82,21 @@ mod tests {
             "Id".into(),
         )));
         context.enter_parent(GTContextParent::Anonymous);
-        assert_eq!(
+        assert_ron_snapshot!(
             GTBranded::parse(pairs.next().unwrap(), &mut context).unwrap(),
-            GTBranded {
-                span: GTSpan(0, 4),
-                id: GTDefinitionId("module".into(), "IdI64".into()),
-                name: GTIdentifier::new(GTSpan(0, 4), "IdI64".into()),
-                primitive: GTPrimitive::Int64(GTSpan(1, 4)),
-            }
+            @r#"
+        GTBranded(
+          span: GTSpan(0, 4),
+          id: GTDefinitionId(GTModuleId("module"), "IdI64"),
+          name: GTIdentifier(GTSpan(0, 4), "IdI64"),
+          primitive: GTPrimitive(
+            span: GTSpan(1, 4),
+            kind: Int64,
+            doc: None,
+            attributes: [],
+          ),
+        )
+        "#
         );
     }
 }

@@ -106,7 +106,7 @@ fn parse(
 
         ParseState::Descriptor(span, doc, attributes) => {
             let descriptor = match pair.as_rule() {
-                Rule::primitive => GTDescriptor::Primitive(pair.try_into()?),
+                Rule::primitive => GTDescriptor::Primitive(GTPrimitive::parse(pair, context)?),
 
                 Rule::name => GTDescriptor::Reference(GTReference::parse(pair, context)),
 

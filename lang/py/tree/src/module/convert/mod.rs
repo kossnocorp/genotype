@@ -1,12 +1,10 @@
 use crate::prelude::internal::*;
-use std::collections::HashMap;
 
 mod ordering;
-pub(crate) use ordering::*;
 mod visitor;
 pub(crate) use visitor::*;
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct PYConvertModule(pub PYModule);
 
 impl PYConvertModule {
@@ -46,7 +44,7 @@ impl PYConvertModule {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use genotype_test::*;
 
     #[test]
     fn test_convert() {
@@ -56,7 +54,7 @@ mod tests {
             "module".into(),
         );
 
-        assert_eq!(
+        assert_ron_snapshot!(
             PYConvertModule::convert(
                 &GTModule {
                     id: "module".into(),
@@ -103,7 +101,7 @@ mod tests {
                                         doc: None,
                                         attributes: vec![],
                                         name: GTKey::new((0, 0).into(), "name".into()),
-                                        descriptor: GTPrimitive::String((0, 0).into()).into(),
+                                        descriptor: GtFactory::primitive_string().into(),
                                         required: true,
                                     },
                                     GTProperty {
@@ -111,7 +109,7 @@ mod tests {
                                         doc: None,
                                         attributes: vec![],
                                         name: GTKey::new((0, 0).into(), "age".into()),
-                                        descriptor: GTPrimitive::Int32((0, 0).into()).into(),
+                                        descriptor: GtFactory::primitive_i32().into(),
                                         required: false,
                                     }
                                 ]
@@ -150,7 +148,7 @@ mod tests {
                                                     attributes: vec![],
                                                     name: GTKey::new((0, 0).into(), "title".into()),
                                                     descriptor: GTDescriptor::Primitive(
-                                                        GTPrimitive::String((0, 0).into())
+                                                        GtFactory::primitive_string()
                                                     ),
                                                     required: true,
                                                 },
@@ -196,107 +194,121 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                            descriptor: GTPrimitive::String((0, 0).into()).into(),
+                            descriptor: GtFactory::primitive_string().into(),
                         },
                     ],
                 },
                 &resolve,
                 &Default::default(),
             ),
-            PYConvertModule(PYModule {
-                doc: None,
-                imports: vec![
-                    PYImport {
-                        reference: PYImportReference::Default(Some("module".into())),
-                        dependency: PYDependencyIdent::Path(".path.to.module".into()),
-                    },
-                    PYImport {
-                        reference: PYImportReference::Named(vec![
-                            PYImportName::Name("Name".into()),
-                            PYImportName::Alias("Name".into(), "Alias".into())
-                        ]),
-                        dependency: PYDependencyIdent::Path(".path.to.module".into()),
-                    },
-                    PYImport {
-                        reference: PYImportReference::Named(vec![PYImportName::Name(
-                            "Optional".into()
-                        )]),
-                        dependency: PYDependencyIdent::Typing,
-                    },
-                    PYImport {
-                        reference: PYImportReference::Named(vec![PYImportName::Name(
-                            "Model".into()
-                        )]),
-                        dependency: PYDependencyIdent::Runtime,
-                    }
-                ],
-                definitions: vec![
-                    PYDefinition::Class(PYClass {
-                        doc: None,
-                        name: "User".into(),
-                        extensions: vec![],
-                        properties: vec![
-                            PYProperty {
-                                doc: None,
-                                name: "name".into(),
-                                descriptor: PYDescriptor::Primitive(PYPrimitive::String),
-                                required: true,
-                            },
-                            PYProperty {
-                                doc: None,
-                                name: "age".into(),
-                                descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
-                                required: false,
-                            }
-                        ],
-                        references: vec![],
-                    }),
-                    PYDefinition::Class(PYClass {
-                        doc: None,
-                        name: "Book".into(),
-                        extensions: vec![],
-                        properties: vec![
-                            PYProperty {
-                                doc: None,
-                                name: "title".into(),
-                                descriptor: PYDescriptor::Primitive(PYPrimitive::String),
-                                required: true,
-                            },
-                            PYProperty {
-                                doc: None,
-                                name: "author".into(),
-                                descriptor: PYReference::new("Author".into(), true).into(),
-                                required: true,
-                            }
-                        ],
-                        references: vec![PYIdentifier("Author".into()),],
-                    }),
-                    PYDefinition::Class(PYClass {
-                        doc: None,
-                        name: "Order".into(),
-                        extensions: vec![],
-                        properties: vec![PYProperty {
-                            doc: None,
-                            name: "book".into(),
-                            descriptor: PYReference::new("Book".into(), false).into(),
-                            required: true,
-                        }],
-                        references: vec![PYIdentifier("Book".into()),],
-                    }),
-                    PYDefinition::Alias(PYAlias {
-                        doc: None,
-                        name: "Name".into(),
-                        descriptor: PYDescriptor::Primitive(PYPrimitive::String),
-                        references: vec![],
-                    }),
-                ]
-            })
+            @r#"
+        PYConvertModule(PYModule(
+          doc: None,
+          imports: [
+            PYImport(
+              dependency: Path(PYPath(".path.to.module")),
+              reference: Default(Some(PYIdentifier("module"))),
+            ),
+            PYImport(
+              dependency: Path(PYPath(".path.to.module")),
+              reference: Named([
+                Name(PYIdentifier("Name")),
+                Alias(PYIdentifier("Name"), PYIdentifier("Alias")),
+              ]),
+            ),
+            PYImport(
+              dependency: Typing,
+              reference: Named([
+                Name(PYIdentifier("Optional")),
+              ]),
+            ),
+            PYImport(
+              dependency: Runtime,
+              reference: Named([
+                Name(PYIdentifier("Model")),
+              ]),
+            ),
+          ],
+          definitions: [
+            Class(PYClass(
+              doc: None,
+              name: PYIdentifier("User"),
+              extensions: [],
+              properties: [
+                PYProperty(
+                  doc: None,
+                  name: PYKey("name"),
+                  descriptor: Primitive(String),
+                  required: true,
+                ),
+                PYProperty(
+                  doc: None,
+                  name: PYKey("age"),
+                  descriptor: Primitive(Int),
+                  required: false,
+                ),
+              ],
+              references: [],
+            )),
+            Class(PYClass(
+              doc: None,
+              name: PYIdentifier("Book"),
+              extensions: [],
+              properties: [
+                PYProperty(
+                  doc: None,
+                  name: PYKey("title"),
+                  descriptor: Primitive(String),
+                  required: true,
+                ),
+                PYProperty(
+                  doc: None,
+                  name: PYKey("author"),
+                  descriptor: Reference(PYReference(
+                    identifier: PYIdentifier("Author"),
+                    forward: true,
+                  )),
+                  required: true,
+                ),
+              ],
+              references: [
+                PYIdentifier("Author"),
+              ],
+            )),
+            Class(PYClass(
+              doc: None,
+              name: PYIdentifier("Order"),
+              extensions: [],
+              properties: [
+                PYProperty(
+                  doc: None,
+                  name: PYKey("book"),
+                  descriptor: Reference(PYReference(
+                    identifier: PYIdentifier("Book"),
+                    forward: false,
+                  )),
+                  required: true,
+                ),
+              ],
+              references: [
+                PYIdentifier("Book"),
+              ],
+            )),
+            Alias(PYAlias(
+              doc: None,
+              name: PYIdentifier("Name"),
+              descriptor: Primitive(String),
+              references: [],
+            )),
+          ],
+        ))
+        "#
         );
     }
 
     #[test]
     fn test_convert_doc() {
-        assert_eq!(
+        assert_ron_snapshot!(
             PYConvertModule::convert(
                 &GTModule {
                     id: "module".into(),
@@ -307,17 +319,19 @@ mod tests {
                 &Default::default(),
                 &Default::default(),
             ),
-            PYConvertModule(PYModule {
-                doc: Some(PYDoc("Hello, world!".into())),
-                imports: vec![],
-                definitions: vec![]
-            })
+            @r#"
+        PYConvertModule(PYModule(
+          doc: Some(PYDoc("Hello, world!")),
+          imports: [],
+          definitions: [],
+        ))
+        "#
         );
     }
 
     #[test]
     fn test_convert_reorder() {
-        assert_eq!(
+        assert_ron_snapshot!(
             PYConvertModule::convert(
                 &GTModule {
                     id: "module".into(),
@@ -370,7 +384,7 @@ mod tests {
                                     doc: None,
                                     attributes: vec![],
                                     name: GTKey::new((0, 0).into(), "message".into()),
-                                    descriptor: GTPrimitive::String((0, 0).into()).into(),
+                                    descriptor: GtFactory::primitive_string().into(),
                                     required: true,
                                 }],
                             }
@@ -391,7 +405,7 @@ mod tests {
                                     doc: None,
                                     attributes: vec![],
                                     name: GTKey::new((0, 0).into(), "message".into()),
-                                    descriptor: GTPrimitive::String((0, 0).into()).into(),
+                                    descriptor: GtFactory::primitive_string().into(),
                                     required: true,
                                 }],
                             }
@@ -402,52 +416,70 @@ mod tests {
                 &Default::default(),
                 &Default::default(),
             ),
-            PYConvertModule(PYModule {
-                doc: None,
-                imports: vec![PYImport {
-                    reference: PYImportReference::Named(vec![PYImportName::Name("Model".into())]),
-                    dependency: PYDependencyIdent::Runtime,
-                }],
-                definitions: vec![
-                    PYDefinition::Class(PYClass {
-                        doc: None,
-                        name: "DM".into(),
-                        extensions: vec![],
-                        properties: vec![PYProperty {
-                            doc: None,
-                            name: "message".into(),
-                            descriptor: PYDescriptor::Primitive(PYPrimitive::String),
-                            required: true,
-                        }],
-                        references: vec![],
-                    }),
-                    PYDefinition::Class(PYClass {
-                        doc: None,
-                        name: "Comment".into(),
-                        extensions: vec![],
-                        properties: vec![PYProperty {
-                            doc: None,
-                            name: "message".into(),
-                            descriptor: PYDescriptor::Primitive(PYPrimitive::String),
-                            required: true,
-                        }],
-                        references: vec![],
-                    }),
-                    PYDefinition::Alias(PYAlias {
-                        doc: None,
-                        name: "Message".into(),
-                        descriptor: PYUnion {
-                            descriptors: vec![
-                                PYReference::new("DM".into(), false).into(),
-                                PYReference::new("Comment".into(), false).into()
-                            ],
-                            discriminator: None,
-                        }
-                        .into(),
-                        references: vec![PYIdentifier("DM".into()), PYIdentifier("Comment".into()),],
-                    }),
-                ]
-            })
+            @r#"
+        PYConvertModule(PYModule(
+          doc: None,
+          imports: [
+            PYImport(
+              dependency: Runtime,
+              reference: Named([
+                Name(PYIdentifier("Model")),
+              ]),
+            ),
+          ],
+          definitions: [
+            Class(PYClass(
+              doc: None,
+              name: PYIdentifier("DM"),
+              extensions: [],
+              properties: [
+                PYProperty(
+                  doc: None,
+                  name: PYKey("message"),
+                  descriptor: Primitive(String),
+                  required: true,
+                ),
+              ],
+              references: [],
+            )),
+            Class(PYClass(
+              doc: None,
+              name: PYIdentifier("Comment"),
+              extensions: [],
+              properties: [
+                PYProperty(
+                  doc: None,
+                  name: PYKey("message"),
+                  descriptor: Primitive(String),
+                  required: true,
+                ),
+              ],
+              references: [],
+            )),
+            Alias(PYAlias(
+              doc: None,
+              name: PYIdentifier("Message"),
+              descriptor: Union(PYUnion(
+                descriptors: [
+                  Reference(PYReference(
+                    identifier: PYIdentifier("DM"),
+                    forward: false,
+                  )),
+                  Reference(PYReference(
+                    identifier: PYIdentifier("Comment"),
+                    forward: false,
+                  )),
+                ],
+                discriminator: None,
+              )),
+              references: [
+                PYIdentifier("DM"),
+                PYIdentifier("Comment"),
+              ],
+            )),
+          ],
+        ))
+        "#
         );
     }
 }

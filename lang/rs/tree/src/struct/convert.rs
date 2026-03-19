@@ -103,7 +103,7 @@ impl RSConvert<RSStruct> for GTBranded {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_test::prelude::*;
+    use genotype_test::*;
 
     #[test]
     fn test_convert_object() {
@@ -118,7 +118,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "name".into()),
-                        descriptor: GTPrimitive::String((0, 0).into()).into(),
+                        descriptor: GtFactory::primitive_string().into(),
                         required: true,
                     },
                     GTProperty {
@@ -126,7 +126,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "age".into()),
-                        descriptor: GTPrimitive::Int32((0, 0).into()).into(),
+                        descriptor: GtFactory::primitive_i32().into(),
                         required: false,
                     }
                 ]
@@ -252,7 +252,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "name".into()),
-                        descriptor: GTPrimitive::String((0, 0).into()).into(),
+                        descriptor: GtFactory::primitive_string().into(),
                         required: true,
                     },
                     GTProperty {
@@ -260,7 +260,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "age".into()),
-                        descriptor: GTPrimitive::IntSize((0, 0).into()).into(),
+                        descriptor: GtFactory::primitive_isize().into(),
                         required: false,
                     }
                 ]
