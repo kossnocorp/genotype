@@ -127,7 +127,7 @@ mod tests {
                       attributes: [],
                       name: RSFieldName("author"),
                       descriptor: Reference(RSReference(
-                        id: GTReferenceId(GTModuleId("book"), GTSpan(55, 61)),
+                        id: GTReferenceId(GTModuleId("book"), GTSpan(56, 62)),
                         identifier: RSIdentifier("Author"),
                         definition_id: GTDefinitionId(GTModuleId("author"), "Author"),
                       )),
@@ -140,7 +140,7 @@ mod tests {
               definitions: {
                 GTDefinitionId(GTModuleId("author"), "Author"): GtProjectModuleDefinitionResolve(
                   references: [
-                    GTReferenceId(GTModuleId("book"), GTSpan(55, 61)),
+                    GTReferenceId(GTModuleId("book"), GTSpan(56, 62)),
                   ],
                   deps: [],
                 ),
@@ -253,7 +253,7 @@ mod tests {
                       attributes: [],
                       name: RSFieldName("author"),
                       descriptor: Reference(RSReference(
-                        id: GTReferenceId(GTModuleId("book"), GTSpan(50, 56)),
+                        id: GTReferenceId(GTModuleId("book"), GTSpan(51, 57)),
                         identifier: RSIdentifier("author.Author"),
                         definition_id: GTDefinitionId(GTModuleId("author"), "Author"),
                       )),
@@ -265,7 +265,7 @@ mod tests {
                       ],
                       name: RSFieldName("author_name"),
                       descriptor: Reference(RSReference(
-                        id: GTReferenceId(GTModuleId("book"), GTSpan(71, 81)),
+                        id: GTReferenceId(GTModuleId("book"), GTSpan(73, 83)),
                         identifier: RSIdentifier("author.AuthorName"),
                         definition_id: GTDefinitionId(GTModuleId("author"), "AuthorName"),
                       )),
@@ -278,13 +278,13 @@ mod tests {
               definitions: {
                 GTDefinitionId(GTModuleId("author"), "Author"): GtProjectModuleDefinitionResolve(
                   references: [
-                    GTReferenceId(GTModuleId("book"), GTSpan(50, 56)),
+                    GTReferenceId(GTModuleId("book"), GTSpan(51, 57)),
                   ],
                   deps: [],
                 ),
                 GTDefinitionId(GTModuleId("author"), "AuthorName"): GtProjectModuleDefinitionResolve(
                   references: [
-                    GTReferenceId(GTModuleId("book"), GTSpan(71, 81)),
+                    GTReferenceId(GTModuleId("book"), GTSpan(73, 83)),
                   ],
                   deps: [],
                 ),

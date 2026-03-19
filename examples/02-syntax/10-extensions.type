@@ -1,14 +1,14 @@
 Base: {
   name: string,
-  age: int
+  age: int,
 }
 
 Processor: {
   ...Base,
-  cores: int
+  cores: int,
 }
 
 User: {
   ...Base,
-  email: string
+  email: string,
 }

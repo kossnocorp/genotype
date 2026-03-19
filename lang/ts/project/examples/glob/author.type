@@ -1,5 +1,5 @@
 Author: {
-  name: AuthorName
+  name: AuthorName,
 }
 
 AuthorName: string

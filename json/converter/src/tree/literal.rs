@@ -5,15 +5,17 @@ use crate::{GtjTreeConvert, GtjTreeConvertContext};
 
 impl GtjTreeConvert<GTLiteral> for GtjLiteral {
     fn to_tree_with_context(&self, _context: &mut GtjTreeConvertContext) -> GTLiteral {
-        match &self.value {
-            GtjLiteralValue::Null => GTLiteral::Null(Default::default()),
-            GtjLiteralValue::Boolean(boolean) => {
-                GTLiteral::Boolean(Default::default(), boolean.clone())
-            }
-            GtjLiteralValue::Number(number) => GTLiteral::Float(Default::default(), number.clone()),
-            GtjLiteralValue::String(string) => {
-                GTLiteral::String(Default::default(), string.clone())
-            }
+        let value = match &self.value {
+            GtjLiteralValue::Null => GTLiteralValue::Null,
+            GtjLiteralValue::Boolean(boolean) => GTLiteralValue::Boolean(boolean.clone()),
+            GtjLiteralValue::Number(number) => GTLiteralValue::Float(number.clone()),
+            GtjLiteralValue::String(string) => GTLiteralValue::String(string.clone()),
+        };
+        GTLiteral {
+            span: Default::default(),
+            doc: None,
+            attributes: vec![],
+            value,
         }
     }
 }
@@ -39,9 +41,23 @@ mod tests {
         };
 
         let descriptor_tree: GTDescriptor = literal.to_tree_with_context(&mut Default::default());
-        assert_ron_snapshot!(descriptor_tree, @"Literal(Null(GTSpan(0, 0)))");
+        assert_ron_snapshot!(descriptor_tree, @"
+        Literal(GTLiteral(
+          span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
+          value: Null,
+        ))
+        ");
 
         let literal_tree: GTLiteral = literal.to_tree_with_context(&mut Default::default());
-        assert_ron_snapshot!(literal_tree, @"Null(GTSpan(0, 0))");
+        assert_ron_snapshot!(literal_tree, @"
+        GTLiteral(
+          span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
+          value: Null,
+        )
+        ");
     }
 }

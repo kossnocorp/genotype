@@ -1,4 +1,4 @@
 Hello: {
-  name: string
+  name: string,
   age?: int
 }

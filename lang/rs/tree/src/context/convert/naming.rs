@@ -85,15 +85,15 @@ impl RSConvertContext {
     }
 
     /// Renders a name segment from the given literal.
-    pub fn render_literal_name_segment(literal: &GTLiteral) -> String {
+    pub fn render_literal_name_segment(literal: &GTLiteralValue) -> String {
         match literal {
-            GTLiteral::Null(_) => "Null".into(),
-            GTLiteral::String(_, value) => value.to_pascal_case(),
-            GTLiteral::Integer(_, value) => format!("{value}"),
-            GTLiteral::Float(_, value) => {
+            GTLiteralValue::Null => "Null".into(),
+            GTLiteralValue::String(value) => value.to_pascal_case(),
+            GTLiteralValue::Integer(value) => format!("{value}"),
+            GTLiteralValue::Float(value) => {
                 format!("{value}", value = format!("{:.}", value).replace('.', "_"))
             }
-            GTLiteral::Boolean(_, value) => format!("{value}").to_pascal_case(),
+            GTLiteralValue::Boolean(value) => format!("{value}").to_pascal_case(),
         }
     }
 }
@@ -115,9 +115,9 @@ impl RSConvertNameSegment {
                     "".to_string()
                 };
 
-                match literal {
-                    GTLiteral::Null(_) => "Null".into(),
-                    GTLiteral::String(_, value) => {
+                match &literal.value {
+                    GTLiteralValue::Null => "Null".into(),
+                    GTLiteralValue::String(value) => {
                         let str = value.to_pascal_case();
                         let first = str.chars().next().unwrap_or_default();
                         if first == '_' || UnicodeXID::is_xid_start(first) {
@@ -126,14 +126,14 @@ impl RSConvertNameSegment {
                             format!("{prefix}{str}")
                         }
                     }
-                    GTLiteral::Integer(_, value) => format!("{prefix}{value}"),
-                    GTLiteral::Float(_, value) => {
+                    GTLiteralValue::Integer(value) => format!("{prefix}{value}"),
+                    GTLiteralValue::Float(value) => {
                         format!(
                             "{value}",
                             value = format!("{prefix}{:.}", value).replace('.', "_")
                         )
                     }
-                    GTLiteral::Boolean(_, value) => format!("{value}").to_pascal_case(),
+                    GTLiteralValue::Boolean(value) => format!("{value}").to_pascal_case(),
                 }
             }
         }
@@ -190,7 +190,15 @@ mod tests {
         context.enter_parent(RSContextParent::Definition("Person".into()));
         context.enter_parent(RSContextParent::Field("v".into()));
         assert_eq!(
-            context.name_child(Some(GTLiteral::Integer(Default::default(), 1).into())),
+            context.name_child(Some(
+                GTLiteral {
+                    span: (0, 0).into(),
+                    doc: None,
+                    attributes: vec![],
+                    value: GTLiteralValue::Integer(1),
+                }
+                .into()
+            )),
             "PersonV1".into()
         );
     }
@@ -199,7 +207,15 @@ mod tests {
     fn test_name_solo_literal_number_child() {
         let context = RSConvertContext::empty("module".into());
         assert_eq!(
-            context.name_child(Some(GTLiteral::Integer(Default::default(), 1).into())),
+            context.name_child(Some(
+                GTLiteral {
+                    span: (0, 0).into(),
+                    doc: None,
+                    attributes: vec![],
+                    value: GTLiteralValue::Integer(1),
+                }
+                .into()
+            )),
             "Lit1".into()
         );
     }
@@ -211,7 +227,13 @@ mod tests {
         context.enter_parent(RSContextParent::Field("v".into()));
         assert_eq!(
             context.name_child(Some(
-                GTLiteral::String(Default::default(), "1".into()).into()
+                GTLiteral {
+                    span: (0, 0).into(),
+                    doc: None,
+                    attributes: vec![],
+                    value: GTLiteralValue::String("1".into()),
+                }
+                .into()
             )),
             "PersonV1".into()
         );
@@ -222,7 +244,13 @@ mod tests {
         let context = RSConvertContext::empty("module".into());
         assert_eq!(
             context.name_child(Some(
-                GTLiteral::String(Default::default(), "1".into()).into()
+                GTLiteral {
+                    span: (0, 0).into(),
+                    doc: None,
+                    attributes: vec![],
+                    value: GTLiteralValue::String("1".into()),
+                }
+                .into()
             )),
             "Lit1".into()
         );

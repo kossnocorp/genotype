@@ -1,4 +1,4 @@
-use genotype_parser::tree::GTLiteral;
+use genotype_parser::tree::{GTLiteral, GTLiteralValue};
 
 use crate::visitor::GTVisitor;
 
@@ -19,7 +19,13 @@ mod tests {
     #[test]
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
-        let mut literal = GTLiteral::String((0, 0).into(), "Hello, world!".into());
+        let value = GTLiteralValue::String("Hello, world!".into());
+        let mut literal = GTLiteral {
+            span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
+            value,
+        };
         literal.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,

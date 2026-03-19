@@ -15,9 +15,9 @@ ObjectUnion:
   | ObjectUnionAccount
 
 ObjectUnionUser: {
-  kind: "user"
+  kind: "user",
 }
 
 ObjectUnionAccount: {
-  kind: "account"
+  kind: "account",
 }

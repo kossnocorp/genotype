@@ -2,7 +2,7 @@ Order: {
   delivery: {
     address: {
       street: string,
-      city: string
+      city: string,
     }
   }
 }

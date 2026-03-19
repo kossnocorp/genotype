@@ -1,22 +1,27 @@
 module = { SOI ~ (module_doc)* ~ (import | alias)* ~ EOI }
 
-alias = { line_doc* ~ attribute* ~ name ~ ":" ~ descriptor }
+alias = { annotation* ~ name ~ ":" ~ descriptors }
 
 name = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 
+annotation = _{ attribute | line_doc }
+
 // Descriptors
 
-descriptor = @{
-    (WHITESPACE | COMMENT)*
-    ~ "|"?
-    ~ (WHITESPACE | COMMENT)*
-    ~ descriptor_inner
-    ~ ((WHITESPACE | COMMENT)* ~ "|" ~ (WHITESPACE | COMMENT)* ~ descriptor_inner)*
+descriptors = @{
+    ("|" ~ (WHITESPACE | COMMENT)*)?
+    ~ descriptor
+    ~ ((WHITESPACE | COMMENT)* ~ "|" ~ (WHITESPACE | COMMENT)* ~ descriptor)*
+    ~ ((WHITESPACE | COMMENT)* ~ "|")?
 }
 
-// NOTE: Order matters! prefer structural containers before inline imports
+descriptor = !{ annotation* ~ descriptor_inner }
+
+// descriptor_attribute = @{ attribute }
+
+// NOTE: Order matters! Prefer structural containers before inline imports
 // to avoid ambiguity when parsing nested descriptors (e.g. arrays).
-descriptor_inner = !{ literal | primitive | branded | any | object | array | tuple | record | inline_import | alias | name }
+descriptor_inner = _{ literal | primitive | branded | any | object | array | tuple | record | inline_import | alias | name }
 
 primitive = { primitive_index | "boolean" }
 
@@ -62,15 +67,19 @@ branded = ${ "@" ~ primitive }
 
 object = { "{" ~ properties? ~ "}" }
 
-properties = _{ any_property ~ (","? ~ any_property)* ~ ","? }
+properties = ${
+    property
+    ~ ((WHITESPACE | COMMENT)* ~ "," ~ (WHITESPACE | COMMENT)* ~ property)*
+    ~ ((WHITESPACE | COMMENT)* ~ ",")?
+}
 
-any_property = _{ extension_property | optional_property | required_property }
+property = !{ extension_property | optional_property | required_property }
 
 extension_property = { "..." ~ name }
 
-required_property = { line_doc* ~ attribute* ~ name ~ ":" ~ descriptor }
+required_property = { annotation* ~ name ~ ":" ~ descriptors }
 
-optional_property = { line_doc* ~ name ~ "?:" ~ descriptor }
+optional_property = { annotation* ~ name ~ "?:" ~ descriptors }
 
 // Attributes
 
@@ -86,19 +95,19 @@ attribute_properties = { "(" ~ attribute_property ~ ("," ~ attribute_property)* 
 
 attribute_property = { name ~ "=" ~ attribute_value }
 
-attribute_value = { literal | name }
+attribute_value = !{ literal | name }
 
 // Arrays
 
-array = { "[" ~ descriptor ~ "]" }
+array = { "[" ~ descriptors ~ "]" }
 
 // Tuples
 
-tuple = { "(" ~ (descriptor ~ ("," ~ descriptor)*)? ~ ")" }
+tuple = { "(" ~ (descriptors ~ ("," ~ descriptors)*)? ~ ")" }
 
 // Records
 
-record = { "{" ~ record_key ~ ":" ~ descriptor ~ "}" }
+record = { "{" ~ record_key ~ ":" ~ descriptors ~ "}" }
 
 record_key = { "[" ~ primitive_index? ~ "]" }
 

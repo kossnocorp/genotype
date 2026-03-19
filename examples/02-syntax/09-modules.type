@@ -3,9 +3,9 @@ use ../../author/{Author, Genre, Something as Else}
 use author/Author
 
 Book: {
-  title: string
-  author: ../../author/Author
-  genre: Genre
+  title: string,
+  author: ../../author/Author,
+  genre: Genre,
 }
 
 Author: ../../author/Author

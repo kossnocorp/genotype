@@ -69,3 +69,52 @@ impl GTVisitor for UnwrapNamedVisitor {
         }
     }
 }
+
+pub struct GtFactory {}
+
+impl GtFactory {
+    pub fn literal_boolean(value: bool) -> GTLiteral {
+        GTLiteral {
+            span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
+            value: GTLiteralValue::Boolean(value),
+        }
+    }
+
+    pub fn literal_integer(value: i64) -> GTLiteral {
+        GTLiteral {
+            span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
+            value: GTLiteralValue::Integer(value),
+        }
+    }
+
+    pub fn literal_float(value: f64) -> GTLiteral {
+        GTLiteral {
+            span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
+            value: GTLiteralValue::Float(value),
+        }
+    }
+
+    pub fn literal_string(value: &str) -> GTLiteral {
+        GTLiteral {
+            span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
+            value: GTLiteralValue::String(value.into()),
+        }
+    }
+
+    pub fn literal_null() -> GTLiteral {
+        GTLiteral {
+            span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
+            value: GTLiteralValue::Null,
+        }
+    }
+}

@@ -7,5 +7,5 @@ User: {
 }
 
 Account: {
-  email: string
+  email: string,
 }

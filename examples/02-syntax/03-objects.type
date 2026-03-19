@@ -3,9 +3,9 @@ Hello: {
 }
 
 Hello: {
-  name: string
-  age: int
-  flag: boolean
+  name: string,
+  age: int,
+  flag: boolean,
 }
 
 Empty: {}
@@ -19,5 +19,5 @@ Hello: { name: string }
 Hello: { name: string, age: int }
 
 PascalCase: {
-  snake_case: int
+  snake_case: int,
 }

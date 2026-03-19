@@ -2,5 +2,5 @@ use genotype_json_types/JsonAny
 
 Prompt: {
   content: string,
-  output: JsonAny
+  output: JsonAny,
 }

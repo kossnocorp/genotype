@@ -10,10 +10,10 @@ Hello: /* Inline comment */ string
 /// ...alias comment
 Hello: {
   /// Property comment
-  name: string
+  name: string,
   /// Multiline...
   /// ...property comment
-  age: int
+  age: int,
 }
 
 Hello: string // Trailing comment

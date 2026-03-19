@@ -148,12 +148,12 @@ mod tests {
                 aliases: [
                   GTAlias(
                     id: GTDefinitionId(GTModuleId("author"), "Author"),
-                    span: GTSpan(0, 26),
+                    span: GTSpan(0, 27),
                     doc: None,
                     attributes: [],
                     name: GTIdentifier(GTSpan(0, 6), "Author"),
                     descriptor: Object(GTObject(
-                      span: GTSpan(8, 26),
+                      span: GTSpan(8, 27),
                       name: Named(GTIdentifier(GTSpan(0, 6), "Author")),
                       extensions: [],
                       properties: [
@@ -177,7 +177,7 @@ mod tests {
               ),
               source_code: NamedSource(
                 name: "author.type",
-                source: "Author: {\n  name: string\n}",
+                source: "Author: {\n  name: string,\n}",
                 language: None,
               ),
             ),
@@ -196,12 +196,12 @@ mod tests {
                 aliases: [
                   GTAlias(
                     id: GTDefinitionId(GTModuleId("book"), "Book"),
-                    span: GTSpan(21, 63),
+                    span: GTSpan(21, 65),
                     doc: None,
                     attributes: [],
                     name: GTIdentifier(GTSpan(21, 25), "Book"),
                     descriptor: Object(GTObject(
-                      span: GTSpan(27, 63),
+                      span: GTSpan(27, 65),
                       name: Named(GTIdentifier(GTSpan(21, 25), "Book")),
                       extensions: [],
                       properties: [
@@ -214,15 +214,15 @@ mod tests {
                           required: true,
                         ),
                         GTProperty(
-                          span: GTSpan(47, 61),
+                          span: GTSpan(48, 62),
                           doc: None,
                           attributes: [],
-                          name: GTKey(GTSpan(47, 53), "author"),
+                          name: GTKey(GTSpan(48, 54), "author"),
                           descriptor: Reference(GTReference(
-                            span: GTSpan(55, 61),
-                            id: GTReferenceId(GTModuleId("book"), GTSpan(55, 61)),
+                            span: GTSpan(56, 62),
+                            id: GTReferenceId(GTModuleId("book"), GTSpan(56, 62)),
                             definition_id: Resolved(GTDefinitionId(GTModuleId("author"), "Author")),
-                            identifier: GTIdentifier(GTSpan(55, 61), "Author"),
+                            identifier: GTIdentifier(GTSpan(56, 62), "Author"),
                           )),
                           required: true,
                         ),
@@ -236,14 +236,14 @@ mod tests {
                   GTPath(GTSpan(4, 12), Unresolved, "./author"): "author.type",
                 },
                 identifiers: {
-                  GTIdentifier(GTSpan(55, 61), "Author"): GTPModuleIdentifierResolve(
+                  GTIdentifier(GTSpan(56, 62), "Author"): GTPModuleIdentifierResolve(
                     source: External(GTPath(GTSpan(4, 12), Unresolved, "./author")),
                   ),
                 },
                 definitions: {
                   GTDefinitionId(GTModuleId("author"), "Author"): GtProjectModuleDefinitionResolve(
                     references: [
-                      GTReferenceId(GTModuleId("book"), GTSpan(55, 61)),
+                      GTReferenceId(GTModuleId("book"), GTSpan(56, 62)),
                     ],
                     deps: [],
                   ),
@@ -251,7 +251,7 @@ mod tests {
               ),
               source_code: NamedSource(
                 name: "book.type",
-                source: "use ./author/Author\n\nBook: {\n  title: string\n  author: Author\n}",
+                source: "use ./author/Author\n\nBook: {\n  title: string,\n  author: Author,\n}",
                 language: None,
               ),
             ),
@@ -270,12 +270,12 @@ mod tests {
                 aliases: [
                   GTAlias(
                     id: GTDefinitionId(GTModuleId("order"), "Order"),
-                    span: GTSpan(17, 63),
+                    span: GTSpan(17, 65),
                     doc: None,
                     attributes: [],
                     name: GTIdentifier(GTSpan(17, 22), "Order"),
                     descriptor: Object(GTObject(
-                      span: GTSpan(24, 63),
+                      span: GTSpan(24, 65),
                       name: Named(GTIdentifier(GTSpan(17, 22), "Order")),
                       extensions: [],
                       properties: [
@@ -292,17 +292,17 @@ mod tests {
                           required: true,
                         ),
                         GTProperty(
-                          span: GTSpan(48, 61),
+                          span: GTSpan(49, 62),
                           doc: None,
                           attributes: [],
-                          name: GTKey(GTSpan(48, 53), "books"),
+                          name: GTKey(GTSpan(49, 54), "books"),
                           descriptor: Array(GTArray(
-                            span: GTSpan(55, 61),
+                            span: GTSpan(56, 62),
                             descriptor: Reference(GTReference(
-                              span: GTSpan(56, 60),
-                              id: GTReferenceId(GTModuleId("order"), GTSpan(56, 60)),
+                              span: GTSpan(57, 61),
+                              id: GTReferenceId(GTModuleId("order"), GTSpan(57, 61)),
                               definition_id: Resolved(GTDefinitionId(GTModuleId("book"), "Book")),
-                              identifier: GTIdentifier(GTSpan(56, 60), "Book"),
+                              identifier: GTIdentifier(GTSpan(57, 61), "Book"),
                             )),
                           )),
                           required: true,
@@ -318,14 +318,14 @@ mod tests {
                   GTPath(GTSpan(34, 40), Unresolved, "./user"): "user.type",
                 },
                 identifiers: {
-                  GTIdentifier(GTSpan(56, 60), "Book"): GTPModuleIdentifierResolve(
+                  GTIdentifier(GTSpan(57, 61), "Book"): GTPModuleIdentifierResolve(
                     source: External(GTPath(GTSpan(4, 10), Unresolved, "./book")),
                   ),
                 },
                 definitions: {
                   GTDefinitionId(GTModuleId("book"), "Book"): GtProjectModuleDefinitionResolve(
                     references: [
-                      GTReferenceId(GTModuleId("order"), GTSpan(56, 60)),
+                      GTReferenceId(GTModuleId("order"), GTSpan(57, 61)),
                     ],
                     deps: [],
                   ),
@@ -333,7 +333,7 @@ mod tests {
               ),
               source_code: NamedSource(
                 name: "order.type",
-                source: "use ./book/Book\n\nOrder: {\n  user: ./user/User\n  books: [Book]\n}",
+                source: "use ./book/Book\n\nOrder: {\n  user: ./user/User,\n  books: [Book],\n}",
                 language: None,
               ),
             ),
@@ -346,12 +346,12 @@ mod tests {
                 aliases: [
                   GTAlias(
                     id: GTDefinitionId(GTModuleId("user"), "User"),
-                    span: GTSpan(0, 40),
+                    span: GTSpan(0, 42),
                     doc: None,
                     attributes: [],
                     name: GTIdentifier(GTSpan(0, 4), "User"),
                     descriptor: Object(GTObject(
-                      span: GTSpan(6, 40),
+                      span: GTSpan(6, 42),
                       name: Named(GTIdentifier(GTSpan(0, 4), "User")),
                       extensions: [],
                       properties: [
@@ -364,11 +364,11 @@ mod tests {
                           required: true,
                         ),
                         GTProperty(
-                          span: GTSpan(26, 38),
+                          span: GTSpan(27, 39),
                           doc: None,
                           attributes: [],
-                          name: GTKey(GTSpan(26, 30), "name"),
-                          descriptor: Primitive(String(GTSpan(32, 38))),
+                          name: GTKey(GTSpan(27, 31), "name"),
+                          descriptor: Primitive(String(GTSpan(33, 39))),
                           required: true,
                         ),
                       ],
@@ -383,7 +383,7 @@ mod tests {
               ),
               source_code: NamedSource(
                 name: "user.type",
-                source: "User: {\n  email: string\n  name: string\n}",
+                source: "User: {\n  email: string,\n  name: string,\n}",
                 language: None,
               ),
             ),
@@ -443,12 +443,12 @@ mod tests {
                 aliases: [
                   GTAlias(
                     id: GTDefinitionId(GTModuleId("author"), "Author"),
-                    span: GTSpan(0, 26),
+                    span: GTSpan(0, 27),
                     doc: None,
                     attributes: [],
                     name: GTIdentifier(GTSpan(0, 6), "Author"),
                     descriptor: Object(GTObject(
-                      span: GTSpan(8, 26),
+                      span: GTSpan(8, 27),
                       name: Named(GTIdentifier(GTSpan(0, 6), "Author")),
                       extensions: [],
                       properties: [
@@ -472,7 +472,7 @@ mod tests {
               ),
               source_code: NamedSource(
                 name: "author.type",
-                source: "Author: {\n  name: string\n}",
+                source: "Author: {\n  name: string,\n}",
                 language: None,
               ),
             ),
@@ -491,12 +491,12 @@ mod tests {
                 aliases: [
                   GTAlias(
                     id: GTDefinitionId(GTModuleId("book"), "Book"),
-                    span: GTSpan(21, 63),
+                    span: GTSpan(21, 65),
                     doc: None,
                     attributes: [],
                     name: GTIdentifier(GTSpan(21, 25), "Book"),
                     descriptor: Object(GTObject(
-                      span: GTSpan(27, 63),
+                      span: GTSpan(27, 65),
                       name: Named(GTIdentifier(GTSpan(21, 25), "Book")),
                       extensions: [],
                       properties: [
@@ -509,15 +509,15 @@ mod tests {
                           required: true,
                         ),
                         GTProperty(
-                          span: GTSpan(47, 61),
+                          span: GTSpan(48, 62),
                           doc: None,
                           attributes: [],
-                          name: GTKey(GTSpan(47, 53), "author"),
+                          name: GTKey(GTSpan(48, 54), "author"),
                           descriptor: Reference(GTReference(
-                            span: GTSpan(55, 61),
-                            id: GTReferenceId(GTModuleId("book"), GTSpan(55, 61)),
+                            span: GTSpan(56, 62),
+                            id: GTReferenceId(GTModuleId("book"), GTSpan(56, 62)),
                             definition_id: Resolved(GTDefinitionId(GTModuleId("author"), "Author")),
-                            identifier: GTIdentifier(GTSpan(55, 61), "Author"),
+                            identifier: GTIdentifier(GTSpan(56, 62), "Author"),
                           )),
                           required: true,
                         ),
@@ -531,14 +531,14 @@ mod tests {
                   GTPath(GTSpan(4, 12), Unresolved, "./author"): "author.type",
                 },
                 identifiers: {
-                  GTIdentifier(GTSpan(55, 61), "Author"): GTPModuleIdentifierResolve(
+                  GTIdentifier(GTSpan(56, 62), "Author"): GTPModuleIdentifierResolve(
                     source: External(GTPath(GTSpan(4, 12), Unresolved, "./author")),
                   ),
                 },
                 definitions: {
                   GTDefinitionId(GTModuleId("author"), "Author"): GtProjectModuleDefinitionResolve(
                     references: [
-                      GTReferenceId(GTModuleId("book"), GTSpan(55, 61)),
+                      GTReferenceId(GTModuleId("book"), GTSpan(56, 62)),
                     ],
                     deps: [],
                   ),
@@ -546,7 +546,7 @@ mod tests {
               ),
               source_code: NamedSource(
                 name: "book.type",
-                source: "use ./author/Author\n\nBook: {\n  title: string\n  author: Author\n}",
+                source: "use ./author/Author\n\nBook: {\n  title: string,\n  author: Author,\n}",
                 language: None,
               ),
             ),
@@ -565,12 +565,12 @@ mod tests {
                 aliases: [
                   GTAlias(
                     id: GTDefinitionId(GTModuleId("order"), "Order"),
-                    span: GTSpan(17, 63),
+                    span: GTSpan(17, 65),
                     doc: None,
                     attributes: [],
                     name: GTIdentifier(GTSpan(17, 22), "Order"),
                     descriptor: Object(GTObject(
-                      span: GTSpan(24, 63),
+                      span: GTSpan(24, 65),
                       name: Named(GTIdentifier(GTSpan(17, 22), "Order")),
                       extensions: [],
                       properties: [
@@ -587,17 +587,17 @@ mod tests {
                           required: true,
                         ),
                         GTProperty(
-                          span: GTSpan(48, 61),
+                          span: GTSpan(49, 62),
                           doc: None,
                           attributes: [],
-                          name: GTKey(GTSpan(48, 53), "books"),
+                          name: GTKey(GTSpan(49, 54), "books"),
                           descriptor: Array(GTArray(
-                            span: GTSpan(55, 61),
+                            span: GTSpan(56, 62),
                             descriptor: Reference(GTReference(
-                              span: GTSpan(56, 60),
-                              id: GTReferenceId(GTModuleId("order"), GTSpan(56, 60)),
+                              span: GTSpan(57, 61),
+                              id: GTReferenceId(GTModuleId("order"), GTSpan(57, 61)),
                               definition_id: Resolved(GTDefinitionId(GTModuleId("book"), "Book")),
-                              identifier: GTIdentifier(GTSpan(56, 60), "Book"),
+                              identifier: GTIdentifier(GTSpan(57, 61), "Book"),
                             )),
                           )),
                           required: true,
@@ -613,14 +613,14 @@ mod tests {
                   GTPath(GTSpan(34, 40), Unresolved, "./user"): "user.type",
                 },
                 identifiers: {
-                  GTIdentifier(GTSpan(56, 60), "Book"): GTPModuleIdentifierResolve(
+                  GTIdentifier(GTSpan(57, 61), "Book"): GTPModuleIdentifierResolve(
                     source: External(GTPath(GTSpan(4, 10), Unresolved, "./book")),
                   ),
                 },
                 definitions: {
                   GTDefinitionId(GTModuleId("book"), "Book"): GtProjectModuleDefinitionResolve(
                     references: [
-                      GTReferenceId(GTModuleId("order"), GTSpan(56, 60)),
+                      GTReferenceId(GTModuleId("order"), GTSpan(57, 61)),
                     ],
                     deps: [],
                   ),
@@ -628,7 +628,7 @@ mod tests {
               ),
               source_code: NamedSource(
                 name: "order.type",
-                source: "use ./book/Book\n\nOrder: {\n  user: ./user/User\n  books: [Book]\n}",
+                source: "use ./book/Book\n\nOrder: {\n  user: ./user/User,\n  books: [Book],\n}",
                 language: None,
               ),
             ),
@@ -641,12 +641,12 @@ mod tests {
                 aliases: [
                   GTAlias(
                     id: GTDefinitionId(GTModuleId("user"), "User"),
-                    span: GTSpan(0, 40),
+                    span: GTSpan(0, 42),
                     doc: None,
                     attributes: [],
                     name: GTIdentifier(GTSpan(0, 4), "User"),
                     descriptor: Object(GTObject(
-                      span: GTSpan(6, 40),
+                      span: GTSpan(6, 42),
                       name: Named(GTIdentifier(GTSpan(0, 4), "User")),
                       extensions: [],
                       properties: [
@@ -659,11 +659,11 @@ mod tests {
                           required: true,
                         ),
                         GTProperty(
-                          span: GTSpan(26, 38),
+                          span: GTSpan(27, 39),
                           doc: None,
                           attributes: [],
-                          name: GTKey(GTSpan(26, 30), "name"),
-                          descriptor: Primitive(String(GTSpan(32, 38))),
+                          name: GTKey(GTSpan(27, 31), "name"),
+                          descriptor: Primitive(String(GTSpan(33, 39))),
                           required: true,
                         ),
                       ],
@@ -678,7 +678,7 @@ mod tests {
               ),
               source_code: NamedSource(
                 name: "user.type",
-                source: "User: {\n  email: string\n  name: string\n}",
+                source: "User: {\n  email: string,\n  name: string,\n}",
                 language: None,
               ),
             ),
@@ -741,35 +741,35 @@ mod tests {
                 aliases: [
                   GTAlias(
                     id: GTDefinitionId(GTModuleId("anonymous"), "Order"),
-                    span: GTSpan(0, 90),
+                    span: GTSpan(0, 91),
                     doc: None,
                     attributes: [],
                     name: GTIdentifier(GTSpan(0, 5), "Order"),
                     descriptor: Object(GTObject(
-                      span: GTSpan(7, 90),
+                      span: GTSpan(7, 91),
                       name: Named(GTIdentifier(GTSpan(0, 5), "Order")),
                       extensions: [],
                       properties: [
                         GTProperty(
-                          span: GTSpan(11, 88),
+                          span: GTSpan(11, 89),
                           doc: None,
                           attributes: [],
                           name: GTKey(GTSpan(11, 19), "delivery"),
                           descriptor: Object(GTObject(
-                            span: GTSpan(21, 88),
-                            name: Alias(GTIdentifier(GTSpan(21, 88), "OrderDelivery"), Property(GTIdentifier(GTSpan(0, 5), "Order"), [
+                            span: GTSpan(21, 89),
+                            name: Alias(GTIdentifier(GTSpan(21, 89), "OrderDelivery"), Property(GTIdentifier(GTSpan(0, 5), "Order"), [
                               GTKey(GTSpan(11, 19), "delivery"),
                             ])),
                             extensions: [],
                             properties: [
                               GTProperty(
-                                span: GTSpan(27, 84),
+                                span: GTSpan(27, 85),
                                 doc: None,
                                 attributes: [],
                                 name: GTKey(GTSpan(27, 34), "address"),
                                 descriptor: Object(GTObject(
-                                  span: GTSpan(36, 84),
-                                  name: Alias(GTIdentifier(GTSpan(36, 84), "OrderDeliveryAddress"), Property(GTIdentifier(GTSpan(0, 5), "Order"), [
+                                  span: GTSpan(36, 85),
+                                  name: Alias(GTIdentifier(GTSpan(36, 85), "OrderDeliveryAddress"), Property(GTIdentifier(GTSpan(0, 5), "Order"), [
                                     GTKey(GTSpan(11, 19), "delivery"),
                                     GTKey(GTSpan(27, 34), "address"),
                                   ])),
@@ -804,33 +804,33 @@ mod tests {
                   ),
                   GTAlias(
                     id: GTDefinitionId(GTModuleId("anonymous"), "Email"),
-                    span: GTSpan(92, 144),
+                    span: GTSpan(93, 145),
                     doc: None,
                     attributes: [],
-                    name: GTIdentifier(GTSpan(92, 97), "Email"),
+                    name: GTIdentifier(GTSpan(93, 98), "Email"),
                     descriptor: Union(GTUnion(
-                      span: GTSpan(99, 144),
+                      span: GTSpan(100, 145),
                       descriptors: [
-                        Primitive(String(GTSpan(99, 105))),
+                        Primitive(String(GTSpan(100, 106))),
                         Object(GTObject(
-                          span: GTSpan(108, 144),
-                          name: Alias(GTIdentifier(GTSpan(108, 144), "EmailObj"), Alias(GTIdentifier(GTSpan(92, 97), "Email"))),
+                          span: GTSpan(109, 145),
+                          name: Alias(GTIdentifier(GTSpan(109, 145), "EmailObj"), Alias(GTIdentifier(GTSpan(93, 98), "Email"))),
                           extensions: [],
                           properties: [
                             GTProperty(
-                              span: GTSpan(112, 124),
+                              span: GTSpan(113, 125),
                               doc: None,
                               attributes: [],
-                              name: GTKey(GTSpan(112, 116), "name"),
-                              descriptor: Primitive(String(GTSpan(118, 124))),
+                              name: GTKey(GTSpan(113, 117), "name"),
+                              descriptor: Primitive(String(GTSpan(119, 125))),
                               required: true,
                             ),
                             GTProperty(
-                              span: GTSpan(128, 141),
+                              span: GTSpan(129, 142),
                               doc: None,
                               attributes: [],
-                              name: GTKey(GTSpan(128, 133), "email"),
-                              descriptor: Primitive(String(GTSpan(135, 141))),
+                              name: GTKey(GTSpan(129, 134), "email"),
+                              descriptor: Primitive(String(GTSpan(136, 142))),
                               required: true,
                             ),
                           ],
@@ -847,7 +847,7 @@ mod tests {
               ),
               source_code: NamedSource(
                 name: "anonymous.type",
-                source: "Order: {\n  delivery: {\n    address: {\n      street: string,\n      city: string\n    }\n  }\n}\n\nEmail: string | {\n  name: string,\n  email: string,\n}\n\n",
+                source: "Order: {\n  delivery: {\n    address: {\n      street: string,\n      city: string,\n    }\n  }\n}\n\nEmail: string | {\n  name: string,\n  email: string,\n}\n\n",
                 language: None,
               ),
             ),

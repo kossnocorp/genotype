@@ -52,7 +52,7 @@ fn parse(
 
         ParseState::Attributes(span, doc, attributes) => match pair.as_rule() {
             Rule::attribute => {
-                let attribute = GTAttribute::parse(pair)?;
+                let attribute = GTAttribute::parse(pair, context)?;
                 let mut attributes = attributes;
                 attributes.push(attribute);
 
@@ -180,6 +180,7 @@ mod tests {
             parents: parents.clone(),
             resolve: GTModuleResolve::new(),
             claimed_names: Default::default(),
+            annotation: None,
         };
 
         GTAlias::parse(pairs.next().unwrap(), &mut context).unwrap();

@@ -16,12 +16,13 @@ impl GTTraverse for GTAttributeAssignment {
 mod tests {
     use super::*;
     use crate::visitor::mock::*;
+    use genotype_test::prelude::*;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
-        let literal = GTLiteral::String((0, 0).into(), "answer".into());
+        let literal = GtFactory::literal_string("answer");
         let value = GTAttributeValue::Literal(literal.clone());
         let mut assignment = GTAttributeAssignment::new((0, 0).into(), value.clone());
         assignment.traverse(&mut visitor);

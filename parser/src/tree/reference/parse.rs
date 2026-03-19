@@ -29,7 +29,7 @@ mod tests {
                 r#"use user/User
 
             Author: {
-              name: Name
+              name: Name,
               user: User
             }
 
@@ -43,7 +43,7 @@ mod tests {
             @r#"
         [
           GTIdentifier(GTSpan(57, 61), "Name"),
-          GTIdentifier(GTSpan(82, 86), "User"),
+          GTIdentifier(GTSpan(83, 87), "User"),
         ]
         "#
         );

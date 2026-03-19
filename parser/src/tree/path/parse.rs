@@ -156,7 +156,7 @@ mod tests {
             use ./././misc/order/{Order, SomethingElse}
 
             Order: {
-                book: book/Book
+                book: book/Book,
                 user: ./misc/../misc/./user/User
             }"#
             .into(),
@@ -191,12 +191,12 @@ mod tests {
           aliases: [
             GTAlias(
               id: GTDefinitionId(GTModuleId("module"), "Order"),
-              span: GTSpan(121, 224),
+              span: GTSpan(121, 225),
               doc: None,
               attributes: [],
               name: GTIdentifier(GTSpan(121, 126), "Order"),
               descriptor: Object(GTObject(
-                span: GTSpan(128, 224),
+                span: GTSpan(128, 225),
                 name: Named(GTIdentifier(GTSpan(121, 126), "Order")),
                 extensions: [],
                 properties: [
@@ -213,14 +213,14 @@ mod tests {
                     required: true,
                   ),
                   GTProperty(
-                    span: GTSpan(178, 210),
+                    span: GTSpan(179, 211),
                     doc: None,
                     attributes: [],
-                    name: GTKey(GTSpan(178, 182), "user"),
+                    name: GTKey(GTSpan(179, 183), "user"),
                     descriptor: InlineImport(GTInlineImport(
-                      span: GTSpan(184, 210),
-                      name: GTIdentifier(GTSpan(206, 210), "User"),
-                      path: GTPath(GTSpan(184, 205), Unresolved, "./misc/user"),
+                      span: GTSpan(185, 211),
+                      name: GTIdentifier(GTSpan(207, 211), "User"),
+                      path: GTPath(GTSpan(185, 206), Unresolved, "./misc/user"),
                     )),
                     required: true,
                   ),

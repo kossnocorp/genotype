@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
 impl GTAttributeAssignment {
-    pub fn parse(pair: Pair<'_, Rule>) -> GTNodeParseResult<Self> {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
         let span: GTSpan = pair.as_span().into();
 
         let mut inner = pair.into_inner();
@@ -11,7 +11,7 @@ impl GTAttributeAssignment {
 
         Ok(GTAttributeAssignment {
             span,
-            value: GTAttributeValue::parse(pair)?,
+            value: GTAttributeValue::parse(pair, context)?,
         })
     }
 }
@@ -19,15 +19,26 @@ impl GTAttributeAssignment {
 #[cfg(test)]
 mod tests {
     use crate::*;
+    use insta::assert_ron_snapshot;
     use pest::Parser;
-    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::attribute_assignment, "= 42").unwrap();
-        assert_eq!(
-            GTAttributeAssignment::new((0, 4).into(), GTLiteral::Integer((2, 4).into(), 42).into()),
-            GTAttributeAssignment::parse(pairs.next().unwrap()).unwrap(),
+        let mut context = GTContext::new("module".into());
+        assert_ron_snapshot!(
+            GTAttributeAssignment::parse(pairs.next().unwrap(), &mut context).unwrap(),
+            @"
+        GTAttributeAssignment(
+          span: GTSpan(0, 4),
+          value: Literal(GTLiteral(
+            span: GTSpan(2, 4),
+            doc: None,
+            attributes: [],
+            value: Integer(42),
+          )),
+        )
+        "
         );
     }
 }

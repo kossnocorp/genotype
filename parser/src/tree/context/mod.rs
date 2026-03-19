@@ -1,5 +1,8 @@
 use crate::prelude::internal::*;
 
+mod annotations;
+pub use annotations::*;
+
 mod ids;
 mod naming;
 
@@ -13,6 +16,7 @@ pub struct GTContext {
     /// names.
     // [TODO] Use `GTNamingContext` instead of `claimed_names` in the future.
     pub claimed_names: HashSet<String>,
+    pub annotation: Option<GTContextAnnotation>,
 }
 
 /// The parent context enum that defines the kind of a parent an object has.
@@ -34,6 +38,7 @@ impl GTContext {
             resolve: GTModuleResolve::new(),
             parents: vec![],
             claimed_names: HashSet::new(),
+            annotation: None,
         }
     }
 }

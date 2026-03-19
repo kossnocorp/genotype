@@ -4,7 +4,7 @@ impl GTRecordKey {
     pub fn parse(pair: Pair<'_, Rule>) -> GTNodeParseResult<Self> {
         let span = pair.as_span().into();
 
-        match pair.into_inner().as_str() {
+        match pair.clone().into_inner().as_str() {
             "" | "string" => Ok(GTRecordKey::String(span)),
             "number" => Ok(GTRecordKey::Number(span)),
             "int" => Ok(GTRecordKey::Int64(span)),
@@ -25,7 +25,11 @@ impl GTRecordKey {
             "f32" => Ok(GTRecordKey::Float32(span)),
             "f64" => Ok(GTRecordKey::Float64(span)),
             "boolean" => Ok(GTRecordKey::Boolean(span)),
-            _ => Err(GTParseError::UnknownRule(span, GTNode::RecordKey)),
+            _ => Err(GTParseError::UnexpectedRule(
+                span,
+                GTNode::RecordKey,
+                pair.as_rule(),
+            )),
         }
     }
 }

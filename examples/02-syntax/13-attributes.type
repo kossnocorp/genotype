@@ -3,13 +3,13 @@ Message: Reply | DM
 Reply: {
   #[tag]
   type: "reply",
-  message: string
+  message: string,
 }
 
 DM: {
   #[tag]
   type: "dm",
-  message: string
+  message: string,
 }
 
 #[hello = "world"]
@@ -20,3 +20,17 @@ Arguments: true
 
 #[hello(which = "cruel", what = "world")]
 Properties: true
+
+Response: #[name = Success] SuccessResponse | #[name = Error] ErrorResponse
+
+Response:
+  | #[name = Success]
+  SuccessResponse
+  | #[name = Error]
+  ErrorResponse
+
+Response:
+  #[name = Success]
+  SuccessResponse |
+  #[name = Error]
+  ErrorResponse |

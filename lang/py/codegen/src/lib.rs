@@ -51,7 +51,7 @@ impl GtlCodegen for PyCodegen {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_snapshot;
+    use genotype_test::prelude::*;
 
     #[test]
     fn test_register_import() {
@@ -122,7 +122,7 @@ mod tests {
             doc: None,
             attributes: vec![],
             name: GTIdentifier::new(Default::default(), "Hello".into()),
-            descriptor: GTLiteral::String(Default::default(), "hello".into()).into(),
+            descriptor: GtFactory::literal_string("hello").into(),
         }));
         let result = codegen.inject_descriptor(alias).unwrap();
         assert_snapshot!(result, @"Hello");

@@ -1,19 +1,19 @@
 CommentBase: {
-  v: 2
-  text: string
+  v: 2,
+  text: string,
 }
 
 UserComment: {
-  ...CommentBase
-  type: "user"
-  userId: string
-  published: boolean
+  ...CommentBase,
+  type: "user",
+  userId: string,
+  published: boolean,
 }
 
 SystemComment: {
-  ...CommentBase
-  type: "system"
-  published: true
+  ...CommentBase,
+  type: "system",
+  published: true,
 }
 
 False: false
