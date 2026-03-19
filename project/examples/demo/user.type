@@ -1,6 +1,6 @@
 use ./base/*
 
 User: {
-  name: Name
-  email: string
+  name: Name,
+  email: string,
 }

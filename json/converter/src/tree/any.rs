@@ -128,7 +128,14 @@ mod tests {
         };
 
         let tree: GTDescriptor = literal.to_tree_with_context(&mut Default::default());
-        assert_ron_snapshot!(tree, @r#"Literal(String(GTSpan(0, 0), "Hello"))"#);
+        assert_ron_snapshot!(tree, @r#"
+        Literal(GTLiteral(
+          span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
+          value: String("Hello"),
+        ))
+        "#);
     }
 
     #[test]

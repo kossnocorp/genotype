@@ -24,7 +24,7 @@ impl GTDescriptor {
             GTDescriptor::Alias(alias) => alias.span,
             GTDescriptor::Array(array) => array.span,
             GTDescriptor::InlineImport(inline_import) => inline_import.span,
-            GTDescriptor::Literal(literal) => literal.span(),
+            GTDescriptor::Literal(literal) => literal.span,
             GTDescriptor::Object(object) => object.span,
             GTDescriptor::Primitive(primitive) => primitive.span(),
             GTDescriptor::Reference(reference) => reference.span,

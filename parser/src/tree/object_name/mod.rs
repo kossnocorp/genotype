@@ -1,6 +1,6 @@
 use crate::prelude::internal::*;
 
-/// A name assigned to an object. It can be explicitely named,
+/// A name assigned to an object. It can be explicitly named,
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub enum GTObjectName {
     /// Explicately given name.

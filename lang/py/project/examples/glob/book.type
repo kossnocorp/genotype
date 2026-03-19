@@ -1,7 +1,7 @@
 use ./author/*
 
 Book: {
-  title: string
-  author: Author
-  authorName: AuthorName
+  title: string,
+  author: Author,
+  authorName: AuthorName,
 }

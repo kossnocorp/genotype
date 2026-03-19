@@ -156,6 +156,7 @@ mod tests {
                 GTContextParent::Alias(GTIdentifier::new((5, 10).into(), "Hello".into())),
             ],
             claimed_names: Default::default(),
+            annotation: None,
         };
         assert_eq!(
             context.name_object((50, 55).into()).unwrap(),
@@ -174,6 +175,7 @@ mod tests {
                 GTContextParent::Anonymous,
             ],
             claimed_names: Default::default(),
+            annotation: None,
         };
         assert_eq!(
             context.name_object((50, 55).into()).unwrap(),
@@ -197,6 +199,7 @@ mod tests {
                 GTContextParent::Property(GTKey::new((15, 20).into(), "world".into())),
             ],
             claimed_names: Default::default(),
+            annotation: None,
         };
         assert_eq!(
             context.name_object((50, 55).into()).unwrap(),

@@ -52,5 +52,5 @@ GtjSchemaTuple = {
 
 GtjSchemaLiteral = {
   ...GtjSchemaBase,
-  const: null | boolean | number | string
+  const: null | boolean | number | string,
 }

@@ -3,16 +3,16 @@ use crate::prelude::internal::*;
 #[derive(Error, Diagnostic, Debug, PartialEq)]
 pub enum GTParseError {
     #[error("Failed to parse {1} node")]
-    #[diagnostic(code("GTP002"))]
+    #[diagnostic(code("GTP001"))]
     Internal(#[label("internal error")] GTSpan, GTNode),
 
     #[error("Failed to parse {1} node")]
     #[diagnostic(code("GTP002"))]
     InternalMessage(#[label("{2}")] GTSpan, GTNode, &'static str),
 
-    #[error("Failed to parse {1} node")]
+    #[error("Encountered unexpected rule '{2:?}' while parsing '{1}' node")]
     #[diagnostic(code("GTP003"))]
-    UnknownRule(#[label("unknown rule")] GTSpan, GTNode),
+    UnexpectedRule(#[label("unexpected rule")] GTSpan, GTNode, Rule),
 
     #[error("Failed to parse {1} node")]
     #[diagnostic(code("GTP004"))]
@@ -31,7 +31,7 @@ impl GTParseError {
         match self {
             Self::Internal(span, _) => span.clone(),
             Self::InternalMessage(span, _, _) => span.clone(),
-            Self::UnknownRule(span, _) => span.clone(),
+            Self::UnexpectedRule(span, _, _) => span.clone(),
             Self::UnexpectedEnd(span, _) => span.clone(),
             Self::UnknownValue(span, _) => span.clone(),
             Self::UnmatchedDescriptor(span, _) => span.clone(),
@@ -44,8 +44,12 @@ impl GTParseError {
             Self::InternalMessage(_, node, message) => {
                 format!("failed to parse {:?} node: {}", node.name(), message)
             }
-            Self::UnknownRule(_, node) => {
-                format!("failed to parse {:?} node: unknown rule", node.name())
+            Self::UnexpectedRule(_, node, rule) => {
+                format!(
+                    "failed to parse {:?} node: unexpected rule {:?}",
+                    node.name(),
+                    rule
+                )
             }
             Self::UnexpectedEnd(_, node) => {
                 format!("failed to parse {:?} node: unexpected end", node.name())

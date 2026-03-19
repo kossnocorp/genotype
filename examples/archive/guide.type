@@ -22,12 +22,12 @@
 // C#, or properties form in JTD.
 Structure = {
   // Properties are defined by the property name and its type:
-  text: string
+  text: string,
 
   // Basic primitive types include string, boolean, number and float:
-  flag: boolean
-  num: number // Represents 64-bit integer
-  pi: float   // Represents 64-bit floating point number
+  flag: boolean,
+  num: number // Represents 64-bit integer,
+  pi: float   // Represents 64-bit floating point number,
 }
 
 // You might already noticed that comments in Genotype are defined by //.
@@ -36,10 +36,10 @@ Structure = {
 /// Structures can also be annoted with doc comments.
 User: {
   /// As well as properties.
-  name: string
+  name: string,
 
   /// User's age.
-  age: /* Btw you can also use block comments too. */ number
+  age: /* Btw you can also use block comments too. */ number,
 }
 
 // Doc comments will translate to TSDoc in TypeScript, doc comments in Rust,
@@ -49,7 +49,7 @@ User: {
 
 More = {
   // Types can be defined nullable by adding a question mark:
-  prop: string?
+  prop: string?,
   // This is equivalent to `string | null` in TypeScript and `Option<String>`
   // in Rust.
 
@@ -59,26 +59,26 @@ More = {
   // in the data at all.
 
   // Properties can refer other types:
-  structure: Structure
+  structure: Structure,
 
   // ... nested structures:
   nested: {
-    hello: string
+    hello: string,
 
     // ... or even be recursive:
-    more: More
+    more: More,
   }
 
   // Nested properties can be named:
   anotherNested: AnotherNested = {
-    hello: string
+    hello: string,
   }
 
   // Arrays are defined by wrapping into square brackets:
-  list: [string]
+  list: [string],
 
   // Tuples are defined by listing types in parentheses:
-  tuple: (string, number)
+  tuple: (string, number),
 }
 
 // You can write properties on the same line delimited by a comma:
@@ -106,9 +106,9 @@ UserMap = { [number]: User }
 // You can use string, number and float as keys.
 
 User: {
-  name: string
+  name: string,
   #[validate: "email"]
-  email: string
+  email: string,
 }
 
 // You can tag a structure:
@@ -119,17 +119,17 @@ Comment = {
 
 // You can reuse properties from other structures:
 Content = {
-  text: string
+  text: string,
 }
 
 Post = {
   ...Content
-  title: string
+  title: string,
 }
 
 Comment = {
   ...Content
-  user: User
+  user: User,
 }
 
 // [TODO] enum
@@ -143,7 +143,7 @@ State = {
 }
 
 ActivePayload = {
-  startedAt: string
+  startedAt: string,
 }
 
 // [TODO] Granular integer and float types:

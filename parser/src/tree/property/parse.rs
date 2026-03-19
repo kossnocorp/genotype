@@ -12,8 +12,8 @@ impl GTProperty {
         let property = parse(
             inner,
             pair,
-            context,
             ParseState::Doc(span.clone(), required, None),
+            context,
         )?;
 
         context.exit_parent(span, GTNode::Property)?;
@@ -25,8 +25,8 @@ impl GTProperty {
 fn parse(
     mut inner: Pairs<'_, Rule>,
     pair: Pair<'_, Rule>,
-    context: &mut GTContext,
     state: ParseState,
+    context: &mut GTContext,
 ) -> GTNodeParseResult<GTProperty> {
     match state {
         ParseState::Doc(span, required, doc_acc) => match pair.as_rule() {
@@ -46,8 +46,8 @@ fn parse(
                     Some(pair) => parse(
                         inner,
                         pair,
-                        context,
                         ParseState::Doc(span, required, doc_acc),
+                        context,
                     ),
                     None => Err(GTParseError::Internal(span, GTNode::Property)),
                 }
@@ -56,22 +56,22 @@ fn parse(
             _ => parse(
                 inner,
                 pair,
-                context,
                 ParseState::Attributes(span, required, doc_acc, vec![]),
+                context,
             ),
         },
 
         ParseState::Attributes(span, required, doc, mut attributes) => match pair.as_rule() {
             Rule::attribute => {
-                let attribute = GTAttribute::parse(pair)?;
+                let attribute = GTAttribute::parse(pair, context)?;
                 attributes.push(attribute);
 
                 match inner.next() {
                     Some(pair) => parse(
                         inner,
                         pair,
-                        context,
                         ParseState::Attributes(span, required, doc, attributes),
+                        context,
                     ),
                     None => Err(GTParseError::Internal(span, GTNode::Property)),
                 }
@@ -80,8 +80,8 @@ fn parse(
             _ => parse(
                 inner,
                 pair,
-                context,
                 ParseState::Name(span, required, doc, attributes),
+                context,
             ),
         },
 
@@ -94,8 +94,8 @@ fn parse(
                 Some(pair) => parse(
                     inner,
                     pair,
-                    context,
                     ParseState::Descriptor(span, required, doc, attributes, name),
+                    context,
                 ),
                 None => Err(GTParseError::Internal(span, GTNode::Property)),
             }
@@ -125,28 +125,31 @@ enum ParseState {
 #[cfg(test)]
 mod tests {
     use crate::*;
+    use insta::assert_ron_snapshot;
     use pest::Parser;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_parse() {
-        let mut pairs = GenotypeParser::parse(Rule::any_property, "world: string").unwrap();
-        assert_eq!(
+        let mut pairs = GenotypeParser::parse(Rule::required_property, "world: string").unwrap();
+        assert_ron_snapshot!(
             GTProperty::parse(pairs.next().unwrap(), &mut GTContext::new("module".into())).unwrap(),
-            GTProperty {
-                span: (0, 13).into(),
-                doc: None,
-                attributes: vec![],
-                name: GTKey::new((0, 5).into(), "world".into()),
-                descriptor: GTPrimitive::String((7, 13).into()).into(),
-                required: true
-            }
+            @r#"
+        GTProperty(
+          span: GTSpan(0, 13),
+          doc: None,
+          attributes: [],
+          name: GTKey(GTSpan(0, 5), "world"),
+          descriptor: Primitive(String(GTSpan(7, 13))),
+          required: true,
+        )
+        "#
         );
     }
 
     #[test]
     fn test_parse_parent() {
-        let mut pairs = GenotypeParser::parse(Rule::any_property, "world: string").unwrap();
+        let mut pairs = GenotypeParser::parse(Rule::required_property, "world: string").unwrap();
         let parents = vec![GTContextParent::Alias(GTIdentifier::new(
             (0, 5).into(),
             "Hello".into(),
@@ -156,6 +159,7 @@ mod tests {
             parents: parents.clone(),
             resolve: GTModuleResolve::new(),
             claimed_names: Default::default(),
+            annotation: None,
         };
 
         GTProperty::parse(pairs.next().unwrap(), &mut context).unwrap();

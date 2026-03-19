@@ -29,7 +29,13 @@ mod tests {
     #[test]
     fn test_traverse_literal() {
         let mut visitor = GTMockVisitor::new();
-        let literal = GTLiteral::String((0, 0).into(), "answer".into());
+        let value = GTLiteralValue::String("answer".into());
+        let literal = GTLiteral {
+            span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
+            value,
+        };
         let mut value = GTAttributeValue::Literal(literal.clone());
         value.traverse(&mut visitor);
         assert_eq!(

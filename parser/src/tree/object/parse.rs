@@ -6,7 +6,7 @@ impl GTObject {
 
         let name = context.name_object(span.clone())?;
 
-        // It is an explicitely named object, so we need to add an anonymous parent so following
+        // It is an explicitly named object, so we need to add an anonymous parent so following
         // children don't get the object name.
         let named = matches!(name, GTObjectName::Named(_));
         if named {
@@ -20,17 +20,35 @@ impl GTObject {
             properties: vec![],
         };
 
-        for pair in pair.into_inner() {
-            match pair.as_rule() {
-                Rule::required_property | Rule::optional_property => {
-                    object.properties.push(GTProperty::parse(pair, context)?);
-                }
+        if let Some(properties_pair) = pair.into_inner().next() {
+            for pair in properties_pair.into_inner() {
+                // Extract property rule
+                let property_pair = pair
+                    .into_inner()
+                    .next()
+                    .ok_or_else(|| GTParseError::UnexpectedEnd(span.clone(), GTNode::Object))?;
 
-                Rule::extension_property => {
-                    object.extensions.push(GTExtension::parse(pair, context)?);
-                }
+                match property_pair.as_rule() {
+                    Rule::required_property | Rule::optional_property => {
+                        object
+                            .properties
+                            .push(GTProperty::parse(property_pair, context)?);
+                    }
 
-                _ => return Err(GTParseError::Internal(object.span, GTNode::Object)),
+                    Rule::extension_property => {
+                        object
+                            .extensions
+                            .push(GTExtension::parse(property_pair, context)?);
+                    }
+
+                    rule => {
+                        return Err(GTParseError::UnexpectedRule(
+                            property_pair.as_span().into(),
+                            GTNode::Object,
+                            rule,
+                        ));
+                    }
+                }
             }
         }
 
@@ -61,6 +79,7 @@ mod tests {
                 "Hello".into(),
             ))],
             claimed_names: Default::default(),
+            annotation: None,
         };
         assert_eq!(
             GTObject::parse(pairs.next().unwrap(), &mut context).unwrap(),
@@ -85,7 +104,7 @@ mod tests {
         let source_code = NamedSource::new(
             "module.type",
             r#"Order: {
-                book: book/Book
+                book: book/Book,
                 user: ./misc/user/User
             }"#
             .into(),
@@ -96,7 +115,7 @@ mod tests {
             @r#"
         [
           GTPath(GTSpan(31, 35), Unresolved, "book"),
-          GTPath(GTSpan(63, 74), Unresolved, "./misc/user"),
+          GTPath(GTSpan(64, 75), Unresolved, "./misc/user"),
         ]
         "#
         );
@@ -107,7 +126,7 @@ mod tests {
         let source_code = NamedSource::new(
             "module.type",
             r#"Order: {
-                book: book/Book
+                book: book/Book,
                 user: ./misc/../misc/./user/User
             }"#
             .into(),
@@ -118,7 +137,7 @@ mod tests {
             @r#"
         [
           GTPath(GTSpan(31, 35), Unresolved, "book"),
-          GTPath(GTSpan(63, 84), Unresolved, "./misc/user"),
+          GTPath(GTSpan(64, 85), Unresolved, "./misc/user"),
         ]
         "#
         );
@@ -135,6 +154,7 @@ mod tests {
                 GTContextParent::Anonymous,
             ],
             claimed_names: Default::default(),
+            annotation: None,
         };
         assert_eq!(
             GTObject::parse(pairs.next().unwrap(), &mut context).unwrap(),

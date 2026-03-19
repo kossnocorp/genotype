@@ -83,7 +83,7 @@ Payload: {
   /// You can use literal types to define constants:
   version: 1,
   /// And branded types to define unique identifiers:
-  id: PayloadId = @string
+  id: PayloadId = @string,
 }
 
 /// There's also a special type any that will translate into any JSON value:

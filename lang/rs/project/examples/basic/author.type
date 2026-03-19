@@ -1,3 +1,3 @@
 Author: {
-  name: string
+  name: string,
 }

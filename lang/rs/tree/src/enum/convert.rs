@@ -133,9 +133,44 @@ fn name_variant_descriptor(
         GTDescriptor::Reference(reference) => reference.identifier.convert(context)?,
         GTDescriptor::InlineImport(import) => import.name.convert(context)?,
         GTDescriptor::Object(object) => object.name.to_identifier().convert(context)?,
-        GTDescriptor::Literal(literal) => RSConvertNameSegment::Literal(literal.clone())
-            .render(true)
-            .into(),
+        GTDescriptor::Literal(literal) => {
+            let mut attr_name = None;
+            for attr in literal.attributes.iter() {
+                match &attr.descriptor {
+                    Some(GTAttributeDescriptor::Assignment(assignment)) => {
+                        if attr.name.name == "name" {
+                            if let GTAttributeValue::Literal(literal) = &assignment.value {
+                                if let GTLiteralValue::String(string) = &literal.value {
+                                    attr_name = Some(string.clone());
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    Some(GTAttributeDescriptor::Properties(properties)) => {
+                        for property in properties.iter() {
+                            if property.name.name == "name" {
+                                if let GTAttributeValue::Literal(literal) = &property.value {
+                                    if let GTLiteralValue::String(string) = &literal.value {
+                                        attr_name = Some(string.clone());
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+
+            match attr_name {
+                Some(name) => name.into(),
+
+                None => RSConvertNameSegment::Literal(literal.clone())
+                    .render(true)
+                    .into(),
+            }
+        }
         GTDescriptor::Branded(branded) => branded.name.convert(context)?,
         GTDescriptor::Primitive(primitive) => match primitive {
             GTPrimitive::Boolean(_) => "Boolean".into(),
@@ -771,6 +806,52 @@ mod tests {
                 identifier: RSIdentifier("Ping"),
                 definition_id: GTDefinitionId(GTModuleId("module"), "Ping"),
               )))),
+            ),
+          ],
+        )
+        "#
+        );
+    }
+
+    #[test]
+    fn test_attr_literal_name_assignment() {
+        let mut context = RSConvertContext::empty("module".into());
+        context.enter_parent(RSContextParent::Alias("Status".into()));
+
+        let union = unwrap_named::<GTUnion>(
+            "Status",
+            r#"
+            Status: #[name = "Success"] "ok" | #[name = "Error"] "nope"
+            "#,
+        );
+        println!("{:#?}", union);
+        assert_ron_snapshot!(
+            union.convert(&mut context).unwrap(),
+            @r#"
+        RSEnum(
+          id: GTDefinitionId(GTModuleId("module"), "Status"),
+          doc: None,
+          attributes: [
+            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RSAttribute("serde(untagged)"),
+          ],
+          name: RSIdentifier("Status"),
+          variants: [
+            RSEnumVariant(
+              doc: None,
+              attributes: [
+                RSAttribute("literal(\"ok\")"),
+              ],
+              name: RSIdentifier("Success"),
+              descriptor: None,
+            ),
+            RSEnumVariant(
+              doc: None,
+              attributes: [
+                RSAttribute("literal(\"nope\")"),
+              ],
+              name: RSIdentifier("Error"),
+              descriptor: None,
             ),
           ],
         )

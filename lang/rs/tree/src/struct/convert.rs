@@ -103,7 +103,7 @@ impl RSConvert<RSStruct> for GTBranded {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
+    use genotype_test::prelude::*;
 
     #[test]
     fn test_convert_object() {
@@ -307,7 +307,7 @@ mod tests {
     #[test]
     fn test_convert_literal() {
         assert_ron_snapshot!(
-            GTLiteral::Boolean((0, 0).into(), true)
+            GtFactory::literal_boolean(true)
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @r#"
@@ -329,7 +329,7 @@ mod tests {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Alias("Version".into()));
         assert_ron_snapshot!(
-            GTLiteral::Integer((0, 0).into(), 1)
+            GtFactory::literal_integer(1)
                 .convert(&mut context)
                 .unwrap(),
             @r#"
@@ -352,7 +352,7 @@ mod tests {
         context.enter_parent(RSContextParent::Definition("User".into()));
         context.enter_parent(RSContextParent::Field("v".into()));
         assert_ron_snapshot!(
-            GTLiteral::Integer((0, 0).into(), 1)
+            GtFactory::literal_integer(1)
                 .convert(&mut context)
                 .unwrap(),
             @r#"
@@ -373,7 +373,7 @@ mod tests {
     fn test_convert_literal_import() {
         let mut context = RSConvertContext::empty("module".into());
         assert_ron_snapshot!(
-            GTLiteral::Boolean((0, 0).into(), false)
+            GtFactory::literal_boolean(false)
                 .convert(&mut context)
                 .unwrap(),
             @r#"
@@ -403,7 +403,7 @@ mod tests {
         let mut context = RSConvertContext::empty("module".into());
         context.provide_doc(Some("Hello, world!".into()));
         assert_ron_snapshot!(
-            GTLiteral::Boolean((0, 0).into(), false)
+            GtFactory::literal_boolean(false)
                 .convert(&mut context)
                 .unwrap(),
             @r#"
@@ -423,7 +423,7 @@ mod tests {
     #[test]
     fn test_convert_literal_float() {
         assert_ron_snapshot!(
-            GTLiteral::Float(Default::default(), 1.23456)
+            GtFactory::literal_float(1.23456)
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @r#"
@@ -443,7 +443,7 @@ mod tests {
     #[test]
     fn test_convert_branded() {
         assert_ron_snapshot!(
-            GTLiteral::Boolean((0, 0).into(), true)
+            GtFactory::literal_boolean(true)
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @r#"
@@ -465,7 +465,7 @@ mod tests {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Alias("Version".into()));
         assert_ron_snapshot!(
-            GTLiteral::Integer((0, 0).into(), 1)
+            GtFactory::literal_integer(1)
                 .convert(&mut context)
                 .unwrap(),
             @r#"
@@ -488,7 +488,7 @@ mod tests {
         context.enter_parent(RSContextParent::Definition("User".into()));
         context.enter_parent(RSContextParent::Field("v".into()));
         assert_ron_snapshot!(
-            GTLiteral::Integer((0, 0).into(), 1)
+            GtFactory::literal_integer(1)
                 .convert(&mut context)
                 .unwrap(),
             @r#"
@@ -509,7 +509,7 @@ mod tests {
     fn test_convert_branded_import() {
         let mut context = RSConvertContext::empty("module".into());
         assert_ron_snapshot!(
-            GTLiteral::Boolean((0, 0).into(), false)
+            GtFactory::literal_boolean(false)
                 .convert(&mut context)
                 .unwrap(),
             @r#"
@@ -539,7 +539,7 @@ mod tests {
         let mut context = RSConvertContext::empty("module".into());
         context.provide_doc(Some("Hello, world!".into()));
         assert_ron_snapshot!(
-            GTLiteral::Boolean((0, 0).into(), false)
+            GtFactory::literal_boolean(false)
                 .convert(&mut context)
                 .unwrap(),
             @r#"

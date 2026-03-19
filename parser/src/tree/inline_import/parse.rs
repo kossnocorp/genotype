@@ -41,7 +41,7 @@ mod tests {
         let source_code = NamedSource::new(
             "module.type",
             r#"Order: {
-                book: book/Book
+                book: book/Book,
                 user: ./misc/user/User
             }"#
             .into(),
@@ -52,7 +52,7 @@ mod tests {
             @r#"
         [
           GTPath(GTSpan(31, 35), Unresolved, "book"),
-          GTPath(GTSpan(63, 74), Unresolved, "./misc/user"),
+          GTPath(GTSpan(64, 75), Unresolved, "./misc/user"),
         ]
         "#
         );
@@ -63,7 +63,7 @@ mod tests {
         let source_code = NamedSource::new(
             "module.type",
             r#"Order: {
-                book: book/Book
+                book: book/Book,
                 user: ./misc/../misc/./user/User
             }"#
             .into(),
@@ -74,7 +74,7 @@ mod tests {
             @r#"
         [
           GTPath(GTSpan(31, 35), Unresolved, "book"),
-          GTPath(GTSpan(63, 84), Unresolved, "./misc/user"),
+          GTPath(GTSpan(64, 85), Unresolved, "./misc/user"),
         ]
         "#
         );

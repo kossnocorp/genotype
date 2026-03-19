@@ -26,14 +26,14 @@ impl PYConvert<PYDefinition> for GTAlias {
                 for attribute in self.attributes.iter() {
                     if let PYDescriptor::Union(union) = &mut descriptor {
                         if let Some(assignment) = attribute.get_assigned("discriminator") {
-                            if let GTAttributeValue::Literal(GTLiteral::String(_, value)) =
-                                &assignment.value
-                            {
-                                union.discriminator = value.clone().into();
-                                // [TODO] Resolve right now is a mess, instead of resolving in
-                                // convert functions, it should be resolved in the end or by
-                                // the parent.
-                                union.clone().resolve(context);
+                            if let GTAttributeValue::Literal(literal) = &assignment.value {
+                                if let GTLiteralValue::String(value) = &literal.value {
+                                    union.discriminator = value.clone().into();
+                                    // [TODO] Resolve right now is a mess, instead of resolving in
+                                    // convert functions, it should be resolved in the end or by
+                                    // the parent.
+                                    union.clone().resolve(context);
+                                }
                             }
                         }
                     }
@@ -369,10 +369,12 @@ mod tests {
                     descriptor: Some(GTAttributeDescriptor::Assignment(
                         GTAttributeAssignment::new(
                             (0, 0).into(),
-                            GTAttributeValue::Literal(GTLiteral::String(
-                                (0, 0).into(),
-                                "type".into()
-                            ))
+                            GTAttributeValue::Literal(GTLiteral {
+                                span: (0, 0).into(),
+                                doc: None,
+                                attributes: vec![],
+                                value: GTLiteralValue::String("type".into()),
+                            })
                         )
                     ))
                 }],
