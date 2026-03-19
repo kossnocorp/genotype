@@ -14,6 +14,7 @@ cargo-binstall = "latest"
 "cargo:cargo-release" = "latest"
 "cargo:cargo-insta" = "latest"
 "cargo:just-lsp" = "latest"
+watchexec = "latest"
 opencode = "latest"
 
 [settings]
