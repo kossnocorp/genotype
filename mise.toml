@@ -1,7 +1,8 @@
 [tools]
 # Stack
 rust = { version = "latest", channel = "stable", components = "rustfmt,clippy" }
-node = { version = "latest", postinstall = 'corepack enable' }
+node = "lts"
+pnpm = "latest"
 python = "latest"
 uv = "latest"
 
