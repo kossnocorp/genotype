@@ -609,8 +609,8 @@ mod tests {
               ),
               resolve: GTPModuleResolve(
                 paths: {
-                  GTPath(GTSpan(34, 40), Unresolved, "./user"): "user.type",
                   GTPath(GTSpan(4, 10), Unresolved, "./book"): "book.type",
+                  GTPath(GTSpan(34, 40), Unresolved, "./user"): "user.type",
                 },
                 identifiers: {
                   GTIdentifier(GTSpan(56, 60), "Book"): GTPModuleIdentifierResolve(

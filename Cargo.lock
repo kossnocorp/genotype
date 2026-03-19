@@ -897,6 +897,7 @@ dependencies = [
  "genotype_path",
  "genotype_visitor",
  "glob",
+ "indexmap",
  "insta",
  "miette",
  "num_cpus",
