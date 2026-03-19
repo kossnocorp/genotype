@@ -18,9 +18,9 @@ descriptor = @{
 // to avoid ambiguity when parsing nested descriptors (e.g. arrays).
 descriptor_inner = !{ literal | primitive | branded | any | object | array | tuple | record | inline_import | alias | name }
 
-primitive = { primitive_index | "null" }
+primitive = { primitive_index | "boolean" }
 
-primitive_index = ${ "string" | primitive_numeric | "boolean" }
+primitive_index = ${ "string" | primitive_numeric }
 
 primitive_numeric = ${ "number" | "int" | "i8" | "i16" | "i32" | "i64" | "i128" | "isize" | "u8" | "u16" | "u32" | "u64" | "u128" | "usize" | "float" | "f32" | "f64" }
 
@@ -28,7 +28,7 @@ any = { "any" }
 
 // Literals
 
-literal = { literal_string | literal_float | literal_integer | literal_boolean }
+literal = { literal_string | literal_float | literal_integer | literal_boolean | literal_null }
 
 literal_string = ${ quote ~ string_inner ~ quote }
 
@@ -43,6 +43,8 @@ string_unicode = @{ "u" ~ ASCII_HEX_DIGIT{4} }
 literal_integer = @{ ("+" | "-")? ~ integer }
 
 literal_float = @{ ("+" | "-")? ~ integer ~ ("." ~ digits ~ exponent? | exponent) }
+
+literal_null = ${ "null" }
 
 integer =  @{ "0" | (ASCII_NONZERO_DIGIT ~ digits?) }
 
@@ -92,7 +94,7 @@ array = { "[" ~ descriptor ~ "]" }
 
 // Tuples
 
-tuple = { "(" ~ descriptor ~ ("," ~ descriptor)* ~ ")" }
+tuple = { "(" ~ (descriptor ~ ("," ~ descriptor)*)? ~ ")" }
 
 // Records
 

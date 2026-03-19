@@ -68,10 +68,10 @@ mod tests {
     fn test_convert_descriptors() {
         let tuple = GtjTuple {
             r#type: GtjTupleTypeTuple,
-            descriptors: vec![GtjAny::GtjNull(GtjNull {
-                r#type: GtjNullTypeNull,
+            descriptors: vec![GtjAny::GtjNumber(GtjNumber {
                 name: None,
                 doc: None,
+                r#type: GtjNumberTypeNumber,
             })],
             name: None,
             doc: None,
@@ -82,7 +82,7 @@ mod tests {
         GTTuple(
           span: GTSpan(0, 0),
           descriptors: [
-            Primitive(Null(GTSpan(0, 0))),
+            Primitive(Number(GTSpan(0, 0))),
           ],
         )
         ");

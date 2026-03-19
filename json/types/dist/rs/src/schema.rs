@@ -139,7 +139,7 @@ pub struct GtjSchemaLiteral {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum GtjSchemaLiteralConst {
-    Null(()),
+    Null,
     Boolean(bool),
     Number(f64),
     String(String),

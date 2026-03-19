@@ -6,7 +6,7 @@ use crate::{GtjTreeConvert, GtjTreeConvertContext};
 impl GtjTreeConvert<GTLiteral> for GtjLiteral {
     fn to_tree_with_context(&self, _context: &mut GtjTreeConvertContext) -> GTLiteral {
         match &self.value {
-            GtjLiteralValue::Null(_) => GTLiteral::Null(Default::default()),
+            GtjLiteralValue::Null => GTLiteral::Null(Default::default()),
             GtjLiteralValue::Boolean(boolean) => {
                 GTLiteral::Boolean(Default::default(), boolean.clone())
             }
@@ -35,7 +35,7 @@ mod tests {
             r#type: GtjLiteralTypeLiteral,
             name: None,
             doc: None,
-            value: GtjLiteralValue::Null(()),
+            value: GtjLiteralValue::Null,
         };
 
         let descriptor_tree: GTDescriptor = literal.to_tree_with_context(&mut Default::default());

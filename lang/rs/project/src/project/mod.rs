@@ -400,7 +400,7 @@ mod tests {
             ),
             GtlProjectFile(
               path: "examples/extensions/dist/rs/src/admin.rs",
-              source: "use litty::literal;\nuse serde::{Deserialize, Serialize};\nuse crate::named::Name;\n\n#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]\npub struct Admin {\n    pub name: Name,\n    pub email: String,\n    #[serde(default, skip_serializing_if = \"Option::is_none\")]\n    pub age: Option<i64>,\n    pub role: AdminRole,\n}\n\n#[literal(\"superadmin\")]\npub struct AdminRoleSuperadmin;\n\n#[literal(\"admin\")]\npub struct AdminRoleAdmin;\n\n#[literal(\"moderator\")]\npub struct AdminRoleModerator;\n\n#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]\n#[serde(untagged)]\npub enum AdminRole {\n    Superadmin(AdminRoleSuperadmin),\n    Admin(AdminRoleAdmin),\n    Moderator(AdminRoleModerator),\n}\n",
+              source: "use litty::literal;\nuse serde::{Deserialize, Serialize};\nuse crate::named::Name;\n\n#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]\npub struct Admin {\n    pub name: Name,\n    pub email: String,\n    #[serde(default, skip_serializing_if = \"Option::is_none\")]\n    pub age: Option<i64>,\n    pub role: AdminRole,\n}\n\n#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]\n#[serde(untagged)]\npub enum AdminRole {\n    #[literal(\"superadmin\")]\n    Superadmin,\n    #[literal(\"admin\")]\n    Admin,\n    #[literal(\"moderator\")]\n    Moderator,\n}\n",
             ),
             GtlProjectFile(
               path: "examples/extensions/dist/rs/src/named.rs",

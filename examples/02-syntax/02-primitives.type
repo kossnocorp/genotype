@@ -5,5 +5,3 @@ Int: int
 Float: float
 
 Boolean: boolean
-
-Null: null

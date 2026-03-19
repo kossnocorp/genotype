@@ -4,7 +4,6 @@ use genotype_json_types::*;
 impl GtjSchemaConvert<GtjSchemaAny> for GtjAny {
     fn to_schema(&self) -> GtjSchemaAny {
         match self {
-            GtjAny::GtjNull(null) => null.to_schema(),
             GtjAny::GtjBoolean(boolean) => boolean.to_schema(),
             GtjAny::GtjNumber(number) => number.to_schema(),
             GtjAny::GtjString(string) => string.to_schema(),
@@ -21,22 +20,6 @@ impl GtjSchemaConvert<GtjSchemaAny> for GtjAny {
 mod tests {
     use super::*;
     use insta::assert_ron_snapshot;
-
-    #[test]
-    fn test_convert_null() {
-        let null = GtjAny::GtjNull(GtjNull {
-            name: Some("hello".into()),
-            doc: Some("Hello, world!".into()),
-            r#type: GtjNullTypeNull,
-        });
-        assert_ron_snapshot!(null.to_schema(), @r#"
-        GtjSchemaNull(
-          title: Some("hello"),
-          description: Some("Hello, world!"),
-          type: "null",
-        )
-        "#);
-    }
 
     #[test]
     fn test_convert_boolean() {
@@ -128,10 +111,10 @@ mod tests {
             name: Some("hello".into()),
             doc: Some("Hello, world!".into()),
             r#type: GtjArrayTypeArray,
-            descriptor: GtjAny::GtjNull(GtjNull {
+            descriptor: GtjAny::GtjNumber(GtjNumber {
                 name: None,
                 doc: None,
-                r#type: GtjNullTypeNull,
+                r#type: GtjNumberTypeNumber,
             }),
         }));
         assert_ron_snapshot!(array.to_schema(), @r#"
@@ -139,8 +122,8 @@ mod tests {
           title: Some("hello"),
           description: Some("Hello, world!"),
           type: "array",
-          items: GtjSchemaNull(
-            type: "null",
+          items: GtjSchemaNumber(
+            type: "number",
           ),
         )
         "#);
@@ -153,10 +136,10 @@ mod tests {
             name: Some("hello".into()),
             doc: Some("Hello, world!".into()),
             descriptors: vec![
-                GtjAny::GtjNull(GtjNull {
+                GtjAny::GtjNumber(GtjNumber {
                     name: None,
                     doc: None,
-                    r#type: GtjNullTypeNull,
+                    r#type: GtjNumberTypeNumber,
                 }),
                 GtjAny::GtjBoolean(GtjBoolean {
                     name: None,
@@ -170,8 +153,8 @@ mod tests {
           title: Some("hello"),
           description: Some("Hello, world!"),
           anyOf: [
-            GtjSchemaNull(
-              type: "null",
+            GtjSchemaNumber(
+              type: "number",
             ),
             GtjSchemaBoolean(
               type: "boolean",
@@ -194,6 +177,23 @@ mod tests {
           title: Some("hello"),
           description: Some("Hello, world!"),
           const: true,
+        )
+        "#);
+    }
+
+    #[test]
+    fn test_convert_literal_null() {
+        let literal = GtjAny::GtjLiteral(GtjLiteral {
+            name: Some("hello".into()),
+            doc: Some("Hello, world!".into()),
+            r#type: GtjLiteralTypeLiteral,
+            value: GtjLiteralValue::Null,
+        });
+        assert_ron_snapshot!(literal.to_schema(), @r#"
+        GtjSchemaLiteral(
+          title: Some("hello"),
+          description: Some("Hello, world!"),
+          const: (),
         )
         "#);
     }

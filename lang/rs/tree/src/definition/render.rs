@@ -86,17 +86,17 @@ mod tests {
                         doc: None,
                         name: "Boolean".into(),
                         attributes: vec![],
-                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                        descriptor: Some(RSEnumVariantDescriptor::Descriptor(
                             RSDescriptor::Primitive(RSPrimitive::Boolean).into()
-                        ),
+                        )),
                     },
                     RSEnumVariant {
                         doc: None,
                         name: "String".into(),
                         attributes: vec![],
-                        descriptor: RSEnumVariantDescriptor::Descriptor(
+                        descriptor: Some(RSEnumVariantDescriptor::Descriptor(
                             RSDescriptor::Primitive(RSPrimitive::String).into()
-                        ),
+                        )),
                     }
                 ],
             })

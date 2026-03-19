@@ -21,8 +21,12 @@ impl<'a> GtlRender<'a> for RSEnumVariant {
         }
 
         let name = self.name.render(state, context)?;
-        let descriptor = self.descriptor.render(state, context)?;
-        blocks.push(state.indent_format(&format!("{name}({descriptor}),")));
+        let descriptor = if let Some(descriptor) = &self.descriptor {
+            format!("({})", descriptor.render(state, context)?)
+        } else {
+            "".into()
+        };
+        blocks.push(state.indent_format(&format!("{name}{descriptor},")));
 
         Ok(blocks.join("\n"))
     }
@@ -40,7 +44,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: "Variant".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean).into(),
+                descriptor: Some(RSDescriptor::Primitive(RSPrimitive::Boolean).into()),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -55,7 +59,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: "Variant".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean).into(),
+                descriptor: Some(RSDescriptor::Primitive(RSPrimitive::Boolean).into()),
             }
             .render(
                 RSRenderState::default().indent_inc(),
@@ -73,7 +77,7 @@ mod tests {
                 doc: None,
                 attributes: vec![RSAttribute(r#"serde(rename = "variant")"#.into())],
                 name: "Variant".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean).into(),
+                descriptor: Some(RSDescriptor::Primitive(RSPrimitive::Boolean).into()),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -91,7 +95,7 @@ mod tests {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "Variant".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean).into(),
+                descriptor: Some(RSDescriptor::Primitive(RSPrimitive::Boolean).into()),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -109,7 +113,7 @@ mod tests {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![RSAttribute(r#"serde(rename = "variant")"#.into())],
                 name: "Variant".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean).into(),
+                descriptor: Some(RSDescriptor::Primitive(RSPrimitive::Boolean).into()),
             }
             .render(
                 RSRenderState::default().indent_inc(),
@@ -120,6 +124,28 @@ mod tests {
         /// Hello, world!
         #[serde(rename = "variant")]
         Variant(bool),
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_no_descriptor() {
+        assert_snapshot!(
+            RSEnumVariant {
+                doc: Some("Hello, world!".into()),
+                attributes: vec![RSAttribute(r#"literal(3.14)"#.into())],
+                name: "Variant".into(),
+                descriptor: None,
+            }
+            .render(
+                RSRenderState::default().indent_inc(),
+                &mut Default::default()
+            )
+            .unwrap(),
+            @r#"
+        /// Hello, world!
+        #[literal(3.14)]
+        Variant,
         "#
         );
     }

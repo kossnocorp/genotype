@@ -213,14 +213,6 @@ mod tests {
                 name: GTIdentifier(GTSpan(40, 47), "Boolean"),
                 descriptor: Primitive(Boolean(GTSpan(49, 56))),
               ),
-              GTAlias(
-                id: GTDefinitionId(GTModuleId("module"), "Null"),
-                span: GTSpan(58, 68),
-                doc: None,
-                attributes: [],
-                name: GTIdentifier(GTSpan(58, 62), "Null"),
-                descriptor: Primitive(Null(GTSpan(64, 68))),
-              ),
             ],
           ),
           resolve: GTModuleResolve(
@@ -230,13 +222,12 @@ mod tests {
               GTIdentifier(GTSpan(16, 19), "Int"),
               GTIdentifier(GTSpan(26, 31), "Float"),
               GTIdentifier(GTSpan(40, 47), "Boolean"),
-              GTIdentifier(GTSpan(58, 62), "Null"),
             ],
             references: [],
           ),
           source_code: NamedSource(
             name: "../examples/02-syntax/02-primitives.type",
-            source: "String: string\n\nInt: int\n\nFloat: float\n\nBoolean: boolean\n\nNull: null",
+            source: "String: string\n\nInt: int\n\nFloat: float\n\nBoolean: boolean",
             language: None,
           ),
         )
@@ -821,6 +812,17 @@ mod tests {
                   ],
                 )),
               ),
+              GTAlias(
+                id: GTDefinitionId(GTModuleId("module"), "Empty"),
+                span: GTSpan(101, 110),
+                doc: None,
+                attributes: [],
+                name: GTIdentifier(GTSpan(101, 106), "Empty"),
+                descriptor: Tuple(GTTuple(
+                  span: GTSpan(108, 110),
+                  descriptors: [],
+                )),
+              ),
             ],
           ),
           resolve: GTModuleResolve(
@@ -828,12 +830,13 @@ mod tests {
             exports: [
               GTIdentifier(GTSpan(0, 4), "User"),
               GTIdentifier(GTSpan(69, 76), "Address"),
+              GTIdentifier(GTSpan(101, 106), "Empty"),
             ],
             references: [],
           ),
           source_code: NamedSource(
             name: "../examples/02-syntax/08-tuples.type",
-            source: "User: {\n  name: (string, string)\n  address: (int, string, string)\n}\n\nAddress: (int, string, string)",
+            source: "User: {\n  name: (string, string)\n  address: (int, string, string)\n}\n\nAddress: (int, string, string)\n\nEmpty: ()",
             language: None,
           ),
         )
@@ -1824,19 +1827,6 @@ mod tests {
                   primitive: Boolean(GTSpan(51, 58)),
                 )),
               ),
-              GTAlias(
-                id: GTDefinitionId(GTModuleId("module"), "Nope"),
-                span: GTSpan(60, 71),
-                doc: None,
-                attributes: [],
-                name: GTIdentifier(GTSpan(60, 64), "Nope"),
-                descriptor: Branded(GTBranded(
-                  span: GTSpan(66, 71),
-                  id: GTDefinitionId(GTModuleId("module"), "Nope"),
-                  name: GTIdentifier(GTSpan(60, 64), "Nope"),
-                  primitive: Null(GTSpan(67, 71)),
-                )),
-              ),
             ],
           ),
           resolve: GTModuleResolve(
@@ -1846,13 +1836,12 @@ mod tests {
               GTIdentifier(GTSpan(13, 19), "UserId"),
               GTIdentifier(GTSpan(30, 35), "Const"),
               GTIdentifier(GTSpan(45, 48), "Yes"),
-              GTIdentifier(GTSpan(60, 64), "Nope"),
             ],
             references: [],
           ),
           source_code: NamedSource(
             name: "../examples/02-syntax/16-branded.type",
-            source: "OrgId: @int\n\nUserId: @string\n\nConst: @float\n\nYes: @boolean\n\nNope: @null",
+            source: "OrgId: @int\n\nUserId: @string\n\nConst: @float\n\nYes: @boolean",
             language: None,
           ),
         )

@@ -7,9 +7,6 @@ pub use context::*;
 mod any;
 pub use any::*;
 
-mod null;
-pub use null::*;
-
 mod boolean;
 pub use boolean::*;
 

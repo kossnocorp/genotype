@@ -37,10 +37,10 @@ mod tests {
     fn test_convert() {
         let array = GtjArray {
             r#type: GtjArrayTypeArray,
-            descriptor: GtjAny::GtjNull(GtjNull {
-                r#type: GtjNullTypeNull,
+            descriptor: GtjAny::GtjNumber(GtjNumber {
                 name: None,
                 doc: None,
+                r#type: GtjNumberTypeNumber,
             }),
             name: None,
             doc: None,
@@ -50,7 +50,7 @@ mod tests {
         assert_ron_snapshot!(descriptor_tree, @"
         Array(GTArray(
           span: GTSpan(0, 0),
-          descriptor: Primitive(Null(GTSpan(0, 0))),
+          descriptor: Primitive(Number(GTSpan(0, 0))),
         ))
         ");
 
@@ -58,7 +58,7 @@ mod tests {
         assert_ron_snapshot!(array_tree, @"
         GTArray(
           span: GTSpan(0, 0),
-          descriptor: Primitive(Null(GTSpan(0, 0))),
+          descriptor: Primitive(Number(GTSpan(0, 0))),
         )
         ");
     }

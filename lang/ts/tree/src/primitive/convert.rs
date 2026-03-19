@@ -20,7 +20,6 @@ impl TSConvert<TSPrimitive> for GTPrimitive {
             GTPrimitive::IntUSize(_) => TSPrimitive::Number,
             GTPrimitive::Float32(_) => TSPrimitive::Number,
             GTPrimitive::Float64(_) => TSPrimitive::Number,
-            GTPrimitive::Null(_) => TSPrimitive::Null,
         }
     }
 }
@@ -95,10 +94,6 @@ mod tests {
         assert_ron_snapshot!(
             GTPrimitive::Float64((0, 0).into()).convert(&mut Default::default()),
             @"Number"
-        );
-        assert_ron_snapshot!(
-            GTPrimitive::Null((0, 0).into()).convert(&mut Default::default()),
-            @"Null"
         );
     }
 }

@@ -27,7 +27,6 @@ impl TryFrom<Pair<'_, Rule>> for GTPrimitive {
             "float" => Ok(GTPrimitive::Float64(span)),
             "f32" => Ok(GTPrimitive::Float32(span)),
             "f64" => Ok(GTPrimitive::Float64(span)),
-            "null" => Ok(GTPrimitive::Null(span)),
             _ => Err(GTParseError::Internal(span, GTNode::Primitive)),
         }
     }
