@@ -77,16 +77,6 @@ impl RSConvert<RSStruct> for GTLiteral {
     }
 }
 
-fn render_literal(literal: &GTLiteral) -> String {
-    match literal {
-        GTLiteral::Null(_) => "null".to_string(),
-        GTLiteral::Boolean(_, value) => value.to_string(),
-        GTLiteral::Integer(_, value) => value.to_string(),
-        GTLiteral::Float(_, value) => GTLiteral::render_float(&value),
-        GTLiteral::String(_, value) => GTLiteral::render_string(&value),
-    }
-}
-
 impl RSConvert<RSStruct> for GTBranded {
     fn convert(&self, context: &mut RSConvertContext) -> Result<RSStruct> {
         let doc = context.consume_doc();

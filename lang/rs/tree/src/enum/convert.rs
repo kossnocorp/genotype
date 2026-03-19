@@ -49,16 +49,28 @@ fn convert_variant(
     variant_names: &mut HashSet<RSIdentifier>,
     context: &mut RSConvertContext,
 ) -> Result<RSEnumVariant> {
+    let mut attributes = vec![];
     let variant_name = name_variant_descriptor(descriptor, context)?;
     let variant_name = ensure_unique_variant_name(variant_name, variant_names);
 
     context.enter_parent(RSContextParent::EnumVariant(variant_name.clone()));
 
-    let descriptor = RSEnumVariantDescriptor::Descriptor(descriptor.convert(context)?);
+    let descriptor = match descriptor {
+        GTDescriptor::Literal(literal) => {
+            let str = render_literal(literal);
+            attributes.push(RSAttribute(format!("literal({str})",)));
+            context.add_import(RSDependencyIdent::Litty, "literal".into());
+            None
+        }
+
+        _ => Some(RSEnumVariantDescriptor::Descriptor(
+            descriptor.convert(context)?,
+        )),
+    };
 
     let enum_variant = RSEnumVariant {
         doc: None,
-        attributes: vec![],
+        attributes,
         name: variant_name,
         descriptor,
     };
@@ -143,7 +155,6 @@ fn name_variant_descriptor(
             GTPrimitive::IntUSize(_) => "IntUSize".into(),
             GTPrimitive::Float32(_) => "Float32".into(),
             GTPrimitive::Float64(_) => "Float".into(),
-            GTPrimitive::Null(_) => "Null".into(),
         },
         GTDescriptor::Array(_) => "Vec".into(),
         GTDescriptor::Union(_) => "Union".into(),
@@ -162,14 +173,16 @@ mod tests {
     fn test_convert() {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Alias("Union".into()));
+
+        let union = unwrap_named::<GTUnion>(
+            "Union",
+            r#"
+            Union: boolean | string
+            "#,
+        );
+
         assert_ron_snapshot!(
-            GTUnion {
-                span: (0, 0).into(),
-                descriptors: vec![
-                    GTPrimitive::Boolean((0, 0).into()).into(),
-                    GTPrimitive::String((0, 0).into()).into(),
-                ]
-            }
+            union
             .convert(&mut context)
             .unwrap(),
             @r#"
@@ -186,51 +199,19 @@ mod tests {
               doc: None,
               attributes: [],
               name: RSIdentifier("Boolean"),
-              descriptor: Descriptor(Primitive(Boolean)),
+              descriptor: Some(Descriptor(Primitive(Boolean))),
             ),
             RSEnumVariant(
               doc: None,
               attributes: [],
               name: RSIdentifier("String"),
-              descriptor: Descriptor(Primitive(String)),
+              descriptor: Some(Descriptor(Primitive(String))),
             ),
           ],
         )
         "#
         );
-    }
 
-    #[test]
-    fn test_convert_import() {
-        let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Alias("Union".into()));
-        assert_ron_snapshot!(
-            GTUnion {
-                span: (0, 0).into(),
-                descriptors: vec![GTPrimitive::String((0, 0).into()).into()],
-            }
-            .convert(&mut context)
-            .unwrap(),
-            @r#"
-        RSEnum(
-          id: GTDefinitionId(GTModuleId("module"), "Union"),
-          doc: None,
-          attributes: [
-            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
-            RSAttribute("serde(untagged)"),
-          ],
-          name: RSIdentifier("Union"),
-          variants: [
-            RSEnumVariant(
-              doc: None,
-              attributes: [],
-              name: RSIdentifier("String"),
-              descriptor: Descriptor(Primitive(String)),
-            ),
-          ],
-        )
-        "#
-        );
         assert_ron_snapshot!(
             context.as_dependencies(),
             @r#"
@@ -247,11 +228,16 @@ mod tests {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Alias("Union".into()));
         context.provide_doc(Some("Hello, world!".into()));
+
+        let union = unwrap_named::<GTUnion>(
+            "Union",
+            r#"
+            Union: boolean | string
+            "#,
+        );
+
         assert_ron_snapshot!(
-            GTUnion {
-                span: (0, 0).into(),
-                descriptors: vec![GTPrimitive::String((0, 0).into()).into()],
-            }
+            union
             .convert(&mut context)
             .unwrap(),
             @r#"
@@ -267,8 +253,14 @@ mod tests {
             RSEnumVariant(
               doc: None,
               attributes: [],
+              name: RSIdentifier("Boolean"),
+              descriptor: Some(Descriptor(Primitive(Boolean))),
+            ),
+            RSEnumVariant(
+              doc: None,
+              attributes: [],
               name: RSIdentifier("String"),
-              descriptor: Descriptor(Primitive(String)),
+              descriptor: Some(Descriptor(Primitive(String))),
             ),
           ],
         )
@@ -277,94 +269,91 @@ mod tests {
     }
 
     #[test]
-    fn test_naming() {
+    fn test_literal_variants() {
         let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Definition("Admin".into()));
-        context.enter_parent(RSContextParent::Field("role".into()));
+        context.enter_parent(RSContextParent::Alias("AnimalKind".into()));
+
+        let union = unwrap_named::<GTUnion>(
+            "AnimalKind",
+            r#"
+            AnimalKind: "dog" | "cat" | "bird"
+            "#,
+        );
         assert_ron_snapshot!(
-            GTUnion {
-                span: (0, 0).into(),
-                descriptors: vec![
-                    GTLiteral::String((0, 1).into(), "superadmin".into()).into(),
-                    GTLiteral::String((0, 2).into(), "admin".into()).into(),
-                    GTLiteral::String((0, 3).into(), "moderator".into()).into(),
-                ],
-            }
-            .convert(&mut context)
-            .unwrap(),
+            union.convert(&mut context).unwrap(),
             @r#"
         RSEnum(
-          id: GTDefinitionId(GTModuleId("module"), "AdminRole"),
+          id: GTDefinitionId(GTModuleId("module"), "AnimalKind"),
           doc: None,
           attributes: [
             RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
             RSAttribute("serde(untagged)"),
           ],
-          name: RSIdentifier("AdminRole"),
+          name: RSIdentifier("AnimalKind"),
           variants: [
             RSEnumVariant(
               doc: None,
-              attributes: [],
-              name: RSIdentifier("Superadmin"),
-              descriptor: Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(0, 1)),
-                identifier: RSIdentifier("AdminRoleSuperadmin"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "AdminRoleSuperadmin"),
-              ))),
+              attributes: [
+                RSAttribute("literal(\"dog\")"),
+              ],
+              name: RSIdentifier("Dog"),
+              descriptor: None,
             ),
             RSEnumVariant(
               doc: None,
-              attributes: [],
-              name: RSIdentifier("Admin"),
-              descriptor: Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(0, 2)),
-                identifier: RSIdentifier("AdminRoleAdmin"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "AdminRoleAdmin"),
-              ))),
+              attributes: [
+                RSAttribute("literal(\"cat\")"),
+              ],
+              name: RSIdentifier("Cat"),
+              descriptor: None,
             ),
             RSEnumVariant(
               doc: None,
-              attributes: [],
-              name: RSIdentifier("Moderator"),
-              descriptor: Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(0, 3)),
-                identifier: RSIdentifier("AdminRoleModerator"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "AdminRoleModerator"),
-              ))),
+              attributes: [
+                RSAttribute("literal(\"bird\")"),
+              ],
+              name: RSIdentifier("Bird"),
+              descriptor: None,
             ),
           ],
         )
-        "#
-        );
+        "#);
+
+        let imports = context.drain_imports();
+        assert_ron_snapshot!(
+            imports,
+            @r#"
+        [
+          RSUse(
+            dependency: Litty,
+            reference: Named([
+              Name(RSIdentifier("literal")),
+            ]),
+          ),
+          RSUse(
+            dependency: Serde,
+            reference: Named([
+              Name(RSIdentifier("Deserialize")),
+              Name(RSIdentifier("Serialize")),
+            ]),
+          ),
+        ]
+        "#);
     }
 
     #[test]
     fn test_unique_name() {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Alias("Union".into()));
+
+        let union = unwrap_named::<GTUnion>(
+            "Union",
+            r#"
+            Union: () | string | () | string | ()
+            "#,
+        );
         assert_ron_snapshot!(
-            GTUnion {
-                span: (0, 0).into(),
-                descriptors: vec![
-                    GTTuple {
-                        span: (0, 0).into(),
-                        descriptors: vec![],
-                    }
-                    .into(),
-                    GTPrimitive::String((0, 0).into()).into(),
-                    GTTuple {
-                        span: (0, 0).into(),
-                        descriptors: vec![],
-                    }
-                    .into(),
-                    GTPrimitive::String((0, 0).into()).into(),
-                    GTTuple {
-                        span: (0, 0).into(),
-                        descriptors: vec![],
-                    }
-                    .into()
-                ],
-            }
+            union
             .convert(&mut context)
             .unwrap(),
             @r#"
@@ -381,37 +370,37 @@ mod tests {
               doc: None,
               attributes: [],
               name: RSIdentifier("Tuple"),
-              descriptor: Descriptor(Tuple(RSTuple(
+              descriptor: Some(Descriptor(Tuple(RSTuple(
                 descriptors: [],
-              ))),
+              )))),
             ),
             RSEnumVariant(
               doc: None,
               attributes: [],
               name: RSIdentifier("String"),
-              descriptor: Descriptor(Primitive(String)),
+              descriptor: Some(Descriptor(Primitive(String))),
             ),
             RSEnumVariant(
               doc: None,
               attributes: [],
               name: RSIdentifier("Tuple2"),
-              descriptor: Descriptor(Tuple(RSTuple(
+              descriptor: Some(Descriptor(Tuple(RSTuple(
                 descriptors: [],
-              ))),
+              )))),
             ),
             RSEnumVariant(
               doc: None,
               attributes: [],
               name: RSIdentifier("String2"),
-              descriptor: Descriptor(Primitive(String)),
+              descriptor: Some(Descriptor(Primitive(String))),
             ),
             RSEnumVariant(
               doc: None,
               attributes: [],
               name: RSIdentifier("Tuple3"),
-              descriptor: Descriptor(Tuple(RSTuple(
+              descriptor: Some(Descriptor(Tuple(RSTuple(
                 descriptors: [],
-              ))),
+              )))),
             ),
           ],
         )
@@ -423,17 +412,15 @@ mod tests {
     fn test_numeric_name() {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Alias("Union".into()));
+
+        let union = unwrap_named::<GTUnion>(
+            "Union",
+            r#"
+            Union: i32 | i64 | isize | f32 | f64
+            "#,
+        );
         assert_ron_snapshot!(
-            GTUnion {
-                span: (0, 0).into(),
-                descriptors: vec![
-                    GTPrimitive::Int32((0, 0).into()).into(),
-                    GTPrimitive::Int64((0, 0).into()).into(),
-                    GTPrimitive::IntSize((0, 0).into()).into(),
-                    GTPrimitive::Float32((0, 0).into()).into(),
-                    GTPrimitive::Float64((0, 0).into()).into(),
-                ],
-            }
+            union
             .convert(&mut context)
             .unwrap(),
             @r#"
@@ -450,31 +437,31 @@ mod tests {
               doc: None,
               attributes: [],
               name: RSIdentifier("Int32"),
-              descriptor: Descriptor(Primitive(Int32)),
+              descriptor: Some(Descriptor(Primitive(Int32))),
             ),
             RSEnumVariant(
               doc: None,
               attributes: [],
               name: RSIdentifier("Int"),
-              descriptor: Descriptor(Primitive(Int64)),
+              descriptor: Some(Descriptor(Primitive(Int64))),
             ),
             RSEnumVariant(
               doc: None,
               attributes: [],
               name: RSIdentifier("IntSize"),
-              descriptor: Descriptor(Primitive(IntSize)),
+              descriptor: Some(Descriptor(Primitive(IntSize))),
             ),
             RSEnumVariant(
               doc: None,
               attributes: [],
               name: RSIdentifier("Float32"),
-              descriptor: Descriptor(Primitive(Float32)),
+              descriptor: Some(Descriptor(Primitive(Float32))),
             ),
             RSEnumVariant(
               doc: None,
               attributes: [],
               name: RSIdentifier("Float"),
-              descriptor: Descriptor(Primitive(Float64)),
+              descriptor: Some(Descriptor(Primitive(Float64))),
             ),
           ],
         )
@@ -483,18 +470,18 @@ mod tests {
     }
 
     #[test]
-    fn test_literal_name() {
+    fn test_literal_names() {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Alias("Union".into()));
+
+        let union = unwrap_named::<GTUnion>(
+            "Union",
+            r#"
+            Union: null | "Hello" | true
+            "#,
+        );
         assert_ron_snapshot!(
-            GTUnion {
-                span: (0, 0).into(),
-                descriptors: vec![
-                    GTLiteral::Null((0, 1).into()).into(),
-                    GTLiteral::String((0, 2).into(), "Hello".into()).into(),
-                    GTLiteral::Boolean((0, 3).into(), true).into(),
-                ],
-            }
+            union
             .convert(&mut context)
             .unwrap(),
             @r#"
@@ -509,33 +496,27 @@ mod tests {
           variants: [
             RSEnumVariant(
               doc: None,
-              attributes: [],
+              attributes: [
+                RSAttribute("literal(null)"),
+              ],
               name: RSIdentifier("Null"),
-              descriptor: Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(0, 1)),
-                identifier: RSIdentifier("UnionNull"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "UnionNull"),
-              ))),
+              descriptor: None,
             ),
             RSEnumVariant(
               doc: None,
-              attributes: [],
+              attributes: [
+                RSAttribute("literal(\"Hello\")"),
+              ],
               name: RSIdentifier("Hello"),
-              descriptor: Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(0, 2)),
-                identifier: RSIdentifier("UnionHello"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "UnionHello"),
-              ))),
+              descriptor: None,
             ),
             RSEnumVariant(
               doc: None,
-              attributes: [],
+              attributes: [
+                RSAttribute("literal(true)"),
+              ],
               name: RSIdentifier("True"),
-              descriptor: Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(0, 3)),
-                identifier: RSIdentifier("UnionTrue"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "UnionTrue"),
-              ))),
+              descriptor: None,
             ),
           ],
         )
@@ -547,14 +528,15 @@ mod tests {
     fn test_literal_integer_name() {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Alias("Version".into()));
+
+        let union = unwrap_named::<GTUnion>(
+            "Version",
+            r#"
+            Version: 0 | 1
+            "#,
+        );
         assert_ron_snapshot!(
-            GTUnion {
-                span: (0, 0).into(),
-                descriptors: vec![
-                    GTLiteral::Integer((0, 1).into(), 0).into(),
-                    GTLiteral::Integer((0, 2).into(), 1).into(),
-                ],
-            }
+            union
             .convert(&mut context)
             .unwrap(),
             @r#"
@@ -569,23 +551,19 @@ mod tests {
           variants: [
             RSEnumVariant(
               doc: None,
-              attributes: [],
+              attributes: [
+                RSAttribute("literal(0)"),
+              ],
               name: RSIdentifier("Lit0"),
-              descriptor: Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(0, 1)),
-                identifier: RSIdentifier("Version0"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "Version0"),
-              ))),
+              descriptor: None,
             ),
             RSEnumVariant(
               doc: None,
-              attributes: [],
+              attributes: [
+                RSAttribute("literal(1)"),
+              ],
               name: RSIdentifier("Lit1"),
-              descriptor: Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(0, 2)),
-                identifier: RSIdentifier("Version1"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "Version1"),
-              ))),
+              descriptor: None,
             ),
           ],
         )
@@ -597,14 +575,15 @@ mod tests {
     fn test_literal_float_name() {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Alias("Version".into()));
+
+        let union = unwrap_named::<GTUnion>(
+            "Version",
+            r#"
+            Version: 1.2 | 3.4
+            "#,
+        );
         assert_ron_snapshot!(
-            GTUnion {
-                span: (0, 0).into(),
-                descriptors: vec![
-                    GTLiteral::Float((0, 1).into(), 1.2).into(),
-                    GTLiteral::Float((0, 2).into(), 3.4).into(),
-                ],
-            }
+            union
             .convert(&mut context)
             .unwrap(),
             @r#"
@@ -619,23 +598,19 @@ mod tests {
           variants: [
             RSEnumVariant(
               doc: None,
-              attributes: [],
+              attributes: [
+                RSAttribute("literal(1.2)"),
+              ],
               name: RSIdentifier("Lit1_2"),
-              descriptor: Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(0, 1)),
-                identifier: RSIdentifier("Version1_2"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "Version1_2"),
-              ))),
+              descriptor: None,
             ),
             RSEnumVariant(
               doc: None,
-              attributes: [],
+              attributes: [
+                RSAttribute("literal(3.4)"),
+              ],
               name: RSIdentifier("Lit3_4"),
-              descriptor: Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(0, 2)),
-                identifier: RSIdentifier("Version3_4"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "Version3_4"),
-              ))),
+              descriptor: None,
             ),
           ],
         )
@@ -647,14 +622,15 @@ mod tests {
     fn test_literal_invalid_string_name() {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Alias("Version".into()));
+
+        let union = unwrap_named::<GTUnion>(
+            "Version",
+            r#"
+            Version: "0" | "1"
+            "#,
+        );
         assert_ron_snapshot!(
-            GTUnion {
-                span: (0, 0).into(),
-                descriptors: vec![
-                    GTLiteral::String((0, 1).into(), "0".into()).into(),
-                    GTLiteral::String((0, 2).into(), "1".into()).into(),
-                ],
-            }
+            union
             .convert(&mut context)
             .unwrap(),
             @r#"
@@ -669,23 +645,19 @@ mod tests {
           variants: [
             RSEnumVariant(
               doc: None,
-              attributes: [],
+              attributes: [
+                RSAttribute("literal(\"0\")"),
+              ],
               name: RSIdentifier("Lit0"),
-              descriptor: Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(0, 1)),
-                identifier: RSIdentifier("Version0"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "Version0"),
-              ))),
+              descriptor: None,
             ),
             RSEnumVariant(
               doc: None,
-              attributes: [],
+              attributes: [
+                RSAttribute("literal(\"1\")"),
+              ],
               name: RSIdentifier("Lit1"),
-              descriptor: Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(0, 2)),
-                identifier: RSIdentifier("Version1"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "Version1"),
-              ))),
+              descriptor: None,
             ),
           ],
         )
@@ -722,21 +694,21 @@ mod tests {
               doc: None,
               attributes: [],
               name: RSIdentifier("Ping"),
-              descriptor: Descriptor(Reference(RSReference(
+              descriptor: Some(Descriptor(Reference(RSReference(
                 id: GTReferenceId(GTModuleId("module"), GTSpan(28, 45)),
                 identifier: RSIdentifier("ServerMessagePing"),
                 definition_id: GTDefinitionId(GTModuleId("module"), "ServerMessagePing"),
-              ))),
+              )))),
             ),
             RSEnumVariant(
               doc: None,
               attributes: [],
               name: RSIdentifier("Pong"),
-              descriptor: Descriptor(Reference(RSReference(
+              descriptor: Some(Descriptor(Reference(RSReference(
                 id: GTReferenceId(GTModuleId("module"), GTSpan(48, 65)),
                 identifier: RSIdentifier("ServerMessagePong"),
                 definition_id: GTDefinitionId(GTModuleId("module"), "ServerMessagePong"),
-              ))),
+              )))),
             ),
           ],
         )
@@ -774,31 +746,31 @@ mod tests {
               doc: None,
               attributes: [],
               name: RSIdentifier("ServerMessagePing"),
-              descriptor: Descriptor(Reference(RSReference(
+              descriptor: Some(Descriptor(Reference(RSReference(
                 id: GTReferenceId(GTModuleId("module"), GTSpan(28, 45)),
                 identifier: RSIdentifier("ServerMessagePing"),
                 definition_id: GTDefinitionId(GTModuleId("module"), "ServerMessagePing"),
-              ))),
+              )))),
             ),
             RSEnumVariant(
               doc: None,
               attributes: [],
               name: RSIdentifier("Pong"),
-              descriptor: Descriptor(Reference(RSReference(
+              descriptor: Some(Descriptor(Reference(RSReference(
                 id: GTReferenceId(GTModuleId("module"), GTSpan(48, 65)),
                 identifier: RSIdentifier("ServerMessagePong"),
                 definition_id: GTDefinitionId(GTModuleId("module"), "ServerMessagePong"),
-              ))),
+              )))),
             ),
             RSEnumVariant(
               doc: None,
               attributes: [],
               name: RSIdentifier("Ping"),
-              descriptor: Descriptor(Reference(RSReference(
+              descriptor: Some(Descriptor(Reference(RSReference(
                 id: GTReferenceId(GTModuleId("module"), GTSpan(68, 72)),
                 identifier: RSIdentifier("Ping"),
                 definition_id: GTDefinitionId(GTModuleId("module"), "Ping"),
-              ))),
+              )))),
             ),
           ],
         )

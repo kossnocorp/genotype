@@ -37,6 +37,8 @@ impl TryFrom<Pair<'_, Rule>> for GTLiteral {
                 Ok(GTLiteral::Boolean(span, value))
             }
 
+            Rule::literal_null => Ok(GTLiteral::Null(span)),
+
             _ => Err(else_err()),
         }
     }

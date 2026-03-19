@@ -36,7 +36,7 @@ impl<'a> GtlRender<'a> for RSEnum {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_snapshot;
+    use genotype_test::prelude::*;
 
     #[test]
     fn test_render() {
@@ -51,13 +51,13 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: "String".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::String).into(),
+                        descriptor: Some(RSDescriptor::Primitive(RSPrimitive::String).into()),
                     },
                     RSEnumVariant {
                         doc: None,
                         attributes: vec![],
                         name: "Int".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize).into(),
+                        descriptor: Some(RSDescriptor::Primitive(RSPrimitive::IntSize).into()),
                     },
                 ],
             }
@@ -85,13 +85,13 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: "String".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::String).into(),
+                        descriptor: Some(RSDescriptor::Primitive(RSPrimitive::String).into()),
                     },
                     RSEnumVariant {
                         doc: None,
                         attributes: vec![],
                         name: "Int".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize).into(),
+                        descriptor: Some(RSDescriptor::Primitive(RSPrimitive::IntSize).into()),
                     },
                 ],
             }
@@ -122,13 +122,13 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: "String".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::String).into(),
+                        descriptor: Some(RSDescriptor::Primitive(RSPrimitive::String).into()),
                     },
                     RSEnumVariant {
                         doc: None,
                         attributes: vec![],
                         name: "Int".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize).into(),
+                        descriptor: Some(RSDescriptor::Primitive(RSPrimitive::IntSize).into()),
                     },
                 ],
             }
@@ -157,13 +157,13 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: "String".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::String).into(),
+                        descriptor: Some(RSDescriptor::Primitive(RSPrimitive::String).into()),
                     },
                     RSEnumVariant {
                         doc: None,
                         attributes: vec![],
                         name: "Int".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize).into(),
+                        descriptor: Some(RSDescriptor::Primitive(RSPrimitive::IntSize).into()),
                     },
                 ],
             }
@@ -192,13 +192,13 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: "String".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::String).into(),
+                        descriptor: Some(RSDescriptor::Primitive(RSPrimitive::String).into()),
                     },
                     RSEnumVariant {
                         doc: None,
                         attributes: vec![],
                         name: "Int".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize).into(),
+                        descriptor: Some(RSDescriptor::Primitive(RSPrimitive::IntSize).into()),
                     },
                 ],
             }
@@ -215,6 +215,43 @@ mod tests {
             Int(isize),
         }
         "
+        );
+    }
+
+    #[test]
+    fn test_render_no_descriptor() {
+        let mut context = RSConvertContext::empty("module".into());
+        context.enter_parent(RSContextParent::Alias("AnimalKind".into()));
+
+        let union = unwrap_named::<GTUnion>(
+            "Misc",
+            r#"
+            Misc: "hello" | 123 | true | null
+            "#,
+        );
+        let union = union.convert(&mut context).unwrap();
+
+        assert_snapshot!(
+            union
+            .render(
+                RSRenderState::default().indent_inc(),
+                &mut Default::default()
+            )
+            .unwrap(),
+            @r#"
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[serde(untagged)]
+        pub enum AnimalKind {
+            #[literal("hello")]
+            Hello,
+            #[literal(123)]
+            Lit123,
+            #[literal(true)]
+            True,
+            #[literal(null)]
+            Null,
+        }
+        "#
         );
     }
 }

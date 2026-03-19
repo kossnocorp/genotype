@@ -7,7 +7,7 @@ impl GtjSchemaConvert<GtjSchemaLiteral> for GtjLiteral {
             title: self.name.clone(),
             description: self.doc.clone(),
             r#const: match self.value {
-                GtjLiteralValue::Null(value) => GtjSchemaLiteralConst::Null(value),
+                GtjLiteralValue::Null => GtjSchemaLiteralConst::Null,
                 GtjLiteralValue::Boolean(value) => GtjSchemaLiteralConst::Boolean(value),
                 GtjLiteralValue::Number(value) => GtjSchemaLiteralConst::Number(value),
                 GtjLiteralValue::String(ref value) => GtjSchemaLiteralConst::String(value.clone()),
@@ -33,7 +33,7 @@ mod tests {
             r#type: GtjLiteralTypeLiteral,
             name: Some("hello".into()),
             doc: Some("Hello, world!".into()),
-            value: GtjLiteralValue::Null(()),
+            value: GtjLiteralValue::Null,
         };
 
         let any_schema: GtjSchemaAny = literal.to_schema();

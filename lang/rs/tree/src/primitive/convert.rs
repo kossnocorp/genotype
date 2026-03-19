@@ -20,7 +20,6 @@ impl RSConvert<RSPrimitive> for GTPrimitive {
             GTPrimitive::IntUSize(_) => RSPrimitive::IntUSize,
             GTPrimitive::Float32(_) => RSPrimitive::Float32,
             GTPrimitive::Float64(_) => RSPrimitive::Float64,
-            GTPrimitive::Null(_) => RSPrimitive::Unit,
         })
     }
 }
@@ -127,12 +126,6 @@ mod tests {
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @"Float64"
-        );
-        assert_ron_snapshot!(
-            GTPrimitive::Null((0, 0).into())
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
-            @"Unit"
         );
     }
 }

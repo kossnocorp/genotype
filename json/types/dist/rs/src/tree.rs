@@ -4,7 +4,6 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum GtjAny {
-    GtjNull(GtjNull),
     GtjBoolean(GtjBoolean),
     GtjNumber(GtjNumber),
     GtjString(GtjString),
@@ -155,7 +154,7 @@ pub enum GtjLiteralValue {
     String(String),
     Number(f64),
     Boolean(bool),
-    Null(()),
+    Null,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

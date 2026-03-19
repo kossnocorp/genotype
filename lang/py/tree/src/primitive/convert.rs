@@ -20,7 +20,6 @@ impl PYConvert<PYPrimitive> for GTPrimitive {
             GTPrimitive::IntUSize(_) => PYPrimitive::Int,
             GTPrimitive::Float32(_) => PYPrimitive::Float,
             GTPrimitive::Float64(_) => PYPrimitive::Float,
-            GTPrimitive::Null(_) => PYPrimitive::None,
         }
     }
 }
@@ -29,7 +28,6 @@ impl PYConvert<PYPrimitive> for GTPrimitive {
 mod tests {
     use super::*;
     use insta::assert_ron_snapshot;
-    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert() {
@@ -104,10 +102,6 @@ mod tests {
         assert_ron_snapshot!(
             GTPrimitive::Float64((0, 0).into()).convert(&mut PYConvertContext::default()),
             @"Float"
-        );
-        assert_ron_snapshot!(
-            GTPrimitive::Null((0, 0).into()).convert(&mut PYConvertContext::default()),
-            @"r#None"
         );
     }
 }

@@ -4,3 +4,5 @@ User: {
 }
 
 Address: (int, string, string)
+
+Empty: ()

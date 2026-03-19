@@ -21,7 +21,6 @@ pub enum GTPrimitive {
     IntUSize(GTSpan),
     Float32(GTSpan),
     Float64(GTSpan),
-    Null(GTSpan),
 }
 
 impl GTPrimitive {
@@ -44,7 +43,6 @@ impl GTPrimitive {
             GTPrimitive::IntUSize(span) => *span,
             GTPrimitive::Float32(span) => *span,
             GTPrimitive::Float64(span) => *span,
-            GTPrimitive::Null(span) => *span,
         }
     }
 }
@@ -69,7 +67,6 @@ impl Display for GTPrimitive {
             GTPrimitive::IntUSize(_) => write!(f, "usize"),
             GTPrimitive::Float32(_) => write!(f, "f32"),
             GTPrimitive::Float64(_) => write!(f, "f64"),
-            GTPrimitive::Null(_) => write!(f, "null"),
         }
     }
 }

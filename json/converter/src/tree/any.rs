@@ -6,7 +6,6 @@ use crate::{GtjTreeConvert, GtjTreeConvertContext};
 impl GtjTreeConvert<GTDescriptor> for GtjAny {
     fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTDescriptor {
         match self {
-            GtjAny::GtjNull(null) => null.to_tree_with_context(context),
             GtjAny::GtjBoolean(boolean) => boolean.to_tree_with_context(context),
             GtjAny::GtjNumber(number) => number.to_tree_with_context(context),
             GtjAny::GtjString(string) => string.to_tree_with_context(context),
@@ -23,18 +22,6 @@ impl GtjTreeConvert<GTDescriptor> for GtjAny {
 mod tests {
     use super::*;
     use insta::assert_ron_snapshot;
-
-    #[test]
-    fn test_convert_null() {
-        let null = GtjNull {
-            r#type: GtjNullTypeNull,
-            name: None,
-            doc: None,
-        };
-
-        let tree: GTDescriptor = null.to_tree_with_context(&mut Default::default());
-        assert_ron_snapshot!(tree, @"Primitive(Null(GTSpan(0, 0)))");
-    }
 
     #[test]
     fn test_convert_boolean() {
@@ -75,10 +62,10 @@ mod tests {
     fn test_convert_array() {
         let array = GtjArray {
             r#type: GtjArrayTypeArray,
-            descriptor: GtjAny::GtjNull(GtjNull {
-                r#type: GtjNullTypeNull,
+            descriptor: GtjAny::GtjNumber(GtjNumber {
                 name: None,
                 doc: None,
+                r#type: GtjNumberTypeNumber,
             }),
             name: None,
             doc: None,
@@ -88,7 +75,7 @@ mod tests {
         assert_ron_snapshot!(tree, @"
         Array(GTArray(
           span: GTSpan(0, 0),
-          descriptor: Primitive(Null(GTSpan(0, 0))),
+          descriptor: Primitive(Number(GTSpan(0, 0))),
         ))
         ");
     }

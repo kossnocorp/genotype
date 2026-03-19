@@ -225,17 +225,17 @@ mod tests {
               doc: None,
               attributes: [],
               name: RSIdentifier("Obj"),
-              descriptor: Descriptor(Reference(RSReference(
+              descriptor: Some(Descriptor(Reference(RSReference(
                 id: GTReferenceId(GTModuleId("module"), GTSpan(0, 0)),
                 identifier: RSIdentifier("BookObj"),
                 definition_id: GTDefinitionId(GTModuleId("module"), "BookObj"),
-              ))),
+              )))),
             ),
             RSEnumVariant(
               doc: None,
               attributes: [],
               name: RSIdentifier("String"),
-              descriptor: Descriptor(Primitive(String)),
+              descriptor: Some(Descriptor(Primitive(String))),
             ),
           ],
         ))

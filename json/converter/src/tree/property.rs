@@ -35,10 +35,10 @@ mod tests {
             r#type: GtjPropertyTypeProperty,
             name: "hello".into(),
             doc: None,
-            descriptor: GtjAny::GtjNull(GtjNull {
-                r#type: GtjNullTypeNull,
+            descriptor: GtjAny::GtjNumber(GtjNumber {
                 name: None,
                 doc: None,
+                r#type: GtjNumberTypeNumber,
             }),
             required: false,
         };
@@ -50,7 +50,7 @@ mod tests {
           doc: None,
           attributes: [],
           name: GTKey(GTSpan(0, 0), "hello"),
-          descriptor: Primitive(Null(GTSpan(0, 0))),
+          descriptor: Primitive(Number(GTSpan(0, 0))),
           required: false,
         )
         "#);

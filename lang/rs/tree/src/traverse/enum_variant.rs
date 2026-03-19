@@ -12,6 +12,8 @@ impl RSTraverse for RSEnumVariant {
 
         self.name.traverse(visitor);
 
-        self.descriptor.traverse(visitor);
+        if let Some(descriptor) = &mut self.descriptor {
+            descriptor.traverse(visitor);
+        }
     }
 }
