@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use crate::prelude::internal::*;
 
 use genotype_parser::{
     GTDefinitionId, GTPathKind,
@@ -14,11 +14,11 @@ use super::*;
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GTPModuleResolve {
     /// Paths resolve.
-    pub paths: HashMap<GTPath, GtModulePath>,
+    pub paths: IndexMap<GTPath, GtModulePath>,
     /// Identifiers resolve.
-    pub identifiers: HashMap<GTIdentifier, GTPModuleIdentifierResolve>,
+    pub identifiers: IndexMap<GTIdentifier, GTPModuleIdentifierResolve>,
     /// Definitions resolve.
-    pub definitions: HashMap<GTDefinitionId, GtProjectModuleDefinitionResolve>,
+    pub definitions: IndexMap<GTDefinitionId, GtProjectModuleDefinitionResolve>,
 }
 
 impl GTPModuleResolve {
@@ -27,7 +27,7 @@ impl GTPModuleResolve {
         parse: &GTProjectModuleParse,
     ) -> Result<Self> {
         // Resolve module dependencies by mapping local paths to project module paths
-        let mut paths: HashMap<GTPath, GtModulePath> = HashMap::new();
+        let mut paths: IndexMap<GTPath, GtModulePath> = IndexMap::new();
         for local_path in parse.1.resolve.deps.iter() {
             // Continue if the dependency is already resolved or it is a package path
             if paths.contains_key(local_path) || local_path.kind() == GTPathKind::Package {
@@ -40,7 +40,7 @@ impl GTPModuleResolve {
         }
 
         // Resolve module references mapping identifiers to dependencies
-        let mut identifiers: HashMap<GTIdentifier, GTPModuleIdentifierResolve> = HashMap::new();
+        let mut identifiers: IndexMap<GTIdentifier, GTPModuleIdentifierResolve> = IndexMap::new();
         for reference in parse.1.resolve.references.iter() {
             // Continue if the reference is already resolved
             if identifiers.contains_key(reference) {

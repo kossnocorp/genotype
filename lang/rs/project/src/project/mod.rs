@@ -276,15 +276,15 @@ mod tests {
             ),
             resolve: RSPModuleResolve(
               definitions: {
-                GTDefinitionId(GTModuleId("author"), "AuthorName"): GtProjectModuleDefinitionResolve(
-                  references: [
-                    GTReferenceId(GTModuleId("book"), GTSpan(71, 81)),
-                  ],
-                  deps: [],
-                ),
                 GTDefinitionId(GTModuleId("author"), "Author"): GtProjectModuleDefinitionResolve(
                   references: [
                     GTReferenceId(GTModuleId("book"), GTSpan(50, 56)),
+                  ],
+                  deps: [],
+                ),
+                GTDefinitionId(GTModuleId("author"), "AuthorName"): GtProjectModuleDefinitionResolve(
+                  references: [
+                    GTReferenceId(GTModuleId("book"), GTSpan(71, 81)),
                   ],
                   deps: [],
                 ),

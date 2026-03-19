@@ -6,7 +6,7 @@ pub struct GTPResolveVisitor<'a> {
     resolve: &'a GTPResolve,
     /// Module definitions resolve accumulated during the visit. It is then
     /// moved to corresponding module `GTPModuleResolve` struct.
-    definitions: HashMap<GTModuleId, HashMap<GTDefinitionId, GtProjectModuleDefinitionResolve>>,
+    definitions: IndexMap<GTModuleId, IndexMap<GTDefinitionId, GtProjectModuleDefinitionResolve>>,
 }
 
 impl<'a> GTPResolveVisitor<'a> {
@@ -18,7 +18,7 @@ impl<'a> GTPResolveVisitor<'a> {
         }
     }
 
-    pub fn drain_definitions(self) -> HashMap<GTDefinitionId, GtProjectModuleDefinitionResolve> {
+    pub fn drain_definitions(self) -> IndexMap<GTDefinitionId, GtProjectModuleDefinitionResolve> {
         self.definitions
             .get(&self.module_id)
             .and_then(|references| Some(references.clone()))

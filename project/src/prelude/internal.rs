@@ -3,6 +3,7 @@ pub use genotype_config::*;
 pub use genotype_lang_core_config::*;
 pub use genotype_parser::*;
 pub use genotype_path::*;
+pub use indexmap::IndexMap;
 pub use miette::{Diagnostic, NamedSource, Result};
 pub use serde::Serialize;
 pub use std::collections::HashMap;
