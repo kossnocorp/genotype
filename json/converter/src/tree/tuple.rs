@@ -82,7 +82,12 @@ mod tests {
         GTTuple(
           span: GTSpan(0, 0),
           descriptors: [
-            Primitive(Number(GTSpan(0, 0))),
+            Primitive(GTPrimitive(
+              span: GTSpan(0, 0),
+              kind: Number,
+              doc: None,
+              attributes: [],
+            )),
           ],
         )
         ");

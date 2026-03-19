@@ -53,7 +53,7 @@ impl RSConvertModule {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
+    use genotype_test::*;
 
     #[test]
     fn test_convert() {
@@ -118,7 +118,7 @@ mod tests {
                                         doc: None,
                                         attributes: vec![],
                                         name: GTKey::new((0, 0).into(), "name".into()),
-                                        descriptor: GTPrimitive::String((0, 0).into()).into(),
+                                        descriptor: GtFactory::primitive_string().into(),
                                         required: true,
                                     },
                                     GTProperty {
@@ -126,7 +126,7 @@ mod tests {
                                         doc: None,
                                         attributes: vec![],
                                         name: GTKey::new((0, 0).into(), "age".into()),
-                                        descriptor: GTPrimitive::Int32((0, 0).into()).into(),
+                                        descriptor: GtFactory::primitive_i32().into(),
                                         required: false,
                                     }
                                 ]
@@ -165,7 +165,7 @@ mod tests {
                                                     attributes: vec![],
                                                     name: GTKey::new((0, 0).into(), "title".into()),
                                                     descriptor: GTDescriptor::Primitive(
-                                                        GTPrimitive::String((0, 0).into())
+                                                        GtFactory::primitive_string()
                                                     ),
                                                     required: true,
                                                 },
@@ -211,7 +211,7 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                            descriptor: GTPrimitive::String((0, 0).into()).into(),
+                            descriptor: GtFactory::primitive_string().into(),
                         },
                     ],
                 },

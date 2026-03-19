@@ -16,7 +16,7 @@ impl RSConvert<RSMap> for GTRecord {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
+    use genotype_test::*;
 
     #[test]
     fn test_convert() {
@@ -24,7 +24,7 @@ mod tests {
             GTRecord {
                 span: (0, 0).into(),
                 key: GTRecordKey::String((0, 0).into()),
-                descriptor: GTPrimitive::String((0, 0).into()).into(),
+                descriptor: GtFactory::primitive_string().into(),
             }
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
@@ -44,7 +44,7 @@ mod tests {
             GTRecord {
                 span: (0, 0).into(),
                 key: GTRecordKey::String((0, 0).into()),
-                descriptor: GTPrimitive::String((0, 0).into()).into(),
+                descriptor: GtFactory::primitive_string().into(),
             }
             .convert(&mut context)
             .unwrap(),

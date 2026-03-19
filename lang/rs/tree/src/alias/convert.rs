@@ -52,7 +52,7 @@ impl RSConvert<RSDefinition> for GTAlias {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
+    use genotype_test::*;
 
     #[test]
     fn test_convert_alias() {
@@ -63,7 +63,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
+                descriptor: GtFactory::primitive_boolean().into(),
             }
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
@@ -97,7 +97,7 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTKey::new((0, 0).into(), "title".into()),
-                            descriptor: GTPrimitive::String((0, 0).into()).into(),
+                            descriptor: GtFactory::primitive_string().into(),
                             required: true,
                         },
                         GTProperty {
@@ -105,7 +105,7 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTKey::new((0, 0).into(), "author".into()),
-                            descriptor: GTPrimitive::String((0, 0).into()).into(),
+                            descriptor: GtFactory::primitive_string().into(),
                             required: true,
                         }
                     ]
@@ -153,7 +153,7 @@ mod tests {
                     span: (0, 0).into(),
                     id: GTDefinitionId("module".into(), "BookId".into()),
                     name: GTIdentifier((0, 0).into(), "BookId".into()),
-                    primitive: GTPrimitive::Int32((0, 0).into())
+                    primitive: GtFactory::primitive_i32()
                 })
                 .into(),
             }
@@ -200,12 +200,12 @@ mod tests {
                                 doc: None,
                                 attributes: vec![],
                                 name: GTKey::new((0, 0).into(), "author".into()),
-                                descriptor: GTPrimitive::String((0, 0).into()).into(),
+                                descriptor: GtFactory::primitive_string().into(),
                                 required: true,
                             }]
                         }
                         .into(),
-                        GTPrimitive::String((0, 0).into()).into(),
+                        GtFactory::primitive_string().into(),
                     ]
                 })
             }
@@ -276,7 +276,7 @@ mod tests {
                 doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
+                descriptor: GtFactory::primitive_boolean().into(),
             }
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),

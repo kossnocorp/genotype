@@ -18,8 +18,7 @@ impl PYConvert<PYNewtype> for GTBranded {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
-    use pretty_assertions::assert_eq;
+    use genotype_test::*;
 
     #[test]
     fn test_convert() {
@@ -28,7 +27,7 @@ mod tests {
                 span: (0, 0).into(),
                 id: GTDefinitionId("module".into(), "UserId".into()),
                 name: GTIdentifier::new((0, 0).into(), "UserId".into()),
-                primitive: GTPrimitive::String((0, 0).into()).into(),
+                primitive: GtFactory::primitive_string().into(),
             }
             .convert(&mut PYConvertContext::default()),
             @r#"
@@ -49,7 +48,7 @@ mod tests {
                 span: (0, 0).into(),
                 id: GTDefinitionId("module".into(), "UserId".into()),
                 name: GTIdentifier::new((0, 0).into(), "UserId".into()),
-                primitive: GTPrimitive::String((0, 0).into()).into(),
+                primitive: GtFactory::primitive_string().into(),
             }
             .convert(&mut context),
             @r#"
@@ -79,7 +78,7 @@ mod tests {
                 span: (0, 0).into(),
                 id: GTDefinitionId("module".into(), "UserId".into()),
                 name: GTIdentifier::new((0, 0).into(), "UserId".into()),
-                primitive: GTPrimitive::String((0, 0).into()).into(),
+                primitive: GtFactory::primitive_string().into(),
             }
             .convert(&mut context),
             @r#"

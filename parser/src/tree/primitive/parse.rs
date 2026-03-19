@@ -1,130 +1,74 @@
 use crate::prelude::internal::*;
 
-impl TryFrom<Pair<'_, Rule>> for GTPrimitive {
-    type Error = GTParseError;
-
-    fn try_from(pair: Pair<'_, Rule>) -> Result<Self, Self::Error> {
+impl GTPrimitive {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
         let span = pair.as_span().into();
-
-        match pair.as_str() {
-            "boolean" => Ok(GTPrimitive::Boolean(span)),
-            "string" => Ok(GTPrimitive::String(span)),
-            "number" => Ok(GTPrimitive::Number(span)),
-            "int" => Ok(GTPrimitive::Int64(span)),
-            "i8" => Ok(GTPrimitive::Int8(span)),
-            "i16" => Ok(GTPrimitive::Int16(span)),
-            "i32" => Ok(GTPrimitive::Int32(span)),
-            "i64" => Ok(GTPrimitive::Int64(span)),
-            "i128" => Ok(GTPrimitive::Int128(span)),
-            "isize" => Ok(GTPrimitive::IntSize(span)),
-            "uint" => Ok(GTPrimitive::IntU32(span)),
-            "u8" => Ok(GTPrimitive::IntU8(span)),
-            "u16" => Ok(GTPrimitive::IntU16(span)),
-            "u32" => Ok(GTPrimitive::IntU32(span)),
-            "u64" => Ok(GTPrimitive::IntU64(span)),
-            "u128" => Ok(GTPrimitive::IntU128(span)),
-            "usize" => Ok(GTPrimitive::IntUSize(span)),
-            "float" => Ok(GTPrimitive::Float64(span)),
-            "f32" => Ok(GTPrimitive::Float32(span)),
-            "f64" => Ok(GTPrimitive::Float64(span)),
-            _ => Err(GTParseError::Internal(span, GTNode::Primitive)),
-        }
+        let kind = GTPrimitiveKind::parse(pair, context)?;
+        Ok(GTPrimitive {
+            span,
+            doc: None,
+            attributes: vec![],
+            kind,
+        })
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
-    use pest::Parser;
+    use super::*;
+    use crate::test::*;
 
     #[test]
-    fn test_from_pair() {
-        let mut pairs = GenotypeParser::parse(Rule::primitive, "boolean").unwrap();
-        assert_eq!(
-            GTPrimitive::try_from(pairs.next().unwrap()).unwrap(),
-            GTPrimitive::Boolean(GTSpan(0, 7))
+    fn test_parse() {
+        assert_ron_snapshot!(
+            parse_node!(GTPrimitive, to_parse_args(Rule::primitive, "boolean")),
+            @"
+        GTPrimitive(
+          span: GTSpan(0, 7),
+          kind: Boolean,
+          doc: None,
+          attributes: [],
+        )
+        "
+        );
+        assert_ron_snapshot!(
+            parse_node!(GTPrimitive, to_parse_args(Rule::primitive, "string")),
+            @"
+        GTPrimitive(
+          span: GTSpan(0, 6),
+          kind: String,
+          doc: None,
+          attributes: [],
+        )
+        "
+        );
+
+        assert_ron_snapshot!(
+            parse_node!(GTPrimitive, to_parse_args(Rule::primitive, "number")),
+            @"
+        GTPrimitive(
+          span: GTSpan(0, 6),
+          kind: Number,
+          doc: None,
+          attributes: [],
+        )
+        "
         );
     }
 
     #[test]
     fn test_error() {
-        let mut pairs = GenotypeParser::parse(Rule::literal_boolean, "false").unwrap();
-        assert_eq!(
-            GTPrimitive::try_from(pairs.next().unwrap()).unwrap_err(),
-            GTParseError::Internal((0, 5).into(), GTNode::Primitive)
-        );
-    }
-
-    #[test]
-    fn test_int_sizes() {
-        let mut pairs = GenotypeParser::parse(Rule::primitive, "i8").unwrap();
-        assert_eq!(
-            GTPrimitive::try_from(pairs.next().unwrap()).unwrap(),
-            GTPrimitive::Int8(GTSpan(0, 2))
-        );
-        let mut pairs = GenotypeParser::parse(Rule::primitive, "i16").unwrap();
-        assert_eq!(
-            GTPrimitive::try_from(pairs.next().unwrap()).unwrap(),
-            GTPrimitive::Int16(GTSpan(0, 3))
-        );
-        let mut pairs = GenotypeParser::parse(Rule::primitive, "i32").unwrap();
-        assert_eq!(
-            GTPrimitive::try_from(pairs.next().unwrap()).unwrap(),
-            GTPrimitive::Int32(GTSpan(0, 3))
-        );
-        let mut pairs = GenotypeParser::parse(Rule::primitive, "i64").unwrap();
-        assert_eq!(
-            GTPrimitive::try_from(pairs.next().unwrap()).unwrap(),
-            GTPrimitive::Int64(GTSpan(0, 3))
-        );
-        let mut pairs = GenotypeParser::parse(Rule::primitive, "i128").unwrap();
-        assert_eq!(
-            GTPrimitive::try_from(pairs.next().unwrap()).unwrap(),
-            GTPrimitive::Int128(GTSpan(0, 4))
-        );
-        let mut pairs = GenotypeParser::parse(Rule::primitive, "isize").unwrap();
-        assert_eq!(
-            GTPrimitive::try_from(pairs.next().unwrap()).unwrap(),
-            GTPrimitive::IntSize(GTSpan(0, 5))
-        );
-        let mut pairs = GenotypeParser::parse(Rule::primitive, "u8").unwrap();
-        assert_eq!(
-            GTPrimitive::try_from(pairs.next().unwrap()).unwrap(),
-            GTPrimitive::IntU8(GTSpan(0, 2))
-        );
-        let mut pairs = GenotypeParser::parse(Rule::primitive, "u16").unwrap();
-        assert_eq!(
-            GTPrimitive::try_from(pairs.next().unwrap()).unwrap(),
-            GTPrimitive::IntU16(GTSpan(0, 3))
-        );
-        let mut pairs = GenotypeParser::parse(Rule::primitive, "u32").unwrap();
-        assert_eq!(
-            GTPrimitive::try_from(pairs.next().unwrap()).unwrap(),
-            GTPrimitive::IntU32(GTSpan(0, 3))
-        );
-        let mut pairs = GenotypeParser::parse(Rule::primitive, "u64").unwrap();
-        assert_eq!(
-            GTPrimitive::try_from(pairs.next().unwrap()).unwrap(),
-            GTPrimitive::IntU64(GTSpan(0, 3))
-        );
-        let mut pairs = GenotypeParser::parse(Rule::primitive, "u128").unwrap();
-        assert_eq!(
-            GTPrimitive::try_from(pairs.next().unwrap()).unwrap(),
-            GTPrimitive::IntU128(GTSpan(0, 4))
-        );
-        let mut pairs = GenotypeParser::parse(Rule::primitive, "usize").unwrap();
-        assert_eq!(
-            GTPrimitive::try_from(pairs.next().unwrap()).unwrap(),
-            GTPrimitive::IntUSize(GTSpan(0, 5))
-        );
-    }
-
-    #[test]
-    fn test_number() {
-        let mut pairs = GenotypeParser::parse(Rule::primitive, "number").unwrap();
-        assert_eq!(
-            GTPrimitive::try_from(pairs.next().unwrap()).unwrap(),
-            GTPrimitive::Number(GTSpan(0, 6))
+        assert_debug_snapshot!(
+            parse_node_err!(GTPrimitive, to_parse_args(Rule::literal_boolean, "false")),
+            @"
+        Internal(
+            GTSpan(
+                0,
+                5,
+            ),
+            Primitive,
+        )
+        "
         );
     }
 }

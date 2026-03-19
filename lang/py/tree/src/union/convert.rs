@@ -17,7 +17,7 @@ impl PYConvert<PYUnion> for GTUnion {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
+    use genotype_test::*;
 
     #[test]
     fn test_convert() {
@@ -25,8 +25,8 @@ mod tests {
             GTUnion {
                 span: (0, 0).into(),
                 descriptors: vec![
-                    GTPrimitive::Boolean((0, 0).into()).into(),
-                    GTPrimitive::String((0, 0).into()).into(),
+                    GtFactory::primitive_boolean().into(),
+                    GtFactory::primitive_string().into(),
                 ]
             }
             .convert(&mut PYConvertContext::default()),
@@ -54,7 +54,7 @@ mod tests {
         assert_ron_snapshot!(
             GTUnion {
                 span: (0, 0).into(),
-                descriptors: vec![GTPrimitive::String((0, 0).into()).into()],
+                descriptors: vec![GtFactory::primitive_string().into()],
             }
             .convert(&mut context),
             @"

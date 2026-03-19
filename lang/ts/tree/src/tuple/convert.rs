@@ -15,7 +15,7 @@ impl TSConvert<TSTuple> for GTTuple {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
+    use genotype_test::*;
 
     #[test]
     fn test_convert() {
@@ -23,8 +23,8 @@ mod tests {
             GTTuple {
                 span: (0, 0).into(),
                 descriptors: vec![
-                    GTPrimitive::Boolean((0, 0).into()).into(),
-                    GTPrimitive::String((0, 0).into()).into(),
+                    GtFactory::primitive_boolean().into(),
+                    GtFactory::primitive_string().into(),
                 ]
             }
             .convert(&mut Default::default()),

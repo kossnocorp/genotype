@@ -172,24 +172,24 @@ fn name_variant_descriptor(
             }
         }
         GTDescriptor::Branded(branded) => branded.name.convert(context)?,
-        GTDescriptor::Primitive(primitive) => match primitive {
-            GTPrimitive::Boolean(_) => "Boolean".into(),
-            GTPrimitive::String(_) => "String".into(),
-            GTPrimitive::Number(_) => "Number".into(),
-            GTPrimitive::Int8(_) => "Int8".into(),
-            GTPrimitive::Int16(_) => "Int16".into(),
-            GTPrimitive::Int32(_) => "Int32".into(),
-            GTPrimitive::Int64(_) => "Int".into(),
-            GTPrimitive::Int128(_) => "Int128".into(),
-            GTPrimitive::IntSize(_) => "IntSize".into(),
-            GTPrimitive::IntU8(_) => "IntU8".into(),
-            GTPrimitive::IntU16(_) => "IntU16".into(),
-            GTPrimitive::IntU32(_) => "IntU32".into(),
-            GTPrimitive::IntU64(_) => "IntU64".into(),
-            GTPrimitive::IntU128(_) => "IntU128".into(),
-            GTPrimitive::IntUSize(_) => "IntUSize".into(),
-            GTPrimitive::Float32(_) => "Float32".into(),
-            GTPrimitive::Float64(_) => "Float".into(),
+        GTDescriptor::Primitive(primitive) => match primitive.kind {
+            GTPrimitiveKind::Boolean => "Boolean".into(),
+            GTPrimitiveKind::String => "String".into(),
+            GTPrimitiveKind::Number => "Number".into(),
+            GTPrimitiveKind::Int8 => "Int8".into(),
+            GTPrimitiveKind::Int16 => "Int16".into(),
+            GTPrimitiveKind::Int32 => "Int32".into(),
+            GTPrimitiveKind::Int64 => "Int".into(),
+            GTPrimitiveKind::Int128 => "Int128".into(),
+            GTPrimitiveKind::IntSize => "IntSize".into(),
+            GTPrimitiveKind::IntU8 => "IntU8".into(),
+            GTPrimitiveKind::IntU16 => "IntU16".into(),
+            GTPrimitiveKind::IntU32 => "IntU32".into(),
+            GTPrimitiveKind::IntU64 => "IntU64".into(),
+            GTPrimitiveKind::IntU128 => "IntU128".into(),
+            GTPrimitiveKind::IntUSize => "IntUSize".into(),
+            GTPrimitiveKind::Float32 => "Float32".into(),
+            GTPrimitiveKind::Float64 => "Float".into(),
         },
         GTDescriptor::Array(_) => "Vec".into(),
         GTDescriptor::Union(_) => "Union".into(),
@@ -202,7 +202,7 @@ fn name_variant_descriptor(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_test::prelude::*;
+    use genotype_test::*;
 
     #[test]
     fn test_convert() {

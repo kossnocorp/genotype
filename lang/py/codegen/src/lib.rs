@@ -51,7 +51,7 @@ impl GtlCodegen for PyCodegen {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_test::prelude::*;
+    use genotype_test::*;
 
     #[test]
     fn test_register_import() {
@@ -88,10 +88,16 @@ mod tests {
     #[test]
     fn test_inject_descriptor() {
         let mut codegen = PyCodegen::default();
-        let primitive = GTDescriptor::Primitive(GTPrimitive::String(Default::default()));
+        let primitive = GTDescriptor::Primitive(GtFactory::primitive_string());
         let result = codegen.inject_descriptor(primitive).unwrap();
-        assert_snapshot!(result, @"str");
-        assert_snapshot!(codegen.render_module().unwrap(), @"");
+        assert_snapshot!(
+            result,
+            @"str"
+        );
+        assert_snapshot!(
+            codegen.render_module().unwrap(),
+            @""
+        );
     }
 
     #[test]
@@ -103,7 +109,7 @@ mod tests {
             doc: None,
             attributes: vec![],
             name: GTIdentifier::new(Default::default(), "Hello".into()),
-            descriptor: GTPrimitive::String(Default::default()).into(),
+            descriptor: GtFactory::primitive_string().into(),
         }));
         let result = codegen.inject_descriptor(alias).unwrap();
         assert_snapshot!(result, "Hello");
@@ -125,7 +131,10 @@ mod tests {
             descriptor: GtFactory::literal_string("hello").into(),
         }));
         let result = codegen.inject_descriptor(alias).unwrap();
-        assert_snapshot!(result, @"Hello");
+        assert_snapshot!(
+            result,
+            @"Hello"
+        );
         assert_snapshot!(
             codegen.render_module().unwrap(),
             @r#"

@@ -55,8 +55,7 @@ impl PYConvert<PYDefinition> for GTAlias {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
-    use pretty_assertions::assert_eq;
+    use genotype_test::*;
 
     #[test]
     fn test_convert_alias() {
@@ -67,7 +66,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
+                descriptor: GtFactory::primitive_boolean().into()
             }
             .convert(&mut PYConvertContext::default()),
             @r#"
@@ -100,7 +99,7 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTKey::new((0, 0).into(), "title".into()),
-                            descriptor: GTPrimitive::String((0, 0).into()).into(),
+                            descriptor: GtFactory::primitive_string().into(),
                             required: true,
                         },
                         GTProperty {
@@ -108,7 +107,7 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTKey::new((0, 0).into(), "author".into()),
-                            descriptor: GTPrimitive::String((0, 0).into()).into(),
+                            descriptor: GtFactory::primitive_string().into(),
                             required: true,
                         }
                     ]
@@ -153,7 +152,7 @@ mod tests {
                     span: (0, 0).into(),
                     id: GTDefinitionId("module".into(), "UserId".into()),
                     name: GTIdentifier::new((0, 0).into(), "UserId".into()),
-                    primitive: GTPrimitive::String((0, 0).into()).into(),
+                    primitive: GtFactory::primitive_string().into(),
                 })
             }
             .convert(&mut PYConvertContext::default()),
@@ -193,12 +192,12 @@ mod tests {
                                 doc: None,
                                 attributes: vec![],
                                 name: GTKey::new((0, 0).into(), "author".into()),
-                                descriptor: GTPrimitive::String((0, 0).into()).into(),
+                                descriptor: GtFactory::primitive_string().into(),
                                 required: true,
                             }]
                         }
                         .into(),
-                        GTPrimitive::String((0, 0).into()).into(),
+                        GtFactory::primitive_string().into(),
                     ]
                 })
             }
@@ -265,7 +264,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GTPrimitive::String((0, 0).into()).into(),
+                descriptor: GtFactory::primitive_string().into(),
             }
             .convert(&mut context),
             @r#"
@@ -292,7 +291,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GTPrimitive::String((0, 0).into()).into(),
+                descriptor: GtFactory::primitive_string().into(),
             }
             .convert(&mut context),
             @r#"
@@ -441,7 +440,7 @@ mod tests {
                 doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
+                descriptor: GtFactory::primitive_boolean().into(),
             }
             .convert(&mut PYConvertContext::default()),
             @r#"

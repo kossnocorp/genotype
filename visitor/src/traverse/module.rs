@@ -27,6 +27,7 @@ mod tests {
     use super::*;
     use crate::visitor::mock::*;
     use genotype_parser::tree::*;
+    use genotype_test::*;
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -45,7 +46,7 @@ mod tests {
             doc: None,
             attributes: vec![],
             name: GTIdentifier::new((0, 0).into(), "Name".into()),
-            descriptor: GTPrimitive::String((0, 0).into()).into(),
+            descriptor: GtFactory::primitive_string().into(),
         };
         let mut module = GTModule {
             id: "module".into(),
@@ -63,7 +64,7 @@ mod tests {
                 GTMockVisited::ImportReference(reference.clone()),
                 GTMockVisited::Alias(alias.clone()),
                 GTMockVisited::Descriptor(alias.descriptor.clone()),
-                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
+                GTMockVisited::Primitive(GtFactory::primitive_string()),
             ]
         );
     }
@@ -84,7 +85,7 @@ mod tests {
             doc: None,
             attributes: vec![],
             name: GTIdentifier::new((0, 0).into(), "Name".into()),
-            descriptor: GTPrimitive::String((0, 0).into()).into(),
+            descriptor: GtFactory::primitive_string().into(),
         };
         let mut module = GTModule {
             id: "module".into(),
@@ -103,7 +104,7 @@ mod tests {
                 GTMockVisited::ImportReference(reference.clone()),
                 GTMockVisited::Alias(alias.clone()),
                 GTMockVisited::Descriptor(alias.descriptor.clone()),
-                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
+                GTMockVisited::Primitive(GtFactory::primitive_string()),
             ]
         );
     }

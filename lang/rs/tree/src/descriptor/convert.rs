@@ -67,7 +67,7 @@ impl RSConvert<RSDescriptor> for GTRecordKey {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
+    use genotype_test::*;
 
     #[test]
     fn test_convert_descriptor_alias() {
@@ -79,7 +79,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
+                descriptor: GtFactory::primitive_boolean().into(),
             }))
             .convert(&mut context)
             .unwrap(),
@@ -112,7 +112,7 @@ mod tests {
         assert_ron_snapshot!(
             GTDescriptor::Array(Box::new(GTArray {
                 span: (0, 0).into(),
-                descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
+                descriptor: GtFactory::primitive_boolean().into(),
             }))
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
@@ -162,7 +162,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "name".into()),
-                        descriptor: GTPrimitive::String((0, 0).into()).into(),
+                        descriptor: GtFactory::primitive_string().into(),
                         required: true,
                     },
                     GTProperty {
@@ -170,7 +170,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "age".into()),
-                        descriptor: GTPrimitive::Int32((0, 0).into()).into(),
+                        descriptor: GtFactory::primitive_i32().into(),
                         required: false,
                     }
                 ],
@@ -224,7 +224,7 @@ mod tests {
     #[test]
     fn test_convert_descriptor_primitive() {
         assert_ron_snapshot!(
-            GTDescriptor::Primitive(GTPrimitive::Boolean((0, 0).into()))
+            GTDescriptor::Primitive(GtFactory::primitive_boolean())
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @"Primitive(Boolean)"
@@ -261,8 +261,8 @@ mod tests {
             GTDescriptor::Tuple(GTTuple {
                 span: (0, 0).into(),
                 descriptors: vec![
-                    GTPrimitive::Boolean((0, 0).into()).into(),
-                    GTPrimitive::String((0, 0).into()).into(),
+                    GtFactory::primitive_boolean().into(),
+                    GtFactory::primitive_string().into(),
                 ]
             })
             .convert(&mut RSConvertContext::empty("module".into()))
@@ -286,8 +286,8 @@ mod tests {
             GTDescriptor::Union(GTUnion {
                 span: (0, 1).into(),
                 descriptors: vec![
-                    GTPrimitive::Boolean((0, 0).into()).into(),
-                    GTPrimitive::String((0, 0).into()).into(),
+                    GtFactory::primitive_boolean().into(),
+                    GtFactory::primitive_string().into(),
                 ]
             })
             .convert(&mut context)

@@ -25,6 +25,7 @@ mod tests {
     use super::*;
     use crate::visitor::mock::*;
     use genotype_parser::tree::*;
+    use genotype_test::*;
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -36,7 +37,7 @@ mod tests {
             doc: None,
             attributes: vec![],
             name: GTIdentifier::new((0, 0).into(), "Name".into()),
-            descriptor: GTPrimitive::String((0, 0).into()).into(),
+            descriptor: GtFactory::primitive_string().into(),
         };
         alias.traverse(&mut visitor);
         assert_eq!(
@@ -44,7 +45,7 @@ mod tests {
             vec![
                 GTMockVisited::Alias(alias.clone()),
                 GTMockVisited::Descriptor(alias.descriptor.clone()),
-                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
+                GTMockVisited::Primitive(GtFactory::primitive_string()),
             ]
         );
     }
@@ -58,7 +59,7 @@ mod tests {
             doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
             attributes: vec![],
             name: GTIdentifier::new((0, 0).into(), "Name".into()),
-            descriptor: GTPrimitive::String((0, 0).into()).into(),
+            descriptor: GtFactory::primitive_string().into(),
         };
         alias.traverse(&mut visitor);
         assert_eq!(
@@ -67,7 +68,7 @@ mod tests {
                 GTMockVisited::Alias(alias.clone()),
                 GTMockVisited::Doc(alias.doc.clone().unwrap()),
                 GTMockVisited::Descriptor(alias.descriptor.clone()),
-                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
+                GTMockVisited::Primitive(GtFactory::primitive_string()),
             ]
         );
     }
@@ -86,7 +87,7 @@ mod tests {
             doc: None,
             attributes: vec![attribute.clone(), attribute.clone()],
             name: GTIdentifier::new((0, 0).into(), "Name".into()),
-            descriptor: GTPrimitive::String((0, 0).into()).into(),
+            descriptor: GtFactory::primitive_string().into(),
         };
         alias.traverse(&mut visitor);
         assert_eq!(
@@ -98,7 +99,7 @@ mod tests {
                 GTMockVisited::Attribute(attribute.clone()),
                 GTMockVisited::AttributeName(attribute.name.clone()),
                 GTMockVisited::Descriptor(alias.descriptor.clone()),
-                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
+                GTMockVisited::Primitive(GtFactory::primitive_string()),
             ]
         );
     }

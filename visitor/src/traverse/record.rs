@@ -17,13 +17,14 @@ impl GTTraverse for GTRecord {
 mod tests {
     use super::*;
     use crate::visitor::mock::*;
+    use genotype_test::*;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
         let key = GTRecordKey::String((0, 0).into());
-        let primitive = GTPrimitive::String((0, 0).into());
+        let primitive = GtFactory::primitive_string();
         let descriptor = GTDescriptor::Primitive(primitive.clone());
         let mut record = GTRecord {
             span: (0, 0).into(),

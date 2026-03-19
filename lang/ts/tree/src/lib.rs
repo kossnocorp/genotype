@@ -98,3 +98,6 @@ pub use tuple::*;
 
 mod union;
 pub use union::*;
+
+#[cfg(test)]
+pub mod test;

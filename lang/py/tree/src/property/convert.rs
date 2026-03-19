@@ -15,7 +15,7 @@ impl PYConvert<PYProperty> for GTProperty {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
+    use genotype_test::*;
 
     #[test]
     fn test_convert() {
@@ -25,7 +25,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GTKey::new((0, 0).into(), "name".into()),
-                descriptor: GTPrimitive::String((0, 0).into()).into(),
+                descriptor: GtFactory::primitive_string().into(),
                 required: false,
             }
             .convert(&mut PYConvertContext::default()),
@@ -55,7 +55,7 @@ mod tests {
                 span: (0, 0).into(),
                 attributes: vec![],
                 name: GTKey::new((0, 0).into(), "name".into()),
-                descriptor: GTPrimitive::String((0, 0).into()).into(),
+                descriptor: GtFactory::primitive_string().into(),
                 required: false,
             }
             .convert(&mut context),

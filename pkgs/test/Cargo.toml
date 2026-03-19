@@ -9,7 +9,7 @@ repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
 miette = { version = "7.6.0", features = ["fancy", "serde"] }
-genotype_parser = { version = "0.14.0", path = "../../parser" }
+genotype_parser = { version = "0.14.0", path = "../../parser", features = ["test"]}
 genotype_visitor = { version = "0.14.0", path = "../../visitor" }
 genotype_project = { version = "0.14.0", path = "../../project" }
 genotype_path = { version = "0.14.0", path = "../../path" }

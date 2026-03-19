@@ -2,24 +2,24 @@ use crate::prelude::internal::*;
 
 impl TSConvert<TSPrimitive> for GTPrimitive {
     fn convert(&self, _context: &mut TSConvertContext) -> TSPrimitive {
-        match self {
-            GTPrimitive::Boolean(_) => TSPrimitive::Boolean,
-            GTPrimitive::String(_) => TSPrimitive::String,
-            GTPrimitive::Number(_) => TSPrimitive::Number,
-            GTPrimitive::Int8(_) => TSPrimitive::Number,
-            GTPrimitive::Int16(_) => TSPrimitive::Number,
-            GTPrimitive::Int32(_) => TSPrimitive::Number,
-            GTPrimitive::Int64(_) => TSPrimitive::Number,
-            GTPrimitive::Int128(_) => TSPrimitive::BigInt,
-            GTPrimitive::IntSize(_) => TSPrimitive::Number,
-            GTPrimitive::IntU8(_) => TSPrimitive::Number,
-            GTPrimitive::IntU16(_) => TSPrimitive::Number,
-            GTPrimitive::IntU32(_) => TSPrimitive::Number,
-            GTPrimitive::IntU64(_) => TSPrimitive::Number,
-            GTPrimitive::IntU128(_) => TSPrimitive::BigInt,
-            GTPrimitive::IntUSize(_) => TSPrimitive::Number,
-            GTPrimitive::Float32(_) => TSPrimitive::Number,
-            GTPrimitive::Float64(_) => TSPrimitive::Number,
+        match self.kind {
+            GTPrimitiveKind::Boolean => TSPrimitive::Boolean,
+            GTPrimitiveKind::String => TSPrimitive::String,
+            GTPrimitiveKind::Number => TSPrimitive::Number,
+            GTPrimitiveKind::Int8 => TSPrimitive::Number,
+            GTPrimitiveKind::Int16 => TSPrimitive::Number,
+            GTPrimitiveKind::Int32 => TSPrimitive::Number,
+            GTPrimitiveKind::Int64 => TSPrimitive::Number,
+            GTPrimitiveKind::Int128 => TSPrimitive::BigInt,
+            GTPrimitiveKind::IntSize => TSPrimitive::Number,
+            GTPrimitiveKind::IntU8 => TSPrimitive::Number,
+            GTPrimitiveKind::IntU16 => TSPrimitive::Number,
+            GTPrimitiveKind::IntU32 => TSPrimitive::Number,
+            GTPrimitiveKind::IntU64 => TSPrimitive::Number,
+            GTPrimitiveKind::IntU128 => TSPrimitive::BigInt,
+            GTPrimitiveKind::IntUSize => TSPrimitive::Number,
+            GTPrimitiveKind::Float32 => TSPrimitive::Number,
+            GTPrimitiveKind::Float64 => TSPrimitive::Number,
         }
     }
 }
@@ -27,72 +27,73 @@ impl TSConvert<TSPrimitive> for GTPrimitive {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
+    use crate::test::*;
+    use genotype_test::*;
 
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTPrimitive::Boolean((0, 0).into()).convert(&mut Default::default()),
+            convert_to_ts(GtFactory::primitive_boolean()),
             @"Boolean"
         );
         assert_ron_snapshot!(
-            GTPrimitive::String((0, 0).into()).convert(&mut Default::default()),
+            convert_to_ts(GtFactory::primitive_string()),
             @"String"
         );
         assert_ron_snapshot!(
-            GTPrimitive::Int8((0, 0).into()).convert(&mut Default::default()),
+            convert_to_ts(GtFactory::primitive_i8()),
             @"Number"
         );
         assert_ron_snapshot!(
-            GTPrimitive::Int16((0, 0).into()).convert(&mut Default::default()),
+            convert_to_ts(GtFactory::primitive_i16()),
             @"Number"
         );
         assert_ron_snapshot!(
-            GTPrimitive::Int32((0, 0).into()).convert(&mut Default::default()),
+            convert_to_ts(GtFactory::primitive_i32()),
             @"Number"
         );
         assert_ron_snapshot!(
-            GTPrimitive::Int64((0, 0).into()).convert(&mut Default::default()),
+            convert_to_ts(GtFactory::primitive_i64()),
             @"Number"
         );
         assert_ron_snapshot!(
-            GTPrimitive::Int128((0, 0).into()).convert(&mut Default::default()),
+            convert_to_ts(GtFactory::primitive_i128()),
             @"BigInt"
         );
         assert_ron_snapshot!(
-            GTPrimitive::IntSize((0, 0).into()).convert(&mut Default::default()),
+            convert_to_ts(GtFactory::primitive_isize()),
             @"Number"
         );
         assert_ron_snapshot!(
-            GTPrimitive::IntU8((0, 0).into()).convert(&mut Default::default()),
+            convert_to_ts(GtFactory::primitive_u8()),
             @"Number"
         );
         assert_ron_snapshot!(
-            GTPrimitive::IntU16((0, 0).into()).convert(&mut Default::default()),
+            convert_to_ts(GtFactory::primitive_u16()),
             @"Number"
         );
         assert_ron_snapshot!(
-            GTPrimitive::IntU32((0, 0).into()).convert(&mut Default::default()),
+            convert_to_ts(GtFactory::primitive_u32()),
             @"Number"
         );
         assert_ron_snapshot!(
-            GTPrimitive::IntU64((0, 0).into()).convert(&mut Default::default()),
+            convert_to_ts(GtFactory::primitive_u64()),
             @"Number"
         );
         assert_ron_snapshot!(
-            GTPrimitive::IntU128((0, 0).into()).convert(&mut Default::default()),
+            convert_to_ts(GtFactory::primitive_u128()),
             @"BigInt"
         );
         assert_ron_snapshot!(
-            GTPrimitive::IntUSize((0, 0).into()).convert(&mut Default::default()),
+            convert_to_ts(GtFactory::primitive_usize()),
             @"Number"
         );
         assert_ron_snapshot!(
-            GTPrimitive::Float32((0, 0).into()).convert(&mut Default::default()),
+            convert_to_ts(GtFactory::primitive_f32()),
             @"Number"
         );
         assert_ron_snapshot!(
-            GTPrimitive::Float64((0, 0).into()).convert(&mut Default::default()),
+            convert_to_ts(GtFactory::primitive_f64()),
             @"Number"
         );
     }

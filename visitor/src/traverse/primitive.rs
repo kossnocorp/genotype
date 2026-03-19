@@ -14,16 +14,17 @@ impl GTTraverse for GTPrimitive {
 mod tests {
     use super::*;
     use crate::visitor::mock::*;
+    use genotype_test::*;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
-        let mut primitive = GTPrimitive::String((0, 0).into());
+        let mut primitive = GtFactory::primitive_string();
         primitive.traverse(&mut visitor);
         assert_eq!(
             visitor.visited,
-            vec![GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),]
+            vec![GTMockVisited::Primitive(GtFactory::primitive_string()),]
         );
     }
 }

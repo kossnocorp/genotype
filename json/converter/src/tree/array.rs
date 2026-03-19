@@ -50,7 +50,12 @@ mod tests {
         assert_ron_snapshot!(descriptor_tree, @"
         Array(GTArray(
           span: GTSpan(0, 0),
-          descriptor: Primitive(Number(GTSpan(0, 0))),
+          descriptor: Primitive(GTPrimitive(
+            span: GTSpan(0, 0),
+            kind: Number,
+            doc: None,
+            attributes: [],
+          )),
         ))
         ");
 
@@ -58,7 +63,12 @@ mod tests {
         assert_ron_snapshot!(array_tree, @"
         GTArray(
           span: GTSpan(0, 0),
-          descriptor: Primitive(Number(GTSpan(0, 0))),
+          descriptor: Primitive(GTPrimitive(
+            span: GTSpan(0, 0),
+            kind: Number,
+            doc: None,
+            attributes: [],
+          )),
         )
         ");
     }

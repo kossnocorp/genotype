@@ -15,7 +15,7 @@ impl GTTraverse for GTArray {
 mod tests {
     use super::*;
     use crate::visitor::mock::*;
-    use genotype_parser::tree::*;
+    use genotype_test::*;
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -23,7 +23,7 @@ mod tests {
         let mut visitor = GTMockVisitor::new();
         let mut array = GTArray {
             span: (0, 0).into(),
-            descriptor: GTPrimitive::String((0, 0).into()).into(),
+            descriptor: GtFactory::primitive_string().into(),
         };
         array.traverse(&mut visitor);
         assert_eq!(
@@ -31,7 +31,7 @@ mod tests {
             vec![
                 GTMockVisited::Array(array.clone()),
                 GTMockVisited::Descriptor(array.descriptor.clone()),
-                GTMockVisited::Primitive(GTPrimitive::String((0, 0).into())),
+                GTMockVisited::Primitive(GtFactory::primitive_string()),
             ]
         );
     }

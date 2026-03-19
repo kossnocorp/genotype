@@ -130,7 +130,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(0, 3), "Age"),
-                descriptor: Primitive(Int64(GTSpan(5, 8))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(5, 8),
+                  kind: Int64,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
               GTAlias(
                 id: GTDefinitionId(GTModuleId("module"), "AnotherAge"),
@@ -151,7 +156,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(27, 37), "snake_case"),
-                descriptor: Primitive(Int64(GTSpan(39, 42))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(39, 42),
+                  kind: Int64,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
             ],
           ),
@@ -190,7 +200,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(0, 6), "String"),
-                descriptor: Primitive(String(GTSpan(8, 14))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(8, 14),
+                  kind: String,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
               GTAlias(
                 id: GTDefinitionId(GTModuleId("module"), "Int"),
@@ -198,7 +213,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(16, 19), "Int"),
-                descriptor: Primitive(Int64(GTSpan(21, 24))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(21, 24),
+                  kind: Int64,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
               GTAlias(
                 id: GTDefinitionId(GTModuleId("module"), "Float"),
@@ -206,7 +226,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(26, 31), "Float"),
-                descriptor: Primitive(Float64(GTSpan(33, 38))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(33, 38),
+                  kind: Float64,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
               GTAlias(
                 id: GTDefinitionId(GTModuleId("module"), "Boolean"),
@@ -214,7 +239,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(40, 47), "Boolean"),
-                descriptor: Primitive(Boolean(GTSpan(49, 56))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(49, 56),
+                  kind: Boolean,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
             ],
           ),
@@ -262,7 +292,12 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GTKey(GTSpan(11, 15), "name"),
-                      descriptor: Primitive(String(GTSpan(17, 23))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(17, 23),
+                        kind: String,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                   ],
@@ -284,7 +319,12 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GTKey(GTSpan(38, 42), "name"),
-                      descriptor: Primitive(String(GTSpan(44, 50))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(44, 50),
+                        kind: String,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                     GTProperty(
@@ -292,7 +332,12 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GTKey(GTSpan(54, 57), "age"),
-                      descriptor: Primitive(Int64(GTSpan(59, 62))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(59, 62),
+                        kind: Int64,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                     GTProperty(
@@ -300,7 +345,12 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GTKey(GTSpan(66, 70), "flag"),
-                      descriptor: Primitive(Boolean(GTSpan(72, 79))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(72, 79),
+                        kind: Boolean,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                   ],
@@ -348,7 +398,12 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GTKey(GTSpan(117, 121), "name"),
-                      descriptor: Primitive(String(GTSpan(123, 129))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(123, 129),
+                        kind: String,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                   ],
@@ -370,7 +425,12 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GTKey(GTSpan(142, 146), "name"),
-                      descriptor: Primitive(String(GTSpan(148, 154))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(148, 154),
+                        kind: String,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                     GTProperty(
@@ -378,7 +438,12 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GTKey(GTSpan(156, 159), "age"),
-                      descriptor: Primitive(Int64(GTSpan(161, 164))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(161, 164),
+                        kind: Int64,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                   ],
@@ -400,7 +465,12 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GTKey(GTSpan(184, 194), "snake_case"),
-                      descriptor: Primitive(Int64(GTSpan(196, 199))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(196, 199),
+                        kind: Int64,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                   ],
@@ -445,7 +515,12 @@ mod tests {
                 doc: Some(GTDoc(GTSpan(62, 75), "Alias comment")),
                 attributes: [],
                 name: GTIdentifier(GTSpan(76, 81), "Hello"),
-                descriptor: Primitive(String(GTSpan(104, 110))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(104, 110),
+                  kind: String,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
               GTAlias(
                 id: GTDefinitionId(GTModuleId("module"), "Hello"),
@@ -463,7 +538,12 @@ mod tests {
                       doc: Some(GTDoc(GTSpan(165, 181), "Property comment")),
                       attributes: [],
                       name: GTKey(GTSpan(184, 188), "name"),
-                      descriptor: Primitive(String(GTSpan(190, 196))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(190, 196),
+                        kind: String,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                     GTProperty(
@@ -471,7 +551,12 @@ mod tests {
                       doc: Some(GTDoc(GTSpan(204, 242), "Multiline...\n...property comment")),
                       attributes: [],
                       name: GTKey(GTSpan(245, 248), "age"),
-                      descriptor: Primitive(Int64(GTSpan(250, 253))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(250, 253),
+                        kind: Int64,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                   ],
@@ -483,7 +568,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(258, 263), "Hello"),
-                descriptor: Primitive(String(GTSpan(265, 271))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(265, 271),
+                  kind: String,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
             ],
           ),
@@ -530,7 +620,12 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GTKey(GTSpan(11, 15), "name"),
-                      descriptor: Primitive(String(GTSpan(17, 23))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(17, 23),
+                        kind: String,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                     GTProperty(
@@ -538,7 +633,12 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GTKey(GTSpan(27, 30), "age"),
-                      descriptor: Primitive(Int64(GTSpan(33, 36))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(33, 36),
+                        kind: Int64,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: false,
                     ),
                   ],
@@ -599,7 +699,12 @@ mod tests {
                             doc: None,
                             attributes: [],
                             name: GTKey(GTSpan(23, 28), "first"),
-                            descriptor: Primitive(String(GTSpan(30, 36))),
+                            descriptor: Primitive(GTPrimitive(
+                              span: GTSpan(30, 36),
+                              kind: String,
+                              doc: None,
+                              attributes: [],
+                            )),
                             required: true,
                           ),
                           GTProperty(
@@ -607,7 +712,12 @@ mod tests {
                             doc: None,
                             attributes: [],
                             name: GTKey(GTSpan(42, 46), "last"),
-                            descriptor: Primitive(String(GTSpan(48, 54))),
+                            descriptor: Primitive(GTPrimitive(
+                              span: GTSpan(48, 54),
+                              kind: String,
+                              doc: None,
+                              attributes: [],
+                            )),
                             required: true,
                           ),
                         ],
@@ -649,7 +759,12 @@ mod tests {
                               doc: None,
                               attributes: [],
                               name: GTKey(GTSpan(93, 98), "first"),
-                              descriptor: Primitive(String(GTSpan(100, 106))),
+                              descriptor: Primitive(GTPrimitive(
+                                span: GTSpan(100, 106),
+                                kind: String,
+                                doc: None,
+                                attributes: [],
+                              )),
                               required: true,
                             ),
                             GTProperty(
@@ -657,7 +772,12 @@ mod tests {
                               doc: None,
                               attributes: [],
                               name: GTKey(GTSpan(112, 116), "last"),
-                              descriptor: Primitive(String(GTSpan(118, 124))),
+                              descriptor: Primitive(GTPrimitive(
+                                span: GTSpan(118, 124),
+                                kind: String,
+                                doc: None,
+                                attributes: [],
+                              )),
                               required: true,
                             ),
                           ],
@@ -713,7 +833,12 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GTKey(GTSpan(10, 15), "title"),
-                      descriptor: Primitive(String(GTSpan(17, 23))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(17, 23),
+                        kind: String,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                     GTProperty(
@@ -723,7 +848,12 @@ mod tests {
                       name: GTKey(GTSpan(27, 31), "tags"),
                       descriptor: Array(GTArray(
                         span: GTSpan(33, 41),
-                        descriptor: Primitive(String(GTSpan(34, 40))),
+                        descriptor: Primitive(GTPrimitive(
+                          span: GTSpan(34, 40),
+                          kind: String,
+                          doc: None,
+                          attributes: [],
+                        )),
                       )),
                       required: true,
                     ),
@@ -776,8 +906,18 @@ mod tests {
                       descriptor: Tuple(GTTuple(
                         span: GTSpan(16, 32),
                         descriptors: [
-                          Primitive(String(GTSpan(17, 23))),
-                          Primitive(String(GTSpan(25, 31))),
+                          Primitive(GTPrimitive(
+                            span: GTSpan(17, 23),
+                            kind: String,
+                            doc: None,
+                            attributes: [],
+                          )),
+                          Primitive(GTPrimitive(
+                            span: GTSpan(25, 31),
+                            kind: String,
+                            doc: None,
+                            attributes: [],
+                          )),
                         ],
                       )),
                       required: true,
@@ -790,9 +930,24 @@ mod tests {
                       descriptor: Tuple(GTTuple(
                         span: GTSpan(45, 66),
                         descriptors: [
-                          Primitive(Int64(GTSpan(46, 49))),
-                          Primitive(String(GTSpan(51, 57))),
-                          Primitive(String(GTSpan(59, 65))),
+                          Primitive(GTPrimitive(
+                            span: GTSpan(46, 49),
+                            kind: Int64,
+                            doc: None,
+                            attributes: [],
+                          )),
+                          Primitive(GTPrimitive(
+                            span: GTSpan(51, 57),
+                            kind: String,
+                            doc: None,
+                            attributes: [],
+                          )),
+                          Primitive(GTPrimitive(
+                            span: GTSpan(59, 65),
+                            kind: String,
+                            doc: None,
+                            attributes: [],
+                          )),
                         ],
                       )),
                       required: true,
@@ -809,9 +964,24 @@ mod tests {
                 descriptor: Tuple(GTTuple(
                   span: GTSpan(80, 101),
                   descriptors: [
-                    Primitive(Int64(GTSpan(81, 84))),
-                    Primitive(String(GTSpan(86, 92))),
-                    Primitive(String(GTSpan(94, 100))),
+                    Primitive(GTPrimitive(
+                      span: GTSpan(81, 84),
+                      kind: Int64,
+                      doc: None,
+                      attributes: [],
+                    )),
+                    Primitive(GTPrimitive(
+                      span: GTSpan(86, 92),
+                      kind: String,
+                      doc: None,
+                      attributes: [],
+                    )),
+                    Primitive(GTPrimitive(
+                      span: GTSpan(94, 100),
+                      kind: String,
+                      doc: None,
+                      attributes: [],
+                    )),
                   ],
                 )),
               ),
@@ -891,7 +1061,12 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GTKey(GTSpan(94, 99), "title"),
-                      descriptor: Primitive(String(GTSpan(101, 107))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(101, 107),
+                        kind: String,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                     GTProperty(
@@ -1003,7 +1178,12 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GTKey(GTSpan(10, 14), "name"),
-                      descriptor: Primitive(String(GTSpan(16, 22))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(16, 22),
+                        kind: String,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                     GTProperty(
@@ -1011,7 +1191,12 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GTKey(GTSpan(26, 29), "age"),
-                      descriptor: Primitive(Int64(GTSpan(31, 34))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(31, 34),
+                        kind: Int64,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                   ],
@@ -1043,7 +1228,12 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GTKey(GTSpan(65, 70), "cores"),
-                      descriptor: Primitive(Int64(GTSpan(72, 75))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(72, 75),
+                        kind: Int64,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                   ],
@@ -1075,7 +1265,12 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GTKey(GTSpan(101, 106), "email"),
-                      descriptor: Primitive(String(GTSpan(108, 114))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(108, 114),
+                        kind: String,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                   ],
@@ -1142,7 +1337,12 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GTKey(GTSpan(25, 29), "text"),
-                      descriptor: Primitive(String(GTSpan(31, 37))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(31, 37),
+                        kind: String,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                   ],
@@ -1187,7 +1387,12 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GTKey(GTSpan(93, 99), "userId"),
-                      descriptor: Primitive(String(GTSpan(101, 107))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(101, 107),
+                        kind: String,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                     GTProperty(
@@ -1195,7 +1400,12 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GTKey(GTSpan(111, 120), "published"),
-                      descriptor: Primitive(Boolean(GTSpan(122, 129))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(122, 129),
+                        kind: Boolean,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                   ],
@@ -1434,7 +1644,12 @@ mod tests {
                       attributes: [],
                       value: String("Hello"),
                     )),
-                    Primitive(String(GTSpan(53, 59))),
+                    Primitive(GTPrimitive(
+                      span: GTSpan(53, 59),
+                      kind: String,
+                      doc: None,
+                      attributes: [],
+                    )),
                   ],
                 )),
               ),
@@ -1453,7 +1668,12 @@ mod tests {
                       attributes: [],
                       value: String("Hello"),
                     )),
-                    Primitive(String(GTSpan(141, 147))),
+                    Primitive(GTPrimitive(
+                      span: GTSpan(141, 147),
+                      kind: String,
+                      doc: None,
+                      attributes: [],
+                    )),
                   ],
                 )),
               ),
@@ -1632,7 +1852,12 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GTKey(GTSpan(58, 65), "message"),
-                      descriptor: Primitive(String(GTSpan(67, 73))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(67, 73),
+                        kind: String,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                   ],
@@ -1676,7 +1901,12 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GTKey(GTSpan(109, 116), "message"),
-                      descriptor: Primitive(String(GTSpan(118, 124))),
+                      descriptor: Primitive(GTPrimitive(
+                        span: GTSpan(118, 124),
+                        kind: String,
+                        doc: None,
+                        attributes: [],
+                      )),
                       required: true,
                     ),
                   ],
@@ -1921,7 +2151,12 @@ mod tests {
                 descriptor: Record(GTRecord(
                   span: GTSpan(6, 20),
                   key: String(GTSpan(8, 10)),
-                  descriptor: Primitive(String(GTSpan(12, 18))),
+                  descriptor: Primitive(GTPrimitive(
+                    span: GTSpan(12, 18),
+                    kind: String,
+                    doc: None,
+                    attributes: [],
+                  )),
                 )),
               ),
               GTAlias(
@@ -1933,7 +2168,12 @@ mod tests {
                 descriptor: Record(GTRecord(
                   span: GTSpan(27, 44),
                   key: Int64(GTSpan(29, 34)),
-                  descriptor: Primitive(String(GTSpan(36, 42))),
+                  descriptor: Primitive(GTPrimitive(
+                    span: GTSpan(36, 42),
+                    kind: String,
+                    doc: None,
+                    attributes: [],
+                  )),
                 )),
               ),
             ],
@@ -2009,7 +2249,12 @@ mod tests {
                   span: GTSpan(7, 11),
                   id: GTDefinitionId(GTModuleId("module"), "OrgId"),
                   name: GTIdentifier(GTSpan(0, 5), "OrgId"),
-                  primitive: Int64(GTSpan(8, 11)),
+                  primitive: GTPrimitive(
+                    span: GTSpan(8, 11),
+                    kind: Int64,
+                    doc: None,
+                    attributes: [],
+                  ),
                 )),
               ),
               GTAlias(
@@ -2022,7 +2267,12 @@ mod tests {
                   span: GTSpan(21, 28),
                   id: GTDefinitionId(GTModuleId("module"), "UserId"),
                   name: GTIdentifier(GTSpan(13, 19), "UserId"),
-                  primitive: String(GTSpan(22, 28)),
+                  primitive: GTPrimitive(
+                    span: GTSpan(22, 28),
+                    kind: String,
+                    doc: None,
+                    attributes: [],
+                  ),
                 )),
               ),
               GTAlias(
@@ -2035,7 +2285,12 @@ mod tests {
                   span: GTSpan(37, 43),
                   id: GTDefinitionId(GTModuleId("module"), "Const"),
                   name: GTIdentifier(GTSpan(30, 35), "Const"),
-                  primitive: Float64(GTSpan(38, 43)),
+                  primitive: GTPrimitive(
+                    span: GTSpan(38, 43),
+                    kind: Float64,
+                    doc: None,
+                    attributes: [],
+                  ),
                 )),
               ),
               GTAlias(
@@ -2048,7 +2303,12 @@ mod tests {
                   span: GTSpan(50, 58),
                   id: GTDefinitionId(GTModuleId("module"), "Yes"),
                   name: GTIdentifier(GTSpan(45, 48), "Yes"),
-                  primitive: Boolean(GTSpan(51, 58)),
+                  primitive: GTPrimitive(
+                    span: GTSpan(51, 58),
+                    kind: Boolean,
+                    doc: None,
+                    attributes: [],
+                  ),
                 )),
               ),
             ],
@@ -2087,7 +2347,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(0, 4), "Int8"),
-                descriptor: Primitive(Int8(GTSpan(6, 8))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(6, 8),
+                  kind: Int8,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
               GTAlias(
                 id: GTDefinitionId(GTModuleId("module"), "Int16"),
@@ -2095,7 +2360,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(9, 14), "Int16"),
-                descriptor: Primitive(Int16(GTSpan(16, 19))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(16, 19),
+                  kind: Int16,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
               GTAlias(
                 id: GTDefinitionId(GTModuleId("module"), "Int32"),
@@ -2103,7 +2373,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(20, 25), "Int32"),
-                descriptor: Primitive(Int32(GTSpan(27, 30))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(27, 30),
+                  kind: Int32,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
               GTAlias(
                 id: GTDefinitionId(GTModuleId("module"), "Int64"),
@@ -2111,7 +2386,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(31, 36), "Int64"),
-                descriptor: Primitive(Int64(GTSpan(38, 41))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(38, 41),
+                  kind: Int64,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
               GTAlias(
                 id: GTDefinitionId(GTModuleId("module"), "Int128"),
@@ -2119,7 +2399,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(42, 48), "Int128"),
-                descriptor: Primitive(Int128(GTSpan(50, 54))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(50, 54),
+                  kind: Int128,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
               GTAlias(
                 id: GTDefinitionId(GTModuleId("module"), "IntSize"),
@@ -2127,7 +2412,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(55, 62), "IntSize"),
-                descriptor: Primitive(IntSize(GTSpan(64, 69))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(64, 69),
+                  kind: IntSize,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
               GTAlias(
                 id: GTDefinitionId(GTModuleId("module"), "IntU8"),
@@ -2135,7 +2425,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(70, 75), "IntU8"),
-                descriptor: Primitive(IntU8(GTSpan(77, 79))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(77, 79),
+                  kind: IntU8,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
               GTAlias(
                 id: GTDefinitionId(GTModuleId("module"), "IntU16"),
@@ -2143,7 +2438,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(80, 86), "IntU16"),
-                descriptor: Primitive(IntU16(GTSpan(88, 91))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(88, 91),
+                  kind: IntU16,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
               GTAlias(
                 id: GTDefinitionId(GTModuleId("module"), "IntU32"),
@@ -2151,7 +2451,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(92, 98), "IntU32"),
-                descriptor: Primitive(IntU32(GTSpan(100, 103))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(100, 103),
+                  kind: IntU32,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
               GTAlias(
                 id: GTDefinitionId(GTModuleId("module"), "IntU64"),
@@ -2159,7 +2464,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(104, 110), "IntU64"),
-                descriptor: Primitive(IntU64(GTSpan(112, 115))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(112, 115),
+                  kind: IntU64,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
               GTAlias(
                 id: GTDefinitionId(GTModuleId("module"), "IntU128"),
@@ -2167,7 +2477,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(116, 123), "IntU128"),
-                descriptor: Primitive(IntU128(GTSpan(125, 129))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(125, 129),
+                  kind: IntU128,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
               GTAlias(
                 id: GTDefinitionId(GTModuleId("module"), "IntUSize"),
@@ -2175,7 +2490,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(130, 138), "IntUSize"),
-                descriptor: Primitive(IntUSize(GTSpan(140, 145))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(140, 145),
+                  kind: IntUSize,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
               GTAlias(
                 id: GTDefinitionId(GTModuleId("module"), "Float32"),
@@ -2183,7 +2503,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(146, 153), "Float32"),
-                descriptor: Primitive(Float32(GTSpan(155, 158))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(155, 158),
+                  kind: Float32,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
               GTAlias(
                 id: GTDefinitionId(GTModuleId("module"), "Float64"),
@@ -2191,7 +2516,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(159, 166), "Float64"),
-                descriptor: Primitive(Float64(GTSpan(168, 171))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(168, 171),
+                  kind: Float64,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
               GTAlias(
                 id: GTDefinitionId(GTModuleId("module"), "Int8Record"),
@@ -2202,7 +2532,12 @@ mod tests {
                 descriptor: Record(GTRecord(
                   span: GTSpan(185, 201),
                   key: Int8(GTSpan(187, 191)),
-                  descriptor: Primitive(String(GTSpan(193, 199))),
+                  descriptor: Primitive(GTPrimitive(
+                    span: GTSpan(193, 199),
+                    kind: String,
+                    doc: None,
+                    attributes: [],
+                  )),
                 )),
               ),
               GTAlias(
@@ -2214,7 +2549,12 @@ mod tests {
                 descriptor: Record(GTRecord(
                   span: GTSpan(215, 232),
                   key: Int16(GTSpan(217, 222)),
-                  descriptor: Primitive(String(GTSpan(224, 230))),
+                  descriptor: Primitive(GTPrimitive(
+                    span: GTSpan(224, 230),
+                    kind: String,
+                    doc: None,
+                    attributes: [],
+                  )),
                 )),
               ),
               GTAlias(
@@ -2226,7 +2566,12 @@ mod tests {
                 descriptor: Record(GTRecord(
                   span: GTSpan(246, 263),
                   key: Int32(GTSpan(248, 253)),
-                  descriptor: Primitive(String(GTSpan(255, 261))),
+                  descriptor: Primitive(GTPrimitive(
+                    span: GTSpan(255, 261),
+                    kind: String,
+                    doc: None,
+                    attributes: [],
+                  )),
                 )),
               ),
               GTAlias(
@@ -2238,7 +2583,12 @@ mod tests {
                 descriptor: Record(GTRecord(
                   span: GTSpan(277, 294),
                   key: Int64(GTSpan(279, 284)),
-                  descriptor: Primitive(String(GTSpan(286, 292))),
+                  descriptor: Primitive(GTPrimitive(
+                    span: GTSpan(286, 292),
+                    kind: String,
+                    doc: None,
+                    attributes: [],
+                  )),
                 )),
               ),
               GTAlias(
@@ -2250,7 +2600,12 @@ mod tests {
                 descriptor: Record(GTRecord(
                   span: GTSpan(309, 327),
                   key: Int128(GTSpan(311, 317)),
-                  descriptor: Primitive(String(GTSpan(319, 325))),
+                  descriptor: Primitive(GTPrimitive(
+                    span: GTSpan(319, 325),
+                    kind: String,
+                    doc: None,
+                    attributes: [],
+                  )),
                 )),
               ),
               GTAlias(
@@ -2262,7 +2617,12 @@ mod tests {
                 descriptor: Record(GTRecord(
                   span: GTSpan(343, 362),
                   key: IntSize(GTSpan(345, 352)),
-                  descriptor: Primitive(String(GTSpan(354, 360))),
+                  descriptor: Primitive(GTPrimitive(
+                    span: GTSpan(354, 360),
+                    kind: String,
+                    doc: None,
+                    attributes: [],
+                  )),
                 )),
               ),
               GTAlias(
@@ -2274,7 +2634,12 @@ mod tests {
                 descriptor: Record(GTRecord(
                   span: GTSpan(376, 392),
                   key: IntU8(GTSpan(378, 382)),
-                  descriptor: Primitive(String(GTSpan(384, 390))),
+                  descriptor: Primitive(GTPrimitive(
+                    span: GTSpan(384, 390),
+                    kind: String,
+                    doc: None,
+                    attributes: [],
+                  )),
                 )),
               ),
               GTAlias(
@@ -2286,7 +2651,12 @@ mod tests {
                 descriptor: Record(GTRecord(
                   span: GTSpan(407, 424),
                   key: IntU16(GTSpan(409, 414)),
-                  descriptor: Primitive(String(GTSpan(416, 422))),
+                  descriptor: Primitive(GTPrimitive(
+                    span: GTSpan(416, 422),
+                    kind: String,
+                    doc: None,
+                    attributes: [],
+                  )),
                 )),
               ),
               GTAlias(
@@ -2298,7 +2668,12 @@ mod tests {
                 descriptor: Record(GTRecord(
                   span: GTSpan(439, 456),
                   key: IntU32(GTSpan(441, 446)),
-                  descriptor: Primitive(String(GTSpan(448, 454))),
+                  descriptor: Primitive(GTPrimitive(
+                    span: GTSpan(448, 454),
+                    kind: String,
+                    doc: None,
+                    attributes: [],
+                  )),
                 )),
               ),
               GTAlias(
@@ -2310,7 +2685,12 @@ mod tests {
                 descriptor: Record(GTRecord(
                   span: GTSpan(471, 488),
                   key: IntU64(GTSpan(473, 478)),
-                  descriptor: Primitive(String(GTSpan(480, 486))),
+                  descriptor: Primitive(GTPrimitive(
+                    span: GTSpan(480, 486),
+                    kind: String,
+                    doc: None,
+                    attributes: [],
+                  )),
                 )),
               ),
               GTAlias(
@@ -2322,7 +2702,12 @@ mod tests {
                 descriptor: Record(GTRecord(
                   span: GTSpan(504, 522),
                   key: IntU128(GTSpan(506, 512)),
-                  descriptor: Primitive(String(GTSpan(514, 520))),
+                  descriptor: Primitive(GTPrimitive(
+                    span: GTSpan(514, 520),
+                    kind: String,
+                    doc: None,
+                    attributes: [],
+                  )),
                 )),
               ),
               GTAlias(
@@ -2334,7 +2719,12 @@ mod tests {
                 descriptor: Record(GTRecord(
                   span: GTSpan(539, 558),
                   key: IntUSize(GTSpan(541, 548)),
-                  descriptor: Primitive(String(GTSpan(550, 556))),
+                  descriptor: Primitive(GTPrimitive(
+                    span: GTSpan(550, 556),
+                    kind: String,
+                    doc: None,
+                    attributes: [],
+                  )),
                 )),
               ),
               GTAlias(
@@ -2346,7 +2736,12 @@ mod tests {
                 descriptor: Record(GTRecord(
                   span: GTSpan(574, 591),
                   key: Float32(GTSpan(576, 581)),
-                  descriptor: Primitive(String(GTSpan(583, 589))),
+                  descriptor: Primitive(GTPrimitive(
+                    span: GTSpan(583, 589),
+                    kind: String,
+                    doc: None,
+                    attributes: [],
+                  )),
                 )),
               ),
               GTAlias(
@@ -2358,7 +2753,12 @@ mod tests {
                 descriptor: Record(GTRecord(
                   span: GTSpan(607, 624),
                   key: Float64(GTSpan(609, 614)),
-                  descriptor: Primitive(String(GTSpan(616, 622))),
+                  descriptor: Primitive(GTPrimitive(
+                    span: GTSpan(616, 622),
+                    kind: String,
+                    doc: None,
+                    attributes: [],
+                  )),
                 )),
               ),
             ],
@@ -2421,7 +2821,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(0, 5), "Hello"),
-                descriptor: Primitive(Number(GTSpan(7, 13))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(7, 13),
+                  kind: Number,
+                  doc: None,
+                  attributes: [],
+                )),
               ),
               GTAlias(
                 id: GTDefinitionId(GTModuleId("module"), "World"),
@@ -2432,7 +2837,12 @@ mod tests {
                 descriptor: Record(GTRecord(
                   span: GTSpan(22, 42),
                   key: Number(GTSpan(24, 32)),
-                  descriptor: Primitive(String(GTSpan(34, 40))),
+                  descriptor: Primitive(GTPrimitive(
+                    span: GTSpan(34, 40),
+                    kind: String,
+                    doc: None,
+                    attributes: [],
+                  )),
                 )),
               ),
             ],

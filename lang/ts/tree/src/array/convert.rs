@@ -11,6 +11,7 @@ impl TSConvert<TSArray> for GTArray {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use genotype_test::*;
     use insta::assert_ron_snapshot;
 
     #[test]
@@ -18,7 +19,7 @@ mod tests {
         assert_ron_snapshot!(
             GTArray {
                 span: (0, 0).into(),
-                descriptor: GTPrimitive::Boolean((0, 0).into()).into(),
+                descriptor: GtFactory::primitive_boolean().into(),
             }
             .convert(&mut Default::default()),
             @"

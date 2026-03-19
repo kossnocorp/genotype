@@ -144,7 +144,12 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTKey(GTSpan(9, 14), "world"),
-                descriptor: Primitive(String(GTSpan(16, 22))),
+                descriptor: Primitive(GTPrimitive(
+                  span: GTSpan(16, 22),
+                  kind: String,
+                  doc: None,
+                  attributes: [],
+                )),
                 required: true,
               ),
             ],
