@@ -14,36 +14,16 @@ impl TSConvert<TSObject> for GTObject {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::test::*;
     use genotype_test::*;
 
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTObject {
-                span: (0, 0).into(),
-                name: GTIdentifier::new((0, 0).into(), "Person".into()).into(),
-                extensions: vec![],
-                properties: vec![
-                    GTProperty {
-                        span: (0, 0).into(),
-                        doc: None,
-                        attributes: vec![],
-                        name: GTKey::new((0, 0).into(), "name".into()),
-                        descriptor: GtFactory::primitive_string().into(),
-                        required: true,
-                    },
-                    GTProperty {
-                        span: (0, 0).into(),
-                        doc: None,
-                        attributes: vec![],
-                        name: GTKey::new((0, 0).into(), "age".into()),
-                        descriptor: GtFactory::primitive_i32().into(),
-                        required: false,
-                    }
-                ]
-            }
-            .convert(&mut Default::default()),
+            convert_to_ts(GtFactory::object("Person", vec![
+                GtFactory::property("name", GtFactory::primitive_string()),
+                GtFactory::property_optional("age", GtFactory::primitive_i32()),
+            ])),
             @r#"
         TSObject(
           properties: [

@@ -89,6 +89,8 @@ mod tests {
                 name: GTIdentifier::new((0, 0).into(), "Book".into()),
                 descriptor: GTDescriptor::Object(GTObject {
                     span: (0, 0).into(),
+                    doc: None,
+                    attributes: vec![],
                     name: GTIdentifier::new((0, 0).into(), "Book".into()).into(),
                     extensions: vec![],
                     properties: vec![
@@ -190,6 +192,8 @@ mod tests {
                     descriptors: vec![
                         GTObject {
                             span: (0, 0).into(),
+                            doc: None,
+                            attributes: vec![],
                             name: GTObjectName::Named(GTIdentifier::new(
                                 (0, 0).into(),
                                 "BookObj".into()

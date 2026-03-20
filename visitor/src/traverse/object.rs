@@ -56,6 +56,8 @@ mod tests {
         let name_identifier = GTIdentifier::new((0, 0).into(), "Name".into());
         let mut object = GTObject {
             span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
             name: GTObjectName::Named(name_identifier.clone()),
             extensions: vec![extension.clone()],
             properties: vec![property.clone()],

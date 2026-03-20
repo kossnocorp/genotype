@@ -95,6 +95,8 @@ mod tests {
           span: GTSpan(0, 0),
           descriptor: Object(GTObject(
             span: GTSpan(0, 0),
+            doc: None,
+            attributes: [],
             name: Named(GTIdentifier(GTSpan(0, 0), "RootElement")),
             extensions: [],
             properties: [],
@@ -143,6 +145,8 @@ mod tests {
             span: GTSpan(0, 0),
             descriptor: Object(GTObject(
               span: GTSpan(0, 0),
+              doc: None,
+              attributes: [],
               name: Named(GTIdentifier(GTSpan(0, 0), "RootElementElement")),
               extensions: [],
               properties: [
@@ -153,6 +157,8 @@ mod tests {
                   name: GTKey(GTSpan(0, 0), "world"),
                   descriptor: Object(GTObject(
                     span: GTSpan(0, 0),
+                    doc: None,
+                    attributes: [],
                     name: Named(GTIdentifier(GTSpan(0, 0), "RootElementElementWorld")),
                     extensions: [],
                     properties: [],
@@ -188,6 +194,8 @@ mod tests {
           span: GTSpan(0, 0),
           descriptor: Object(GTObject(
             span: GTSpan(0, 0),
+            doc: None,
+            attributes: [],
             name: Named(GTIdentifier(GTSpan(0, 0), "HelloElement")),
             extensions: [],
             properties: [],
@@ -236,6 +244,8 @@ mod tests {
             span: GTSpan(0, 0),
             descriptor: Object(GTObject(
               span: GTSpan(0, 0),
+              doc: None,
+              attributes: [],
               name: Named(GTIdentifier(GTSpan(0, 0), "Hey")),
               extensions: [],
               properties: [
@@ -246,6 +256,8 @@ mod tests {
                   name: GTKey(GTSpan(0, 0), "world"),
                   descriptor: Object(GTObject(
                     span: GTSpan(0, 0),
+                    doc: None,
+                    attributes: [],
                     name: Named(GTIdentifier(GTSpan(0, 0), "HeyWorld")),
                     extensions: [],
                     properties: [],

@@ -286,6 +286,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(0, 5), "Hello"),
                 descriptor: Object(GTObject(
                   span: GTSpan(7, 25),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(0, 5), "Hello")),
                   extensions: [],
                   properties: [
@@ -313,6 +315,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(27, 32), "Hello"),
                 descriptor: Object(GTObject(
                   span: GTSpan(34, 82),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(27, 32), "Hello")),
                   extensions: [],
                   properties: [
@@ -366,6 +370,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(84, 89), "Empty"),
                 descriptor: Object(GTObject(
                   span: GTSpan(91, 93),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(84, 89), "Empty")),
                   extensions: [],
                   properties: [],
@@ -379,6 +385,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(95, 100), "Empty"),
                 descriptor: Object(GTObject(
                   span: GTSpan(102, 106),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(95, 100), "Empty")),
                   extensions: [],
                   properties: [],
@@ -392,6 +400,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(108, 113), "Hello"),
                 descriptor: Object(GTObject(
                   span: GTSpan(115, 131),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(108, 113), "Hello")),
                   extensions: [],
                   properties: [
@@ -419,6 +429,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(133, 138), "Hello"),
                 descriptor: Object(GTObject(
                   span: GTSpan(140, 166),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(133, 138), "Hello")),
                   extensions: [],
                   properties: [
@@ -459,6 +471,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(168, 178), "PascalCase"),
                 descriptor: Object(GTObject(
                   span: GTSpan(180, 202),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(168, 178), "PascalCase")),
                   extensions: [],
                   properties: [
@@ -532,6 +546,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(150, 155), "Hello"),
                 descriptor: Object(GTObject(
                   span: GTSpan(157, 256),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(150, 155), "Hello")),
                   extensions: [],
                   properties: [
@@ -614,6 +630,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(0, 5), "Hello"),
                 descriptor: Object(GTObject(
                   span: GTSpan(7, 38),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(0, 5), "Hello")),
                   extensions: [],
                   properties: [
@@ -681,6 +699,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(0, 5), "Hello"),
                 descriptor: Object(GTObject(
                   span: GTSpan(7, 61),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(0, 5), "Hello")),
                   extensions: [],
                   properties: [
@@ -691,6 +711,8 @@ mod tests {
                       name: GTKey(GTSpan(11, 15), "name"),
                       descriptor: Object(GTObject(
                         span: GTSpan(17, 59),
+                        doc: None,
+                        attributes: [],
                         name: Alias(GTIdentifier(GTSpan(17, 59), "HelloName"), Property(GTIdentifier(GTSpan(0, 5), "Hello"), [
                           GTKey(GTSpan(11, 15), "name"),
                         ])),
@@ -737,6 +759,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(63, 68), "Hello"),
                 descriptor: Object(GTObject(
                   span: GTSpan(70, 131),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(63, 68), "Hello")),
                   extensions: [],
                   properties: [
@@ -753,6 +777,8 @@ mod tests {
                         name: GTIdentifier(GTSpan(80, 85), "Named"),
                         descriptor: Object(GTObject(
                           span: GTSpan(87, 129),
+                          doc: None,
+                          attributes: [],
                           name: Named(GTIdentifier(GTSpan(80, 85), "Named")),
                           extensions: [],
                           properties: [
@@ -827,6 +853,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(0, 4), "Book"),
                 descriptor: Object(GTObject(
                   span: GTSpan(6, 44),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(0, 4), "Book")),
                   extensions: [],
                   properties: [
@@ -897,6 +925,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(0, 4), "User"),
                 descriptor: Object(GTObject(
                   span: GTSpan(6, 69),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(0, 4), "User")),
                   extensions: [],
                   properties: [
@@ -1055,6 +1085,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(84, 88), "Book"),
                 descriptor: Object(GTObject(
                   span: GTSpan(90, 157),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(84, 88), "Book")),
                   extensions: [],
                   properties: [
@@ -1174,6 +1206,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(0, 4), "Base"),
                 descriptor: Object(GTObject(
                   span: GTSpan(6, 37),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(0, 4), "Base")),
                   extensions: [],
                   properties: [
@@ -1214,6 +1248,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(39, 48), "Processor"),
                 descriptor: Object(GTObject(
                   span: GTSpan(50, 78),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(39, 48), "Processor")),
                   extensions: [
                     GTExtension(
@@ -1253,6 +1289,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(80, 84), "User"),
                 descriptor: Object(GTObject(
                   span: GTSpan(86, 117),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(80, 84), "User")),
                   extensions: [
                     GTExtension(
@@ -1324,6 +1362,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(0, 11), "CommentBase"),
                 descriptor: Object(GTObject(
                   span: GTSpan(13, 40),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(0, 11), "CommentBase")),
                   extensions: [],
                   properties: [
@@ -1364,6 +1404,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(42, 53), "UserComment"),
                 descriptor: Object(GTObject(
                   span: GTSpan(55, 132),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(42, 53), "UserComment")),
                   extensions: [
                     GTExtension(
@@ -1429,6 +1471,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(134, 147), "SystemComment"),
                 descriptor: Object(GTObject(
                   span: GTSpan(149, 207),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(134, 147), "SystemComment")),
                   extensions: [
                     GTExtension(
@@ -1725,6 +1769,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(206, 221), "ObjectUnionUser"),
                 descriptor: Object(GTObject(
                   span: GTSpan(223, 242),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(206, 221), "ObjectUnionUser")),
                   extensions: [],
                   properties: [
@@ -1752,6 +1798,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(244, 262), "ObjectUnionAccount"),
                 descriptor: Object(GTObject(
                   span: GTSpan(264, 286),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(244, 262), "ObjectUnionAccount")),
                   extensions: [],
                   properties: [
@@ -1842,6 +1890,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(21, 26), "Reply"),
                 descriptor: Object(GTObject(
                   span: GTSpan(28, 76),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(21, 26), "Reply")),
                   extensions: [],
                   properties: [
@@ -1891,6 +1941,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(78, 80), "DM"),
                 descriptor: Object(GTObject(
                   span: GTSpan(82, 127),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(78, 80), "DM")),
                   extensions: [],
                   properties: [

@@ -116,6 +116,8 @@ mod tests {
           descriptors: [
             Object(GTObject(
               span: GTSpan(0, 0),
+              doc: None,
+              attributes: [],
               name: Named(GTIdentifier(GTSpan(0, 0), "RootElement")),
               extensions: [],
               properties: [],
@@ -167,6 +169,8 @@ mod tests {
               descriptors: [
                 Object(GTObject(
                   span: GTSpan(0, 0),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(0, 0), "RootElementElement")),
                   extensions: [],
                   properties: [
@@ -177,6 +181,8 @@ mod tests {
                       name: GTKey(GTSpan(0, 0), "world"),
                       descriptor: Object(GTObject(
                         span: GTSpan(0, 0),
+                        doc: None,
+                        attributes: [],
                         name: Named(GTIdentifier(GTSpan(0, 0), "RootElementElementWorld")),
                         extensions: [],
                         properties: [],
@@ -215,6 +221,8 @@ mod tests {
           descriptors: [
             Object(GTObject(
               span: GTSpan(0, 0),
+              doc: None,
+              attributes: [],
               name: Named(GTIdentifier(GTSpan(0, 0), "Hello")),
               extensions: [],
               properties: [],
@@ -266,6 +274,8 @@ mod tests {
               descriptors: [
                 Object(GTObject(
                   span: GTSpan(0, 0),
+                  doc: None,
+                  attributes: [],
                   name: Named(GTIdentifier(GTSpan(0, 0), "HiElement")),
                   extensions: [],
                   properties: [
@@ -276,6 +286,8 @@ mod tests {
                       name: GTKey(GTSpan(0, 0), "world"),
                       descriptor: Object(GTObject(
                         span: GTSpan(0, 0),
+                        doc: None,
+                        attributes: [],
                         name: Named(GTIdentifier(GTSpan(0, 0), "HiElementWorld")),
                         extensions: [],
                         properties: [],

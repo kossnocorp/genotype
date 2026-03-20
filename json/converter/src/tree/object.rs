@@ -17,6 +17,8 @@ impl GtjTreeConvert<GTObject> for GtjObject {
 
         GTObject {
             span: Default::default(),
+            doc: None,
+            attributes: vec![],
             name: GTObjectName::Named(GTIdentifier(Default::default(), name)),
             properties,
             extensions: vec![],
@@ -48,6 +50,8 @@ mod tests {
         assert_ron_snapshot!(descriptor_tree, @r#"
         Object(GTObject(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           name: Named(GTIdentifier(GTSpan(0, 0), "Hello")),
           extensions: [],
           properties: [],
@@ -58,6 +62,8 @@ mod tests {
         assert_ron_snapshot!(object_tree, @r#"
         GTObject(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           name: Named(GTIdentifier(GTSpan(0, 0), "Hello")),
           extensions: [],
           properties: [],
@@ -78,6 +84,8 @@ mod tests {
         assert_ron_snapshot!(object_tree, @r#"
         GTObject(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           name: Named(GTIdentifier(GTSpan(0, 0), "Root")),
           extensions: [],
           properties: [],
@@ -108,6 +116,8 @@ mod tests {
         assert_ron_snapshot!(object_tree, @r#"
         GTObject(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           name: Named(GTIdentifier(GTSpan(0, 0), "Root")),
           extensions: [],
           properties: [
@@ -155,6 +165,8 @@ mod tests {
         assert_ron_snapshot!(object_tree, @r#"
         GTObject(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           name: Named(GTIdentifier(GTSpan(0, 0), "Root")),
           extensions: [],
           properties: [
@@ -165,6 +177,8 @@ mod tests {
               name: GTKey(GTSpan(0, 0), "hello"),
               descriptor: Object(GTObject(
                 span: GTSpan(0, 0),
+                doc: None,
+                attributes: [],
                 name: Named(GTIdentifier(GTSpan(0, 0), "RootHello")),
                 extensions: [],
                 properties: [],
@@ -213,6 +227,8 @@ mod tests {
         assert_ron_snapshot!(object_tree, @r#"
         GTObject(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           name: Named(GTIdentifier(GTSpan(0, 0), "Root")),
           extensions: [],
           properties: [
@@ -223,6 +239,8 @@ mod tests {
               name: GTKey(GTSpan(0, 0), "hello"),
               descriptor: Object(GTObject(
                 span: GTSpan(0, 0),
+                doc: None,
+                attributes: [],
                 name: Named(GTIdentifier(GTSpan(0, 0), "RootHello")),
                 extensions: [],
                 properties: [
@@ -233,6 +251,8 @@ mod tests {
                     name: GTKey(GTSpan(0, 0), "world"),
                     descriptor: Object(GTObject(
                       span: GTSpan(0, 0),
+                      doc: None,
+                      attributes: [],
                       name: Named(GTIdentifier(GTSpan(0, 0), "RootHelloWorld")),
                       extensions: [],
                       properties: [],
@@ -274,6 +294,8 @@ mod tests {
         assert_ron_snapshot!(object_tree, @r#"
         GTObject(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           name: Named(GTIdentifier(GTSpan(0, 0), "Hello")),
           extensions: [],
           properties: [
@@ -284,6 +306,8 @@ mod tests {
               name: GTKey(GTSpan(0, 0), "world"),
               descriptor: Object(GTObject(
                 span: GTSpan(0, 0),
+                doc: None,
+                attributes: [],
                 name: Named(GTIdentifier(GTSpan(0, 0), "HelloWorld")),
                 extensions: [],
                 properties: [],
@@ -332,6 +356,8 @@ mod tests {
         assert_ron_snapshot!(object_tree, @r#"
         GTObject(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           name: Named(GTIdentifier(GTSpan(0, 0), "Hello")),
           extensions: [],
           properties: [
@@ -342,6 +368,8 @@ mod tests {
               name: GTKey(GTSpan(0, 0), "world"),
               descriptor: Object(GTObject(
                 span: GTSpan(0, 0),
+                doc: None,
+                attributes: [],
                 name: Named(GTIdentifier(GTSpan(0, 0), "Hi")),
                 extensions: [],
                 properties: [
@@ -352,6 +380,8 @@ mod tests {
                     name: GTKey(GTSpan(0, 0), "world"),
                     descriptor: Object(GTObject(
                       span: GTSpan(0, 0),
+                      doc: None,
+                      attributes: [],
                       name: Named(GTIdentifier(GTSpan(0, 0), "HiWorld")),
                       extensions: [],
                       properties: [],

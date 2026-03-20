@@ -119,6 +119,8 @@ mod tests {
         assert_ron_snapshot!(tree, @r#"
         Object(GTObject(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           name: Named(GTIdentifier(GTSpan(0, 0), "Root")),
           extensions: [],
           properties: [],

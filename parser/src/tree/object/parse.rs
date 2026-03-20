@@ -15,6 +15,8 @@ impl GTObject {
 
         let mut object = GTObject {
             span: span.clone(),
+            doc: None,
+            attributes: vec![],
             name,
             extensions: vec![],
             properties: vec![],
@@ -83,6 +85,8 @@ mod tests {
             @r#"
         GTObject(
           span: GTSpan(0, 17),
+          doc: None,
+          attributes: [],
           name: Named(GTIdentifier(GTSpan(0, 5), "Hello")),
           extensions: [],
           properties: [
@@ -167,6 +171,8 @@ mod tests {
             @r#"
         GTObject(
           span: GTSpan(0, 17),
+          doc: None,
+          attributes: [],
           name: Alias(GTIdentifier(GTSpan(0, 17), "HelloObj"), Alias(GTIdentifier(GTSpan(0, 5), "Hello"))),
           extensions: [],
           properties: [

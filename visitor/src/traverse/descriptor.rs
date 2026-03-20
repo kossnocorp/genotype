@@ -124,6 +124,8 @@ mod tests {
         let name = GTObjectName::Named(name_identifier.clone());
         let object = GTObject {
             span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
             name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Name".into())),
             extensions: vec![],
             properties: vec![property.clone()],

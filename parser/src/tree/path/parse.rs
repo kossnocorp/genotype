@@ -197,6 +197,8 @@ mod tests {
               name: GTIdentifier(GTSpan(121, 126), "Order"),
               descriptor: Object(GTObject(
                 span: GTSpan(128, 225),
+                doc: None,
+                attributes: [],
                 name: Named(GTIdentifier(GTSpan(121, 126), "Order")),
                 extensions: [],
                 properties: [

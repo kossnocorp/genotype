@@ -249,4 +249,68 @@ impl GtFactory {
     pub fn path(path: &str) -> GTPath {
         GTPath::parse((0, 0).into(), path).unwrap()
     }
+
+    pub fn object(name: &str, properties: Vec<GTProperty>) -> GTObject {
+        GTObject {
+            span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
+            name: GTIdentifier::new((0, 0).into(), name.into()).into(),
+            extensions: vec![],
+            properties,
+        }
+    }
+
+    pub fn property<Type>(name: &str, descriptor: Type) -> GTProperty
+    where
+        Type: Into<GTDescriptor>,
+    {
+        GTProperty {
+            span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
+            name: GTKey::new((0, 0).into(), name.into()),
+            descriptor: descriptor.into(),
+            required: true,
+        }
+    }
+
+    pub fn property_optional<Type>(name: &str, descriptor: Type) -> GTProperty
+    where
+        Type: Into<GTDescriptor>,
+    {
+        GTProperty {
+            required: false,
+            ..GtFactory::property(name, descriptor)
+        }
+    }
+
+    pub fn alias<Type>(name: &str, descriptor: Type) -> GTAlias
+    where
+        Type: Into<GTDescriptor>,
+    {
+        GTAlias {
+            id: GTDefinitionId("module".into(), name.into()),
+            span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
+            name: GTIdentifier::new((0, 0).into(), name.into()),
+            descriptor: descriptor.into(),
+        }
+    }
+
+    pub fn some_doc(doc: &str) -> Option<GTDoc> {
+        Some(Self::doc(doc))
+    }
+
+    pub fn doc(doc: &str) -> GTDoc {
+        GTDoc((0, 0).into(), doc.into())
+    }
+
+    pub fn descriptor<Type>(descriptor: Type) -> GTDescriptor
+    where
+        Type: Into<GTDescriptor>,
+    {
+        descriptor.into()
+    }
 }
