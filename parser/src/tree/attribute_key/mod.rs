@@ -5,11 +5,11 @@ mod parse;
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize)]
 pub struct GTAttributeKey {
     pub span: GTSpan,
-    pub name: String,
+    pub value: String,
 }
 
 impl GTAttributeKey {
     pub fn new(span: GTSpan, name: String) -> Self {
-        Self { span, name }
+        Self { span, value: name }
     }
 }
