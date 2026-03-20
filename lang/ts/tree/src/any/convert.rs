@@ -8,11 +8,14 @@ impl TSConvert<TSAny> for GTAny {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use insta::assert_ron_snapshot;
+    use crate::test::*;
+    use genotype_test::*;
 
     #[test]
     fn test_convert() {
-        assert_ron_snapshot!(GTAny((0, 0).into()).convert(&mut Default::default()), @"TSAny");
+        assert_ron_snapshot!(
+            convert_to_ts(GtFactory::any()),
+            @"TSAny"
+        );
     }
 }

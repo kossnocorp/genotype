@@ -150,12 +150,9 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "UserId".into()),
-                descriptor: GTDescriptor::Branded(GTBranded {
-                    span: (0, 0).into(),
-                    id: GTDefinitionId("module".into(), "UserId".into()),
-                    name: GTIdentifier::new((0, 0).into(), "UserId".into()),
-                    primitive: GtFactory::primitive_string().into(),
-                })
+                descriptor: GtFactory::descriptor(
+                    GtFactory::branded("UserId", GtFactory::primitive_string())
+                )
             }
             .convert(&mut PYConvertContext::default()),
             @r#"

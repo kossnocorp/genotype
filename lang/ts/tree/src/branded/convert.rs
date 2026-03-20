@@ -24,12 +24,10 @@ mod tests {
     fn test_convert() {
         assert_ron_snapshot!(
             convert_to_ts(
-                GTBranded {
-                    span: (0, 0).into(),
-                    id: GTDefinitionId("module".into(), "UserId".into()),
-                    name: GTIdentifier::new((0, 0).into(), "UserId".into()),
-                    primitive: GtFactory::primitive_string().into(),
-                }
+                GtFactory::branded(
+                    "UserId",
+                    GtFactory::primitive_string(),
+                )
             ),
             @r#"
         TSBranded(
@@ -45,12 +43,10 @@ mod tests {
     fn test_doc() {
         assert_ron_snapshot!(
             convert_to_ts_with(
-                GTBranded {
-                    span: (0, 0).into(),
-                    id: GTDefinitionId("module".into(), "UserId".into()),
-                    name: GTIdentifier::new((0, 0).into(), "UserId".into()),
-                    primitive: GtFactory::primitive_string().into(),
-                },
+                GtFactory::branded(
+                    "UserId",
+                    GtFactory::primitive_string(),
+                ),
                 |context| {
                     context.provide_doc(Some("This is a user ID.".into()));
                 },

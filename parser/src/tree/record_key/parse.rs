@@ -24,7 +24,6 @@ impl GTRecordKey {
             "float" => Ok(GTRecordKey::Float64(span)),
             "f32" => Ok(GTRecordKey::Float32(span)),
             "f64" => Ok(GTRecordKey::Float64(span)),
-            "boolean" => Ok(GTRecordKey::Boolean(span)),
             _ => Err(GTParseError::UnexpectedRule(
                 span,
                 GTNode::RecordKey,

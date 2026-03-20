@@ -13,7 +13,6 @@ impl TSConvert<TSRecordKey> for GTRecordKey {
             | GTRecordKey::IntU32(_)
             | GTRecordKey::Float32(_)
             | GTRecordKey::Float64(_) => TSRecordKey::Number,
-            GTRecordKey::Boolean(_) => TSRecordKey::Boolean,
 
             GTRecordKey::Int64(_)
             | GTRecordKey::Int128(_)
@@ -22,7 +21,7 @@ impl TSConvert<TSRecordKey> for GTRecordKey {
             | GTRecordKey::IntU128(_)
             | GTRecordKey::IntUSize(_) => {
                 // [TODO] Return an error instead of panicking. It is not
-                // straightforward because it will require chaning `TSConvert`
+                // straightforward because it will require changing `TSConvert`
                 // to return `Result`.
                 // See: https://github.com/kossnocorp/genotype/issues/8
                 panic!("TypeScript records don't support BigInt as a key")
@@ -49,10 +48,6 @@ mod tests {
         assert_ron_snapshot!(
             GTRecordKey::Float64((0, 0).into()).convert(&mut Default::default()),
             @"Number"
-        );
-        assert_ron_snapshot!(
-            GTRecordKey::Boolean((0, 0).into()).convert(&mut Default::default()),
-            @"Boolean"
         );
     }
 }

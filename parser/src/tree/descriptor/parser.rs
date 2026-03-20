@@ -108,7 +108,7 @@ fn parse(
             let descriptor = match pair.as_rule() {
                 Rule::primitive => GTDescriptor::Primitive(GTPrimitive::parse(pair, context)?),
 
-                Rule::name => GTDescriptor::Reference(GTReference::parse(pair, context)),
+                Rule::name => GTDescriptor::Reference(GTReference::parse(pair, context)?),
 
                 Rule::object => GTDescriptor::Object(GTObject::parse(pair, context)?),
 
@@ -131,7 +131,7 @@ fn parse(
 
                 Rule::record => GTDescriptor::Record(Box::new(GTRecord::parse(pair, context)?)),
 
-                Rule::any => GTDescriptor::Any(pair.into()),
+                Rule::any => GTDescriptor::Any(GTAny::parse(pair, context)?),
 
                 Rule::branded => GTDescriptor::Branded(GTBranded::parse(pair, context)?),
 

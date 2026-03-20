@@ -1,18 +1,18 @@
 use crate::prelude::internal::*;
 
 impl GTReference {
-    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> Self {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> Result<Self, GTParseError> {
         let span: GTSpan = pair.as_span().into();
         let identifier: GTIdentifier = pair.into();
         context.resolve.references.insert(identifier.clone());
-        GTReference {
+        Ok(GTReference {
             span: span.clone(),
             doc: None,
             attributes: vec![],
             id: GTReferenceId(context.module_id.clone(), span),
             definition_id: GTReferenceDefinitionId::Unresolved,
             identifier,
-        }
+        })
     }
 }
 

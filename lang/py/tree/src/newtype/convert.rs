@@ -18,18 +18,15 @@ impl PYConvert<PYNewtype> for GTBranded {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use genotype_test::*;
 
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTBranded {
-                span: (0, 0).into(),
-                id: GTDefinitionId("module".into(), "UserId".into()),
-                name: GTIdentifier::new((0, 0).into(), "UserId".into()),
-                primitive: GtFactory::primitive_string().into(),
-            }
-            .convert(&mut PYConvertContext::default()),
+            convert_to_py(
+                GtFactory::branded("UserId", GtFactory::primitive_string())
+            ),
             @r#"
         PYNewtype(
           doc: None,
@@ -44,13 +41,10 @@ mod tests {
     fn test_convert_resolve() {
         let mut context = PYConvertContext::default();
         assert_ron_snapshot!(
-            GTBranded {
-                span: (0, 0).into(),
-                id: GTDefinitionId("module".into(), "UserId".into()),
-                name: GTIdentifier::new((0, 0).into(), "UserId".into()),
-                primitive: GtFactory::primitive_string().into(),
-            }
-            .convert(&mut context),
+            convert_to_py_with_context(
+                GtFactory::branded("UserId", GtFactory::primitive_string()),
+                &mut context
+            ),
             @r#"
         PYNewtype(
           doc: None,
@@ -74,13 +68,10 @@ mod tests {
         let mut context = PYConvertContext::default();
         context.provide_doc(Some(PYDoc("Hello, world!".into())));
         assert_ron_snapshot!(
-            GTBranded {
-                span: (0, 0).into(),
-                id: GTDefinitionId("module".into(), "UserId".into()),
-                name: GTIdentifier::new((0, 0).into(), "UserId".into()),
-                primitive: GtFactory::primitive_string().into(),
-            }
-            .convert(&mut context),
+            convert_to_py_with_context(
+                GtFactory::branded("UserId", GtFactory::primitive_string()),
+                &mut context
+            ),
             @r#"
         PYNewtype(
           doc: Some(PYDoc("Hello, world!")),

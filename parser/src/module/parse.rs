@@ -2252,6 +2252,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(0, 4), "Dict"),
                 descriptor: Record(GTRecord(
                   span: GTSpan(6, 20),
+                  doc: None,
+                  attributes: [],
                   key: String(GTSpan(8, 10)),
                   descriptor: Primitive(GTPrimitive(
                     span: GTSpan(12, 18),
@@ -2269,6 +2271,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(22, 25), "Map"),
                 descriptor: Record(GTRecord(
                   span: GTSpan(27, 44),
+                  doc: None,
+                  attributes: [],
                   key: Int64(GTSpan(29, 34)),
                   descriptor: Primitive(GTPrimitive(
                     span: GTSpan(36, 42),
@@ -2312,7 +2316,11 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GTIdentifier(GTSpan(0, 8), "Anything"),
-                descriptor: Any(GTAny(GTSpan(10, 13))),
+                descriptor: Any(GTAny(
+                  span: GTSpan(10, 13),
+                  doc: None,
+                  attributes: [],
+                )),
               ),
             ],
           ),
@@ -2349,6 +2357,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(0, 5), "OrgId"),
                 descriptor: Branded(GTBranded(
                   span: GTSpan(7, 11),
+                  doc: None,
+                  attributes: [],
                   id: GTDefinitionId(GTModuleId("module"), "OrgId"),
                   name: GTIdentifier(GTSpan(0, 5), "OrgId"),
                   primitive: GTPrimitive(
@@ -2367,6 +2377,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(13, 19), "UserId"),
                 descriptor: Branded(GTBranded(
                   span: GTSpan(21, 28),
+                  doc: None,
+                  attributes: [],
                   id: GTDefinitionId(GTModuleId("module"), "UserId"),
                   name: GTIdentifier(GTSpan(13, 19), "UserId"),
                   primitive: GTPrimitive(
@@ -2385,6 +2397,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(30, 35), "Const"),
                 descriptor: Branded(GTBranded(
                   span: GTSpan(37, 43),
+                  doc: None,
+                  attributes: [],
                   id: GTDefinitionId(GTModuleId("module"), "Const"),
                   name: GTIdentifier(GTSpan(30, 35), "Const"),
                   primitive: GTPrimitive(
@@ -2403,6 +2417,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(45, 48), "Yes"),
                 descriptor: Branded(GTBranded(
                   span: GTSpan(50, 58),
+                  doc: None,
+                  attributes: [],
                   id: GTDefinitionId(GTModuleId("module"), "Yes"),
                   name: GTIdentifier(GTSpan(45, 48), "Yes"),
                   primitive: GTPrimitive(
@@ -2633,6 +2649,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(173, 183), "Int8Record"),
                 descriptor: Record(GTRecord(
                   span: GTSpan(185, 201),
+                  doc: None,
+                  attributes: [],
                   key: Int8(GTSpan(187, 191)),
                   descriptor: Primitive(GTPrimitive(
                     span: GTSpan(193, 199),
@@ -2650,6 +2668,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(202, 213), "Int16Record"),
                 descriptor: Record(GTRecord(
                   span: GTSpan(215, 232),
+                  doc: None,
+                  attributes: [],
                   key: Int16(GTSpan(217, 222)),
                   descriptor: Primitive(GTPrimitive(
                     span: GTSpan(224, 230),
@@ -2667,6 +2687,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(233, 244), "Int32Record"),
                 descriptor: Record(GTRecord(
                   span: GTSpan(246, 263),
+                  doc: None,
+                  attributes: [],
                   key: Int32(GTSpan(248, 253)),
                   descriptor: Primitive(GTPrimitive(
                     span: GTSpan(255, 261),
@@ -2684,6 +2706,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(264, 275), "Int64Record"),
                 descriptor: Record(GTRecord(
                   span: GTSpan(277, 294),
+                  doc: None,
+                  attributes: [],
                   key: Int64(GTSpan(279, 284)),
                   descriptor: Primitive(GTPrimitive(
                     span: GTSpan(286, 292),
@@ -2701,6 +2725,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(295, 307), "Int128Record"),
                 descriptor: Record(GTRecord(
                   span: GTSpan(309, 327),
+                  doc: None,
+                  attributes: [],
                   key: Int128(GTSpan(311, 317)),
                   descriptor: Primitive(GTPrimitive(
                     span: GTSpan(319, 325),
@@ -2718,6 +2744,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(328, 341), "IntSizeRecord"),
                 descriptor: Record(GTRecord(
                   span: GTSpan(343, 362),
+                  doc: None,
+                  attributes: [],
                   key: IntSize(GTSpan(345, 352)),
                   descriptor: Primitive(GTPrimitive(
                     span: GTSpan(354, 360),
@@ -2735,6 +2763,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(363, 374), "IntU8Record"),
                 descriptor: Record(GTRecord(
                   span: GTSpan(376, 392),
+                  doc: None,
+                  attributes: [],
                   key: IntU8(GTSpan(378, 382)),
                   descriptor: Primitive(GTPrimitive(
                     span: GTSpan(384, 390),
@@ -2752,6 +2782,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(393, 405), "IntU16Record"),
                 descriptor: Record(GTRecord(
                   span: GTSpan(407, 424),
+                  doc: None,
+                  attributes: [],
                   key: IntU16(GTSpan(409, 414)),
                   descriptor: Primitive(GTPrimitive(
                     span: GTSpan(416, 422),
@@ -2769,6 +2801,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(425, 437), "IntU32Record"),
                 descriptor: Record(GTRecord(
                   span: GTSpan(439, 456),
+                  doc: None,
+                  attributes: [],
                   key: IntU32(GTSpan(441, 446)),
                   descriptor: Primitive(GTPrimitive(
                     span: GTSpan(448, 454),
@@ -2786,6 +2820,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(457, 469), "IntU64Record"),
                 descriptor: Record(GTRecord(
                   span: GTSpan(471, 488),
+                  doc: None,
+                  attributes: [],
                   key: IntU64(GTSpan(473, 478)),
                   descriptor: Primitive(GTPrimitive(
                     span: GTSpan(480, 486),
@@ -2803,6 +2839,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(489, 502), "IntU128Record"),
                 descriptor: Record(GTRecord(
                   span: GTSpan(504, 522),
+                  doc: None,
+                  attributes: [],
                   key: IntU128(GTSpan(506, 512)),
                   descriptor: Primitive(GTPrimitive(
                     span: GTSpan(514, 520),
@@ -2820,6 +2858,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(523, 537), "IntUSizeRecord"),
                 descriptor: Record(GTRecord(
                   span: GTSpan(539, 558),
+                  doc: None,
+                  attributes: [],
                   key: IntUSize(GTSpan(541, 548)),
                   descriptor: Primitive(GTPrimitive(
                     span: GTSpan(550, 556),
@@ -2837,6 +2877,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(559, 572), "Float32Record"),
                 descriptor: Record(GTRecord(
                   span: GTSpan(574, 591),
+                  doc: None,
+                  attributes: [],
                   key: Float32(GTSpan(576, 581)),
                   descriptor: Primitive(GTPrimitive(
                     span: GTSpan(583, 589),
@@ -2854,6 +2896,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(592, 605), "Float64Record"),
                 descriptor: Record(GTRecord(
                   span: GTSpan(607, 624),
+                  doc: None,
+                  attributes: [],
                   key: Float64(GTSpan(609, 614)),
                   descriptor: Primitive(GTPrimitive(
                     span: GTSpan(616, 622),
@@ -2938,6 +2982,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(15, 20), "World"),
                 descriptor: Record(GTRecord(
                   span: GTSpan(22, 42),
+                  doc: None,
+                  attributes: [],
                   key: Number(GTSpan(24, 32)),
                   descriptor: Primitive(GTPrimitive(
                     span: GTSpan(34, 40),

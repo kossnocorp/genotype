@@ -37,6 +37,8 @@ fn parse(
 
             Ok(GTRecord {
                 span,
+                doc: None,
+                attributes: vec![],
                 key,
                 descriptor,
             })
@@ -60,9 +62,11 @@ mod tests {
         let mut context = GTContext::new("module".into());
         assert_ron_snapshot!(
             GTRecord::parse(pairs.next().unwrap(), &mut context).unwrap(),
-            @r"
+            @"
         GTRecord(
           span: GTSpan(0, 14),
+          doc: None,
+          attributes: [],
           key: String(GTSpan(2, 4)),
           descriptor: Primitive(GTPrimitive(
             span: GTSpan(6, 12),
@@ -81,9 +85,11 @@ mod tests {
         let mut context = GTContext::new("module".into());
         assert_ron_snapshot!(
             GTRecord::parse(pairs.next().unwrap(), &mut context).unwrap(),
-            @r"
+            @"
         GTRecord(
           span: GTSpan(0, 17),
+          doc: None,
+          attributes: [],
           key: Int64(GTSpan(2, 7)),
           descriptor: Primitive(GTPrimitive(
             span: GTSpan(9, 15),

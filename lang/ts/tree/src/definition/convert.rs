@@ -97,12 +97,12 @@ mod tests {
     #[test]
     fn test_convert_branded() {
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::alias("BookId", GTBranded {
-                span: (0, 0).into(),
-                id: GTDefinitionId("module".into(), "BookId".into()),
-                name: GTIdentifier::new((0, 0).into(), "BookId".into()),
-                primitive: GtFactory::primitive_string().into(),
-            })),
+            convert_to_ts(
+                GtFactory::alias(
+                    "BookId",
+                    GtFactory::branded("BookId", GtFactory::primitive_string())
+                )
+            ),
             @r#"
         Branded(TSBranded(
           doc: None,
@@ -245,12 +245,9 @@ mod tests {
                 doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "BookId".into()),
-                descriptor: GTDescriptor::Branded(GTBranded {
-                    span: (0, 0).into(),
-                    id: GTDefinitionId("module".into(), "BookId".into()),
-                    name: GTIdentifier::new((0, 0).into(), "BookId".into()),
-                    primitive: GtFactory::primitive_string().into(),
-                })
+                descriptor: GtFactory::descriptor(
+                    GtFactory::branded("BookId", GtFactory::primitive_string())
+                )
             }
             .convert(&mut Default::default()),
             @r#"

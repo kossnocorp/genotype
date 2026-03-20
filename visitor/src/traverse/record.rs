@@ -28,6 +28,8 @@ mod tests {
         let descriptor = GTDescriptor::Primitive(primitive.clone());
         let mut record = GTRecord {
             span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
             key: key.clone(),
             descriptor: descriptor.clone(),
         };

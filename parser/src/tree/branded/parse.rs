@@ -13,6 +13,8 @@ impl GTBranded {
 
         Ok(GTBranded {
             span,
+            doc: None,
+            attributes: vec![],
             id,
             name,
             primitive,
@@ -34,6 +36,8 @@ mod tests {
             @r#"
         GTBranded(
           span: GTSpan(0, 4),
+          doc: None,
+          attributes: [],
           id: GTDefinitionId(GTModuleId("module"), "I64"),
           name: GTIdentifier(GTSpan(0, 4), "I64"),
           primitive: GTPrimitive(
@@ -60,6 +64,8 @@ mod tests {
             @r#"
         GTBranded(
           span: GTSpan(0, 4),
+          doc: None,
+          attributes: [],
           id: GTDefinitionId(GTModuleId("module"), "Id"),
           name: GTIdentifier(GTSpan(0, 3), "Id"),
           primitive: GTPrimitive(
@@ -87,6 +93,8 @@ mod tests {
             @r#"
         GTBranded(
           span: GTSpan(0, 4),
+          doc: None,
+          attributes: [],
           id: GTDefinitionId(GTModuleId("module"), "IdI64"),
           name: GTIdentifier(GTSpan(0, 4), "IdI64"),
           primitive: GTPrimitive(

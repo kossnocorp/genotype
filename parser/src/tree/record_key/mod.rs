@@ -20,5 +20,4 @@ pub enum GTRecordKey {
     IntUSize(GTSpan),
     Float32(GTSpan),
     Float64(GTSpan),
-    Boolean(GTSpan),
 }
