@@ -65,7 +65,7 @@ mod tests {
                 span: (0, 2).into(),
                 name: GTAttributeName {
                     span: (0, 2).into(),
-                    name: "example".into(),
+                    value: "example".into(),
                 },
                 descriptor: Some(GTAttributeDescriptor::Assignment(GTAttributeAssignment {
                     span: (0, 2).into(),
@@ -89,7 +89,7 @@ mod tests {
               span: GTSpan(0, 2),
               name: GTAttributeName(
                 span: GTSpan(0, 2),
-                name: "example",
+                value: "example",
               ),
               descriptor: Some(Assignment(GTAttributeAssignment(
                 span: GTSpan(0, 2),

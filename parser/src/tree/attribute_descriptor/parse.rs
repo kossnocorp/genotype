@@ -107,7 +107,7 @@ mod tests {
             span: GTSpan(1, 16),
             name: GTAttributeKey(
               span: GTSpan(1, 6),
-              name: "hello",
+              value: "hello",
             ),
             value: Literal(GTLiteral(
               span: GTSpan(9, 16),
@@ -120,7 +120,7 @@ mod tests {
             span: GTSpan(18, 27),
             name: GTAttributeKey(
               span: GTSpan(18, 21),
-              name: "qwe",
+              value: "qwe",
             ),
             value: Literal(GTLiteral(
               span: GTSpan(24, 27),

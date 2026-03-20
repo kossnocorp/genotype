@@ -1921,7 +1921,7 @@ mod tests {
                           span: GTSpan(32, 38),
                           name: GTAttributeName(
                             span: GTSpan(34, 37),
-                            name: "tag",
+                            value: "tag",
                           ),
                           descriptor: None,
                         ),
@@ -1972,7 +1972,7 @@ mod tests {
                           span: GTSpan(86, 92),
                           name: GTAttributeName(
                             span: GTSpan(88, 91),
-                            name: "tag",
+                            value: "tag",
                           ),
                           descriptor: None,
                         ),
@@ -2011,7 +2011,7 @@ mod tests {
                     span: GTSpan(129, 147),
                     name: GTAttributeName(
                       span: GTSpan(131, 136),
-                      name: "hello",
+                      value: "hello",
                     ),
                     descriptor: Some(Assignment(GTAttributeAssignment(
                       span: GTSpan(137, 146),
@@ -2041,7 +2041,7 @@ mod tests {
                     span: GTSpan(165, 191),
                     name: GTAttributeName(
                       span: GTSpan(167, 172),
-                      name: "hello",
+                      value: "hello",
                     ),
                     descriptor: Some(Arguments([
                       Literal(GTLiteral(
@@ -2076,14 +2076,14 @@ mod tests {
                     span: GTSpan(209, 250),
                     name: GTAttributeName(
                       span: GTSpan(211, 216),
-                      name: "hello",
+                      value: "hello",
                     ),
                     descriptor: Some(Properties([
                       GTAttributeProperty(
                         span: GTSpan(217, 232),
                         name: GTAttributeKey(
                           span: GTSpan(217, 222),
-                          name: "which",
+                          value: "which",
                         ),
                         value: Literal(GTLiteral(
                           span: GTSpan(225, 232),
@@ -2096,7 +2096,7 @@ mod tests {
                         span: GTSpan(234, 248),
                         name: GTAttributeKey(
                           span: GTSpan(234, 238),
-                          name: "what",
+                          value: "what",
                         ),
                         value: Literal(GTLiteral(
                           span: GTSpan(241, 248),

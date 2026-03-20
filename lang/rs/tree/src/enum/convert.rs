@@ -134,38 +134,8 @@ fn name_variant_descriptor(
         GTDescriptor::InlineImport(import) => import.name.convert(context)?,
         GTDescriptor::Object(object) => object.name.to_identifier().convert(context)?,
         GTDescriptor::Literal(literal) => {
-            let mut attr_name = None;
-            for attr in literal.attributes.iter() {
-                match &attr.descriptor {
-                    Some(GTAttributeDescriptor::Assignment(assignment)) => {
-                        if attr.name.name == "name" {
-                            if let GTAttributeValue::Literal(literal) = &assignment.value {
-                                if let GTLiteralValue::String(string) = &literal.value {
-                                    attr_name = Some(string.clone());
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    Some(GTAttributeDescriptor::Properties(properties)) => {
-                        for property in properties.iter() {
-                            if property.name.name == "name" {
-                                if let GTAttributeValue::Literal(literal) = &property.value {
-                                    if let GTLiteralValue::String(string) = &literal.value {
-                                        attr_name = Some(string.clone());
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    _ => {}
-                }
-            }
-
-            match attr_name {
+            match GTAttribute::find_property_in(&literal.attributes, "variant") {
                 Some(name) => name.into(),
-
                 None => RSConvertNameSegment::Literal(literal.clone())
                     .render(true)
                     .into(),
@@ -821,7 +791,7 @@ mod tests {
         let union = unwrap_named::<GTUnion>(
             "Status",
             r#"
-            Status: #[name = "Success"] "ok" | #[name = "Error"] "nope"
+            Status: #[variant = "Success"] "ok" | #[variant = "Error"] "nope"
             "#,
         );
         println!("{:#?}", union);
