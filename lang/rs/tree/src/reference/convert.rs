@@ -21,27 +21,18 @@ impl RSConvert<RSReference> for GTReference {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
+    use crate::test::*;
+    use genotype_test::*;
 
     #[test]
     fn test_convert() {
         let mut context = RSConvertContext::empty("module".into());
         context.push_defined(&"Name".into());
         assert_ron_snapshot!(
-            GTReference {
-                span: (0, 0).into(),
-                id: GTReferenceId("module".into(), (1, 8).into()),
-                definition_id: GTReferenceDefinitionId::Resolved(GTDefinitionId(
-                    "module".into(),
-                    "Name".into()
-                )),
-                identifier: GTIdentifier::new((0, 0).into(), "Name".into())
-            }
-            .convert(&mut context)
-            .unwrap(),
+            convert_to_rs(GtFactory::reference("Name")),
             @r#"
         RSReference(
-          id: GTReferenceId(GTModuleId("module"), GTSpan(1, 8)),
+          id: GTReferenceId(GTModuleId("module"), GTSpan(0, 0)),
           identifier: RSIdentifier("Name"),
           definition_id: GTDefinitionId(GTModuleId("module"), "Name"),
         )

@@ -160,25 +160,7 @@ mod tests {
                                                         (0, 0).into(),
                                                         "author".into()
                                                     ),
-                                                    descriptor: GTReference {
-                                                        span: (0, 0).into(),
-                                                        id: GTReferenceId(
-                                                            "module".into(),
-                                                            (0, 0).into()
-                                                        ),
-                                                        definition_id:
-                                                            GTReferenceDefinitionId::Resolved(
-                                                                GTDefinitionId(
-                                                                    "module".into(),
-                                                                    "Author".into()
-                                                                )
-                                                            ),
-                                                        identifier: GTIdentifier::new(
-                                                            (0, 0).into(),
-                                                            "Author".into()
-                                                        )
-                                                    }
-                                                    .into(),
+                                                    descriptor: GtFactory::reference("Author").into(),
                                                     required: true,
                                                 }
                                             ]

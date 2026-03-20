@@ -53,6 +53,7 @@ impl TSConvert<TSDescriptor> for GTDescriptor {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use genotype_test::*;
 
     #[test]
@@ -177,16 +178,7 @@ mod tests {
                 name: GTIdentifier::new((0, 0).into(), "Book".into()).into(),
                 extensions: vec![GTExtension {
                     span: (0, 0).into(),
-                    reference: GTReference {
-                        span: (0, 0).into(),
-                        id: GTReferenceId("module".into(), (0, 0).into()),
-                        definition_id: GTReferenceDefinitionId::Resolved(GTDefinitionId(
-                            "module".into(),
-                            "Good".into()
-                        ),),
-                        identifier: GTIdentifier::new((0, 0).into(), "Good".into())
-                    }
-                    .into()
+                    reference: GtFactory::reference("Good").into()
                 }],
                 properties: vec![GTProperty {
                     span: (0, 0).into(),
@@ -230,16 +222,7 @@ mod tests {
     #[test]
     fn test_convert_reference() {
         assert_ron_snapshot!(
-            GTDescriptor::Reference(GTReference {
-                span: (0, 0).into(),
-                id: GTReferenceId("module".into(), (0, 0).into()),
-                definition_id: GTReferenceDefinitionId::Resolved(GTDefinitionId(
-                    "module".into(),
-                    "Name".into()
-                ),),
-                identifier: GTIdentifier::new((0, 0).into(), "Name".into())
-            })
-            .convert(&mut Default::default()),
+            convert_to_ts(GTDescriptor::Reference(GtFactory::reference("Name"))),
             @r#"Reference(TSReference(TSIdentifier("Name")))"#
         );
     }

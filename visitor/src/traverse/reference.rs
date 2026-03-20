@@ -24,6 +24,8 @@ mod tests {
         let identifier = GTIdentifier::new((0, 0).into(), "Name".into());
         let mut reference = GTReference {
             span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
             id: GTReferenceId("module".into(), (0, 0).into()),
             definition_id: GTReferenceDefinitionId::Unresolved,
             identifier: identifier.clone().into(),

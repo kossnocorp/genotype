@@ -162,16 +162,7 @@ mod tests {
                     name: GTIdentifier::new((0, 0).into(), "Book".into()).into(),
                     extensions: vec![GTExtension {
                         span: (0, 0).into(),
-                        reference: GTReference {
-                            span: (0, 0).into(),
-                            id: GTReferenceId("module".into(), (0, 0).into()),
-                            definition_id: GTReferenceDefinitionId::Resolved(GTDefinitionId(
-                                "module".into(),
-                                "Good".into()
-                            )),
-                            identifier: GTIdentifier::new((0, 0).into(), "Good".into())
-                        }
-                        .into()
+                        reference: GtFactory::reference("Good").into()
                     }],
                     properties: vec![GTProperty {
                         span: (0, 0).into(),
@@ -226,15 +217,7 @@ mod tests {
                             ),
                             extensions: vec![GTExtension {
                                 span: (0, 0).into(),
-                                reference: GTReference {
-                                    span: (0, 0).into(),
-                                    id: GTReferenceId("module".into(), (0, 0).into()),
-                                    definition_id: GTReferenceDefinitionId::Resolved(
-                                        GTDefinitionId("module".into(), "Good".into())
-                                    ),
-                                    identifier: GTIdentifier::new((0, 0).into(), "Good".into())
-                                }
-                                .into()
+                                reference: GtFactory::reference("Good").into()
                             }],
                             properties: vec![GTProperty {
                                 span: (0, 0).into(),

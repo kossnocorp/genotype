@@ -54,9 +54,10 @@ mod tests {
         codegen.register_import(TSImport::new("another".into(), "AlsoName".into()));
         assert_snapshot!(
             codegen.render_module().unwrap(),
-            @r#"import { Name } from "dependency";
-import { AlsoName } from "another";
-"#
+            @r#"
+        import { Name } from "dependency";
+        import { AlsoName } from "another";
+        "#
         );
     }
 

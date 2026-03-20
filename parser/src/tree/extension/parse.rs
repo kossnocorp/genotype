@@ -31,6 +31,8 @@ mod tests {
                 span: (0, 8).into(),
                 reference: GTReference {
                     span: (3, 8).into(),
+                    doc: None,
+                    attributes: vec![],
                     id: GTReferenceId("module".into(), (3, 8).into()),
                     definition_id: GTReferenceDefinitionId::Unresolved,
                     identifier: GTIdentifier::new((3, 8).into(), "Hello".into()),

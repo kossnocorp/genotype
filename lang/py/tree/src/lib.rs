@@ -95,3 +95,6 @@ pub use visitor::*;
 
 mod traverse;
 pub use traverse::*;
+
+#[cfg(test)]
+pub mod test;
