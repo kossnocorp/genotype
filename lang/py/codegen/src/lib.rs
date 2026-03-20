@@ -88,7 +88,7 @@ mod tests {
     #[test]
     fn test_inject_descriptor() {
         let mut codegen = PyCodegen::default();
-        let primitive = GTDescriptor::Primitive(GtFactory::primitive_string());
+        let primitive = GTDescriptor::Primitive(Gt::primitive_string());
         let result = codegen.inject_descriptor(primitive).unwrap();
         assert_snapshot!(
             result,
@@ -109,7 +109,7 @@ mod tests {
             doc: None,
             attributes: vec![],
             name: GTIdentifier::new(Default::default(), "Hello".into()),
-            descriptor: GtFactory::primitive_string().into(),
+            descriptor: Gt::primitive_string().into(),
         }));
         let result = codegen.inject_descriptor(alias).unwrap();
         assert_snapshot!(result, "Hello");
@@ -128,7 +128,7 @@ mod tests {
             doc: None,
             attributes: vec![],
             name: GTIdentifier::new(Default::default(), "Hello".into()),
-            descriptor: GtFactory::literal_string("hello").into(),
+            descriptor: Gt::literal_string("hello").into(),
         }));
         let result = codegen.inject_descriptor(alias).unwrap();
         assert_snapshot!(

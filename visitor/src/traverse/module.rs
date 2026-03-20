@@ -46,7 +46,7 @@ mod tests {
             doc: None,
             attributes: vec![],
             name: GTIdentifier::new((0, 0).into(), "Name".into()),
-            descriptor: GtFactory::primitive_string().into(),
+            descriptor: Gt::primitive_string().into(),
         };
         let mut module = GTModule {
             id: "module".into(),
@@ -64,7 +64,7 @@ mod tests {
                 GTMockVisited::ImportReference(reference.clone()),
                 GTMockVisited::Alias(alias.clone()),
                 GTMockVisited::Descriptor(alias.descriptor.clone()),
-                GTMockVisited::Primitive(GtFactory::primitive_string()),
+                GTMockVisited::Primitive(Gt::primitive_string()),
             ]
         );
     }
@@ -85,7 +85,7 @@ mod tests {
             doc: None,
             attributes: vec![],
             name: GTIdentifier::new((0, 0).into(), "Name".into()),
-            descriptor: GtFactory::primitive_string().into(),
+            descriptor: Gt::primitive_string().into(),
         };
         let mut module = GTModule {
             id: "module".into(),
@@ -104,7 +104,7 @@ mod tests {
                 GTMockVisited::ImportReference(reference.clone()),
                 GTMockVisited::Alias(alias.clone()),
                 GTMockVisited::Descriptor(alias.descriptor.clone()),
-                GTMockVisited::Primitive(GtFactory::primitive_string()),
+                GTMockVisited::Primitive(Gt::primitive_string()),
             ]
         );
     }

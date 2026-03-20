@@ -17,7 +17,7 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::inline_import("./path/to/module", "Name")),
+            convert_node(Gt::inline_import("./path/to/module", "Name")),
             @r#"
         RSInlineUse(
           path: RSPath(GTModuleId("path/to/module"), "super::path::to::module"),

@@ -33,67 +33,67 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::primitive_boolean()),
+            convert_node(Gt::primitive_boolean()),
             @"Boolean"
         );
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::primitive_string()),
+            convert_node(Gt::primitive_string()),
             @"String"
         );
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::primitive_i8()),
+            convert_node(Gt::primitive_i8()),
             @"Number"
         );
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::primitive_i16()),
+            convert_node(Gt::primitive_i16()),
             @"Number"
         );
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::primitive_i32()),
+            convert_node(Gt::primitive_i32()),
             @"Number"
         );
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::primitive_i64()),
+            convert_node(Gt::primitive_i64()),
             @"Number"
         );
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::primitive_i128()),
+            convert_node(Gt::primitive_i128()),
             @"BigInt"
         );
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::primitive_isize()),
+            convert_node(Gt::primitive_isize()),
             @"Number"
         );
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::primitive_u8()),
+            convert_node(Gt::primitive_u8()),
             @"Number"
         );
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::primitive_u16()),
+            convert_node(Gt::primitive_u16()),
             @"Number"
         );
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::primitive_u32()),
+            convert_node(Gt::primitive_u32()),
             @"Number"
         );
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::primitive_u64()),
+            convert_node(Gt::primitive_u64()),
             @"Number"
         );
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::primitive_u128()),
+            convert_node(Gt::primitive_u128()),
             @"BigInt"
         );
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::primitive_usize()),
+            convert_node(Gt::primitive_usize()),
             @"Number"
         );
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::primitive_f32()),
+            convert_node(Gt::primitive_f32()),
             @"Number"
         );
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::primitive_f64()),
+            convert_node(Gt::primitive_f64()),
             @"Number"
         );
     }

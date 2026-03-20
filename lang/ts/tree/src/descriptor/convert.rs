@@ -66,7 +66,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GtFactory::primitive_boolean().into(),
+                descriptor: Gt::primitive_boolean().into(),
             }))
             .convert(&mut context),
             @r#"Reference(TSReference(TSIdentifier("Name")))"#
@@ -89,7 +89,7 @@ mod tests {
     #[test]
     fn test_convert_array() {
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::descriptor(GtFactory::array(GtFactory::primitive_boolean()))),
+            convert_node(Gt::descriptor(Gt::array(Gt::primitive_boolean()))),
             @"
         Array(TSArray(
           descriptor: Primitive(Boolean),
@@ -101,8 +101,8 @@ mod tests {
     #[test]
     fn test_convert_inline_import() {
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::descriptor(
-                GtFactory::inline_import("./path/to/module", "Name")
+            convert_node(Gt::descriptor(
+                Gt::inline_import("./path/to/module", "Name")
             )),
             @r#"
         InlineImport(TSInlineImport(
@@ -116,9 +116,9 @@ mod tests {
     #[test]
     fn test_convert_object() {
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::descriptor(GtFactory::object("Person", vec![
-                GtFactory::property("name", GtFactory::primitive_string()),
-                GtFactory::property_optional("age", GtFactory::primitive_i32())
+            convert_node(Gt::descriptor(Gt::object("Person", vec![
+                Gt::property("name", Gt::primitive_string()),
+                Gt::property_optional("age", Gt::primitive_i32())
             ]))),
             @r#"
         Object(TSObject(
@@ -146,13 +146,13 @@ mod tests {
         );
 
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::descriptor(GTObject {
+            convert_node(Gt::descriptor(GTObject {
                 extensions: vec![GTExtension {
                     span: (0, 0).into(),
-                    reference: GtFactory::reference("Good").into()
+                    reference: Gt::reference("Good").into()
                 }],
-                ..GtFactory::object("Book", vec![
-                    GtFactory::property("title", GtFactory::primitive_string()),
+                ..Gt::object("Book", vec![
+                    Gt::property("title", Gt::primitive_string()),
                 ])
             })),
             @r#"
@@ -178,7 +178,7 @@ mod tests {
     #[test]
     fn test_convert_primitive() {
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::descriptor(GtFactory::primitive_boolean())),
+            convert_node(Gt::descriptor(Gt::primitive_boolean())),
             @"Primitive(Boolean)"
         );
     }
@@ -186,7 +186,7 @@ mod tests {
     #[test]
     fn test_convert_reference() {
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::descriptor(GtFactory::reference("Name"))),
+            convert_node(Gt::descriptor(Gt::reference("Name"))),
             @r#"Reference(TSReference(TSIdentifier("Name")))"#
         );
     }
@@ -194,9 +194,9 @@ mod tests {
     #[test]
     fn test_convert_tuple() {
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::descriptor(GtFactory::tuple(vec![
-                GtFactory::primitive_boolean().into(),
-                GtFactory::primitive_string().into(),
+            convert_node(Gt::descriptor(Gt::tuple(vec![
+                Gt::primitive_boolean().into(),
+                Gt::primitive_string().into(),
             ]))),
             @"
         Tuple(TSTuple(
@@ -215,8 +215,8 @@ mod tests {
             GTDescriptor::Union(GTUnion {
                 span: (0, 0).into(),
                 descriptors: vec![
-                    GtFactory::primitive_boolean().into(),
-                    GtFactory::primitive_string().into(),
+                    Gt::primitive_boolean().into(),
+                    Gt::primitive_string().into(),
                 ]
             })
             .convert(&mut Default::default()),
@@ -234,8 +234,8 @@ mod tests {
     #[test]
     fn test_convert_record() {
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::descriptor(
-                GtFactory::record(GtFactory::record_key_string(), GtFactory::primitive_string())
+            convert_node(Gt::descriptor(
+                Gt::record(Gt::record_key_string(), Gt::primitive_string())
             )),
             @"
         Record(TSRecord(
@@ -249,7 +249,7 @@ mod tests {
     #[test]
     fn test_convert_any() {
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::descriptor(GtFactory::any())),
+            convert_node(Gt::descriptor(Gt::any())),
             @"Any(TSAny)"
         );
     }
@@ -258,8 +258,8 @@ mod tests {
     fn test_convert_branded() {
         let mut context = Default::default();
         assert_ron_snapshot!(
-            convert_to_ts_with_context(GtFactory::descriptor(
-                GtFactory::branded("UserId", GtFactory::primitive_string())
+            convert_node_with(Gt::descriptor(
+                Gt::branded("UserId", Gt::primitive_string())
             ), &mut context),
             @r#"Reference(TSReference(TSIdentifier("UserId")))"#
         );

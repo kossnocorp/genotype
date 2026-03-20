@@ -103,7 +103,7 @@ mod tests {
                                         doc: None,
                                         attributes: vec![],
                                         name: GTKey::new((0, 0).into(), "name".into()),
-                                        descriptor: GtFactory::primitive_string().into(),
+                                        descriptor: Gt::primitive_string().into(),
                                         required: true,
                                     },
                                     GTProperty {
@@ -111,7 +111,7 @@ mod tests {
                                         doc: None,
                                         attributes: vec![],
                                         name: GTKey::new((0, 0).into(), "age".into()),
-                                        descriptor: GtFactory::primitive_i32().into(),
+                                        descriptor: Gt::primitive_i32().into(),
                                         required: false,
                                     }
                                 ]
@@ -154,7 +154,7 @@ mod tests {
                                                     attributes: vec![],
                                                     name: GTKey::new((0, 0).into(), "title".into()),
                                                     descriptor: GTDescriptor::Primitive(
-                                                        GtFactory::primitive_string()
+                                                        Gt::primitive_string()
                                                     ),
                                                     required: true,
                                                 },
@@ -166,7 +166,7 @@ mod tests {
                                                         (0, 0).into(),
                                                         "author".into()
                                                     ),
-                                                    descriptor: GtFactory::reference("Author").into(),
+                                                    descriptor: Gt::reference("Author").into(),
                                                     required: true,
                                                 }
                                             ]
@@ -182,7 +182,7 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                            descriptor: GtFactory::primitive_string().into(),
+                            descriptor: Gt::primitive_string().into(),
                         },
                     ],
                 },
@@ -335,8 +335,8 @@ mod tests {
                             descriptor: GTUnion {
                                 span: (0, 0).into(),
                                 descriptors: vec![
-                                    GtFactory::reference("DM").into(),
-                                    GtFactory::reference("Comment").into(),
+                                    Gt::reference("DM").into(),
+                                    Gt::reference("Comment").into(),
                                 ],
                             }
                             .into(),
@@ -358,7 +358,7 @@ mod tests {
                                     doc: None,
                                     attributes: vec![],
                                     name: GTKey::new((0, 0).into(), "message".into()),
-                                    descriptor: GtFactory::primitive_string().into(),
+                                    descriptor: Gt::primitive_string().into(),
                                     required: true,
                                 }],
                             }
@@ -381,7 +381,7 @@ mod tests {
                                     doc: None,
                                     attributes: vec![],
                                     name: GTKey::new((0, 0).into(), "message".into()),
-                                    descriptor: GtFactory::primitive_string().into(),
+                                    descriptor: Gt::primitive_string().into(),
                                     required: true,
                                 }],
                             }

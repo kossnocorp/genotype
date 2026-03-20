@@ -23,10 +23,10 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            convert_to_ts(
-                GtFactory::branded(
+            convert_node(
+                Gt::branded(
                     "UserId",
-                    GtFactory::primitive_string(),
+                    Gt::primitive_string(),
                 )
             ),
             @r#"
@@ -41,15 +41,15 @@ mod tests {
 
     #[test]
     fn test_doc() {
+        let mut context = TSConvertContext::default();
+        context.provide_doc(Some("This is a user ID.".into()));
         assert_ron_snapshot!(
-            convert_to_ts_with(
-                GtFactory::branded(
+            convert_node_with(
+                Gt::branded(
                     "UserId",
-                    GtFactory::primitive_string(),
+                    Gt::primitive_string(),
                 ),
-                |context| {
-                    context.provide_doc(Some("This is a user ID.".into()));
-                },
+                &mut context
             ),
             @r#"
         TSBranded(

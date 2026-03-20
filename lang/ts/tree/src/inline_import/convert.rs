@@ -12,13 +12,13 @@ impl TSConvert<TSInlineImport> for GTInlineImport {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_test::*;
     use crate::test::*;
+    use genotype_test::*;
 
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::inline_import("./path/to/module", "Name")),
+            convert_node(Gt::inline_import("./path/to/module", "Name")),
             @r#"
         TSInlineImport(
           path: TSPath("./path/to/module"),

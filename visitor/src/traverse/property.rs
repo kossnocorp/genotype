@@ -31,7 +31,7 @@ mod tests {
             doc: None,
             attributes: vec![],
             name: GTKey((0, 0).into(), "key".into()),
-            descriptor: GtFactory::primitive_string().into(),
+            descriptor: Gt::primitive_string().into(),
             required: true,
         };
         property.traverse(&mut visitor);
@@ -41,7 +41,7 @@ mod tests {
                 GTMockVisited::Property(property.clone()),
                 GTMockVisited::Key(property.name.clone()),
                 GTMockVisited::Descriptor(property.descriptor.clone()),
-                GTMockVisited::Primitive(GtFactory::primitive_string()),
+                GTMockVisited::Primitive(Gt::primitive_string()),
             ]
         );
     }
@@ -54,7 +54,7 @@ mod tests {
             doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
             attributes: vec![],
             name: GTKey((0, 0).into(), "key".into()),
-            descriptor: GtFactory::primitive_string().into(),
+            descriptor: Gt::primitive_string().into(),
             required: true,
         };
         property.traverse(&mut visitor);
@@ -65,7 +65,7 @@ mod tests {
                 GTMockVisited::Doc(property.doc.clone().unwrap()),
                 GTMockVisited::Key(property.name.clone()),
                 GTMockVisited::Descriptor(property.descriptor.clone()),
-                GTMockVisited::Primitive(GtFactory::primitive_string()),
+                GTMockVisited::Primitive(Gt::primitive_string()),
             ]
         );
     }

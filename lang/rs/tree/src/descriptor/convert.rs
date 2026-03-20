@@ -79,7 +79,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GtFactory::primitive_boolean().into(),
+                descriptor: Gt::primitive_boolean().into(),
             }))
             .convert(&mut context)
             .unwrap(),
@@ -110,7 +110,7 @@ mod tests {
     #[test]
     fn test_convert_descriptor_array() {
         assert_ron_snapshot!(
-            GtFactory::descriptor(GtFactory::array(GtFactory::primitive_boolean()))
+            Gt::descriptor(Gt::array(Gt::primitive_boolean()))
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
             @"
@@ -124,8 +124,8 @@ mod tests {
     #[test]
     fn test_convert_descriptor_inline_import() {
         assert_ron_snapshot!(
-            convert_to_rs(
-                GtFactory::descriptor(GtFactory::inline_import("./path/to/module", "Name"))
+            convert_node(
+                Gt::descriptor(Gt::inline_import("./path/to/module", "Name"))
             ),
             @r#"
         InlineUse(RSInlineUse(
@@ -152,7 +152,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "name".into()),
-                        descriptor: GtFactory::primitive_string().into(),
+                        descriptor: Gt::primitive_string().into(),
                         required: true,
                     },
                     GTProperty {
@@ -160,7 +160,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "age".into()),
-                        descriptor: GtFactory::primitive_i32().into(),
+                        descriptor: Gt::primitive_i32().into(),
                         required: false,
                     }
                 ],
@@ -214,7 +214,7 @@ mod tests {
     #[test]
     fn test_convert_descriptor_primitive() {
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::descriptor(GtFactory::primitive_boolean())),
+            convert_node(Gt::descriptor(Gt::primitive_boolean())),
             @"Primitive(Boolean)"
         );
     }
@@ -222,7 +222,7 @@ mod tests {
     #[test]
     fn test_convert_descriptor_reference() {
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::descriptor(GtFactory::reference("Name"))),
+            convert_node(Gt::descriptor(Gt::reference("Name"))),
             @r#"
         Reference(RSReference(
           id: GTReferenceId(GTModuleId("module"), GTSpan(0, 0)),
@@ -236,9 +236,9 @@ mod tests {
     #[test]
     fn test_convert_descriptor_tuple() {
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::descriptor(GtFactory::tuple(vec![
-                GtFactory::primitive_boolean().into(),
-                GtFactory::primitive_string().into(),
+            convert_node(Gt::descriptor(Gt::tuple(vec![
+                Gt::primitive_boolean().into(),
+                Gt::primitive_string().into(),
             ]))),
             @"
         Tuple(RSTuple(
@@ -259,8 +259,8 @@ mod tests {
             GTDescriptor::Union(GTUnion {
                 span: (0, 1).into(),
                 descriptors: vec![
-                    GtFactory::primitive_boolean().into(),
-                    GtFactory::primitive_string().into(),
+                    Gt::primitive_boolean().into(),
+                    Gt::primitive_string().into(),
                 ]
             })
             .convert(&mut context)
@@ -311,63 +311,63 @@ mod tests {
     #[test]
     fn test_convert_record_key() {
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::record_key_string()),
+            convert_node(Gt::record_key_string()),
             @"Primitive(String)"
         );
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::record_key_i8()),
+            convert_node(Gt::record_key_i8()),
             @"Primitive(Int8)"
         );
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::record_key_i16()),
+            convert_node(Gt::record_key_i16()),
             @"Primitive(Int16)"
         );
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::record_key_i32()),
+            convert_node(Gt::record_key_i32()),
             @"Primitive(Int32)"
         );
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::record_key_i64()),
+            convert_node(Gt::record_key_i64()),
             @"Primitive(Int64)"
         );
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::record_key_i128()),
+            convert_node(Gt::record_key_i128()),
             @"Primitive(Int128)"
         );
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::record_key_isize()),
+            convert_node(Gt::record_key_isize()),
             @"Primitive(IntSize)"
         );
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::record_key_u8()),
+            convert_node(Gt::record_key_u8()),
             @"Primitive(IntU8)"
         );
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::record_key_u16()),
+            convert_node(Gt::record_key_u16()),
             @"Primitive(IntU16)"
         );
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::record_key_u32()),
+            convert_node(Gt::record_key_u32()),
             @"Primitive(IntU32)"
         );
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::record_key_u64()),
+            convert_node(Gt::record_key_u64()),
             @"Primitive(IntU64)"
         );
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::record_key_u128()),
+            convert_node(Gt::record_key_u128()),
             @"Primitive(IntU128)"
         );
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::record_key_usize()),
+            convert_node(Gt::record_key_usize()),
             @"Primitive(IntUSize)"
         );
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::record_key_f32()),
+            convert_node(Gt::record_key_f32()),
             @"Primitive(Float32)"
         );
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::record_key_f64()),
+            convert_node(Gt::record_key_f64()),
             @"Primitive(Float64)"
         );
     }

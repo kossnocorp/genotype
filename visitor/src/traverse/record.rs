@@ -24,7 +24,7 @@ mod tests {
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
         let key = GTRecordKey::String((0, 0).into());
-        let primitive = GtFactory::primitive_string();
+        let primitive = Gt::primitive_string();
         let descriptor = GTDescriptor::Primitive(primitive.clone());
         let mut record = GTRecord {
             span: (0, 0).into(),

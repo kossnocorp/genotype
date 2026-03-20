@@ -56,7 +56,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GtFactory::primitive_boolean().into(),
+                descriptor: Gt::primitive_boolean().into(),
             }))
             .convert(&mut context),
             @r#"
@@ -85,7 +85,7 @@ mod tests {
     #[test]
     fn test_convert_array() {
         assert_ron_snapshot!(
-            convert_to_py(GtFactory::descriptor(GtFactory::array(GtFactory::primitive_boolean()))),
+            convert_node(Gt::descriptor(Gt::array(Gt::primitive_boolean()))),
             @"
         List(PYList(
           descriptor: Primitive(Boolean),
@@ -98,8 +98,8 @@ mod tests {
     fn test_convert_inline_import() {
         let mut context = PYConvertContext::default();
         assert_ron_snapshot!(
-            convert_to_py_with_context(
-                GtFactory::descriptor(GtFactory::inline_import("./path/to/module", "Name")),
+            convert_node_with(
+                Gt::descriptor(Gt::inline_import("./path/to/module", "Name")),
                 &mut context
             ),
             @r#"
@@ -135,7 +135,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "name".into()),
-                        descriptor: GtFactory::primitive_string().into(),
+                        descriptor: Gt::primitive_string().into(),
                         required: true,
                     },
                     GTProperty {
@@ -143,7 +143,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "age".into()),
-                        descriptor: GtFactory::primitive_i32().into(),
+                        descriptor: Gt::primitive_i32().into(),
                         required: false,
                     }
                 ],
@@ -189,7 +189,7 @@ mod tests {
     #[test]
     fn test_convert_primitive() {
         assert_ron_snapshot!(
-            GTDescriptor::Primitive(GtFactory::primitive_boolean())
+            GTDescriptor::Primitive(Gt::primitive_boolean())
                 .convert(&mut PYConvertContext::default()),
             @"Primitive(Boolean)"
         );
@@ -198,7 +198,7 @@ mod tests {
     #[test]
     fn test_convert_reference() {
         assert_ron_snapshot!(
-            convert_to_py(GtFactory::descriptor(GtFactory::reference("Name"))),
+            convert_node(Gt::descriptor(Gt::reference("Name"))),
             @r#"
         Reference(PYReference(
           identifier: PYIdentifier("Name"),
@@ -211,9 +211,9 @@ mod tests {
     #[test]
     fn test_convert_tuple() {
         assert_ron_snapshot!(
-            convert_to_py(GtFactory::descriptor(GtFactory::tuple(vec![
-                GtFactory::primitive_boolean().into(),
-                GtFactory::primitive_string().into(),
+            convert_node(Gt::descriptor(Gt::tuple(vec![
+                Gt::primitive_boolean().into(),
+                Gt::primitive_string().into(),
             ]))),
             @"
         Tuple(PYTuple(
@@ -232,8 +232,8 @@ mod tests {
             GTDescriptor::Union(GTUnion {
                 span: (0, 0).into(),
                 descriptors: vec![
-                    GtFactory::primitive_boolean().into(),
-                    GtFactory::primitive_string().into(),
+                    Gt::primitive_boolean().into(),
+                    Gt::primitive_string().into(),
                 ]
             })
             .convert(&mut PYConvertContext::default()),
@@ -253,10 +253,10 @@ mod tests {
     fn test_convert_branded() {
         let mut context = PYConvertContext::default();
         assert_ron_snapshot!(
-            convert_to_py_with_context(
-                GtFactory::descriptor(GtFactory::branded(
+            convert_node_with(
+                Gt::descriptor(Gt::branded(
                     "UserId",
-                    GtFactory::primitive_string()
+                    Gt::primitive_string()
                 )),
                 &mut context
             ),

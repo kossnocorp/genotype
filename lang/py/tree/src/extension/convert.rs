@@ -18,7 +18,7 @@ mod tests {
         assert_ron_snapshot!(
             GTExtension {
                 span: (0, 0).into(),
-                reference: GtFactory::reference("Name").into()
+                reference: Gt::reference("Name").into()
             }
             .convert(&mut PYConvertContext::default()),
             @r#"

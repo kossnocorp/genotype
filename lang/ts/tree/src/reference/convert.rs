@@ -14,7 +14,7 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GtFactory::reference("Name").convert(&mut Default::default()),
+            Gt::reference("Name").convert(&mut Default::default()),
             @r#"TSReference(TSIdentifier("Name"))"#,
         );
     }

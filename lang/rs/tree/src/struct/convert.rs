@@ -120,7 +120,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "name".into()),
-                        descriptor: GtFactory::primitive_string().into(),
+                        descriptor: Gt::primitive_string().into(),
                         required: true,
                     },
                     GTProperty {
@@ -128,7 +128,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "age".into()),
-                        descriptor: GtFactory::primitive_i32().into(),
+                        descriptor: Gt::primitive_i32().into(),
                         required: false,
                     }
                 ]
@@ -262,7 +262,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "name".into()),
-                        descriptor: GtFactory::primitive_string().into(),
+                        descriptor: Gt::primitive_string().into(),
                         required: true,
                     },
                     GTProperty {
@@ -270,7 +270,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "age".into()),
-                        descriptor: GtFactory::primitive_isize().into(),
+                        descriptor: Gt::primitive_isize().into(),
                         required: false,
                     }
                 ]
@@ -317,7 +317,7 @@ mod tests {
     #[test]
     fn test_convert_literal() {
         assert_ron_snapshot!(
-            GtFactory::literal_boolean(true)
+            Gt::literal_boolean(true)
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @r#"
@@ -339,7 +339,7 @@ mod tests {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Alias("Version".into()));
         assert_ron_snapshot!(
-            GtFactory::literal_integer(1)
+            Gt::literal_integer(1)
                 .convert(&mut context)
                 .unwrap(),
             @r#"
@@ -362,7 +362,7 @@ mod tests {
         context.enter_parent(RSContextParent::Definition("User".into()));
         context.enter_parent(RSContextParent::Field("v".into()));
         assert_ron_snapshot!(
-            GtFactory::literal_integer(1)
+            Gt::literal_integer(1)
                 .convert(&mut context)
                 .unwrap(),
             @r#"
@@ -383,7 +383,7 @@ mod tests {
     fn test_convert_literal_import() {
         let mut context = RSConvertContext::empty("module".into());
         assert_ron_snapshot!(
-            GtFactory::literal_boolean(false)
+            Gt::literal_boolean(false)
                 .convert(&mut context)
                 .unwrap(),
             @r#"
@@ -413,7 +413,7 @@ mod tests {
         let mut context = RSConvertContext::empty("module".into());
         context.provide_doc(Some("Hello, world!".into()));
         assert_ron_snapshot!(
-            GtFactory::literal_boolean(false)
+            Gt::literal_boolean(false)
                 .convert(&mut context)
                 .unwrap(),
             @r#"
@@ -433,7 +433,7 @@ mod tests {
     #[test]
     fn test_convert_literal_float() {
         assert_ron_snapshot!(
-            GtFactory::literal_float(1.23456)
+            Gt::literal_float(1.23456)
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @r#"
@@ -453,7 +453,7 @@ mod tests {
     #[test]
     fn test_convert_branded() {
         assert_ron_snapshot!(
-            GtFactory::literal_boolean(true)
+            Gt::literal_boolean(true)
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @r#"
@@ -475,7 +475,7 @@ mod tests {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Alias("Version".into()));
         assert_ron_snapshot!(
-            GtFactory::literal_integer(1)
+            Gt::literal_integer(1)
                 .convert(&mut context)
                 .unwrap(),
             @r#"
@@ -498,7 +498,7 @@ mod tests {
         context.enter_parent(RSContextParent::Definition("User".into()));
         context.enter_parent(RSContextParent::Field("v".into()));
         assert_ron_snapshot!(
-            GtFactory::literal_integer(1)
+            Gt::literal_integer(1)
                 .convert(&mut context)
                 .unwrap(),
             @r#"
@@ -519,7 +519,7 @@ mod tests {
     fn test_convert_branded_import() {
         let mut context = RSConvertContext::empty("module".into());
         assert_ron_snapshot!(
-            GtFactory::literal_boolean(false)
+            Gt::literal_boolean(false)
                 .convert(&mut context)
                 .unwrap(),
             @r#"
@@ -549,7 +549,7 @@ mod tests {
         let mut context = RSConvertContext::empty("module".into());
         context.provide_doc(Some("Hello, world!".into()));
         assert_ron_snapshot!(
-            GtFactory::literal_boolean(false)
+            Gt::literal_boolean(false)
                 .convert(&mut context)
                 .unwrap(),
             @r#"

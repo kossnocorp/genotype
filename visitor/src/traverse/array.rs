@@ -25,7 +25,7 @@ mod tests {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            descriptor: GtFactory::primitive_string().into(),
+            descriptor: Gt::primitive_string().into(),
         };
         array.traverse(&mut visitor);
         assert_eq!(
@@ -33,7 +33,7 @@ mod tests {
             vec![
                 GTMockVisited::Array(array.clone()),
                 GTMockVisited::Descriptor(array.descriptor.clone()),
-                GTMockVisited::Primitive(GtFactory::primitive_string()),
+                GTMockVisited::Primitive(Gt::primitive_string()),
             ]
         );
     }

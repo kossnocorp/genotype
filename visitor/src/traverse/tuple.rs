@@ -24,7 +24,7 @@ mod tests {
     #[test]
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
-        let primitive = GTDescriptor::Primitive(GtFactory::primitive_string());
+        let primitive = GTDescriptor::Primitive(Gt::primitive_string());
         let mut tuple = GTTuple {
             span: (0, 0).into(),
             doc: None,
@@ -37,7 +37,7 @@ mod tests {
             vec![
                 GTMockVisited::Tuple(tuple.clone()),
                 GTMockVisited::Descriptor(primitive),
-                GTMockVisited::Primitive(GtFactory::primitive_string()),
+                GTMockVisited::Primitive(Gt::primitive_string()),
             ]
         );
     }

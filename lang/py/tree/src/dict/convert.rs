@@ -18,8 +18,8 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            convert_to_py(
-                GtFactory::record(GtFactory::record_key_string(), GtFactory::primitive_string())
+            convert_node(
+                Gt::record(Gt::record_key_string(), Gt::primitive_string())
             ),
             @"
         PYDict(

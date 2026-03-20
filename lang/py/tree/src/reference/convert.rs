@@ -25,13 +25,10 @@ mod tests {
 
     #[test]
     fn test_convert_reference() {
+        let mut context = PYConvertContext::default();
+        context.push_defined(&"Name".into());
         assert_ron_snapshot!(
-            convert_to_py_with(
-                GtFactory::reference("Name"),
-                |context| {
-                    context.push_defined(&"Name".into());
-                }
-            ),
+            convert_node_with(Gt::reference("Name"), &mut context),
             @r#"
         PYReference(
           identifier: PYIdentifier("Name"),
@@ -44,7 +41,7 @@ mod tests {
     #[test]
     fn test_convert_reference_forward() {
         assert_ron_snapshot!(
-            convert_to_py(GtFactory::reference("Name")),
+            convert_node(Gt::reference("Name")),
             @r#"
         PYReference(
           identifier: PYIdentifier("Name"),
@@ -59,7 +56,7 @@ mod tests {
         let mut context = PYConvertContext::default();
 
         assert_ron_snapshot!(
-            convert_to_py_with_context(GtFactory::inline_import("./path/to/module", "Name"), &mut context),
+            convert_node_with(Gt::inline_import("./path/to/module", "Name"), &mut context),
             @r#"
         PYReference(
           identifier: PYIdentifier("Name"),

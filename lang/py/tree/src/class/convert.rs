@@ -46,7 +46,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "name".into()),
-                        descriptor: GtFactory::primitive_string().into(),
+                        descriptor: Gt::primitive_string().into(),
                         required: true,
                     },
                     GTProperty {
@@ -54,7 +54,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: GTKey::new((0, 0).into(), "age".into()),
-                        descriptor: GtFactory::primitive_i32().into(),
+                        descriptor: Gt::primitive_i32().into(),
                         required: false,
                     }
                 ]

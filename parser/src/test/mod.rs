@@ -10,9 +10,9 @@ pub use pretty_assertions::{
 mod parser;
 pub use parser::*;
 
-pub struct GtFactory {}
+pub struct Gt {}
 
-impl GtFactory {
+impl Gt {
     pub fn literal_boolean(value: bool) -> GTLiteral {
         GTLiteral {
             span: (0, 0).into(),
@@ -287,7 +287,7 @@ impl GtFactory {
     {
         GTProperty {
             required: false,
-            ..GtFactory::property(name, descriptor)
+            ..Gt::property(name, descriptor)
         }
     }
 

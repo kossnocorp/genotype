@@ -23,8 +23,8 @@ mod tests {
             GTUnion {
                 span: (0, 0).into(),
                 descriptors: vec![
-                    GtFactory::primitive_boolean().into(),
-                    GtFactory::primitive_string().into(),
+                    Gt::primitive_boolean().into(),
+                    Gt::primitive_string().into(),
                 ]
             }
             .convert(&mut Default::default()),

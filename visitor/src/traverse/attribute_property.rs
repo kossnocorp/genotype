@@ -24,7 +24,7 @@ mod tests {
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
         let key = GTAttributeKey::new((0, 0).into(), "question".into());
-        let literal = GtFactory::literal_string("answer");
+        let literal = Gt::literal_string("answer");
         let value = GTAttributeValue::Literal(literal.clone());
         let mut property = GTAttributeProperty::new((0, 0).into(), key.clone(), value.clone());
         property.traverse(&mut visitor);

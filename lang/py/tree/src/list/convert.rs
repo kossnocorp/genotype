@@ -18,7 +18,7 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            convert_to_py(GtFactory::array(GtFactory::primitive_boolean())),
+            convert_node(Gt::array(Gt::primitive_boolean())),
             @"
         PYList(
           descriptor: Primitive(Boolean),
@@ -37,7 +37,7 @@ mod tests {
             },
         );
         assert_ron_snapshot!(
-            GtFactory::array(GtFactory::primitive_string())
+            Gt::array(Gt::primitive_string())
             .convert(&mut context),
             @"
         PYList(
