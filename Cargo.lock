@@ -1285,13 +1285,9 @@ dependencies = [
 name = "litty_macro"
 version = "0.2.0"
 dependencies = [
- "insta",
- "litty 0.2.0",
- "pretty_assertions",
  "proc-macro2",
  "quote",
  "serde",
- "serde_json",
  "syn",
 ]
 
@@ -1305,6 +1301,17 @@ dependencies = [
  "quote",
  "serde",
  "syn",
+]
+
+[[package]]
+name = "litty_macro_tests"
+version = "0.2.0"
+dependencies = [
+ "litty 0.2.0",
+ "litty_macro 0.2.0",
+ "pretty_assertions",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

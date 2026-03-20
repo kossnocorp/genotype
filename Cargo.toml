@@ -18,6 +18,7 @@ members = [
   "lang/rs/project",
   "lang/rs/config",
   "lang/rs/runtime/litty",
+  "lang/rs/runtime/litty_macro_tests",
   "lang/rs/runtime/core",
   "json/types/dist/rs",
   "json/converter",
