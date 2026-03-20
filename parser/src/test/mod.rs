@@ -340,4 +340,100 @@ impl GtFactory {
             descriptors,
         }
     }
+
+    pub fn any() -> GTAny {
+        GTAny {
+            span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
+        }
+    }
+
+    pub fn branded(name: &str, primitive: GTPrimitive) -> GTBranded {
+        GTBranded {
+            span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
+            id: Self::definition_id(name),
+            name: Self::identifier(name),
+            primitive,
+        }
+    }
+
+    pub fn record<Type>(key: GTRecordKey, descriptor: Type) -> GTRecord
+    where
+        Type: Into<GTDescriptor>,
+    {
+        GTRecord {
+            span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
+            key,
+            descriptor: descriptor.into(),
+        }
+    }
+
+    pub fn record_key_string() -> GTRecordKey {
+        GTRecordKey::String((0, 0).into())
+    }
+
+    pub fn record_key_number() -> GTRecordKey {
+        GTRecordKey::Number((0, 0).into())
+    }
+
+    pub fn record_key_i8() -> GTRecordKey {
+        GTRecordKey::Int8((0, 0).into())
+    }
+
+    pub fn record_key_i16() -> GTRecordKey {
+        GTRecordKey::Int16((0, 0).into())
+    }
+
+    pub fn record_key_i32() -> GTRecordKey {
+        GTRecordKey::Int32((0, 0).into())
+    }
+
+    pub fn record_key_i64() -> GTRecordKey {
+        GTRecordKey::Int64((0, 0).into())
+    }
+
+    pub fn record_key_i128() -> GTRecordKey {
+        GTRecordKey::Int128((0, 0).into())
+    }
+
+    pub fn record_key_isize() -> GTRecordKey {
+        GTRecordKey::IntSize((0, 0).into())
+    }
+
+    pub fn record_key_u8() -> GTRecordKey {
+        GTRecordKey::IntU8((0, 0).into())
+    }
+
+    pub fn record_key_u16() -> GTRecordKey {
+        GTRecordKey::IntU16((0, 0).into())
+    }
+
+    pub fn record_key_u32() -> GTRecordKey {
+        GTRecordKey::IntU32((0, 0).into())
+    }
+
+    pub fn record_key_u64() -> GTRecordKey {
+        GTRecordKey::IntU64((0, 0).into())
+    }
+
+    pub fn record_key_u128() -> GTRecordKey {
+        GTRecordKey::IntU128((0, 0).into())
+    }
+
+    pub fn record_key_usize() -> GTRecordKey {
+        GTRecordKey::IntUSize((0, 0).into())
+    }
+
+    pub fn record_key_f32() -> GTRecordKey {
+        GTRecordKey::Float32((0, 0).into())
+    }
+
+    pub fn record_key_f64() -> GTRecordKey {
+        GTRecordKey::Float64((0, 0).into())
+    }
 }

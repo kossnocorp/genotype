@@ -7,7 +7,7 @@ impl GTExtension {
         match pair.into_inner().next() {
             Some(pair) => Ok(GTExtension {
                 span,
-                reference: GTReference::parse(pair, context),
+                reference: GTReference::parse(pair, context)?,
             }),
 
             None => Err(GTParseError::Internal(span, GTNode::Extension)),

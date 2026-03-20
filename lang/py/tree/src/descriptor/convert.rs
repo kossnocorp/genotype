@@ -198,8 +198,7 @@ mod tests {
     #[test]
     fn test_convert_reference() {
         assert_ron_snapshot!(
-            GTDescriptor::Reference(GtFactory::reference("Name").into())
-            .convert(&mut PYConvertContext::default()),
+            convert_to_py(GtFactory::descriptor(GtFactory::reference("Name"))),
             @r#"
         Reference(PYReference(
           identifier: PYIdentifier("Name"),
@@ -254,13 +253,13 @@ mod tests {
     fn test_convert_branded() {
         let mut context = PYConvertContext::default();
         assert_ron_snapshot!(
-            GTDescriptor::Branded(GTBranded {
-                span: (0, 0).into(),
-                id: GTDefinitionId("module".into(), "UserId".into()),
-                name: GTIdentifier::new((0, 0).into(), "UserId".into()),
-                primitive: GtFactory::primitive_string().into(),
-            })
-            .convert(&mut context),
+            convert_to_py_with_context(
+                GtFactory::descriptor(GtFactory::branded(
+                    "UserId",
+                    GtFactory::primitive_string()
+                )),
+                &mut context
+            ),
             @r#"
         Reference(PYReference(
           identifier: PYIdentifier("UserId"),

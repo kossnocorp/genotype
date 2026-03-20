@@ -19,7 +19,6 @@ impl PYConvert<PYDictKey> for GTRecordKey {
             GTRecordKey::Number(_) | GTRecordKey::Float32(_) | GTRecordKey::Float64(_) => {
                 PYDictKey::Float
             }
-            GTRecordKey::Boolean(_) => PYDictKey::Boolean,
         }
     }
 }
@@ -27,25 +26,22 @@ impl PYConvert<PYDictKey> for GTRecordKey {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
+    use crate::test::*;
+    use genotype_test::*;
 
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTRecordKey::String((0, 0).into()).convert(&mut PYConvertContext::default()),
+            convert_to_py(GtFactory::record_key_string()),
             @"String"
         );
         assert_ron_snapshot!(
-            GTRecordKey::Int32((0, 0).into()).convert(&mut PYConvertContext::default()),
+            convert_to_py(GtFactory::record_key_i32()),
             @"Int"
         );
         assert_ron_snapshot!(
-            GTRecordKey::Float64((0, 0).into()).convert(&mut PYConvertContext::default()),
+            convert_to_py(GtFactory::record_key_f64()),
             @"Float"
-        );
-        assert_ron_snapshot!(
-            GTRecordKey::Boolean((0, 0).into()).convert(&mut PYConvertContext::default()),
-            @"Boolean"
         );
     }
 }

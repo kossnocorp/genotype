@@ -234,12 +234,9 @@ mod tests {
     #[test]
     fn test_convert_record() {
         assert_ron_snapshot!(
-            GTDescriptor::Record(Box::new(GTRecord {
-                span: (0, 0).into(),
-                key: GTRecordKey::String((0, 0).into()),
-                descriptor: GtFactory::primitive_string().into(),
-            }))
-            .convert(&mut Default::default()),
+            convert_to_ts(GtFactory::descriptor(
+                GtFactory::record(GtFactory::record_key_string(), GtFactory::primitive_string())
+            )),
             @"
         Record(TSRecord(
           key: String,
@@ -252,7 +249,7 @@ mod tests {
     #[test]
     fn test_convert_any() {
         assert_ron_snapshot!(
-            GTDescriptor::Any(GTAny((0, 0).into())).convert(&mut Default::default()),
+            convert_to_ts(GtFactory::descriptor(GtFactory::any())),
             @"Any(TSAny)"
         );
     }
@@ -261,13 +258,9 @@ mod tests {
     fn test_convert_branded() {
         let mut context = Default::default();
         assert_ron_snapshot!(
-            GTDescriptor::Branded(GTBranded {
-                span: (0, 0).into(),
-                id: GTDefinitionId("module".into(), "UserId".into()),
-                name: GTIdentifier::new((0, 0).into(), "UserId".into()),
-                primitive: GtFactory::primitive_string().into(),
-            })
-            .convert(&mut context),
+            convert_to_ts_with_context(GtFactory::descriptor(
+                GtFactory::branded("UserId", GtFactory::primitive_string())
+            ), &mut context),
             @r#"Reference(TSReference(TSIdentifier("UserId")))"#
         );
         let hoisted = context.drain_hoisted();

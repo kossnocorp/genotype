@@ -11,18 +11,15 @@ impl TSConvert<TSRecord> for GTRecord {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::test::*;
     use genotype_test::*;
 
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTRecord {
-                span: (0, 0).into(),
-                key: GTRecordKey::String((0, 0).into()),
-                descriptor: GtFactory::primitive_string().into(),
-            }
-            .convert(&mut Default::default()),
+            convert_to_ts(
+                GtFactory::record(GtFactory::record_key_string(), GtFactory::primitive_string())
+            ),
             @"
         TSRecord(
           key: String,

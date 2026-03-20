@@ -31,7 +31,7 @@ impl GTDescriptor {
             GTDescriptor::Tuple(tuple) => tuple.span,
             GTDescriptor::Union(union) => union.span,
             GTDescriptor::Record(record) => record.span,
-            GTDescriptor::Any(any) => any.span(),
+            GTDescriptor::Any(any) => any.span,
             GTDescriptor::Branded(branded) => branded.span,
         }
     }

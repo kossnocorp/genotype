@@ -59,7 +59,6 @@ impl RSConvert<RSDescriptor> for GTRecordKey {
             GTRecordKey::IntUSize(_) => RSPrimitive::IntUSize.into(),
             GTRecordKey::Float32(_) => RSPrimitive::Float32.into(),
             GTRecordKey::Float64(_) => RSPrimitive::Float64.into(),
-            GTRecordKey::Boolean(_) => RSPrimitive::Boolean.into(),
         })
     }
 }
@@ -312,100 +311,64 @@ mod tests {
     #[test]
     fn test_convert_record_key() {
         assert_ron_snapshot!(
-            GTRecordKey::String((0, 0).into())
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
+            convert_to_rs(GtFactory::record_key_string()),
             @"Primitive(String)"
         );
         assert_ron_snapshot!(
-            GTRecordKey::Int8((0, 0).into())
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
+            convert_to_rs(GtFactory::record_key_i8()),
             @"Primitive(Int8)"
         );
         assert_ron_snapshot!(
-            GTRecordKey::Int16((0, 0).into())
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
+            convert_to_rs(GtFactory::record_key_i16()),
             @"Primitive(Int16)"
         );
         assert_ron_snapshot!(
-            GTRecordKey::Int32((0, 0).into())
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
+            convert_to_rs(GtFactory::record_key_i32()),
             @"Primitive(Int32)"
         );
         assert_ron_snapshot!(
-            GTRecordKey::Int64((0, 0).into())
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
+            convert_to_rs(GtFactory::record_key_i64()),
             @"Primitive(Int64)"
         );
         assert_ron_snapshot!(
-            GTRecordKey::Int128((0, 0).into())
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
+            convert_to_rs(GtFactory::record_key_i128()),
             @"Primitive(Int128)"
         );
         assert_ron_snapshot!(
-            GTRecordKey::IntSize((0, 0).into())
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
+            convert_to_rs(GtFactory::record_key_isize()),
             @"Primitive(IntSize)"
         );
         assert_ron_snapshot!(
-            GTRecordKey::IntU8((0, 0).into())
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
+            convert_to_rs(GtFactory::record_key_u8()),
             @"Primitive(IntU8)"
         );
         assert_ron_snapshot!(
-            GTRecordKey::IntU16((0, 0).into())
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
+            convert_to_rs(GtFactory::record_key_u16()),
             @"Primitive(IntU16)"
         );
         assert_ron_snapshot!(
-            GTRecordKey::IntU32((0, 0).into())
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
+            convert_to_rs(GtFactory::record_key_u32()),
             @"Primitive(IntU32)"
         );
         assert_ron_snapshot!(
-            GTRecordKey::IntU64((0, 0).into())
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
+            convert_to_rs(GtFactory::record_key_u64()),
             @"Primitive(IntU64)"
         );
         assert_ron_snapshot!(
-            GTRecordKey::IntU128((0, 0).into())
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
+            convert_to_rs(GtFactory::record_key_u128()),
             @"Primitive(IntU128)"
         );
         assert_ron_snapshot!(
-            GTRecordKey::IntUSize((0, 0).into())
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
+            convert_to_rs(GtFactory::record_key_usize()),
             @"Primitive(IntUSize)"
         );
         assert_ron_snapshot!(
-            GTRecordKey::Float32((0, 0).into())
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
+            convert_to_rs(GtFactory::record_key_f32()),
             @"Primitive(Float32)"
         );
         assert_ron_snapshot!(
-            GTRecordKey::Float64((0, 0).into())
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
+            convert_to_rs(GtFactory::record_key_f64()),
             @"Primitive(Float64)"
-        );
-        assert_ron_snapshot!(
-            GTRecordKey::Boolean((0, 0).into())
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
-            @"Primitive(Boolean)"
         );
     }
 }

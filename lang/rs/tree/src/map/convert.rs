@@ -16,18 +16,15 @@ impl RSConvert<RSMap> for GTRecord {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use genotype_test::*;
 
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTRecord {
-                span: (0, 0).into(),
-                key: GTRecordKey::String((0, 0).into()),
-                descriptor: GtFactory::primitive_string().into(),
-            }
-            .convert(&mut RSConvertContext::empty("module".into()))
-            .unwrap(),
+            convert_to_rs(
+                GtFactory::record(GtFactory::record_key_string(), GtFactory::primitive_string())
+            ),
             @"
         RSMap(
           key: Primitive(String),
@@ -41,13 +38,10 @@ mod tests {
     fn test_convert_import() {
         let mut context = RSConvertContext::empty("module".into());
         assert_ron_snapshot!(
-            GTRecord {
-                span: (0, 0).into(),
-                key: GTRecordKey::String((0, 0).into()),
-                descriptor: GtFactory::primitive_string().into(),
-            }
-            .convert(&mut context)
-            .unwrap(),
+            convert_to_rs_with_context(
+                GtFactory::record(GtFactory::record_key_string(), GtFactory::primitive_string()),
+                &mut context
+            ),
             @"
         RSMap(
           key: Primitive(String),

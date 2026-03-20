@@ -245,6 +245,8 @@ mod tests {
         let primitive_descriptor = GTDescriptor::Primitive(primitive.clone());
         let record = GTRecord {
             span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
             key: key.clone(),
             descriptor: primitive_descriptor.clone(),
         };
@@ -265,7 +267,11 @@ mod tests {
     #[test]
     fn test_traverse_any() {
         let mut visitor = GTMockVisitor::new();
-        let mut any = GTAny((0, 0).into());
+        let mut any = GTAny {
+            span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
+        };
         any.traverse(&mut visitor);
         assert_eq!(visitor.visited, vec![GTMockVisited::Any(any.clone()),]);
     }
