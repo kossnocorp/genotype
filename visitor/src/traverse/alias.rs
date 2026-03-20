@@ -37,7 +37,7 @@ mod tests {
             doc: None,
             attributes: vec![],
             name: GTIdentifier::new((0, 0).into(), "Name".into()),
-            descriptor: GtFactory::primitive_string().into(),
+            descriptor: Gt::primitive_string().into(),
         };
         alias.traverse(&mut visitor);
         assert_eq!(
@@ -45,7 +45,7 @@ mod tests {
             vec![
                 GTMockVisited::Alias(alias.clone()),
                 GTMockVisited::Descriptor(alias.descriptor.clone()),
-                GTMockVisited::Primitive(GtFactory::primitive_string()),
+                GTMockVisited::Primitive(Gt::primitive_string()),
             ]
         );
     }
@@ -59,7 +59,7 @@ mod tests {
             doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
             attributes: vec![],
             name: GTIdentifier::new((0, 0).into(), "Name".into()),
-            descriptor: GtFactory::primitive_string().into(),
+            descriptor: Gt::primitive_string().into(),
         };
         alias.traverse(&mut visitor);
         assert_eq!(
@@ -68,7 +68,7 @@ mod tests {
                 GTMockVisited::Alias(alias.clone()),
                 GTMockVisited::Doc(alias.doc.clone().unwrap()),
                 GTMockVisited::Descriptor(alias.descriptor.clone()),
-                GTMockVisited::Primitive(GtFactory::primitive_string()),
+                GTMockVisited::Primitive(Gt::primitive_string()),
             ]
         );
     }
@@ -87,7 +87,7 @@ mod tests {
             doc: None,
             attributes: vec![attribute.clone(), attribute.clone()],
             name: GTIdentifier::new((0, 0).into(), "Name".into()),
-            descriptor: GtFactory::primitive_string().into(),
+            descriptor: Gt::primitive_string().into(),
         };
         alias.traverse(&mut visitor);
         assert_eq!(
@@ -99,7 +99,7 @@ mod tests {
                 GTMockVisited::Attribute(attribute.clone()),
                 GTMockVisited::AttributeName(attribute.name.clone()),
                 GTMockVisited::Descriptor(alias.descriptor.clone()),
-                GTMockVisited::Primitive(GtFactory::primitive_string()),
+                GTMockVisited::Primitive(Gt::primitive_string()),
             ]
         );
     }

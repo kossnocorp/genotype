@@ -22,8 +22,8 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            convert_to_rs(
-                GtFactory::record(GtFactory::record_key_string(), GtFactory::primitive_string())
+            convert_node(
+                Gt::record(Gt::record_key_string(), Gt::primitive_string())
             ),
             @"
         RSMap(
@@ -38,8 +38,8 @@ mod tests {
     fn test_convert_import() {
         let mut context = RSConvertContext::empty("module".into());
         assert_ron_snapshot!(
-            convert_to_rs_with_context(
-                GtFactory::record(GtFactory::record_key_string(), GtFactory::primitive_string()),
+            convert_node_with(
+                Gt::record(Gt::record_key_string(), Gt::primitive_string()),
                 &mut context
             ),
             @"

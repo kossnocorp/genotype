@@ -32,15 +32,15 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            convert_to_py(GtFactory::record_key_string()),
+            convert_node(Gt::record_key_string()),
             @"String"
         );
         assert_ron_snapshot!(
-            convert_to_py(GtFactory::record_key_i32()),
+            convert_node(Gt::record_key_i32()),
             @"Int"
         );
         assert_ron_snapshot!(
-            convert_to_py(GtFactory::record_key_f64()),
+            convert_node(Gt::record_key_f64()),
             @"Float"
         );
     }

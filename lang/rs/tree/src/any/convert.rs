@@ -16,7 +16,7 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::any()),
+            convert_node(Gt::any()),
             @"RSAny"
         );
     }
@@ -25,7 +25,7 @@ mod tests {
     fn test_convert_resolve() {
         let mut context = RSConvertContext::empty("module".into());
         assert_ron_snapshot!(
-            convert_to_rs_with_context(GtFactory::any(), &mut context),
+            convert_node_with(Gt::any(), &mut context),
             @"RSAny"
         );
         assert_ron_snapshot!(

@@ -26,9 +26,9 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::tuple(vec![
-                GtFactory::primitive_boolean().into(),
-                GtFactory::primitive_string().into(),
+            convert_node(Gt::tuple(vec![
+                Gt::primitive_boolean().into(),
+                Gt::primitive_string().into(),
             ])),
             @"
         RSTuple(

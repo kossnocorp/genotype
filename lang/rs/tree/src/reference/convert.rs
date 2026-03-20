@@ -29,7 +29,7 @@ mod tests {
         let mut context = RSConvertContext::empty("module".into());
         context.push_defined(&"Name".into());
         assert_ron_snapshot!(
-            convert_to_rs(GtFactory::reference("Name")),
+            convert_node(Gt::reference("Name")),
             @r#"
         RSReference(
           id: GTReferenceId(GTModuleId("module"), GTSpan(0, 0)),

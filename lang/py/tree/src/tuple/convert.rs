@@ -22,9 +22,9 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            convert_to_py(GtFactory::tuple(vec![
-                GtFactory::primitive_boolean().into(),
-                GtFactory::primitive_string().into(),
+            convert_node(Gt::tuple(vec![
+                Gt::primitive_boolean().into(),
+                Gt::primitive_string().into(),
             ])),
             @"
         PYTuple(
@@ -47,8 +47,8 @@ mod tests {
             },
         );
         assert_ron_snapshot!(
-            convert_to_py_with_context(GtFactory::tuple(vec![
-                GtFactory::primitive_string().into(),
+            convert_node_with(Gt::tuple(vec![
+                Gt::primitive_string().into(),
             ]), &mut context),
             @"
         PYTuple(

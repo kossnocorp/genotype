@@ -44,7 +44,7 @@ mod tests {
     #[test]
     fn test_traverse_assignment() {
         let mut visitor = GTMockVisitor::new();
-        let literal = GtFactory::literal_string("answer");
+        let literal = Gt::literal_string("answer");
         let value = GTAttributeValue::Literal(literal.clone());
         let assignment = GTAttributeAssignment::new((0, 0).into(), value.clone());
         let descriptor = GTAttributeDescriptor::Assignment(assignment.clone());
@@ -70,7 +70,7 @@ mod tests {
     #[test]
     fn test_traverse_arguments() {
         let mut visitor = GTMockVisitor::new();
-        let literal = GtFactory::literal_string("answer");
+        let literal = Gt::literal_string("answer");
         let value = GTAttributeValue::Literal(literal.clone());
         let descriptor = GTAttributeDescriptor::Arguments(vec![value.clone()]);
         let mut attribute = GTAttribute::new(
@@ -95,7 +95,7 @@ mod tests {
     fn test_traverse_properties() {
         let mut visitor = GTMockVisitor::new();
         let key = GTAttributeKey::new((0, 0).into(), "question".into());
-        let literal = GtFactory::literal_string("answer");
+        let literal = Gt::literal_string("answer");
         let value = GTAttributeValue::Literal(literal.clone());
         let property = GTAttributeProperty::new((0, 0).into(), key.clone(), value.clone());
         let descriptor = GTAttributeDescriptor::Properties(vec![property.clone()]);

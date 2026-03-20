@@ -32,97 +32,97 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GtFactory::primitive_boolean()
+            Gt::primitive_boolean()
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @"Boolean"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_string()
+            Gt::primitive_string()
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @"String"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_i8()
+            Gt::primitive_i8()
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @"Int8"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_i16()
+            Gt::primitive_i16()
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @"Int16"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_i32()
+            Gt::primitive_i32()
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @"Int32"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_i64()
+            Gt::primitive_i64()
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @"Int64"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_i128()
+            Gt::primitive_i128()
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @"Int128"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_isize()
+            Gt::primitive_isize()
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @"IntSize"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_u8()
+            Gt::primitive_u8()
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @"IntU8"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_u16()
+            Gt::primitive_u16()
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @"IntU16"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_u32()
+            Gt::primitive_u32()
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @"IntU32"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_u64()
+            Gt::primitive_u64()
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @"IntU64"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_u128()
+            Gt::primitive_u128()
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @"IntU128"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_usize()
+            Gt::primitive_usize()
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @"IntUSize"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_f32()
+            Gt::primitive_f32()
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @"Float32"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_f64()
+            Gt::primitive_f64()
                 .convert(&mut RSConvertContext::empty("module".into()))
                 .unwrap(),
             @"Float64"

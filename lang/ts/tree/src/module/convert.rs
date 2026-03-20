@@ -91,9 +91,9 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTIdentifier::new((0, 0).into(), "User".into()),
-                            descriptor: GtFactory::object("User", vec![
-                                GtFactory::property("name", GtFactory::primitive_string()),
-                                GtFactory::property_optional("age", GtFactory::primitive_i32()),
+                            descriptor: Gt::object("User", vec![
+                                Gt::property("name", Gt::primitive_string()),
+                                Gt::property_optional("age", Gt::primitive_i32()),
                             ]).into(),
                         },
                         GTAlias {
@@ -102,16 +102,16 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTIdentifier::new((0, 0).into(), "Order".into()),
-                            descriptor: GtFactory::object("Order", vec![
-                                GtFactory::property("book", GTDescriptor::Alias(Box::new(GTAlias {
+                            descriptor: Gt::object("Order", vec![
+                                Gt::property("book", GTDescriptor::Alias(Box::new(GTAlias {
                                     id: GTDefinitionId("module".into(), "Book".into()),
                                     span: (0, 0).into(),
                                     doc: None,
                                     attributes: vec![],
                                     name: GTIdentifier::new((0, 0).into(), "Book".into()),
-                                    descriptor: GtFactory::object("Book", vec![
-                                        GtFactory::property("title", GtFactory::primitive_string()),
-                                        GtFactory::property("author", GtFactory::reference("Author")),
+                                    descriptor: Gt::object("Book", vec![
+                                        Gt::property("title", Gt::primitive_string()),
+                                        Gt::property("author", Gt::reference("Author")),
                                     ]).into(),
                                 }))),
                             ]).into(),
@@ -122,7 +122,7 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                            descriptor: GtFactory::primitive_string().into(),
+                            descriptor: Gt::primitive_string().into(),
                         },
                     ],
                 },

@@ -15,7 +15,7 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            convert_to_py(GtFactory::any()),
+            convert_node(Gt::any()),
             @"PYAny"
         );
     }
@@ -24,7 +24,7 @@ mod tests {
     fn test_convert_resolve() {
         let mut context = PYConvertContext::default();
         assert_ron_snapshot!(
-            convert_to_py_with_context(GtFactory::any(), &mut context),
+            convert_node_with(Gt::any(), &mut context),
             @"PYAny"
         );
 

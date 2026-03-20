@@ -50,7 +50,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GtFactory::primitive_boolean().into(),
+                descriptor: Gt::primitive_boolean().into(),
             }
             .convert(&mut Default::default()),
             @r#"
@@ -66,9 +66,9 @@ mod tests {
     #[test]
     fn test_convert_interface() {
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::alias("Book", GtFactory::object("Book", vec![
-                GtFactory::property("title", GtFactory::primitive_string()),
-                GtFactory::property("author", GtFactory::primitive_string())
+            convert_node(Gt::alias("Book", Gt::object("Book", vec![
+                Gt::property("title", Gt::primitive_string()),
+                Gt::property("author", Gt::primitive_string())
             ]))),
             @r#"
         Interface(TSInterface(
@@ -97,10 +97,10 @@ mod tests {
     #[test]
     fn test_convert_branded() {
         assert_ron_snapshot!(
-            convert_to_ts(
-                GtFactory::alias(
+            convert_node(
+                Gt::alias(
                     "BookId",
-                    GtFactory::branded("BookId", GtFactory::primitive_string())
+                    Gt::branded("BookId", Gt::primitive_string())
                 )
             ),
             @r#"
@@ -116,13 +116,13 @@ mod tests {
     #[test]
     fn test_convert_extensions() {
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::alias("Book", GTObject {
+            convert_node(Gt::alias("Book", GTObject {
                 extensions: vec![GTExtension {
                     span: (0, 0).into(),
-                    reference: GtFactory::reference("Good").into()
+                    reference: Gt::reference("Good").into()
                 }],
-                ..GtFactory::object("Book", vec![
-                    GtFactory::property("author", GtFactory::primitive_string())
+                ..Gt::object("Book", vec![
+                    Gt::property("author", Gt::primitive_string())
                 ])
             })),
             @r#"
@@ -147,24 +147,24 @@ mod tests {
         );
 
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::alias("Book", GTUnion {
+            convert_node(Gt::alias("Book", GTUnion {
                 span: (0, 0).into(),
                 descriptors: vec![
                     GTObject {
                         name: GTObjectName::Alias(
                             GTIdentifier::new((0, 0).into(), "BookAuthorObj".into()),
-                            GTObjectNameParent::Alias(GtFactory::identifier("BookAuthor"))
+                            GTObjectNameParent::Alias(Gt::identifier("BookAuthor"))
                         ),
                         extensions: vec![GTExtension {
                             span: (0, 0).into(),
-                            reference: GtFactory::reference("Good").into()
+                            reference: Gt::reference("Good").into()
                         }],
-                        ..GtFactory::object("Book", vec![
-                            GtFactory::property("author", GtFactory::primitive_string())
+                        ..Gt::object("Book", vec![
+                            Gt::property("author", Gt::primitive_string())
                         ])
                     }
                     .into(),
-                    GtFactory::primitive_string().into(),
+                    Gt::primitive_string().into(),
                 ]
             })),
             @r#"
@@ -199,9 +199,9 @@ mod tests {
     #[test]
     fn test_convert_doc_interface() {
         assert_ron_snapshot!(
-            convert_to_ts(GTAlias {
-                doc: GtFactory::some_doc("Hello, world!"),
-                ..GtFactory::alias("Book", GtFactory::object("Book", vec![]))
+            convert_node(GTAlias {
+                doc: Gt::some_doc("Hello, world!"),
+                ..Gt::alias("Book", Gt::object("Book", vec![]))
             }),
             @r#"
         Interface(TSInterface(
@@ -223,7 +223,7 @@ mod tests {
                 doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GtFactory::primitive_boolean().into(),
+                descriptor: Gt::primitive_boolean().into(),
             }
             .convert(&mut Default::default()),
             @r#"
@@ -245,8 +245,8 @@ mod tests {
                 doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "BookId".into()),
-                descriptor: GtFactory::descriptor(
-                    GtFactory::branded("BookId", GtFactory::primitive_string())
+                descriptor: Gt::descriptor(
+                    Gt::branded("BookId", Gt::primitive_string())
                 )
             }
             .convert(&mut Default::default()),

@@ -22,7 +22,7 @@ mod tests {
     #[test]
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
-        let literal = GtFactory::literal_string("answer");
+        let literal = Gt::literal_string("answer");
         let value = GTAttributeValue::Literal(literal.clone());
         let mut assignment = GTAttributeAssignment::new((0, 0).into(), value.clone());
         assignment.traverse(&mut visitor);

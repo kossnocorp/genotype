@@ -20,9 +20,9 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::object("Person", vec![
-                GtFactory::property("name", GtFactory::primitive_string()),
-                GtFactory::property_optional("age", GtFactory::primitive_i32()),
+            convert_node(Gt::object("Person", vec![
+                Gt::property("name", Gt::primitive_string()),
+                Gt::property_optional("age", Gt::primitive_i32()),
             ])),
             @r#"
         TSObject(

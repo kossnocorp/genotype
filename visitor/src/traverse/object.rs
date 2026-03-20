@@ -50,7 +50,7 @@ mod tests {
             doc: None,
             attributes: vec![],
             name: GTKey((0, 0).into(), "key".into()),
-            descriptor: GtFactory::primitive_string().into(),
+            descriptor: Gt::primitive_string().into(),
             required: true,
         };
         let name_identifier = GTIdentifier::new((0, 0).into(), "Name".into());
@@ -75,7 +75,7 @@ mod tests {
                 GTMockVisited::Property(property.clone()),
                 GTMockVisited::Key(property.name.clone()),
                 GTMockVisited::Descriptor(property.descriptor.clone()),
-                GTMockVisited::Primitive(GtFactory::primitive_string()),
+                GTMockVisited::Primitive(Gt::primitive_string()),
             ]
         );
     }

@@ -14,7 +14,7 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::any()),
+            convert_node(Gt::any()),
             @"TSAny"
         );
     }

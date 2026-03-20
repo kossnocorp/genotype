@@ -35,7 +35,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GTKey::new((0, 0).into(), "name".into()),
-                descriptor: GtFactory::primitive_string().into(),
+                descriptor: Gt::primitive_string().into(),
                 required: true,
             }
             .convert(&mut Default::default()),
@@ -58,7 +58,7 @@ mod tests {
                 doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
                 attributes: vec![],
                 name: GTKey::new((0, 0).into(), "name".into()),
-                descriptor: GtFactory::primitive_string().into(),
+                descriptor: Gt::primitive_string().into(),
                 required: true,
             }
             .convert(&mut Default::default()),
@@ -81,7 +81,7 @@ mod tests {
                 doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
                 attributes: vec![],
                 name: GTKey::new((0, 0).into(), "name".into()),
-                descriptor: GtFactory::primitive_string().into(),
+                descriptor: Gt::primitive_string().into(),
                 required: false,
             }
             .convert(&mut Default::default()),

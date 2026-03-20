@@ -16,7 +16,7 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            convert_to_ts(GtFactory::array(GtFactory::primitive_boolean())),
+            convert_node(Gt::array(Gt::primitive_boolean())),
             @"
         TSArray(
           descriptor: Primitive(Boolean),

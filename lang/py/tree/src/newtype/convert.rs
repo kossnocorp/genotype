@@ -24,8 +24,8 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            convert_to_py(
-                GtFactory::branded("UserId", GtFactory::primitive_string())
+            convert_node(
+                Gt::branded("UserId", Gt::primitive_string())
             ),
             @r#"
         PYNewtype(
@@ -41,8 +41,8 @@ mod tests {
     fn test_convert_resolve() {
         let mut context = PYConvertContext::default();
         assert_ron_snapshot!(
-            convert_to_py_with_context(
-                GtFactory::branded("UserId", GtFactory::primitive_string()),
+            convert_node_with(
+                Gt::branded("UserId", Gt::primitive_string()),
                 &mut context
             ),
             @r#"
@@ -68,8 +68,8 @@ mod tests {
         let mut context = PYConvertContext::default();
         context.provide_doc(Some(PYDoc("Hello, world!".into())));
         assert_ron_snapshot!(
-            convert_to_py_with_context(
-                GtFactory::branded("UserId", GtFactory::primitive_string()),
+            convert_node_with(
+                Gt::branded("UserId", Gt::primitive_string()),
                 &mut context
             ),
             @r#"

@@ -25,7 +25,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GTKey::new((0, 0).into(), "name".into()),
-                descriptor: GtFactory::primitive_string().into(),
+                descriptor: Gt::primitive_string().into(),
                 required: false,
             }
             .convert(&mut PYConvertContext::default()),
@@ -55,7 +55,7 @@ mod tests {
                 span: (0, 0).into(),
                 attributes: vec![],
                 name: GTKey::new((0, 0).into(), "name".into()),
-                descriptor: GtFactory::primitive_string().into(),
+                descriptor: Gt::primitive_string().into(),
                 required: false,
             }
             .convert(&mut context),

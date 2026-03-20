@@ -66,7 +66,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GtFactory::primitive_boolean().into()
+                descriptor: Gt::primitive_boolean().into()
             }
             .convert(&mut PYConvertContext::default()),
             @r#"
@@ -101,7 +101,7 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTKey::new((0, 0).into(), "title".into()),
-                            descriptor: GtFactory::primitive_string().into(),
+                            descriptor: Gt::primitive_string().into(),
                             required: true,
                         },
                         GTProperty {
@@ -109,7 +109,7 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTKey::new((0, 0).into(), "author".into()),
-                            descriptor: GtFactory::primitive_string().into(),
+                            descriptor: Gt::primitive_string().into(),
                             required: true,
                         }
                     ]
@@ -150,8 +150,8 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "UserId".into()),
-                descriptor: GtFactory::descriptor(
-                    GtFactory::branded("UserId", GtFactory::primitive_string())
+                descriptor: Gt::descriptor(
+                    Gt::branded("UserId", Gt::primitive_string())
                 )
             }
             .convert(&mut PYConvertContext::default()),
@@ -193,12 +193,12 @@ mod tests {
                                 doc: None,
                                 attributes: vec![],
                                 name: GTKey::new((0, 0).into(), "author".into()),
-                                descriptor: GtFactory::primitive_string().into(),
+                                descriptor: Gt::primitive_string().into(),
                                 required: true,
                             }]
                         }
                         .into(),
-                        GtFactory::primitive_string().into(),
+                        Gt::primitive_string().into(),
                     ]
                 })
             }
@@ -265,7 +265,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GtFactory::primitive_string().into(),
+                descriptor: Gt::primitive_string().into(),
             }
             .convert(&mut context),
             @r#"
@@ -292,7 +292,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GtFactory::primitive_string().into(),
+                descriptor: Gt::primitive_string().into(),
             }
             .convert(&mut context),
             @r#"
@@ -384,8 +384,8 @@ mod tests {
                 descriptor: GTDescriptor::Union(GTUnion {
                     span: (0, 0).into(),
                     descriptors: vec![
-                        GtFactory::reference("Reply").into(),
-                        GtFactory::reference("DM").into(),
+                        Gt::reference("Reply").into(),
+                        Gt::reference("DM").into(),
                     ]
                 })
             }
@@ -425,7 +425,7 @@ mod tests {
                 doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GtFactory::primitive_boolean().into(),
+                descriptor: Gt::primitive_boolean().into(),
             }
             .convert(&mut PYConvertContext::default()),
             @r#"

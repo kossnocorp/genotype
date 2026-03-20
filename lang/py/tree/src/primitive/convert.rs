@@ -32,75 +32,75 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GtFactory::primitive_boolean().convert(&mut PYConvertContext::default()),
+            Gt::primitive_boolean().convert(&mut PYConvertContext::default()),
             @"Boolean"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_string().convert(&mut PYConvertContext::default()),
+            Gt::primitive_string().convert(&mut PYConvertContext::default()),
             @"String"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_number().convert(&mut PYConvertContext::default()),
+            Gt::primitive_number().convert(&mut PYConvertContext::default()),
             @"Float"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_i8().convert(&mut PYConvertContext::default()),
+            Gt::primitive_i8().convert(&mut PYConvertContext::default()),
             @"Int"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_i16().convert(&mut PYConvertContext::default()),
+            Gt::primitive_i16().convert(&mut PYConvertContext::default()),
             @"Int"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_i32().convert(&mut PYConvertContext::default()),
+            Gt::primitive_i32().convert(&mut PYConvertContext::default()),
             @"Int"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_i64().convert(&mut PYConvertContext::default()),
+            Gt::primitive_i64().convert(&mut PYConvertContext::default()),
             @"Int"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_i128().convert(&mut PYConvertContext::default()),
+            Gt::primitive_i128().convert(&mut PYConvertContext::default()),
             @"Int"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_isize().convert(&mut PYConvertContext::default()),
+            Gt::primitive_isize().convert(&mut PYConvertContext::default()),
             @"Int"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_u8().convert(&mut PYConvertContext::default()),
+            Gt::primitive_u8().convert(&mut PYConvertContext::default()),
             @"Int"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_u16().convert(&mut PYConvertContext::default()),
+            Gt::primitive_u16().convert(&mut PYConvertContext::default()),
             @"Int"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_u32().convert(&mut PYConvertContext::default()),
+            Gt::primitive_u32().convert(&mut PYConvertContext::default()),
             @"Int"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_u64().convert(&mut PYConvertContext::default()),
+            Gt::primitive_u64().convert(&mut PYConvertContext::default()),
             @"Int"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_u128().convert(&mut PYConvertContext::default()),
+            Gt::primitive_u128().convert(&mut PYConvertContext::default()),
             @"Int"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_usize().convert(&mut PYConvertContext::default()),
+            Gt::primitive_usize().convert(&mut PYConvertContext::default()),
             @"Int"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_f64().convert(&mut PYConvertContext::default()),
+            Gt::primitive_f64().convert(&mut PYConvertContext::default()),
             @"Float"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_f32().convert(&mut PYConvertContext::default()),
+            Gt::primitive_f32().convert(&mut PYConvertContext::default()),
             @"Float"
         );
         assert_ron_snapshot!(
-            GtFactory::primitive_f64().convert(&mut PYConvertContext::default()),
+            Gt::primitive_f64().convert(&mut PYConvertContext::default()),
             @"Float"
         );
     }

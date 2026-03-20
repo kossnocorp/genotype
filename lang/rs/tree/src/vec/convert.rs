@@ -15,7 +15,7 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GtFactory::array(GtFactory::primitive_boolean())
+            Gt::array(Gt::primitive_boolean())
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
             @"

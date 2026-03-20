@@ -24,7 +24,7 @@ mod tests {
     #[test]
     fn test_traverse() {
         let mut visitor = GTMockVisitor::new();
-        let primitive = GTDescriptor::Primitive(GtFactory::primitive_string());
+        let primitive = GTDescriptor::Primitive(Gt::primitive_string());
         let union = GTUnion {
             span: (0, 0).into(),
             descriptors: vec![primitive.clone()],
@@ -37,7 +37,7 @@ mod tests {
                 GTMockVisited::Descriptor(descriptor.clone()),
                 GTMockVisited::Union(union.clone()),
                 GTMockVisited::Descriptor(primitive),
-                GTMockVisited::Primitive(GtFactory::primitive_string()),
+                GTMockVisited::Primitive(Gt::primitive_string()),
             ]
         );
     }
