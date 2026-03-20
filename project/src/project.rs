@@ -154,6 +154,8 @@ mod tests {
                     name: GTIdentifier(GTSpan(0, 6), "Author"),
                     descriptor: Object(GTObject(
                       span: GTSpan(8, 27),
+                      doc: None,
+                      attributes: [],
                       name: Named(GTIdentifier(GTSpan(0, 6), "Author")),
                       extensions: [],
                       properties: [
@@ -207,6 +209,8 @@ mod tests {
                     name: GTIdentifier(GTSpan(21, 25), "Book"),
                     descriptor: Object(GTObject(
                       span: GTSpan(27, 65),
+                      doc: None,
+                      attributes: [],
                       name: Named(GTIdentifier(GTSpan(21, 25), "Book")),
                       extensions: [],
                       properties: [
@@ -288,6 +292,8 @@ mod tests {
                     name: GTIdentifier(GTSpan(17, 22), "Order"),
                     descriptor: Object(GTObject(
                       span: GTSpan(24, 65),
+                      doc: None,
+                      attributes: [],
                       name: Named(GTIdentifier(GTSpan(17, 22), "Order")),
                       extensions: [],
                       properties: [
@@ -366,6 +372,8 @@ mod tests {
                     name: GTIdentifier(GTSpan(0, 4), "User"),
                     descriptor: Object(GTObject(
                       span: GTSpan(6, 42),
+                      doc: None,
+                      attributes: [],
                       name: Named(GTIdentifier(GTSpan(0, 4), "User")),
                       extensions: [],
                       properties: [
@@ -473,6 +481,8 @@ mod tests {
                     name: GTIdentifier(GTSpan(0, 6), "Author"),
                     descriptor: Object(GTObject(
                       span: GTSpan(8, 27),
+                      doc: None,
+                      attributes: [],
                       name: Named(GTIdentifier(GTSpan(0, 6), "Author")),
                       extensions: [],
                       properties: [
@@ -526,6 +536,8 @@ mod tests {
                     name: GTIdentifier(GTSpan(21, 25), "Book"),
                     descriptor: Object(GTObject(
                       span: GTSpan(27, 65),
+                      doc: None,
+                      attributes: [],
                       name: Named(GTIdentifier(GTSpan(21, 25), "Book")),
                       extensions: [],
                       properties: [
@@ -607,6 +619,8 @@ mod tests {
                     name: GTIdentifier(GTSpan(17, 22), "Order"),
                     descriptor: Object(GTObject(
                       span: GTSpan(24, 65),
+                      doc: None,
+                      attributes: [],
                       name: Named(GTIdentifier(GTSpan(17, 22), "Order")),
                       extensions: [],
                       properties: [
@@ -685,6 +699,8 @@ mod tests {
                     name: GTIdentifier(GTSpan(0, 4), "User"),
                     descriptor: Object(GTObject(
                       span: GTSpan(6, 42),
+                      doc: None,
+                      attributes: [],
                       name: Named(GTIdentifier(GTSpan(0, 4), "User")),
                       extensions: [],
                       properties: [
@@ -795,6 +811,8 @@ mod tests {
                     name: GTIdentifier(GTSpan(0, 5), "Order"),
                     descriptor: Object(GTObject(
                       span: GTSpan(7, 91),
+                      doc: None,
+                      attributes: [],
                       name: Named(GTIdentifier(GTSpan(0, 5), "Order")),
                       extensions: [],
                       properties: [
@@ -805,6 +823,8 @@ mod tests {
                           name: GTKey(GTSpan(11, 19), "delivery"),
                           descriptor: Object(GTObject(
                             span: GTSpan(21, 89),
+                            doc: None,
+                            attributes: [],
                             name: Alias(GTIdentifier(GTSpan(21, 89), "OrderDelivery"), Property(GTIdentifier(GTSpan(0, 5), "Order"), [
                               GTKey(GTSpan(11, 19), "delivery"),
                             ])),
@@ -817,6 +837,8 @@ mod tests {
                                 name: GTKey(GTSpan(27, 34), "address"),
                                 descriptor: Object(GTObject(
                                   span: GTSpan(36, 85),
+                                  doc: None,
+                                  attributes: [],
                                   name: Alias(GTIdentifier(GTSpan(36, 85), "OrderDeliveryAddress"), Property(GTIdentifier(GTSpan(0, 5), "Order"), [
                                     GTKey(GTSpan(11, 19), "delivery"),
                                     GTKey(GTSpan(27, 34), "address"),
@@ -877,6 +899,8 @@ mod tests {
                         )),
                         Object(GTObject(
                           span: GTSpan(109, 145),
+                          doc: None,
+                          attributes: [],
                           name: Alias(GTIdentifier(GTSpan(109, 145), "EmailObj"), Alias(GTIdentifier(GTSpan(93, 98), "Email"))),
                           extensions: [],
                           properties: [

@@ -130,6 +130,8 @@ mod tests {
         assert_ron_snapshot!(
             GTDescriptor::Object(GTObject {
                 span: (0, 0).into(),
+                doc: None,
+                attributes: vec![],
                 name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
                 extensions: vec![],
                 properties: vec![

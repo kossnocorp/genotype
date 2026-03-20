@@ -123,30 +123,10 @@ mod tests {
     #[test]
     fn test_convert_object() {
         assert_ron_snapshot!(
-            GTDescriptor::Object(GTObject {
-                span: (0, 0).into(),
-                name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
-                extensions: vec![],
-                properties: vec![
-                    GTProperty {
-                        span: (0, 0).into(),
-                        doc: None,
-                        attributes: vec![],
-                        name: GTKey::new((0, 0).into(), "name".into()),
-                        descriptor: GtFactory::primitive_string().into(),
-                        required: true,
-                    },
-                    GTProperty {
-                        span: (0, 0).into(),
-                        doc: None,
-                        attributes: vec![],
-                        name: GTKey::new((0, 0).into(), "age".into()),
-                        descriptor: GtFactory::primitive_i32().into(),
-                        required: false,
-                    }
-                ]
-            })
-            .convert(&mut Default::default()),
+            convert_to_ts(GtFactory::descriptor(GtFactory::object("Person", vec![
+                GtFactory::property("name", GtFactory::primitive_string()),
+                GtFactory::property_optional("age", GtFactory::primitive_i32())
+            ]))),
             @r#"
         Object(TSObject(
           properties: [
@@ -173,23 +153,15 @@ mod tests {
         );
 
         assert_ron_snapshot!(
-            GTDescriptor::Object(GTObject {
-                span: (0, 0).into(),
-                name: GTIdentifier::new((0, 0).into(), "Book".into()).into(),
+            convert_to_ts(GtFactory::descriptor(GTObject {
                 extensions: vec![GTExtension {
                     span: (0, 0).into(),
                     reference: GtFactory::reference("Good").into()
                 }],
-                properties: vec![GTProperty {
-                    span: (0, 0).into(),
-                    doc: None,
-                    attributes: vec![],
-                    name: GTKey::new((0, 0).into(), "title".into()),
-                    descriptor: GtFactory::primitive_string().into(),
-                    required: true,
-                },]
-            })
-            .convert(&mut Default::default()),
+                ..GtFactory::object("Book", vec![
+                    GtFactory::property("title", GtFactory::primitive_string()),
+                ])
+            })),
             @r#"
         Intersection(TSIntersection(
           descriptors: [

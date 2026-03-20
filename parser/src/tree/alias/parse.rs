@@ -136,6 +136,8 @@ mod tests {
           name: GTIdentifier(GTSpan(0, 5), "Hello"),
           descriptor: Object(GTObject(
             span: GTSpan(7, 24),
+            doc: None,
+            attributes: [],
             name: Named(GTIdentifier(GTSpan(0, 5), "Hello")),
             extensions: [],
             properties: [

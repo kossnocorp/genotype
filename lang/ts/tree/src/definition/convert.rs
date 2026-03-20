@@ -66,37 +66,10 @@ mod tests {
     #[test]
     fn test_convert_interface() {
         assert_ron_snapshot!(
-            GTAlias {
-                id: GTDefinitionId("module".into(), "Book".into()),
-                span: (0, 0).into(),
-                doc: None,
-                attributes: vec![],
-                name: GTIdentifier::new((0, 0).into(), "Book".into()),
-                descriptor: GTDescriptor::Object(GTObject {
-                    span: (0, 0).into(),
-                    name: GTIdentifier::new((0, 0).into(), "Book".into()).into(),
-                    extensions: vec![],
-                    properties: vec![
-                        GTProperty {
-                            span: (0, 0).into(),
-                            doc: None,
-                            attributes: vec![],
-                            name: GTKey::new((0, 0).into(), "title".into()),
-                            descriptor: GtFactory::primitive_string().into(),
-                            required: true,
-                        },
-                        GTProperty {
-                            span: (0, 0).into(),
-                            doc: None,
-                            attributes: vec![],
-                            name: GTKey::new((0, 0).into(), "author".into()),
-                            descriptor: GtFactory::primitive_string().into(),
-                            required: true,
-                        }
-                    ]
-                })
-            }
-            .convert(&mut Default::default()),
+            convert_to_ts(GtFactory::alias("Book", GtFactory::object("Book", vec![
+                GtFactory::property("title", GtFactory::primitive_string()),
+                GtFactory::property("author", GtFactory::primitive_string())
+            ]))),
             @r#"
         Interface(TSInterface(
           doc: None,
@@ -124,20 +97,12 @@ mod tests {
     #[test]
     fn test_convert_branded() {
         assert_ron_snapshot!(
-            GTAlias {
-                id: GTDefinitionId("module".into(), "BookId".into()),
+            convert_to_ts(GtFactory::alias("BookId", GTBranded {
                 span: (0, 0).into(),
-                doc: None,
-                attributes: vec![],
+                id: GTDefinitionId("module".into(), "BookId".into()),
                 name: GTIdentifier::new((0, 0).into(), "BookId".into()),
-                descriptor: GTDescriptor::Branded(GTBranded {
-                    span: (0, 0).into(),
-                    id: GTDefinitionId("module".into(), "BookId".into()),
-                    name: GTIdentifier::new((0, 0).into(), "BookId".into()),
-                    primitive: GtFactory::primitive_string().into(),
-                })
-            }
-            .convert(&mut Default::default()),
+                primitive: GtFactory::primitive_string().into(),
+            })),
             @r#"
         Branded(TSBranded(
           doc: None,
@@ -151,30 +116,15 @@ mod tests {
     #[test]
     fn test_convert_extensions() {
         assert_ron_snapshot!(
-            GTAlias {
-                id: GTDefinitionId("module".into(), "Book".into()),
-                span: (0, 0).into(),
-                doc: None,
-                attributes: vec![],
-                name: GTIdentifier::new((0, 0).into(), "Book".into()),
-                descriptor: GTDescriptor::Object(GTObject {
+            convert_to_ts(GtFactory::alias("Book", GTObject {
+                extensions: vec![GTExtension {
                     span: (0, 0).into(),
-                    name: GTIdentifier::new((0, 0).into(), "Book".into()).into(),
-                    extensions: vec![GTExtension {
-                        span: (0, 0).into(),
-                        reference: GtFactory::reference("Good").into()
-                    }],
-                    properties: vec![GTProperty {
-                        span: (0, 0).into(),
-                        doc: None,
-                        attributes: vec![],
-                        name: GTKey::new((0, 0).into(), "author".into()),
-                        descriptor: GtFactory::primitive_string().into(),
-                        required: true,
-                    }]
-                })
-            }
-            .convert(&mut Default::default()),
+                    reference: GtFactory::reference("Good").into()
+                }],
+                ..GtFactory::object("Book", vec![
+                    GtFactory::property("author", GtFactory::primitive_string())
+                ])
+            })),
             @r#"
         Interface(TSInterface(
           doc: None,
@@ -197,43 +147,26 @@ mod tests {
         );
 
         assert_ron_snapshot!(
-            GTAlias {
-                id: GTDefinitionId("module".into(), "Book".into()),
+            convert_to_ts(GtFactory::alias("Book", GTUnion {
                 span: (0, 0).into(),
-                doc: None,
-                attributes: vec![],
-                name: GTIdentifier::new((0, 0).into(), "Book".into()),
-                descriptor: GTDescriptor::Union(GTUnion {
-                    span: (0, 0).into(),
-                    descriptors: vec![
-                        GTObject {
+                descriptors: vec![
+                    GTObject {
+                        name: GTObjectName::Alias(
+                            GTIdentifier::new((0, 0).into(), "BookAuthorObj".into()),
+                            GTObjectNameParent::Alias(GtFactory::identifier("BookAuthor"))
+                        ),
+                        extensions: vec![GTExtension {
                             span: (0, 0).into(),
-                            name: GTObjectName::Alias(
-                                GTIdentifier::new((0, 0).into(), "BookAuthorObj".into()),
-                                GTObjectNameParent::Alias(GTIdentifier::new(
-                                    (0, 0).into(),
-                                    "BookAuthor".into()
-                                ))
-                            ),
-                            extensions: vec![GTExtension {
-                                span: (0, 0).into(),
-                                reference: GtFactory::reference("Good").into()
-                            }],
-                            properties: vec![GTProperty {
-                                span: (0, 0).into(),
-                                doc: None,
-                                attributes: vec![],
-                                name: GTKey::new((0, 0).into(), "author".into()),
-                                descriptor: GtFactory::primitive_string().into(),
-                                required: true,
-                            }]
-                        }
-                        .into(),
-                        GtFactory::primitive_string().into(),
-                    ]
-                })
-            }
-            .convert(&mut Default::default()),
+                            reference: GtFactory::reference("Good").into()
+                        }],
+                        ..GtFactory::object("Book", vec![
+                            GtFactory::property("author", GtFactory::primitive_string())
+                        ])
+                    }
+                    .into(),
+                    GtFactory::primitive_string().into(),
+                ]
+            })),
             @r#"
         Alias(TSAlias(
           doc: None,
@@ -266,20 +199,10 @@ mod tests {
     #[test]
     fn test_convert_doc_interface() {
         assert_ron_snapshot!(
-            GTAlias {
-                id: GTDefinitionId("module".into(), "Book".into()),
-                span: (0, 0).into(),
-                doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
-                attributes: vec![],
-                name: GTIdentifier::new((0, 0).into(), "Book".into()),
-                descriptor: GTDescriptor::Object(GTObject {
-                    span: (0, 0).into(),
-                    name: GTIdentifier::new((0, 0).into(), "Book".into()).into(),
-                    extensions: vec![],
-                    properties: vec![]
-                })
-            }
-            .convert(&mut Default::default()),
+            convert_to_ts(GTAlias {
+                doc: GtFactory::some_doc("Hello, world!"),
+                ..GtFactory::alias("Book", GtFactory::object("Book", vec![]))
+            }),
             @r#"
         Interface(TSInterface(
           doc: Some(TSDoc("Hello, world!")),
