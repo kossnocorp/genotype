@@ -234,20 +234,12 @@ mod tests {
     #[test]
     fn test_convert_descriptor_reference() {
         assert_ron_snapshot!(
-            GTDescriptor::Reference(GTReference {
-                span: (0, 1).into(),
-                id: GTReferenceId("module".into(), (0, 1).into()),
-                definition_id: GTReferenceDefinitionId::Resolved(GTDefinitionId(
-                    "module".into(),
-                    "Name".into()
-                )),
-                identifier: GTIdentifier::new((0, 0).into(), "Name".into())
-            })
+            GTDescriptor::Reference(GtFactory::reference("Name"))
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
             @r#"
         Reference(RSReference(
-          id: GTReferenceId(GTModuleId("module"), GTSpan(0, 1)),
+          id: GTReferenceId(GTModuleId("module"), GTSpan(0, 0)),
           identifier: RSIdentifier("Name"),
           definition_id: GTDefinitionId(GTModuleId("module"), "Name"),
         ))

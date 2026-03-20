@@ -7,6 +7,8 @@ impl GTReference {
         context.resolve.references.insert(identifier.clone());
         GTReference {
             span: span.clone(),
+            doc: None,
+            attributes: vec![],
             id: GTReferenceId(context.module_id.clone(), span),
             definition_id: GTReferenceDefinitionId::Unresolved,
             identifier,

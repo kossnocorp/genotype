@@ -237,6 +237,8 @@ mod tests {
                     span: (0, 0).into(),
                     reference: GTReference {
                         span: (2, 9).into(),
+                        doc: None,
+                        attributes: vec![],
                         id: GTReferenceId("module".into(), (2, 9).into()),
                         definition_id: GTReferenceDefinitionId::Resolved(GTDefinitionId(
                             "module".into(),

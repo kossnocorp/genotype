@@ -11,23 +11,14 @@ impl TSConvert<TSExtension> for GTExtension {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
-    use pretty_assertions::assert_eq;
+    use genotype_test::*;
 
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
             GTExtension {
                 span: (0, 0).into(),
-                reference: GTReference {
-                    span: (0, 0).into(),
-                    id: GTReferenceId("module".into(), (0, 0).into()),
-                    definition_id: GTReferenceDefinitionId::Resolved(GTDefinitionId(
-                        "module".into(),
-                        "Name".into()
-                    )),
-                    identifier: GTIdentifier::new((0, 0).into(), "Name".into())
-                }
+                reference: GtFactory::reference("Name"),
             }
             .convert(&mut Default::default()),
             @r#"

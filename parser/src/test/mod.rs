@@ -210,4 +210,43 @@ impl GtFactory {
             kind: GTPrimitiveKind::Float64,
         }
     }
+
+    pub fn identifier(name: &str) -> GTIdentifier {
+        GTIdentifier((0, 0).into(), name.into())
+    }
+
+    pub fn definition_id(name: &str) -> GTDefinitionId {
+        GTDefinitionId("module".into(), name.into())
+    }
+
+    pub fn reference_definition_id(name: &str) -> GTReferenceDefinitionId {
+        GTReferenceDefinitionId::Resolved(Self::definition_id(name))
+    }
+
+    pub fn reference_id() -> GTReferenceId {
+        GTReferenceId("module".into(), (0, 0).into())
+    }
+
+    pub fn reference(name: &str) -> GTReference {
+        GTReference {
+            span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
+            id: Self::reference_id(),
+            definition_id: Self::reference_definition_id(name),
+            identifier: Self::identifier(name),
+        }
+    }
+
+    pub fn inline_import(path: &str, name: &str) -> GTInlineImport {
+        GTInlineImport {
+            span: (0, 0).into(),
+            path: Self::path(path),
+            name: Self::identifier(name),
+        }
+    }
+
+    pub fn path(path: &str) -> GTPath {
+        GTPath::parse((0, 0).into(), path).unwrap()
+    }
 }

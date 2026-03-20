@@ -230,6 +230,8 @@ mod tests {
                           name: GTKey(GTSpan(48, 54), "author"),
                           descriptor: Reference(GTReference(
                             span: GTSpan(56, 62),
+                            doc: None,
+                            attributes: [],
                             id: GTReferenceId(GTModuleId("book"), GTSpan(56, 62)),
                             definition_id: Resolved(GTDefinitionId(GTModuleId("author"), "Author")),
                             identifier: GTIdentifier(GTSpan(56, 62), "Author"),
@@ -310,6 +312,8 @@ mod tests {
                             span: GTSpan(56, 62),
                             descriptor: Reference(GTReference(
                               span: GTSpan(57, 61),
+                              doc: None,
+                              attributes: [],
                               id: GTReferenceId(GTModuleId("order"), GTSpan(57, 61)),
                               definition_id: Resolved(GTDefinitionId(GTModuleId("book"), "Book")),
                               identifier: GTIdentifier(GTSpan(57, 61), "Book"),
@@ -545,6 +549,8 @@ mod tests {
                           name: GTKey(GTSpan(48, 54), "author"),
                           descriptor: Reference(GTReference(
                             span: GTSpan(56, 62),
+                            doc: None,
+                            attributes: [],
                             id: GTReferenceId(GTModuleId("book"), GTSpan(56, 62)),
                             definition_id: Resolved(GTDefinitionId(GTModuleId("author"), "Author")),
                             identifier: GTIdentifier(GTSpan(56, 62), "Author"),
@@ -625,6 +631,8 @@ mod tests {
                             span: GTSpan(56, 62),
                             descriptor: Reference(GTReference(
                               span: GTSpan(57, 61),
+                              doc: None,
+                              attributes: [],
                               id: GTReferenceId(GTModuleId("order"), GTSpan(57, 61)),
                               definition_id: Resolved(GTDefinitionId(GTModuleId("book"), "Book")),
                               identifier: GTIdentifier(GTSpan(57, 61), "Book"),

@@ -15,3 +15,10 @@ where
     context_fn(&mut context);
     gt_node.convert(&mut context)
 }
+
+pub fn convert_to_ts_with_context<GtNode: TSConvert<Node>, Node>(
+    gt_node: GtNode,
+    context: &mut TSConvertContext,
+) -> Node {
+    gt_node.convert(context)
+}

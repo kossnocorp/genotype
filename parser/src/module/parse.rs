@@ -145,6 +145,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(10, 20), "AnotherAge"),
                 descriptor: Reference(GTReference(
                   span: GTSpan(22, 25),
+                  doc: None,
+                  attributes: [],
                   id: GTReferenceId(GTModuleId("module"), GTSpan(22, 25)),
                   definition_id: Unresolved,
                   identifier: GTIdentifier(GTSpan(22, 25), "Age"),
@@ -1088,6 +1090,8 @@ mod tests {
                       name: GTKey(GTSpan(142, 147), "genre"),
                       descriptor: Reference(GTReference(
                         span: GTSpan(149, 154),
+                        doc: None,
+                        attributes: [],
                         id: GTReferenceId(GTModuleId("module"), GTSpan(149, 154)),
                         definition_id: Unresolved,
                         identifier: GTIdentifier(GTSpan(149, 154), "Genre"),
@@ -1216,6 +1220,8 @@ mod tests {
                       span: GTSpan(54, 61),
                       reference: GTReference(
                         span: GTSpan(57, 61),
+                        doc: None,
+                        attributes: [],
                         id: GTReferenceId(GTModuleId("module"), GTSpan(57, 61)),
                         definition_id: Unresolved,
                         identifier: GTIdentifier(GTSpan(57, 61), "Base"),
@@ -1253,6 +1259,8 @@ mod tests {
                       span: GTSpan(90, 97),
                       reference: GTReference(
                         span: GTSpan(93, 97),
+                        doc: None,
+                        attributes: [],
                         id: GTReferenceId(GTModuleId("module"), GTSpan(93, 97)),
                         definition_id: Unresolved,
                         identifier: GTIdentifier(GTSpan(93, 97), "Base"),
@@ -1362,6 +1370,8 @@ mod tests {
                       span: GTSpan(59, 73),
                       reference: GTReference(
                         span: GTSpan(62, 73),
+                        doc: None,
+                        attributes: [],
                         id: GTReferenceId(GTModuleId("module"), GTSpan(62, 73)),
                         definition_id: Unresolved,
                         identifier: GTIdentifier(GTSpan(62, 73), "CommentBase"),
@@ -1425,6 +1435,8 @@ mod tests {
                       span: GTSpan(153, 167),
                       reference: GTReference(
                         span: GTSpan(156, 167),
+                        doc: None,
+                        attributes: [],
                         id: GTReferenceId(GTModuleId("module"), GTSpan(156, 167)),
                         definition_id: Unresolved,
                         identifier: GTIdentifier(GTSpan(156, 167), "CommentBase"),
@@ -1688,12 +1700,16 @@ mod tests {
                   descriptors: [
                     Reference(GTReference(
                       span: GTSpan(166, 181),
+                      doc: None,
+                      attributes: [],
                       id: GTReferenceId(GTModuleId("module"), GTSpan(166, 181)),
                       definition_id: Unresolved,
                       identifier: GTIdentifier(GTSpan(166, 181), "ObjectUnionUser"),
                     )),
                     Reference(GTReference(
                       span: GTSpan(186, 204),
+                      doc: None,
+                      attributes: [],
                       id: GTReferenceId(GTModuleId("module"), GTSpan(186, 204)),
                       definition_id: Unresolved,
                       identifier: GTIdentifier(GTSpan(186, 204), "ObjectUnionAccount"),
@@ -1801,12 +1817,16 @@ mod tests {
                   descriptors: [
                     Reference(GTReference(
                       span: GTSpan(9, 14),
+                      doc: None,
+                      attributes: [],
                       id: GTReferenceId(GTModuleId("module"), GTSpan(9, 14)),
                       definition_id: Unresolved,
                       identifier: GTIdentifier(GTSpan(9, 14), "Reply"),
                     )),
                     Reference(GTReference(
                       span: GTSpan(17, 19),
+                      doc: None,
+                      attributes: [],
                       id: GTReferenceId(GTModuleId("module"), GTSpan(17, 19)),
                       definition_id: Unresolved,
                       identifier: GTIdentifier(GTSpan(17, 19), "DM"),
@@ -2037,12 +2057,16 @@ mod tests {
                   descriptors: [
                     Reference(GTReference(
                       span: GTSpan(297, 312),
+                      doc: None,
+                      attributes: [],
                       id: GTReferenceId(GTModuleId("module"), GTSpan(297, 312)),
                       definition_id: Unresolved,
                       identifier: GTIdentifier(GTSpan(297, 312), "SuccessResponse"),
                     )),
                     Reference(GTReference(
                       span: GTSpan(331, 344),
+                      doc: None,
+                      attributes: [],
                       id: GTReferenceId(GTModuleId("module"), GTSpan(331, 344)),
                       definition_id: Unresolved,
                       identifier: GTIdentifier(GTSpan(331, 344), "ErrorResponse"),
@@ -2061,12 +2085,16 @@ mod tests {
                   descriptors: [
                     Reference(GTReference(
                       span: GTSpan(380, 395),
+                      doc: None,
+                      attributes: [],
                       id: GTReferenceId(GTModuleId("module"), GTSpan(380, 395)),
                       definition_id: Unresolved,
                       identifier: GTIdentifier(GTSpan(380, 395), "SuccessResponse"),
                     )),
                     Reference(GTReference(
                       span: GTSpan(418, 431),
+                      doc: None,
+                      attributes: [],
                       id: GTReferenceId(GTModuleId("module"), GTSpan(418, 431)),
                       definition_id: Unresolved,
                       identifier: GTIdentifier(GTSpan(418, 431), "ErrorResponse"),
@@ -2085,12 +2113,16 @@ mod tests {
                   descriptors: [
                     Reference(GTReference(
                       span: GTSpan(465, 480),
+                      doc: None,
+                      attributes: [],
                       id: GTReferenceId(GTModuleId("module"), GTSpan(465, 480)),
                       definition_id: Unresolved,
                       identifier: GTIdentifier(GTSpan(465, 480), "SuccessResponse"),
                     )),
                     Reference(GTReference(
                       span: GTSpan(503, 516),
+                      doc: None,
+                      attributes: [],
                       id: GTReferenceId(GTModuleId("module"), GTSpan(503, 516)),
                       definition_id: Unresolved,
                       identifier: GTIdentifier(GTSpan(503, 516), "ErrorResponse"),

@@ -160,25 +160,7 @@ mod tests {
                                                         (0, 0).into(),
                                                         "author".into()
                                                     ),
-                                                    descriptor: GTReference {
-                                                        span: (0, 0).into(),
-                                                        id: GTReferenceId(
-                                                            "module".into(),
-                                                            (0, 0).into()
-                                                        ),
-                                                        definition_id:
-                                                            GTReferenceDefinitionId::Resolved(
-                                                                GTDefinitionId(
-                                                                    "module".into(),
-                                                                    "Author".into()
-                                                                )
-                                                            ),
-                                                        identifier: GTIdentifier::new(
-                                                            (0, 0).into(),
-                                                            "Author".into()
-                                                        )
-                                                    }
-                                                    .into(),
+                                                    descriptor: GtFactory::reference("Author").into(),
                                                     required: true,
                                                 }
                                             ]
@@ -347,24 +329,8 @@ mod tests {
                             descriptor: GTUnion {
                                 span: (0, 0).into(),
                                 descriptors: vec![
-                                    GTReference {
-                                        span: (0, 0).into(),
-                                        id: GTReferenceId("module".into(), (0, 0).into()),
-                                        definition_id: GTReferenceDefinitionId::Resolved(
-                                            GTDefinitionId("module".into(), "DM".into())
-                                        ),
-                                        identifier: GTIdentifier((0, 0).into(), "DM".into())
-                                    }
-                                    .into(),
-                                    GTReference {
-                                        span: (0, 0).into(),
-                                        id: GTReferenceId("module".into(), (0, 0).into()),
-                                        definition_id: GTReferenceDefinitionId::Resolved(
-                                            GTDefinitionId("module".into(), "Comment".into())
-                                        ),
-                                        identifier: GTIdentifier((0, 0).into(), "Comment".into())
-                                    }
-                                    .into(),
+                                    GtFactory::reference("DM").into(),
+                                    GtFactory::reference("Comment").into(),
                                 ],
                             }
                             .into(),

@@ -201,18 +201,7 @@ mod tests {
     #[test]
     fn test_convert_reference() {
         assert_ron_snapshot!(
-            GTDescriptor::Reference(
-                GTReference {
-                    span: (0, 0).into(),
-                    id: GTReferenceId("module".into(), (0, 0).into()),
-                    definition_id: GTReferenceDefinitionId::Resolved(GTDefinitionId(
-                        "module".into(),
-                        "Name".into()
-                    )),
-                    identifier: GTIdentifier::new((0, 0).into(), "Name".into())
-                }
-                .into()
-            )
+            GTDescriptor::Reference(GtFactory::reference("Name").into())
             .convert(&mut PYConvertContext::default()),
             @r#"
         Reference(PYReference(

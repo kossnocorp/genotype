@@ -104,3 +104,6 @@ pub use visitor::*;
 
 mod helpers;
 pub use helpers::*;
+
+#[cfg(test)]
+pub mod test;

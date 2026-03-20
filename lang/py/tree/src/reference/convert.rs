@@ -20,23 +20,18 @@ impl PYConvert<PYReference> for GTInlineImport {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
+    use crate::test::*;
+    use genotype_test::*;
 
     #[test]
     fn test_convert_reference() {
-        let mut context = PYConvertContext::default();
-        context.push_defined(&"Name".into());
         assert_ron_snapshot!(
-            GTReference {
-                span: (0, 0).into(),
-                id: GTReferenceId("module".into(), (0, 0).into()),
-                definition_id: GTReferenceDefinitionId::Resolved(GTDefinitionId(
-                    "module".into(),
-                    "Name".into()
-                )),
-                identifier: GTIdentifier::new((0, 0).into(), "Name".into())
-            }
-            .convert(&mut context),
+            convert_to_py_with(
+                GtFactory::reference("Name"),
+                |context| {
+                    context.push_defined(&"Name".into());
+                }
+            ),
             @r#"
         PYReference(
           identifier: PYIdentifier("Name"),
@@ -48,18 +43,8 @@ mod tests {
 
     #[test]
     fn test_convert_reference_forward() {
-        let mut context = PYConvertContext::default();
         assert_ron_snapshot!(
-            GTReference {
-                span: (0, 0).into(),
-                id: GTReferenceId("module".into(), (0, 0).into()),
-                definition_id: GTReferenceDefinitionId::Resolved(GTDefinitionId(
-                    "module".into(),
-                    "Name".into()
-                )),
-                identifier: GTIdentifier::new((0, 0).into(), "Name".into())
-            }
-            .convert(&mut context),
+            convert_to_py(GtFactory::reference("Name")),
             @r#"
         PYReference(
           identifier: PYIdentifier("Name"),
@@ -72,13 +57,9 @@ mod tests {
     #[test]
     fn test_convert_inline_import() {
         let mut context = PYConvertContext::default();
+
         assert_ron_snapshot!(
-            GTInlineImport {
-                span: (0, 0).into(),
-                path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
-                name: GTIdentifier::new((0, 0).into(), "Name".into()),
-            }
-            .convert(&mut context),
+            convert_to_py_with_context(GtFactory::inline_import("./path/to/module", "Name"), &mut context),
             @r#"
         PYReference(
           identifier: PYIdentifier("Name"),
@@ -86,6 +67,7 @@ mod tests {
         )
         "#,
         );
+
         assert_ron_snapshot!(
             context.as_dependencies(),
             @r#"
