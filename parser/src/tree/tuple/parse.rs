@@ -5,6 +5,8 @@ impl GTTuple {
         let span = pair.as_span().into();
         let mut tuple = GTTuple {
             span,
+            doc: None,
+            attributes: vec![],
             descriptors: vec![],
         };
 
@@ -24,13 +26,13 @@ mod tests {
 
     #[test]
     fn test_parse() {
-        let mut pairs = GenotypeParser::parse(Rule::tuple, "(string, int)").unwrap();
-        let mut context = GTContext::new("module".into());
         assert_ron_snapshot!(
-            GTTuple::parse(pairs.next().unwrap(), &mut context).unwrap(),
+            parse_node!(GTTuple, to_parse_args(Rule::tuple, "(string, int)")),
             @"
         GTTuple(
           span: GTSpan(0, 13),
+          doc: None,
+          attributes: [],
           descriptors: [
             Primitive(GTPrimitive(
               span: GTSpan(1, 7),

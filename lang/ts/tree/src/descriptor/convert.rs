@@ -89,11 +89,7 @@ mod tests {
     #[test]
     fn test_convert_array() {
         assert_ron_snapshot!(
-            GTDescriptor::Array(Box::new(GTArray {
-                span: (0, 0).into(),
-                descriptor: GtFactory::primitive_boolean().into(),
-            }))
-            .convert(&mut Default::default()),
+            convert_to_ts(GtFactory::descriptor(GtFactory::array(GtFactory::primitive_boolean()))),
             @"
         Array(TSArray(
           descriptor: Primitive(Boolean),
@@ -105,12 +101,9 @@ mod tests {
     #[test]
     fn test_convert_inline_import() {
         assert_ron_snapshot!(
-            GTDescriptor::InlineImport(GTInlineImport {
-                span: (0, 0).into(),
-                path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
-                name: GTIdentifier::new((0, 0).into(), "Name".into())
-            })
-            .convert(&mut Default::default()),
+            convert_to_ts(GtFactory::descriptor(
+                GtFactory::inline_import("./path/to/module", "Name")
+            )),
             @r#"
         InlineImport(TSInlineImport(
           path: TSPath("./path/to/module"),
@@ -185,8 +178,7 @@ mod tests {
     #[test]
     fn test_convert_primitive() {
         assert_ron_snapshot!(
-            GTDescriptor::Primitive(GtFactory::primitive_boolean())
-                .convert(&mut Default::default()),
+            convert_to_ts(GtFactory::descriptor(GtFactory::primitive_boolean())),
             @"Primitive(Boolean)"
         );
     }
@@ -194,7 +186,7 @@ mod tests {
     #[test]
     fn test_convert_reference() {
         assert_ron_snapshot!(
-            convert_to_ts(GTDescriptor::Reference(GtFactory::reference("Name"))),
+            convert_to_ts(GtFactory::descriptor(GtFactory::reference("Name"))),
             @r#"Reference(TSReference(TSIdentifier("Name")))"#
         );
     }
@@ -202,14 +194,10 @@ mod tests {
     #[test]
     fn test_convert_tuple() {
         assert_ron_snapshot!(
-            GTDescriptor::Tuple(GTTuple {
-                span: (0, 0).into(),
-                descriptors: vec![
-                    GtFactory::primitive_boolean().into(),
-                    GtFactory::primitive_string().into(),
-                ]
-            })
-            .convert(&mut Default::default()),
+            convert_to_ts(GtFactory::descriptor(GtFactory::tuple(vec![
+                GtFactory::primitive_boolean().into(),
+                GtFactory::primitive_string().into(),
+            ]))),
             @"
         Tuple(TSTuple(
           descriptors: [

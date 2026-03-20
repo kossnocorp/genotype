@@ -43,6 +43,7 @@ impl PYConvert<PYDescriptor> for GTDescriptor {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use genotype_test::*;
 
     #[test]
@@ -84,11 +85,7 @@ mod tests {
     #[test]
     fn test_convert_array() {
         assert_ron_snapshot!(
-            GTDescriptor::Array(Box::new(GTArray {
-                span: (0, 0).into(),
-                descriptor: GtFactory::primitive_boolean().into(),
-            }))
-            .convert(&mut PYConvertContext::default()),
+            convert_to_py(GtFactory::descriptor(GtFactory::array(GtFactory::primitive_boolean()))),
             @"
         List(PYList(
           descriptor: Primitive(Boolean),
@@ -101,12 +98,10 @@ mod tests {
     fn test_convert_inline_import() {
         let mut context = PYConvertContext::default();
         assert_ron_snapshot!(
-            GTDescriptor::InlineImport(GTInlineImport {
-                span: (0, 0).into(),
-                path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
-                name: GTIdentifier::new((0, 0).into(), "Name".into())
-            })
-            .convert(&mut context),
+            convert_to_py_with_context(
+                GtFactory::descriptor(GtFactory::inline_import("./path/to/module", "Name")),
+                &mut context
+            ),
             @r#"
         Reference(PYReference(
           identifier: PYIdentifier("Name"),
@@ -217,14 +212,10 @@ mod tests {
     #[test]
     fn test_convert_tuple() {
         assert_ron_snapshot!(
-            GTDescriptor::Tuple(GTTuple {
-                span: (0, 0).into(),
-                descriptors: vec![
-                    GtFactory::primitive_boolean().into(),
-                    GtFactory::primitive_string().into(),
-                ]
-            })
-            .convert(&mut PYConvertContext::default()),
+            convert_to_py(GtFactory::descriptor(GtFactory::tuple(vec![
+                GtFactory::primitive_boolean().into(),
+                GtFactory::primitive_string().into(),
+            ]))),
             @"
         Tuple(PYTuple(
           descriptors: [

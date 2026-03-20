@@ -17,6 +17,8 @@ impl GtjTreeConvert<GTArray> for GtjArray {
 
         GTArray {
             span: GTSpan::default(),
+            doc: None,
+            attributes: vec![],
             descriptor,
         }
     }
@@ -50,6 +52,8 @@ mod tests {
         assert_ron_snapshot!(descriptor_tree, @"
         Array(GTArray(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           descriptor: Primitive(GTPrimitive(
             span: GTSpan(0, 0),
             kind: Number,
@@ -63,6 +67,8 @@ mod tests {
         assert_ron_snapshot!(array_tree, @"
         GTArray(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           descriptor: Primitive(GTPrimitive(
             span: GTSpan(0, 0),
             kind: Number,
@@ -93,6 +99,8 @@ mod tests {
         assert_ron_snapshot!(tree, @r#"
         Array(GTArray(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           descriptor: Object(GTObject(
             span: GTSpan(0, 0),
             doc: None,
@@ -141,8 +149,12 @@ mod tests {
         assert_ron_snapshot!(tree, @r#"
         GTArray(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           descriptor: Array(GTArray(
             span: GTSpan(0, 0),
+            doc: None,
+            attributes: [],
             descriptor: Object(GTObject(
               span: GTSpan(0, 0),
               doc: None,
@@ -192,6 +204,8 @@ mod tests {
         assert_ron_snapshot!(tree, @r#"
         GTArray(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           descriptor: Object(GTObject(
             span: GTSpan(0, 0),
             doc: None,
@@ -240,8 +254,12 @@ mod tests {
         assert_ron_snapshot!(tree, @r#"
         GTArray(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           descriptor: Array(GTArray(
             span: GTSpan(0, 0),
+            doc: None,
+            attributes: [],
             descriptor: Object(GTObject(
               span: GTSpan(0, 0),
               doc: None,

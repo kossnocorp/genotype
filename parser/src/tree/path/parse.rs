@@ -209,6 +209,8 @@ mod tests {
                     name: GTKey(GTSpan(146, 150), "book"),
                     descriptor: InlineImport(GTInlineImport(
                       span: GTSpan(152, 161),
+                      doc: None,
+                      attributes: [],
                       name: GTIdentifier(GTSpan(157, 161), "Book"),
                       path: GTPath(GTSpan(152, 156), Unresolved, "book"),
                     )),
@@ -221,6 +223,8 @@ mod tests {
                     name: GTKey(GTSpan(179, 183), "user"),
                     descriptor: InlineImport(GTInlineImport(
                       span: GTSpan(185, 211),
+                      doc: None,
+                      attributes: [],
                       name: GTIdentifier(GTSpan(207, 211), "User"),
                       path: GTPath(GTSpan(185, 206), Unresolved, "./misc/user"),
                     )),

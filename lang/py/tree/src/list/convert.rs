@@ -12,16 +12,13 @@ impl PYConvert<PYList> for GTArray {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use genotype_test::*;
 
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTArray {
-                span: (0, 0).into(),
-                descriptor: GtFactory::primitive_boolean().into(),
-            }
-            .convert(&mut PYConvertContext::default()),
+            convert_to_py(GtFactory::array(GtFactory::primitive_boolean())),
             @"
         PYList(
           descriptor: Primitive(Boolean),
@@ -40,10 +37,7 @@ mod tests {
             },
         );
         assert_ron_snapshot!(
-            GTArray {
-                span: (0, 0).into(),
-                descriptor: GtFactory::primitive_string().into(),
-            }
+            GtFactory::array(GtFactory::primitive_string())
             .convert(&mut context),
             @"
         PYList(

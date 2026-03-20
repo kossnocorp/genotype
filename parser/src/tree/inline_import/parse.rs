@@ -9,6 +9,8 @@ impl GTInlineImport {
 
         Ok(GTInlineImport {
             span,
+            doc: None,
+            attributes: vec![],
             path,
             name: GTIdentifier::new(name_span, name),
         })
@@ -18,21 +20,21 @@ impl GTInlineImport {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
-    use pretty_assertions::assert_eq;
+    use crate::test::*;
 
     #[test]
     fn test_parse() {
-        let mut pairs =
-            GenotypeParser::parse(Rule::inline_import, "./path/to/module/Name").unwrap();
-        assert_eq!(
-            GTInlineImport::parse(pairs.next().unwrap(), &mut GTContext::new("module".into()))
-                .unwrap(),
-            GTInlineImport {
-                span: (0, 21).into(),
-                name: GTIdentifier::new((17, 21).into(), "Name".into()),
-                path: GTPath::parse((0, 16).into(), "./path/to/module").unwrap(),
-            }
+        assert_ron_snapshot!(
+            parse_node!(GTInlineImport, to_parse_args(Rule::inline_import, "./path/to/module/Name")),
+            @r#"
+        GTInlineImport(
+          span: GTSpan(0, 21),
+          doc: None,
+          attributes: [],
+          name: GTIdentifier(GTSpan(17, 21), "Name"),
+          path: GTPath(GTSpan(0, 16), Unresolved, "./path/to/module"),
+        )
+        "#
         );
     }
 

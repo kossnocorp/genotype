@@ -67,6 +67,7 @@ impl RSConvert<RSDescriptor> for GTRecordKey {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use genotype_test::*;
 
     #[test]
@@ -110,10 +111,7 @@ mod tests {
     #[test]
     fn test_convert_descriptor_array() {
         assert_ron_snapshot!(
-            GTDescriptor::Array(Box::new(GTArray {
-                span: (0, 0).into(),
-                descriptor: GtFactory::primitive_boolean().into(),
-            }))
+            GtFactory::descriptor(GtFactory::array(GtFactory::primitive_boolean()))
             .convert(&mut RSConvertContext::empty("module".into()))
             .unwrap(),
             @"
@@ -126,19 +124,10 @@ mod tests {
 
     #[test]
     fn test_convert_descriptor_inline_import() {
-        let mut context = RSConvertContext::empty("module".into());
         assert_ron_snapshot!(
-            GTDescriptor::InlineImport(GTInlineImport {
-                span: (0, 0).into(),
-                path: GTPath::new(
-                    (0, 0).into(),
-                    GTPathModuleId::Resolved("path/to/module".into()),
-                    "./path/to/module".into()
-                ),
-                name: GTIdentifier::new((0, 0).into(), "Name".into())
-            })
-            .convert(&mut context)
-            .unwrap(),
+            convert_to_rs(
+                GtFactory::descriptor(GtFactory::inline_import("./path/to/module", "Name"))
+            ),
             @r#"
         InlineUse(RSInlineUse(
           path: RSPath(GTModuleId("path/to/module"), "super::path::to::module"),
@@ -226,9 +215,7 @@ mod tests {
     #[test]
     fn test_convert_descriptor_primitive() {
         assert_ron_snapshot!(
-            GTDescriptor::Primitive(GtFactory::primitive_boolean())
-                .convert(&mut RSConvertContext::empty("module".into()))
-                .unwrap(),
+            convert_to_rs(GtFactory::descriptor(GtFactory::primitive_boolean())),
             @"Primitive(Boolean)"
         );
     }
@@ -236,9 +223,7 @@ mod tests {
     #[test]
     fn test_convert_descriptor_reference() {
         assert_ron_snapshot!(
-            GTDescriptor::Reference(GtFactory::reference("Name"))
-            .convert(&mut RSConvertContext::empty("module".into()))
-            .unwrap(),
+            convert_to_rs(GtFactory::descriptor(GtFactory::reference("Name"))),
             @r#"
         Reference(RSReference(
           id: GTReferenceId(GTModuleId("module"), GTSpan(0, 0)),
@@ -252,15 +237,10 @@ mod tests {
     #[test]
     fn test_convert_descriptor_tuple() {
         assert_ron_snapshot!(
-            GTDescriptor::Tuple(GTTuple {
-                span: (0, 0).into(),
-                descriptors: vec![
-                    GtFactory::primitive_boolean().into(),
-                    GtFactory::primitive_string().into(),
-                ]
-            })
-            .convert(&mut RSConvertContext::empty("module".into()))
-            .unwrap(),
+            convert_to_rs(GtFactory::descriptor(GtFactory::tuple(vec![
+                GtFactory::primitive_boolean().into(),
+                GtFactory::primitive_string().into(),
+            ]))),
             @"
         Tuple(RSTuple(
           descriptors: [

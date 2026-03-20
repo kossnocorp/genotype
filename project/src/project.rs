@@ -304,6 +304,8 @@ mod tests {
                           name: GTKey(GTSpan(28, 32), "user"),
                           descriptor: InlineImport(GTInlineImport(
                             span: GTSpan(34, 45),
+                            doc: None,
+                            attributes: [],
                             name: GTIdentifier(GTSpan(41, 45), "User"),
                             path: GTPath(GTSpan(34, 40), Resolved(GTModuleId("user")), "./user"),
                           )),
@@ -316,6 +318,8 @@ mod tests {
                           name: GTKey(GTSpan(49, 54), "books"),
                           descriptor: Array(GTArray(
                             span: GTSpan(56, 62),
+                            doc: None,
+                            attributes: [],
                             descriptor: Reference(GTReference(
                               span: GTSpan(57, 61),
                               doc: None,
@@ -631,6 +635,8 @@ mod tests {
                           name: GTKey(GTSpan(28, 32), "user"),
                           descriptor: InlineImport(GTInlineImport(
                             span: GTSpan(34, 45),
+                            doc: None,
+                            attributes: [],
                             name: GTIdentifier(GTSpan(41, 45), "User"),
                             path: GTPath(GTSpan(34, 40), Resolved(GTModuleId("user")), "./user"),
                           )),
@@ -643,6 +649,8 @@ mod tests {
                           name: GTKey(GTSpan(49, 54), "books"),
                           descriptor: Array(GTArray(
                             span: GTSpan(56, 62),
+                            doc: None,
+                            attributes: [],
                             descriptor: Reference(GTReference(
                               span: GTSpan(57, 61),
                               doc: None,

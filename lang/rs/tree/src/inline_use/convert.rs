@@ -9,27 +9,18 @@ impl RSConvert<RSInlineUse> for GTInlineImport {
 }
 
 #[cfg(test)]
-mod tesrs {
+mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
+    use crate::test::*;
+    use genotype_test::*;
 
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTInlineImport {
-                span: (0, 0).into(),
-                path: GTPath::new(
-                    (0, 0).into(),
-                    GTPathModuleId::Resolved("module/path".into()),
-                    "./path/to/module".into()
-                ),
-                name: GTIdentifier::new((0, 0).into(), "Name".into()),
-            }
-            .convert(&mut RSConvertContext::empty("module".into()))
-            .unwrap(),
+            convert_to_rs(GtFactory::inline_import("./path/to/module", "Name")),
             @r#"
         RSInlineUse(
-          path: RSPath(GTModuleId("module/path"), "super::path::to::module"),
+          path: RSPath(GTModuleId("path/to/module"), "super::path::to::module"),
           name: RSIdentifier("Name"),
         )
         "#

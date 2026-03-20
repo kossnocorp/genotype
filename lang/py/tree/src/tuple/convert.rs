@@ -16,19 +16,16 @@ impl PYConvert<PYTuple> for GTTuple {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use genotype_test::*;
 
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTTuple {
-                span: (0, 0).into(),
-                descriptors: vec![
-                    GtFactory::primitive_boolean().into(),
-                    GtFactory::primitive_string().into(),
-                ]
-            }
-            .convert(&mut PYConvertContext::default()),
+            convert_to_py(GtFactory::tuple(vec![
+                GtFactory::primitive_boolean().into(),
+                GtFactory::primitive_string().into(),
+            ])),
             @"
         PYTuple(
           descriptors: [
@@ -50,11 +47,9 @@ mod tests {
             },
         );
         assert_ron_snapshot!(
-            GTTuple {
-                span: (0, 0).into(),
-                descriptors: vec![GtFactory::primitive_string().into()],
-            }
-            .convert(&mut context),
+            convert_to_py_with_context(GtFactory::tuple(vec![
+                GtFactory::primitive_string().into(),
+            ]), &mut context),
             @"
         PYTuple(
           descriptors: [
