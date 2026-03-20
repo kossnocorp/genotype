@@ -23,6 +23,8 @@ mod tests {
         let mut visitor = GTMockVisitor::new();
         let mut array = GTArray {
             span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
             descriptor: GtFactory::primitive_string().into(),
         };
         array.traverse(&mut visitor);

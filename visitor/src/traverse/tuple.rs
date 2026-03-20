@@ -27,6 +27,8 @@ mod tests {
         let primitive = GTDescriptor::Primitive(GtFactory::primitive_string());
         let mut tuple = GTTuple {
             span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
             descriptors: vec![primitive.clone()],
         };
         tuple.traverse(&mut visitor);

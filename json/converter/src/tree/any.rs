@@ -96,6 +96,8 @@ mod tests {
         assert_ron_snapshot!(tree, @"
         Array(GTArray(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           descriptor: Primitive(GTPrimitive(
             span: GTSpan(0, 0),
             kind: Number,
@@ -179,6 +181,8 @@ mod tests {
         assert_ron_snapshot!(tree, @"
         Tuple(GTTuple(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           descriptors: [],
         ))
         ");

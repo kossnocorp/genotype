@@ -10,18 +10,13 @@ impl TSConvert<TSArray> for GTArray {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::test::*;
     use genotype_test::*;
-    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTArray {
-                span: (0, 0).into(),
-                descriptor: GtFactory::primitive_boolean().into(),
-            }
-            .convert(&mut Default::default()),
+            convert_to_ts(GtFactory::array(GtFactory::primitive_boolean())),
             @"
         TSArray(
           descriptor: Primitive(Boolean),

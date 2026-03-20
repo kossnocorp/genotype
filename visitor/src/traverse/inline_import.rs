@@ -24,6 +24,8 @@ mod tests {
         let mut visitor = GTMockVisitor::new();
         let mut import = GTInlineImport {
             span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
             path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
             name: GTIdentifier::new((0, 0).into(), "Name".into()),
         };

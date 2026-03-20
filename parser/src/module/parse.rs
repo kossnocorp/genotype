@@ -878,6 +878,8 @@ mod tests {
                       name: GTKey(GTSpan(27, 31), "tags"),
                       descriptor: Array(GTArray(
                         span: GTSpan(33, 41),
+                        doc: None,
+                        attributes: [],
                         descriptor: Primitive(GTPrimitive(
                           span: GTSpan(34, 40),
                           kind: String,
@@ -937,6 +939,8 @@ mod tests {
                       name: GTKey(GTSpan(10, 14), "name"),
                       descriptor: Tuple(GTTuple(
                         span: GTSpan(16, 32),
+                        doc: None,
+                        attributes: [],
                         descriptors: [
                           Primitive(GTPrimitive(
                             span: GTSpan(17, 23),
@@ -961,6 +965,8 @@ mod tests {
                       name: GTKey(GTSpan(36, 43), "address"),
                       descriptor: Tuple(GTTuple(
                         span: GTSpan(45, 66),
+                        doc: None,
+                        attributes: [],
                         descriptors: [
                           Primitive(GTPrimitive(
                             span: GTSpan(46, 49),
@@ -995,6 +1001,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(71, 78), "Address"),
                 descriptor: Tuple(GTTuple(
                   span: GTSpan(80, 101),
+                  doc: None,
+                  attributes: [],
                   descriptors: [
                     Primitive(GTPrimitive(
                       span: GTSpan(81, 84),
@@ -1025,6 +1033,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(103, 108), "Empty"),
                 descriptor: Tuple(GTTuple(
                   span: GTSpan(110, 112),
+                  doc: None,
+                  attributes: [],
                   descriptors: [],
                 )),
               ),
@@ -1110,6 +1120,8 @@ mod tests {
                       name: GTKey(GTSpan(111, 117), "author"),
                       descriptor: InlineImport(GTInlineImport(
                         span: GTSpan(119, 138),
+                        doc: None,
+                        attributes: [],
                         name: GTIdentifier(GTSpan(132, 138), "Author"),
                         path: GTPath(GTSpan(119, 131), Unresolved, "../../author"),
                       )),
@@ -1141,6 +1153,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(159, 165), "Author"),
                 descriptor: InlineImport(GTInlineImport(
                   span: GTSpan(167, 186),
+                  doc: None,
+                  attributes: [],
                   name: GTIdentifier(GTSpan(180, 186), "Author"),
                   path: GTPath(GTSpan(167, 179), Unresolved, "../../author"),
                 )),
@@ -1153,8 +1167,12 @@ mod tests {
                 name: GTIdentifier(GTSpan(188, 195), "Authors"),
                 descriptor: Array(GTArray(
                   span: GTSpan(197, 218),
+                  doc: None,
+                  attributes: [],
                   descriptor: InlineImport(GTInlineImport(
                     span: GTSpan(198, 217),
+                    doc: None,
+                    attributes: [],
                     name: GTIdentifier(GTSpan(211, 217), "Author"),
                     path: GTPath(GTSpan(198, 210), Unresolved, "../../author"),
                   )),

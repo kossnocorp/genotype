@@ -48,7 +48,7 @@ impl GTDescriptor {
             GTDescriptor::Tuple(_) => GTNode::Tuple,
             GTDescriptor::Union(_) => GTNode::Union,
             GTDescriptor::Record(_) => GTNode::Record,
-            GTDescriptor::Any(_) => GTNode::Branded,
+            GTDescriptor::Any(_) => GTNode::Any,
             GTDescriptor::Branded(_) => GTNode::Branded,
         }
     }
@@ -103,6 +103,12 @@ impl TryFrom<GTDescriptor> for GTArray {
 //#endregion
 
 //#region InlineImport
+
+impl From<GTInlineImport> for GTDescriptor {
+    fn from(inline_import: GTInlineImport) -> Self {
+        GTDescriptor::InlineImport(inline_import)
+    }
+}
 
 impl TryFrom<GTDescriptor> for GTInlineImport {
     type Error = GTParseError;

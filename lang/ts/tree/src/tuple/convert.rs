@@ -14,20 +14,16 @@ impl TSConvert<TSTuple> for GTTuple {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::test::*;
     use genotype_test::*;
 
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTTuple {
-                span: (0, 0).into(),
-                descriptors: vec![
-                    GtFactory::primitive_boolean().into(),
-                    GtFactory::primitive_string().into(),
-                ]
-            }
-            .convert(&mut Default::default()),
+            convert_to_ts(GtFactory::tuple(vec![
+                GtFactory::primitive_boolean().into(),
+                GtFactory::primitive_string().into(),
+            ])),
             @"
         TSTuple(
           descriptors: [

@@ -8,7 +8,12 @@ impl GTArray {
             .next()
             .ok_or_else(|| GTParseError::Internal(span.clone(), GTNode::Array))?;
         let descriptor = GTDescriptor::parse(pair, context)?;
-        Ok(GTArray { span, descriptor })
+        Ok(GTArray {
+            span,
+            doc: None,
+            attributes: vec![],
+            descriptor,
+        })
     }
 }
 
@@ -25,6 +30,8 @@ mod tests {
             @"
         GTArray(
           span: GTSpan(0, 8),
+          doc: None,
+          attributes: [],
           descriptor: Primitive(GTPrimitive(
             span: GTSpan(1, 7),
             kind: String,

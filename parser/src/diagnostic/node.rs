@@ -3,6 +3,7 @@ use crate::prelude::internal::*;
 /// Genotype node identifier. Used for error reporting and diagnostics.
 #[derive(Debug, PartialEq)]
 pub enum GTNode {
+    Any,
     Alias,
     Array,
     Attribute,
@@ -32,6 +33,7 @@ pub enum GTNode {
 impl GTNode {
     pub fn name(&self) -> &'static str {
         match self {
+            Self::Any => "any",
             Self::Alias => "alias",
             Self::Attribute => "attribute",
             Self::AttributeAssignment => "attribute assignment",

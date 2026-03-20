@@ -73,6 +73,8 @@ mod tests {
         let mut visitor = GTMockVisitor::new();
         let array = GTArray {
             span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
             descriptor: GtFactory::primitive_string().into(),
         };
         let mut descriptor = GTDescriptor::Array(Box::new(array.clone()));
@@ -93,6 +95,8 @@ mod tests {
         let mut visitor = GTMockVisitor::new();
         let import = GTInlineImport {
             span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
             path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
             name: GTIdentifier::new((0, 0).into(), "Name".into()),
         };
@@ -195,6 +199,8 @@ mod tests {
         let primitive = GTDescriptor::Primitive(GtFactory::primitive_string());
         let tuple = GTTuple {
             span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
             descriptors: vec![primitive.clone()],
         };
         let mut descriptor = GTDescriptor::Tuple(tuple.clone());

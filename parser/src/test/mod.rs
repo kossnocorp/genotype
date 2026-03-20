@@ -241,13 +241,19 @@ impl GtFactory {
     pub fn inline_import(path: &str, name: &str) -> GTInlineImport {
         GTInlineImport {
             span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
             path: Self::path(path),
             name: Self::identifier(name),
         }
     }
 
     pub fn path(path: &str) -> GTPath {
-        GTPath::parse((0, 0).into(), path).unwrap()
+        GTPath::new((0, 0).into(), Self::path_module_id(), path.into())
+    }
+
+    pub fn path_module_id() -> GTPathModuleId {
+        GTPathModuleId::Resolved("path/to/module".into())
     }
 
     pub fn object(name: &str, properties: Vec<GTProperty>) -> GTObject {
@@ -312,5 +318,26 @@ impl GtFactory {
         Type: Into<GTDescriptor>,
     {
         descriptor.into()
+    }
+
+    pub fn array<Type>(descriptor: Type) -> GTArray
+    where
+        Type: Into<GTDescriptor>,
+    {
+        GTArray {
+            span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
+            descriptor: descriptor.into(),
+        }
+    }
+
+    pub fn tuple(descriptors: Vec<GTDescriptor>) -> GTTuple {
+        GTTuple {
+            span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
+            descriptors,
+        }
     }
 }
