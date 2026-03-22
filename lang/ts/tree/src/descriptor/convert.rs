@@ -212,14 +212,10 @@ mod tests {
     #[test]
     fn test_convert_union() {
         assert_ron_snapshot!(
-            GTDescriptor::Union(GTUnion {
-                span: (0, 0).into(),
-                descriptors: vec![
-                    Gt::primitive_boolean().into(),
-                    Gt::primitive_string().into(),
-                ]
-            })
-            .convert(&mut Default::default()),
+            convert_node(Gt::descriptor(Gt::union(vec![
+                Gt::primitive_boolean().into(),
+                Gt::primitive_string().into(),
+            ]))),
             @"
         Union(TSUnion(
           descriptors: [

@@ -222,6 +222,8 @@ mod tests {
         let primitive = GTDescriptor::Primitive(Gt::primitive_string());
         let union = GTUnion {
             span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
             descriptors: vec![primitive.clone()],
         };
         let mut descriptor = GTDescriptor::Union(union.clone());

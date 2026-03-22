@@ -470,4 +470,45 @@ impl Gt {
     pub fn context() -> GTContext {
         GTContext::new("module".into())
     }
+
+    pub fn union(descriptors: Vec<GTDescriptor>) -> GTUnion {
+        GTUnion {
+            span: (0, 0).into(),
+            doc: None,
+            attributes: vec![],
+            descriptors,
+        }
+    }
+}
+
+#[macro_export]
+macro_rules! node_with {
+    ($node:expr $(, $field:ident = $value:expr )* $(,)?) => {{
+        let mut node = $node;
+        $(
+            node.$field = $value;
+        )*
+        node
+    }};
+}
+
+#[macro_export]
+macro_rules! attribute_node {
+    ($key:ident = $value:expr) => {
+        Gt::attribute(
+            stringify!($key),
+            Gt::attribute_assignment(Gt::literal_string($value)),
+        )
+    };
+}
+
+#[macro_export]
+macro_rules! descriptor_nodes {
+    ($($item:expr),* $(,)?) => {
+        vec![
+            $(
+                ($item).into()
+            ),*
+        ]
+    };
 }

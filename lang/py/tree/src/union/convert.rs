@@ -17,19 +17,16 @@ impl PYConvert<PYUnion> for GTUnion {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use genotype_test::*;
 
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTUnion {
-                span: (0, 0).into(),
-                descriptors: vec![
-                    Gt::primitive_boolean().into(),
-                    Gt::primitive_string().into(),
-                ]
-            }
-            .convert(&mut PYConvertContext::default()),
+            convert_node(Gt::union(vec![
+                Gt::primitive_boolean().into(),
+                Gt::primitive_string().into(),
+            ])),
             @"
         PYUnion(
           descriptors: [
@@ -52,11 +49,9 @@ mod tests {
             },
         );
         assert_ron_snapshot!(
-            GTUnion {
-                span: (0, 0).into(),
-                descriptors: vec![Gt::primitive_string().into()],
-            }
-            .convert(&mut context),
+            convert_node_with(Gt::union(vec![
+                Gt::primitive_string().into(),
+            ]), &mut context),
             @"
         PYUnion(
           descriptors: [

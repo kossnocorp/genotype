@@ -1687,6 +1687,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(0, 5), "Hello"),
                 descriptor: Union(GTUnion(
                   span: GTSpan(7, 24),
+                  doc: None,
+                  attributes: [],
                   descriptors: [
                     Literal(GTLiteral(
                       span: GTSpan(7, 14),
@@ -1711,6 +1713,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(26, 35), "Multiline"),
                 descriptor: Union(GTUnion(
                   span: GTSpan(39, 59),
+                  doc: None,
+                  attributes: [],
                   descriptors: [
                     Literal(GTLiteral(
                       span: GTSpan(41, 48),
@@ -1735,6 +1739,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(61, 73), "WithComments"),
                 descriptor: Union(GTUnion(
                   span: GTSpan(100, 147),
+                  doc: None,
+                  attributes: [],
                   descriptors: [
                     Literal(GTLiteral(
                       span: GTSpan(102, 109),
@@ -1759,6 +1765,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(149, 160), "ObjectUnion"),
                 descriptor: Union(GTUnion(
                   span: GTSpan(164, 204),
+                  doc: None,
+                  attributes: [],
                   descriptors: [
                     Reference(GTReference(
                       span: GTSpan(166, 181),
@@ -1880,6 +1888,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(0, 7), "Message"),
                 descriptor: Union(GTUnion(
                   span: GTSpan(9, 19),
+                  doc: None,
+                  attributes: [],
                   descriptors: [
                     Reference(GTReference(
                       span: GTSpan(9, 14),
@@ -2124,6 +2134,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(269, 277), "Response"),
                 descriptor: Union(GTUnion(
                   span: GTSpan(279, 344),
+                  doc: None,
+                  attributes: [],
                   descriptors: [
                     Reference(GTReference(
                       span: GTSpan(297, 312),
@@ -2176,6 +2188,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(346, 354), "Response"),
                 descriptor: Union(GTUnion(
                   span: GTSpan(358, 431),
+                  doc: None,
+                  attributes: [],
                   descriptors: [
                     Reference(GTReference(
                       span: GTSpan(380, 395),
@@ -2228,6 +2242,8 @@ mod tests {
                 name: GTIdentifier(GTSpan(433, 441), "Response"),
                 descriptor: Union(GTUnion(
                   span: GTSpan(445, 518),
+                  doc: None,
+                  attributes: [],
                   descriptors: [
                     Reference(GTReference(
                       span: GTSpan(465, 480),

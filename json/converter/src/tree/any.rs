@@ -143,6 +143,8 @@ mod tests {
         assert_ron_snapshot!(tree, @"
         Union(GTUnion(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           descriptors: [],
         ))
         ");

@@ -52,6 +52,23 @@ impl GTDescriptor {
             GTDescriptor::Branded(_) => GTNode::Branded,
         }
     }
+
+    pub fn attributes(&self) -> &Vec<GTAttribute> {
+        match &self {
+            GTDescriptor::Alias(alias) => &alias.attributes,
+            GTDescriptor::Array(array) => &array.attributes,
+            GTDescriptor::InlineImport(inline_import) => &inline_import.attributes,
+            GTDescriptor::Literal(literal) => &literal.attributes,
+            GTDescriptor::Object(object) => &object.attributes,
+            GTDescriptor::Primitive(primitive) => &primitive.attributes,
+            GTDescriptor::Reference(reference) => &reference.attributes,
+            GTDescriptor::Tuple(tuple) => &tuple.attributes,
+            GTDescriptor::Union(union) => &union.attributes,
+            GTDescriptor::Record(record) => &record.attributes,
+            GTDescriptor::Any(any) => &any.attributes,
+            GTDescriptor::Branded(branded) => &branded.attributes,
+        }
+    }
 }
 
 //#region Alias

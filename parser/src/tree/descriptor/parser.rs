@@ -44,6 +44,8 @@ impl GTDescriptor {
 
             descriptors => Ok(GTDescriptor::Union(GTUnion {
                 span,
+                doc: None,
+                attributes: vec![],
                 descriptors: descriptors.to_owned(),
             })),
         }

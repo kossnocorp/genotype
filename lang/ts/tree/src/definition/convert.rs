@@ -147,9 +147,8 @@ mod tests {
         );
 
         assert_ron_snapshot!(
-            convert_node(Gt::alias("Book", GTUnion {
-                span: (0, 0).into(),
-                descriptors: vec![
+            convert_node(Gt::alias("Book", Gt::union(
+                descriptor_nodes![
                     GTObject {
                         name: GTObjectName::Alias(
                             GTIdentifier::new((0, 0).into(), "BookAuthorObj".into()),
@@ -162,11 +161,10 @@ mod tests {
                         ..Gt::object("Book", vec![
                             Gt::property("author", Gt::primitive_string())
                         ])
-                    }
-                    .into(),
-                    Gt::primitive_string().into(),
+                    },
+                    Gt::primitive_string()
                 ]
-            })),
+            ))),
             @r#"
         Alias(TSAlias(
           doc: None,

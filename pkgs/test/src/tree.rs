@@ -8,7 +8,8 @@ use relative_path::RelativePathBuf;
 use std::fmt::Debug;
 use std::vec;
 
-pub fn unwrap_module(source_code: &str) -> GTModule {
+#[deprecated(note = "Use `Gt` factory methods instead")]
+pub fn parse_module(source_code: &str) -> GTModule {
     let id = GTModuleId("module".into());
 
     // TODO: This flow replicates what GtProject::load does. Find a better way
@@ -31,18 +32,25 @@ pub fn unwrap_module(source_code: &str) -> GTModule {
     modules.first().unwrap().module.clone()
 }
 
-pub fn unwrap_named<Type>(name: &str, source_code: &str) -> Type
+#[deprecated(note = "Use `Gt` factory methods instead")]
+pub fn parse_get_named<Type>(name: &str, source_code: &str) -> Type
 where
     Type: TryFrom<GTDescriptor>,
     Type::Error: Debug,
 {
-    let mut module = unwrap_module(source_code);
+    let mut module = parse_module(source_code);
     let mut visitor = UnwrapNamedVisitor::new(name);
     module.traverse(&mut visitor);
 
     let descriptor = visitor.descriptor.expect("named descriptor must exist");
-
-    Type::try_from(descriptor).expect("named descriptor must enclose given type")
+    match Type::try_from(descriptor.clone()) {
+        Ok(inner) => inner,
+        Err(err) => {
+            println!("named descriptor must enclose given type: {err:?}");
+            println!("descriptor: {:?}", descriptor);
+            panic!("Failed to convert descriptor to type");
+        }
+    }
 }
 
 struct UnwrapNamedVisitor {

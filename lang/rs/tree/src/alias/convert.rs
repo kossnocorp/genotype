@@ -183,31 +183,13 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GTIdentifier::new((0, 0).into(), "Book".into()),
-                descriptor: GTDescriptor::Union(GTUnion {
-                    span: (0, 0).into(),
-                    descriptors: vec![
-                        GTObject {
-                            span: (0, 0).into(),
-                            doc: None,
-                            attributes: vec![],
-                            name: GTObjectName::Named(GTIdentifier::new(
-                                (0, 0).into(),
-                                "BookObj".into()
-                            )),
-                            extensions: vec![],
-                            properties: vec![GTProperty {
-                                span: (0, 0).into(),
-                                doc: None,
-                                attributes: vec![],
-                                name: GTKey::new((0, 0).into(), "author".into()),
-                                descriptor: Gt::primitive_string().into(),
-                                required: true,
-                            }]
-                        }
-                        .into(),
-                        Gt::primitive_string().into(),
-                    ]
-                })
+                descriptor: Gt::descriptor(Gt::union(descriptor_nodes![
+                    Gt::object(
+                        "BookObj",
+                        vec![Gt::property("author", Gt::primitive_string())]
+                    ),
+                    Gt::primitive_string()
+                ]))
             }
             .convert(&mut context)
             .unwrap(),
