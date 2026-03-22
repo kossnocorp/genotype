@@ -1,6 +1,8 @@
 use crate::prelude::internal::*;
 
 #[cfg(test)]
+pub use indoc::indoc;
+#[cfg(test)]
 pub use insta::{assert_debug_snapshot, assert_ron_snapshot, assert_snapshot};
 #[cfg(test)]
 pub use pretty_assertions::{
@@ -435,5 +437,37 @@ impl Gt {
 
     pub fn record_key_f64() -> GTRecordKey {
         GTRecordKey::Float64((0, 0).into())
+    }
+
+    pub fn attribute<Type>(name: &str, descriptor: Type) -> GTAttribute
+    where
+        Type: Into<GTAttributeDescriptor>,
+    {
+        GTAttribute {
+            span: (0, 2).into(),
+            name: Self::attribute_name(name),
+            descriptor: Some(descriptor.into()),
+        }
+    }
+
+    pub fn attribute_name(value: &str) -> GTAttributeName {
+        GTAttributeName {
+            span: (0, 0).into(),
+            value: value.into(),
+        }
+    }
+
+    pub fn attribute_assignment<Type>(value: Type) -> GTAttributeAssignment
+    where
+        Type: Into<GTAttributeValue>,
+    {
+        GTAttributeAssignment {
+            span: (0, 0).into(),
+            value: value.into(),
+        }
+    }
+
+    pub fn context() -> GTContext {
+        GTContext::new("module".into())
     }
 }

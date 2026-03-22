@@ -3,6 +3,7 @@ use crate::prelude::internal::*;
 impl GTObject {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
         let span: GTSpan = pair.as_span().into();
+        let (doc, attributes) = context.take_annotation_or_default();
 
         let name = context.name_object(span.clone())?;
 
@@ -15,8 +16,8 @@ impl GTObject {
 
         let mut object = GTObject {
             span: span.clone(),
-            doc: None,
-            attributes: vec![],
+            doc,
+            attributes,
             name,
             extensions: vec![],
             properties: vec![],
@@ -190,6 +191,49 @@ mod tests {
               required: true,
             ),
           ],
+        )
+        "#
+        );
+    }
+
+    #[test]
+    fn test_annotation() {
+        let mut context = Gt::context();
+        context.enter_parent(GTContextParent::Alias(Gt::identifier("Hello")));
+        context.provide_annotation((
+            Gt::some_doc("Hello, world!"),
+            vec![Gt::attribute(
+                "example",
+                Gt::attribute_assignment(Gt::literal_string("value")),
+            )],
+        ));
+        assert_ron_snapshot!(
+            parse_node!(GTObject, (to_parse_rules(Rule::object, "{}"), &mut context)),
+            @r#"
+        GTObject(
+          span: GTSpan(0, 2),
+          doc: Some(GTDoc(GTSpan(0, 0), "Hello, world!")),
+          attributes: [
+            GTAttribute(
+              span: GTSpan(0, 2),
+              name: GTAttributeName(
+                span: GTSpan(0, 0),
+                value: "example",
+              ),
+              descriptor: Some(Assignment(GTAttributeAssignment(
+                span: GTSpan(0, 0),
+                value: Literal(GTLiteral(
+                  span: GTSpan(0, 0),
+                  doc: None,
+                  attributes: [],
+                  value: String("value"),
+                )),
+              ))),
+            ),
+          ],
+          name: Named(GTIdentifier(GTSpan(0, 0), "Hello")),
+          extensions: [],
+          properties: [],
         )
         "#
         );

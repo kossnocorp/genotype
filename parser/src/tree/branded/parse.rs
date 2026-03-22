@@ -3,6 +3,7 @@ use crate::prelude::internal::*;
 impl GTBranded {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
         let span: GTSpan = pair.as_span().into();
+        let (doc, attributes) = context.take_annotation_or_default();
         let pair = pair
             .into_inner()
             .next()
@@ -13,8 +14,8 @@ impl GTBranded {
 
         Ok(GTBranded {
             span,
-            doc: None,
-            attributes: vec![],
+            doc,
+            attributes,
             id,
             name,
             primitive,
@@ -97,6 +98,53 @@ mod tests {
           attributes: [],
           id: GTDefinitionId(GTModuleId("module"), "IdI64"),
           name: GTIdentifier(GTSpan(0, 4), "IdI64"),
+          primitive: GTPrimitive(
+            span: GTSpan(1, 4),
+            kind: Int64,
+            doc: None,
+            attributes: [],
+          ),
+        )
+        "#
+        );
+    }
+
+    #[test]
+    fn test_annotation() {
+        let mut context = Gt::context();
+        context.provide_annotation((
+            Gt::some_doc("Hello, world!"),
+            vec![Gt::attribute(
+                "example",
+                Gt::attribute_assignment(Gt::literal_string("value")),
+            )],
+        ));
+        assert_ron_snapshot!(
+            parse_node!(GTBranded, (to_parse_rules(Rule::branded, "@int"), &mut context)),
+            @r#"
+        GTBranded(
+          span: GTSpan(0, 4),
+          doc: Some(GTDoc(GTSpan(0, 0), "Hello, world!")),
+          attributes: [
+            GTAttribute(
+              span: GTSpan(0, 2),
+              name: GTAttributeName(
+                span: GTSpan(0, 0),
+                value: "example",
+              ),
+              descriptor: Some(Assignment(GTAttributeAssignment(
+                span: GTSpan(0, 0),
+                value: Literal(GTLiteral(
+                  span: GTSpan(0, 0),
+                  doc: None,
+                  attributes: [],
+                  value: String("value"),
+                )),
+              ))),
+            ),
+          ],
+          id: GTDefinitionId(GTModuleId("module"), "I64"),
+          name: GTIdentifier(GTSpan(0, 4), "I64"),
           primitive: GTPrimitive(
             span: GTSpan(1, 4),
             kind: Int64,
