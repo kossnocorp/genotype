@@ -2128,7 +2128,19 @@ mod tests {
                     Reference(GTReference(
                       span: GTSpan(297, 312),
                       doc: None,
-                      attributes: [],
+                      attributes: [
+                        GTAttribute(
+                          span: GTSpan(279, 296),
+                          name: GTAttributeName(
+                            span: GTSpan(281, 285),
+                            value: "name",
+                          ),
+                          descriptor: Some(Assignment(GTAttributeAssignment(
+                            span: GTSpan(286, 295),
+                            value: Identifier(GTIdentifier(GTSpan(288, 295), "Success")),
+                          ))),
+                        ),
+                      ],
                       id: GTReferenceId(GTModuleId("module"), GTSpan(297, 312)),
                       definition_id: Unresolved,
                       identifier: GTIdentifier(GTSpan(297, 312), "SuccessResponse"),
@@ -2136,7 +2148,19 @@ mod tests {
                     Reference(GTReference(
                       span: GTSpan(331, 344),
                       doc: None,
-                      attributes: [],
+                      attributes: [
+                        GTAttribute(
+                          span: GTSpan(315, 330),
+                          name: GTAttributeName(
+                            span: GTSpan(317, 321),
+                            value: "name",
+                          ),
+                          descriptor: Some(Assignment(GTAttributeAssignment(
+                            span: GTSpan(322, 329),
+                            value: Identifier(GTIdentifier(GTSpan(324, 329), "Error")),
+                          ))),
+                        ),
+                      ],
                       id: GTReferenceId(GTModuleId("module"), GTSpan(331, 344)),
                       definition_id: Unresolved,
                       identifier: GTIdentifier(GTSpan(331, 344), "ErrorResponse"),
@@ -2156,7 +2180,19 @@ mod tests {
                     Reference(GTReference(
                       span: GTSpan(380, 395),
                       doc: None,
-                      attributes: [],
+                      attributes: [
+                        GTAttribute(
+                          span: GTSpan(360, 377),
+                          name: GTAttributeName(
+                            span: GTSpan(362, 366),
+                            value: "name",
+                          ),
+                          descriptor: Some(Assignment(GTAttributeAssignment(
+                            span: GTSpan(367, 376),
+                            value: Identifier(GTIdentifier(GTSpan(369, 376), "Success")),
+                          ))),
+                        ),
+                      ],
                       id: GTReferenceId(GTModuleId("module"), GTSpan(380, 395)),
                       definition_id: Unresolved,
                       identifier: GTIdentifier(GTSpan(380, 395), "SuccessResponse"),
@@ -2164,7 +2200,19 @@ mod tests {
                     Reference(GTReference(
                       span: GTSpan(418, 431),
                       doc: None,
-                      attributes: [],
+                      attributes: [
+                        GTAttribute(
+                          span: GTSpan(400, 415),
+                          name: GTAttributeName(
+                            span: GTSpan(402, 406),
+                            value: "name",
+                          ),
+                          descriptor: Some(Assignment(GTAttributeAssignment(
+                            span: GTSpan(407, 414),
+                            value: Identifier(GTIdentifier(GTSpan(409, 414), "Error")),
+                          ))),
+                        ),
+                      ],
                       id: GTReferenceId(GTModuleId("module"), GTSpan(418, 431)),
                       definition_id: Unresolved,
                       identifier: GTIdentifier(GTSpan(418, 431), "ErrorResponse"),
@@ -2184,7 +2232,19 @@ mod tests {
                     Reference(GTReference(
                       span: GTSpan(465, 480),
                       doc: None,
-                      attributes: [],
+                      attributes: [
+                        GTAttribute(
+                          span: GTSpan(445, 462),
+                          name: GTAttributeName(
+                            span: GTSpan(447, 451),
+                            value: "name",
+                          ),
+                          descriptor: Some(Assignment(GTAttributeAssignment(
+                            span: GTSpan(452, 461),
+                            value: Identifier(GTIdentifier(GTSpan(454, 461), "Success")),
+                          ))),
+                        ),
+                      ],
                       id: GTReferenceId(GTModuleId("module"), GTSpan(465, 480)),
                       definition_id: Unresolved,
                       identifier: GTIdentifier(GTSpan(465, 480), "SuccessResponse"),
@@ -2192,7 +2252,19 @@ mod tests {
                     Reference(GTReference(
                       span: GTSpan(503, 516),
                       doc: None,
-                      attributes: [],
+                      attributes: [
+                        GTAttribute(
+                          span: GTSpan(485, 500),
+                          name: GTAttributeName(
+                            span: GTSpan(487, 491),
+                            value: "name",
+                          ),
+                          descriptor: Some(Assignment(GTAttributeAssignment(
+                            span: GTSpan(492, 499),
+                            value: Identifier(GTIdentifier(GTSpan(494, 499), "Error")),
+                          ))),
+                        ),
+                      ],
                       id: GTReferenceId(GTModuleId("module"), GTSpan(503, 516)),
                       definition_id: Unresolved,
                       identifier: GTIdentifier(GTSpan(503, 516), "ErrorResponse"),

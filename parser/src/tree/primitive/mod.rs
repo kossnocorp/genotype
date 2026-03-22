@@ -6,7 +6,7 @@ mod parse;
 pub struct GTPrimitive {
     pub span: GTSpan,
     pub kind: GTPrimitiveKind,
-    pub doc: Option<String>,
+    pub doc: Option<GTDoc>,
     pub attributes: Vec<GTAttribute>,
 }
 

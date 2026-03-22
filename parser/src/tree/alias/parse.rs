@@ -3,12 +3,18 @@ use crate::prelude::internal::*;
 impl GTAlias {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
         let span: GTSpan = pair.as_span().into();
+        let annotation = context.take_annotation_or_default();
         let mut inner = pair.into_inner();
 
         let pair = inner
             .next()
             .ok_or_else(|| GTParseError::Internal(span.clone(), GTNode::Alias))?;
-        let alias = parse(inner, pair, context, ParseState::Doc(span.clone(), None))?;
+        let alias = parse(
+            inner,
+            pair,
+            context,
+            ParseState::Annotation(span.clone(), annotation),
+        )?;
 
         context.exit_parent(span, GTNode::Alias)?;
 
@@ -23,7 +29,7 @@ fn parse(
     state: ParseState,
 ) -> GTNodeParseResult<GTAlias> {
     match state {
-        ParseState::Doc(span, doc_acc) => match pair.as_rule() {
+        ParseState::Annotation(span, (doc_acc, mut attributes)) => match pair.as_rule() {
             Rule::line_doc => {
                 let doc = pair.into_inner().find(|p| p.as_rule() == Rule::doc);
                 let doc_acc = if let Some(pair) = doc {
@@ -37,23 +43,18 @@ fn parse(
                 };
 
                 match inner.next() {
-                    Some(pair) => parse(inner, pair, context, ParseState::Doc(span, doc_acc)),
+                    Some(pair) => parse(
+                        inner,
+                        pair,
+                        context,
+                        ParseState::Annotation(span, (doc_acc, attributes)),
+                    ),
                     None => Err(GTParseError::Internal(span, GTNode::Alias)),
                 }
             }
 
-            _ => parse(
-                inner,
-                pair,
-                context,
-                ParseState::Attributes(span, doc_acc, vec![]),
-            ),
-        },
-
-        ParseState::Attributes(span, doc, attributes) => match pair.as_rule() {
             Rule::attribute => {
                 let attribute = GTAttribute::parse(pair, context)?;
-                let mut attributes = attributes;
                 attributes.push(attribute);
 
                 match inner.next() {
@@ -61,7 +62,7 @@ fn parse(
                         inner,
                         pair,
                         context,
-                        ParseState::Attributes(span, doc, attributes),
+                        ParseState::Annotation(span, (doc_acc, attributes)),
                     ),
                     None => Err(GTParseError::Internal(span, GTNode::Alias)),
                 }
@@ -71,11 +72,11 @@ fn parse(
                 inner,
                 pair,
                 context,
-                ParseState::Name(span, doc, attributes),
+                ParseState::Name(span, (doc_acc, attributes)),
             ),
         },
 
-        ParseState::Name(span, doc, attributes) => {
+        ParseState::Name(span, annotation) => {
             let name: GTIdentifier = pair.into();
 
             context.resolve.exports.push(name.clone());
@@ -86,13 +87,13 @@ fn parse(
                     inner,
                     pair,
                     context,
-                    ParseState::Descriptor(span, doc, attributes, name),
+                    ParseState::Descriptor(span, annotation, name),
                 ),
                 None => Err(GTParseError::Internal(span, GTNode::Alias)),
             }
         }
 
-        ParseState::Descriptor(span, doc, attributes, name) => {
+        ParseState::Descriptor(span, (doc, attributes), name) => {
             let id = context.module_id.definition_id(&name);
             let descriptor = GTDescriptor::parse(pair, context)?;
             Ok(GTAlias {
@@ -108,14 +109,14 @@ fn parse(
 }
 
 enum ParseState {
-    Doc(GTSpan, Option<GTDoc>),
-    Attributes(GTSpan, Option<GTDoc>, Vec<GTAttribute>),
-    Name(GTSpan, Option<GTDoc>, Vec<GTAttribute>),
-    Descriptor(GTSpan, Option<GTDoc>, Vec<GTAttribute>, GTIdentifier),
+    Annotation(GTSpan, GTContextAnnotation),
+    Name(GTSpan, GTContextAnnotation),
+    Descriptor(GTSpan, GTContextAnnotation, GTIdentifier),
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::test::*;
     use crate::*;
     use insta::assert_ron_snapshot;
     use miette::NamedSource;
@@ -193,5 +194,128 @@ mod tests {
         GTAlias::parse(pairs.next().unwrap(), &mut context).unwrap();
 
         assert_eq!(context.parents, parents);
+    }
+
+    #[test]
+    fn test_annotation() {
+        let mut context = Gt::context();
+        context.provide_annotation((
+            Gt::some_doc("Hello, world!"),
+            vec![Gt::attribute(
+                "example",
+                Gt::attribute_assignment(Gt::literal_string("value")),
+            )],
+        ));
+        assert_ron_snapshot!(
+            parse_node!(GTAlias, (to_parse_rules(Rule::alias, "Hello: string"), &mut context)),
+            @r#"
+        GTAlias(
+          id: GTDefinitionId(GTModuleId("module"), "Hello"),
+          span: GTSpan(0, 13),
+          doc: Some(GTDoc(GTSpan(0, 0), "Hello, world!")),
+          attributes: [
+            GTAttribute(
+              span: GTSpan(0, 2),
+              name: GTAttributeName(
+                span: GTSpan(0, 0),
+                value: "example",
+              ),
+              descriptor: Some(Assignment(GTAttributeAssignment(
+                span: GTSpan(0, 0),
+                value: Literal(GTLiteral(
+                  span: GTSpan(0, 0),
+                  doc: None,
+                  attributes: [],
+                  value: String("value"),
+                )),
+              ))),
+            ),
+          ],
+          name: GTIdentifier(GTSpan(0, 5), "Hello"),
+          descriptor: Primitive(GTPrimitive(
+            span: GTSpan(7, 13),
+            kind: String,
+            doc: None,
+            attributes: [],
+          )),
+        )
+        "#
+        );
+    }
+
+    #[test]
+    fn test_annotation_merge_and_mixed_order() {
+        let mut context = Gt::context();
+        context.provide_annotation((
+            Gt::some_doc("Outside"),
+            vec![Gt::attribute(
+                "outside",
+                Gt::attribute_assignment(Gt::literal_string("first")),
+            )],
+        ));
+        assert_ron_snapshot!(
+            parse_node!(
+                GTAlias,
+                (
+                    to_parse_rules(
+                        Rule::alias,
+                        indoc! {r#"
+                            #[inside = "second"]
+                            /// Alias doc
+                            Hello: string
+                        "#}
+                    ),
+                    &mut context
+                )
+            ),
+            @r#"
+        GTAlias(
+          id: GTDefinitionId(GTModuleId("module"), "Hello"),
+          span: GTSpan(0, 48),
+          doc: Some(GTDoc(GTSpan(0, 34), "Outside\nAlias doc")),
+          attributes: [
+            GTAttribute(
+              span: GTSpan(0, 2),
+              name: GTAttributeName(
+                span: GTSpan(0, 0),
+                value: "outside",
+              ),
+              descriptor: Some(Assignment(GTAttributeAssignment(
+                span: GTSpan(0, 0),
+                value: Literal(GTLiteral(
+                  span: GTSpan(0, 0),
+                  doc: None,
+                  attributes: [],
+                  value: String("first"),
+                )),
+              ))),
+            ),
+            GTAttribute(
+              span: GTSpan(0, 20),
+              name: GTAttributeName(
+                span: GTSpan(2, 8),
+                value: "inside",
+              ),
+              descriptor: Some(Assignment(GTAttributeAssignment(
+                span: GTSpan(9, 19),
+                value: Literal(GTLiteral(
+                  span: GTSpan(11, 19),
+                  doc: None,
+                  attributes: [],
+                  value: String("second"),
+                )),
+              ))),
+            ),
+          ],
+          name: GTIdentifier(GTSpan(35, 40), "Hello"),
+          descriptor: Primitive(GTPrimitive(
+            span: GTSpan(42, 48),
+            kind: String,
+            doc: None,
+            attributes: [],
+          )),
+        )
+        "#
+        );
     }
 }
