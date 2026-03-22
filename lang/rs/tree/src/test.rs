@@ -11,6 +11,17 @@ pub fn convert_node_with<GtNode: RSConvert<Node>, Node>(
     gt_node.convert(context).unwrap()
 }
 
+pub fn convert_node_err_with<GtNode: RSConvert<Node>, Node>(
+    gt_node: GtNode,
+    context: &mut RSConvertContext,
+) -> miette::Report
+where
+    Node: std::fmt::Debug,
+{
+    let result = gt_node.convert(context);
+    result.unwrap_err()
+}
+
 pub struct Gtrs {}
 
 impl Gtrs {

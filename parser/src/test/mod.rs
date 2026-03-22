@@ -450,6 +450,14 @@ impl Gt {
         }
     }
 
+    pub fn attribute_flag(name: &str) -> GTAttribute {
+        GTAttribute {
+            span: (0, 2).into(),
+            name: Self::attribute_name(name),
+            descriptor: None,
+        }
+    }
+
     pub fn attribute_name(value: &str) -> GTAttributeName {
         GTAttributeName {
             span: (0, 0).into(),
@@ -491,14 +499,19 @@ macro_rules! node_with {
         node
     }};
 }
-
 #[macro_export]
 macro_rules! attribute_node {
+    // key = value
     ($key:ident = $value:expr) => {
         Gt::attribute(
             stringify!($key),
             Gt::attribute_assignment(Gt::literal_string($value)),
         )
+    };
+
+    // flag-style: attribute_node!(default)
+    ($key:ident) => {
+        Gt::attribute_flag(stringify!($key))
     };
 }
 

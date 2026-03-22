@@ -13,6 +13,9 @@ pub use ids::*;
 mod naming;
 pub use naming::*;
 
+mod config;
+pub use config::*;
+
 #[derive(Default)]
 pub struct RSConvertContext {
     resolve: RSConvertResolve,
