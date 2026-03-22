@@ -14,20 +14,16 @@ impl TSConvert<TSUnion> for GTUnion {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::test::*;
     use genotype_test::*;
 
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTUnion {
-                span: (0, 0).into(),
-                descriptors: vec![
-                    Gt::primitive_boolean().into(),
-                    Gt::primitive_string().into(),
-                ]
-            }
-            .convert(&mut Default::default()),
+            convert_node(Gt::union(vec![
+                Gt::primitive_boolean().into(),
+                Gt::primitive_string().into(),
+            ])),
             @"
         TSUnion(
           descriptors: [

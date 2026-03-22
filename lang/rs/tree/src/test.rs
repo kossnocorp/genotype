@@ -10,3 +10,17 @@ pub fn convert_node_with<GtNode: RSConvert<Node>, Node>(
 ) -> Node {
     gt_node.convert(context).unwrap()
 }
+
+pub struct Gtrs {}
+
+impl Gtrs {
+    pub fn convert_context() -> RSConvertContext {
+        RSConvertContext::empty("module".into())
+    }
+
+    pub fn convert_context_with_parent(parent_name: &str) -> RSConvertContext {
+        let mut context = Self::convert_context();
+        context.enter_parent(RSContextParent::Alias(parent_name.into()));
+        context
+    }
+}

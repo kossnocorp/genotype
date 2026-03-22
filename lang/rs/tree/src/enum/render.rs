@@ -223,7 +223,7 @@ mod tests {
         let mut context = RSConvertContext::empty("module".into());
         context.enter_parent(RSContextParent::Alias("AnimalKind".into()));
 
-        let union = unwrap_named::<GTUnion>(
+        let union = parse_get_named::<GTUnion>(
             "Misc",
             r#"
             Misc: "hello" | 123 | true | null

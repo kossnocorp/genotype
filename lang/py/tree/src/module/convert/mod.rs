@@ -332,14 +332,10 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GTIdentifier::new((0, 0).into(), "Message".into()),
-                            descriptor: GTUnion {
-                                span: (0, 0).into(),
-                                descriptors: vec![
-                                    Gt::reference("DM").into(),
-                                    Gt::reference("Comment").into(),
-                                ],
-                            }
-                            .into(),
+                            descriptor: Gt::descriptor(Gt::union(descriptor_nodes![
+                                Gt::reference("DM"),
+                                Gt::reference("Comment")
+                            ]))
                         },
                         GTAlias {
                             id: GTDefinitionId("module".into(), "DM".into()),

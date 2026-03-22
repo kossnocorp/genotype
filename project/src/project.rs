@@ -898,6 +898,8 @@ mod tests {
                     name: GTIdentifier(GTSpan(93, 98), "Email"),
                     descriptor: Union(GTUnion(
                       span: GTSpan(100, 145),
+                      doc: None,
+                      attributes: [],
                       descriptors: [
                         Primitive(GTPrimitive(
                           span: GTSpan(100, 106),

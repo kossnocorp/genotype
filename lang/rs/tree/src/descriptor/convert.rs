@@ -253,21 +253,15 @@ mod tests {
 
     #[test]
     fn test_convert_descriptor_union() {
-        let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Alias("Union".into()));
+        let mut context = Gtrs::convert_context_with_parent("Union");
         assert_ron_snapshot!(
-            GTDescriptor::Union(GTUnion {
-                span: (0, 1).into(),
-                descriptors: vec![
-                    Gt::primitive_boolean().into(),
-                    Gt::primitive_string().into(),
-                ]
-            })
-            .convert(&mut context)
-            .unwrap(),
+            convert_node_with(Gt::descriptor(Gt::union(vec![
+                Gt::primitive_boolean().into(),
+                Gt::primitive_string().into(),
+            ])), &mut context),
             @r#"
         Reference(RSReference(
-          id: GTReferenceId(GTModuleId("module"), GTSpan(0, 1)),
+          id: GTReferenceId(GTModuleId("module"), GTSpan(0, 0)),
           identifier: RSIdentifier("Union"),
           definition_id: GTDefinitionId(GTModuleId("module"), "Union"),
         ))

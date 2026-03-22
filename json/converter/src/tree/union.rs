@@ -22,6 +22,8 @@ impl GtjTreeConvert<GTUnion> for GtjUnion {
 
         GTUnion {
             span: GTSpan::default(),
+            doc: None,
+            attributes: vec![],
             descriptors,
         }
     }
@@ -51,6 +53,8 @@ mod tests {
         assert_ron_snapshot!(descriptor_tree, @"
         Union(GTUnion(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           descriptors: [],
         ))
         ");
@@ -59,6 +63,8 @@ mod tests {
         assert_ron_snapshot!(union_tree, @"
         GTUnion(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           descriptors: [],
         )
         ");
@@ -81,6 +87,8 @@ mod tests {
         assert_ron_snapshot!(union_tree, @"
         GTUnion(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           descriptors: [
             Primitive(GTPrimitive(
               span: GTSpan(0, 0),
@@ -113,6 +121,8 @@ mod tests {
         assert_ron_snapshot!(union_tree, @r#"
         GTUnion(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           descriptors: [
             Object(GTObject(
               span: GTSpan(0, 0),
@@ -163,9 +173,13 @@ mod tests {
         assert_ron_snapshot!(union_tree, @r#"
         GTUnion(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           descriptors: [
             Union(GTUnion(
               span: GTSpan(0, 0),
+              doc: None,
+              attributes: [],
               descriptors: [
                 Object(GTObject(
                   span: GTSpan(0, 0),
@@ -218,6 +232,8 @@ mod tests {
         assert_ron_snapshot!(union_tree, @r#"
         GTUnion(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           descriptors: [
             Object(GTObject(
               span: GTSpan(0, 0),
@@ -268,9 +284,13 @@ mod tests {
         assert_ron_snapshot!(union_tree, @r#"
         GTUnion(
           span: GTSpan(0, 0),
+          doc: None,
+          attributes: [],
           descriptors: [
             Union(GTUnion(
               span: GTSpan(0, 0),
+              doc: None,
+              attributes: [],
               descriptors: [
                 Object(GTObject(
                   span: GTSpan(0, 0),
