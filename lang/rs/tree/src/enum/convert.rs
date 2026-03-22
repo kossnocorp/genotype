@@ -23,6 +23,18 @@ impl RSConvert<RSEnum> for GTUnion {
 
         trim_variant_names(&name, &mut variants, &mut variant_names);
 
+        if context.config().derive.contains(&"Default".into()) {
+            let default_attrs = variants
+                .iter()
+                .flat_map(|variant| variant.attributes.iter().find(|attr| attr.0 == "default"));
+            let count = default_attrs.clone().count();
+            if count == 0 {
+                return Err(RSConverterError::MissingDefaultVariant(self.span.clone()).into());
+            } else if count > 1 {
+                return Err(RSConverterError::MultipleDefaultVariants(self.span.clone()).into());
+            }
+        }
+
         let r#enum = RSEnum {
             id,
             doc,
@@ -54,6 +66,10 @@ fn convert_variant(
     let variant_name = ensure_unique_variant_name(variant_name, variant_names);
 
     context.enter_parent(RSContextParent::EnumVariant(variant_name.clone()));
+
+    if GTAttribute::find_flag(descriptor.attributes(), "default") {
+        attributes.push(RSAttribute("default".into()));
+    }
 
     let descriptor = match descriptor {
         GTDescriptor::Literal(literal) => {
@@ -968,6 +984,132 @@ mod tests {
           ],
         )
         "#
+        );
+    }
+
+    #[test]
+    fn test_attr_default() {
+        let mut context = Gtrs::convert_context_with_parent("Status");
+        let mut config = RsConfigLang::default();
+        config.derive.push("Default".into());
+        context.assign_config(config);
+        let union = Gt::union(descriptor_nodes![
+            Gt::primitive_string(),
+            node_with!(
+                Gt::primitive_number(),
+                attributes = vec![attribute_node!(default)]
+            ),
+        ]);
+        assert_debug_snapshot!(
+            convert_node_with(union, &mut context),
+            @r#"
+        RSEnum {
+            id: GTDefinitionId(
+                GTModuleId(
+                    "module",
+                ),
+                "Status",
+            ),
+            doc: None,
+            attributes: [
+                RSAttribute(
+                    "derive(Debug, Clone, PartialEq, Serialize, Deserialize)",
+                ),
+                RSAttribute(
+                    "serde(untagged)",
+                ),
+            ],
+            name: RSIdentifier(
+                "Status",
+            ),
+            variants: [
+                RSEnumVariant {
+                    doc: None,
+                    attributes: [],
+                    name: RSIdentifier(
+                        "String",
+                    ),
+                    descriptor: Some(
+                        Descriptor(
+                            Primitive(
+                                String,
+                            ),
+                        ),
+                    ),
+                },
+                RSEnumVariant {
+                    doc: None,
+                    attributes: [
+                        RSAttribute(
+                            "default",
+                        ),
+                    ],
+                    name: RSIdentifier(
+                        "Number",
+                    ),
+                    descriptor: Some(
+                        Descriptor(
+                            Primitive(
+                                Float64,
+                            ),
+                        ),
+                    ),
+                },
+            ],
+        }
+        "#
+        );
+    }
+
+    #[test]
+    fn test_attr_default_missing_err() {
+        let mut context = Gtrs::convert_context_with_parent("Status");
+        let mut config = RsConfigLang::default();
+        config.derive.push("Default".into());
+        context.assign_config(config);
+        let union = Gt::union(descriptor_nodes![
+            Gt::primitive_string(),
+            Gt::primitive_number()
+        ]);
+        assert_debug_snapshot!(
+            convert_node_err_with(union, &mut context),
+            @"
+        MissingDefaultVariant(
+            GTSpan(
+                0,
+                0,
+            ),
+        )
+        "
+        );
+    }
+
+    #[test]
+    fn test_attr_default_multiple_err() {
+        let mut context = Gtrs::convert_context_with_parent("Status");
+        let mut config = RsConfigLang::default();
+        config.derive.push("Default".into());
+        context.assign_config(config);
+        let union = Gt::union(descriptor_nodes![
+            node_with!(
+                Gt::primitive_string(),
+                attributes = vec![attribute_node!(default)]
+            ),
+            node_with!(
+                Gt::primitive_number(),
+                attributes = vec![attribute_node!(default)]
+            )
+        ]);
+        assert_debug_snapshot!(
+            convert_node_err_with(union, &mut context),
+            @"
+        MultipleDefaultVariants(
+            GTSpan(
+                0,
+                0,
+            ),
+        )
+        "
         );
     }
 }

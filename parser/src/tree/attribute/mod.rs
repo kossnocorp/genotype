@@ -70,4 +70,10 @@ impl GTAttribute {
         }
         None
     }
+
+    pub fn find_flag(attributes: &Vec<GTAttribute>, name: &str) -> bool {
+        attributes
+            .iter()
+            .any(|attr| attr.is_it(name) && attr.descriptor.is_none())
+    }
 }
