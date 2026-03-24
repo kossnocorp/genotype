@@ -8,7 +8,7 @@ importers:
 
   .: {}
 
-  lsp:
+  pkgs/npm-genotype-lsp:
     optionalDependencies:
       '@genotype-lsp/darwin-arm64':
         specifier: workspace:*
@@ -29,23 +29,23 @@ importers:
         specifier: workspace:*
         version: link:npm/win32-x64
 
-  lsp/npm/darwin-arm64: {}
+  pkgs/npm-genotype-lsp/npm/darwin-arm64: {}
 
-  lsp/npm/darwin-x64: {}
+  pkgs/npm-genotype-lsp/npm/darwin-x64: {}
 
-  lsp/npm/linux-arm64: {}
+  pkgs/npm-genotype-lsp/npm/linux-arm64: {}
 
-  lsp/npm/linux-x64: {}
+  pkgs/npm-genotype-lsp/npm/linux-x64: {}
 
-  lsp/npm/win32-arm64: {}
+  pkgs/npm-genotype-lsp/npm/win32-arm64: {}
 
-  lsp/npm/win32-x64: {}
+  pkgs/npm-genotype-lsp/npm/win32-x64: {}
 
-  vscode:
+  pkgs/npm-vscode-genotype:
     dependencies:
       genotype-lsp:
         specifier: workspace:*
-        version: link:../lsp
+        version: link:../npm-genotype-lsp
       vscode-languageclient:
         specifier: ^9.0.1
         version: 9.0.1
@@ -62,17 +62,11 @@ importers:
 
 packages:
 
-  '@types/node@22.10.5':
-    resolution: {integrity: sha512-F8Q+SeGimwOo86fiovQh8qiXfFEh2/ocYv7tU5pJ3EXMSSxk1Joj5wefpFK2fHTf/N6HKGSxIDBT9f3gCxXPkQ==}
-
   '@types/node@22.15.18':
     resolution: {integrity: sha512-v1DKRfUdyW+jJhZNEI1PYy29S2YRxMV5AOO/x/SjKmW0acCIOqmbj6Haf9eHAhsPmrhlHSxEhv/1WszcLWV4cg==}
 
   '@types/vscode@1.100.0':
     resolution: {integrity: sha512-4uNyvzHoraXEeCamR3+fzcBlh7Afs4Ifjs4epINyUX/jvdk0uzLnwiDY35UKDKnkCHP5Nu3dljl2H8lR6s+rQw==}
-
-  '@types/vscode@1.96.0':
-    resolution: {integrity: sha512-qvZbSZo+K4ZYmmDuaodMbAa67Pl6VDQzLKFka6rq+3WUTY4Kro7Bwoi0CuZLO/wema0ygcmpwow7zZfPJTs5jg==}
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
@@ -94,9 +88,6 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  undici-types@6.20.0:
-    resolution: {integrity: sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg==}
-
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
@@ -116,17 +107,11 @@ packages:
 
 snapshots:
 
-  '@types/node@22.10.5':
-    dependencies:
-      undici-types: 6.20.0
-
   '@types/node@22.15.18':
     dependencies:
       undici-types: 6.21.0
 
   '@types/vscode@1.100.0': {}
-
-  '@types/vscode@1.96.0': {}
 
   balanced-match@1.0.2: {}
 
@@ -141,8 +126,6 @@ snapshots:
   semver@7.7.2: {}
 
   typescript@5.8.3: {}
-
-  undici-types@6.20.0: {}
 
   undici-types@6.21.0: {}
 

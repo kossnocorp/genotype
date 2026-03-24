@@ -1,0 +1,13 @@
+[package]
+name = "litty_macro_tests"
+version = "0.2.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+litty = { path = "../crate-litty" }
+litty_macro = { path = "../crate-litty-macro" }
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+serde = { version = "1.0.210", features = ["derive"] }
+serde_json = "1.0.132"

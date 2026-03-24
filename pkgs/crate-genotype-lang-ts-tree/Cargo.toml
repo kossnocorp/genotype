@@ -1,0 +1,22 @@
+[package]
+name = "genotype_lang_ts_tree"
+version = "0.14.0"
+edition = "2024"
+description = "Genotype language TypeScript target AST crate"
+authors = ["Sasha Koss <koss@nocorp.me>"]
+license = "MIT"
+repository = "https://github.com/kossnocorp/genotype"
+
+[dependencies]
+genotype_parser = { version = "0.14.0", path = "../crate-genotype-parser" }
+genotype_lang_core_tree = { version = "0.14.0", path = "../crate-genotype-lang-core-tree" }
+genotype_lang_ts_config = { version = "0.14.0", path = "../crate-genotype-lang-ts-config" }
+heck = "0.5.0"
+miette = { version = "7.6.0", features = ["fancy", "serde"] }
+thiserror = "1.0.64"
+serde = { version = "1.0.210", features = ["derive"] }
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+insta = { version = "1.46.3", features = ["ron"] }
+genotype_test = { version = "0.14.0", path = "../crate-genotype-test" }

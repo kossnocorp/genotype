@@ -53,7 +53,7 @@ wheels = [
 [[package]]
 name = "genotype-runtime"
 version = "0.4.0"
-source = { editable = "lang/py/runtime" }
+source = { editable = "pkgs/pip-genotype-runtime" }
 dependencies = [
     { name = "pydantic", version = "2.10.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
     { name = "pydantic", version = "2.11.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
