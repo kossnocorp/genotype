@@ -5,7 +5,8 @@ edition = "2024"
 description = "Macro crate for Litty, literals for Rust"
 authors = ["Sasha Koss <koss@nocorp.me>"]
 license = "MIT"
-repository = "https://github.com/kossnocorp/genotype"
+readme = "README.md"
+repository = "https://github.com/kossnocorp/genotype/tree/main/pkgs/crate-litty-macro"
 
 [lib]
 proc-macro = true

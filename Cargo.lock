@@ -591,7 +591,7 @@ dependencies = [
  "genotype_parser",
  "heck",
  "insta",
- "litty 0.2.0",
+ "litty 0.3.0",
  "miette",
  "pretty_assertions",
  "serde",
@@ -603,7 +603,7 @@ dependencies = [
 name = "genotype_json_types"
 version = "0.3.0"
 dependencies = [
- "litty 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "litty 0.2.0",
  "serde",
 ]
 
@@ -759,6 +759,7 @@ dependencies = [
  "genotype_parser",
  "genotype_path",
  "genotype_project",
+ "genotype_test",
  "indexmap",
  "insta",
  "miette",
@@ -1273,22 +1274,22 @@ checksum = "4ee93343901ab17bd981295f2cf0026d4ad018c7c31ba84549a4ddbb47a45104"
 [[package]]
 name = "litty"
 version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f1adaf3c9f44eaf4e8f51d824720465599b9804fe9eeabc2cb9f30dda9d021a1"
+dependencies = [
+ "litty_macro 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde",
+]
+
+[[package]]
+name = "litty"
+version = "0.3.0"
 dependencies = [
  "insta",
  "litty_macro 0.2.0",
  "pretty_assertions",
  "serde",
  "serde_json",
-]
-
-[[package]]
-name = "litty"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f1adaf3c9f44eaf4e8f51d824720465599b9804fe9eeabc2cb9f30dda9d021a1"
-dependencies = [
- "litty_macro 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde",
 ]
 
 [[package]]
@@ -1317,7 +1318,7 @@ dependencies = [
 name = "litty_macro_tests"
 version = "0.2.0"
 dependencies = [
- "litty 0.2.0",
+ "litty 0.3.0",
  "litty_macro 0.2.0",
  "pretty_assertions",
  "serde",

@@ -20,7 +20,13 @@ build-json-types-watch:
   while sleep 0.1; do ls json/schema/src/*.type | entr -d just build-json-types; done
 
 version version:
-  cargo release version {{version}} --exclude litty --exclude litty_macro --exclude genotype_runtime --exclude genotype_json_types --execute
+  cargo release version {{version}} \
+    --exclude litty \
+    --exclude litty_macro \
+    --exclude litty_macro_tests \
+    --exclude genotype_runtime \
+    --exclude genotype_json_types \
+    --execute
   cd pkgs/npm-genotype-lsp && just version {{version}}
   # [TODO] Include into the release process?
   # cd pkgs/npm-vscode-genotype && just version {{version}}
