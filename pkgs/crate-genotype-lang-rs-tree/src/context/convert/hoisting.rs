@@ -1,7 +1,5 @@
 use crate::prelude::internal::*;
 
-use super::{RSConvertContext, naming::RSContextParent};
-
 impl RSConvertContext {
     pub fn hoist<HoistFn, Definition>(&mut self, mut hoist_fn: HoistFn) -> Result<RSReference>
     where

@@ -12,11 +12,24 @@ impl RSConvert<RSStruct> for GTObject {
         context.enter_parent(RSContextParent::Definition(name.clone()));
 
         let doc = context.consume_doc();
-        let fields = self
-            .properties
-            .iter()
-            .map(|p| p.convert(context))
-            .collect::<Result<Vec<_>>>()?;
+
+        // Collect regular and literal fields separately. Literal fields will be
+        // converted to attributes and won't be actual fields in the struct.
+        // Having them as fields results in extra struct, naming issues, and
+        // ultimately verbose code for the end user without any benefit.
+        let mut fields = vec![];
+        let mut literal_fields = vec![];
+        for property in &self.properties {
+            match &property.descriptor {
+                GTDescriptor::Literal(literal) => {
+                    let name = RSNaming::render(property.name.1.as_ref());
+                    let value = render_literal(literal);
+                    literal_fields.push(format!("{name} = {value}"));
+                }
+
+                _ => fields.push(property.convert(context)?),
+            }
+        }
 
         // If object has extension, we need to set fields to unresolved as Rust has no inheritance
         // and we need to copy fields from the parent struct after all the modules are known.
@@ -31,20 +44,41 @@ impl RSConvert<RSStruct> for GTObject {
             RSStructFields::Resolved(fields)
         };
 
+        let mut attributes = vec![{
+            // Use Litty derives instead of Serde if there are literal fields. It is a drop-in
+            // replacement and behaves the same for regular fields, but also adds support for
+            // literal fields.
+            let derive_mode = if literal_fields.is_empty() {
+                RSContextRenderDeriveSerdeMode::Serde
+            } else {
+                RSContextRenderDeriveSerdeMode::Litty
+            };
+            context
+                .render_derive(RSContextRenderDeriveTypeMode::Struct, derive_mode)
+                .into()
+        }];
+
+        // Add literal fields via Litty's literals attribute.
+        if !literal_fields.is_empty() {
+            attributes.push(RSAttribute(format!(
+                "literals({})",
+                literal_fields.join(", ")
+            )));
+            context.add_import(RSDependencyIdent::Litty, "Literals".into());
+        }
+
         let r#struct = RSStruct {
             id,
             doc,
-            attributes: vec![
-                context
-                    .render_derive(RSContextRenderDeriveMode::Struct)
-                    .into(),
-            ],
+            attributes,
             name,
             fields,
         };
 
-        context.add_import(RSDependencyIdent::Serde, "Deserialize".into());
-        context.add_import(RSDependencyIdent::Serde, "Serialize".into());
+        if literal_fields.is_empty() {
+            context.add_import(RSDependencyIdent::Serde, "Deserialize".into());
+            context.add_import(RSDependencyIdent::Serde, "Serialize".into());
+        }
 
         context.exit_parent();
         Ok(r#struct)
@@ -91,7 +125,10 @@ impl RSConvert<RSStruct> for GTBranded {
             doc,
             attributes: vec![
                 context
-                    .render_derive(RSContextRenderDeriveMode::Struct)
+                    .render_derive(
+                        RSContextRenderDeriveTypeMode::Struct,
+                        RSContextRenderDeriveSerdeMode::Serde,
+                    )
                     .into(),
             ],
             name,
@@ -199,6 +236,148 @@ mod tests {
           (Serde, RSIdentifier("Deserialize")),
           (Serde, RSIdentifier("Serialize")),
         ]
+        "#
+        );
+    }
+
+    #[test]
+    fn test_convert_object_literal_fields() {
+        let mut context = RSConvertContext::empty("module".into());
+        assert_ron_snapshot!(
+            GTObject {
+                span: (0, 0).into(),
+                doc: None,
+                attributes: vec![],
+                name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
+                extensions: vec![],
+                properties: vec![
+                    GTProperty {
+                        span: (0, 0).into(),
+                        doc: None,
+                        attributes: vec![],
+                        name: GTKey::new((0, 0).into(), "ok".into()),
+                        descriptor: Gt::literal_boolean(true).into(),
+                        required: true,
+                    },
+                    GTProperty {
+                        span: (0, 0).into(),
+                        doc: None,
+                        attributes: vec![],
+                        name: GTKey::new((0, 0).into(), "version".into()),
+                        descriptor: Gt::literal_integer(1).into(),
+                        required: true,
+                    },
+                    GTProperty {
+                        span: (0, 0).into(),
+                        doc: None,
+                        attributes: vec![],
+                        name: GTKey::new((0, 0).into(), "message".into()),
+                        descriptor: Gt::primitive_string().into(),
+                        required: true,
+                    },
+                ],
+            }
+            .convert(&mut context)
+            .unwrap(),
+            @r#"
+        RSStruct(
+          id: GTDefinitionId(GTModuleId("module"), "Person"),
+          doc: None,
+          attributes: [
+            RSAttribute("derive(Debug, Clone, PartialEq, Literals)"),
+            RSAttribute("literals(ok = true, version = 1)"),
+          ],
+          name: RSIdentifier("Person"),
+          fields: Resolved([
+            RSField(
+              doc: None,
+              attributes: [],
+              name: RSFieldName("message"),
+              descriptor: Primitive(String),
+            ),
+          ]),
+        )
+        "#
+        );
+        assert_ron_snapshot!(
+            context.as_dependencies(),
+            @r#"
+        [
+          (Litty, RSIdentifier("Literals")),
+        ]
+        "#
+        );
+    }
+
+    #[test]
+    fn test_convert_object_literal_fields_unresolved() {
+        let mut context = RSConvertContext::empty("module".into());
+        assert_ron_snapshot!(
+            GTObject {
+                span: (1, 8).into(),
+                doc: None,
+                attributes: vec![],
+                name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
+                extensions: vec![GTExtension {
+                    span: (0, 0).into(),
+                    reference: GTReference {
+                        span: (2, 9).into(),
+                        doc: None,
+                        attributes: vec![],
+                        id: GTReferenceId("module".into(), (2, 9).into()),
+                        definition_id: GTReferenceDefinitionId::Resolved(GTDefinitionId(
+                            "module".into(),
+                            "Model".into()
+                        )),
+                        identifier: GTIdentifier::new((0, 0).into(), "Model".into())
+                    }
+                    .into(),
+                }],
+                properties: vec![
+                    GTProperty {
+                        span: (0, 0).into(),
+                        doc: None,
+                        attributes: vec![],
+                        name: GTKey::new((0, 0).into(), "ok".into()),
+                        descriptor: Gt::literal_boolean(true).into(),
+                        required: true,
+                    },
+                    GTProperty {
+                        span: (0, 0).into(),
+                        doc: None,
+                        attributes: vec![],
+                        name: GTKey::new((0, 0).into(), "name".into()),
+                        descriptor: Gt::primitive_string().into(),
+                        required: true,
+                    },
+                ],
+            }
+            .convert(&mut context)
+            .unwrap(),
+            @r#"
+        RSStruct(
+          id: GTDefinitionId(GTModuleId("module"), "Person"),
+          doc: None,
+          attributes: [
+            RSAttribute("derive(Debug, Clone, PartialEq, Literals)"),
+            RSAttribute("literals(ok = true)"),
+          ],
+          name: RSIdentifier("Person"),
+          fields: Unresolved(GTSpan(1, 8), [
+            RSReference(
+              id: GTReferenceId(GTModuleId("module"), GTSpan(2, 9)),
+              identifier: RSIdentifier("Model"),
+              definition_id: GTDefinitionId(GTModuleId("module"), "Model"),
+            ),
+          ], [
+            RSField(
+              doc: None,
+              attributes: [],
+              name: RSFieldName("name"),
+              descriptor: Primitive(String),
+            ),
+          ]),
+        )
         "#
         );
     }

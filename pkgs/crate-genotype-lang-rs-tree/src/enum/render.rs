@@ -239,7 +239,7 @@ mod tests {
             )
             .unwrap(),
             @r#"
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[derive(Debug, Clone, PartialEq, Literals)]
         #[serde(untagged)]
         pub enum AnimalKind {
             #[literal("hello")]
@@ -250,6 +250,39 @@ mod tests {
             True,
             #[literal(null)]
             Null,
+        }
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_literals() {
+        let mut context = RSConvertContext::empty("module".into());
+        context.enter_parent(RSContextParent::Alias("AnimalKind".into()));
+
+        let union = Gt::union(descriptor_nodes!(
+            Gt::literal_string("hello"),
+            Gt::literal_boolean(true),
+            Gt::primitive_boolean()
+        ));
+        let union = union.convert(&mut context).unwrap();
+
+        assert_snapshot!(
+            union
+            .render(
+                RSRenderState::default().indent_inc(),
+                &mut Default::default()
+            )
+            .unwrap(),
+            @r#"
+        #[derive(Debug, Clone, PartialEq, Literals)]
+        #[serde(untagged)]
+        pub enum AnimalKind {
+            #[literal("hello")]
+            Hello,
+            #[literal(true)]
+            True,
+            Boolean(bool),
         }
         "#
         );

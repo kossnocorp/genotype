@@ -29,7 +29,7 @@ impl RSDependencyIdent {
             }),
             Self::Litty => Some(RSDependencyExternal {
                 name: "litty".into(),
-                version: "0.2".into(),
+                version: "0.3".into(),
                 features: vec![],
             }),
             Self::Serde => Some(RSDependencyExternal {

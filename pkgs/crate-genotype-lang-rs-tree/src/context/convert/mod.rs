@@ -36,17 +36,31 @@ pub struct RSConvertContext {
 }
 
 impl RSConvertContextMockable for RSConvertContext {
-    fn render_derive(&self, mode: RSContextRenderDeriveMode) -> String {
+    fn render_derive(
+        &self,
+        mode: RSContextRenderDeriveTypeMode,
+        serde_mode: RSContextRenderDeriveSerdeMode,
+    ) -> String {
         let mut traits = self
             .config
             .derive
             .iter()
-            .filter(|f| mode != RSContextRenderDeriveMode::UnionEnum || *f != "Default")
+            .filter(|f| mode != RSContextRenderDeriveTypeMode::UnionEnum || *f != "Default")
             .map(|derive| derive.as_str())
             .collect::<Vec<&str>>();
 
-        // We always need to derive Serialize and Deserialize
-        traits.extend(vec!["Serialize", "Deserialize"]);
+        // All types need to have serialize and deserialize derive macros.
+        match serde_mode {
+            RSContextRenderDeriveSerdeMode::Serde => {
+                traits.push("Serialize");
+                traits.push("Deserialize");
+            }
+
+            RSContextRenderDeriveSerdeMode::Litty => {
+                // Literals combines SerializeLiterals and DeserializeLiterals.
+                traits.push("Literals");
+            }
+        }
         let traits = traits.join(", ");
 
         format!("derive({traits})")

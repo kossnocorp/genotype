@@ -168,4 +168,37 @@ mod tests {
         "
         );
     }
+
+    #[test]
+    fn test_render_literal_fields() {
+        assert_snapshot!(
+            RSStruct {
+                id: GTDefinitionId("module".into(), "Name".into()),
+                doc: None,
+                attributes: vec![
+                    "derive(Debug, Clone, PartialEq)".into(),
+                    "derive(Literals)".into(),
+                    "literals(ok = true, version = 1)".into(),
+                ],
+                name: "Name".into(),
+                fields: vec![RSField {
+                    doc: None,
+                    attributes: vec![],
+                    name: "message".into(),
+                    descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                }]
+                .into(),
+            }
+            .render(Default::default(), &mut Default::default())
+            .unwrap(),
+            @"
+        #[derive(Debug, Clone, PartialEq)]
+        #[derive(Literals)]
+        #[literals(ok = true, version = 1)]
+        pub struct Name {
+            pub message: String,
+        }
+        "
+        );
+    }
 }
