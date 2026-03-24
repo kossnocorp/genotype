@@ -1,6 +1,6 @@
 [package]
 name = "genotype_visitor_macro"
-version = "0.14.0"
+version = "0.15.0"
 edition = "2024"
 description = "Genotype visitor proc-macros"
 authors = ["Sasha Koss <koss@nocorp.me>"]
