@@ -11,7 +11,7 @@ use async_lsp::tracing::TracingLayer;
 use async_lsp::{ClientSocket, LanguageClient, LanguageServer, ResponseError};
 use futures::future::BoxFuture;
 use tower::ServiceBuilder;
-use tracing::{info, Level};
+use tracing::{Level, info};
 
 struct ServerState {
     client: ClientSocket,

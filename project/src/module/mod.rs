@@ -1,6 +1,6 @@
 use genotype_parser::GTModule;
+use genotype_parser::visitor::Traverse;
 use genotype_path::{GtModulePath, GtSrcRelativePath};
-use genotype_visitor::traverse::GTTraverse;
 use miette::{NamedSource, Result};
 
 mod definition;

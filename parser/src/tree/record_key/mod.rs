@@ -2,7 +2,7 @@ use crate::prelude::internal::*;
 
 mod parse;
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
 pub enum GTRecordKey {
     String(GTSpan),
     Number(GTSpan),

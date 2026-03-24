@@ -83,7 +83,7 @@ impl RsProject<'_> {
                             .ok_or_else(|| {
                                 RSProjectError::BuildModulePath(format!(
                                     "Failed to find reference with id {module_id}/{referenced_id}",
-                                    module_id = current_definition_id.0 .0,
+                                    module_id = current_definition_id.0.0,
                                     referenced_id = current_definition_id.1
                                 ))
                             })
@@ -140,7 +140,7 @@ impl RsProject<'_> {
                                 span.clone(),
                                 format!(
                                     "Can't find module with id {id}",
-                                    id = current_definition_id.0 .0
+                                    id = current_definition_id.0.0
                                 ),
                             )
                         })?;
@@ -156,7 +156,7 @@ impl RsProject<'_> {
                                 span.clone(),
                                 format!(
                                     "Can't find definition {module_id}/{id}",
-                                    module_id = current_definition_id.0 .0,
+                                    module_id = current_definition_id.0.0,
                                     id = current_definition_id.1
                                 ),
                             )
@@ -235,7 +235,9 @@ impl RsProject<'_> {
                                 // If that's a module use, we need to rewrite the existing
                                 // references.
                                 RSUseReference::Module => {
-                                    todo!("Rewrite the copied extension references to the module import");
+                                    todo!(
+                                        "Rewrite the copied extension references to the module import"
+                                    );
                                 }
 
                                 // If that's a named use, we need to add the referenced name to
@@ -269,7 +271,7 @@ impl RsProject<'_> {
                                     )]),
                                     dependency: RSDependencyIdent::Local(RSPath(
                                         referenced_definition_id.0.clone(),
-                                        format!("crate::{}", referenced_definition_id.0 .0).into(),
+                                        format!("crate::{}", referenced_definition_id.0.0).into(),
                                     )),
                                 });
                             }
@@ -309,7 +311,7 @@ impl RsProject<'_> {
                             .map(|(_, (span, _))| span.clone())
                             .collect(),
                     ))
-                    .into_diagnostic()
+                    .into_diagnostic();
                 }
             };
 

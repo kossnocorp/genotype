@@ -2,10 +2,12 @@ use crate::prelude::internal::*;
 
 mod parse;
 
-#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
 pub struct GTAttribute {
     pub span: GTSpan,
+    #[visit]
     pub name: GTAttributeName,
+    #[visit]
     pub descriptor: Option<GTAttributeDescriptor>,
 }
 

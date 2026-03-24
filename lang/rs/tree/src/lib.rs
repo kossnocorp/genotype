@@ -84,9 +84,6 @@ pub use struct_fields::*;
 mod tuple;
 pub use tuple::*;
 
-mod traverse;
-pub use traverse::*;
-
 mod r#use;
 pub use r#use::*;
 

@@ -3,7 +3,7 @@ use crate::prelude::internal::*;
 mod parse;
 
 /// Unique module identifier.
-#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
 pub struct GTIdentifier(
     /// Identifier position in the source code.
     pub GTSpan,

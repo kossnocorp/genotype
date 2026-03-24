@@ -99,5 +99,8 @@ pub use tuple::*;
 mod union;
 pub use union::*;
 
+mod visitor;
+pub use visitor::*;
+
 #[cfg(test)]
 pub mod test;

@@ -3,10 +3,10 @@ use crate::prelude::internal::*;
 mod convert;
 mod render;
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
 pub enum RSUseName {
-    Name(RSIdentifier),
-    Alias(RSIdentifier, RSIdentifier),
+    Name(#[visit] RSIdentifier),
+    Alias(#[visit] RSIdentifier, #[visit] RSIdentifier),
 }
 
 impl RSUseName {

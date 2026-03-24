@@ -2,10 +2,10 @@ use crate::prelude::internal::*;
 
 mod parse;
 
-#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
 pub enum GTAttributeValue {
-    Literal(GTLiteral),
-    Identifier(GTIdentifier),
+    Literal(#[visit] GTLiteral),
+    Identifier(#[visit] GTIdentifier),
 }
 
 impl From<GTLiteral> for GTAttributeValue {

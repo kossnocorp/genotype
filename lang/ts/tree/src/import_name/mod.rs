@@ -3,10 +3,10 @@ use crate::prelude::internal::*;
 mod convert;
 mod render;
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
 pub enum TSImportName {
-    Name(TSIdentifier),
-    Alias(TSIdentifier, TSIdentifier),
+    Name(#[visit] TSIdentifier),
+    Alias(#[visit] TSIdentifier, #[visit] TSIdentifier),
 }
 
 impl From<&str> for TSImportName {

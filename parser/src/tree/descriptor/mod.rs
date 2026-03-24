@@ -2,20 +2,20 @@ use crate::prelude::internal::*;
 
 mod parser;
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
 pub enum GTDescriptor {
-    Alias(Box<GTAlias>),
-    Array(Box<GTArray>),
-    InlineImport(GTInlineImport),
-    Literal(GTLiteral),
-    Object(GTObject),
-    Primitive(GTPrimitive),
-    Reference(GTReference),
-    Tuple(GTTuple),
-    Union(GTUnion),
-    Record(Box<GTRecord>),
-    Any(GTAny),
-    Branded(GTBranded),
+    Alias(#[visit] Box<GTAlias>),
+    Array(#[visit] Box<GTArray>),
+    InlineImport(#[visit] GTInlineImport),
+    Literal(#[visit] GTLiteral),
+    Object(#[visit] GTObject),
+    Primitive(#[visit] GTPrimitive),
+    Reference(#[visit] GTReference),
+    Tuple(#[visit] GTTuple),
+    Union(#[visit] GTUnion),
+    Record(#[visit] Box<GTRecord>),
+    Any(#[visit] GTAny),
+    Branded(#[visit] GTBranded),
 }
 
 impl GTDescriptor {

@@ -1,5 +1,5 @@
 use crate::prelude::internal::*;
-use genotype_visitor::visitor::GTVisitor;
+use genotype_parser::visitor::GTVisitor;
 
 pub struct GTPResolveVisitor<'a> {
     module_id: GTModuleId,

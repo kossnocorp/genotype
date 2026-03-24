@@ -1,6 +1,6 @@
 use proc_macro::TokenStream;
-use quote::{quote, ToTokens};
-use syn::{parse_macro_input, Ident, Lit};
+use quote::{ToTokens, quote};
+use syn::{Ident, Lit, parse_macro_input};
 
 pub fn macro_attribute(attr: TokenStream, input: TokenStream) -> TokenStream {
     let item = parse_macro_input!(input);

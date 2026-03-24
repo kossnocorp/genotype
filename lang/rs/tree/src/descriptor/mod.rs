@@ -3,17 +3,17 @@ use crate::prelude::internal::*;
 mod convert;
 mod render;
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
 pub enum RSDescriptor {
-    Enum(Box<RSEnum>),
-    Vec(Box<RSVec>),
-    Primitive(RSPrimitive),
-    Reference(RSReference),
-    InlineUse(RSInlineUse),
-    Tuple(RSTuple),
-    Map(Box<RSMap>),
-    Option(Box<RSOption>),
-    Any(RSAny),
+    Enum(#[visit] Box<RSEnum>),
+    Vec(#[visit] Box<RSVec>),
+    Primitive(#[visit] RSPrimitive),
+    Reference(#[visit] RSReference),
+    InlineUse(#[visit] RSInlineUse),
+    Tuple(#[visit] RSTuple),
+    Map(#[visit] Box<RSMap>),
+    Option(#[visit] Box<RSOption>),
+    Any(#[visit] RSAny),
 }
 
 impl From<RSEnum> for RSDescriptor {

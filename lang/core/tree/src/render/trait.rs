@@ -7,5 +7,5 @@ pub trait GtlRender<'a> {
     type RenderContext: GtlRenderContext;
 
     fn render(&self, state: Self::RenderState, context: &mut Self::RenderContext)
-        -> Result<String>;
+    -> Result<String>;
 }

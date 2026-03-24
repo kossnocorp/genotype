@@ -4,7 +4,7 @@ mod convert;
 pub use convert::*;
 mod render;
 
-#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
 pub struct RSPath(pub GTModuleId, pub String);
 
 impl RSPath {

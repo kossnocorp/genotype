@@ -2,11 +2,11 @@ use crate::prelude::internal::*;
 
 mod render;
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
 pub enum TSImportReference {
     Default(String),
     Glob(String),
-    Named(Vec<TSImportName>),
+    Named(#[visit] Vec<TSImportName>),
 }
 
 impl From<&str> for TSImportReference {

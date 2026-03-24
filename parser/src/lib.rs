@@ -10,6 +10,9 @@ pub use parser::*;
 pub mod tree;
 pub use tree::*;
 
+pub mod visitor;
+pub use visitor::*;
+
 pub mod miette_serde;
 pub use miette_serde::*;
 

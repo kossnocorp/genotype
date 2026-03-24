@@ -3,7 +3,7 @@ use crate::prelude::internal::*;
 impl GTDoc {
     pub fn concat(&self, pair: Pair<'_, Rule>) -> Self {
         let added_span = pair.as_span();
-        let span = (self.0 .0, added_span.end()).into();
+        let span = (self.0.0, added_span.end()).into();
         GTDoc(span, format!("{}\n{}", self.1, pair.as_str()))
     }
 }

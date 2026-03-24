@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
 pub enum GTImportName {
-    Name(GTSpan, GTIdentifier),
-    Alias(GTSpan, GTIdentifier, GTIdentifier),
+    Name(GTSpan, #[visit] GTIdentifier),
+    Alias(GTSpan, #[visit] GTIdentifier, #[visit] GTIdentifier),
 }

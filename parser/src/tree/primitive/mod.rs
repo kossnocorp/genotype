@@ -2,11 +2,13 @@ use crate::prelude::internal::*;
 
 mod parse;
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
 pub struct GTPrimitive {
     pub span: GTSpan,
     pub kind: GTPrimitiveKind,
+    #[visit]
     pub doc: Option<GTDoc>,
+    #[visit]
     pub attributes: Vec<GTAttribute>,
 }
 
