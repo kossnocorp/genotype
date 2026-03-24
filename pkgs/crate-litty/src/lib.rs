@@ -15,4 +15,7 @@ pub use float::*;
 
 mod r#enum;
 
-pub use litty_macro::literal;
+pub use litty_macro::{
+    DeserializeLiterals, Literals, SerializeLiterals, deserialize_literal, literal,
+    serialize_literal,
+};

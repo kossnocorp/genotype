@@ -1,6 +1,5 @@
 #[cfg(test)]
 mod tests {
-    use super::*;
     use crate::LitStr;
     use litty_macro::literal;
     use pretty_assertions::assert_eq;

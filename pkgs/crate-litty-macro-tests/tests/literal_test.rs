@@ -1,4 +1,7 @@
-use litty_macro::literal;
+use litty_macro::{
+    deserialize_literal, literal, serialize_literal, DeserializeLiterals, Literals,
+    SerializeLiterals,
+};
 use pretty_assertions::assert_eq;
 use serde::{Deserialize, Serialize};
 use std::hash::Hash;
@@ -145,8 +148,7 @@ fn test_enum_structs() {
 
 #[test]
 fn test_enum_variants() {
-    #[literal]
-    #[derive(Debug, PartialEq)]
+    #[derive(Debug, PartialEq, Literals)]
     pub enum ABC {
         #[literal("a")]
         A,
@@ -161,57 +163,110 @@ fn test_enum_variants() {
 }
 
 #[test]
-fn test_enum_variants_debug() {
-    #[literal]
-    #[derive(Debug, PartialEq)]
+fn test_enum_serialize_literals() {
+    #[derive(Debug, PartialEq, SerializeLiterals)]
     pub enum ABC {
         #[literal("a")]
         A,
+        #[literal("b")]
         B,
-        C(String, usize),
-        D {
-            x: usize,
-            y: usize,
-        },
     }
 
-    assert_eq!(format!("{:?}", ABC::A), r#""a""#);
-    assert_eq!(format!("{:?}", ABC::B), "B");
-    assert_eq!(
-        format!("{:?}", ABC::C("test".to_string(), 42)),
-        "C(\"test\", 42)"
-    );
-    assert_eq!(format!("{:?}", ABC::D { x: 1, y: 2 }), "D { x: 1, y: 2 }");
+    assert_eq!(serde_json::to_string_pretty(&ABC::A).unwrap(), r#""a""#);
+    assert_eq!(serde_json::to_string_pretty(&ABC::B).unwrap(), r#""b""#);
 }
 
 #[test]
-fn test_enum_variants_hash() {
-    #[literal]
-    #[derive(Debug, PartialEq, Eq, Hash)]
+fn test_enum_deserialize_literals() {
+    #[derive(Debug, PartialEq, DeserializeLiterals)]
     pub enum ABC {
         #[literal("a")]
         A,
+        #[literal("b")]
         B,
-        C(String, usize),
-        D {
-            x: usize,
-            y: usize,
-        },
     }
 
-    let mut hasher = DefaultHasher::new();
-    ABC::A.hash(&mut hasher);
-    let a_hash1 = hasher.finish();
+    assert_eq!(serde_json::from_str::<ABC>(r#""b""#).unwrap(), ABC::B);
+}
 
-    let mut hasher = DefaultHasher::new();
-    ABC::A.hash(&mut hasher);
-    let a_hash2 = hasher.finish();
+#[test]
+fn test_literal_fields() {
+    #[derive(Debug, PartialEq, Literals)]
+    #[literals(ok = true, version = 1)]
+    struct SuccessV1 {
+        message: String,
+    }
 
-    assert_eq!(a_hash1, a_hash2);
+    let value = SuccessV1 {
+        message: "hello".to_string(),
+    };
 
-    let mut hasher = DefaultHasher::new();
-    ABC::B.hash(&mut hasher);
-    let b_hash = hasher.finish();
+    assert_eq!(
+        serde_json::to_string(&value).unwrap(),
+        r#"{"message":"hello","ok":true,"version":1}"#
+    );
 
-    assert_ne!(a_hash1, b_hash);
+    let parsed: SuccessV1 =
+        serde_json::from_str(r#"{"message":"hello","ok":true,"version":1}"#).unwrap();
+    assert_eq!(parsed, value);
+
+    assert!(
+        serde_json::from_str::<SuccessV1>(r#"{"message":"hello","ok":false,"version":1}"#).is_err()
+    );
+}
+
+#[test]
+fn test_serialize_literals() {
+    #[derive(Debug, PartialEq, SerializeLiterals)]
+    #[literals(ok = true, version = 1)]
+    struct SuccessV1 {
+        message: String,
+    }
+
+    let value = SuccessV1 {
+        message: "hello".to_string(),
+    };
+
+    assert_eq!(
+        serde_json::to_string(&value).unwrap(),
+        r#"{"message":"hello","ok":true,"version":1}"#
+    );
+}
+
+#[test]
+fn test_deserialize_literals() {
+    #[derive(Debug, PartialEq, DeserializeLiterals)]
+    #[literals(ok = true, version = 1)]
+    struct SuccessV1 {
+        message: String,
+    }
+
+    let parsed: SuccessV1 =
+        serde_json::from_str(r#"{"message":"hello","ok":true,"version":1}"#).unwrap();
+    assert_eq!(
+        parsed,
+        SuccessV1 {
+            message: "hello".to_string()
+        }
+    );
+
+    assert!(
+        serde_json::from_str::<SuccessV1>(r#"{"message":"hello","ok":false,"version":1}"#).is_err()
+    );
+}
+
+#[test]
+fn test_serialize_literal_struct_attribute() {
+    #[serialize_literal("hello")]
+    struct Hello;
+
+    assert_eq!(serde_json::to_string_pretty(&Hello).unwrap(), r#""hello""#);
+}
+
+#[test]
+fn test_deserialize_literal_struct_attribute() {
+    #[deserialize_literal("hello")]
+    struct Hello;
+
+    assert_eq!(serde_json::from_str::<Hello>(r#""hello""#).unwrap(), Hello);
 }
