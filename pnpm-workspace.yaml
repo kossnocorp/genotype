@@ -1,6 +1,6 @@
 packages:
-  - "lsp"
-  - "lsp/npm/*"
-  - "vscode"
-  - "vscode/server"
-  - "vscode/client"
+  - "pkgs/npm-genotype-lsp"
+  - "pkgs/npm-genotype-lsp/npm/*"
+  - "pkgs/npm-vscode-genotype"
+  - "pkgs/npm-vscode-genotype/server"
+  - "pkgs/npm-vscode-genotype/client"

@@ -1,0 +1,22 @@
+[package]
+name = "genotype_workspace"
+version = "0.14.0"
+edition = "2024"
+description = "Genotype language workspace"
+authors = ["Sasha Koss <koss@nocorp.me>"]
+license = "MIT"
+repository = "https://github.com/kossnocorp/genotype"
+
+[dependencies]
+genotype_parser = { version = "0.14.0", path = "../crate-genotype-parser" }
+genotype_config = { version = "0.14.0", path = "../crate-genotype-config" }
+miette = { version = "7.6.0", features = ["fancy", "serde"] }
+thiserror = "1.0.64"
+num_cpus = "1.16.0"
+rayon = "1.10.0"
+indexmap = { version = "2.6.0", features = ["serde"] }
+sha2 = "0.10.8"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+insta = { version = "1.46.3", features = ["ron"] }
