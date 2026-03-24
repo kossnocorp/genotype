@@ -1,6 +1,6 @@
 [package]
 name = "genotype_config"
-version = "0.14.0"
+version = "0.15.0"
 edition = "2024"
 description = "Genotype language config crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
@@ -8,11 +8,11 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_path = { version = "0.14.0", path = "../crate-genotype-path" }
-genotype_lang_core_config = { version = "0.14.0", path = "../crate-genotype-lang-core-config" }
-genotype_lang_py_config = { version = "0.14.0", path = "../crate-genotype-lang-py-config" }
-genotype_lang_ts_config = { version = "0.14.0", path = "../crate-genotype-lang-ts-config" }
-genotype_lang_rs_config = { version = "0.14.0", path = "../crate-genotype-lang-rs-config" }
+genotype_path = { version = "0.15.0", path = "../crate-genotype-path" }
+genotype_lang_core_config = { version = "0.15.0", path = "../crate-genotype-lang-core-config" }
+genotype_lang_py_config = { version = "0.15.0", path = "../crate-genotype-lang-py-config" }
+genotype_lang_ts_config = { version = "0.15.0", path = "../crate-genotype-lang-ts-config" }
+genotype_lang_rs_config = { version = "0.15.0", path = "../crate-genotype-lang-rs-config" }
 clap = "4.5.20"
 figment = { version = "0.10.19", features = ["toml", "env"] }
 miette = { version = "7.6.0", features = ["fancy", "serde"] }

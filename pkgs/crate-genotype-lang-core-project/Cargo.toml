@@ -1,6 +1,6 @@
 [package]
 name = "genotype_lang_core_project"
-version = "0.14.0"
+version = "0.15.0"
 edition = "2024"
 description = "Genotype language target project crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
@@ -8,11 +8,11 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_path = { version = "0.14.0", path = "../crate-genotype-path" }
-genotype_project = { version = "0.14.0", path = "../crate-genotype-project" }
-genotype_config = { version = "0.14.0", path = "../crate-genotype-config" }
-genotype_lang_core_config = { version = "0.14.0", path = "../crate-genotype-lang-core-config" }
-genotype_lang_core_tree = { version = "0.14.0", path = "../crate-genotype-lang-core-tree" }
+genotype_path = { version = "0.15.0", path = "../crate-genotype-path" }
+genotype_project = { version = "0.15.0", path = "../crate-genotype-project" }
+genotype_config = { version = "0.15.0", path = "../crate-genotype-config" }
+genotype_lang_core_config = { version = "0.15.0", path = "../crate-genotype-lang-core-config" }
+genotype_lang_core_tree = { version = "0.15.0", path = "../crate-genotype-lang-core-tree" }
 miette = { version = "7.6.0", features = ["fancy", "serde"] }
 thiserror = "1.0.64"
 indexmap = { version = "2.6.0", features = ["serde"] }
