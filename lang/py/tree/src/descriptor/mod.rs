@@ -3,16 +3,16 @@ use crate::prelude::internal::*;
 mod convert;
 mod render;
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
 pub enum PYDescriptor {
-    List(Box<PYList>),
-    Literal(PYLiteral),
-    Primitive(PYPrimitive),
-    Reference(PYReference),
-    Tuple(PYTuple),
-    Union(PYUnion),
-    Dict(Box<PYDict>),
-    Any(PYAny),
+    List(#[visit] Box<PYList>),
+    Literal(#[visit] PYLiteral),
+    Primitive(#[visit] PYPrimitive),
+    Reference(#[visit] PYReference),
+    Tuple(#[visit] PYTuple),
+    Union(#[visit] PYUnion),
+    Dict(#[visit] Box<PYDict>),
+    Any(#[visit] PYAny),
 }
 
 impl From<PYPrimitive> for PYDescriptor {

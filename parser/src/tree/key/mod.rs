@@ -2,7 +2,7 @@ use crate::prelude::internal::*;
 
 mod parse;
 
-#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
 pub struct GTKey(pub GTSpan, pub String);
 
 impl GTKey {

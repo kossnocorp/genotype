@@ -2,11 +2,11 @@ use crate::prelude::internal::*;
 
 mod parse;
 
-#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
 pub enum GTAttributeDescriptor {
-    Assignment(GTAttributeAssignment),
+    Assignment(#[visit] GTAttributeAssignment),
     Arguments(Vec<GTAttributeValue>),
-    Properties(Vec<GTAttributeProperty>),
+    Properties(#[visit] Vec<GTAttributeProperty>),
 }
 
 impl From<GTAttributeAssignment> for GTAttributeDescriptor {

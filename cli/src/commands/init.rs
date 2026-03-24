@@ -7,7 +7,7 @@ use genotype_lang_ts_config::*;
 use genotype_path::*;
 use heck::{ToKebabCase, ToSnakeCase};
 use inquire::{
-    list_option::ListOption, min_length, required, validator::Validation, MultiSelect, Text,
+    MultiSelect, Text, list_option::ListOption, min_length, required, validator::Validation,
 };
 use miette::Result;
 use owo_colors::OwoColorize;

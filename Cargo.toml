@@ -25,7 +25,7 @@ members = [
   "lsp",
   "parser",
   "project",
-  "visitor",
+  "pkgs/genotype_visitor_macro",
   "writer",
   "cli",
   "config",

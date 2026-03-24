@@ -11,7 +11,6 @@ repository = "https://github.com/kossnocorp/genotype"
 genotype_path = { version = "0.14.0", path = "../path", features = ["project"] }
 genotype_parser = { version = "0.14.0", path = "../parser" }
 genotype_config = { version = "0.14.0", path = "../config" }
-genotype_visitor = { version = "0.14.0", path = "../visitor" }
 genotype_lang_core_config = { version = "0.14.0", path = "../lang/core/config" }
 glob = "0.3.1"
 miette = { version = "7.6.0", features = ["fancy", "serde"] }

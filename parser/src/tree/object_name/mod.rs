@@ -1,13 +1,13 @@
 use crate::prelude::internal::*;
 
 /// A name assigned to an object. It can be explicitly named,
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
 pub enum GTObjectName {
     /// Explicately given name.
-    Named(GTIdentifier),
+    Named(#[visit] GTIdentifier),
     /// Name given to an anonymous object. It includes the name parent that helped
     /// to build the object name.
-    Alias(GTIdentifier, GTObjectNameParent),
+    Alias(#[visit] GTIdentifier, GTObjectNameParent),
 }
 
 impl GTObjectName {

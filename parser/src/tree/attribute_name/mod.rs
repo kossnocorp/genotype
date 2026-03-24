@@ -2,7 +2,7 @@ use crate::prelude::internal::*;
 
 mod parse;
 
-#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
 pub struct GTAttributeName {
     pub span: GTSpan,
     pub value: String,

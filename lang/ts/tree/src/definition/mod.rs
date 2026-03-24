@@ -3,12 +3,12 @@ use crate::prelude::internal::*;
 mod convert;
 mod render;
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
 pub enum TSDefinition {
-    Alias(TSAlias),
-    Interface(TSInterface),
-    Branded(TSBranded),
-    Embed(TSEmbedDefinition),
+    Alias(#[visit] TSAlias),
+    Interface(#[visit] TSInterface),
+    Branded(#[visit] TSBranded),
+    Embed(#[visit] TSEmbedDefinition),
 }
 
 impl TSDefinition {

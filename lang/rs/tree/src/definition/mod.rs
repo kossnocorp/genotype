@@ -2,11 +2,11 @@ use crate::prelude::internal::*;
 
 mod render;
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
 pub enum RSDefinition {
-    Alias(RSAlias),
-    Struct(RSStruct),
-    Enum(RSEnum),
+    Alias(#[visit] RSAlias),
+    Struct(#[visit] RSStruct),
+    Enum(#[visit] RSEnum),
 }
 
 impl RSDefinition {

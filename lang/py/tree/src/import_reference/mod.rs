@@ -2,11 +2,11 @@ use crate::prelude::internal::*;
 
 mod render;
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
 pub enum PYImportReference {
-    Default(Option<PYIdentifier>),
+    Default(#[visit] Option<PYIdentifier>),
     Glob,
-    Named(Vec<PYImportName>),
+    Named(#[visit] Vec<PYImportName>),
 }
 
 impl From<&str> for PYImportReference {

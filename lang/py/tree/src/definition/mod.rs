@@ -2,12 +2,12 @@ use crate::prelude::internal::*;
 
 mod render;
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
 pub enum PYDefinition {
-    Alias(PYAlias),
-    Class(PYClass),
-    Newtype(PYNewtype),
-    Embed(PYEmbedDefinition),
+    Alias(#[visit] PYAlias),
+    Class(#[visit] PYClass),
+    Newtype(#[visit] PYNewtype),
+    Embed(#[visit] PYEmbedDefinition),
 }
 
 impl PYDefinition {

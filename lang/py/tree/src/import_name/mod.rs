@@ -3,10 +3,10 @@ use crate::prelude::internal::*;
 mod convert;
 mod render;
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
 pub enum PYImportName {
-    Name(PYIdentifier),
-    Alias(PYIdentifier, PYIdentifier),
+    Name(#[visit] PYIdentifier),
+    Alias(#[visit] PYIdentifier, #[visit] PYIdentifier),
 }
 
 impl From<&str> for PYImportName {

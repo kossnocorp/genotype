@@ -1,0 +1,12 @@
+error[E0277]: the trait bound `i32: Traverse<_>` is not satisfied
+ --> tests/ui/explicit_visit_invalid_type.rs:3:10
+  |
+3 | #[derive(Visitor)]
+  |          ^^^^^^^ the trait `Traverse<_>` is not implemented for `i32`
+  |
+help: the trait `Traverse<V>` is implemented for `GTNode`
+ --> tests/ui/explicit_visit_invalid_type.rs:3:10
+  |
+3 | #[derive(Visitor)]
+  |          ^^^^^^^
+  = note: this error originates in the derive macro `Visitor` (in Nightly builds, run with -Z macro-backtrace for more info)

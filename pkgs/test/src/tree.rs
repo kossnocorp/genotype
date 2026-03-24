@@ -1,8 +1,7 @@
+use genotype_parser::visitor::{GTVisitor, Traverse};
 use genotype_parser::*;
 use genotype_path::*;
 use genotype_project::{GTPResolve, GTProjectModuleParse, GtProjectModule};
-use genotype_visitor::traverse::GTTraverse;
-use genotype_visitor::visitor::GTVisitor;
 use miette::NamedSource;
 use relative_path::RelativePathBuf;
 use std::fmt::Debug;

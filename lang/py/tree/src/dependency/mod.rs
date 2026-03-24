@@ -2,9 +2,9 @@ use crate::prelude::internal::*;
 
 pub struct PYDependency {}
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Visitor)]
 pub enum PYDependencyIdent {
-    Path(PYPath),
+    Path(#[visit] PYPath),
     Runtime,
     Typing,
     TypingExtensions,

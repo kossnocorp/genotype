@@ -3,7 +3,7 @@ use crate::prelude::internal::*;
 mod parse;
 
 /// Unique module path reference. It defines a particular path reference in the source code.
-#[derive(Debug, Eq, Hash, Clone, Serialize)]
+#[derive(Debug, Eq, Hash, Clone, Serialize, Visitor)]
 pub struct GTPath(
     /// Where the path is defined in the source code.
     pub GTSpan,

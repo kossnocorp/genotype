@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 use figment::{
-    providers::{Env, Format, Serialized, Toml},
     Figment,
+    providers::{Env, Format, Serialized, Toml},
 };
 
 pub const GTCONFIG_FILE: &str = "genotype.toml";

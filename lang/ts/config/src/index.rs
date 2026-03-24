@@ -5,7 +5,7 @@ pub struct TsConfig {
     #[serde(flatten)]
     pub common: GtlConfigCommon<TsPkgPath>,
 
-        #[serde(flatten)]
+    #[serde(flatten)]
     pub lang: TsConfigLang,
 }
 

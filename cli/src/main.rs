@@ -1,7 +1,7 @@
 use clap::{Parser, Subcommand};
 use commands::{
-    build::{build_command, GTBuildCommand},
-    init::{init_command, GTInitCommand},
+    build::{GTBuildCommand, build_command},
+    init::{GTInitCommand, init_command},
 };
 use diagnostic::error::GTCliError;
 

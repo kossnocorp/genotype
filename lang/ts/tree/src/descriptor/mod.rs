@@ -3,19 +3,19 @@ use crate::prelude::internal::*;
 mod convert;
 mod render;
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
 pub enum TSDescriptor {
-    Array(Box<TSArray>),
-    InlineImport(TSInlineImport),
-    Intersection(TSIntersection),
-    Literal(TSLiteral),
-    Object(TSObject),
-    Primitive(TSPrimitive),
-    Reference(TSReference),
-    Tuple(TSTuple),
-    Union(TSUnion),
-    Record(Box<TSRecord>),
-    Any(TSAny),
+    Array(#[visit] Box<TSArray>),
+    InlineImport(#[visit] TSInlineImport),
+    Intersection(#[visit] TSIntersection),
+    Literal(#[visit] TSLiteral),
+    Object(#[visit] TSObject),
+    Primitive(#[visit] TSPrimitive),
+    Reference(#[visit] TSReference),
+    Tuple(#[visit] TSTuple),
+    Union(#[visit] TSUnion),
+    Record(#[visit] Box<TSRecord>),
+    Any(#[visit] TSAny),
 }
 
 impl From<&str> for TSDescriptor {

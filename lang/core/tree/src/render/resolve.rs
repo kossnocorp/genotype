@@ -29,9 +29,7 @@ impl<RenderState: GtlRenderState, RenderContext: GtlRenderContext> Clone
     }
 }
 
-impl<RenderState, RenderContext> Debug
-    for dyn GtlRenderResolveImport<'_, RenderState, RenderContext>
-{
+impl<RenderState, RenderContext> Debug for dyn GtlRenderResolveImport<'_, RenderState, RenderContext> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         f.debug_struct("GtlCodegenImport")
             // [TODO]
@@ -40,9 +38,7 @@ impl<RenderState, RenderContext> Debug
     }
 }
 
-impl<'a, RenderState, RenderContext> PartialEq
-    for dyn GtlRenderResolveImport<'a, RenderState, RenderContext>
-{
+impl<'a, RenderState, RenderContext> PartialEq for dyn GtlRenderResolveImport<'a, RenderState, RenderContext> {
     fn eq(&self, _other: &Self) -> bool {
         // [TODO]
         true

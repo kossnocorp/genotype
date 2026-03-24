@@ -1,9 +1,9 @@
-use serde::Serialize;
+use crate::prelude::internal::*;
 
 mod convert;
 mod render;
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
 pub struct PYKey(pub String);
 
 impl From<&str> for PYKey {

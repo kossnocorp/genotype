@@ -1,6 +1,6 @@
 use crate::prelude::internal::*;
 
-use super::{naming::RSContextParent, RSConvertContext};
+use super::{RSConvertContext, naming::RSContextParent};
 
 impl RSConvertContext {
     pub fn hoist<HoistFn, Definition>(&mut self, mut hoist_fn: HoistFn) -> Result<RSReference>
