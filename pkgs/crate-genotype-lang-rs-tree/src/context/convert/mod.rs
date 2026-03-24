@@ -102,7 +102,7 @@ impl RSConvertContext {
             .get(identifier)
             .unwrap_or(identifier)
             .1
-            .clone()
+            .to_string()
     }
 
     pub fn resolve_path(&self, path: &GTPath) -> String {

@@ -48,7 +48,7 @@ impl TryFrom<&Vec<GTProjectModuleParse>> for GTPResolve {
                     return;
                 }
 
-                let package_module_id = GTModuleId(import.path.source_str().to_owned());
+                let package_module_id = GTModuleId(import.path.source_str().to_owned().into());
                 let mut definitions = vec![];
                 match &import.reference {
                     GTImportReference::Name(_, name) => {
@@ -80,7 +80,7 @@ impl TryFrom<&Vec<GTProjectModuleParse>> for GTPResolve {
                         module_id.clone()
                     } else if tree_path.kind() == GTPathKind::Package {
                         // It is a package path
-                        let id = GTModuleId(tree_path.source_str().to_owned());
+                        let id = GTModuleId(tree_path.source_str().to_owned().into());
                         module_paths.insert(tree_path.source_str().into(), id.clone());
                         id
                     } else {

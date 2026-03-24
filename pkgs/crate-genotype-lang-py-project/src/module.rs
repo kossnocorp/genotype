@@ -51,7 +51,7 @@ impl GtlProjectModule<PyConfig> for PyProjectModule {
                             let identifier = (*reference).clone();
                             let span = identifier.0.clone();
                             let alias_str = format!("{}.{}", prefix, identifier.1);
-                            let alias = GTIdentifier::new(span, alias_str);
+                            let alias = GTIdentifier::new(span, alias_str.into());
                             resolve.identifiers.insert(identifier.clone(), alias);
                             resolve.imported.insert(identifier);
                         });

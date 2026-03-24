@@ -11,7 +11,7 @@ impl RSConvert<RSPath> for GTPath {
         match &self.1 {
             GTPathModuleId::Resolved(module_id) => Ok(RSPath(
                 module_id.clone(),
-                rs_parse_module_path(context.resolve_path(self)),
+                rs_parse_module_path(context.resolve_path(self)).into(),
             )),
 
             GTPathModuleId::Unresolved => {

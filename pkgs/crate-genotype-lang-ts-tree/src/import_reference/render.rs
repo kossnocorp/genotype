@@ -11,7 +11,7 @@ impl<'a> GtlRender<'a> for TSImportReference {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         Ok(match self {
-            TSImportReference::Default(name) => name.clone(),
+            TSImportReference::Default(name) => name.to_string(),
 
             TSImportReference::Glob(name) => format!("* as {}", name),
 

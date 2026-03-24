@@ -6,14 +6,14 @@ impl RSConvert<RSFieldName> for GTKey {
         let name = self.1.to_snake_case();
 
         // Add rename attribute in case of aliasing
-        if name != self.1 {
+        if name.as_str() != self.1.as_ref() {
             context.attribute_field(format!(
                 r#"serde(rename = "{original_name}")"#,
                 original_name = self.1
             ));
         }
 
-        Ok(RSFieldName(name))
+        Ok(RSFieldName(name.into()))
     }
 }
 

@@ -52,7 +52,7 @@ impl GtlProjectModule<RsConfig> for RsProjectModule {
                             let identifier = (*reference).clone();
                             let span = identifier.0.clone();
                             let alias_str = format!("{}.{}", prefix, identifier.1);
-                            let alias = GTIdentifier::new(span, alias_str);
+                            let alias = GTIdentifier::new(span, alias_str.into());
                             convert_resolve
                                 .identifiers
                                 .insert(identifier.clone(), alias);

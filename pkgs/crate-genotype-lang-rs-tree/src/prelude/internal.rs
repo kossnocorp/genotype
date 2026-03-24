@@ -7,3 +7,4 @@ pub use genotype_parser::visitor::{Traverse, Visitor, visitor};
 pub(crate) use genotype_parser::*;
 pub(crate) use miette::Result;
 pub(crate) use serde::Serialize;
+pub(crate) use std::sync::Arc;

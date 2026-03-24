@@ -12,4 +12,5 @@ pub use std::ffi::OsString;
 pub use std::fmt::Display;
 pub use std::hash::{Hash, Hasher};
 pub use std::path::{Component, Path, PathBuf};
+pub use std::sync::Arc;
 pub use thiserror::Error;

@@ -152,6 +152,12 @@ impl From<String> for RSConvertNameSegment {
     }
 }
 
+impl From<Arc<str>> for RSConvertNameSegment {
+    fn from(value: Arc<str>) -> Self {
+        RSConvertNameSegment::String(value.to_string())
+    }
+}
+
 impl From<GTLiteral> for RSConvertNameSegment {
     fn from(value: GTLiteral) -> Self {
         RSConvertNameSegment::Literal(value)

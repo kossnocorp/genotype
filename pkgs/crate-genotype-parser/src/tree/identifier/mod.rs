@@ -8,11 +8,11 @@ pub struct GTIdentifier(
     /// Identifier position in the source code.
     pub GTSpan,
     /// Identifier name.
-    pub String,
+    pub Arc<str>,
 );
 
 impl GTIdentifier {
-    pub fn new(span: GTSpan, name: String) -> Self {
+    pub fn new(span: GTSpan, name: Arc<str>) -> Self {
         Self(span, name)
     }
 
@@ -21,10 +21,10 @@ impl GTIdentifier {
     }
 
     pub fn as_str(&self) -> &str {
-        &self.1
+        self.1.as_ref()
     }
 
     pub fn as_string(&self) -> String {
-        self.1.clone()
+        self.1.to_string()
     }
 }

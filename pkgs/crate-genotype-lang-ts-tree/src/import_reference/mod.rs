@@ -4,8 +4,8 @@ mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
 pub enum TSImportReference {
-    Default(String),
-    Glob(String),
+    Default(Arc<str>),
+    Glob(Arc<str>),
     Named(#[visit] Vec<TSImportName>),
 }
 

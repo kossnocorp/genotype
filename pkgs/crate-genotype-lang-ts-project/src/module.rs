@@ -49,7 +49,7 @@ impl GtlProjectModule<TsConfig> for TsProjectModule {
                         let alias = format!("{}.{}", prefix, identifier.1);
                         resolve
                             .identifiers
-                            .insert(identifier, GTIdentifier::new(span, alias));
+                            .insert(identifier, GTIdentifier::new(span, alias.into()));
                     });
                 }
             }

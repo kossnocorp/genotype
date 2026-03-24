@@ -4,7 +4,7 @@ mod convert;
 mod render;
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
-pub struct TSPath(pub String);
+pub struct TSPath(pub Arc<str>);
 
 impl TSPath {
     pub fn is_external(&self) -> bool {
@@ -15,6 +15,18 @@ impl TSPath {
 impl From<&str> for TSPath {
     fn from(str: &str) -> Self {
         TSPath(str.into())
+    }
+}
+
+impl From<String> for TSPath {
+    fn from(str: String) -> Self {
+        TSPath(str.into())
+    }
+}
+
+impl From<Arc<str>> for TSPath {
+    fn from(str: Arc<str>) -> Self {
+        TSPath(str)
     }
 }
 

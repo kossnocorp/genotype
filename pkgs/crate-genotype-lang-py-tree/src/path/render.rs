@@ -10,7 +10,7 @@ impl<'a> GtlRender<'a> for PYPath {
         _state: Self::RenderState,
         _context: &mut Self::RenderContext,
     ) -> Result<String> {
-        Ok(self.0.clone())
+        Ok(self.0.to_string())
     }
 }
 

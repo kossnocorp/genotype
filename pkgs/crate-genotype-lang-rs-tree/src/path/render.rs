@@ -10,7 +10,7 @@ impl<'a> GtlRender<'a> for RSPath {
         _state: Self::RenderState,
         _context: &mut Self::RenderContext,
     ) -> Result<String> {
-        Ok(self.1.clone())
+        Ok(self.1.to_string())
     }
 }
 

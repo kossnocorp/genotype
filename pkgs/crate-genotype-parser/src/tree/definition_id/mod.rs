@@ -7,5 +7,5 @@ pub struct GTDefinitionId(
     /// Module id that contains the definition.
     pub GTModuleId,
     /// Source definition name.
-    pub String,
+    pub Arc<str>,
 );

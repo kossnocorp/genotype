@@ -14,7 +14,7 @@ genotype_parser = { version = "0.14.0", path = "../crate-genotype-parser" }
 miette = { version = "7.6.0", features = ["fancy", "serde"] }
 indexmap = { version = "2.6.0", features = ["serde"] }
 heck = "0.5.0"
-serde = { version = "1.0.210", features = ["derive"] }
+serde = { version = "1.0.210", features = ["derive", "rc"] }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

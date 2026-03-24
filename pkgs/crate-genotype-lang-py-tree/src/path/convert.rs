@@ -8,7 +8,7 @@ pub fn py_parse_module_path(path: String) -> String {
 
 impl PYConvert<PYPath> for GTPath {
     fn convert(&self, context: &mut PYConvertContext) -> PYPath {
-        PYPath(py_parse_module_path(context.resolve_path(self)))
+        PYPath(py_parse_module_path(context.resolve_path(self)).into())
     }
 }
 

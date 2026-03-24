@@ -11,7 +11,7 @@ impl<'a> GtlRender<'a> for TSPath {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         if self.is_external() {
-            return Ok(self.0.clone());
+            return Ok(self.0.to_string());
         }
         Ok(context.config.format_import_path(&self.0))
     }

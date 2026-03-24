@@ -4,7 +4,7 @@ mod convert;
 mod render;
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, PartialOrd, Ord, Serialize, Visitor)]
-pub struct PYIdentifier(pub String);
+pub struct PYIdentifier(pub Arc<str>);
 
 impl GtlDependencyRef for PYIdentifier {}
 
@@ -16,6 +16,12 @@ impl From<&str> for PYIdentifier {
 
 impl From<String> for PYIdentifier {
     fn from(str: String) -> Self {
+        PYIdentifier(str.into())
+    }
+}
+
+impl From<Arc<str>> for PYIdentifier {
+    fn from(str: Arc<str>) -> Self {
         PYIdentifier(str)
     }
 }

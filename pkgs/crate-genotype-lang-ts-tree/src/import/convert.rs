@@ -3,7 +3,9 @@ use crate::prelude::internal::*;
 impl TSConvert<TSImport> for GTImport {
     fn convert(&self, context: &mut TSConvertContext) -> TSImport {
         let reference = match &self.reference {
-            GTImportReference::Glob(_) => TSImportReference::Glob(context.resolve_glob(self)),
+            GTImportReference::Glob(_) => {
+                TSImportReference::Glob(context.resolve_glob(self).into())
+            }
 
             GTImportReference::Names(_, names) => TSImportReference::Named(
                 names
