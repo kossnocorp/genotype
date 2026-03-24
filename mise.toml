@@ -17,6 +17,7 @@ cargo-binstall = "latest"
 "cargo:just-lsp" = "latest"
 watchexec = "latest"
 opencode = "latest"
+oxfmt = "latest"
 
 [settings]
 experimental = true

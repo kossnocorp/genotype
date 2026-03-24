@@ -3,5 +3,6 @@
   "nixEnvSelector.nixFile": "${workspaceFolder}/flake.nix",
   "debug.javascript.defaultRuntimeExecutable": {
     "pwa-node": "/home/vscode/.local/share/mise/shims/node"
-  }
+  },
+  "editor.defaultFormatter": "oxc.oxc-vscode"
 }
