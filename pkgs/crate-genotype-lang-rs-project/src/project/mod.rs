@@ -39,7 +39,7 @@ impl<'a> GtlProject<'a> for RsProject<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
+    use genotype_test::*;
 
     #[test]
     fn test_convert_base() {
@@ -301,34 +301,96 @@ mod tests {
         let config = GtConfig::from_root("module", "./examples/basic");
         let project = GtProject::load(&config).unwrap();
 
-        assert_ron_snapshot!(
-          RsProject::generate(&project).unwrap().dist().unwrap(),
+        let dist = RsProject::generate(&project).unwrap().dist().unwrap();
+
+        assert_equal!(dist.files.iter().count(), 5);
+
+        assert_debug_snapshot!(
+          dist.files[0].path,
           @r#"
-        GtlProjectDist(
-          files: [
-            GtlProjectFile(
-              path: "examples/basic/dist/rs/.gitignore",
-              source: "target",
-            ),
-            GtlProjectFile(
-              path: "examples/basic/dist/rs/Cargo.toml",
-              source: "[package]\nedition = \"2024\"\n\n[dependencies]\nserde = { version = \"1\", features = [\"derive\"] }\n\n",
-            ),
-            GtlProjectFile(
-              path: "examples/basic/dist/rs/src/lib.rs",
-              source: "pub(crate) mod author;\npub use author::*;\npub(crate) mod book;\npub use book::*;\n",
-            ),
-            GtlProjectFile(
-              path: "examples/basic/dist/rs/src/author.rs",
-              source: "use serde::{Deserialize, Serialize};\n\n#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]\npub struct Author {\n    pub name: String,\n}\n",
-            ),
-            GtlProjectFile(
-              path: "examples/basic/dist/rs/src/book.rs",
-              source: "use super::author::Author;\nuse serde::{Deserialize, Serialize};\n\n#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]\npub struct Book {\n    pub title: String,\n    pub author: Author,\n}\n",
-            ),
-          ],
+        GtCwdRelativePath(
+            "examples/basic/dist/rs/.gitignore",
         )
         "#
+        );
+        assert_snapshot!(
+          dist.files[0].source,
+          @"target"
+        );
+
+        assert_debug_snapshot!(
+          dist.files[1].path,
+          @r#"
+        GtCwdRelativePath(
+            "examples/basic/dist/rs/Cargo.toml",
+        )
+        "#
+        );
+        assert_snapshot!(
+          dist.files[1].source,
+          @r#"
+        [package]
+        edition = "2024"
+
+        [dependencies]
+        serde = { version = "1", features = ["derive"] }
+        "#
+        );
+
+        assert_debug_snapshot!(
+          dist.files[2].path,
+          @r#"
+        GtCwdRelativePath(
+            "examples/basic/dist/rs/src/lib.rs",
+        )
+        "#
+        );
+        assert_snapshot!(
+          dist.files[2].source,
+          @"
+        pub(crate) mod author;
+        pub use author::*;
+        pub(crate) mod book;
+        pub use book::*;
+        "
+        );
+
+        assert_debug_snapshot!(
+          dist.files[3].path,
+          @r#"
+        GtCwdRelativePath(
+            "examples/basic/dist/rs/src/author.rs",
+        )
+        "#
+        );
+        assert_snapshot!(
+          dist.files[3].source,
+          @"
+        use serde::{Deserialize, Serialize};
+
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        pub struct Author {
+            pub name: String,
+        }
+        "
+        );
+
+        assert_ron_snapshot!(
+          dist.files[4].path,
+          @r#""examples/basic/dist/rs/src/book.rs""#
+        );
+        assert_snapshot!(
+          dist.files[4].source,
+          @"
+        use super::author::Author;
+        use serde::{Deserialize, Serialize};
+
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        pub struct Book {
+            pub title: String,
+            pub author: Author,
+        }
+        "
         );
     }
 
@@ -337,42 +399,127 @@ mod tests {
         let config = GtConfig::from_root("module", "./examples/nested");
         let project = GtProject::load(&config).unwrap();
 
-        assert_ron_snapshot!(
-          RsProject::generate(&project).unwrap().dist().unwrap(),
+        let dist = RsProject::generate(&project).unwrap().dist().unwrap();
+
+        assert_equal!(dist.files.iter().count(), 7);
+
+        assert_debug_snapshot!(
+          dist.files[0].path,
           @r#"
-        GtlProjectDist(
-          files: [
-            GtlProjectFile(
-              path: "examples/nested/dist/rs/.gitignore",
-              source: "target",
-            ),
-            GtlProjectFile(
-              path: "examples/nested/dist/rs/Cargo.toml",
-              source: "[package]\nedition = \"2024\"\n\n[dependencies]\nserde = { version = \"1\", features = [\"derive\"] }\n\n",
-            ),
-            GtlProjectFile(
-              path: "examples/nested/dist/rs/src/lib.rs",
-              source: "pub(crate) mod inventory;\npub use inventory::*;\npub(crate) mod shop;\npub use shop::*;\n",
-            ),
-            GtlProjectFile(
-              path: "examples/nested/dist/rs/src/shop/goods/mod.rs",
-              source: "pub(crate) mod book;\npub use book::*;\n",
-            ),
-            GtlProjectFile(
-              path: "examples/nested/dist/rs/src/shop/mod.rs",
-              source: "pub(crate) mod goods;\npub use goods::*;\n",
-            ),
-            GtlProjectFile(
-              path: "examples/nested/dist/rs/src/inventory.rs",
-              source: "use super::shop::goods::book::Book;\nuse serde::{Deserialize, Serialize};\n\n#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]\npub struct Inventory {\n    pub goods: Vec<Book>,\n}\n",
-            ),
-            GtlProjectFile(
-              path: "examples/nested/dist/rs/src/shop/goods/book.rs",
-              source: "use serde::{Deserialize, Serialize};\n\n#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]\npub struct Book {\n    pub title: String,\n}\n",
-            ),
-          ],
+        GtCwdRelativePath(
+            "examples/nested/dist/rs/.gitignore",
         )
         "#
+        );
+        assert_snapshot!(
+          dist.files[0].source,
+          @"target"
+        );
+
+        assert_debug_snapshot!(
+          dist.files[1].path,
+          @r#"
+        GtCwdRelativePath(
+            "examples/nested/dist/rs/Cargo.toml",
+        )
+        "#
+        );
+        assert_snapshot!(
+          dist.files[1].source,
+          @r#"
+        [package]
+        edition = "2024"
+
+        [dependencies]
+        serde = { version = "1", features = ["derive"] }
+        "#
+        );
+
+        assert_debug_snapshot!(
+          dist.files[2].path,
+          @r#"
+        GtCwdRelativePath(
+            "examples/nested/dist/rs/src/lib.rs",
+        )
+        "#
+        );
+        assert_snapshot!(
+          dist.files[2].source,
+          @"
+        pub(crate) mod inventory;
+        pub use inventory::*;
+        pub(crate) mod shop;
+        pub use shop::*;
+        "
+        );
+
+        assert_debug_snapshot!(
+          dist.files[3].path,
+          @r#"
+        GtCwdRelativePath(
+            "examples/nested/dist/rs/src/shop/goods/mod.rs",
+        )
+        "#
+        );
+        assert_snapshot!(
+          dist.files[3].source,
+          @"
+        pub(crate) mod book;
+        pub use book::*;
+        "
+        );
+
+        assert_debug_snapshot!(
+          dist.files[4].path,
+          @r#"
+        GtCwdRelativePath(
+            "examples/nested/dist/rs/src/shop/mod.rs",
+        )
+        "#
+        );
+        assert_snapshot!(
+          dist.files[4].source,
+          @"
+        pub(crate) mod goods;
+        pub use goods::*;
+        "
+        );
+
+        assert_debug_snapshot!(
+          dist.files[5].path,
+          @r#"
+        GtCwdRelativePath(
+            "examples/nested/dist/rs/src/inventory.rs",
+        )
+        "#
+        );
+        assert_snapshot!(
+          dist.files[5].source,
+          @"
+        use super::shop::goods::book::Book;
+        use serde::{Deserialize, Serialize};
+
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        pub struct Inventory {
+            pub goods: Vec<Book>,
+        }
+        "
+        );
+
+        assert_ron_snapshot!(
+          dist.files[6].path,
+          @r#""examples/nested/dist/rs/src/shop/goods/book.rs""#
+        );
+        assert_snapshot!(
+          dist.files[6].source,
+          @"
+        use serde::{Deserialize, Serialize};
+
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        pub struct Book {
+            pub title: String,
+        }
+        "
         );
     }
 
@@ -381,37 +528,145 @@ mod tests {
         let config = GtConfig::from_root("module", "./examples/extensions");
         let project = GtProject::load(&config).unwrap();
 
-        assert_ron_snapshot!(
-          RsProject::generate(&project).unwrap().dist().unwrap(),
+        let dist = RsProject::generate(&project).unwrap().dist().unwrap();
+
+        assert_equal!(dist.files.iter().count(), 6);
+
+        assert_debug_snapshot!(
+          dist.files[0].path,
           @r#"
-        GtlProjectDist(
-          files: [
-            GtlProjectFile(
-              path: "examples/extensions/dist/rs/.gitignore",
-              source: "target",
-            ),
-            GtlProjectFile(
-              path: "examples/extensions/dist/rs/Cargo.toml",
-              source: "[package]\nedition = \"2024\"\n\n[dependencies]\nlitty = \"0.2\"\nserde = { version = \"1\", features = [\"derive\"] }\n\n",
-            ),
-            GtlProjectFile(
-              path: "examples/extensions/dist/rs/src/lib.rs",
-              source: "pub(crate) mod admin;\npub use admin::*;\npub(crate) mod named;\npub use named::*;\npub(crate) mod user;\npub use user::*;\n",
-            ),
-            GtlProjectFile(
-              path: "examples/extensions/dist/rs/src/admin.rs",
-              source: "use litty::literal;\nuse serde::{Deserialize, Serialize};\nuse crate::named::Name;\n\n#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]\npub struct Admin {\n    pub name: Name,\n    pub email: String,\n    #[serde(default, skip_serializing_if = \"Option::is_none\")]\n    pub age: Option<i64>,\n    pub role: AdminRole,\n}\n\n#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]\n#[serde(untagged)]\npub enum AdminRole {\n    #[literal(\"superadmin\")]\n    Superadmin,\n    #[literal(\"admin\")]\n    Admin,\n    #[literal(\"moderator\")]\n    Moderator,\n}\n",
-            ),
-            GtlProjectFile(
-              path: "examples/extensions/dist/rs/src/named.rs",
-              source: "use serde::{Deserialize, Serialize};\n\n#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]\npub struct Named {\n    pub name: Name,\n}\n\npub type Name = String;\n",
-            ),
-            GtlProjectFile(
-              path: "examples/extensions/dist/rs/src/user.rs",
-              source: "use super::named::Name;\nuse serde::{Deserialize, Serialize};\n\n#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]\npub struct User {\n    pub name: Name,\n    pub email: String,\n    #[serde(default, skip_serializing_if = \"Option::is_none\")]\n    pub age: Option<i64>,\n}\n\n#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]\npub struct Account {\n    pub email: String,\n}\n",
-            ),
-          ],
+        GtCwdRelativePath(
+            "examples/extensions/dist/rs/.gitignore",
         )
+        "#
+        );
+        assert_snapshot!(
+          dist.files[0].source,
+          @"target"
+        );
+
+        assert_debug_snapshot!(
+          dist.files[1].path,
+          @r#"
+        GtCwdRelativePath(
+            "examples/extensions/dist/rs/Cargo.toml",
+        )
+        "#
+        );
+        assert_snapshot!(
+          dist.files[1].source,
+          @r#"
+        [package]
+        edition = "2024"
+
+        [dependencies]
+        litty = "0.2"
+        serde = { version = "1", features = ["derive"] }
+        "#
+        );
+
+        assert_debug_snapshot!(
+          dist.files[2].path,
+          @r#"
+        GtCwdRelativePath(
+            "examples/extensions/dist/rs/src/lib.rs",
+        )
+        "#
+        );
+        assert_snapshot!(
+          dist.files[2].source,
+          @"
+        pub(crate) mod admin;
+        pub use admin::*;
+        pub(crate) mod named;
+        pub use named::*;
+        pub(crate) mod user;
+        pub use user::*;
+        "
+        );
+
+        assert_debug_snapshot!(
+          dist.files[3].path,
+          @r#"
+        GtCwdRelativePath(
+            "examples/extensions/dist/rs/src/admin.rs",
+        )
+        "#
+        );
+        assert_snapshot!(
+          dist.files[3].source,
+          @r#"
+        use litty::literal;
+        use serde::{Deserialize, Serialize};
+        use crate::named::Name;
+
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        pub struct Admin {
+            pub name: Name,
+            pub email: String,
+            #[serde(default, skip_serializing_if = "Option::is_none")]
+            pub age: Option<i64>,
+            pub role: AdminRole,
+        }
+
+        #[derive(Debug, Clone, PartialEq, Literals)]
+        #[serde(untagged)]
+        pub enum AdminRole {
+            #[literal("superadmin")]
+            Superadmin,
+            #[literal("admin")]
+            Admin,
+            #[literal("moderator")]
+            Moderator,
+        }
+        "#
+        );
+
+        assert_debug_snapshot!(
+          dist.files[4].path,
+          @r#"
+        GtCwdRelativePath(
+            "examples/extensions/dist/rs/src/named.rs",
+        )
+        "#
+        );
+        assert_snapshot!(
+          dist.files[4].source,
+          @"
+        use litty::Literals;
+
+        #[derive(Debug, Clone, PartialEq, Literals)]
+        #[literals(named = true)]
+        pub struct Named {
+            pub name: Name,
+        }
+
+        pub type Name = String;
+        "
+        );
+
+        assert_ron_snapshot!(
+          dist.files[5].path,
+          @r#""examples/extensions/dist/rs/src/user.rs""#
+        );
+        assert_snapshot!(
+          dist.files[5].source,
+          @r#"
+        use super::named::Name;
+        use serde::{Deserialize, Serialize};
+
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        pub struct User {
+            pub name: Name,
+            pub email: String,
+            #[serde(default, skip_serializing_if = "Option::is_none")]
+            pub age: Option<i64>,
+        }
+
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        pub struct Account {
+            pub email: String,
+        }
         "#
         );
     }
@@ -421,30 +676,76 @@ mod tests {
         let config = GtConfig::load(&"./examples/dependencies".into()).unwrap();
         let project = GtProject::load(&config).unwrap();
 
-        assert_ron_snapshot!(
-          RsProject::generate(&project).unwrap().dist().unwrap(),
+        let dist = RsProject::generate(&project).unwrap().dist().unwrap();
+
+        assert_equal!(dist.files.iter().count(), 4);
+
+        assert_debug_snapshot!(
+          dist.files[0].path,
           @r#"
-        GtlProjectDist(
-          files: [
-            GtlProjectFile(
-              path: "examples/dependencies/dist/rs/.gitignore",
-              source: "target",
-            ),
-            GtlProjectFile(
-              path: "examples/dependencies/dist/rs/Cargo.toml",
-              source: "[package]\nedition = \"2024\"\nname = \"genotype_example_package\"\nversion = \"0.1.0\"\n[dependencies]\ngenotype_json_types = \"0.1.0\"\nserde = { version = \"1\", features = [\"derive\"] }\n\n",
-            ),
-            GtlProjectFile(
-              path: "examples/dependencies/dist/rs/src/lib.rs",
-              source: "pub(crate) mod prompt;\npub use prompt::*;\n",
-            ),
-            GtlProjectFile(
-              path: "examples/dependencies/dist/rs/src/prompt.rs",
-              source: "use genotype_json_types::JsonAny;\nuse serde::{Deserialize, Serialize};\n\n#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]\npub struct Prompt {\n    pub content: String,\n    pub output: JsonAny,\n}\n",
-            ),
-          ],
+        GtCwdRelativePath(
+            "examples/dependencies/dist/rs/.gitignore",
         )
         "#
+        );
+        assert_snapshot!(
+          dist.files[0].source,
+          @"target"
+        );
+
+        assert_debug_snapshot!(
+          dist.files[1].path,
+          @r#"
+        GtCwdRelativePath(
+            "examples/dependencies/dist/rs/Cargo.toml",
+        )
+        "#
+        );
+        assert_snapshot!(
+          dist.files[1].source,
+          @r#"
+        [package]
+        edition = "2024"
+        name = "genotype_example_package"
+        version = "0.1.0"
+        [dependencies]
+        genotype_json_types = "0.1.0"
+        serde = { version = "1", features = ["derive"] }
+        "#
+        );
+
+        assert_debug_snapshot!(
+          dist.files[2].path,
+          @r#"
+        GtCwdRelativePath(
+            "examples/dependencies/dist/rs/src/lib.rs",
+        )
+        "#
+        );
+        assert_snapshot!(
+          dist.files[2].source,
+          @"
+        pub(crate) mod prompt;
+        pub use prompt::*;
+        "
+        );
+
+        assert_ron_snapshot!(
+          dist.files[3].path,
+          @r#""examples/dependencies/dist/rs/src/prompt.rs""#
+        );
+        assert_snapshot!(
+          dist.files[3].source,
+          @"
+        use genotype_json_types::JsonAny;
+        use serde::{Deserialize, Serialize};
+
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        pub struct Prompt {
+            pub content: String,
+            pub output: JsonAny,
+        }
+        "
         );
     }
 }

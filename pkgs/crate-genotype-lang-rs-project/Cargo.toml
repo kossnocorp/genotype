@@ -27,3 +27,4 @@ serde = { version = "1.0.210", features = ["derive"] }
 pretty_assertions = "1.4.1"
 insta = { version = "1.46.3", features = ["ron"] }
 genotype_config = { version = "0.14.0", path = "../crate-genotype-config" }
+genotype_test = { version = "0.14.0", path = "../crate-genotype-test" }

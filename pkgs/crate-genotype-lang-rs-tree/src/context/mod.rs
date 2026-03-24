@@ -7,13 +7,23 @@ pub use convert::*;
 pub mod mock;
 
 #[derive(PartialEq)]
-pub enum RSContextRenderDeriveMode {
+pub enum RSContextRenderDeriveTypeMode {
     Struct,
     UnionEnum,
 }
 
+#[derive(PartialEq)]
+pub enum RSContextRenderDeriveSerdeMode {
+    Serde,
+    Litty,
+}
+
 pub trait RSConvertContextMockable {
-    fn render_derive(&self, _mode: RSContextRenderDeriveMode) -> String {
+    fn render_derive(
+        &self,
+        _type_mode: RSContextRenderDeriveTypeMode,
+        _serde_mode: RSContextRenderDeriveSerdeMode,
+    ) -> String {
         String::new()
     }
 }

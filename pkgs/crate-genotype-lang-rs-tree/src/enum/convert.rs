@@ -15,10 +15,13 @@ impl RSConvert<RSEnum> for GTUnion {
 
         let mut variant_names: HashSet<RSIdentifier> = HashSet::new();
 
+        let mut literals_count = 0;
         let mut variants = self
             .descriptors
             .iter()
-            .map(|descriptor| convert_variant(descriptor, &mut variant_names, context))
+            .map(|descriptor| {
+                convert_variant(descriptor, &mut variant_names, &mut literals_count, context)
+            })
             .collect::<Result<Vec<_>>>()?;
 
         trim_variant_names(&name, &mut variants, &mut variant_names);
@@ -40,9 +43,19 @@ impl RSConvert<RSEnum> for GTUnion {
             doc,
             name,
             attributes: vec![
-                context
-                    .render_derive(RSContextRenderDeriveMode::UnionEnum)
-                    .into(),
+                {
+                    // Use Litty derives instead of Serde if there are literal variants. It is
+                    // a drop-in replacement and behaves the same for regular variants, but also
+                    // adds support for literal variants.
+                    let serde_mode = if literals_count > 0 {
+                        RSContextRenderDeriveSerdeMode::Litty
+                    } else {
+                        RSContextRenderDeriveSerdeMode::Serde
+                    };
+                    context
+                        .render_derive(RSContextRenderDeriveTypeMode::UnionEnum, serde_mode)
+                        .into()
+                },
                 r#"serde(untagged)"#.into(),
             ],
             variants,
@@ -59,6 +72,7 @@ impl RSConvert<RSEnum> for GTUnion {
 fn convert_variant(
     descriptor: &GTDescriptor,
     variant_names: &mut HashSet<RSIdentifier>,
+    literals_count: &mut usize,
     context: &mut RSConvertContext,
 ) -> Result<RSEnumVariant> {
     let mut attributes = vec![];
@@ -76,6 +90,7 @@ fn convert_variant(
             let str = render_literal(literal);
             attributes.push(RSAttribute(format!("literal({str})",)));
             context.add_import(RSDependencyIdent::Litty, "literal".into());
+            *literals_count += 1;
             None
         }
 
@@ -308,7 +323,7 @@ mod tests {
           id: GTDefinitionId(GTModuleId("module"), "AnimalKind"),
           doc: None,
           attributes: [
-            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RSAttribute("derive(Debug, Clone, PartialEq, Literals)"),
             RSAttribute("serde(untagged)"),
           ],
           name: RSIdentifier("AnimalKind"),
@@ -511,7 +526,7 @@ mod tests {
           id: GTDefinitionId(GTModuleId("module"), "Union"),
           doc: None,
           attributes: [
-            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RSAttribute("derive(Debug, Clone, PartialEq, Literals)"),
             RSAttribute("serde(untagged)"),
           ],
           name: RSIdentifier("Union"),
@@ -566,7 +581,7 @@ mod tests {
           id: GTDefinitionId(GTModuleId("module"), "Version"),
           doc: None,
           attributes: [
-            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RSAttribute("derive(Debug, Clone, PartialEq, Literals)"),
             RSAttribute("serde(untagged)"),
           ],
           name: RSIdentifier("Version"),
@@ -613,7 +628,7 @@ mod tests {
           id: GTDefinitionId(GTModuleId("module"), "Version"),
           doc: None,
           attributes: [
-            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RSAttribute("derive(Debug, Clone, PartialEq, Literals)"),
             RSAttribute("serde(untagged)"),
           ],
           name: RSIdentifier("Version"),
@@ -660,7 +675,7 @@ mod tests {
           id: GTDefinitionId(GTModuleId("module"), "Version"),
           doc: None,
           attributes: [
-            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RSAttribute("derive(Debug, Clone, PartialEq, Literals)"),
             RSAttribute("serde(untagged)"),
           ],
           name: RSIdentifier("Version"),
@@ -869,7 +884,7 @@ mod tests {
           id: GTDefinitionId(GTModuleId("module"), "Status"),
           doc: None,
           attributes: [
-            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RSAttribute("derive(Debug, Clone, PartialEq, Literals)"),
             RSAttribute("serde(untagged)"),
           ],
           name: RSIdentifier("Status"),

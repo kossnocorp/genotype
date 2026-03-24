@@ -1,5 +1,6 @@
 Named: {
   name: Name,
+  named: true,
 }
 
 Name: string
