@@ -1277,7 +1277,7 @@ version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f1adaf3c9f44eaf4e8f51d824720465599b9804fe9eeabc2cb9f30dda9d021a1"
 dependencies = [
- "litty_macro 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "litty_macro 0.2.0",
  "serde",
 ]
 
@@ -1286,20 +1286,10 @@ name = "litty"
 version = "0.3.0"
 dependencies = [
  "insta",
- "litty_macro 0.2.0",
+ "litty_macro 0.3.0",
  "pretty_assertions",
  "serde",
  "serde_json",
-]
-
-[[package]]
-name = "litty_macro"
-version = "0.2.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "serde",
- "syn",
 ]
 
 [[package]]
@@ -1315,11 +1305,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "litty_macro"
+version = "0.3.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "serde",
+ "syn",
+]
+
+[[package]]
 name = "litty_macro_tests"
 version = "0.2.0"
 dependencies = [
  "litty 0.3.0",
- "litty_macro 0.2.0",
+ "litty_macro 0.3.0",
  "pretty_assertions",
  "serde",
  "serde_json",
