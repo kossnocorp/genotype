@@ -2,7 +2,7 @@ use crate::prelude::internal::*;
 
 impl PYConvert<PYIdentifier> for GTIdentifier {
     fn convert(&self, context: &mut PYConvertContext) -> PYIdentifier {
-        PYIdentifier(context.resolve_identifier(self))
+        PYIdentifier(context.resolve_identifier(self).into())
     }
 }
 

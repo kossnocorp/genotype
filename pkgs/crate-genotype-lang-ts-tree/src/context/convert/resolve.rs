@@ -33,6 +33,6 @@ impl TSConvertContext {
             .get(identifier)
             .unwrap_or(identifier)
             .1
-            .clone()
+            .to_string()
     }
 }

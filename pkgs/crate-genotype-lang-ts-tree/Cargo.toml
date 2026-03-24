@@ -14,7 +14,7 @@ genotype_lang_ts_config = { version = "0.14.0", path = "../crate-genotype-lang-t
 heck = "0.5.0"
 miette = { version = "7.6.0", features = ["fancy", "serde"] }
 thiserror = "1.0.64"
-serde = { version = "1.0.210", features = ["derive"] }
+serde = { version = "1.0.210", features = ["derive", "rc"] }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

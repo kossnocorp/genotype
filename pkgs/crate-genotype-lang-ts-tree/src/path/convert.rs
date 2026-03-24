@@ -2,7 +2,7 @@ use crate::prelude::internal::*;
 
 impl TSConvert<TSPath> for GTPath {
     fn convert(&self, context: &mut TSConvertContext) -> TSPath {
-        TSPath(context.resolve_path(self))
+        TSPath(context.resolve_path(self).into())
     }
 }
 

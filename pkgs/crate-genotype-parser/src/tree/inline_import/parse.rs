@@ -13,7 +13,7 @@ impl GTInlineImport {
             doc,
             attributes,
             path,
-            name: GTIdentifier::new(name_span, name),
+            name: GTIdentifier::new(name_span, name.into()),
         })
     }
 }

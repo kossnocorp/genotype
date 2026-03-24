@@ -12,7 +12,7 @@ pub enum RSDependencyIdent {
 impl RSDependencyIdent {
     pub fn as_path(&self) -> String {
         match self {
-            Self::Local(path) => path.1.clone(),
+            Self::Local(path) => path.1.to_string(),
             Self::Runtime => "genotype_runtime".into(),
             Self::Litty => "litty".into(),
             Self::Serde => "serde".into(),

@@ -19,7 +19,7 @@ impl GtjTreeConvert<GTObject> for GtjObject {
             span: Default::default(),
             doc: None,
             attributes: vec![],
-            name: GTObjectName::Named(GTIdentifier(Default::default(), name)),
+            name: GTObjectName::Named(GTIdentifier(Default::default(), name.into())),
             properties,
             extensions: vec![],
         }

@@ -15,7 +15,7 @@ impl GtjTreeConvert<GTProperty> for GtjProperty {
             descriptor,
             attributes: Default::default(),
             required: self.required,
-            name: GTKey(Default::default(), self.name.clone()),
+            name: GTKey(Default::default(), self.name.clone().into()),
             doc: self
                 .doc
                 .clone()

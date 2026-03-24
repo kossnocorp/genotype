@@ -10,17 +10,17 @@ pub struct GTPath(
     /// Module identifier. May be unresolved.
     pub GTPathModuleId,
     /// Literal path string how it was defined in the source code.
-    String,
+    Arc<str>,
 );
 
 impl GTPath {
-    pub fn new(span: GTSpan, module_id: GTPathModuleId, path: String) -> Self {
+    pub fn new(span: GTSpan, module_id: GTPathModuleId, path: Arc<str>) -> Self {
         Self(span, module_id, path)
     }
 
     /// Returns the literal path string ref.
     pub fn source_str(&self) -> &str {
-        &self.2
+        self.2.as_ref()
     }
 
     pub fn kind(&self) -> GTPathKind {
@@ -38,7 +38,7 @@ impl GTPath {
                     self.2[..index].to_owned(),
                     Some(self.2[index + 1..].to_owned()),
                 ),
-                None => (self.2.clone(), None),
+                None => (self.2.to_string(), None),
             })
         } else {
             None

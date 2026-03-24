@@ -4,7 +4,7 @@ mod convert;
 mod render;
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, PartialOrd, Ord, Serialize, Visitor)]
-pub struct RSIdentifier(pub String);
+pub struct RSIdentifier(pub Arc<str>);
 
 impl GtlDependencyRef for RSIdentifier {}
 
@@ -16,6 +16,12 @@ impl From<&str> for RSIdentifier {
 
 impl From<String> for RSIdentifier {
     fn from(str: String) -> Self {
+        RSIdentifier(str.into())
+    }
+}
+
+impl From<Arc<str>> for RSIdentifier {
+    fn from(str: Arc<str>) -> Self {
         RSIdentifier(str)
     }
 }

@@ -24,7 +24,7 @@ impl GTPath {
 
     pub fn parse(span: GTSpan, path: &str) -> GTNodeParseResult<Self> {
         match Self::normalize_path(path) {
-            Ok(path) => Ok(GTPath(span, GTPathModuleId::Unresolved, path)),
+            Ok(path) => Ok(GTPath(span, GTPathModuleId::Unresolved, path.into())),
             Err(_) => Err(GTParseError::Internal(span, GTNode::Path)),
         }
     }

@@ -16,7 +16,7 @@ impl GTContext {
     pub fn name_object(&mut self, span: GTSpan) -> GTNodeParseResult<GTObjectName> {
         // The alias is the immediate parent, so we can return it.
         if let Some(name) = self.claim_alias() {
-            self.claim_name(&name.1);
+            self.claim_name(name.1.as_ref());
             return Ok(GTObjectName::Named(name));
         }
 
@@ -40,7 +40,7 @@ impl GTContext {
 
                     let identifier = parent.to_identifier(span.clone());
                     // [TODO] Ensure unique name
-                    self.claim_name(&identifier.1);
+                    self.claim_name(identifier.1.as_ref());
 
                     return Ok(GTObjectName::Alias(identifier, parent));
                 }
@@ -75,15 +75,15 @@ impl GTContext {
                 false
             };
 
-            let mut segments = vec![];
+            let mut segments: Vec<String> = vec![];
             for parent in self.parents.iter().rev() {
                 match parent {
                     // Add any keys on the path to the name segments.
-                    GTContextParent::Property(key) => segments.push(key.1.clone()),
+                    GTContextParent::Property(key) => segments.push(key.1.to_string()),
 
                     // If we finally found an alias parent, we can stop building the name.
                     GTContextParent::Alias(identifier) => {
-                        segments.push(identifier.1.clone());
+                        segments.push(identifier.1.to_string());
                         break;
                     }
 
@@ -102,7 +102,7 @@ impl GTContext {
             self.ensure_unique_name(span, name)
         };
 
-        self.claim_name(&name.1);
+        self.claim_name(name.1.as_ref());
 
         name
     }
@@ -115,11 +115,11 @@ impl GTContext {
             name
         };
 
-        GTIdentifier::new(span.clone(), name)
+        GTIdentifier::new(span.clone(), name.into())
     }
 
     /// Enumerates the name if it's already claimed.
-    fn enumerate_name(&self, name: &String) -> String {
+    fn enumerate_name(&self, name: &str) -> String {
         let mut index = 2;
         loop {
             let enumerated_name = format!("{name}{index}");
@@ -136,8 +136,8 @@ impl GTContext {
     }
 
     /// Takes the name so it can't be used again.
-    fn claim_name(&mut self, name: &String) {
-        self.claimed_names.insert(name.clone());
+    fn claim_name(&mut self, name: &str) {
+        self.claimed_names.insert(name.to_string());
     }
 }
 

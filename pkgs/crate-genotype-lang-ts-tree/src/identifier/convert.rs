@@ -2,7 +2,7 @@ use crate::prelude::internal::*;
 
 impl TSConvert<TSIdentifier> for GTIdentifier {
     fn convert(&self, context: &mut TSConvertContext) -> TSIdentifier {
-        TSIdentifier(context.resolve_identifier(self))
+        TSIdentifier(context.resolve_identifier(self).into())
     }
 }
 

@@ -25,7 +25,7 @@ impl GTAttribute {
     }
 
     pub fn is_it(&self, name: &str) -> bool {
-        self.name.value == name
+        self.name.value.as_ref() == name
     }
 
     pub fn get_assigned(&self, name: &str) -> Option<&GTAttributeAssignment> {
@@ -40,7 +40,7 @@ impl GTAttribute {
     pub fn find_property(&self, name: &str) -> Option<String> {
         match &self.descriptor {
             Some(GTAttributeDescriptor::Assignment(assignment)) => {
-                if self.name.value == name {
+                if self.name.value.as_ref() == name {
                     if let GTAttributeValue::Literal(literal) = &assignment.value {
                         if let GTLiteralValue::String(string) = &literal.value {
                             return Some(string.clone());
@@ -50,7 +50,7 @@ impl GTAttribute {
             }
             Some(GTAttributeDescriptor::Properties(properties)) => {
                 for property in properties.iter() {
-                    if property.name.value == name {
+                    if property.name.value.as_ref() == name {
                         if let GTAttributeValue::Literal(literal) = &property.value {
                             if let GTLiteralValue::String(string) = &literal.value {
                                 return Some(string.clone());

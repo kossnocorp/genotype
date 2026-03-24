@@ -27,7 +27,7 @@ impl From<GTIdentifier> for GTObjectName {
 
 impl From<String> for GTObjectName {
     fn from(value: String) -> Self {
-        GTObjectName::Named(GTIdentifier::new(Default::default(), value))
+        GTObjectName::Named(GTIdentifier::new(Default::default(), value.into()))
     }
 }
 
@@ -44,16 +44,16 @@ impl GTObjectNameParent {
     pub fn to_identifier(&self, span: GTSpan) -> GTIdentifier {
         match self {
             GTObjectNameParent::Alias(identifier) => {
-                GTIdentifier::new(span, format!("{}Obj", identifier.1))
+                GTIdentifier::new(span, format!("{}Obj", identifier.1).into())
             }
 
             GTObjectNameParent::Property(identifier, keys) => {
                 let keys = keys
                     .iter()
-                    .map(|key| Self::capitalize(&key.1))
+                    .map(|key| Self::capitalize(key.1.as_ref()))
                     .collect::<Vec<_>>()
                     .join("");
-                GTIdentifier::new(span, format!("{}{}", identifier.1, keys))
+                GTIdentifier::new(span, format!("{}{}", identifier.1, keys).into())
             }
         }
     }

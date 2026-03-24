@@ -3,7 +3,7 @@ use heck::ToSnakeCase;
 
 impl PYConvert<PYKey> for GTKey {
     fn convert(&self, _context: &mut PYConvertContext) -> PYKey {
-        PYKey(self.1.clone().to_snake_case())
+        PYKey(self.1.to_snake_case().into())
     }
 }
 
