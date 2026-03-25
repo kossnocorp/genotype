@@ -12,7 +12,7 @@ This change log follows the format documented in [Keep a CHANGELOG].
 
 ### Changed
 
-- Made macros generate unique identifiers for internal enum helper to avoid possible name collisions.
+- Made macros generate unique identifiers for internal enum helpers to avoid possible name collisions.
 
 ## v0.3.0 - 2026-03-25
 
