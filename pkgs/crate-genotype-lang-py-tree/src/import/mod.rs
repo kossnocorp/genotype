@@ -4,20 +4,20 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct PYImport {
+pub struct PyImport {
     #[visit]
-    pub dependency: PYDependencyIdent,
+    pub dependency: PyDependencyIdent,
     #[visit]
-    pub reference: PYImportReference,
+    pub reference: PyImportReference,
 }
 
-impl PYImport {
-    pub fn new(dependency: PYDependencyIdent, reference: PYImportReference) -> Self {
-        PYImport {
+impl PyImport {
+    pub fn new(dependency: PyDependencyIdent, reference: PyImportReference) -> Self {
+        PyImport {
             dependency,
             reference,
         }
     }
 }
 
-impl GtlImport for PYImport {}
+impl GtlImport for PyImport {}

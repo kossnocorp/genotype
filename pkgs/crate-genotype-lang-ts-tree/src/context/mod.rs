@@ -6,10 +6,10 @@ pub use convert::*;
 #[cfg(test)]
 pub mod mock;
 
-pub trait TSConvertContextMockable {}
+pub trait TsConvertContextMockable {}
 
-pub trait TSConvertContextConstraint:
-    TSConvertContextMockable
-    + GtlConvertContext<DependencyIdent = TSDependencyIdent, DependencyRef = TSIdentifier>
+pub trait TsConvertContextConstraint:
+    TsConvertContextMockable
+    + GtlConvertContext<DependencyIdent = TsDependencyIdent, DependencyRef = TsIdentifier>
 {
 }

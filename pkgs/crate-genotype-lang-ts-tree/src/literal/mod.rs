@@ -4,7 +4,7 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub enum TSLiteral {
+pub enum TsLiteral {
     Null,
     Boolean(bool),
     Integer(i64),

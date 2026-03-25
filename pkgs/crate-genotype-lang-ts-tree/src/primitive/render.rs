@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSPrimitive {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsPrimitive {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -11,12 +11,12 @@ impl<'a> GtlRender<'a> for TSPrimitive {
         _context: &mut Self::RenderContext,
     ) -> Result<String> {
         Ok(match self {
-            TSPrimitive::String => "string",
-            TSPrimitive::Number => "number",
-            TSPrimitive::Boolean => "boolean",
-            TSPrimitive::BigInt => "bigint",
-            TSPrimitive::Null => "null",
-            TSPrimitive::Undefined => "undefined",
+            TsPrimitive::String => "string",
+            TsPrimitive::Number => "number",
+            TsPrimitive::Boolean => "boolean",
+            TsPrimitive::BigInt => "bigint",
+            TsPrimitive::Null => "null",
+            TsPrimitive::Undefined => "undefined",
         }
         .to_string())
     }
@@ -30,37 +30,37 @@ mod tests {
     #[test]
     fn test_render_primitive() {
         assert_snapshot!(
-            TSPrimitive::String
+            TsPrimitive::String
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"string"
         );
         assert_snapshot!(
-            TSPrimitive::Number
+            TsPrimitive::Number
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"number"
         );
         assert_snapshot!(
-            TSPrimitive::BigInt
+            TsPrimitive::BigInt
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"bigint"
         );
         assert_snapshot!(
-            TSPrimitive::Boolean
+            TsPrimitive::Boolean
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"boolean"
         );
         assert_snapshot!(
-            TSPrimitive::Null
+            TsPrimitive::Null
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"null"
         );
         assert_snapshot!(
-            TSPrimitive::Undefined
+            TsPrimitive::Undefined
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"undefined"

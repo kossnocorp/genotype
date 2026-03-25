@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSEmbedDefinition {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsEmbedDefinition {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -22,7 +22,7 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            TSEmbedDefinition {
+            TsEmbedDefinition {
                 name: "Name".into(),
                 embed: r#"const hello = {
   name: "World"
@@ -42,7 +42,7 @@ mod tests {
     #[test]
     fn test_render_indent() {
         assert_snapshot!(
-            TSEmbedDefinition {
+            TsEmbedDefinition {
                 name: "Name".into(),
                 embed: r#"const hello = {
   name: "World"
@@ -50,7 +50,7 @@ mod tests {
                 .into()
             }
             .render(
-                TSRenderState::default().indent_inc(),
+                TsRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),

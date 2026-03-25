@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYDescriptor {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyDescriptor {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
     fn render(
         &self,
@@ -11,14 +11,14 @@ impl<'a> GtlRender<'a> for PYDescriptor {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         match self {
-            PYDescriptor::List(array) => array.render(state, context),
-            PYDescriptor::Literal(literal) => literal.render(state, context),
-            PYDescriptor::Primitive(primitive) => primitive.render(state, context),
-            PYDescriptor::Reference(name) => name.render(state, context),
-            PYDescriptor::Tuple(tuple) => tuple.render(state, context),
-            PYDescriptor::Union(union) => union.render(state, context),
-            PYDescriptor::Dict(dict) => dict.render(state, context),
-            PYDescriptor::Any(any) => any.render(state, context),
+            PyDescriptor::List(array) => array.render(state, context),
+            PyDescriptor::Literal(literal) => literal.render(state, context),
+            PyDescriptor::Primitive(primitive) => primitive.render(state, context),
+            PyDescriptor::Reference(name) => name.render(state, context),
+            PyDescriptor::Tuple(tuple) => tuple.render(state, context),
+            PyDescriptor::Union(union) => union.render(state, context),
+            PyDescriptor::Dict(dict) => dict.render(state, context),
+            PyDescriptor::Any(any) => any.render(state, context),
         }
     }
 }
@@ -31,8 +31,8 @@ mod tests {
     #[test]
     fn test_render_array() {
         assert_snapshot!(
-            PYDescriptor::List(Box::new(PYList {
-                descriptor: PYDescriptor::Primitive(PYPrimitive::Int)
+            PyDescriptor::List(Box::new(PyList {
+                descriptor: PyDescriptor::Primitive(PyPrimitive::Int)
             }))
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -43,13 +43,13 @@ mod tests {
     #[test]
     fn test_render_primitive() {
         assert_snapshot!(
-            PYDescriptor::Primitive(PYPrimitive::Boolean)
+            PyDescriptor::Primitive(PyPrimitive::Boolean)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"bool"
         );
         assert_snapshot!(
-            PYDescriptor::Primitive(PYPrimitive::String)
+            PyDescriptor::Primitive(PyPrimitive::String)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"str"
@@ -59,7 +59,7 @@ mod tests {
     #[test]
     fn test_render_reference() {
         assert_snapshot!(
-            PYDescriptor::Reference(PYReference::new("Name".into(), false))
+            PyDescriptor::Reference(PyReference::new("Name".into(), false))
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"Name"
@@ -69,10 +69,10 @@ mod tests {
     #[test]
     fn test_render_tuple() {
         assert_snapshot!(
-            PYDescriptor::Tuple(PYTuple {
+            PyDescriptor::Tuple(PyTuple {
                 descriptors: vec![
-                    PYDescriptor::Primitive(PYPrimitive::Int),
-                    PYDescriptor::Primitive(PYPrimitive::String)
+                    PyDescriptor::Primitive(PyPrimitive::Int),
+                    PyDescriptor::Primitive(PyPrimitive::String)
                 ]
             })
             .render(Default::default(), &mut Default::default())
@@ -84,10 +84,10 @@ mod tests {
     #[test]
     fn test_render_union() {
         assert_snapshot!(
-            PYDescriptor::Union(PYUnion {
+            PyDescriptor::Union(PyUnion {
                 descriptors: vec![
-                    PYDescriptor::Primitive(PYPrimitive::String),
-                    PYDescriptor::Primitive(PYPrimitive::Int),
+                    PyDescriptor::Primitive(PyPrimitive::String),
+                    PyDescriptor::Primitive(PyPrimitive::Int),
                 ],
                 discriminator: None
             })
@@ -100,9 +100,9 @@ mod tests {
     #[test]
     fn test_render_dict() {
         assert_snapshot!(
-            PYDescriptor::Dict(Box::new(PYDict {
-                key: PYDictKey::String,
-                descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
+            PyDescriptor::Dict(Box::new(PyDict {
+                key: PyDictKey::String,
+                descriptor: PyDescriptor::Primitive(PyPrimitive::Int),
             }))
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -113,7 +113,7 @@ mod tests {
     #[test]
     fn test_render_any() {
         assert_snapshot!(
-            PYDescriptor::Any(PYAny)
+            PyDescriptor::Any(PyAny)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"Any"

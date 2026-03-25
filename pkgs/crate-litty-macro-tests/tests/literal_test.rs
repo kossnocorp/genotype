@@ -127,7 +127,7 @@ fn test_clone() {
 fn test_enum_structs() {
     #[derive(PartialEq, Debug, Serialize, Deserialize)]
     #[serde(untagged)]
-    pub enum ABC {
+    pub enum Abc {
         A(A),
         B(B),
         C(C),
@@ -142,14 +142,14 @@ fn test_enum_structs() {
     #[literal("c")]
     pub struct C;
 
-    assert_eq!(serde_json::to_string_pretty(&ABC::B(B)).unwrap(), r#""b""#);
-    assert_eq!(serde_json::from_str::<ABC>(r#""b""#).unwrap(), ABC::B(B));
+    assert_eq!(serde_json::to_string_pretty(&Abc::B(B)).unwrap(), r#""b""#);
+    assert_eq!(serde_json::from_str::<Abc>(r#""b""#).unwrap(), Abc::B(B));
 }
 
 #[test]
 fn test_enum_variants() {
     #[derive(Debug, PartialEq, Literals)]
-    pub enum ABC {
+    pub enum Abc {
         #[literal("a")]
         A,
         #[literal("b")]
@@ -158,35 +158,35 @@ fn test_enum_variants() {
         C,
     }
 
-    assert_eq!(serde_json::to_string_pretty(&ABC::B).unwrap(), r#""b""#);
-    assert_eq!(serde_json::from_str::<ABC>(r#""b""#).unwrap(), ABC::B);
+    assert_eq!(serde_json::to_string_pretty(&Abc::B).unwrap(), r#""b""#);
+    assert_eq!(serde_json::from_str::<Abc>(r#""b""#).unwrap(), Abc::B);
 }
 
 #[test]
 fn test_enum_serialize_literals() {
     #[derive(Debug, PartialEq, SerializeLiterals)]
-    pub enum ABC {
+    pub enum Abc {
         #[literal("a")]
         A,
         #[literal("b")]
         B,
     }
 
-    assert_eq!(serde_json::to_string_pretty(&ABC::A).unwrap(), r#""a""#);
-    assert_eq!(serde_json::to_string_pretty(&ABC::B).unwrap(), r#""b""#);
+    assert_eq!(serde_json::to_string_pretty(&Abc::A).unwrap(), r#""a""#);
+    assert_eq!(serde_json::to_string_pretty(&Abc::B).unwrap(), r#""b""#);
 }
 
 #[test]
 fn test_enum_deserialize_literals() {
     #[derive(Debug, PartialEq, DeserializeLiterals)]
-    pub enum ABC {
+    pub enum Abc {
         #[literal("a")]
         A,
         #[literal("b")]
         B,
     }
 
-    assert_eq!(serde_json::from_str::<ABC>(r#""b""#).unwrap(), ABC::B);
+    assert_eq!(serde_json::from_str::<Abc>(r#""b""#).unwrap(), Abc::B);
 }
 
 #[test]

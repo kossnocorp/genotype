@@ -4,9 +4,9 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct TSRecord {
+pub struct TsRecord {
     #[visit]
-    pub key: TSRecordKey,
+    pub key: TsRecordKey,
     #[visit]
-    pub descriptor: TSDescriptor,
+    pub descriptor: TsDescriptor,
 }

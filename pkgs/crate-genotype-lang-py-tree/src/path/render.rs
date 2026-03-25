@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYPath {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyPath {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
     fn render(
         &self,
@@ -22,7 +22,7 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            PYPath(".path.to.module".into())
+            PyPath(".path.to.module".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @".path.to.module"

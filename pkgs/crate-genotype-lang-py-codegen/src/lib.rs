@@ -8,16 +8,16 @@ pub mod prelude;
 
 #[derive(Default)]
 pub struct PyCodegen {
-    module: PYModule,
-    convert_context: PYConvertContext,
+    module: PyModule,
+    convert_context: PyConvertContext,
 }
 
 impl PyCodegen {}
 
 impl GtlCodegen for PyCodegen {
-    type Import = PYImport;
+    type Import = PyImport;
 
-    type Definition = PYDefinition;
+    type Definition = PyDefinition;
 
     fn register_import(&mut self, import: Self::Import) {
         self.module.imports.push(import);
@@ -27,7 +27,7 @@ impl GtlCodegen for PyCodegen {
         self.module.definitions.push(definition);
     }
 
-    fn inject_descriptor(&mut self, descriptor: GTDescriptor) -> Result<String, Report> {
+    fn inject_descriptor(&mut self, descriptor: GtDescriptor) -> Result<String, Report> {
         let descriptor = descriptor.convert(&mut self.convert_context);
 
         let imports = self.convert_context.drain_imports();
@@ -56,8 +56,8 @@ mod tests {
     #[test]
     fn test_register_import() {
         let mut codegen = PyCodegen::default();
-        codegen.register_import(PYImport::new("dependency".into(), "Name".into()));
-        codegen.register_import(PYImport::new("another".into(), "AlsoName".into()));
+        codegen.register_import(PyImport::new("dependency".into(), "Name".into()));
+        codegen.register_import(PyImport::new("another".into(), "AlsoName".into()));
         assert_snapshot!(
             codegen.render_module().unwrap(),
             @"
@@ -71,10 +71,10 @@ mod tests {
     fn test_register_definition() {
         let mut codegen = PyCodegen::default();
         codegen.register_definition(
-            PYAlias {
+            PyAlias {
                 doc: None,
                 name: "Name".into(),
-                descriptor: PYAny.into(),
+                descriptor: PyAny.into(),
                 references: vec![],
             }
             .into(),
@@ -88,7 +88,7 @@ mod tests {
     #[test]
     fn test_inject_descriptor() {
         let mut codegen = PyCodegen::default();
-        let primitive = GTDescriptor::Primitive(Gt::primitive_string());
+        let primitive = GtDescriptor::Primitive(Gt::primitive_string());
         let result = codegen.inject_descriptor(primitive).unwrap();
         assert_snapshot!(
             result,
@@ -103,12 +103,12 @@ mod tests {
     #[test]
     fn test_inject_descriptor_with_hoisted() {
         let mut codegen = PyCodegen::default();
-        let alias = GTDescriptor::Alias(Box::new(GTAlias {
-            id: GTDefinitionId(GTModuleId("module".into()), "Hello".into()),
+        let alias = GtDescriptor::Alias(Box::new(GtAlias {
+            id: GtDefinitionId(GtModuleId("module".into()), "Hello".into()),
             span: Default::default(),
             doc: None,
             attributes: vec![],
-            name: GTIdentifier::new(Default::default(), "Hello".into()),
+            name: GtIdentifier::new(Default::default(), "Hello".into()),
             descriptor: Gt::primitive_string().into(),
         }));
         let result = codegen.inject_descriptor(alias).unwrap();
@@ -122,12 +122,12 @@ mod tests {
     #[test]
     fn test_inject_descriptor_with_imports() {
         let mut codegen = PyCodegen::default();
-        let alias = GTDescriptor::Alias(Box::new(GTAlias {
-            id: GTDefinitionId(GTModuleId("module".into()), "Hello".into()),
+        let alias = GtDescriptor::Alias(Box::new(GtAlias {
+            id: GtDefinitionId(GtModuleId("module".into()), "Hello".into()),
             span: Default::default(),
             doc: None,
             attributes: vec![],
-            name: GTIdentifier::new(Default::default(), "Hello".into()),
+            name: GtIdentifier::new(Default::default(), "Hello".into()),
             descriptor: Gt::literal_string("hello").into(),
         }));
         let result = codegen.inject_descriptor(alias).unwrap();

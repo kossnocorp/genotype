@@ -1,4 +1,4 @@
-use crate::diagnostic::error::GTCliError;
+use crate::diagnostic::error::GtCliError;
 use clap::Args;
 use genotype_config::GtConfig;
 use genotype_lang_core_project::*;
@@ -6,19 +6,19 @@ use genotype_lang_py_project::*;
 use genotype_lang_rs_project::*;
 use genotype_lang_ts_project::*;
 use genotype_project::GtProject;
-use genotype_writer::GTWriter;
+use genotype_writer::GtWriter;
 use miette::Result;
 use owo_colors::OwoColorize;
 use std::path::PathBuf;
 
 #[derive(Args)]
-pub struct GTBuildCommand {
+pub struct GtBuildCommand {
     /// What to build
     #[arg(default_value = ".")]
     path: PathBuf,
 }
 
-pub fn build_command(args: &GTBuildCommand) -> Result<()> {
+pub fn build_command(args: &GtBuildCommand) -> Result<()> {
     let config = GtConfig::load(&args.path)?;
     let project = GtProject::load(&config)?;
 
@@ -39,7 +39,7 @@ pub fn build_command(args: &GTBuildCommand) -> Result<()> {
         langs.push(rs);
     }
 
-    GTWriter::write(&langs, &project.config).map_err(|_| GTCliError::Write)?;
+    GtWriter::write(&langs, &project.config).map_err(|_| GtCliError::Write)?;
 
     println!(
         "{} project to {:?}",

@@ -1,13 +1,13 @@
 use crate::prelude::internal::*;
 
-use super::RSConvertContext;
+use super::RsConvertContext;
 
-impl RSConvertContext {
+impl RsConvertContext {
     pub fn attribute_field(&mut self, attribute: String) {
-        self.field_attributes.push(RSAttribute(attribute));
+        self.field_attributes.push(RsAttribute(attribute));
     }
 
-    pub fn drain_field_attributes(&mut self) -> Vec<RSAttribute> {
+    pub fn drain_field_attributes(&mut self) -> Vec<RsAttribute> {
         self.field_attributes.drain(..).collect()
     }
 }

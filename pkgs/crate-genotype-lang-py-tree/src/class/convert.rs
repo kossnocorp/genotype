@@ -1,12 +1,12 @@
 use crate::prelude::internal::*;
 
-impl PYConvert<PYClass> for GTObject {
-    fn convert(&self, context: &mut PYConvertContext) -> PYClass {
+impl PyConvert<PyClass> for GtObject {
+    fn convert(&self, context: &mut PyConvertContext) -> PyClass {
         context.create_references_scope();
 
         let name = match &self.name {
-            GTObjectName::Named(identifier) => identifier.convert(context),
-            GTObjectName::Alias(identifier, _) => identifier.convert(context),
+            GtObjectName::Named(identifier) => identifier.convert(context),
+            GtObjectName::Alias(identifier, _) => identifier.convert(context),
         };
 
         let doc = context.consume_doc();
@@ -15,7 +15,7 @@ impl PYConvert<PYClass> for GTObject {
 
         let references = context.pop_references_scope();
 
-        PYClass {
+        PyClass {
             doc,
             name,
             extensions,
@@ -34,47 +34,47 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTObject {
+            GtObject {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
+                name: GtObjectName::Named(GtIdentifier::new((0, 0).into(), "Person".into())),
                 extensions: vec![],
                 properties: vec![
-                    GTProperty {
+                    GtProperty {
                         span: (0, 0).into(),
                         doc: None,
                         attributes: vec![],
-                        name: GTKey::new((0, 0).into(), "name".into()),
+                        name: GtKey::new((0, 0).into(), "name".into()),
                         descriptor: Gt::primitive_string().into(),
                         required: true,
                     },
-                    GTProperty {
+                    GtProperty {
                         span: (0, 0).into(),
                         doc: None,
                         attributes: vec![],
-                        name: GTKey::new((0, 0).into(), "age".into()),
+                        name: GtKey::new((0, 0).into(), "age".into()),
                         descriptor: Gt::primitive_i32().into(),
                         required: false,
                     }
                 ]
             }
-            .convert(&mut PYConvertContext::default()),
+            .convert(&mut PyConvertContext::default()),
             @r#"
-        PYClass(
+        PyClass(
           doc: None,
-          name: PYIdentifier("Person"),
+          name: PyIdentifier("Person"),
           extensions: [],
           properties: [
-            PYProperty(
+            PyProperty(
               doc: None,
-              name: PYKey("name"),
+              name: PyKey("name"),
               descriptor: Primitive(String),
               required: true,
             ),
-            PYProperty(
+            PyProperty(
               doc: None,
-              name: PYKey("age"),
+              name: PyKey("age"),
               descriptor: Primitive(Int),
               required: false,
             ),
@@ -87,21 +87,21 @@ mod tests {
 
     #[test]
     fn test_convert_resolve() {
-        let mut context = PYConvertContext::default();
+        let mut context = PyConvertContext::default();
         assert_ron_snapshot!(
-            GTObject {
+            GtObject {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
+                name: GtObjectName::Named(GtIdentifier::new((0, 0).into(), "Person".into())),
                 extensions: vec![],
                 properties: vec![]
             }
             .convert(&mut context),
             @r#"
-        PYClass(
+        PyClass(
           doc: None,
-          name: PYIdentifier("Person"),
+          name: PyIdentifier("Person"),
           extensions: [],
           properties: [],
           references: [],
@@ -112,7 +112,7 @@ mod tests {
             context.as_dependencies(),
             @r#"
         [
-          (Runtime, PYIdentifier("Model")),
+          (Runtime, PyIdentifier("Model")),
         ]
         "#
         );
@@ -120,22 +120,22 @@ mod tests {
 
     #[test]
     fn test_convert_doc() {
-        let mut context = PYConvertContext::default();
-        context.provide_doc(Some(PYDoc("Hello, world!".into())));
+        let mut context = PyConvertContext::default();
+        context.provide_doc(Some(PyDoc("Hello, world!".into())));
         assert_ron_snapshot!(
-            GTObject {
+            GtObject {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
+                name: GtObjectName::Named(GtIdentifier::new((0, 0).into(), "Person".into())),
                 extensions: vec![],
                 properties: vec![],
             }
             .convert(&mut context),
             @r#"
-        PYClass(
-          doc: Some(PYDoc("Hello, world!")),
-          name: PYIdentifier("Person"),
+        PyClass(
+          doc: Some(PyDoc("Hello, world!")),
+          name: PyIdentifier("Person"),
           extensions: [],
           properties: [],
           references: [],

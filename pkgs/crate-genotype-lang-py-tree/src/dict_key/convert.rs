@@ -1,23 +1,23 @@
 use crate::prelude::internal::*;
 
-impl PYConvert<PYDictKey> for GTRecordKey {
-    fn convert(&self, _context: &mut PYConvertContext) -> PYDictKey {
+impl PyConvert<PyDictKey> for GtRecordKey {
+    fn convert(&self, _context: &mut PyConvertContext) -> PyDictKey {
         match self {
-            GTRecordKey::String(_) => PYDictKey::String,
-            GTRecordKey::Int8(_)
-            | GTRecordKey::Int16(_)
-            | GTRecordKey::Int32(_)
-            | GTRecordKey::Int64(_)
-            | GTRecordKey::Int128(_)
-            | GTRecordKey::IntSize(_)
-            | GTRecordKey::IntU8(_)
-            | GTRecordKey::IntU16(_)
-            | GTRecordKey::IntU32(_)
-            | GTRecordKey::IntU64(_)
-            | GTRecordKey::IntU128(_)
-            | GTRecordKey::IntUSize(_) => PYDictKey::Int,
-            GTRecordKey::Number(_) | GTRecordKey::Float32(_) | GTRecordKey::Float64(_) => {
-                PYDictKey::Float
+            GtRecordKey::String(_) => PyDictKey::String,
+            GtRecordKey::Int8(_)
+            | GtRecordKey::Int16(_)
+            | GtRecordKey::Int32(_)
+            | GtRecordKey::Int64(_)
+            | GtRecordKey::Int128(_)
+            | GtRecordKey::IntSize(_)
+            | GtRecordKey::IntU8(_)
+            | GtRecordKey::IntU16(_)
+            | GtRecordKey::IntU32(_)
+            | GtRecordKey::IntU64(_)
+            | GtRecordKey::IntU128(_)
+            | GtRecordKey::IntUSize(_) => PyDictKey::Int,
+            GtRecordKey::Number(_) | GtRecordKey::Float32(_) | GtRecordKey::Float64(_) => {
+                PyDictKey::Float
             }
         }
     }

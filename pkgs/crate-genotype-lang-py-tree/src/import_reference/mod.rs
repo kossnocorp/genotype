@@ -3,14 +3,14 @@ use crate::prelude::internal::*;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub enum PYImportReference {
-    Default(#[visit] Option<PYIdentifier>),
+pub enum PyImportReference {
+    Default(#[visit] Option<PyIdentifier>),
     Glob,
-    Named(#[visit] Vec<PYImportName>),
+    Named(#[visit] Vec<PyImportName>),
 }
 
-impl From<&str> for PYImportReference {
+impl From<&str> for PyImportReference {
     fn from(str: &str) -> Self {
-        PYImportReference::Named(vec![str.into()])
+        PyImportReference::Named(vec![str.into()])
     }
 }

@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl TSConvert<TSArray> for GTArray {
-    fn convert(&self, context: &mut TSConvertContext) -> TSArray {
-        TSArray {
+impl TsConvert<TsArray> for GtArray {
+    fn convert(&self, context: &mut TsConvertContext) -> TsArray {
+        TsArray {
             descriptor: self.descriptor.convert(context),
         }
     }
@@ -18,7 +18,7 @@ mod tests {
         assert_ron_snapshot!(
             convert_node(Gt::array(Gt::primitive_boolean())),
             @"
-        TSArray(
+        TsArray(
           descriptor: Primitive(Boolean),
         )
         "

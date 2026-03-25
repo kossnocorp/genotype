@@ -15,222 +15,222 @@ pub use parser::*;
 pub struct Gt {}
 
 impl Gt {
-    pub fn literal_boolean(value: bool) -> GTLiteral {
-        GTLiteral {
+    pub fn literal_boolean(value: bool) -> GtLiteral {
+        GtLiteral {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            value: GTLiteralValue::Boolean(value),
+            value: GtLiteralValue::Boolean(value),
         }
     }
 
-    pub fn literal_integer(value: i64) -> GTLiteral {
-        GTLiteral {
+    pub fn literal_integer(value: i64) -> GtLiteral {
+        GtLiteral {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            value: GTLiteralValue::Integer(value),
+            value: GtLiteralValue::Integer(value),
         }
     }
 
-    pub fn literal_float(value: f64) -> GTLiteral {
-        GTLiteral {
+    pub fn literal_float(value: f64) -> GtLiteral {
+        GtLiteral {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            value: GTLiteralValue::Float(value),
+            value: GtLiteralValue::Float(value),
         }
     }
 
-    pub fn literal_string(value: &str) -> GTLiteral {
-        GTLiteral {
+    pub fn literal_string(value: &str) -> GtLiteral {
+        GtLiteral {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            value: GTLiteralValue::String(value.into()),
+            value: GtLiteralValue::String(value.into()),
         }
     }
 
-    pub fn literal_null() -> GTLiteral {
-        GTLiteral {
+    pub fn literal_null() -> GtLiteral {
+        GtLiteral {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            value: GTLiteralValue::Null,
+            value: GtLiteralValue::Null,
         }
     }
 
-    pub fn primitive_boolean() -> GTPrimitive {
-        GTPrimitive {
+    pub fn primitive_boolean() -> GtPrimitive {
+        GtPrimitive {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            kind: GTPrimitiveKind::Boolean,
+            kind: GtPrimitiveKind::Boolean,
         }
     }
 
-    pub fn primitive_string() -> GTPrimitive {
-        GTPrimitive {
+    pub fn primitive_string() -> GtPrimitive {
+        GtPrimitive {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            kind: GTPrimitiveKind::String,
+            kind: GtPrimitiveKind::String,
         }
     }
 
-    pub fn primitive_number() -> GTPrimitive {
-        GTPrimitive {
+    pub fn primitive_number() -> GtPrimitive {
+        GtPrimitive {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            kind: GTPrimitiveKind::Number,
+            kind: GtPrimitiveKind::Number,
         }
     }
 
-    pub fn primitive_i8() -> GTPrimitive {
-        GTPrimitive {
+    pub fn primitive_i8() -> GtPrimitive {
+        GtPrimitive {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            kind: GTPrimitiveKind::Int8,
+            kind: GtPrimitiveKind::Int8,
         }
     }
 
-    pub fn primitive_i16() -> GTPrimitive {
-        GTPrimitive {
+    pub fn primitive_i16() -> GtPrimitive {
+        GtPrimitive {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            kind: GTPrimitiveKind::Int16,
+            kind: GtPrimitiveKind::Int16,
         }
     }
 
-    pub fn primitive_i32() -> GTPrimitive {
-        GTPrimitive {
+    pub fn primitive_i32() -> GtPrimitive {
+        GtPrimitive {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            kind: GTPrimitiveKind::Int32,
+            kind: GtPrimitiveKind::Int32,
         }
     }
 
-    pub fn primitive_i64() -> GTPrimitive {
-        GTPrimitive {
+    pub fn primitive_i64() -> GtPrimitive {
+        GtPrimitive {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            kind: GTPrimitiveKind::Int64,
+            kind: GtPrimitiveKind::Int64,
         }
     }
 
-    pub fn primitive_i128() -> GTPrimitive {
-        GTPrimitive {
+    pub fn primitive_i128() -> GtPrimitive {
+        GtPrimitive {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            kind: GTPrimitiveKind::Int128,
+            kind: GtPrimitiveKind::Int128,
         }
     }
 
-    pub fn primitive_isize() -> GTPrimitive {
-        GTPrimitive {
+    pub fn primitive_isize() -> GtPrimitive {
+        GtPrimitive {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            kind: GTPrimitiveKind::IntSize,
+            kind: GtPrimitiveKind::IntSize,
         }
     }
 
-    pub fn primitive_u8() -> GTPrimitive {
-        GTPrimitive {
+    pub fn primitive_u8() -> GtPrimitive {
+        GtPrimitive {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            kind: GTPrimitiveKind::IntU8,
+            kind: GtPrimitiveKind::IntU8,
         }
     }
 
-    pub fn primitive_u16() -> GTPrimitive {
-        GTPrimitive {
+    pub fn primitive_u16() -> GtPrimitive {
+        GtPrimitive {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            kind: GTPrimitiveKind::IntU16,
+            kind: GtPrimitiveKind::IntU16,
         }
     }
 
-    pub fn primitive_u32() -> GTPrimitive {
-        GTPrimitive {
+    pub fn primitive_u32() -> GtPrimitive {
+        GtPrimitive {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            kind: GTPrimitiveKind::IntU32,
+            kind: GtPrimitiveKind::IntU32,
         }
     }
 
-    pub fn primitive_u64() -> GTPrimitive {
-        GTPrimitive {
+    pub fn primitive_u64() -> GtPrimitive {
+        GtPrimitive {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            kind: GTPrimitiveKind::IntU64,
+            kind: GtPrimitiveKind::IntU64,
         }
     }
 
-    pub fn primitive_u128() -> GTPrimitive {
-        GTPrimitive {
+    pub fn primitive_u128() -> GtPrimitive {
+        GtPrimitive {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            kind: GTPrimitiveKind::IntU128,
+            kind: GtPrimitiveKind::IntU128,
         }
     }
 
-    pub fn primitive_usize() -> GTPrimitive {
-        GTPrimitive {
+    pub fn primitive_usize() -> GtPrimitive {
+        GtPrimitive {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            kind: GTPrimitiveKind::IntUSize,
+            kind: GtPrimitiveKind::IntUSize,
         }
     }
 
-    pub fn primitive_f32() -> GTPrimitive {
-        GTPrimitive {
+    pub fn primitive_f32() -> GtPrimitive {
+        GtPrimitive {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            kind: GTPrimitiveKind::Float32,
+            kind: GtPrimitiveKind::Float32,
         }
     }
 
-    pub fn primitive_f64() -> GTPrimitive {
-        GTPrimitive {
+    pub fn primitive_f64() -> GtPrimitive {
+        GtPrimitive {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            kind: GTPrimitiveKind::Float64,
+            kind: GtPrimitiveKind::Float64,
         }
     }
 
-    pub fn identifier(name: &str) -> GTIdentifier {
-        GTIdentifier((0, 0).into(), name.into())
+    pub fn identifier(name: &str) -> GtIdentifier {
+        GtIdentifier((0, 0).into(), name.into())
     }
 
-    pub fn definition_id(name: &str) -> GTDefinitionId {
-        GTDefinitionId("module".into(), name.into())
+    pub fn definition_id(name: &str) -> GtDefinitionId {
+        GtDefinitionId("module".into(), name.into())
     }
 
-    pub fn reference_definition_id(name: &str) -> GTReferenceDefinitionId {
-        GTReferenceDefinitionId::Resolved(Self::definition_id(name))
+    pub fn reference_definition_id(name: &str) -> GtReferenceDefinitionId {
+        GtReferenceDefinitionId::Resolved(Self::definition_id(name))
     }
 
-    pub fn reference_id() -> GTReferenceId {
-        GTReferenceId("module".into(), (0, 0).into())
+    pub fn reference_id() -> GtReferenceId {
+        GtReferenceId("module".into(), (0, 0).into())
     }
 
-    pub fn reference(name: &str) -> GTReference {
-        GTReference {
+    pub fn reference(name: &str) -> GtReference {
+        GtReference {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
@@ -240,8 +240,8 @@ impl Gt {
         }
     }
 
-    pub fn inline_import(path: &str, name: &str) -> GTInlineImport {
-        GTInlineImport {
+    pub fn inline_import(path: &str, name: &str) -> GtInlineImport {
+        GtInlineImport {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
@@ -250,83 +250,83 @@ impl Gt {
         }
     }
 
-    pub fn path(path: &str) -> GTPath {
-        GTPath::new((0, 0).into(), Self::path_module_id(), path.into())
+    pub fn path(path: &str) -> GtPath {
+        GtPath::new((0, 0).into(), Self::path_module_id(), path.into())
     }
 
-    pub fn path_module_id() -> GTPathModuleId {
-        GTPathModuleId::Resolved("path/to/module".into())
+    pub fn path_module_id() -> GtPathModuleId {
+        GtPathModuleId::Resolved("path/to/module".into())
     }
 
-    pub fn object(name: &str, properties: Vec<GTProperty>) -> GTObject {
-        GTObject {
+    pub fn object(name: &str, properties: Vec<GtProperty>) -> GtObject {
+        GtObject {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            name: GTIdentifier::new((0, 0).into(), name.into()).into(),
+            name: GtIdentifier::new((0, 0).into(), name.into()).into(),
             extensions: vec![],
             properties,
         }
     }
 
-    pub fn property<Type>(name: &str, descriptor: Type) -> GTProperty
+    pub fn property<Type>(name: &str, descriptor: Type) -> GtProperty
     where
-        Type: Into<GTDescriptor>,
+        Type: Into<GtDescriptor>,
     {
-        GTProperty {
+        GtProperty {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            name: GTKey::new((0, 0).into(), name.into()),
+            name: GtKey::new((0, 0).into(), name.into()),
             descriptor: descriptor.into(),
             required: true,
         }
     }
 
-    pub fn property_optional<Type>(name: &str, descriptor: Type) -> GTProperty
+    pub fn property_optional<Type>(name: &str, descriptor: Type) -> GtProperty
     where
-        Type: Into<GTDescriptor>,
+        Type: Into<GtDescriptor>,
     {
-        GTProperty {
+        GtProperty {
             required: false,
             ..Gt::property(name, descriptor)
         }
     }
 
-    pub fn alias<Type>(name: &str, descriptor: Type) -> GTAlias
+    pub fn alias<Type>(name: &str, descriptor: Type) -> GtAlias
     where
-        Type: Into<GTDescriptor>,
+        Type: Into<GtDescriptor>,
     {
-        GTAlias {
-            id: GTDefinitionId("module".into(), name.into()),
+        GtAlias {
+            id: GtDefinitionId("module".into(), name.into()),
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
-            name: GTIdentifier::new((0, 0).into(), name.into()),
+            name: GtIdentifier::new((0, 0).into(), name.into()),
             descriptor: descriptor.into(),
         }
     }
 
-    pub fn some_doc(doc: &str) -> Option<GTDoc> {
+    pub fn some_doc(doc: &str) -> Option<GtDoc> {
         Some(Self::doc(doc))
     }
 
-    pub fn doc(doc: &str) -> GTDoc {
-        GTDoc((0, 0).into(), doc.into())
+    pub fn doc(doc: &str) -> GtDoc {
+        GtDoc((0, 0).into(), doc.into())
     }
 
-    pub fn descriptor<Type>(descriptor: Type) -> GTDescriptor
+    pub fn descriptor<Type>(descriptor: Type) -> GtDescriptor
     where
-        Type: Into<GTDescriptor>,
+        Type: Into<GtDescriptor>,
     {
         descriptor.into()
     }
 
-    pub fn array<Type>(descriptor: Type) -> GTArray
+    pub fn array<Type>(descriptor: Type) -> GtArray
     where
-        Type: Into<GTDescriptor>,
+        Type: Into<GtDescriptor>,
     {
-        GTArray {
+        GtArray {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
@@ -334,8 +334,8 @@ impl Gt {
         }
     }
 
-    pub fn tuple(descriptors: Vec<GTDescriptor>) -> GTTuple {
-        GTTuple {
+    pub fn tuple(descriptors: Vec<GtDescriptor>) -> GtTuple {
+        GtTuple {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
@@ -343,16 +343,16 @@ impl Gt {
         }
     }
 
-    pub fn any() -> GTAny {
-        GTAny {
+    pub fn any() -> GtAny {
+        GtAny {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
         }
     }
 
-    pub fn branded(name: &str, primitive: GTPrimitive) -> GTBranded {
-        GTBranded {
+    pub fn branded(name: &str, primitive: GtPrimitive) -> GtBranded {
+        GtBranded {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
@@ -362,11 +362,11 @@ impl Gt {
         }
     }
 
-    pub fn record<Type>(key: GTRecordKey, descriptor: Type) -> GTRecord
+    pub fn record<Type>(key: GtRecordKey, descriptor: Type) -> GtRecord
     where
-        Type: Into<GTDescriptor>,
+        Type: Into<GtDescriptor>,
     {
-        GTRecord {
+        GtRecord {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],
@@ -375,112 +375,112 @@ impl Gt {
         }
     }
 
-    pub fn record_key_string() -> GTRecordKey {
-        GTRecordKey::String((0, 0).into())
+    pub fn record_key_string() -> GtRecordKey {
+        GtRecordKey::String((0, 0).into())
     }
 
-    pub fn record_key_number() -> GTRecordKey {
-        GTRecordKey::Number((0, 0).into())
+    pub fn record_key_number() -> GtRecordKey {
+        GtRecordKey::Number((0, 0).into())
     }
 
-    pub fn record_key_i8() -> GTRecordKey {
-        GTRecordKey::Int8((0, 0).into())
+    pub fn record_key_i8() -> GtRecordKey {
+        GtRecordKey::Int8((0, 0).into())
     }
 
-    pub fn record_key_i16() -> GTRecordKey {
-        GTRecordKey::Int16((0, 0).into())
+    pub fn record_key_i16() -> GtRecordKey {
+        GtRecordKey::Int16((0, 0).into())
     }
 
-    pub fn record_key_i32() -> GTRecordKey {
-        GTRecordKey::Int32((0, 0).into())
+    pub fn record_key_i32() -> GtRecordKey {
+        GtRecordKey::Int32((0, 0).into())
     }
 
-    pub fn record_key_i64() -> GTRecordKey {
-        GTRecordKey::Int64((0, 0).into())
+    pub fn record_key_i64() -> GtRecordKey {
+        GtRecordKey::Int64((0, 0).into())
     }
 
-    pub fn record_key_i128() -> GTRecordKey {
-        GTRecordKey::Int128((0, 0).into())
+    pub fn record_key_i128() -> GtRecordKey {
+        GtRecordKey::Int128((0, 0).into())
     }
 
-    pub fn record_key_isize() -> GTRecordKey {
-        GTRecordKey::IntSize((0, 0).into())
+    pub fn record_key_isize() -> GtRecordKey {
+        GtRecordKey::IntSize((0, 0).into())
     }
 
-    pub fn record_key_u8() -> GTRecordKey {
-        GTRecordKey::IntU8((0, 0).into())
+    pub fn record_key_u8() -> GtRecordKey {
+        GtRecordKey::IntU8((0, 0).into())
     }
 
-    pub fn record_key_u16() -> GTRecordKey {
-        GTRecordKey::IntU16((0, 0).into())
+    pub fn record_key_u16() -> GtRecordKey {
+        GtRecordKey::IntU16((0, 0).into())
     }
 
-    pub fn record_key_u32() -> GTRecordKey {
-        GTRecordKey::IntU32((0, 0).into())
+    pub fn record_key_u32() -> GtRecordKey {
+        GtRecordKey::IntU32((0, 0).into())
     }
 
-    pub fn record_key_u64() -> GTRecordKey {
-        GTRecordKey::IntU64((0, 0).into())
+    pub fn record_key_u64() -> GtRecordKey {
+        GtRecordKey::IntU64((0, 0).into())
     }
 
-    pub fn record_key_u128() -> GTRecordKey {
-        GTRecordKey::IntU128((0, 0).into())
+    pub fn record_key_u128() -> GtRecordKey {
+        GtRecordKey::IntU128((0, 0).into())
     }
 
-    pub fn record_key_usize() -> GTRecordKey {
-        GTRecordKey::IntUSize((0, 0).into())
+    pub fn record_key_usize() -> GtRecordKey {
+        GtRecordKey::IntUSize((0, 0).into())
     }
 
-    pub fn record_key_f32() -> GTRecordKey {
-        GTRecordKey::Float32((0, 0).into())
+    pub fn record_key_f32() -> GtRecordKey {
+        GtRecordKey::Float32((0, 0).into())
     }
 
-    pub fn record_key_f64() -> GTRecordKey {
-        GTRecordKey::Float64((0, 0).into())
+    pub fn record_key_f64() -> GtRecordKey {
+        GtRecordKey::Float64((0, 0).into())
     }
 
-    pub fn attribute<Type>(name: &str, descriptor: Type) -> GTAttribute
+    pub fn attribute<Type>(name: &str, descriptor: Type) -> GtAttribute
     where
-        Type: Into<GTAttributeDescriptor>,
+        Type: Into<GtAttributeDescriptor>,
     {
-        GTAttribute {
+        GtAttribute {
             span: (0, 2).into(),
             name: Self::attribute_name(name),
             descriptor: Some(descriptor.into()),
         }
     }
 
-    pub fn attribute_flag(name: &str) -> GTAttribute {
-        GTAttribute {
+    pub fn attribute_flag(name: &str) -> GtAttribute {
+        GtAttribute {
             span: (0, 2).into(),
             name: Self::attribute_name(name),
             descriptor: None,
         }
     }
 
-    pub fn attribute_name(value: &str) -> GTAttributeName {
-        GTAttributeName {
+    pub fn attribute_name(value: &str) -> GtAttributeName {
+        GtAttributeName {
             span: (0, 0).into(),
             value: value.into(),
         }
     }
 
-    pub fn attribute_assignment<Type>(value: Type) -> GTAttributeAssignment
+    pub fn attribute_assignment<Type>(value: Type) -> GtAttributeAssignment
     where
-        Type: Into<GTAttributeValue>,
+        Type: Into<GtAttributeValue>,
     {
-        GTAttributeAssignment {
+        GtAttributeAssignment {
             span: (0, 0).into(),
             value: value.into(),
         }
     }
 
-    pub fn context() -> GTContext {
-        GTContext::new("module".into())
+    pub fn context() -> GtContext {
+        GtContext::new("module".into())
     }
 
-    pub fn union(descriptors: Vec<GTDescriptor>) -> GTUnion {
-        GTUnion {
+    pub fn union(descriptors: Vec<GtDescriptor>) -> GtUnion {
+        GtUnion {
             span: (0, 0).into(),
             doc: None,
             attributes: vec![],

@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
-pub enum GTPrimitiveKind {
+pub enum GtPrimitiveKind {
     Boolean,
     String,
     Number,
@@ -21,55 +21,55 @@ pub enum GTPrimitiveKind {
     Float64,
 }
 
-impl Display for GTPrimitiveKind {
+impl Display for GtPrimitiveKind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            GTPrimitiveKind::Boolean => write!(f, "bool"),
-            GTPrimitiveKind::String => write!(f, "str"),
-            GTPrimitiveKind::Number => write!(f, "number"),
-            GTPrimitiveKind::Int8 => write!(f, "i8"),
-            GTPrimitiveKind::Int16 => write!(f, "i16"),
-            GTPrimitiveKind::Int32 => write!(f, "i32"),
-            GTPrimitiveKind::Int64 => write!(f, "i64"),
-            GTPrimitiveKind::Int128 => write!(f, "i128"),
-            GTPrimitiveKind::IntSize => write!(f, "isize"),
-            GTPrimitiveKind::IntU8 => write!(f, "u8"),
-            GTPrimitiveKind::IntU16 => write!(f, "u16"),
-            GTPrimitiveKind::IntU32 => write!(f, "u32"),
-            GTPrimitiveKind::IntU64 => write!(f, "u64"),
-            GTPrimitiveKind::IntU128 => write!(f, "u128"),
-            GTPrimitiveKind::IntUSize => write!(f, "usize"),
-            GTPrimitiveKind::Float32 => write!(f, "f32"),
-            GTPrimitiveKind::Float64 => write!(f, "f64"),
+            GtPrimitiveKind::Boolean => write!(f, "bool"),
+            GtPrimitiveKind::String => write!(f, "str"),
+            GtPrimitiveKind::Number => write!(f, "number"),
+            GtPrimitiveKind::Int8 => write!(f, "i8"),
+            GtPrimitiveKind::Int16 => write!(f, "i16"),
+            GtPrimitiveKind::Int32 => write!(f, "i32"),
+            GtPrimitiveKind::Int64 => write!(f, "i64"),
+            GtPrimitiveKind::Int128 => write!(f, "i128"),
+            GtPrimitiveKind::IntSize => write!(f, "isize"),
+            GtPrimitiveKind::IntU8 => write!(f, "u8"),
+            GtPrimitiveKind::IntU16 => write!(f, "u16"),
+            GtPrimitiveKind::IntU32 => write!(f, "u32"),
+            GtPrimitiveKind::IntU64 => write!(f, "u64"),
+            GtPrimitiveKind::IntU128 => write!(f, "u128"),
+            GtPrimitiveKind::IntUSize => write!(f, "usize"),
+            GtPrimitiveKind::Float32 => write!(f, "f32"),
+            GtPrimitiveKind::Float64 => write!(f, "f64"),
         }
     }
 }
 
-impl GTPrimitiveKind {
-    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
+impl GtPrimitiveKind {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> GtNodeParseResult<Self> {
         let span = pair.as_span().into();
         match pair.as_str() {
-            "boolean" => Ok(GTPrimitiveKind::Boolean),
-            "string" => Ok(GTPrimitiveKind::String),
-            "number" => Ok(GTPrimitiveKind::Number),
-            "int" => Ok(GTPrimitiveKind::Int64),
-            "i8" => Ok(GTPrimitiveKind::Int8),
-            "i16" => Ok(GTPrimitiveKind::Int16),
-            "i32" => Ok(GTPrimitiveKind::Int32),
-            "i64" => Ok(GTPrimitiveKind::Int64),
-            "i128" => Ok(GTPrimitiveKind::Int128),
-            "isize" => Ok(GTPrimitiveKind::IntSize),
-            "uint" => Ok(GTPrimitiveKind::IntU32),
-            "u8" => Ok(GTPrimitiveKind::IntU8),
-            "u16" => Ok(GTPrimitiveKind::IntU16),
-            "u32" => Ok(GTPrimitiveKind::IntU32),
-            "u64" => Ok(GTPrimitiveKind::IntU64),
-            "u128" => Ok(GTPrimitiveKind::IntU128),
-            "usize" => Ok(GTPrimitiveKind::IntUSize),
-            "float" => Ok(GTPrimitiveKind::Float64),
-            "f32" => Ok(GTPrimitiveKind::Float32),
-            "f64" => Ok(GTPrimitiveKind::Float64),
-            _ => Err(GTParseError::Internal(span, GTNode::Primitive)),
+            "boolean" => Ok(GtPrimitiveKind::Boolean),
+            "string" => Ok(GtPrimitiveKind::String),
+            "number" => Ok(GtPrimitiveKind::Number),
+            "int" => Ok(GtPrimitiveKind::Int64),
+            "i8" => Ok(GtPrimitiveKind::Int8),
+            "i16" => Ok(GtPrimitiveKind::Int16),
+            "i32" => Ok(GtPrimitiveKind::Int32),
+            "i64" => Ok(GtPrimitiveKind::Int64),
+            "i128" => Ok(GtPrimitiveKind::Int128),
+            "isize" => Ok(GtPrimitiveKind::IntSize),
+            "uint" => Ok(GtPrimitiveKind::IntU32),
+            "u8" => Ok(GtPrimitiveKind::IntU8),
+            "u16" => Ok(GtPrimitiveKind::IntU16),
+            "u32" => Ok(GtPrimitiveKind::IntU32),
+            "u64" => Ok(GtPrimitiveKind::IntU64),
+            "u128" => Ok(GtPrimitiveKind::IntU128),
+            "usize" => Ok(GtPrimitiveKind::IntUSize),
+            "float" => Ok(GtPrimitiveKind::Float64),
+            "f32" => Ok(GtPrimitiveKind::Float32),
+            "f64" => Ok(GtPrimitiveKind::Float64),
+            _ => Err(GtParseError::Internal(span, GtNode::Primitive)),
         }
     }
 }
@@ -82,16 +82,16 @@ mod tests {
     #[test]
     fn test_parse() {
         assert_ron_snapshot!(
-            parse_node!(GTPrimitiveKind, to_parse_args(Rule::primitive, "boolean")),
+            parse_node!(GtPrimitiveKind, to_parse_args(Rule::primitive, "boolean")),
             @"Boolean"
         );
         assert_ron_snapshot!(
-            parse_node!(GTPrimitiveKind, to_parse_args(Rule::primitive, "string")),
+            parse_node!(GtPrimitiveKind, to_parse_args(Rule::primitive, "string")),
             @"String"
         );
 
         assert_ron_snapshot!(
-            parse_node!(GTPrimitiveKind, to_parse_args(Rule::primitive, "number")),
+            parse_node!(GtPrimitiveKind, to_parse_args(Rule::primitive, "number")),
             @"Number"
         );
     }
@@ -99,51 +99,51 @@ mod tests {
     #[test]
     fn test_int_sizes() {
         assert_ron_snapshot!(
-            parse_node!(GTPrimitiveKind, to_parse_args(Rule::primitive, "i8")),
+            parse_node!(GtPrimitiveKind, to_parse_args(Rule::primitive, "i8")),
             @"Int8"
         );
         assert_ron_snapshot!(
-            parse_node!(GTPrimitiveKind, to_parse_args(Rule::primitive, "i16")),
+            parse_node!(GtPrimitiveKind, to_parse_args(Rule::primitive, "i16")),
             @"Int16"
         );
         assert_ron_snapshot!(
-            parse_node!(GTPrimitiveKind, to_parse_args(Rule::primitive, "i32")),
+            parse_node!(GtPrimitiveKind, to_parse_args(Rule::primitive, "i32")),
             @"Int32"
         );
         assert_ron_snapshot!(
-            parse_node!(GTPrimitiveKind, to_parse_args(Rule::primitive, "i64")),
+            parse_node!(GtPrimitiveKind, to_parse_args(Rule::primitive, "i64")),
             @"Int64"
         );
         assert_ron_snapshot!(
-            parse_node!(GTPrimitiveKind, to_parse_args(Rule::primitive, "i128")),
+            parse_node!(GtPrimitiveKind, to_parse_args(Rule::primitive, "i128")),
             @"Int128"
         );
         assert_ron_snapshot!(
-            parse_node!(GTPrimitiveKind, to_parse_args(Rule::primitive, "isize")),
+            parse_node!(GtPrimitiveKind, to_parse_args(Rule::primitive, "isize")),
             @"IntSize"
         );
         assert_ron_snapshot!(
-            parse_node!(GTPrimitiveKind, to_parse_args(Rule::primitive, "u8")),
+            parse_node!(GtPrimitiveKind, to_parse_args(Rule::primitive, "u8")),
             @"IntU8"
         );
         assert_ron_snapshot!(
-            parse_node!(GTPrimitiveKind, to_parse_args(Rule::primitive, "u16")),
+            parse_node!(GtPrimitiveKind, to_parse_args(Rule::primitive, "u16")),
             @"IntU16"
         );
         assert_ron_snapshot!(
-            parse_node!(GTPrimitiveKind, to_parse_args(Rule::primitive, "u32")),
+            parse_node!(GtPrimitiveKind, to_parse_args(Rule::primitive, "u32")),
             @"IntU32"
         );
         assert_ron_snapshot!(
-            parse_node!(GTPrimitiveKind, to_parse_args(Rule::primitive, "u64")),
+            parse_node!(GtPrimitiveKind, to_parse_args(Rule::primitive, "u64")),
             @"IntU64"
         );
         assert_ron_snapshot!(
-            parse_node!(GTPrimitiveKind, to_parse_args(Rule::primitive, "u128")),
+            parse_node!(GtPrimitiveKind, to_parse_args(Rule::primitive, "u128")),
             @"IntU128"
         );
         assert_ron_snapshot!(
-            parse_node!(GTPrimitiveKind, to_parse_args(Rule::primitive, "usize")),
+            parse_node!(GtPrimitiveKind, to_parse_args(Rule::primitive, "usize")),
             @"IntUSize"
         );
     }
@@ -151,10 +151,10 @@ mod tests {
     #[test]
     fn test_error() {
         assert_debug_snapshot!(
-            parse_node_err!(GTPrimitiveKind, to_parse_args(Rule::literal_boolean, "false")),
+            parse_node_err!(GtPrimitiveKind, to_parse_args(Rule::literal_boolean, "false")),
             @"
         Internal(
-            GTSpan(
+            GtSpan(
                 0,
                 5,
             ),

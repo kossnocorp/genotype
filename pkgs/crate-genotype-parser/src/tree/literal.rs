@@ -1,28 +1,28 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
-pub struct GTLiteral {
-    pub span: GTSpan,
+pub struct GtLiteral {
+    pub span: GtSpan,
     #[visit]
-    pub doc: Option<GTDoc>,
+    pub doc: Option<GtDoc>,
     #[visit]
-    pub attributes: Vec<GTAttribute>,
-    pub value: GTLiteralValue,
+    pub attributes: Vec<GtAttribute>,
+    pub value: GtLiteralValue,
 }
 
-impl GTLiteral {
+impl GtLiteral {
     pub fn to_string(&self) -> String {
         self.value.to_string()
     }
 }
 
-impl GTLiteral {
-    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> Result<Self, GTParseError> {
-        let span: GTSpan = pair.as_span().into();
-        let value = GTLiteralValue::parse(pair, context)?;
+impl GtLiteral {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> Result<Self, GtParseError> {
+        let span: GtSpan = pair.as_span().into();
+        let value = GtLiteralValue::parse(pair, context)?;
         let (doc, attributes) = context.take_annotation_or_default();
 
-        Ok(GTLiteral {
+        Ok(GtLiteral {
             span,
             doc,
             attributes,
@@ -39,12 +39,12 @@ mod tests {
     #[test]
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::literal, "420").unwrap();
-        let mut context = GTContext::new("module".into());
+        let mut context = GtContext::new("module".into());
         assert_ron_snapshot!(
-            GTLiteral::parse(pairs.next().unwrap(), &mut context).unwrap(),
+            GtLiteral::parse(pairs.next().unwrap(), &mut context).unwrap(),
             @"
-        GTLiteral(
-          span: GTSpan(0, 3),
+        GtLiteral(
+          span: GtSpan(0, 3),
           doc: None,
           attributes: [],
           value: Integer(420),
@@ -56,10 +56,10 @@ mod tests {
     #[test]
     fn test_error() {
         assert_debug_snapshot!(
-            parse_node_err!(GTLiteral, to_parse_args(Rule::object, "{}")),
+            parse_node_err!(GtLiteral, to_parse_args(Rule::object, "{}")),
             @"
         Internal(
-            GTSpan(
+            GtSpan(
                 0,
                 2,
             ),
@@ -80,22 +80,22 @@ mod tests {
             )],
         ));
         assert_ron_snapshot!(
-            parse_node!(GTLiteral, (to_parse_rules(Rule::literal, "42"), &mut context)),
+            parse_node!(GtLiteral, (to_parse_rules(Rule::literal, "42"), &mut context)),
             @r#"
-        GTLiteral(
-          span: GTSpan(0, 2),
-          doc: Some(GTDoc(GTSpan(0, 0), "Hello, world!")),
+        GtLiteral(
+          span: GtSpan(0, 2),
+          doc: Some(GtDoc(GtSpan(0, 0), "Hello, world!")),
           attributes: [
-            GTAttribute(
-              span: GTSpan(0, 2),
-              name: GTAttributeName(
-                span: GTSpan(0, 0),
+            GtAttribute(
+              span: GtSpan(0, 2),
+              name: GtAttributeName(
+                span: GtSpan(0, 0),
                 value: "example",
               ),
-              descriptor: Some(Assignment(GTAttributeAssignment(
-                span: GTSpan(0, 0),
-                value: Literal(GTLiteral(
-                  span: GTSpan(0, 0),
+              descriptor: Some(Assignment(GtAttributeAssignment(
+                span: GtSpan(0, 0),
+                value: Literal(GtLiteral(
+                  span: GtSpan(0, 0),
                   doc: None,
                   attributes: [],
                   value: String("value"),

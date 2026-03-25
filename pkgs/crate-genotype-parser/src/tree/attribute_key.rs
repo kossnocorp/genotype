@@ -1,20 +1,20 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
-pub struct GTAttributeKey {
-    pub span: GTSpan,
+pub struct GtAttributeKey {
+    pub span: GtSpan,
     pub value: Arc<str>,
 }
 
-impl GTAttributeKey {
-    pub fn new(span: GTSpan, name: Arc<str>) -> Self {
+impl GtAttributeKey {
+    pub fn new(span: GtSpan, name: Arc<str>) -> Self {
         Self { span, value: name }
     }
 }
 
-impl GTAttributeKey {
+impl GtAttributeKey {
     pub fn parse(pair: Pair<'_, Rule>) -> Self {
-        GTAttributeKey::new(pair.as_span().into(), pair.as_str().into())
+        GtAttributeKey::new(pair.as_span().into(), pair.as_str().into())
     }
 }
 
@@ -28,8 +28,8 @@ mod tests {
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::name, "hello").unwrap();
         assert_eq!(
-            GTAttributeKey::new((0, 5).into(), "hello".into()),
-            GTAttributeKey::parse(pairs.next().unwrap()),
+            GtAttributeKey::new((0, 5).into(), "hello".into()),
+            GtAttributeKey::parse(pairs.next().unwrap()),
         );
     }
 }

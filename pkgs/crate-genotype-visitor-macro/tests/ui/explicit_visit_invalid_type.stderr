@@ -4,7 +4,7 @@ error[E0277]: the trait bound `i32: Traverse<_>` is not satisfied
 3 | #[derive(Visitor)]
   |          ^^^^^^^ the trait `Traverse<_>` is not implemented for `i32`
   |
-help: the trait `Traverse<V>` is implemented for `GTNode`
+help: the trait `Traverse<V>` is implemented for `GtNode`
  --> tests/ui/explicit_visit_invalid_type.rs:3:10
   |
 3 | #[derive(Visitor)]

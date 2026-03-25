@@ -1,4 +1,4 @@
-use genotype_parser::GTNamingContextName;
+use genotype_parser::GtNamingContextName;
 
 use super::GtjTreeConvertContext;
 
@@ -14,7 +14,7 @@ pub trait GtjTreeConvert<Node> {
         name: String,
         context: &mut GtjTreeConvertContext,
     ) -> Node {
-        context.enter_name_context(GTNamingContextName::Identifier(name), |context| {
+        context.enter_name_context(GtNamingContextName::Identifier(name), |context| {
             self.to_tree_with_context(context)
         })
     }

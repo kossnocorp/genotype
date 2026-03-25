@@ -6,7 +6,7 @@ mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
 
-pub enum PYLiteral {
+pub enum PyLiteral {
     None,
     Boolean(bool),
     Integer(i64),

@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSStructFields {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsStructFields {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -11,7 +11,7 @@ impl<'a> GtlRender<'a> for RSStructFields {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         match self {
-            RSStructFields::Newtype(descriptors) => {
+            RsStructFields::Newtype(descriptors) => {
                 if descriptors.len() == 0 {
                     return Ok("()".into());
                 }
@@ -29,7 +29,7 @@ impl<'a> GtlRender<'a> for RSStructFields {
                 Ok(format!("({descriptors});"))
             }
 
-            RSStructFields::Resolved(fields) => {
+            RsStructFields::Resolved(fields) => {
                 if fields.len() == 0 {
                     return Ok(" {}".into());
                 }
@@ -50,10 +50,10 @@ impl<'a> GtlRender<'a> for RSStructFields {
                 ))
             }
 
-            RSStructFields::Unit => Ok(";".into()),
+            RsStructFields::Unit => Ok(";".into()),
 
-            RSStructFields::Unresolved(span, _, _) => {
-                Err(RSError::UnresolvedStructFields(span.clone()).into())
+            RsStructFields::Unresolved(span, _, _) => {
+                Err(RsError::UnresolvedStructFields(span.clone()).into())
             }
         }
     }
@@ -67,18 +67,18 @@ mod tests {
     #[test]
     fn test_render_fields() {
         assert_snapshot!(
-            RSStructFields::Resolved(vec![
-                RSField {
+            RsStructFields::Resolved(vec![
+                RsField {
                     doc: None,
                     attributes: vec![],
                     name: "name".into(),
-                    descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                    descriptor: RsDescriptor::Primitive(RsPrimitive::String),
                 },
-                RSField {
+                RsField {
                     doc: None,
                     attributes: vec![],
                     name: "age".into(),
-                    descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize),
+                    descriptor: RsDescriptor::Primitive(RsPrimitive::IntSize),
                 }
             ])
             .render(Default::default(), &mut Default::default())
@@ -95,7 +95,7 @@ mod tests {
     #[test]
     fn test_render_empty() {
         assert_snapshot!(
-            RSStructFields::Resolved(vec![])
+            RsStructFields::Resolved(vec![])
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @" {}"
@@ -105,22 +105,22 @@ mod tests {
     #[test]
     fn test_render_indent() {
         assert_snapshot!(
-            RSStructFields::Resolved(vec![
-                RSField {
+            RsStructFields::Resolved(vec![
+                RsField {
                     doc: None,
                     attributes: vec![],
                     name: "name".into(),
-                    descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                    descriptor: RsDescriptor::Primitive(RsPrimitive::String),
                 },
-                RSField {
+                RsField {
                     doc: None,
                     attributes: vec![],
                     name: "age".into(),
-                    descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize),
+                    descriptor: RsDescriptor::Primitive(RsPrimitive::IntSize),
                 }
             ])
             .render(
-                RSRenderState::default().indent_inc(),
+                RsRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),
@@ -136,9 +136,9 @@ mod tests {
     #[test]
     fn test_render_newtype() {
         assert_snapshot!(
-            RSStructFields::Newtype(vec![
-                RSDescriptor::Primitive(RSPrimitive::String),
-                RSDescriptor::Primitive(RSPrimitive::IntSize),
+            RsStructFields::Newtype(vec![
+                RsDescriptor::Primitive(RsPrimitive::String),
+                RsDescriptor::Primitive(RsPrimitive::IntSize),
             ])
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -149,7 +149,7 @@ mod tests {
     #[test]
     fn test_render_empty_newtype() {
         assert_snapshot!(
-            RSStructFields::Newtype(vec![])
+            RsStructFields::Newtype(vec![])
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"()"
@@ -159,7 +159,7 @@ mod tests {
     #[test]
     fn test_render_unit() {
         assert_snapshot!(
-            RSStructFields::Unit
+            RsStructFields::Unit
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @";"

@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSArray {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsArray {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -23,8 +23,8 @@ mod tests {
     #[test]
     fn test_render_array() {
         assert_snapshot!(
-            TSArray {
-                descriptor: TSDescriptor::Primitive(TSPrimitive::String)
+            TsArray {
+                descriptor: TsDescriptor::Primitive(TsPrimitive::String)
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),

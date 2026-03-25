@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSMap {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsMap {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -24,9 +24,9 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            RSMap {
-                key: RSPrimitive::String.into(),
-                descriptor: RSPrimitive::IntSize.into(),
+            RsMap {
+                key: RsPrimitive::String.into(),
+                descriptor: RsPrimitive::IntSize.into(),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),

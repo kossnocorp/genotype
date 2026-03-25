@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl GTDescriptor {
-    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
-        let span: GTSpan = pair.as_span().into();
+impl GtDescriptor {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> GtNodeParseResult<Self> {
+        let span: GtSpan = pair.as_span().into();
 
         let mut descriptors = vec![];
 
@@ -10,14 +10,14 @@ impl GTDescriptor {
 
         let is_union = inner.len() > 1;
         if is_union {
-            context.enter_parent(GTContextParent::Anonymous);
+            context.enter_parent(GtContextParent::Anonymous);
         }
 
         for pair in inner {
             let mut descriptor_inner = pair.into_inner();
             let next_pair = descriptor_inner
                 .next()
-                .ok_or_else(|| GTParseError::UnexpectedEnd(span.clone(), GTNode::Descriptor))?;
+                .ok_or_else(|| GtParseError::UnexpectedEnd(span.clone(), GtNode::Descriptor))?;
 
             let descriptor = parse(
                 descriptor_inner,
@@ -30,19 +30,19 @@ impl GTDescriptor {
         }
 
         if is_union {
-            context.exit_parent(span.clone(), GTNode::Descriptor)?;
+            context.exit_parent(span.clone(), GtNode::Descriptor)?;
         }
 
         match descriptors.as_slice() {
-            [] => Err(GTParseError::InternalMessage(
+            [] => Err(GtParseError::InternalMessage(
                 span,
-                GTNode::Descriptor,
+                GtNode::Descriptor,
                 "no descriptors found",
             )),
 
             [descriptor] => Ok(descriptor.to_owned()),
 
-            descriptors => Ok(GTDescriptor::Union(GTUnion {
+            descriptors => Ok(GtDescriptor::Union(GtUnion {
                 span,
                 doc: None,
                 attributes: vec![],
@@ -56,8 +56,8 @@ fn parse(
     mut inner: Pairs<'_, Rule>,
     pair: Pair<'_, Rule>,
     state: ParseState,
-    context: &mut GTContext,
-) -> GTNodeParseResult<GTDescriptor> {
+    context: &mut GtContext,
+) -> GtNodeParseResult<GtDescriptor> {
     match state {
         ParseState::Annotation(span, doc_acc, mut attributes) => match pair.as_rule() {
             Rule::line_doc => {
@@ -79,12 +79,12 @@ fn parse(
                         ParseState::Annotation(span, doc_acc, attributes),
                         context,
                     ),
-                    None => Err(GTParseError::Internal(span, GTNode::Descriptor)),
+                    None => Err(GtParseError::Internal(span, GtNode::Descriptor)),
                 }
             }
 
             Rule::attribute => {
-                let attribute = GTAttribute::parse(pair, context)?;
+                let attribute = GtAttribute::parse(pair, context)?;
                 attributes.push(attribute);
 
                 match inner.next() {
@@ -94,7 +94,7 @@ fn parse(
                         ParseState::Annotation(span, doc_acc, attributes),
                         context,
                     ),
-                    None => Err(GTParseError::Internal(span, GTNode::Descriptor)),
+                    None => Err(GtParseError::Internal(span, GtNode::Descriptor)),
                 }
             }
 
@@ -110,36 +110,36 @@ fn parse(
             context.provide_annotation((doc, attributes));
 
             let descriptor = match pair.as_rule() {
-                Rule::primitive => GTDescriptor::Primitive(GTPrimitive::parse(pair, context)?),
+                Rule::primitive => GtDescriptor::Primitive(GtPrimitive::parse(pair, context)?),
 
-                Rule::name => GTDescriptor::Reference(GTReference::parse(pair, context)?),
+                Rule::name => GtDescriptor::Reference(GtReference::parse(pair, context)?),
 
-                Rule::object => GTDescriptor::Object(GTObject::parse(pair, context)?),
+                Rule::object => GtDescriptor::Object(GtObject::parse(pair, context)?),
 
-                Rule::array => GTDescriptor::Array(Box::new(GTArray::parse(pair, context)?)),
+                Rule::array => GtDescriptor::Array(Box::new(GtArray::parse(pair, context)?)),
 
-                Rule::tuple => GTDescriptor::Tuple(GTTuple::parse(pair, context)?),
+                Rule::tuple => GtDescriptor::Tuple(GtTuple::parse(pair, context)?),
 
-                Rule::descriptor => GTDescriptor::parse(pair, context)?,
+                Rule::descriptor => GtDescriptor::parse(pair, context)?,
 
-                Rule::alias => GTDescriptor::Alias(Box::new(GTAlias::parse(pair, context)?)),
+                Rule::alias => GtDescriptor::Alias(Box::new(GtAlias::parse(pair, context)?)),
 
                 Rule::inline_import => {
-                    GTDescriptor::InlineImport(GTInlineImport::parse(pair, context)?)
+                    GtDescriptor::InlineImport(GtInlineImport::parse(pair, context)?)
                 }
 
-                Rule::literal => GTDescriptor::Literal(GTLiteral::parse(pair, context)?),
+                Rule::literal => GtDescriptor::Literal(GtLiteral::parse(pair, context)?),
 
-                Rule::record => GTDescriptor::Record(Box::new(GTRecord::parse(pair, context)?)),
+                Rule::record => GtDescriptor::Record(Box::new(GtRecord::parse(pair, context)?)),
 
-                Rule::any => GTDescriptor::Any(GTAny::parse(pair, context)?),
+                Rule::any => GtDescriptor::Any(GtAny::parse(pair, context)?),
 
-                Rule::branded => GTDescriptor::Branded(GTBranded::parse(pair, context)?),
+                Rule::branded => GtDescriptor::Branded(GtBranded::parse(pair, context)?),
 
                 rule => {
-                    return Err(GTParseError::UnexpectedRule(
+                    return Err(GtParseError::UnexpectedRule(
                         span.clone(),
-                        GTNode::Descriptor,
+                        GtNode::Descriptor,
                         rule,
                     ));
                 }
@@ -151,8 +151,8 @@ fn parse(
 }
 
 enum ParseState {
-    Annotation(GTSpan, Option<GTDoc>, Vec<GTAttribute>),
-    Descriptor(GTSpan, Option<GTDoc>, Vec<GTAttribute>),
+    Annotation(GtSpan, Option<GtDoc>, Vec<GtAttribute>),
+    Descriptor(GtSpan, Option<GtDoc>, Vec<GtAttribute>),
 }
 
 #[cfg(test)]
@@ -164,12 +164,12 @@ mod tests {
     pub fn parse_literal() {
         assert_ron_snapshot!(
             parse_node!(
-                GTDescriptor,
+                GtDescriptor,
                 to_parse_args(Rule::descriptors, r#""hello""#)
             ),
             @r#"
-        Literal(GTLiteral(
-          span: GTSpan(0, 7),
+        Literal(GtLiteral(
+          span: GtSpan(0, 7),
           doc: None,
           attributes: [],
           value: String("hello"),
@@ -178,12 +178,12 @@ mod tests {
         );
         assert_ron_snapshot!(
             parse_node!(
-                GTDescriptor,
+                GtDescriptor,
                 to_parse_args(Rule::descriptors, "123")
             ),
             @"
-        Literal(GTLiteral(
-          span: GTSpan(0, 3),
+        Literal(GtLiteral(
+          span: GtSpan(0, 3),
           doc: None,
           attributes: [],
           value: Integer(123),
@@ -196,7 +196,7 @@ mod tests {
     pub fn parse_annotated_literal() {
         assert_ron_snapshot!(
             parse_node!(
-                GTDescriptor,
+                GtDescriptor,
                 to_parse_args(Rule::descriptors, indoc! {r#"
                     /// Very nice!
                     #[variant = "Hey"]
@@ -204,20 +204,20 @@ mod tests {
                 "#})
             ),
             @r#"
-        Literal(GTLiteral(
-          span: GTSpan(34, 41),
-          doc: Some(GTDoc(GTSpan(4, 14), "Very nice!")),
+        Literal(GtLiteral(
+          span: GtSpan(34, 41),
+          doc: Some(GtDoc(GtSpan(4, 14), "Very nice!")),
           attributes: [
-            GTAttribute(
-              span: GTSpan(15, 33),
-              name: GTAttributeName(
-                span: GTSpan(17, 24),
+            GtAttribute(
+              span: GtSpan(15, 33),
+              name: GtAttributeName(
+                span: GtSpan(17, 24),
                 value: "variant",
               ),
-              descriptor: Some(Assignment(GTAttributeAssignment(
-                span: GTSpan(25, 32),
-                value: Literal(GTLiteral(
-                  span: GTSpan(27, 32),
+              descriptor: Some(Assignment(GtAttributeAssignment(
+                span: GtSpan(25, 32),
+                value: Literal(GtLiteral(
+                  span: GtSpan(27, 32),
                   doc: None,
                   attributes: [],
                   value: String("Hey"),
@@ -235,7 +235,7 @@ mod tests {
     pub fn parse_annotated_primitive() {
         assert_ron_snapshot!(
             parse_node!(
-                GTDescriptor,
+                GtDescriptor,
                 to_parse_args(Rule::descriptors, indoc! {r#"
                     /// Primitive
                     #[variant = "Hey"]
@@ -243,21 +243,21 @@ mod tests {
                 "#})
             ),
             @r#"
-        Primitive(GTPrimitive(
-          span: GTSpan(33, 39),
+        Primitive(GtPrimitive(
+          span: GtSpan(33, 39),
           kind: String,
-          doc: Some(GTDoc(GTSpan(4, 13), "Primitive")),
+          doc: Some(GtDoc(GtSpan(4, 13), "Primitive")),
           attributes: [
-            GTAttribute(
-              span: GTSpan(14, 32),
-              name: GTAttributeName(
-                span: GTSpan(16, 23),
+            GtAttribute(
+              span: GtSpan(14, 32),
+              name: GtAttributeName(
+                span: GtSpan(16, 23),
                 value: "variant",
               ),
-              descriptor: Some(Assignment(GTAttributeAssignment(
-                span: GTSpan(24, 31),
-                value: Literal(GTLiteral(
-                  span: GTSpan(26, 31),
+              descriptor: Some(Assignment(GtAttributeAssignment(
+                span: GtSpan(24, 31),
+                value: Literal(GtLiteral(
+                  span: GtSpan(26, 31),
                   doc: None,
                   attributes: [],
                   value: String("Hey"),
@@ -274,7 +274,7 @@ mod tests {
     pub fn parse_annotated_reference() {
         assert_ron_snapshot!(
             parse_node!(
-                GTDescriptor,
+                GtDescriptor,
                 to_parse_args(Rule::descriptors, indoc! {r#"
                     /// Ref
                     #[variant = "Hey"]
@@ -282,20 +282,20 @@ mod tests {
                 "#})
             ),
             @r#"
-        Reference(GTReference(
-          span: GTSpan(27, 32),
-          doc: Some(GTDoc(GTSpan(4, 7), "Ref")),
+        Reference(GtReference(
+          span: GtSpan(27, 32),
+          doc: Some(GtDoc(GtSpan(4, 7), "Ref")),
           attributes: [
-            GTAttribute(
-              span: GTSpan(8, 26),
-              name: GTAttributeName(
-                span: GTSpan(10, 17),
+            GtAttribute(
+              span: GtSpan(8, 26),
+              name: GtAttributeName(
+                span: GtSpan(10, 17),
                 value: "variant",
               ),
-              descriptor: Some(Assignment(GTAttributeAssignment(
-                span: GTSpan(18, 25),
-                value: Literal(GTLiteral(
-                  span: GTSpan(20, 25),
+              descriptor: Some(Assignment(GtAttributeAssignment(
+                span: GtSpan(18, 25),
+                value: Literal(GtLiteral(
+                  span: GtSpan(20, 25),
                   doc: None,
                   attributes: [],
                   value: String("Hey"),
@@ -303,9 +303,9 @@ mod tests {
               ))),
             ),
           ],
-          id: GTReferenceId(GTModuleId("module"), GTSpan(27, 32)),
+          id: GtReferenceId(GtModuleId("module"), GtSpan(27, 32)),
           definition_id: Unresolved,
-          identifier: GTIdentifier(GTSpan(27, 32), "Hello"),
+          identifier: GtIdentifier(GtSpan(27, 32), "Hello"),
         ))
         "#
         );
@@ -315,7 +315,7 @@ mod tests {
     pub fn parse_annotated_array() {
         assert_ron_snapshot!(
             parse_node!(
-                GTDescriptor,
+                GtDescriptor,
                 to_parse_args(Rule::descriptors, indoc! {r#"
                     /// Arr
                     #[variant = "Hey"]
@@ -323,20 +323,20 @@ mod tests {
                 "#})
             ),
             @r#"
-        Array(GTArray(
-          span: GTSpan(27, 35),
-          doc: Some(GTDoc(GTSpan(4, 7), "Arr")),
+        Array(GtArray(
+          span: GtSpan(27, 35),
+          doc: Some(GtDoc(GtSpan(4, 7), "Arr")),
           attributes: [
-            GTAttribute(
-              span: GTSpan(8, 26),
-              name: GTAttributeName(
-                span: GTSpan(10, 17),
+            GtAttribute(
+              span: GtSpan(8, 26),
+              name: GtAttributeName(
+                span: GtSpan(10, 17),
                 value: "variant",
               ),
-              descriptor: Some(Assignment(GTAttributeAssignment(
-                span: GTSpan(18, 25),
-                value: Literal(GTLiteral(
-                  span: GTSpan(20, 25),
+              descriptor: Some(Assignment(GtAttributeAssignment(
+                span: GtSpan(18, 25),
+                value: Literal(GtLiteral(
+                  span: GtSpan(20, 25),
                   doc: None,
                   attributes: [],
                   value: String("Hey"),
@@ -344,8 +344,8 @@ mod tests {
               ))),
             ),
           ],
-          descriptor: Primitive(GTPrimitive(
-            span: GTSpan(28, 34),
+          descriptor: Primitive(GtPrimitive(
+            span: GtSpan(28, 34),
             kind: String,
             doc: None,
             attributes: [],
@@ -359,7 +359,7 @@ mod tests {
     pub fn parse_annotated_tuple() {
         assert_ron_snapshot!(
             parse_node!(
-                GTDescriptor,
+                GtDescriptor,
                 to_parse_args(Rule::descriptors, indoc! {r#"
                     /// Tup
                     #[variant = "Hey"]
@@ -367,20 +367,20 @@ mod tests {
                 "#})
             ),
             @r#"
-        Tuple(GTTuple(
-          span: GTSpan(27, 35),
-          doc: Some(GTDoc(GTSpan(4, 7), "Tup")),
+        Tuple(GtTuple(
+          span: GtSpan(27, 35),
+          doc: Some(GtDoc(GtSpan(4, 7), "Tup")),
           attributes: [
-            GTAttribute(
-              span: GTSpan(8, 26),
-              name: GTAttributeName(
-                span: GTSpan(10, 17),
+            GtAttribute(
+              span: GtSpan(8, 26),
+              name: GtAttributeName(
+                span: GtSpan(10, 17),
                 value: "variant",
               ),
-              descriptor: Some(Assignment(GTAttributeAssignment(
-                span: GTSpan(18, 25),
-                value: Literal(GTLiteral(
-                  span: GTSpan(20, 25),
+              descriptor: Some(Assignment(GtAttributeAssignment(
+                span: GtSpan(18, 25),
+                value: Literal(GtLiteral(
+                  span: GtSpan(20, 25),
                   doc: None,
                   attributes: [],
                   value: String("Hey"),
@@ -389,8 +389,8 @@ mod tests {
             ),
           ],
           descriptors: [
-            Primitive(GTPrimitive(
-              span: GTSpan(28, 34),
+            Primitive(GtPrimitive(
+              span: GtSpan(28, 34),
               kind: String,
               doc: None,
               attributes: [],
@@ -405,7 +405,7 @@ mod tests {
     pub fn parse_annotated_record() {
         assert_ron_snapshot!(
             parse_node!(
-                GTDescriptor,
+                GtDescriptor,
                 to_parse_args(Rule::descriptors, indoc! {r#"
                     /// Rec
                     #[variant = "Hey"]
@@ -413,20 +413,20 @@ mod tests {
                 "#})
             ),
             @r#"
-        Record(GTRecord(
-          span: GTSpan(27, 41),
-          doc: Some(GTDoc(GTSpan(4, 7), "Rec")),
+        Record(GtRecord(
+          span: GtSpan(27, 41),
+          doc: Some(GtDoc(GtSpan(4, 7), "Rec")),
           attributes: [
-            GTAttribute(
-              span: GTSpan(8, 26),
-              name: GTAttributeName(
-                span: GTSpan(10, 17),
+            GtAttribute(
+              span: GtSpan(8, 26),
+              name: GtAttributeName(
+                span: GtSpan(10, 17),
                 value: "variant",
               ),
-              descriptor: Some(Assignment(GTAttributeAssignment(
-                span: GTSpan(18, 25),
-                value: Literal(GTLiteral(
-                  span: GTSpan(20, 25),
+              descriptor: Some(Assignment(GtAttributeAssignment(
+                span: GtSpan(18, 25),
+                value: Literal(GtLiteral(
+                  span: GtSpan(20, 25),
                   doc: None,
                   attributes: [],
                   value: String("Hey"),
@@ -434,9 +434,9 @@ mod tests {
               ))),
             ),
           ],
-          key: String(GTSpan(29, 31)),
-          descriptor: Primitive(GTPrimitive(
-            span: GTSpan(33, 39),
+          key: String(GtSpan(29, 31)),
+          descriptor: Primitive(GtPrimitive(
+            span: GtSpan(33, 39),
             kind: String,
             doc: None,
             attributes: [],
@@ -450,7 +450,7 @@ mod tests {
     pub fn parse_annotated_inline_import() {
         assert_ron_snapshot!(
             parse_node!(
-                GTDescriptor,
+                GtDescriptor,
                 to_parse_args(Rule::descriptors, indoc! {r#"
                     /// Import
                     #[variant = "Hey"]
@@ -458,20 +458,20 @@ mod tests {
                 "#})
             ),
             @r#"
-        InlineImport(GTInlineImport(
-          span: GTSpan(30, 51),
-          doc: Some(GTDoc(GTSpan(4, 10), "Import")),
+        InlineImport(GtInlineImport(
+          span: GtSpan(30, 51),
+          doc: Some(GtDoc(GtSpan(4, 10), "Import")),
           attributes: [
-            GTAttribute(
-              span: GTSpan(11, 29),
-              name: GTAttributeName(
-                span: GTSpan(13, 20),
+            GtAttribute(
+              span: GtSpan(11, 29),
+              name: GtAttributeName(
+                span: GtSpan(13, 20),
                 value: "variant",
               ),
-              descriptor: Some(Assignment(GTAttributeAssignment(
-                span: GTSpan(21, 28),
-                value: Literal(GTLiteral(
-                  span: GTSpan(23, 28),
+              descriptor: Some(Assignment(GtAttributeAssignment(
+                span: GtSpan(21, 28),
+                value: Literal(GtLiteral(
+                  span: GtSpan(23, 28),
                   doc: None,
                   attributes: [],
                   value: String("Hey"),
@@ -479,8 +479,8 @@ mod tests {
               ))),
             ),
           ],
-          name: GTIdentifier(GTSpan(47, 51), "Name"),
-          path: GTPath(GTSpan(30, 46), Unresolved, "./path/to/module"),
+          name: GtIdentifier(GtSpan(47, 51), "Name"),
+          path: GtPath(GtSpan(30, 46), Unresolved, "./path/to/module"),
         ))
         "#
         );
@@ -490,7 +490,7 @@ mod tests {
     pub fn parse_annotated_any() {
         assert_ron_snapshot!(
             parse_node!(
-                GTDescriptor,
+                GtDescriptor,
                 to_parse_args(Rule::descriptors, indoc! {r#"
                     /// Any
                     #[variant = "Hey"]
@@ -498,20 +498,20 @@ mod tests {
                 "#})
             ),
             @r#"
-        Any(GTAny(
-          span: GTSpan(27, 30),
-          doc: Some(GTDoc(GTSpan(4, 7), "Any")),
+        Any(GtAny(
+          span: GtSpan(27, 30),
+          doc: Some(GtDoc(GtSpan(4, 7), "Any")),
           attributes: [
-            GTAttribute(
-              span: GTSpan(8, 26),
-              name: GTAttributeName(
-                span: GTSpan(10, 17),
+            GtAttribute(
+              span: GtSpan(8, 26),
+              name: GtAttributeName(
+                span: GtSpan(10, 17),
                 value: "variant",
               ),
-              descriptor: Some(Assignment(GTAttributeAssignment(
-                span: GTSpan(18, 25),
-                value: Literal(GTLiteral(
-                  span: GTSpan(20, 25),
+              descriptor: Some(Assignment(GtAttributeAssignment(
+                span: GtSpan(18, 25),
+                value: Literal(GtLiteral(
+                  span: GtSpan(20, 25),
                   doc: None,
                   attributes: [],
                   value: String("Hey"),
@@ -528,7 +528,7 @@ mod tests {
     pub fn parse_annotated_branded() {
         assert_ron_snapshot!(
             parse_node!(
-                GTDescriptor,
+                GtDescriptor,
                 to_parse_args(Rule::descriptors, indoc! {r#"
                     /// Branded
                     #[variant = "Hey"]
@@ -536,20 +536,20 @@ mod tests {
                 "#})
             ),
             @r#"
-        Branded(GTBranded(
-          span: GTSpan(31, 35),
-          doc: Some(GTDoc(GTSpan(4, 11), "Branded")),
+        Branded(GtBranded(
+          span: GtSpan(31, 35),
+          doc: Some(GtDoc(GtSpan(4, 11), "Branded")),
           attributes: [
-            GTAttribute(
-              span: GTSpan(12, 30),
-              name: GTAttributeName(
-                span: GTSpan(14, 21),
+            GtAttribute(
+              span: GtSpan(12, 30),
+              name: GtAttributeName(
+                span: GtSpan(14, 21),
                 value: "variant",
               ),
-              descriptor: Some(Assignment(GTAttributeAssignment(
-                span: GTSpan(22, 29),
-                value: Literal(GTLiteral(
-                  span: GTSpan(24, 29),
+              descriptor: Some(Assignment(GtAttributeAssignment(
+                span: GtSpan(22, 29),
+                value: Literal(GtLiteral(
+                  span: GtSpan(24, 29),
                   doc: None,
                   attributes: [],
                   value: String("Hey"),
@@ -557,10 +557,10 @@ mod tests {
               ))),
             ),
           ],
-          id: GTDefinitionId(GTModuleId("module"), "I64"),
-          name: GTIdentifier(GTSpan(31, 35), "I64"),
-          primitive: GTPrimitive(
-            span: GTSpan(32, 35),
+          id: GtDefinitionId(GtModuleId("module"), "I64"),
+          name: GtIdentifier(GtSpan(31, 35), "I64"),
+          primitive: GtPrimitive(
+            span: GtSpan(32, 35),
             kind: Int64,
             doc: None,
             attributes: [],
@@ -574,7 +574,7 @@ mod tests {
     pub fn parse_annotated_alias() {
         assert_ron_snapshot!(
             parse_node!(
-                GTDescriptor,
+                GtDescriptor,
                 to_parse_args(Rule::descriptors, indoc! {r#"
                     /// Outer
                     #[outer = "Yes"]
@@ -584,37 +584,37 @@ mod tests {
                 "#})
             ),
             @r#"
-        Alias(GTAlias(
-          id: GTDefinitionId(GTModuleId("module"), "Hello"),
-          span: GTSpan(53, 66),
-          doc: Some(GTDoc(GTSpan(4, 52), "Outer\nInner")),
+        Alias(GtAlias(
+          id: GtDefinitionId(GtModuleId("module"), "Hello"),
+          span: GtSpan(53, 66),
+          doc: Some(GtDoc(GtSpan(4, 52), "Outer\nInner")),
           attributes: [
-            GTAttribute(
-              span: GTSpan(10, 26),
-              name: GTAttributeName(
-                span: GTSpan(12, 17),
+            GtAttribute(
+              span: GtSpan(10, 26),
+              name: GtAttributeName(
+                span: GtSpan(12, 17),
                 value: "outer",
               ),
-              descriptor: Some(Assignment(GTAttributeAssignment(
-                span: GTSpan(18, 25),
-                value: Literal(GTLiteral(
-                  span: GTSpan(20, 25),
+              descriptor: Some(Assignment(GtAttributeAssignment(
+                span: GtSpan(18, 25),
+                value: Literal(GtLiteral(
+                  span: GtSpan(20, 25),
                   doc: None,
                   attributes: [],
                   value: String("Yes"),
                 )),
               ))),
             ),
-            GTAttribute(
-              span: GTSpan(27, 42),
-              name: GTAttributeName(
-                span: GTSpan(29, 34),
+            GtAttribute(
+              span: GtSpan(27, 42),
+              name: GtAttributeName(
+                span: GtSpan(29, 34),
                 value: "inner",
               ),
-              descriptor: Some(Assignment(GTAttributeAssignment(
-                span: GTSpan(35, 41),
-                value: Literal(GTLiteral(
-                  span: GTSpan(37, 41),
+              descriptor: Some(Assignment(GtAttributeAssignment(
+                span: GtSpan(35, 41),
+                value: Literal(GtLiteral(
+                  span: GtSpan(37, 41),
                   doc: None,
                   attributes: [],
                   value: String("No"),
@@ -622,9 +622,9 @@ mod tests {
               ))),
             ),
           ],
-          name: GTIdentifier(GTSpan(53, 58), "Hello"),
-          descriptor: Primitive(GTPrimitive(
-            span: GTSpan(60, 66),
+          name: GtIdentifier(GtSpan(53, 58), "Hello"),
+          descriptor: Primitive(GtPrimitive(
+            span: GtSpan(60, 66),
             kind: String,
             doc: None,
             attributes: [],
@@ -637,11 +637,11 @@ mod tests {
     #[test]
     pub fn parse_annotated_object() {
         let mut context = Gt::context();
-        context.enter_parent(GTContextParent::Alias(Gt::identifier("Hello")));
+        context.enter_parent(GtContextParent::Alias(Gt::identifier("Hello")));
 
         assert_ron_snapshot!(
             parse_node!(
-                GTDescriptor,
+                GtDescriptor,
                 (
                     to_parse_rules(
                         Rule::descriptors,
@@ -655,20 +655,20 @@ mod tests {
                 )
             ),
             @r#"
-        Object(GTObject(
-          span: GTSpan(27, 44),
-          doc: Some(GTDoc(GTSpan(4, 7), "Obj")),
+        Object(GtObject(
+          span: GtSpan(27, 44),
+          doc: Some(GtDoc(GtSpan(4, 7), "Obj")),
           attributes: [
-            GTAttribute(
-              span: GTSpan(8, 26),
-              name: GTAttributeName(
-                span: GTSpan(10, 17),
+            GtAttribute(
+              span: GtSpan(8, 26),
+              name: GtAttributeName(
+                span: GtSpan(10, 17),
                 value: "variant",
               ),
-              descriptor: Some(Assignment(GTAttributeAssignment(
-                span: GTSpan(18, 25),
-                value: Literal(GTLiteral(
-                  span: GTSpan(20, 25),
+              descriptor: Some(Assignment(GtAttributeAssignment(
+                span: GtSpan(18, 25),
+                value: Literal(GtLiteral(
+                  span: GtSpan(20, 25),
                   doc: None,
                   attributes: [],
                   value: String("Hey"),
@@ -676,16 +676,16 @@ mod tests {
               ))),
             ),
           ],
-          name: Named(GTIdentifier(GTSpan(0, 0), "Hello")),
+          name: Named(GtIdentifier(GtSpan(0, 0), "Hello")),
           extensions: [],
           properties: [
-            GTProperty(
-              span: GTSpan(29, 42),
+            GtProperty(
+              span: GtSpan(29, 42),
               doc: None,
               attributes: [],
-              name: GTKey(GTSpan(29, 34), "value"),
-              descriptor: Primitive(GTPrimitive(
-                span: GTSpan(36, 42),
+              name: GtKey(GtSpan(29, 34), "value"),
+              descriptor: Primitive(GtPrimitive(
+                span: GtSpan(36, 42),
                 kind: String,
                 doc: None,
                 attributes: [],

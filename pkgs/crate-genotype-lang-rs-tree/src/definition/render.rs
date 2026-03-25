@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSDefinition {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsDefinition {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -11,9 +11,9 @@ impl<'a> GtlRender<'a> for RSDefinition {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         Ok(match self {
-            RSDefinition::Alias(alias) => alias.render(state, context)?,
-            RSDefinition::Struct(interface) => interface.render(state, context)?,
-            RSDefinition::Enum(r#enum) => r#enum.render(state, context)?,
+            RsDefinition::Alias(alias) => alias.render(state, context)?,
+            RsDefinition::Struct(interface) => interface.render(state, context)?,
+            RsDefinition::Enum(r#enum) => r#enum.render(state, context)?,
         })
     }
 }
@@ -26,11 +26,11 @@ mod tests {
     #[test]
     fn test_render_alias() {
         assert_snapshot!(
-            RSDefinition::Alias(RSAlias {
-                id: GTDefinitionId("module".into(), "Name".into()),
+            RsDefinition::Alias(RsAlias {
+                id: GtDefinitionId("module".into(), "Name".into()),
                 doc: None,
                 name: "Name".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                descriptor: RsDescriptor::Primitive(RsPrimitive::String),
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -41,23 +41,23 @@ mod tests {
     #[test]
     fn test_render_struct() {
         assert_snapshot!(
-            RSDefinition::Struct(RSStruct {
-                id: GTDefinitionId("module".into(), "Name".into()),
+            RsDefinition::Struct(RsStruct {
+                id: GtDefinitionId("module".into(), "Name".into()),
                 doc: None,
                 attributes: vec![],
                 name: "Name".into(),
                 fields: vec![
-                    RSField {
+                    RsField {
                         doc: None,
                         attributes: vec![],
                         name: "name".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                        descriptor: RsDescriptor::Primitive(RsPrimitive::String),
                     },
-                    RSField {
+                    RsField {
                         doc: None,
                         attributes: vec![],
                         name: "age".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize),
+                        descriptor: RsDescriptor::Primitive(RsPrimitive::IntSize),
                     }
                 ]
                 .into(),
@@ -76,26 +76,26 @@ mod tests {
     #[test]
     fn test_render_enum() {
         assert_snapshot!(
-            RSDefinition::Enum(RSEnum {
-                id: GTDefinitionId("module".into(), "ValuesUnion".into()),
+            RsDefinition::Enum(RsEnum {
+                id: GtDefinitionId("module".into(), "ValuesUnion".into()),
                 doc: None,
                 attributes: vec![],
                 name: "ValuesUnion".into(),
                 variants: vec![
-                    RSEnumVariant {
+                    RsEnumVariant {
                         doc: None,
                         name: "Boolean".into(),
                         attributes: vec![],
-                        descriptor: Some(RSEnumVariantDescriptor::Descriptor(
-                            RSDescriptor::Primitive(RSPrimitive::Boolean).into()
+                        descriptor: Some(RsEnumVariantDescriptor::Descriptor(
+                            RsDescriptor::Primitive(RsPrimitive::Boolean).into()
                         )),
                     },
-                    RSEnumVariant {
+                    RsEnumVariant {
                         doc: None,
                         name: "String".into(),
                         attributes: vec![],
-                        descriptor: Some(RSEnumVariantDescriptor::Descriptor(
-                            RSDescriptor::Primitive(RSPrimitive::String).into()
+                        descriptor: Some(RsEnumVariantDescriptor::Descriptor(
+                            RsDescriptor::Primitive(RsPrimitive::String).into()
                         )),
                     }
                 ],

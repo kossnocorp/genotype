@@ -1,16 +1,16 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYDict {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyDict {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
     fn render(
         &self,
         state: Self::RenderState,
         context: &mut Self::RenderContext,
     ) -> Result<String> {
-        let dict = if let PYVersion::Legacy = context.config.version {
+        let dict = if let PyVersion::Legacy = context.config.version {
             "Dict"
         } else {
             "dict"
@@ -30,9 +30,9 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            PYDict {
-                key: PYDictKey::String,
-                descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
+            PyDict {
+                key: PyDictKey::String,
+                descriptor: PyDescriptor::Primitive(PyPrimitive::Int),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -43,14 +43,14 @@ mod tests {
     #[test]
     fn test_render_legacy() {
         assert_snapshot!(
-            PYDict {
-                key: PYDictKey::String,
-                descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
+            PyDict {
+                key: PyDictKey::String,
+                descriptor: PyDescriptor::Primitive(PyPrimitive::Int),
             }
             .render(
                 Default::default(),
-                &mut PYRenderContext {
-                    config: &PyConfigLang::new(PYVersion::Legacy),
+                &mut PyRenderContext {
+                    config: &PyConfigLang::new(PyVersion::Legacy),
                     ..Default::default()
                 }
             )

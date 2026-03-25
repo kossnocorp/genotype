@@ -1,16 +1,16 @@
 use crate::prelude::internal::*;
 
-impl RSConvert<RSTuple> for GTTuple {
-    fn convert(&self, context: &mut RSConvertContext) -> Result<RSTuple> {
+impl RsConvert<RsTuple> for GtTuple {
+    fn convert(&self, context: &mut RsConvertContext) -> Result<RsTuple> {
         context.drop_definition_id();
-        context.enter_parent(RSContextParent::Anonymous);
+        context.enter_parent(RsContextParent::Anonymous);
 
         let descriptors = self
             .descriptors
             .iter()
             .map(|descriptor| descriptor.convert(context))
             .collect::<Result<Vec<_>>>()?;
-        let tuple = RSTuple { descriptors };
+        let tuple = RsTuple { descriptors };
 
         context.exit_parent();
         Ok(tuple)
@@ -31,7 +31,7 @@ mod tests {
                 Gt::primitive_string().into(),
             ])),
             @"
-        RSTuple(
+        RsTuple(
           descriptors: [
             Primitive(Boolean),
             Primitive(String),

@@ -1,13 +1,13 @@
 use crate::prelude::internal::*;
 
-pub type GTContextAnnotation = (Option<GTDoc>, Vec<GTAttribute>);
+pub type GtContextAnnotation = (Option<GtDoc>, Vec<GtAttribute>);
 
-impl GTContext {
-    pub fn provide_annotation(&mut self, annotation: GTContextAnnotation) {
+impl GtContext {
+    pub fn provide_annotation(&mut self, annotation: GtContextAnnotation) {
         self.annotation = Some(annotation);
     }
 
-    pub fn take_annotation_or_default(&mut self) -> GTContextAnnotation {
+    pub fn take_annotation_or_default(&mut self) -> GtContextAnnotation {
         if let Some(annotation) = self.annotation.take() {
             annotation
         } else {

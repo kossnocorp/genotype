@@ -1,3 +1,3 @@
 use crate::prelude::internal::*;
 
-pub type GTNodeParseResult<T> = Result<T, GTParseError>;
+pub type GtNodeParseResult<T> = Result<T, GtParseError>;

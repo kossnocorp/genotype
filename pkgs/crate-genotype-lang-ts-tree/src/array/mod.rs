@@ -4,7 +4,7 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct TSArray {
+pub struct TsArray {
     #[visit]
-    pub descriptor: TSDescriptor,
+    pub descriptor: TsDescriptor,
 }

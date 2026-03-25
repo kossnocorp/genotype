@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSVec {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsVec {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -23,8 +23,8 @@ mod tests {
     #[test]
     fn test_render_array() {
         assert_snapshot!(
-            RSVec {
-                descriptor: RSDescriptor::Primitive(RSPrimitive::String)
+            RsVec {
+                descriptor: RsDescriptor::Primitive(RsPrimitive::String)
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),

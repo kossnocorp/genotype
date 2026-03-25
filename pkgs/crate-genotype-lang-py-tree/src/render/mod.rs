@@ -2,16 +2,16 @@ use crate::prelude::internal::*;
 use std::sync::LazyLock;
 
 #[derive(Debug, PartialEq)]
-pub struct PYRenderContext<'a> {
+pub struct PyRenderContext<'a> {
     pub config: &'a PyConfigLang,
-    pub resolve: GtlRenderResolve<'a, PYRenderState, PYRenderContext<'a>>,
+    pub resolve: GtlRenderResolve<'a, PyRenderState, PyRenderContext<'a>>,
 }
 
-impl GtlRenderContext for PYRenderContext<'_> {}
+impl GtlRenderContext for PyRenderContext<'_> {}
 
 static PY_DEFAULT_CONFIG: LazyLock<PyConfigLang> = LazyLock::new(|| PyConfigLang::default());
 
-impl Default for PYRenderContext<'_> {
+impl Default for PyRenderContext<'_> {
     fn default() -> Self {
         Self {
             config: &PY_DEFAULT_CONFIG,
@@ -21,11 +21,11 @@ impl Default for PYRenderContext<'_> {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct PYRenderState {
+pub struct PyRenderState {
     pub indent: usize,
 }
 
-impl GtlRenderState for PYRenderState {
+impl GtlRenderState for PyRenderState {
     const INDENT: &'static str = "    ";
 
     fn indent_inc(&self) -> Self {
@@ -40,7 +40,7 @@ impl GtlRenderState for PYRenderState {
     }
 }
 
-impl Default for PYRenderState {
+impl Default for PyRenderState {
     fn default() -> Self {
         Self { indent: 0 }
     }

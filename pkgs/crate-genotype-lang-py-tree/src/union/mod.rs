@@ -5,8 +5,8 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct PYUnion {
+pub struct PyUnion {
     #[visit]
-    pub descriptors: Vec<PYDescriptor>,
+    pub descriptors: Vec<PyDescriptor>,
     pub discriminator: Option<String>,
 }

@@ -1,14 +1,14 @@
 use crate::prelude::internal::*;
 use std::collections::HashSet;
 
-impl PYConvertModule {
-    pub fn sort_definitions(unordered_definitions: Vec<PYDefinition>) -> Vec<PYDefinition> {
+impl PyConvertModule {
+    pub fn sort_definitions(unordered_definitions: Vec<PyDefinition>) -> Vec<PyDefinition> {
         let mut unordered_definitions = unordered_definitions;
 
         let definition_identifiers = unordered_definitions
             .iter()
             .map(|definition| definition.name().clone())
-            .collect::<HashSet<PYIdentifier>>();
+            .collect::<HashSet<PyIdentifier>>();
 
         let mut available = HashSet::new();
 

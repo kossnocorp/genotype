@@ -3,7 +3,7 @@ use crate::prelude::internal::*;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct TSIntersection {
+pub struct TsIntersection {
     #[visit]
-    pub descriptors: Vec<TSDescriptor>,
+    pub descriptors: Vec<TsDescriptor>,
 }

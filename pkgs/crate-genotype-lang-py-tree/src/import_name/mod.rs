@@ -4,19 +4,19 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub enum PYImportName {
-    Name(#[visit] PYIdentifier),
-    Alias(#[visit] PYIdentifier, #[visit] PYIdentifier),
+pub enum PyImportName {
+    Name(#[visit] PyIdentifier),
+    Alias(#[visit] PyIdentifier, #[visit] PyIdentifier),
 }
 
-impl From<&str> for PYImportName {
+impl From<&str> for PyImportName {
     fn from(str: &str) -> Self {
-        PYImportName::Name(str.into())
+        PyImportName::Name(str.into())
     }
 }
 
-impl From<PYIdentifier> for PYImportName {
-    fn from(identifier: PYIdentifier) -> Self {
-        PYImportName::Name(identifier)
+impl From<PyIdentifier> for PyImportName {
+    fn from(identifier: PyIdentifier) -> Self {
+        PyImportName::Name(identifier)
     }
 }

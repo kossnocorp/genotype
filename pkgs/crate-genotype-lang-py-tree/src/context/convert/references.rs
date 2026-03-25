@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl PYConvertContext {
+impl PyConvertContext {
     /// Adds a reference to the context. This is used to track definition references.
-    pub fn track_reference(&mut self, reference: &PYReference) {
+    pub fn track_reference(&mut self, reference: &PyReference) {
         let mut references = self.references.pop().unwrap_or_default();
         references.insert(reference.identifier.clone());
         self.references.push(references);
@@ -10,7 +10,7 @@ impl PYConvertContext {
 
     /// Drains all references from the context. This is used to collect all references after
     /// converting a definition.
-    pub fn pop_references_scope(&mut self) -> Vec<PYIdentifier> {
+    pub fn pop_references_scope(&mut self) -> Vec<PyIdentifier> {
         self.references
             .pop()
             .unwrap_or_default()
@@ -31,8 +31,8 @@ mod tests {
 
     #[test]
     fn test_track_reference() {
-        let mut context = PYConvertContext::default();
-        let reference = PYReference {
+        let mut context = PyConvertContext::default();
+        let reference = PyReference {
             identifier: "Foo".into(),
             forward: false,
         };
@@ -42,12 +42,12 @@ mod tests {
 
     #[test]
     fn test_track_reference_unique() {
-        let mut context = PYConvertContext::default();
-        context.track_reference(&PYReference {
+        let mut context = PyConvertContext::default();
+        context.track_reference(&PyReference {
             identifier: "Foo".into(),
             forward: false,
         });
-        context.track_reference(&PYReference {
+        context.track_reference(&PyReference {
             identifier: "Foo".into(),
             forward: false,
         });
@@ -56,13 +56,13 @@ mod tests {
 
     #[test]
     fn test_pop_references_scope() {
-        let mut context = PYConvertContext::default();
+        let mut context = PyConvertContext::default();
         context.create_references_scope();
-        context.track_reference(&PYReference {
+        context.track_reference(&PyReference {
             identifier: "Foo".into(),
             forward: false,
         });
-        context.track_reference(&PYReference {
+        context.track_reference(&PyReference {
             identifier: "Bar".into(),
             forward: false,
         });
@@ -74,14 +74,14 @@ mod tests {
 
     #[test]
     fn test_create_references_scope() {
-        let mut context = PYConvertContext::default();
+        let mut context = PyConvertContext::default();
         context.create_references_scope();
-        context.track_reference(&PYReference {
+        context.track_reference(&PyReference {
             identifier: "Foo".into(),
             forward: false,
         });
         context.create_references_scope();
-        context.track_reference(&PYReference {
+        context.track_reference(&PyReference {
             identifier: "Bar".into(),
             forward: false,
         });

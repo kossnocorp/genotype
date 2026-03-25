@@ -7,7 +7,7 @@ pub struct GtModulePath(GtSrcRelativePath);
 
 impl GtModulePath {
     #[cfg(feature = "parser")]
-    pub fn resolve(&self, path: &GTPath) -> GtModulePath {
+    pub fn resolve(&self, path: &GtPath) -> GtModulePath {
         let parent_path = if let Some(parent) = self.0.relative_path().parent() {
             parent
         } else {
@@ -54,14 +54,14 @@ impl From<&str> for GtModulePath {
 }
 
 #[cfg(feature = "parser")]
-impl From<&GtModulePath> for GTModuleId {
+impl From<&GtModulePath> for GtModuleId {
     fn from(path: &GtModulePath) -> Self {
         path.relative_path().with_extension("").as_str().into()
     }
 }
 
 #[cfg(feature = "parser")]
-impl From<GtModulePath> for GTModuleId {
+impl From<GtModulePath> for GtModuleId {
     fn from(path: GtModulePath) -> Self {
         (&path).into()
     }

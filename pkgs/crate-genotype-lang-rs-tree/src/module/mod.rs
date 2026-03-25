@@ -5,12 +5,12 @@ pub use convert::*;
 mod render;
 
 #[derive(Default, Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct RSModule {
-    pub id: GTModuleId,
+pub struct RsModule {
+    pub id: GtModuleId,
     #[visit]
-    pub doc: Option<RSDoc>,
+    pub doc: Option<RsDoc>,
     #[visit]
-    pub imports: Vec<RSUse>,
+    pub imports: Vec<RsUse>,
     #[visit]
-    pub definitions: Vec<RSDefinition>,
+    pub definitions: Vec<RsDefinition>,
 }

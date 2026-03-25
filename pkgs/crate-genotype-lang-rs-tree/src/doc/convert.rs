@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl RSConvert<RSDoc> for GTDoc {
-    fn convert(&self, _context: &mut RSConvertContext) -> Result<RSDoc> {
-        Ok(RSDoc(
+impl RsConvert<RsDoc> for GtDoc {
+    fn convert(&self, _context: &mut RsConvertContext) -> Result<RsDoc> {
+        Ok(RsDoc(
             self.1.clone(),
             false, // It is assigned by module converter
         ))
@@ -17,10 +17,10 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTDoc((0, 0).into(), "Hello, world!".into())
-                .convert(&mut RSConvertContext::empty("module".into()))
+            GtDoc((0, 0).into(), "Hello, world!".into())
+                .convert(&mut RsConvertContext::empty("module".into()))
                 .unwrap(),
-            @r#"RSDoc("Hello, world!", false)"#
+            @r#"RsDoc("Hello, world!", false)"#
         );
     }
 }

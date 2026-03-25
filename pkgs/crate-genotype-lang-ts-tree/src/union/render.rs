@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSUnion {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsUnion {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -27,10 +27,10 @@ mod tests {
     #[test]
     fn test_render_union() {
         assert_snapshot!(
-            TSUnion {
+            TsUnion {
                 descriptors: vec![
-                    TSDescriptor::Primitive(TSPrimitive::String),
-                    TSDescriptor::Primitive(TSPrimitive::Number),
+                    TsDescriptor::Primitive(TsPrimitive::String),
+                    TsDescriptor::Primitive(TsPrimitive::Number),
                 ]
             }
             .render(Default::default(), &mut Default::default())

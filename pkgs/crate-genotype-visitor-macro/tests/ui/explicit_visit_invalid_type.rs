@@ -1,13 +1,13 @@
 use genotype_visitor_macro::Visitor;
 
 #[derive(Visitor)]
-struct GTNode {
+struct GtNode {
     #[visit]
     value: i32,
 }
 
 mod visitor {
-    use crate::GTNode;
+    use crate::GtNode;
 
     pub use genotype_visitor_macro::visitor;
 
@@ -15,8 +15,8 @@ mod visitor {
         fn traverse(&mut self, visitor: &mut V);
     }
 
-    #[visitor(GTNode)]
-    pub struct GTVisitor;
+    #[visitor(GtNode)]
+    pub struct GtVisitor;
 }
 
 fn main() {}

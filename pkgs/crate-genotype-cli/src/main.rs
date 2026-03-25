@@ -1,9 +1,9 @@
 use clap::{Parser, Subcommand};
 use commands::{
-    build::{GTBuildCommand, build_command},
-    init::{GTInitCommand, init_command},
+    build::{GtBuildCommand, build_command},
+    init::{GtInitCommand, init_command},
 };
-use diagnostic::error::GTCliError;
+use diagnostic::error::GtCliError;
 
 pub mod commands;
 pub mod diagnostic;
@@ -18,10 +18,10 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     /// Builds a Genotype project
-    Build(GTBuildCommand),
+    Build(GtBuildCommand),
 
     /// Initializes a Genotype project
-    Init(GTInitCommand),
+    Init(GtInitCommand),
 }
 
 fn main() -> miette::Result<()> {
@@ -32,6 +32,6 @@ fn main() -> miette::Result<()> {
 
         Some(Commands::Init(args)) => init_command(args),
 
-        None => Err(GTCliError::MissingCommand.into()),
+        None => Err(GtCliError::MissingCommand.into()),
     }
 }

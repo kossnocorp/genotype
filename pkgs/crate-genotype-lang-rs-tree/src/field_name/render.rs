@@ -1,16 +1,16 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSFieldName {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsFieldName {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
         _state: Self::RenderState,
         _context: &mut Self::RenderContext,
     ) -> Result<String> {
-        Ok(RSNaming::render(&self.0))
+        Ok(RsNaming::render(&self.0))
     }
 }
 
@@ -22,7 +22,7 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            RSFieldName("foo".into())
+            RsFieldName("foo".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"foo"
@@ -32,7 +32,7 @@ mod tests {
     #[test]
     fn test_render_keyword() {
         assert_snapshot!(
-            RSFieldName("type".into())
+            RsFieldName("type".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"r#type"

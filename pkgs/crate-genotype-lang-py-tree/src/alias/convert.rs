@@ -1,21 +1,21 @@
 use crate::prelude::internal::*;
 
-impl PYConvert<PYDefinition> for GTAlias {
-    fn convert(&self, context: &mut PYConvertContext) -> PYDefinition {
+impl PyConvert<PyDefinition> for GtAlias {
+    fn convert(&self, context: &mut PyConvertContext) -> PyDefinition {
         let doc = self.doc.as_ref().map(|doc| doc.convert(context));
 
         let name = self.name.convert(context);
         context.push_defined(&name);
 
         match &self.descriptor {
-            GTDescriptor::Object(object) => {
+            GtDescriptor::Object(object) => {
                 context.provide_doc(doc);
-                PYDefinition::Class(object.convert(context))
+                PyDefinition::Class(object.convert(context))
             }
 
-            GTDescriptor::Branded(branded) => {
+            GtDescriptor::Branded(branded) => {
                 context.provide_doc(doc);
-                PYDefinition::Newtype(branded.convert(context))
+                PyDefinition::Newtype(branded.convert(context))
             }
 
             _ => {
@@ -24,10 +24,10 @@ impl PYConvert<PYDefinition> for GTAlias {
                 let mut descriptor = self.descriptor.convert(context);
 
                 for attribute in self.attributes.iter() {
-                    if let PYDescriptor::Union(union) = &mut descriptor {
+                    if let PyDescriptor::Union(union) = &mut descriptor {
                         if let Some(assignment) = attribute.get_assigned("discriminator") {
-                            if let GTAttributeValue::Literal(literal) = &assignment.value {
-                                if let GTLiteralValue::String(value) = &literal.value {
+                            if let GtAttributeValue::Literal(literal) = &assignment.value {
+                                if let GtLiteralValue::String(value) = &literal.value {
                                     union.discriminator = value.clone().into();
                                     // [TODO] Resolve right now is a mess, instead of resolving in
                                     // convert functions, it should be resolved in the end or by
@@ -41,7 +41,7 @@ impl PYConvert<PYDefinition> for GTAlias {
 
                 let references = context.pop_references_scope();
 
-                PYDefinition::Alias(PYAlias {
+                PyDefinition::Alias(PyAlias {
                     doc,
                     name,
                     descriptor,
@@ -60,19 +60,19 @@ mod tests {
     #[test]
     fn test_convert_alias() {
         assert_ron_snapshot!(
-            GTAlias {
-                id: GTDefinitionId("module".into(), "Name".into()),
+            GtAlias {
+                id: GtDefinitionId("module".into(), "Name".into()),
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                name: GTIdentifier::new((0, 0).into(), "Name".into()),
+                name: GtIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: Gt::primitive_boolean().into()
             }
-            .convert(&mut PYConvertContext::default()),
+            .convert(&mut PyConvertContext::default()),
             @r#"
-        Alias(PYAlias(
+        Alias(PyAlias(
           doc: None,
-          name: PYIdentifier("Name"),
+          name: PyIdentifier("Name"),
           descriptor: Primitive(Boolean),
           references: [],
         ))
@@ -83,54 +83,54 @@ mod tests {
     #[test]
     fn test_convert_class() {
         assert_ron_snapshot!(
-            GTAlias {
-                id: GTDefinitionId("module".into(), "Book".into()),
+            GtAlias {
+                id: GtDefinitionId("module".into(), "Book".into()),
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                name: GTIdentifier::new((0, 0).into(), "Book".into()),
-                descriptor: GTDescriptor::Object(GTObject {
+                name: GtIdentifier::new((0, 0).into(), "Book".into()),
+                descriptor: GtDescriptor::Object(GtObject {
                     span: (0, 0).into(),
                     doc: None,
                     attributes: vec![],
-                    name: GTIdentifier::new((0, 0).into(), "Book".into()).into(),
+                    name: GtIdentifier::new((0, 0).into(), "Book".into()).into(),
                     extensions: vec![],
                     properties: vec![
-                        GTProperty {
+                        GtProperty {
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
-                            name: GTKey::new((0, 0).into(), "title".into()),
+                            name: GtKey::new((0, 0).into(), "title".into()),
                             descriptor: Gt::primitive_string().into(),
                             required: true,
                         },
-                        GTProperty {
+                        GtProperty {
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
-                            name: GTKey::new((0, 0).into(), "author".into()),
+                            name: GtKey::new((0, 0).into(), "author".into()),
                             descriptor: Gt::primitive_string().into(),
                             required: true,
                         }
                     ]
                 })
             }
-            .convert(&mut PYConvertContext::default()),
+            .convert(&mut PyConvertContext::default()),
             @r#"
-        Class(PYClass(
+        Class(PyClass(
           doc: None,
-          name: PYIdentifier("Book"),
+          name: PyIdentifier("Book"),
           extensions: [],
           properties: [
-            PYProperty(
+            PyProperty(
               doc: None,
-              name: PYKey("title"),
+              name: PyKey("title"),
               descriptor: Primitive(String),
               required: true,
             ),
-            PYProperty(
+            PyProperty(
               doc: None,
-              name: PYKey("author"),
+              name: PyKey("author"),
               descriptor: Primitive(String),
               required: true,
             ),
@@ -144,21 +144,21 @@ mod tests {
     #[test]
     fn test_convert_branded() {
         assert_ron_snapshot!(
-            GTAlias {
-                id: GTDefinitionId("module".into(), "UserId".into()),
+            GtAlias {
+                id: GtDefinitionId("module".into(), "UserId".into()),
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                name: GTIdentifier::new((0, 0).into(), "UserId".into()),
+                name: GtIdentifier::new((0, 0).into(), "UserId".into()),
                 descriptor: Gt::descriptor(
                     Gt::branded("UserId", Gt::primitive_string())
                 )
             }
-            .convert(&mut PYConvertContext::default()),
+            .convert(&mut PyConvertContext::default()),
             @r#"
-        Newtype(PYNewtype(
+        Newtype(PyNewtype(
           doc: None,
-          name: PYIdentifier("UserId"),
+          name: PyIdentifier("UserId"),
           primitive: String,
         ))
         "#
@@ -167,15 +167,15 @@ mod tests {
 
     #[test]
     fn test_convert_hoisted() {
-        let mut context = PYConvertContext::default();
+        let mut context = PyConvertContext::default();
 
         assert_ron_snapshot!(
-            GTAlias {
-                id: GTDefinitionId("module".into(), "Book".into()),
+            GtAlias {
+                id: GtDefinitionId("module".into(), "Book".into()),
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                name: GTIdentifier::new((0, 0).into(), "Book".into()),
+                name: GtIdentifier::new((0, 0).into(), "Book".into()),
                 descriptor: Gt::descriptor(Gt::union(descriptor_nodes![
                     Gt::object("BookObj", vec![
                         Gt::property("author", Gt::primitive_string())
@@ -185,13 +185,13 @@ mod tests {
             }
             .convert(&mut context),
             @r#"
-        Alias(PYAlias(
+        Alias(PyAlias(
           doc: None,
-          name: PYIdentifier("Book"),
-          descriptor: Union(PYUnion(
+          name: PyIdentifier("Book"),
+          descriptor: Union(PyUnion(
             descriptors: [
-              Reference(PYReference(
-                identifier: PYIdentifier("BookObj"),
+              Reference(PyReference(
+                identifier: PyIdentifier("BookObj"),
                 forward: true,
               )),
               Primitive(String),
@@ -199,7 +199,7 @@ mod tests {
             discriminator: None,
           )),
           references: [
-            PYIdentifier("BookObj"),
+            PyIdentifier("BookObj"),
           ],
         ))
         "#
@@ -210,14 +210,14 @@ mod tests {
             hoisted,
             @r#"
         [
-          Class(PYClass(
+          Class(PyClass(
             doc: None,
-            name: PYIdentifier("BookObj"),
+            name: PyIdentifier("BookObj"),
             extensions: [],
             properties: [
-              PYProperty(
+              PyProperty(
                 doc: None,
-                name: PYKey("author"),
+                name: PyKey("author"),
                 descriptor: Primitive(String),
                 required: true,
               ),
@@ -231,28 +231,28 @@ mod tests {
 
     #[test]
     fn test_convert_resolve() {
-        let mut context = PYConvertContext::new(
+        let mut context = PyConvertContext::new(
             Default::default(),
             PyConfig {
-                lang: PyConfigLang::new(PYVersion::Legacy),
+                lang: PyConfigLang::new(PyVersion::Legacy),
                 ..Default::default()
             },
         );
 
         assert_ron_snapshot!(
-            GTAlias {
-                id: GTDefinitionId("module".into(), "Order".into()),
+            GtAlias {
+                id: GtDefinitionId("module".into(), "Order".into()),
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                name: GTIdentifier::new((0, 0).into(), "Name".into()),
+                name: GtIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: Gt::primitive_string().into(),
             }
             .convert(&mut context),
             @r#"
-        Alias(PYAlias(
+        Alias(PyAlias(
           doc: None,
-          name: PYIdentifier("Name"),
+          name: PyIdentifier("Name"),
           descriptor: Primitive(String),
           references: [],
         ))
@@ -264,22 +264,22 @@ mod tests {
 
     #[test]
     fn test_forward_alias() {
-        let mut context = PYConvertContext::default();
+        let mut context = PyConvertContext::default();
 
         assert_ron_snapshot!(
-            GTAlias {
-                id: GTDefinitionId("module".into(), "Name".into()),
+            GtAlias {
+                id: GtDefinitionId("module".into(), "Name".into()),
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                name: GTIdentifier::new((0, 0).into(), "Name".into()),
+                name: GtIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: Gt::primitive_string().into(),
             }
             .convert(&mut context),
             @r#"
-        Alias(PYAlias(
+        Alias(PyAlias(
           doc: None,
-          name: PYIdentifier("Name"),
+          name: PyIdentifier("Name"),
           descriptor: Primitive(String),
           references: [],
         ))
@@ -288,27 +288,27 @@ mod tests {
 
         assert!(context.is_forward_identifier(
             &"Hello".into(),
-            &GTIdentifier::new((0, 0).into(), "Hello".into())
+            &GtIdentifier::new((0, 0).into(), "Hello".into())
         ));
         assert!(!context.is_forward_identifier(
             &"Name".into(),
-            &GTIdentifier::new((0, 0).into(), "Name".into())
+            &GtIdentifier::new((0, 0).into(), "Name".into())
         ));
     }
 
     #[test]
     fn test_forward_class() {
-        let mut context = PYConvertContext::default();
+        let mut context = PyConvertContext::default();
 
         assert_ron_snapshot!(
-            GTAlias {
-                id: GTDefinitionId("module".into(), "Name".into()),
+            GtAlias {
+                id: GtDefinitionId("module".into(), "Name".into()),
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                name: GTIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GTObject {
-                    name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Name".into())),
+                name: GtIdentifier::new((0, 0).into(), "Name".into()),
+                descriptor: GtObject {
+                    name: GtObjectName::Named(GtIdentifier::new((0, 0).into(), "Name".into())),
                     doc: None,
                     attributes: vec![],
                     span: (0, 0).into(),
@@ -319,9 +319,9 @@ mod tests {
             }
             .convert(&mut context),
             @r#"
-        Class(PYClass(
+        Class(PyClass(
           doc: None,
-          name: PYIdentifier("Name"),
+          name: PyIdentifier("Name"),
           extensions: [],
           properties: [],
           references: [],
@@ -331,63 +331,63 @@ mod tests {
 
         assert!(context.is_forward_identifier(
             &"Hello".into(),
-            &GTIdentifier::new((0, 0).into(), "Hello".into())
+            &GtIdentifier::new((0, 0).into(), "Hello".into())
         ));
         assert!(!context.is_forward_identifier(
             &"Name".into(),
-            &GTIdentifier::new((0, 0).into(), "Name".into())
+            &GtIdentifier::new((0, 0).into(), "Name".into())
         ));
     }
 
     #[test]
     fn test_convert_discriminator() {
         assert_ron_snapshot!(
-            GTAlias {
-                id: GTDefinitionId("module".into(), "Message".into()),
+            GtAlias {
+                id: GtDefinitionId("module".into(), "Message".into()),
                 span: (0, 0).into(),
                 doc: None,
-                attributes: vec![GTAttribute {
+                attributes: vec![GtAttribute {
                     span: (0, 0).into(),
-                    name: GTAttributeName::new((0, 0).into(), "discriminator".into()),
-                    descriptor: Some(GTAttributeDescriptor::Assignment(
-                        GTAttributeAssignment::new(
+                    name: GtAttributeName::new((0, 0).into(), "discriminator".into()),
+                    descriptor: Some(GtAttributeDescriptor::Assignment(
+                        GtAttributeAssignment::new(
                             (0, 0).into(),
-                            GTAttributeValue::Literal(GTLiteral {
+                            GtAttributeValue::Literal(GtLiteral {
                                 span: (0, 0).into(),
                                 doc: None,
                                 attributes: vec![],
-                                value: GTLiteralValue::String("type".into()),
+                                value: GtLiteralValue::String("type".into()),
                             })
                         )
                     ))
                 }],
-                name: GTIdentifier::new((0, 0).into(), "Message".into()),
+                name: GtIdentifier::new((0, 0).into(), "Message".into()),
                 descriptor: Gt::descriptor(Gt::union(descriptor_nodes![
                     Gt::reference("Reply"),
                     Gt::reference("DM")
                 ])),
             }
-            .convert(&mut PYConvertContext::default()),
+            .convert(&mut PyConvertContext::default()),
             @r#"
-        Alias(PYAlias(
+        Alias(PyAlias(
           doc: None,
-          name: PYIdentifier("Message"),
-          descriptor: Union(PYUnion(
+          name: PyIdentifier("Message"),
+          descriptor: Union(PyUnion(
             descriptors: [
-              Reference(PYReference(
-                identifier: PYIdentifier("Reply"),
+              Reference(PyReference(
+                identifier: PyIdentifier("Reply"),
                 forward: true,
               )),
-              Reference(PYReference(
-                identifier: PYIdentifier("DM"),
+              Reference(PyReference(
+                identifier: PyIdentifier("DM"),
                 forward: true,
               )),
             ],
             discriminator: Some("type"),
           )),
           references: [
-            PYIdentifier("Reply"),
-            PYIdentifier("DM"),
+            PyIdentifier("Reply"),
+            PyIdentifier("DM"),
           ],
         ))
         "#
@@ -397,19 +397,19 @@ mod tests {
     #[test]
     fn test_convert_doc_alias() {
         assert_ron_snapshot!(
-            GTAlias {
-                id: GTDefinitionId("module".into(), "Name".into()),
+            GtAlias {
+                id: GtDefinitionId("module".into(), "Name".into()),
                 span: (0, 0).into(),
-                doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
+                doc: Some(GtDoc::new((0, 0).into(), "Hello, world!".into())),
                 attributes: vec![],
-                name: GTIdentifier::new((0, 0).into(), "Name".into()),
+                name: GtIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: Gt::primitive_boolean().into(),
             }
-            .convert(&mut PYConvertContext::default()),
+            .convert(&mut PyConvertContext::default()),
             @r#"
-        Alias(PYAlias(
-          doc: Some(PYDoc("Hello, world!")),
-          name: PYIdentifier("Name"),
+        Alias(PyAlias(
+          doc: Some(PyDoc("Hello, world!")),
+          name: PyIdentifier("Name"),
           descriptor: Primitive(Boolean),
           references: [],
         ))

@@ -1,13 +1,13 @@
 use crate::prelude::internal::*;
 
-impl PYConvert<PYLiteral> for GTLiteral {
-    fn convert(&self, context: &mut PYConvertContext) -> PYLiteral {
+impl PyConvert<PyLiteral> for GtLiteral {
+    fn convert(&self, context: &mut PyConvertContext) -> PyLiteral {
         match &self.value {
-            GTLiteralValue::Null => PYLiteral::None,
-            GTLiteralValue::Boolean(value) => PYLiteral::Boolean(*value),
-            GTLiteralValue::Integer(value) => PYLiteral::Integer(*value),
-            GTLiteralValue::Float(value) => PYLiteral::Float(*value),
-            GTLiteralValue::String(value) => PYLiteral::String(value.clone()),
+            GtLiteralValue::Null => PyLiteral::None,
+            GtLiteralValue::Boolean(value) => PyLiteral::Boolean(*value),
+            GtLiteralValue::Integer(value) => PyLiteral::Integer(*value),
+            GtLiteralValue::Float(value) => PyLiteral::Float(*value),
+            GtLiteralValue::String(value) => PyLiteral::String(value.clone()),
         }
         .resolve(context)
     }
@@ -21,53 +21,53 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTLiteral {
+            GtLiteral {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                value: GTLiteralValue::Null,
+                value: GtLiteralValue::Null,
             }
-            .convert(&mut PYConvertContext::default()),
+            .convert(&mut PyConvertContext::default()),
             @"r#None"
         );
         assert_ron_snapshot!(
-            GTLiteral {
+            GtLiteral {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                value: GTLiteralValue::Boolean(true),
+                value: GtLiteralValue::Boolean(true),
             }
-            .convert(&mut PYConvertContext::default()),
+            .convert(&mut PyConvertContext::default()),
             @"Boolean(true)"
         );
         assert_ron_snapshot!(
-            GTLiteral {
+            GtLiteral {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                value: GTLiteralValue::Integer(-123),
+                value: GtLiteralValue::Integer(-123),
             }
-            .convert(&mut PYConvertContext::default()),
+            .convert(&mut PyConvertContext::default()),
             @"Integer(-123)"
         );
         assert_ron_snapshot!(
-            GTLiteral {
+            GtLiteral {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                value: GTLiteralValue::Float(1.23),
+                value: GtLiteralValue::Float(1.23),
             }
-            .convert(&mut PYConvertContext::default()),
+            .convert(&mut PyConvertContext::default()),
             @"Float(1.23)"
         );
         assert_ron_snapshot!(
-            GTLiteral {
+            GtLiteral {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                value: GTLiteralValue::String("Hello, world!".into()),
+                value: GtLiteralValue::String("Hello, world!".into()),
             }
-            .convert(&mut PYConvertContext::default()),
+            .convert(&mut PyConvertContext::default()),
             @r#"String("Hello, world!")"#
         );
     }
@@ -76,11 +76,11 @@ mod tests {
     fn test_convert_resolve() {
         let mut context = Default::default();
         assert_ron_snapshot!(
-            GTLiteral {
+            GtLiteral {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                value: GTLiteralValue::Boolean(false),
+                value: GtLiteralValue::Boolean(false),
             }
             .convert(&mut context),
             @"Boolean(false)"
@@ -89,7 +89,7 @@ mod tests {
             context.as_dependencies(),
             @r#"
         [
-          (Typing, PYIdentifier("Literal")),
+          (Typing, PyIdentifier("Literal")),
         ]
         "#
         );

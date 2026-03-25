@@ -2,13 +2,13 @@ use crate::prelude::internal::*;
 use std::collections::HashMap;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct TSConvertResolve {
-    pub paths: HashMap<GTPath, GTPath>,
-    pub globs: HashMap<GTPath, String>,
-    pub identifiers: HashMap<GTIdentifier, GTIdentifier>,
+pub struct TsConvertResolve {
+    pub paths: HashMap<GtPath, GtPath>,
+    pub globs: HashMap<GtPath, String>,
+    pub identifiers: HashMap<GtIdentifier, GtIdentifier>,
 }
 
-impl TSConvertResolve {
+impl TsConvertResolve {
     pub fn new() -> Self {
         Self {
             paths: HashMap::new(),
@@ -18,7 +18,7 @@ impl TSConvertResolve {
     }
 }
 
-impl Default for TSConvertResolve {
+impl Default for TsConvertResolve {
     fn default() -> Self {
         Self::new()
     }

@@ -1,14 +1,14 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub enum GTImportReference {
-    Glob(GTSpan),
-    Names(GTSpan, #[visit] Vec<GTImportName>),
-    Name(GTSpan, #[visit] GTIdentifier),
+pub enum GtImportReference {
+    Glob(GtSpan),
+    Names(GtSpan, #[visit] Vec<GtImportName>),
+    Name(GtSpan, #[visit] GtIdentifier),
 }
 
-impl From<GTIdentifier> for GTImportReference {
-    fn from(identifier: GTIdentifier) -> Self {
-        GTImportReference::Name(identifier.0.clone(), identifier)
+impl From<GtIdentifier> for GtImportReference {
+    fn from(identifier: GtIdentifier) -> Self {
+        GtImportReference::Name(identifier.0.clone(), identifier)
     }
 }

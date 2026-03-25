@@ -34,7 +34,7 @@ build-backend = "poetry.core.masonry.api"
 pub struct PyProjectManifestDependency {}
 
 impl GtlProjectManifestDependency for PyProjectManifestDependency {
-    type DependencyIdent = PYDependencyIdent;
+    type DependencyIdent = PyDependencyIdent;
 
     fn as_kv(ident: &Self::DependencyIdent) -> Option<(String, Value)> {
         match ident {

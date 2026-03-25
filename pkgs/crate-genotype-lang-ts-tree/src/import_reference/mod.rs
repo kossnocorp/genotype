@@ -3,14 +3,14 @@ use crate::prelude::internal::*;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub enum TSImportReference {
+pub enum TsImportReference {
     Default(Arc<str>),
     Glob(Arc<str>),
-    Named(#[visit] Vec<TSImportName>),
+    Named(#[visit] Vec<TsImportName>),
 }
 
-impl From<&str> for TSImportReference {
+impl From<&str> for TsImportReference {
     fn from(str: &str) -> Self {
-        TSImportReference::Named(vec![str.into()])
+        TsImportReference::Named(vec![str.into()])
     }
 }

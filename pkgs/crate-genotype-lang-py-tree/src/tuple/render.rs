@@ -1,16 +1,16 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYTuple {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyTuple {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
     fn render(
         &self,
         state: Self::RenderState,
         context: &mut Self::RenderContext,
     ) -> Result<String> {
-        let tuple = if let PYVersion::Legacy = context.config.version {
+        let tuple = if let PyVersion::Legacy = context.config.version {
             "Tuple"
         } else {
             "tuple"
@@ -40,10 +40,10 @@ mod tests {
     #[test]
     fn test_render_tuple() {
         assert_snapshot!(
-            PYTuple {
+            PyTuple {
                 descriptors: vec![
-                    PYDescriptor::Primitive(PYPrimitive::String),
-                    PYDescriptor::Primitive(PYPrimitive::Int),
+                    PyDescriptor::Primitive(PyPrimitive::String),
+                    PyDescriptor::Primitive(PyPrimitive::Int),
                 ]
             }
             .render(Default::default(), &mut Default::default())
@@ -55,7 +55,7 @@ mod tests {
     #[test]
     fn test_render_empty_tuple() {
         assert_snapshot!(
-            PYTuple {
+            PyTuple {
                 descriptors: vec![]
             }
             .render(Default::default(), &mut Default::default())
@@ -67,13 +67,13 @@ mod tests {
     #[test]
     fn test_render_legacy() {
         assert_snapshot!(
-            PYTuple {
+            PyTuple {
                 descriptors: vec![]
             }
             .render(
                 Default::default(),
-                &mut PYRenderContext {
-                    config: &PyConfigLang::new(PYVersion::Legacy),
+                &mut PyRenderContext {
+                    config: &PyConfigLang::new(PyVersion::Legacy),
                     ..Default::default()
                 }
             )

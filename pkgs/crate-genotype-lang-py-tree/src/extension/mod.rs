@@ -4,19 +4,19 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct PYExtension {
+pub struct PyExtension {
     #[visit]
-    pub reference: PYReference,
+    pub reference: PyReference,
 }
 
-impl PYExtension {
-    pub fn new(reference: PYReference) -> Self {
-        PYExtension { reference }
+impl PyExtension {
+    pub fn new(reference: PyReference) -> Self {
+        PyExtension { reference }
     }
 }
 
-impl From<PYReference> for PYExtension {
-    fn from(reference: PYReference) -> Self {
-        PYExtension::new(reference)
+impl From<PyReference> for PyExtension {
+    fn from(reference: PyReference) -> Self {
+        PyExtension::new(reference)
     }
 }

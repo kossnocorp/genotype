@@ -3,26 +3,26 @@ use crate::prelude::internal::*;
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct TsProjectModule {
     pub path: GtPkgSrcRelativePath,
-    pub module: TSModule,
+    pub module: TsModule,
 }
 
 impl GtlProjectModule<TsConfig> for TsProjectModule {
-    type Dependency = TSDependencyIdent;
+    type Dependency = TsDependencyIdent;
 
     fn generate(config: &TsConfig, module: &GtProjectModule) -> Result<Self> {
         let path = module.path.to_pkg_src_relative_path("ts");
 
-        let mut resolve = TSConvertResolve::new();
+        let mut resolve = TsConvertResolve::new();
         let mut prefixes: HashMap<String, u8> = HashMap::new();
 
         for import in module.module.imports.iter() {
-            if let GTImportReference::Glob(_) = import.reference {
+            if let GtImportReference::Glob(_) = import.reference {
                 let references = module
                     .resolve
                     .identifiers
                     .iter()
                     .filter(|(_, resolve)| {
-                        if let GTPModuleIdentifierSource::External(path) = &resolve.source {
+                        if let GtpModuleIdentifierSource::External(path) = &resolve.source {
                             return import.path == *path;
                         }
                         false
@@ -49,14 +49,14 @@ impl GtlProjectModule<TsConfig> for TsProjectModule {
                         let alias = format!("{}.{}", prefix, identifier.1);
                         resolve
                             .identifiers
-                            .insert(identifier, GTIdentifier::new(span, alias.into()));
+                            .insert(identifier, GtIdentifier::new(span, alias.into()));
                     });
                 }
             }
         }
 
         let module =
-            TSConvertModule::convert(&module.module, resolve, config.common.dependencies.clone()).0;
+            TsConvertModule::convert(&module.module, resolve, config.common.dependencies.clone()).0;
 
         Ok(Self { path, module })
     }

@@ -4,10 +4,10 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct TSDoc(pub String);
+pub struct TsDoc(pub String);
 
-impl From<&str> for TSDoc {
+impl From<&str> for TsDoc {
     fn from(str: &str) -> Self {
-        TSDoc(str.into())
+        TsDoc(str.into())
     }
 }

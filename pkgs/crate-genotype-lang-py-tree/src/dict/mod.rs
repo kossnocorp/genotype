@@ -5,9 +5,9 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct PYDict {
+pub struct PyDict {
     #[visit]
-    pub key: PYDictKey,
+    pub key: PyDictKey,
     #[visit]
-    pub descriptor: PYDescriptor,
+    pub descriptor: PyDescriptor,
 }

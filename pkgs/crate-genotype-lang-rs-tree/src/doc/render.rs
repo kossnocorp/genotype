@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSDoc {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsDoc {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -33,7 +33,7 @@ mod tests {
     #[test]
     fn test_render_simple() {
         assert_snapshot!(
-            RSDoc::new("Hello, world!", false)
+            RsDoc::new("Hello, world!", false)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"/// Hello, world!"
@@ -43,7 +43,7 @@ mod tests {
     #[test]
     fn test_render_module() {
         assert_snapshot!(
-            RSDoc::new("Hello, world!", true)
+            RsDoc::new("Hello, world!", true)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"//! Hello, world!"
@@ -53,7 +53,7 @@ mod tests {
     #[test]
     fn test_render_multiline() {
         assert_snapshot!(
-            RSDoc::new(
+            RsDoc::new(
                 r#"Hello,
 cruel
 world!"#,
@@ -72,14 +72,14 @@ world!"#,
     #[test]
     fn test_render_indent() {
         assert_snapshot!(
-            RSDoc::new(
+            RsDoc::new(
                 r#"Hello,
 cruel
 world!"#,
                 false
             )
             .render(
-                RSRenderState::default().indent_inc(),
+                RsRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),

@@ -1,9 +1,9 @@
-use genotype_parser::{GTNamingContext, GTNamingContextName};
+use genotype_parser::{GtNamingContext, GtNamingContextName};
 use heck::ToPascalCase;
 
 #[derive(Default)]
 pub struct GtjTreeConvertContext {
-    naming: GTNamingContext,
+    naming: GtNamingContext,
 }
 
 impl GtjTreeConvertContext {
@@ -20,7 +20,7 @@ impl GtjTreeConvertContext {
         BodyFnResult,
     >(
         &mut self,
-        name: GTNamingContextName,
+        name: GtNamingContextName,
         body: BodyFn,
     ) -> BodyFnResult {
         self.naming.push_name(name);

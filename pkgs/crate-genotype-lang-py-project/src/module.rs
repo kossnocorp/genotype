@@ -4,29 +4,29 @@ use crate::prelude::internal::*;
 pub struct PyProjectModule {
     pub name: String,
     pub path: GtPkgSrcRelativePath,
-    pub module: PYModule,
+    pub module: PyModule,
 }
 
 impl GtlProjectModule<PyConfig> for PyProjectModule {
-    type Dependency = PYDependencyIdent;
+    type Dependency = PyDependencyIdent;
 
     fn generate(config: &PyConfig, module: &GtProjectModule) -> Result<Self> {
         let path = module.path.to_pkg_src_relative_path("py");
         let name = py_parse_module_path(path.with_extension("").as_str().into());
 
-        let mut resolve = PYConvertResolve::default();
+        let mut resolve = PyConvertResolve::default();
         let mut prefixes: HashMap<String, u8> = HashMap::new();
 
         // [TODO] I'm pretty sure I can extract it and share with TypeScript
         for import in module.module.imports.iter() {
             match &import.reference {
-                GTImportReference::Glob(_) => {
+                GtImportReference::Glob(_) => {
                     let references = module
                         .resolve
                         .identifiers
                         .iter()
                         .filter(|(_, resolve)| {
-                            if let GTPModuleIdentifierSource::External(path) = &resolve.source {
+                            if let GtpModuleIdentifierSource::External(path) = &resolve.source {
                                 return import.path == *path;
                             }
                             false
@@ -51,23 +51,23 @@ impl GtlProjectModule<PyConfig> for PyProjectModule {
                             let identifier = (*reference).clone();
                             let span = identifier.0.clone();
                             let alias_str = format!("{}.{}", prefix, identifier.1);
-                            let alias = GTIdentifier::new(span, alias_str.into());
+                            let alias = GtIdentifier::new(span, alias_str.into());
                             resolve.identifiers.insert(identifier.clone(), alias);
                             resolve.imported.insert(identifier);
                         });
                     }
                 }
 
-                GTImportReference::Name(_, identifier) => {
+                GtImportReference::Name(_, identifier) => {
                     resolve.imported.insert(identifier.clone());
                 }
 
-                GTImportReference::Names(_, identifiers) => {
+                GtImportReference::Names(_, identifiers) => {
                     identifiers.iter().for_each(|name| {
                         resolve.imported.insert(
                             match name {
-                                GTImportName::Name(_, identifier) => identifier,
-                                GTImportName::Alias(_, _, identifier) => identifier,
+                                GtImportName::Name(_, identifier) => identifier,
+                                GtImportName::Alias(_, _, identifier) => identifier,
                             }
                             .clone(),
                         );
@@ -76,7 +76,7 @@ impl GtlProjectModule<PyConfig> for PyProjectModule {
             }
         }
 
-        let module = PYConvertModule::convert(&module.module, &resolve, &config).0;
+        let module = PyConvertModule::convert(&module.module, &resolve, &config).0;
 
         Ok(Self { name, path, module })
     }

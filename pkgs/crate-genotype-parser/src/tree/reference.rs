@@ -1,32 +1,32 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
-pub struct GTReference {
-    pub span: GTSpan,
+pub struct GtReference {
+    pub span: GtSpan,
     #[visit]
-    pub doc: Option<GTDoc>,
+    pub doc: Option<GtDoc>,
     #[visit]
-    pub attributes: Vec<GTAttribute>,
-    pub id: GTReferenceId,
-    pub definition_id: GTReferenceDefinitionId,
+    pub attributes: Vec<GtAttribute>,
+    pub id: GtReferenceId,
+    pub definition_id: GtReferenceDefinitionId,
     #[visit]
-    pub identifier: GTIdentifier,
+    pub identifier: GtIdentifier,
 }
 
-impl GTReference {
-    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> Result<Self, GTParseError> {
-        let span: GTSpan = pair.as_span().into();
-        let identifier: GTIdentifier = pair.into();
+impl GtReference {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> Result<Self, GtParseError> {
+        let span: GtSpan = pair.as_span().into();
+        let identifier: GtIdentifier = pair.into();
         let (doc, attributes) = context.take_annotation_or_default();
 
         context.resolve.references.insert(identifier.clone());
 
-        Ok(GTReference {
+        Ok(GtReference {
             span: span.clone(),
             doc,
             attributes,
-            id: GTReferenceId(context.module_id.clone(), span),
-            definition_id: GTReferenceDefinitionId::Unresolved,
+            id: GtReferenceId(context.module_id.clone(), span),
+            definition_id: GtReferenceDefinitionId::Unresolved,
             identifier,
         })
     }
@@ -41,7 +41,7 @@ mod tests {
 
     #[test]
     fn test_parse_references() {
-        let parse = GTModule::parse(
+        let parse = GtModule::parse(
             "module".into(),
             NamedSource::new(
                 "module.type",
@@ -61,8 +61,8 @@ mod tests {
             parse.resolve.references,
             @r#"
         [
-          GTIdentifier(GTSpan(57, 61), "Name"),
-          GTIdentifier(GTSpan(83, 87), "User"),
+          GtIdentifier(GtSpan(57, 61), "Name"),
+          GtIdentifier(GtSpan(83, 87), "User"),
         ]
         "#
         );
@@ -79,22 +79,22 @@ mod tests {
             )],
         ));
         assert_ron_snapshot!(
-            parse_node!(GTReference, (to_parse_rules(Rule::name, "Hello"), &mut context)),
+            parse_node!(GtReference, (to_parse_rules(Rule::name, "Hello"), &mut context)),
             @r#"
-        GTReference(
-          span: GTSpan(0, 5),
-          doc: Some(GTDoc(GTSpan(0, 0), "Hello, world!")),
+        GtReference(
+          span: GtSpan(0, 5),
+          doc: Some(GtDoc(GtSpan(0, 0), "Hello, world!")),
           attributes: [
-            GTAttribute(
-              span: GTSpan(0, 2),
-              name: GTAttributeName(
-                span: GTSpan(0, 0),
+            GtAttribute(
+              span: GtSpan(0, 2),
+              name: GtAttributeName(
+                span: GtSpan(0, 0),
                 value: "example",
               ),
-              descriptor: Some(Assignment(GTAttributeAssignment(
-                span: GTSpan(0, 0),
-                value: Literal(GTLiteral(
-                  span: GTSpan(0, 0),
+              descriptor: Some(Assignment(GtAttributeAssignment(
+                span: GtSpan(0, 0),
+                value: Literal(GtLiteral(
+                  span: GtSpan(0, 0),
                   doc: None,
                   attributes: [],
                   value: String("value"),
@@ -102,9 +102,9 @@ mod tests {
               ))),
             ),
           ],
-          id: GTReferenceId(GTModuleId("module"), GTSpan(0, 5)),
+          id: GtReferenceId(GtModuleId("module"), GtSpan(0, 5)),
           definition_id: Unresolved,
-          identifier: GTIdentifier(GTSpan(0, 5), "Hello"),
+          identifier: GtIdentifier(GtSpan(0, 5), "Hello"),
         )
         "#
         );

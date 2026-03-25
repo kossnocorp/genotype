@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYProperty {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyProperty {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
     fn render(
         &self,
@@ -37,10 +37,10 @@ mod tests {
     #[test]
     fn test_render_primitive() {
         assert_snapshot!(
-            PYProperty {
+            PyProperty {
                 doc: None,
                 name: "name".into(),
-                descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                 required: true
             }
             .render(Default::default(), &mut Default::default())
@@ -48,10 +48,10 @@ mod tests {
             @"name: str"
         );
         assert_snapshot!(
-            PYProperty {
+            PyProperty {
                 doc: None,
                 name: "name".into(),
-                descriptor: PYReference::new("Name".into(), false).into(),
+                descriptor: PyReference::new("Name".into(), false).into(),
                 required: true
             }
             .render(Default::default(), &mut Default::default())
@@ -63,14 +63,14 @@ mod tests {
     #[test]
     fn test_render_indent() {
         assert_snapshot!(
-            PYProperty {
+            PyProperty {
                 doc: None,
                 name: "name".into(),
-                descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                 required: true
             }
             .render(
-                PYRenderState::default().indent_inc(),
+                PyRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),
@@ -81,10 +81,10 @@ mod tests {
     #[test]
     fn test_render_required() {
         assert_snapshot!(
-            PYProperty {
+            PyProperty {
                 doc: None,
                 name: "name".into(),
-                descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                 required: false
             }
             .render(Default::default(), &mut Default::default())
@@ -96,10 +96,10 @@ mod tests {
     #[test]
     fn test_render_doc() {
         assert_snapshot!(
-            PYProperty {
-                doc: Some(PYDoc("Hello, world!".into())),
+            PyProperty {
+                doc: Some(PyDoc("Hello, world!".into())),
                 name: "name".into(),
-                descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                 required: false
             }
             .render(Default::default(), &mut Default::default())

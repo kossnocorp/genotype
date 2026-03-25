@@ -2,58 +2,58 @@ use crate::prelude::internal::*;
 
 /// A name assigned to an object. It can be explicitly named,
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub enum GTObjectName {
+pub enum GtObjectName {
     /// Explicately given name.
-    Named(#[visit] GTIdentifier),
+    Named(#[visit] GtIdentifier),
     /// Name given to an anonymous object. It includes the name parent that helped
     /// to build the object name.
-    Alias(#[visit] GTIdentifier, GTObjectNameParent),
+    Alias(#[visit] GtIdentifier, GtObjectNameParent),
 }
 
-impl GTObjectName {
-    pub fn to_identifier(&self) -> GTIdentifier {
+impl GtObjectName {
+    pub fn to_identifier(&self) -> GtIdentifier {
         match self {
-            GTObjectName::Named(identifier) => identifier.clone(),
-            GTObjectName::Alias(identifier, _) => identifier.clone(),
+            GtObjectName::Named(identifier) => identifier.clone(),
+            GtObjectName::Alias(identifier, _) => identifier.clone(),
         }
     }
 }
 
-impl From<GTIdentifier> for GTObjectName {
-    fn from(value: GTIdentifier) -> Self {
-        GTObjectName::Named(value)
+impl From<GtIdentifier> for GtObjectName {
+    fn from(value: GtIdentifier) -> Self {
+        GtObjectName::Named(value)
     }
 }
 
-impl From<String> for GTObjectName {
+impl From<String> for GtObjectName {
     fn from(value: String) -> Self {
-        GTObjectName::Named(GTIdentifier::new(Default::default(), value.into()))
+        GtObjectName::Named(GtIdentifier::new(Default::default(), value.into()))
     }
 }
 
 /// The kind of parent that builds the object name.
 #[derive(Debug, PartialEq, Clone, Serialize)]
-pub enum GTObjectNameParent {
+pub enum GtObjectNameParent {
     /// An alias parent.
-    Alias(GTIdentifier),
+    Alias(GtIdentifier),
     /// A property parent that starts with the root alias name and the keys path.
-    Property(GTIdentifier, Vec<GTKey>),
+    Property(GtIdentifier, Vec<GtKey>),
 }
 
-impl GTObjectNameParent {
-    pub fn to_identifier(&self, span: GTSpan) -> GTIdentifier {
+impl GtObjectNameParent {
+    pub fn to_identifier(&self, span: GtSpan) -> GtIdentifier {
         match self {
-            GTObjectNameParent::Alias(identifier) => {
-                GTIdentifier::new(span, format!("{}Obj", identifier.1).into())
+            GtObjectNameParent::Alias(identifier) => {
+                GtIdentifier::new(span, format!("{}Obj", identifier.1).into())
             }
 
-            GTObjectNameParent::Property(identifier, keys) => {
+            GtObjectNameParent::Property(identifier, keys) => {
                 let keys = keys
                     .iter()
                     .map(|key| Self::capitalize(key.1.as_ref()))
                     .collect::<Vec<_>>()
                     .join("");
-                GTIdentifier::new(span, format!("{}{}", identifier.1, keys).into())
+                GtIdentifier::new(span, format!("{}{}", identifier.1, keys).into())
             }
         }
     }
@@ -74,25 +74,25 @@ mod tests {
 
     #[test]
     fn test_parent_to_identifier_alias() {
-        let parent = GTObjectNameParent::Alias(GTIdentifier::new((0, 5).into(), "Name".into()));
+        let parent = GtObjectNameParent::Alias(GtIdentifier::new((0, 5).into(), "Name".into()));
         assert_eq!(
             parent.to_identifier((5, 10).into()),
-            GTIdentifier::new((5, 10).into(), "NameObj".into())
+            GtIdentifier::new((5, 10).into(), "NameObj".into())
         );
     }
 
     #[test]
     fn test_parent_to_identifier_property() {
-        let parent = GTObjectNameParent::Property(
-            GTIdentifier::new((0, 5).into(), "User".into()),
+        let parent = GtObjectNameParent::Property(
+            GtIdentifier::new((0, 5).into(), "User".into()),
             vec![
-                GTKey::new((5, 10).into(), "name".into()),
-                GTKey::new((10, 15).into(), "first".into()),
+                GtKey::new((5, 10).into(), "name".into()),
+                GtKey::new((10, 15).into(), "first".into()),
             ],
         );
         assert_eq!(
             parent.to_identifier((15, 20).into()),
-            GTIdentifier::new((15, 20).into(), "UserNameFirst".into())
+            GtIdentifier::new((15, 20).into(), "UserNameFirst".into())
         );
     }
 }

@@ -4,22 +4,22 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct TSKey(pub Arc<str>);
+pub struct TsKey(pub Arc<str>);
 
-impl From<&str> for TSKey {
+impl From<&str> for TsKey {
     fn from(str: &str) -> Self {
-        TSKey(str.into())
+        TsKey(str.into())
     }
 }
 
-impl From<String> for TSKey {
+impl From<String> for TsKey {
     fn from(str: String) -> Self {
-        TSKey(str.into())
+        TsKey(str.into())
     }
 }
 
-impl From<Arc<str>> for TSKey {
+impl From<Arc<str>> for TsKey {
     fn from(str: Arc<str>) -> Self {
-        TSKey(str)
+        TsKey(str)
     }
 }

@@ -2,7 +2,7 @@ use miette::Diagnostic;
 use thiserror::Error;
 
 #[derive(Error, Diagnostic, Debug, PartialEq, Clone)]
-pub enum GTWError {
+pub enum GtwError {
     #[error("Failed to lock the files map")]
     #[diagnostic(code(GTW001))]
     FilesLock,

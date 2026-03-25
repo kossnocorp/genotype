@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl PYConvert<PYDict> for GTRecord {
-    fn convert(&self, context: &mut PYConvertContext) -> PYDict {
-        PYDict {
+impl PyConvert<PyDict> for GtRecord {
+    fn convert(&self, context: &mut PyConvertContext) -> PyDict {
+        PyDict {
             key: self.key.convert(context),
             descriptor: self.descriptor.convert(context),
         }
@@ -22,7 +22,7 @@ mod tests {
                 Gt::record(Gt::record_key_string(), Gt::primitive_string())
             ),
             @"
-        PYDict(
+        PyDict(
           key: String,
           descriptor: Primitive(String),
         )

@@ -1,15 +1,15 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Visitor)]
-pub enum RSDependencyIdent {
-    Local(#[visit] RSPath),
+pub enum RsDependencyIdent {
+    Local(#[visit] RsPath),
     Runtime,
     Litty,
     Serde,
     Std(String),
 }
 
-impl RSDependencyIdent {
+impl RsDependencyIdent {
     pub fn as_path(&self) -> String {
         match self {
             Self::Local(path) => path.1.to_string(),
@@ -20,19 +20,19 @@ impl RSDependencyIdent {
         }
     }
 
-    pub fn external(&self) -> Option<RSDependencyExternal> {
+    pub fn external(&self) -> Option<RsDependencyExternal> {
         match self {
-            Self::Runtime => Some(RSDependencyExternal {
+            Self::Runtime => Some(RsDependencyExternal {
                 name: "genotype_runtime".into(),
                 version: "0.4".into(),
                 features: vec![],
             }),
-            Self::Litty => Some(RSDependencyExternal {
+            Self::Litty => Some(RsDependencyExternal {
                 name: "litty".into(),
                 version: "0.3".into(),
                 features: vec![],
             }),
-            Self::Serde => Some(RSDependencyExternal {
+            Self::Serde => Some(RsDependencyExternal {
                 name: "serde".into(),
                 version: "1".into(),
                 features: vec!["derive".into()],
@@ -42,10 +42,10 @@ impl RSDependencyIdent {
     }
 }
 
-pub struct RSDependencyExternal {
+pub struct RsDependencyExternal {
     pub name: String,
     pub version: String,
     pub features: Vec<String>,
 }
 
-impl GtlDependencyIdent for RSDependencyIdent {}
+impl GtlDependencyIdent for RsDependencyIdent {}

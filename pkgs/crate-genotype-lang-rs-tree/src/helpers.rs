@@ -1,12 +1,12 @@
 use crate::prelude::internal::*;
 
-pub fn render_literal(literal: &GTLiteral) -> String {
+pub fn render_literal(literal: &GtLiteral) -> String {
     match &literal.value {
-        GTLiteralValue::Null => "null".to_string(),
-        GTLiteralValue::Boolean(value) => value.to_string(),
-        GTLiteralValue::Integer(value) => value.to_string(),
-        GTLiteralValue::Float(value) => GTLiteralValue::render_float(&value),
-        GTLiteralValue::String(value) => GTLiteralValue::render_string(&value),
+        GtLiteralValue::Null => "null".to_string(),
+        GtLiteralValue::Boolean(value) => value.to_string(),
+        GtLiteralValue::Integer(value) => value.to_string(),
+        GtLiteralValue::Float(value) => GtLiteralValue::render_float(&value),
+        GtLiteralValue::String(value) => GtLiteralValue::render_string(&value),
     }
 }
 
@@ -18,65 +18,65 @@ mod tests {
     #[test]
     fn test_render_literal() {
         assert_eq!(
-            render_literal(&GTLiteral {
+            render_literal(&GtLiteral {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                value: GTLiteralValue::Null,
+                value: GtLiteralValue::Null,
             }),
             "null"
         );
         assert_eq!(
-            render_literal(&GTLiteral {
+            render_literal(&GtLiteral {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                value: GTLiteralValue::Boolean(true),
+                value: GtLiteralValue::Boolean(true),
             }),
             "true"
         );
         assert_eq!(
-            render_literal(&GTLiteral {
+            render_literal(&GtLiteral {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                value: GTLiteralValue::Boolean(false),
+                value: GtLiteralValue::Boolean(false),
             }),
             "false"
         );
         assert_eq!(
-            render_literal(&GTLiteral {
+            render_literal(&GtLiteral {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                value: GTLiteralValue::Integer(42),
+                value: GtLiteralValue::Integer(42),
             }),
             "42"
         );
         assert_eq!(
-            render_literal(&GTLiteral {
+            render_literal(&GtLiteral {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                value: GTLiteralValue::Float(3.14),
+                value: GtLiteralValue::Float(3.14),
             }),
             "3.14"
         );
         assert_eq!(
-            render_literal(&GTLiteral {
+            render_literal(&GtLiteral {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                value: GTLiteralValue::Float(3.1415),
+                value: GtLiteralValue::Float(3.1415),
             }),
             "3.1415"
         );
         assert_eq!(
-            render_literal(&GTLiteral {
+            render_literal(&GtLiteral {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                value: GTLiteralValue::String("Hello\nWorld".into()),
+                value: GtLiteralValue::String("Hello\nWorld".into()),
             }),
             "\"Hello\\nWorld\""
         );

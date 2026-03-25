@@ -38,7 +38,7 @@ impl RsProjectManifestDependency {
 }
 
 impl GtlProjectManifestDependency for RsProjectManifestDependency {
-    type DependencyIdent = RSDependencyIdent;
+    type DependencyIdent = RsDependencyIdent;
 
     fn as_kv(ident: &Self::DependencyIdent) -> Option<(String, Value)> {
         match ident {

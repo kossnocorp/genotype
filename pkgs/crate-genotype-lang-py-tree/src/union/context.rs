@@ -1,22 +1,22 @@
 use crate::prelude::internal::*;
 
-impl PYContextResolve for PYUnion {
+impl PyContextResolve for PyUnion {
     fn resolve<Context>(self, context: &mut Context) -> Self
     where
-        Context: PYConvertContextConstraint,
+        Context: PyConvertContextConstraint,
     {
-        if context.is_version(PYVersion::Legacy) {
-            context.add_import(PYDependencyIdent::Typing, "Union".into());
+        if context.is_version(PyVersion::Legacy) {
+            context.add_import(PyDependencyIdent::Typing, "Union".into());
         }
 
         if self.discriminator.is_some() {
-            if context.is_version(PYVersion::Legacy) {
-                context.add_import(PYDependencyIdent::TypingExtensions, "Annotated".into());
+            if context.is_version(PyVersion::Legacy) {
+                context.add_import(PyDependencyIdent::TypingExtensions, "Annotated".into());
             } else {
-                context.add_import(PYDependencyIdent::Typing, "Annotated".into());
+                context.add_import(PyDependencyIdent::Typing, "Annotated".into());
             }
 
-            context.add_import(PYDependencyIdent::Pydantic, "Field".into());
+            context.add_import(PyDependencyIdent::Pydantic, "Field".into());
         }
 
         self
@@ -30,9 +30,9 @@ mod tests {
 
     #[test]
     fn test_resolve() {
-        let mut context = PYConvertContextMock::default();
-        let union = PYUnion {
-            descriptors: vec![PYPrimitive::String.into()],
+        let mut context = PyConvertContextMock::default();
+        let union = PyUnion {
+            descriptors: vec![PyPrimitive::String.into()],
             discriminator: None,
         };
         union.resolve(&mut context);
@@ -41,49 +41,49 @@ mod tests {
 
     #[test]
     fn test_resolve_legacy() {
-        let mut context = PYConvertContextMock::new(PYVersion::Legacy);
-        let union = PYUnion {
-            descriptors: vec![PYPrimitive::String.into()],
+        let mut context = PyConvertContextMock::new(PyVersion::Legacy);
+        let union = PyUnion {
+            descriptors: vec![PyPrimitive::String.into()],
             discriminator: None,
         };
         union.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
-            vec![(PYDependencyIdent::Typing, "Union".into())]
+            vec![(PyDependencyIdent::Typing, "Union".into())]
         );
     }
 
     #[test]
     fn test_resolve_discriminator() {
-        let mut context = PYConvertContextMock::default();
-        let union = PYUnion {
-            descriptors: vec![PYPrimitive::String.into()],
+        let mut context = PyConvertContextMock::default();
+        let union = PyUnion {
+            descriptors: vec![PyPrimitive::String.into()],
             discriminator: Some("type".into()),
         };
         union.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
             vec![
-                (PYDependencyIdent::Typing, "Annotated".into()),
-                (PYDependencyIdent::Pydantic, "Field".into())
+                (PyDependencyIdent::Typing, "Annotated".into()),
+                (PyDependencyIdent::Pydantic, "Field".into())
             ]
         );
     }
 
     #[test]
     fn test_resolve_discriminator_legacy() {
-        let mut context = PYConvertContextMock::new(PYVersion::Legacy);
-        let union = PYUnion {
-            descriptors: vec![PYPrimitive::String.into()],
+        let mut context = PyConvertContextMock::new(PyVersion::Legacy);
+        let union = PyUnion {
+            descriptors: vec![PyPrimitive::String.into()],
             discriminator: Some("type".into()),
         };
         union.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
             vec![
-                (PYDependencyIdent::Typing, "Union".into()),
-                (PYDependencyIdent::TypingExtensions, "Annotated".into()),
-                (PYDependencyIdent::Pydantic, "Field".into())
+                (PyDependencyIdent::Typing, "Union".into()),
+                (PyDependencyIdent::TypingExtensions, "Annotated".into()),
+                (PyDependencyIdent::Pydantic, "Field".into())
             ]
         );
     }

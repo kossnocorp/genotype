@@ -4,14 +4,14 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct TSExtension {
+pub struct TsExtension {
     #[visit]
-    pub reference: TSReference,
+    pub reference: TsReference,
 }
 
-impl From<&str> for TSExtension {
+impl From<&str> for TsExtension {
     fn from(str: &str) -> Self {
-        TSExtension {
+        TsExtension {
             reference: str.into(),
         }
     }

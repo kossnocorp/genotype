@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl TSConvert<TSDoc> for GTDoc {
-    fn convert(&self, _context: &mut TSConvertContext) -> TSDoc {
-        TSDoc(self.1.clone())
+impl TsConvert<TsDoc> for GtDoc {
+    fn convert(&self, _context: &mut TsConvertContext) -> TsDoc {
+        TsDoc(self.1.clone())
     }
 }
 
@@ -14,8 +14,8 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTDoc((0, 0).into(), "Hello, world!".into()).convert(&mut Default::default()),
-            @r#"TSDoc("Hello, world!")"#
+            GtDoc((0, 0).into(), "Hello, world!".into()).convert(&mut Default::default()),
+            @r#"TsDoc("Hello, world!")"#
         );
     }
 }

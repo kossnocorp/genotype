@@ -1,16 +1,16 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
-pub struct RSConvertModule(pub RSModule);
+pub struct RsConvertModule(pub RsModule);
 
-impl RSConvertModule {
+impl RsConvertModule {
     pub fn convert(
-        module: &GTModule,
-        resolve: &RSConvertResolve,
+        module: &GtModule,
+        resolve: &RsConvertResolve,
         config: &RsConfig,
     ) -> Result<Self> {
         // [TODO] Get rid of unnecessary clone
-        let mut context = RSConvertContext::new(
+        let mut context = RsConvertContext::new(
             module.id.clone(),
             resolve.clone(),
             config.lang.clone(),
@@ -39,14 +39,14 @@ impl RSConvertModule {
 
         let definitions = context.drain_definitions();
 
-        let module = RSModule {
+        let module = RsModule {
             id: module.id.clone(),
             doc,
             imports,
             definitions,
         };
 
-        Ok(RSConvertModule(module))
+        Ok(RsConvertModule(module))
     }
 }
 
@@ -57,129 +57,129 @@ mod tests {
 
     #[test]
     fn test_convert() {
-        let mut resolve = RSConvertResolve::default();
+        let mut resolve = RsConvertResolve::default();
         resolve.globs.insert(
-            GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+            GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
             "module".into(),
         );
 
         assert_ron_snapshot!(
-            RSConvertModule::convert(
-                &GTModule {
+            RsConvertModule::convert(
+                &GtModule {
                     id: "module".into(),
                     doc: None,
                     imports: vec![
-                        GTImport {
+                        GtImport {
                             span: (0, 0).into(),
-                            path: GTPath::new(
+                            path: GtPath::new(
                                 (0, 0).into(),
-                                GTPathModuleId::Resolved("module/path".into()),
+                                GtPathModuleId::Resolved("module/path".into()),
                                 "./path/to/module".into()
                             ),
-                            reference: GTImportReference::Glob((0, 0).into())
+                            reference: GtImportReference::Glob((0, 0).into())
                         },
-                        GTImport {
+                        GtImport {
                             span: (0, 0).into(),
-                            path: GTPath::new(
+                            path: GtPath::new(
                                 (0, 0).into(),
-                                GTPathModuleId::Resolved("module/path".into()),
+                                GtPathModuleId::Resolved("module/path".into()),
                                 "./path/to/module".into()
                             ),
-                            reference: GTImportReference::Names(
+                            reference: GtImportReference::Names(
                                 (0, 0).into(),
                                 vec![
-                                    GTImportName::Name(
+                                    GtImportName::Name(
                                         (0, 0).into(),
-                                        GTIdentifier::new((0, 0).into(), "Name".into())
+                                        GtIdentifier::new((0, 0).into(), "Name".into())
                                     ),
-                                    GTImportName::Alias(
+                                    GtImportName::Alias(
                                         (0, 0).into(),
-                                        GTIdentifier::new((0, 0).into(), "Name".into()),
-                                        GTIdentifier::new((0, 0).into(), "Alias".into())
+                                        GtIdentifier::new((0, 0).into(), "Name".into()),
+                                        GtIdentifier::new((0, 0).into(), "Alias".into())
                                     )
                                 ]
                             )
                         }
                     ],
                     aliases: vec![
-                        GTAlias {
-                            id: GTDefinitionId("module".into(), "User".into()),
+                        GtAlias {
+                            id: GtDefinitionId("module".into(), "User".into()),
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
-                            name: GTIdentifier::new((0, 0).into(), "User".into()),
-                            descriptor: GTDescriptor::Object(GTObject {
+                            name: GtIdentifier::new((0, 0).into(), "User".into()),
+                            descriptor: GtDescriptor::Object(GtObject {
                                 span: (0, 0).into(),
                                 doc: None,
                                 attributes: vec![],
-                                name: GTIdentifier::new((0, 0).into(), "User".into()).into(),
+                                name: GtIdentifier::new((0, 0).into(), "User".into()).into(),
                                 extensions: vec![],
                                 properties: vec![
-                                    GTProperty {
+                                    GtProperty {
                                         span: (0, 0).into(),
                                         doc: None,
                                         attributes: vec![],
-                                        name: GTKey::new((0, 0).into(), "name".into()),
+                                        name: GtKey::new((0, 0).into(), "name".into()),
                                         descriptor: Gt::primitive_string().into(),
                                         required: true,
                                     },
-                                    GTProperty {
+                                    GtProperty {
                                         span: (0, 0).into(),
                                         doc: None,
                                         attributes: vec![],
-                                        name: GTKey::new((0, 0).into(), "age".into()),
+                                        name: GtKey::new((0, 0).into(), "age".into()),
                                         descriptor: Gt::primitive_i32().into(),
                                         required: false,
                                     }
                                 ]
                             }),
                         },
-                        GTAlias {
-                            id: GTDefinitionId("module".into(), "Order".into()),
+                        GtAlias {
+                            id: GtDefinitionId("module".into(), "Order".into()),
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
-                            name: GTIdentifier::new((0, 0).into(), "Order".into()),
-                            descriptor: GTDescriptor::Object(GTObject {
+                            name: GtIdentifier::new((0, 0).into(), "Order".into()),
+                            descriptor: GtDescriptor::Object(GtObject {
                                 span: (0, 0).into(),
                                 doc: None,
                                 attributes: vec![],
-                                name: GTIdentifier::new((0, 0).into(), "Order".into()).into(),
+                                name: GtIdentifier::new((0, 0).into(), "Order".into()).into(),
                                 extensions: vec![],
-                                properties: vec![GTProperty {
+                                properties: vec![GtProperty {
                                     span: (0, 0).into(),
                                     doc: None,
                                     attributes: vec![],
-                                    name: GTKey::new((0, 0).into(), "book".into()),
-                                    descriptor: GTDescriptor::Alias(Box::new(GTAlias {
-                                        id: GTDefinitionId("module".into(), "Book".into()),
+                                    name: GtKey::new((0, 0).into(), "book".into()),
+                                    descriptor: GtDescriptor::Alias(Box::new(GtAlias {
+                                        id: GtDefinitionId("module".into(), "Book".into()),
                                         span: (0, 0).into(),
                                         doc: None,
                                         attributes: vec![],
-                                        name: GTIdentifier::new((0, 0).into(), "Book".into()),
-                                        descriptor: GTDescriptor::Object(GTObject {
+                                        name: GtIdentifier::new((0, 0).into(), "Book".into()),
+                                        descriptor: GtDescriptor::Object(GtObject {
                                             span: (0, 0).into(),
                                             doc: None,
                                             attributes: vec![],
-                                            name: GTIdentifier::new((0, 0).into(), "Book".into())
+                                            name: GtIdentifier::new((0, 0).into(), "Book".into())
                                                 .into(),
                                             extensions: vec![],
                                             properties: vec![
-                                                GTProperty {
+                                                GtProperty {
                                                     span: (0, 0).into(),
                                                     doc: None,
                                                     attributes: vec![],
-                                                    name: GTKey::new((0, 0).into(), "title".into()),
-                                                    descriptor: GTDescriptor::Primitive(
+                                                    name: GtKey::new((0, 0).into(), "title".into()),
+                                                    descriptor: GtDescriptor::Primitive(
                                                         Gt::primitive_string()
                                                     ),
                                                     required: true,
                                                 },
-                                                GTProperty {
+                                                GtProperty {
                                                     span: (0, 0).into(),
                                                     doc: None,
                                                     attributes: vec![],
-                                                    name: GTKey::new(
+                                                    name: GtKey::new(
                                                         (0, 0).into(),
                                                         "author".into()
                                                     ),
@@ -193,12 +193,12 @@ mod tests {
                                 }]
                             }),
                         },
-                        GTAlias {
-                            id: GTDefinitionId("module".into(), "Name".into()),
+                        GtAlias {
+                            id: GtDefinitionId("module".into(), "Name".into()),
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
-                            name: GTIdentifier::new((0, 0).into(), "Name".into()),
+                            name: GtIdentifier::new((0, 0).into(), "Name".into()),
                             descriptor: Gt::primitive_string().into(),
                         },
                     ],
@@ -208,106 +208,106 @@ mod tests {
             )
             .unwrap(),
             @r#"
-        RSConvertModule(RSModule(
-          id: GTModuleId("module"),
+        RsConvertModule(RsModule(
+          id: GtModuleId("module"),
           doc: None,
           imports: [
-            RSUse(
-              dependency: Local(RSPath(GTModuleId("module/path"), "super::path::to::module")),
+            RsUse(
+              dependency: Local(RsPath(GtModuleId("module/path"), "super::path::to::module")),
               reference: Module,
             ),
-            RSUse(
-              dependency: Local(RSPath(GTModuleId("module/path"), "super::path::to::module")),
+            RsUse(
+              dependency: Local(RsPath(GtModuleId("module/path"), "super::path::to::module")),
               reference: Named([
-                Name(RSIdentifier("Name")),
-                Alias(RSIdentifier("Name"), RSIdentifier("Alias")),
+                Name(RsIdentifier("Name")),
+                Alias(RsIdentifier("Name"), RsIdentifier("Alias")),
               ]),
             ),
-            RSUse(
+            RsUse(
               dependency: Serde,
               reference: Named([
-                Name(RSIdentifier("Deserialize")),
-                Name(RSIdentifier("Serialize")),
+                Name(RsIdentifier("Deserialize")),
+                Name(RsIdentifier("Serialize")),
               ]),
             ),
           ],
           definitions: [
-            Struct(RSStruct(
-              id: GTDefinitionId(GTModuleId("module"), "User"),
+            Struct(RsStruct(
+              id: GtDefinitionId(GtModuleId("module"), "User"),
               doc: None,
               attributes: [
-                RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+                RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
               ],
-              name: RSIdentifier("User"),
+              name: RsIdentifier("User"),
               fields: Resolved([
-                RSField(
+                RsField(
                   doc: None,
                   attributes: [],
-                  name: RSFieldName("name"),
+                  name: RsFieldName("name"),
                   descriptor: Primitive(String),
                 ),
-                RSField(
+                RsField(
                   doc: None,
                   attributes: [
-                    RSAttribute("serde(default, skip_serializing_if = \"Option::is_none\")"),
+                    RsAttribute("serde(default, skip_serializing_if = \"Option::is_none\")"),
                   ],
-                  name: RSFieldName("age"),
-                  descriptor: Option(RSOption(
+                  name: RsFieldName("age"),
+                  descriptor: Option(RsOption(
                     descriptor: Primitive(Int32),
                   )),
                 ),
               ]),
             )),
-            Struct(RSStruct(
-              id: GTDefinitionId(GTModuleId("module"), "Order"),
+            Struct(RsStruct(
+              id: GtDefinitionId(GtModuleId("module"), "Order"),
               doc: None,
               attributes: [
-                RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+                RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
               ],
-              name: RSIdentifier("Order"),
+              name: RsIdentifier("Order"),
               fields: Resolved([
-                RSField(
+                RsField(
                   doc: None,
                   attributes: [],
-                  name: RSFieldName("book"),
-                  descriptor: Reference(RSReference(
-                    id: GTReferenceId(GTModuleId("module"), GTSpan(0, 0)),
-                    identifier: RSIdentifier("Book"),
-                    definition_id: GTDefinitionId(GTModuleId("module"), "Book"),
+                  name: RsFieldName("book"),
+                  descriptor: Reference(RsReference(
+                    id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
+                    identifier: RsIdentifier("Book"),
+                    definition_id: GtDefinitionId(GtModuleId("module"), "Book"),
                   )),
                 ),
               ]),
             )),
-            Struct(RSStruct(
-              id: GTDefinitionId(GTModuleId("module"), "Book"),
+            Struct(RsStruct(
+              id: GtDefinitionId(GtModuleId("module"), "Book"),
               doc: None,
               attributes: [
-                RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+                RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
               ],
-              name: RSIdentifier("Book"),
+              name: RsIdentifier("Book"),
               fields: Resolved([
-                RSField(
+                RsField(
                   doc: None,
                   attributes: [],
-                  name: RSFieldName("title"),
+                  name: RsFieldName("title"),
                   descriptor: Primitive(String),
                 ),
-                RSField(
+                RsField(
                   doc: None,
                   attributes: [],
-                  name: RSFieldName("author"),
-                  descriptor: Reference(RSReference(
-                    id: GTReferenceId(GTModuleId("module"), GTSpan(0, 0)),
-                    identifier: RSIdentifier("Author"),
-                    definition_id: GTDefinitionId(GTModuleId("module"), "Author"),
+                  name: RsFieldName("author"),
+                  descriptor: Reference(RsReference(
+                    id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
+                    identifier: RsIdentifier("Author"),
+                    definition_id: GtDefinitionId(GtModuleId("module"), "Author"),
                   )),
                 ),
               ]),
             )),
-            Alias(RSAlias(
-              id: GTDefinitionId(GTModuleId("module"), "Name"),
+            Alias(RsAlias(
+              id: GtDefinitionId(GtModuleId("module"), "Name"),
               doc: None,
-              name: RSIdentifier("Name"),
+              name: RsIdentifier("Name"),
               descriptor: Primitive(String),
             )),
           ],
@@ -319,10 +319,10 @@ mod tests {
     #[test]
     fn test_convert_doc() {
         assert_ron_snapshot!(
-            RSConvertModule::convert(
-                &GTModule {
+            RsConvertModule::convert(
+                &GtModule {
                     id: "module".into(),
-                    doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
+                    doc: Some(GtDoc::new((0, 0).into(), "Hello, world!".into())),
                     imports: vec![],
                     aliases: vec![],
                 },
@@ -331,9 +331,9 @@ mod tests {
             )
             .unwrap(),
             @r#"
-        RSConvertModule(RSModule(
-          id: GTModuleId("module"),
-          doc: Some(RSDoc("Hello, world!", true)),
+        RsConvertModule(RsModule(
+          id: GtModuleId("module"),
+          doc: Some(RsDoc("Hello, world!", true)),
           imports: [],
           definitions: [],
         ))

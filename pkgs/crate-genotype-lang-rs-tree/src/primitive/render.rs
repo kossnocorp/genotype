@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSPrimitive {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsPrimitive {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -11,23 +11,23 @@ impl<'a> GtlRender<'a> for RSPrimitive {
         _context: &mut Self::RenderContext,
     ) -> Result<String> {
         Ok(match self {
-            RSPrimitive::Unit => "()",
-            RSPrimitive::Boolean => "bool",
-            RSPrimitive::String => "String",
-            RSPrimitive::Int8 => "i8",
-            RSPrimitive::Int16 => "i16",
-            RSPrimitive::Int32 => "i32",
-            RSPrimitive::Int64 => "i64",
-            RSPrimitive::Int128 => "i128",
-            RSPrimitive::IntSize => "isize",
-            RSPrimitive::IntU8 => "u8",
-            RSPrimitive::IntU16 => "u16",
-            RSPrimitive::IntU32 => "u32",
-            RSPrimitive::IntU64 => "u64",
-            RSPrimitive::IntU128 => "u128",
-            RSPrimitive::IntUSize => "usize",
-            RSPrimitive::Float32 => "f32",
-            RSPrimitive::Float64 => "f64",
+            RsPrimitive::Unit => "()",
+            RsPrimitive::Boolean => "bool",
+            RsPrimitive::String => "String",
+            RsPrimitive::Int8 => "i8",
+            RsPrimitive::Int16 => "i16",
+            RsPrimitive::Int32 => "i32",
+            RsPrimitive::Int64 => "i64",
+            RsPrimitive::Int128 => "i128",
+            RsPrimitive::IntSize => "isize",
+            RsPrimitive::IntU8 => "u8",
+            RsPrimitive::IntU16 => "u16",
+            RsPrimitive::IntU32 => "u32",
+            RsPrimitive::IntU64 => "u64",
+            RsPrimitive::IntU128 => "u128",
+            RsPrimitive::IntUSize => "usize",
+            RsPrimitive::Float32 => "f32",
+            RsPrimitive::Float64 => "f64",
         }
         .to_string())
     }
@@ -41,103 +41,103 @@ mod tests {
     #[test]
     fn test_render_primitive() {
         assert_snapshot!(
-            RSPrimitive::Unit
+            RsPrimitive::Unit
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"()"
         );
         assert_snapshot!(
-            RSPrimitive::Boolean
+            RsPrimitive::Boolean
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"bool"
         );
         assert_snapshot!(
-            RSPrimitive::String
+            RsPrimitive::String
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"String"
         );
         assert_snapshot!(
-            RSPrimitive::Int8
+            RsPrimitive::Int8
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"i8"
         );
         assert_snapshot!(
-            RSPrimitive::Int16
+            RsPrimitive::Int16
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"i16"
         );
         assert_snapshot!(
-            RSPrimitive::Int32
+            RsPrimitive::Int32
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"i32"
         );
         assert_snapshot!(
-            RSPrimitive::Int64
+            RsPrimitive::Int64
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"i64"
         );
         assert_snapshot!(
-            RSPrimitive::Int128
+            RsPrimitive::Int128
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"i128"
         );
         assert_snapshot!(
-            RSPrimitive::IntSize
+            RsPrimitive::IntSize
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"isize"
         );
         assert_snapshot!(
-            RSPrimitive::IntU8
+            RsPrimitive::IntU8
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"u8"
         );
         assert_snapshot!(
-            RSPrimitive::IntU16
+            RsPrimitive::IntU16
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"u16"
         );
         assert_snapshot!(
-            RSPrimitive::IntU32
+            RsPrimitive::IntU32
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"u32"
         );
         assert_snapshot!(
-            RSPrimitive::IntU64
+            RsPrimitive::IntU64
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"u64"
         );
         assert_snapshot!(
-            RSPrimitive::IntU128
+            RsPrimitive::IntU128
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"u128"
         );
         assert_snapshot!(
-            RSPrimitive::IntUSize
+            RsPrimitive::IntUSize
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"usize"
         );
         assert_snapshot!(
-            RSPrimitive::Float32
+            RsPrimitive::Float32
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"f32"
         );
         assert_snapshot!(
-            RSPrimitive::Float64
+            RsPrimitive::Float64
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"f64"

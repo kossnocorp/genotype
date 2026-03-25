@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSPath {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsPath {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -25,7 +25,7 @@ mod tests {
     #[test]
     fn render_basic() {
         assert_snapshot!(
-            TSPath("./path/to/module".into())
+            TsPath("./path/to/module".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"./path/to/module.js"
@@ -34,7 +34,7 @@ mod tests {
 
     #[test]
     fn render_ts_ext() {
-        let mut ctx = TSRenderContext {
+        let mut ctx = TsRenderContext {
             config: &TsConfigLang {
                 tsconfig: TsConfigLangTsconfig {
                     allow_importing_ts_extensions: true,
@@ -45,7 +45,7 @@ mod tests {
             ..Default::default()
         };
         assert_snapshot!(
-            TSPath("./path/to/module".into())
+            TsPath("./path/to/module".into())
                 .render(Default::default(), &mut ctx)
                 .unwrap(),
             @"./path/to/module.ts"
@@ -55,7 +55,7 @@ mod tests {
     #[test]
     fn render_external() {
         assert_snapshot!(
-            TSPath("path/to/module".into())
+            TsPath("path/to/module".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"path/to/module"

@@ -3,23 +3,23 @@ use genotype_parser::*;
 
 use crate::{GtjTreeConvert, GtjTreeConvertContext};
 
-impl GtjTreeConvert<GTProperty> for GtjProperty {
-    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTProperty {
+impl GtjTreeConvert<GtProperty> for GtjProperty {
+    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GtProperty {
         let descriptor = context.enter_name_context(
-            GTNamingContextName::Transitive(self.name.clone()),
+            GtNamingContextName::Transitive(self.name.clone()),
             |context| self.descriptor.to_tree_with_context(context),
         );
 
-        GTProperty {
-            span: GTSpan::default(),
+        GtProperty {
+            span: GtSpan::default(),
             descriptor,
             attributes: Default::default(),
             required: self.required,
-            name: GTKey(Default::default(), self.name.clone().into()),
+            name: GtKey(Default::default(), self.name.clone().into()),
             doc: self
                 .doc
                 .clone()
-                .and_then(|content| Some(GTDoc(Default::default(), content))),
+                .and_then(|content| Some(GtDoc(Default::default(), content))),
         }
     }
 }
@@ -43,15 +43,15 @@ mod tests {
             required: false,
         };
 
-        let property_tree: GTProperty = property.to_tree_with_context(&mut Default::default());
+        let property_tree: GtProperty = property.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(property_tree, @r#"
-        GTProperty(
-          span: GTSpan(0, 0),
+        GtProperty(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
-          name: GTKey(GTSpan(0, 0), "hello"),
-          descriptor: Primitive(GTPrimitive(
-            span: GTSpan(0, 0),
+          name: GtKey(GtSpan(0, 0), "hello"),
+          descriptor: Primitive(GtPrimitive(
+            span: GtSpan(0, 0),
             kind: Number,
             doc: None,
             attributes: [],
@@ -72,15 +72,15 @@ mod tests {
             required: true,
         };
 
-        let property_tree: GTProperty = property.to_tree_with_context(&mut Default::default());
+        let property_tree: GtProperty = property.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(property_tree, @r#"
-        GTProperty(
-          span: GTSpan(0, 0),
-          doc: Some(GTDoc(GTSpan(0, 0), "Hello, world!")),
+        GtProperty(
+          span: GtSpan(0, 0),
+          doc: Some(GtDoc(GtSpan(0, 0), "Hello, world!")),
           attributes: [],
-          name: GTKey(GTSpan(0, 0), "world"),
-          descriptor: Primitive(GTPrimitive(
-            span: GTSpan(0, 0),
+          name: GtKey(GtSpan(0, 0), "world"),
+          descriptor: Primitive(GtPrimitive(
+            span: GtSpan(0, 0),
             kind: Number,
             doc: None,
             attributes: [],

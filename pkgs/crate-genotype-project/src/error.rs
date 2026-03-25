@@ -2,7 +2,7 @@ use crate::prelude::internal::*;
 use thiserror::Error;
 
 #[derive(Error, Diagnostic, Debug, PartialEq, Clone)]
-pub enum GTProjectError {
+pub enum GtProjectError {
     #[error("{0} is not found")]
     #[diagnostic(code(GTP101))]
     Canonicalize(String),
@@ -27,7 +27,7 @@ pub enum GTProjectError {
     #[diagnostic(code(GTP201))]
     UndefinedType {
         #[label("referenced here")]
-        span: GTSpan,
+        span: GtSpan,
         identifier: String,
     },
 

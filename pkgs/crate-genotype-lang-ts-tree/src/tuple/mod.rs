@@ -4,7 +4,7 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct TSTuple {
+pub struct TsTuple {
     #[visit]
-    pub descriptors: Vec<TSDescriptor>,
+    pub descriptors: Vec<TsDescriptor>,
 }

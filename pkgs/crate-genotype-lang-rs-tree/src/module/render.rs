@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSModule {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsModule {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -47,63 +47,63 @@ impl<'a> GtlRender<'a> for RSModule {
     }
 }
 
-impl GtlRenderModule for RSModule {}
+impl GtlRenderModule for RsModule {}
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_parser::GTDefinitionId;
+    use genotype_parser::GtDefinitionId;
     use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
         assert_snapshot!(
-            RSModule {
+            RsModule {
                 id: "module".into(),
                 doc: None,
                 imports: vec![
-                    RSUse {
-                        reference: RSUseReference::Module,
-                        dependency: RSDependencyIdent::Local(RSPath(
+                    RsUse {
+                        reference: RsUseReference::Module,
+                        dependency: RsDependencyIdent::Local(RsPath(
                             "path/to/module".into(),
                             "self::path::to::module".into()
                         ))
                     },
-                    RSUse {
-                        reference: RSUseReference::Named(vec![
-                            RSUseName::Name("Name".into()),
-                            RSUseName::Alias("Name".into(), "Alias".into()),
+                    RsUse {
+                        reference: RsUseReference::Named(vec![
+                            RsUseName::Name("Name".into()),
+                            RsUseName::Alias("Name".into(), "Alias".into()),
                         ]),
-                        dependency: RSDependencyIdent::Local(RSPath(
+                        dependency: RsDependencyIdent::Local(RsPath(
                             "path/to/module".into(),
                             "self::path::to::module".into()
                         ))
                     }
                 ],
                 definitions: vec![
-                    RSDefinition::Alias(RSAlias {
-                        id: GTDefinitionId("module".into(), "Name".into()),
+                    RsDefinition::Alias(RsAlias {
+                        id: GtDefinitionId("module".into(), "Name".into()),
                         doc: None,
                         name: "Name".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                        descriptor: RsDescriptor::Primitive(RsPrimitive::String),
                     }),
-                    RSDefinition::Struct(RSStruct {
-                        id: GTDefinitionId("module".into(), "Name".into()),
+                    RsDefinition::Struct(RsStruct {
+                        id: GtDefinitionId("module".into(), "Name".into()),
                         doc: None,
                         attributes: vec![],
                         name: "Name".into(),
                         fields: vec![
-                            RSField {
+                            RsField {
                                 doc: None,
                                 attributes: vec![],
                                 name: "name".into(),
-                                descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                                descriptor: RsDescriptor::Primitive(RsPrimitive::String),
                             },
-                            RSField {
+                            RsField {
                                 doc: None,
                                 attributes: vec![],
                                 name: "age".into(),
-                                descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize),
+                                descriptor: RsDescriptor::Primitive(RsPrimitive::IntSize),
                             }
                         ]
                         .into(),
@@ -129,21 +129,21 @@ mod tests {
     #[test]
     fn test_render_doc() {
         assert_snapshot!(
-            RSModule {
+            RsModule {
                 id: "module".into(),
-                doc: Some(RSDoc::new("Hello, world!", true)),
-                imports: vec![RSUse {
-                    reference: RSUseReference::Module,
-                    dependency: RSDependencyIdent::Local(RSPath(
+                doc: Some(RsDoc::new("Hello, world!", true)),
+                imports: vec![RsUse {
+                    reference: RsUseReference::Module,
+                    dependency: RsDependencyIdent::Local(RsPath(
                         "path/to/module".into(),
                         "self::path::to::module".into()
                     ))
                 },],
-                definitions: vec![RSDefinition::Alias(RSAlias {
-                    id: GTDefinitionId("module".into(), "Name".into()),
+                definitions: vec![RsDefinition::Alias(RsAlias {
+                    id: GtDefinitionId("module".into(), "Name".into()),
                     doc: None,
                     name: "Name".into(),
-                    descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                    descriptor: RsDescriptor::Primitive(RsPrimitive::String),
                 })]
             }
             .render(Default::default(), &mut Default::default())

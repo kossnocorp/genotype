@@ -3,19 +3,19 @@ use std::fs::read_to_string;
 use miette::Result;
 use sha2::{Digest, Sha256};
 
-use crate::{error::GTWError, path::GTWPath};
+use crate::{error::GtwError, path::GtwPath};
 
-pub struct GTWFileSource {
+pub struct GtwFileSource {
     hash: String,
     content: String,
 }
 
-impl GTWFileSource {
-    pub fn read(path: &GTWPath) -> Result<GTWFileSource> {
+impl GtwFileSource {
+    pub fn read(path: &GtwPath) -> Result<GtwFileSource> {
         let content =
-            read_to_string(path.as_path()).map_err(|_| GTWError::ReadSource(path.into()))?;
+            read_to_string(path.as_path()).map_err(|_| GtwError::ReadSource(path.into()))?;
 
-        Ok(GTWFileSource {
+        Ok(GtwFileSource {
             hash: Self::hash(&content),
             content,
         })
@@ -28,7 +28,7 @@ impl GTWFileSource {
         format!("{:x}", result)
     }
 
-    pub fn same_hash(&self, source: &GTWFileSource) -> bool {
+    pub fn same_hash(&self, source: &GtwFileSource) -> bool {
         self.hash == source.hash
     }
 }

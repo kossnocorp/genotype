@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSImportName {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsImportName {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -11,9 +11,9 @@ impl<'a> GtlRender<'a> for TSImportName {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         match self {
-            TSImportName::Name(name) => name.render(state, context),
+            TsImportName::Name(name) => name.render(state, context),
 
-            TSImportName::Alias(name, alias) => {
+            TsImportName::Alias(name, alias) => {
                 let name = name.render(state, context)?;
                 let alias = alias.render(state, context)?;
 
@@ -31,7 +31,7 @@ mod tests {
     #[test]
     fn test_render_name() {
         assert_snapshot!(
-            TSImportName::Name("Name".into())
+            TsImportName::Name("Name".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"Name"
@@ -41,7 +41,7 @@ mod tests {
     #[test]
     fn test_render_alias() {
         assert_snapshot!(
-            TSImportName::Alias("Name".into(), "Alias".into())
+            TsImportName::Alias("Name".into(), "Alias".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"Name as Alias"

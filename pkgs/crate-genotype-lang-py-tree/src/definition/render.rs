@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYDefinition {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyDefinition {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
     fn render(
         &self,
@@ -11,10 +11,10 @@ impl<'a> GtlRender<'a> for PYDefinition {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         match self {
-            PYDefinition::Alias(alias) => alias.render(state, context),
-            PYDefinition::Class(interface) => interface.render(state, context),
-            PYDefinition::Newtype(newtype) => newtype.render(state, context),
-            PYDefinition::Embed(embed) => embed.render(state, context),
+            PyDefinition::Alias(alias) => alias.render(state, context),
+            PyDefinition::Class(interface) => interface.render(state, context),
+            PyDefinition::Newtype(newtype) => newtype.render(state, context),
+            PyDefinition::Embed(embed) => embed.render(state, context),
         }
     }
 }
@@ -27,10 +27,10 @@ mod tests {
     #[test]
     fn test_render_alias() {
         assert_snapshot!(
-            PYDefinition::Alias(PYAlias {
+            PyDefinition::Alias(PyAlias {
                 doc: None,
                 name: "Name".into(),
-                descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                 references: vec![],
             })
             .render(Default::default(), &mut Default::default())
@@ -42,21 +42,21 @@ mod tests {
     #[test]
     fn test_render_class() {
         assert_snapshot!(
-            PYDefinition::Class(PYClass {
+            PyDefinition::Class(PyClass {
                 doc: None,
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![
-                    PYProperty {
+                    PyProperty {
                         doc: None,
                         name: "name".into(),
-                        descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                        descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                         required: true
                     },
-                    PYProperty {
+                    PyProperty {
                         doc: None,
                         name: "age".into(),
-                        descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
+                        descriptor: PyDescriptor::Primitive(PyPrimitive::Int),
                         required: false
                     }
                 ],
@@ -75,10 +75,10 @@ mod tests {
     #[test]
     fn test_render_branded() {
         assert_snapshot!(
-            PYDefinition::Newtype(PYNewtype {
+            PyDefinition::Newtype(PyNewtype {
                 doc: None,
                 name: "UserId".into(),
-                primitive: PYPrimitive::String,
+                primitive: PyPrimitive::String,
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -89,7 +89,7 @@ mod tests {
     #[test]
     fn test_render_embed() {
         assert_snapshot!(
-            PYDefinition::Embed(PYEmbedDefinition {
+            PyDefinition::Embed(PyEmbedDefinition {
                 name: "Name".into(),
                 embed: r#"class Hello:\n    name = "World""#
                     .into()

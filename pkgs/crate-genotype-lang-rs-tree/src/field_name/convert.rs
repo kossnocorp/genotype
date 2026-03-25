@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 use heck::ToSnakeCase;
 
-impl RSConvert<RSFieldName> for GTKey {
-    fn convert(&self, context: &mut RSConvertContext) -> Result<RSFieldName> {
+impl RsConvert<RsFieldName> for GtKey {
+    fn convert(&self, context: &mut RsConvertContext) -> Result<RsFieldName> {
         let name = self.1.to_snake_case();
 
         // Add rename attribute in case of aliasing
@@ -13,7 +13,7 @@ impl RSConvert<RSFieldName> for GTKey {
             ));
         }
 
-        Ok(RSFieldName(name.into()))
+        Ok(RsFieldName(name.into()))
     }
 }
 
@@ -25,27 +25,27 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTKey::new((0, 0).into(), "foo".into())
-                .convert(&mut RSConvertContext::empty("module".into()))
+            GtKey::new((0, 0).into(), "foo".into())
+                .convert(&mut RsConvertContext::empty("module".into()))
                 .unwrap(),
-            @r#"RSFieldName("foo")"#
+            @r#"RsFieldName("foo")"#
         );
     }
 
     #[test]
     fn test_convert_aliased() {
-        let mut context = RSConvertContext::empty("module".into());
+        let mut context = RsConvertContext::empty("module".into());
         assert_ron_snapshot!(
-            GTKey::new((0, 0).into(), "fooBar".into())
+            GtKey::new((0, 0).into(), "fooBar".into())
                 .convert(&mut context)
                 .unwrap(),
-            @r#"RSFieldName("foo_bar")"#
+            @r#"RsFieldName("foo_bar")"#
         );
         assert_ron_snapshot!(
             context.drain_field_attributes(),
             @r#"
         [
-          RSAttribute("serde(rename = \"fooBar\")"),
+          RsAttribute("serde(rename = \"fooBar\")"),
         ]
         "#
         )
@@ -53,12 +53,12 @@ mod tests {
 
     #[test]
     fn test_convert_keyword() {
-        let mut context = RSConvertContext::empty("module".into());
+        let mut context = RsConvertContext::empty("module".into());
         assert_ron_snapshot!(
-            GTKey::new((0, 0).into(), "type".into())
+            GtKey::new((0, 0).into(), "type".into())
                 .convert(&mut context)
                 .unwrap(),
-            @r#"RSFieldName("type")"#
+            @r#"RsFieldName("type")"#
         );
         assert_ron_snapshot!(context.drain_field_attributes(), @"[]")
     }

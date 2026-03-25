@@ -1,32 +1,32 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct GTBranded {
-    pub span: GTSpan,
+pub struct GtBranded {
+    pub span: GtSpan,
     #[visit]
-    pub doc: Option<GTDoc>,
+    pub doc: Option<GtDoc>,
     #[visit]
-    pub attributes: Vec<GTAttribute>,
-    pub id: GTDefinitionId,
+    pub attributes: Vec<GtAttribute>,
+    pub id: GtDefinitionId,
     #[visit]
-    pub name: GTIdentifier,
+    pub name: GtIdentifier,
     #[visit]
-    pub primitive: GTPrimitive,
+    pub primitive: GtPrimitive,
 }
 
-impl GTBranded {
-    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
-        let span: GTSpan = pair.as_span().into();
+impl GtBranded {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> GtNodeParseResult<Self> {
+        let span: GtSpan = pair.as_span().into();
         let (doc, attributes) = context.take_annotation_or_default();
         let pair = pair
             .into_inner()
             .next()
-            .ok_or_else(|| GTParseError::Internal(span.clone(), GTNode::Array))?;
-        let primitive = GTPrimitive::parse(pair, context)?;
+            .ok_or_else(|| GtParseError::Internal(span.clone(), GtNode::Array))?;
+        let primitive = GtPrimitive::parse(pair, context)?;
         let name = context.get_name(&span, &primitive.to_string());
         let id = context.get_definition_id(&name);
 
-        Ok(GTBranded {
+        Ok(GtBranded {
             span,
             doc,
             attributes,
@@ -45,18 +45,18 @@ mod tests {
     #[test]
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::branded, "@int").unwrap();
-        let mut context = GTContext::new("module".into());
+        let mut context = GtContext::new("module".into());
         assert_ron_snapshot!(
-            GTBranded::parse(pairs.next().unwrap(), &mut context).unwrap(),
+            GtBranded::parse(pairs.next().unwrap(), &mut context).unwrap(),
             @r#"
-        GTBranded(
-          span: GTSpan(0, 4),
+        GtBranded(
+          span: GtSpan(0, 4),
           doc: None,
           attributes: [],
-          id: GTDefinitionId(GTModuleId("module"), "I64"),
-          name: GTIdentifier(GTSpan(0, 4), "I64"),
-          primitive: GTPrimitive(
-            span: GTSpan(1, 4),
+          id: GtDefinitionId(GtModuleId("module"), "I64"),
+          name: GtIdentifier(GtSpan(0, 4), "I64"),
+          primitive: GtPrimitive(
+            span: GtSpan(1, 4),
             kind: Int64,
             doc: None,
             attributes: [],
@@ -69,22 +69,22 @@ mod tests {
     #[test]
     fn test_alias() {
         let mut pairs = GenotypeParser::parse(Rule::branded, "@int").unwrap();
-        let mut context = GTContext::new("module".into());
-        context.enter_parent(GTContextParent::Alias(GTIdentifier::new(
-            GTSpan(0, 3),
+        let mut context = GtContext::new("module".into());
+        context.enter_parent(GtContextParent::Alias(GtIdentifier::new(
+            GtSpan(0, 3),
             "Id".into(),
         )));
         assert_ron_snapshot!(
-            GTBranded::parse(pairs.next().unwrap(), &mut context).unwrap(),
+            GtBranded::parse(pairs.next().unwrap(), &mut context).unwrap(),
             @r#"
-        GTBranded(
-          span: GTSpan(0, 4),
+        GtBranded(
+          span: GtSpan(0, 4),
           doc: None,
           attributes: [],
-          id: GTDefinitionId(GTModuleId("module"), "Id"),
-          name: GTIdentifier(GTSpan(0, 3), "Id"),
-          primitive: GTPrimitive(
-            span: GTSpan(1, 4),
+          id: GtDefinitionId(GtModuleId("module"), "Id"),
+          name: GtIdentifier(GtSpan(0, 3), "Id"),
+          primitive: GtPrimitive(
+            span: GtSpan(1, 4),
             kind: Int64,
             doc: None,
             attributes: [],
@@ -97,23 +97,23 @@ mod tests {
     #[test]
     fn test_anonymous() {
         let mut pairs = GenotypeParser::parse(Rule::branded, "@int").unwrap();
-        let mut context = GTContext::new("module".into());
-        context.enter_parent(GTContextParent::Alias(GTIdentifier::new(
-            GTSpan(0, 3),
+        let mut context = GtContext::new("module".into());
+        context.enter_parent(GtContextParent::Alias(GtIdentifier::new(
+            GtSpan(0, 3),
             "Id".into(),
         )));
-        context.enter_parent(GTContextParent::Anonymous);
+        context.enter_parent(GtContextParent::Anonymous);
         assert_ron_snapshot!(
-            GTBranded::parse(pairs.next().unwrap(), &mut context).unwrap(),
+            GtBranded::parse(pairs.next().unwrap(), &mut context).unwrap(),
             @r#"
-        GTBranded(
-          span: GTSpan(0, 4),
+        GtBranded(
+          span: GtSpan(0, 4),
           doc: None,
           attributes: [],
-          id: GTDefinitionId(GTModuleId("module"), "IdI64"),
-          name: GTIdentifier(GTSpan(0, 4), "IdI64"),
-          primitive: GTPrimitive(
-            span: GTSpan(1, 4),
+          id: GtDefinitionId(GtModuleId("module"), "IdI64"),
+          name: GtIdentifier(GtSpan(0, 4), "IdI64"),
+          primitive: GtPrimitive(
+            span: GtSpan(1, 4),
             kind: Int64,
             doc: None,
             attributes: [],
@@ -134,22 +134,22 @@ mod tests {
             )],
         ));
         assert_ron_snapshot!(
-            parse_node!(GTBranded, (to_parse_rules(Rule::branded, "@int"), &mut context)),
+            parse_node!(GtBranded, (to_parse_rules(Rule::branded, "@int"), &mut context)),
             @r#"
-        GTBranded(
-          span: GTSpan(0, 4),
-          doc: Some(GTDoc(GTSpan(0, 0), "Hello, world!")),
+        GtBranded(
+          span: GtSpan(0, 4),
+          doc: Some(GtDoc(GtSpan(0, 0), "Hello, world!")),
           attributes: [
-            GTAttribute(
-              span: GTSpan(0, 2),
-              name: GTAttributeName(
-                span: GTSpan(0, 0),
+            GtAttribute(
+              span: GtSpan(0, 2),
+              name: GtAttributeName(
+                span: GtSpan(0, 0),
                 value: "example",
               ),
-              descriptor: Some(Assignment(GTAttributeAssignment(
-                span: GTSpan(0, 0),
-                value: Literal(GTLiteral(
-                  span: GTSpan(0, 0),
+              descriptor: Some(Assignment(GtAttributeAssignment(
+                span: GtSpan(0, 0),
+                value: Literal(GtLiteral(
+                  span: GtSpan(0, 0),
                   doc: None,
                   attributes: [],
                   value: String("value"),
@@ -157,10 +157,10 @@ mod tests {
               ))),
             ),
           ],
-          id: GTDefinitionId(GTModuleId("module"), "I64"),
-          name: GTIdentifier(GTSpan(0, 4), "I64"),
-          primitive: GTPrimitive(
-            span: GTSpan(1, 4),
+          id: GtDefinitionId(GtModuleId("module"), "I64"),
+          name: GtIdentifier(GtSpan(0, 4), "I64"),
+          primitive: GtPrimitive(
+            span: GtSpan(1, 4),
             kind: Int64,
             doc: None,
             attributes: [],

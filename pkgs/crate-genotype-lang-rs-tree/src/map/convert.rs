@@ -1,12 +1,12 @@
 use crate::prelude::internal::*;
 
-impl RSConvert<RSMap> for GTRecord {
-    fn convert(&self, context: &mut RSConvertContext) -> Result<RSMap> {
+impl RsConvert<RsMap> for GtRecord {
+    fn convert(&self, context: &mut RsConvertContext) -> Result<RsMap> {
         context.add_import(
-            RSDependencyIdent::Std("collections".into()),
+            RsDependencyIdent::Std("collections".into()),
             "BTreeMap".into(),
         );
-        Ok(RSMap {
+        Ok(RsMap {
             key: self.key.convert(context)?,
             descriptor: self.descriptor.convert(context)?,
         })
@@ -26,7 +26,7 @@ mod tests {
                 Gt::record(Gt::record_key_string(), Gt::primitive_string())
             ),
             @"
-        RSMap(
+        RsMap(
           key: Primitive(String),
           descriptor: Primitive(String),
         )
@@ -36,14 +36,14 @@ mod tests {
 
     #[test]
     fn test_convert_import() {
-        let mut context = RSConvertContext::empty("module".into());
+        let mut context = RsConvertContext::empty("module".into());
         assert_ron_snapshot!(
             convert_node_with(
                 Gt::record(Gt::record_key_string(), Gt::primitive_string()),
                 &mut context
             ),
             @"
-        RSMap(
+        RsMap(
           key: Primitive(String),
           descriptor: Primitive(String),
         )
@@ -53,7 +53,7 @@ mod tests {
             context.as_dependencies(),
             @r#"
         [
-          (Std("collections"), RSIdentifier("BTreeMap")),
+          (Std("collections"), RsIdentifier("BTreeMap")),
         ]
         "#
         );

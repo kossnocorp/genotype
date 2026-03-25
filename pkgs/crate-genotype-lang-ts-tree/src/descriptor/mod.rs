@@ -4,58 +4,58 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub enum TSDescriptor {
-    Array(#[visit] Box<TSArray>),
-    InlineImport(#[visit] TSInlineImport),
-    Intersection(#[visit] TSIntersection),
-    Literal(#[visit] TSLiteral),
-    Object(#[visit] TSObject),
-    Primitive(#[visit] TSPrimitive),
-    Reference(#[visit] TSReference),
-    Tuple(#[visit] TSTuple),
-    Union(#[visit] TSUnion),
-    Record(#[visit] Box<TSRecord>),
-    Any(#[visit] TSAny),
+pub enum TsDescriptor {
+    Array(#[visit] Box<TsArray>),
+    InlineImport(#[visit] TsInlineImport),
+    Intersection(#[visit] TsIntersection),
+    Literal(#[visit] TsLiteral),
+    Object(#[visit] TsObject),
+    Primitive(#[visit] TsPrimitive),
+    Reference(#[visit] TsReference),
+    Tuple(#[visit] TsTuple),
+    Union(#[visit] TsUnion),
+    Record(#[visit] Box<TsRecord>),
+    Any(#[visit] TsAny),
 }
 
-impl From<&str> for TSDescriptor {
+impl From<&str> for TsDescriptor {
     fn from(str: &str) -> Self {
-        TSDescriptor::Reference(str.into())
+        TsDescriptor::Reference(str.into())
     }
 }
 
-impl From<TSAny> for TSDescriptor {
-    fn from(any: TSAny) -> Self {
-        TSDescriptor::Any(any)
+impl From<TsAny> for TsDescriptor {
+    fn from(any: TsAny) -> Self {
+        TsDescriptor::Any(any)
     }
 }
 
-impl From<TSIntersection> for TSDescriptor {
-    fn from(intersection: TSIntersection) -> Self {
-        TSDescriptor::Intersection(intersection)
+impl From<TsIntersection> for TsDescriptor {
+    fn from(intersection: TsIntersection) -> Self {
+        TsDescriptor::Intersection(intersection)
     }
 }
 
-impl From<TSObject> for TSDescriptor {
-    fn from(object: TSObject) -> Self {
-        TSDescriptor::Object(object)
+impl From<TsObject> for TsDescriptor {
+    fn from(object: TsObject) -> Self {
+        TsDescriptor::Object(object)
     }
 }
 
-impl From<TSPrimitive> for TSDescriptor {
-    fn from(primitive: TSPrimitive) -> Self {
-        TSDescriptor::Primitive(primitive)
+impl From<TsPrimitive> for TsDescriptor {
+    fn from(primitive: TsPrimitive) -> Self {
+        TsDescriptor::Primitive(primitive)
     }
 }
 
-impl From<TSReference> for TSDescriptor {
-    fn from(reference: TSReference) -> Self {
-        TSDescriptor::Reference(reference)
+impl From<TsReference> for TsDescriptor {
+    fn from(reference: TsReference) -> Self {
+        TsDescriptor::Reference(reference)
     }
 }
 
-impl From<TSUnion> for TSDescriptor {
-    fn from(union: TSUnion) -> Self {
-        TSDescriptor::Union(union)
+impl From<TsUnion> for TsDescriptor {
+    fn from(union: TsUnion) -> Self {
+        TsDescriptor::Union(union)
     }
 }

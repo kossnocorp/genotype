@@ -7,35 +7,35 @@ mod ids;
 mod naming;
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct GTContext {
+pub struct GtContext {
     /// Current module id.
-    pub module_id: GTModuleId,
-    pub resolve: GTModuleResolve,
-    pub parents: Vec<GTContextParent>,
+    pub module_id: GtModuleId,
+    pub resolve: GtModuleResolve,
+    pub parents: Vec<GtContextParent>,
     /// A set of taken definition names. It allows to generate unique synthetic
     /// names.
-    // [TODO] Use `GTNamingContext` instead of `claimed_names` in the future.
+    // [TODO] Use `GtNamingContext` instead of `claimed_names` in the future.
     pub claimed_names: HashSet<String>,
-    pub annotation: Option<GTContextAnnotation>,
+    pub annotation: Option<GtContextAnnotation>,
 }
 
 /// The parent context enum that defines the kind of a parent an object has.
 /// It allows building object names from the parents.
 #[derive(Debug, PartialEq, Clone)]
-pub enum GTContextParent {
+pub enum GtContextParent {
     /// An explicitly named alias parent.
-    Alias(GTIdentifier),
+    Alias(GtIdentifier),
     /// An anonymous parent, i.e. an union or a nested object.
     Anonymous,
     /// A property parent.
-    Property(GTKey),
+    Property(GtKey),
 }
 
-impl GTContext {
-    pub fn new(module_id: GTModuleId) -> Self {
-        GTContext {
+impl GtContext {
+    pub fn new(module_id: GtModuleId) -> Self {
+        GtContext {
             module_id,
-            resolve: GTModuleResolve::new(),
+            resolve: GtModuleResolve::new(),
             parents: vec![],
             claimed_names: HashSet::new(),
             annotation: None,

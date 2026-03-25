@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl PYConvert<PYProperty> for GTProperty {
-    fn convert(&self, context: &mut PYConvertContext) -> PYProperty {
-        PYProperty {
+impl PyConvert<PyProperty> for GtProperty {
+    fn convert(&self, context: &mut PyConvertContext) -> PyProperty {
+        PyProperty {
             doc: self.doc.as_ref().and_then(|doc| Some(doc.convert(context))),
             name: self.name.convert(context),
             descriptor: self.descriptor.convert(context),
@@ -20,19 +20,19 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTProperty {
+            GtProperty {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                name: GTKey::new((0, 0).into(), "name".into()),
+                name: GtKey::new((0, 0).into(), "name".into()),
                 descriptor: Gt::primitive_string().into(),
                 required: false,
             }
-            .convert(&mut PYConvertContext::default()),
+            .convert(&mut PyConvertContext::default()),
             @r#"
-        PYProperty(
+        PyProperty(
           doc: None,
-          name: PYKey("name"),
+          name: PyKey("name"),
           descriptor: Primitive(String),
           required: false,
         )
@@ -42,27 +42,27 @@ mod tests {
 
     #[test]
     fn test_convert_resolve() {
-        let mut context = PYConvertContext::new(
+        let mut context = PyConvertContext::new(
             Default::default(),
             PyConfig {
-                lang: PyConfigLang::new(PYVersion::Legacy),
+                lang: PyConfigLang::new(PyVersion::Legacy),
                 ..Default::default()
             },
         );
         assert_ron_snapshot!(
-            GTProperty {
+            GtProperty {
                 doc: None,
                 span: (0, 0).into(),
                 attributes: vec![],
-                name: GTKey::new((0, 0).into(), "name".into()),
+                name: GtKey::new((0, 0).into(), "name".into()),
                 descriptor: Gt::primitive_string().into(),
                 required: false,
             }
             .convert(&mut context),
             @r#"
-        PYProperty(
+        PyProperty(
           doc: None,
-          name: PYKey("name"),
+          name: PyKey("name"),
           descriptor: Primitive(String),
           required: false,
         )
@@ -72,7 +72,7 @@ mod tests {
             context.as_dependencies(),
             @r#"
         [
-          (Typing, PYIdentifier("Optional")),
+          (Typing, PyIdentifier("Optional")),
         ]
         "#
         );

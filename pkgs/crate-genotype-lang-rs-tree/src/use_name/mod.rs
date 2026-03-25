@@ -4,35 +4,35 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub enum RSUseName {
-    Name(#[visit] RSIdentifier),
-    Alias(#[visit] RSIdentifier, #[visit] RSIdentifier),
+pub enum RsUseName {
+    Name(#[visit] RsIdentifier),
+    Alias(#[visit] RsIdentifier, #[visit] RsIdentifier),
 }
 
-impl RSUseName {
-    pub fn name(&self) -> &RSIdentifier {
+impl RsUseName {
+    pub fn name(&self) -> &RsIdentifier {
         match self {
-            RSUseName::Name(name) => name,
-            RSUseName::Alias(_, name) => name,
+            RsUseName::Name(name) => name,
+            RsUseName::Alias(_, name) => name,
         }
     }
 
-    pub fn original_name(&self) -> &RSIdentifier {
+    pub fn original_name(&self) -> &RsIdentifier {
         match self {
-            RSUseName::Name(name) => name,
-            RSUseName::Alias(name, _) => name,
+            RsUseName::Name(name) => name,
+            RsUseName::Alias(name, _) => name,
         }
     }
 }
 
-impl From<&str> for RSUseName {
+impl From<&str> for RsUseName {
     fn from(str: &str) -> Self {
-        RSUseName::Name(str.into())
+        RsUseName::Name(str.into())
     }
 }
 
-impl From<RSIdentifier> for RSUseName {
-    fn from(identifier: RSIdentifier) -> Self {
-        RSUseName::Name(identifier)
+impl From<RsIdentifier> for RsUseName {
+    fn from(identifier: RsIdentifier) -> Self {
+        RsUseName::Name(identifier)
     }
 }

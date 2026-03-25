@@ -85,7 +85,7 @@ dist"#
             source: "".into(),
         });
 
-        let mut render_context = PYRenderContext {
+        let mut render_context = PyRenderContext {
             config: &self.config.target.lang,
             ..Default::default()
         };
@@ -133,25 +133,25 @@ mod tests {
           PyProjectModule(
             name: "author",
             path: "author.py",
-            module: PYModule(
+            module: PyModule(
               doc: None,
               imports: [
-                PYImport(
+                PyImport(
                   dependency: Runtime,
                   reference: Named([
-                    Name(PYIdentifier("Model")),
+                    Name(PyIdentifier("Model")),
                   ]),
                 ),
               ],
               definitions: [
-                Class(PYClass(
+                Class(PyClass(
                   doc: None,
-                  name: PYIdentifier("Author"),
+                  name: PyIdentifier("Author"),
                   extensions: [],
                   properties: [
-                    PYProperty(
+                    PyProperty(
                       doc: None,
-                      name: PYKey("name"),
+                      name: PyKey("name"),
                       descriptor: Primitive(String),
                       required: true,
                     ),
@@ -164,46 +164,46 @@ mod tests {
           PyProjectModule(
             name: "book",
             path: "book.py",
-            module: PYModule(
+            module: PyModule(
               doc: None,
               imports: [
-                PYImport(
-                  dependency: Path(PYPath(".author")),
+                PyImport(
+                  dependency: Path(PyPath(".author")),
                   reference: Named([
-                    Name(PYIdentifier("Author")),
+                    Name(PyIdentifier("Author")),
                   ]),
                 ),
-                PYImport(
+                PyImport(
                   dependency: Runtime,
                   reference: Named([
-                    Name(PYIdentifier("Model")),
+                    Name(PyIdentifier("Model")),
                   ]),
                 ),
               ],
               definitions: [
-                Class(PYClass(
+                Class(PyClass(
                   doc: None,
-                  name: PYIdentifier("Book"),
+                  name: PyIdentifier("Book"),
                   extensions: [],
                   properties: [
-                    PYProperty(
+                    PyProperty(
                       doc: None,
-                      name: PYKey("title"),
+                      name: PyKey("title"),
                       descriptor: Primitive(String),
                       required: true,
                     ),
-                    PYProperty(
+                    PyProperty(
                       doc: None,
-                      name: PYKey("author"),
-                      descriptor: Reference(PYReference(
-                        identifier: PYIdentifier("Author"),
+                      name: PyKey("author"),
+                      descriptor: Reference(PyReference(
+                        identifier: PyIdentifier("Author"),
                         forward: false,
                       )),
                       required: true,
                     ),
                   ],
                   references: [
-                    PYIdentifier("Author"),
+                    PyIdentifier("Author"),
                   ],
                 )),
               ],
@@ -226,40 +226,40 @@ mod tests {
           PyProjectModule(
             name: "author",
             path: "author.py",
-            module: PYModule(
+            module: PyModule(
               doc: None,
               imports: [
-                PYImport(
+                PyImport(
                   dependency: Runtime,
                   reference: Named([
-                    Name(PYIdentifier("Model")),
+                    Name(PyIdentifier("Model")),
                   ]),
                 ),
               ],
               definitions: [
-                Alias(PYAlias(
+                Alias(PyAlias(
                   doc: None,
-                  name: PYIdentifier("AuthorName"),
+                  name: PyIdentifier("AuthorName"),
                   descriptor: Primitive(String),
                   references: [],
                 )),
-                Class(PYClass(
+                Class(PyClass(
                   doc: None,
-                  name: PYIdentifier("Author"),
+                  name: PyIdentifier("Author"),
                   extensions: [],
                   properties: [
-                    PYProperty(
+                    PyProperty(
                       doc: None,
-                      name: PYKey("name"),
-                      descriptor: Reference(PYReference(
-                        identifier: PYIdentifier("AuthorName"),
+                      name: PyKey("name"),
+                      descriptor: Reference(PyReference(
+                        identifier: PyIdentifier("AuthorName"),
                         forward: false,
                       )),
                       required: true,
                     ),
                   ],
                   references: [
-                    PYIdentifier("AuthorName"),
+                    PyIdentifier("AuthorName"),
                   ],
                 )),
               ],
@@ -268,54 +268,54 @@ mod tests {
           PyProjectModule(
             name: "book",
             path: "book.py",
-            module: PYModule(
+            module: PyModule(
               doc: None,
               imports: [
-                PYImport(
-                  dependency: Path(PYPath(".author")),
-                  reference: Default(Some(PYIdentifier("author"))),
+                PyImport(
+                  dependency: Path(PyPath(".author")),
+                  reference: Default(Some(PyIdentifier("author"))),
                 ),
-                PYImport(
+                PyImport(
                   dependency: Runtime,
                   reference: Named([
-                    Name(PYIdentifier("Model")),
+                    Name(PyIdentifier("Model")),
                   ]),
                 ),
               ],
               definitions: [
-                Class(PYClass(
+                Class(PyClass(
                   doc: None,
-                  name: PYIdentifier("Book"),
+                  name: PyIdentifier("Book"),
                   extensions: [],
                   properties: [
-                    PYProperty(
+                    PyProperty(
                       doc: None,
-                      name: PYKey("title"),
+                      name: PyKey("title"),
                       descriptor: Primitive(String),
                       required: true,
                     ),
-                    PYProperty(
+                    PyProperty(
                       doc: None,
-                      name: PYKey("author"),
-                      descriptor: Reference(PYReference(
-                        identifier: PYIdentifier("author.Author"),
+                      name: PyKey("author"),
+                      descriptor: Reference(PyReference(
+                        identifier: PyIdentifier("author.Author"),
                         forward: false,
                       )),
                       required: true,
                     ),
-                    PYProperty(
+                    PyProperty(
                       doc: None,
-                      name: PYKey("author_name"),
-                      descriptor: Reference(PYReference(
-                        identifier: PYIdentifier("author.AuthorName"),
+                      name: PyKey("author_name"),
+                      descriptor: Reference(PyReference(
+                        identifier: PyIdentifier("author.AuthorName"),
                         forward: false,
                       )),
                       required: true,
                     ),
                   ],
                   references: [
-                    PYIdentifier("author.Author"),
-                    PYIdentifier("author.AuthorName"),
+                    PyIdentifier("author.Author"),
+                    PyIdentifier("author.AuthorName"),
                   ],
                 )),
               ],

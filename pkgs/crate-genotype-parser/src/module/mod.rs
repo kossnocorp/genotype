@@ -7,13 +7,13 @@ mod resolve;
 pub use resolve::*;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct GTModule {
+pub struct GtModule {
     /// Module identifier. Used to reference the module in the project.
-    pub id: GTModuleId,
+    pub id: GtModuleId,
     #[visit]
-    pub doc: Option<GTDoc>,
+    pub doc: Option<GtDoc>,
     #[visit]
-    pub imports: Vec<GTImport>,
+    pub imports: Vec<GtImport>,
     #[visit]
-    pub aliases: Vec<GTAlias>,
+    pub aliases: Vec<GtAlias>,
 }

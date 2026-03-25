@@ -4,22 +4,22 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct PYKey(pub Arc<str>);
+pub struct PyKey(pub Arc<str>);
 
-impl From<&str> for PYKey {
+impl From<&str> for PyKey {
     fn from(str: &str) -> Self {
-        PYKey(str.into())
+        PyKey(str.into())
     }
 }
 
-impl From<String> for PYKey {
+impl From<String> for PyKey {
     fn from(str: String) -> Self {
-        PYKey(str.into())
+        PyKey(str.into())
     }
 }
 
-impl From<Arc<str>> for PYKey {
+impl From<Arc<str>> for PyKey {
     fn from(str: Arc<str>) -> Self {
-        PYKey(str)
+        PyKey(str)
     }
 }

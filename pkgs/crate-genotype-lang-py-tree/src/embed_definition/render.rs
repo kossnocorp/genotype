@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYEmbedDefinition {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyEmbedDefinition {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
     fn render(
         &self,
@@ -22,7 +22,7 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            PYEmbedDefinition {
+            PyEmbedDefinition {
                 name: "Name".into(),
                 embed: r#"class Hello:\n    name = "World""#.into()
             }
@@ -35,12 +35,12 @@ mod tests {
     #[test]
     fn test_render_indent() {
         assert_snapshot!(
-            PYEmbedDefinition {
+            PyEmbedDefinition {
                 name: "Name".into(),
                 embed: r#"class Hello:\n    name = "World""#.into()
             }
             .render(
-                PYRenderState::default().indent_inc(),
+                PyRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),

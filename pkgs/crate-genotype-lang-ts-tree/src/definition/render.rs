@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSDefinition {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsDefinition {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -11,10 +11,10 @@ impl<'a> GtlRender<'a> for TSDefinition {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         match self {
-            TSDefinition::Alias(alias) => alias.render(state, context),
-            TSDefinition::Interface(interface) => interface.render(state, context),
-            TSDefinition::Branded(branded) => branded.render(state, context),
-            TSDefinition::Embed(embed) => embed.render(state, context),
+            TsDefinition::Alias(alias) => alias.render(state, context),
+            TsDefinition::Interface(interface) => interface.render(state, context),
+            TsDefinition::Branded(branded) => branded.render(state, context),
+            TsDefinition::Embed(embed) => embed.render(state, context),
         }
     }
 }
@@ -27,10 +27,10 @@ mod tests {
     #[test]
     fn test_render_alias() {
         assert_snapshot!(
-            TSDefinition::Alias(TSAlias {
+            TsDefinition::Alias(TsAlias {
                 doc: None,
                 name: "Name".into(),
-                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                descriptor: TsDescriptor::Primitive(TsPrimitive::String),
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -41,21 +41,21 @@ mod tests {
     #[test]
     fn test_render_interface() {
         assert_snapshot!(
-            TSDefinition::Interface(TSInterface {
+            TsDefinition::Interface(TsInterface {
                 doc: None,
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![
-                    TSProperty {
+                    TsProperty {
                         doc: None,
                         name: "name".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                        descriptor: TsDescriptor::Primitive(TsPrimitive::String),
                         required: true
                     },
-                    TSProperty {
+                    TsProperty {
                         doc: None,
                         name: "age".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
+                        descriptor: TsDescriptor::Primitive(TsPrimitive::Number),
                         required: false
                     }
                 ]
@@ -74,10 +74,10 @@ mod tests {
     #[test]
     fn test_render_branded() {
         assert_snapshot!(
-            TSDefinition::Branded(TSBranded {
+            TsDefinition::Branded(TsBranded {
                 doc: None,
                 name: "Version".into(),
-                primitive: TSPrimitive::Number
+                primitive: TsPrimitive::Number
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -91,7 +91,7 @@ mod tests {
     #[test]
     fn test_render_embed() {
         assert_snapshot!(
-            TSDefinition::Embed(TSEmbedDefinition {
+            TsDefinition::Embed(TsEmbedDefinition {
                 name: "Name".into(),
                 embed: r#"const hello = {
   name: "World"

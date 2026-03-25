@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl TSConvert<TSAny> for GTAny {
-    fn convert(&self, _context: &mut TSConvertContext) -> TSAny {
-        TSAny
+impl TsConvert<TsAny> for GtAny {
+    fn convert(&self, _context: &mut TsConvertContext) -> TsAny {
+        TsAny
     }
 }
 
@@ -15,7 +15,7 @@ mod tests {
     fn test_convert() {
         assert_ron_snapshot!(
             convert_node(Gt::any()),
-            @"TSAny"
+            @"TsAny"
         );
     }
 }

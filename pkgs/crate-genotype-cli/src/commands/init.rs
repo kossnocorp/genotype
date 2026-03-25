@@ -1,4 +1,4 @@
-use crate::diagnostic::error::GTCliError;
+use crate::diagnostic::error::GtCliError;
 use clap::Args;
 use genotype_config::*;
 use genotype_lang_py_config::*;
@@ -16,12 +16,12 @@ use std::fmt::{Display, Formatter};
 use std::fs::{create_dir_all, write};
 
 #[derive(Args)]
-pub struct GTInitCommand {
+pub struct GtInitCommand {
     /// Where to initialize the project, by default it will be the current directory.
     path: Option<GtRootPath>,
 }
 
-pub fn init_command(args: &GTInitCommand) -> Result<()> {
+pub fn init_command(args: &GtInitCommand) -> Result<()> {
     let mut config = GtConfig::default();
 
     let name = configure_name(&mut config)?;
@@ -32,21 +32,21 @@ pub fn init_command(args: &GTInitCommand) -> Result<()> {
         .clone()
         .unwrap_or_else(|| GtRootPath::new(".".into()));
 
-    create_dir_all(root.as_str()).map_err(|_| GTCliError::FailedCreateDir(root.as_str().into()))?;
+    create_dir_all(root.as_str()).map_err(|_| GtCliError::FailedCreateDir(root.as_str().into()))?;
 
     write(
         root.join_path(&"genotype.toml".into()).as_str(),
-        toml::to_string(&config).map_err(|_| GTCliError::StringifyConfig)?,
+        toml::to_string(&config).map_err(|_| GtCliError::StringifyConfig)?,
     )
-    .map_err(|_| GTCliError::FailedWrite("genotype.toml".into()))?;
+    .map_err(|_| GtCliError::FailedWrite("genotype.toml".into()))?;
 
     let src = root.join(&config.src);
 
-    create_dir_all(src.as_str()).map_err(|_| GTCliError::FailedCreateDir(src.as_str().into()))?;
+    create_dir_all(src.as_str()).map_err(|_| GtCliError::FailedCreateDir(src.as_str().into()))?;
 
     for (file, content) in GUIDE_FILES {
         write(src.join_path(&file.into()).as_str(), content)
-            .map_err(|_| GTCliError::FailedWrite(src.join_path(&file.into()).as_str().into()))?;
+            .map_err(|_| GtCliError::FailedWrite(src.join_path(&file.into()).as_str().into()))?;
     }
 
     println!(
@@ -80,7 +80,7 @@ fn configure_name(config: &mut GtConfig) -> Result<String> {
         .with_validator(required!("Please provide the project name"))
         .with_validator(min_length!(1, "Please provide the project name"))
         .prompt()
-        .map_err(|_| GTCliError::FailedReadline("project name"))?;
+        .map_err(|_| GtCliError::FailedReadline("project name"))?;
 
     config.name = Some(name.clone());
 
@@ -100,7 +100,7 @@ fn configure_targers(config: &mut GtConfig, name: &String) -> Result<()> {
         })
     })
     .prompt()
-    .map_err(|_| GTCliError::FailedReadline("targets"))?;
+    .map_err(|_| GtCliError::FailedReadline("targets"))?;
 
     for target in targets {
         match target {
@@ -130,7 +130,7 @@ fn configure_ts(config: &mut GtConfig, name: &String) -> Result<()> {
             })
         })
         .prompt()
-        .map_err(|_| GTCliError::FailedReadline("TypeScript package name"))?;
+        .map_err(|_| GtCliError::FailedReadline("TypeScript package name"))?;
 
     let manifest = toml::map::Map::from_iter(vec![
         ("name".into(), toml::Value::String(name.clone())),
@@ -161,7 +161,7 @@ fn configure_py(config: &mut GtConfig, name: &String) -> Result<()> {
             })
         })
         .prompt()
-        .map_err(|_| GTCliError::FailedReadline("Python package name"))?;
+        .map_err(|_| GtCliError::FailedReadline("Python package name"))?;
 
     let manifest = toml::map::Map::from_iter(vec![
         ("name".into(), toml::Value::String(name.clone())),
@@ -192,7 +192,7 @@ fn configure_rs(config: &mut GtConfig, name: &String) -> Result<()> {
             })
         })
         .prompt()
-        .map_err(|_| GTCliError::FailedReadline("Rust package name"))?;
+        .map_err(|_| GtCliError::FailedReadline("Rust package name"))?;
 
     let manifest = toml::map::Map::from_iter(vec![
         ("name".into(), toml::Value::String(name.clone())),

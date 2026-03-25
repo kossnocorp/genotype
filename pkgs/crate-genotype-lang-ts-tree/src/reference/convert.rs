@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl TSConvert<TSReference> for GTReference {
-    fn convert(&self, context: &mut TSConvertContext) -> TSReference {
-        TSReference(self.identifier.convert(context))
+impl TsConvert<TsReference> for GtReference {
+    fn convert(&self, context: &mut TsConvertContext) -> TsReference {
+        TsReference(self.identifier.convert(context))
     }
 }
 
@@ -15,7 +15,7 @@ mod tests {
     fn test_convert() {
         assert_ron_snapshot!(
             Gt::reference("Name").convert(&mut Default::default()),
-            @r#"TSReference(TSIdentifier("Name"))"#,
+            @r#"TsReference(TsIdentifier("Name"))"#,
         );
     }
 }

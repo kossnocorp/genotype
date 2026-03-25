@@ -1,10 +1,10 @@
 use crate::prelude::internal::*;
 
-impl RSConvert<RSInlineUse> for GTInlineImport {
-    fn convert(&self, context: &mut RSConvertContext) -> Result<RSInlineUse> {
+impl RsConvert<RsInlineUse> for GtInlineImport {
+    fn convert(&self, context: &mut RsConvertContext) -> Result<RsInlineUse> {
         let path = self.path.convert(context)?;
         let name = self.name.convert(context)?;
-        Ok(RSInlineUse { path, name })
+        Ok(RsInlineUse { path, name })
     }
 }
 
@@ -19,9 +19,9 @@ mod tests {
         assert_ron_snapshot!(
             convert_node(Gt::inline_import("./path/to/module", "Name")),
             @r#"
-        RSInlineUse(
-          path: RSPath(GTModuleId("path/to/module"), "super::path::to::module"),
-          name: RSIdentifier("Name"),
+        RsInlineUse(
+          path: RsPath(GtModuleId("path/to/module"), "super::path::to::module"),
+          name: RsIdentifier("Name"),
         )
         "#
         );

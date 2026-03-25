@@ -1,20 +1,20 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct GTAny {
-    pub span: GTSpan,
+pub struct GtAny {
+    pub span: GtSpan,
     #[visit]
-    pub doc: Option<GTDoc>,
+    pub doc: Option<GtDoc>,
     #[visit]
-    pub attributes: Vec<GTAttribute>,
+    pub attributes: Vec<GtAttribute>,
 }
 
-impl GTAny {
-    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> Result<Self, GTParseError> {
+impl GtAny {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> Result<Self, GtParseError> {
         let span = pair.as_span().into();
         let (doc, attributes) = context.take_annotation_or_default();
 
-        Ok(GTAny {
+        Ok(GtAny {
             span,
             doc,
             attributes,
@@ -30,10 +30,10 @@ mod tests {
     #[test]
     fn test_from_pair() {
         assert_ron_snapshot!(
-            parse_node!(GTAny, to_parse_args(Rule::any, "any")),
+            parse_node!(GtAny, to_parse_args(Rule::any, "any")),
             @"
-        GTAny(
-          span: GTSpan(0, 3),
+        GtAny(
+          span: GtSpan(0, 3),
           doc: None,
           attributes: [],
         )
@@ -52,22 +52,22 @@ mod tests {
             )],
         ));
         assert_ron_snapshot!(
-            parse_node!(GTAny, (to_parse_rules(Rule::any, "any"), &mut context)),
+            parse_node!(GtAny, (to_parse_rules(Rule::any, "any"), &mut context)),
             @r#"
-        GTAny(
-          span: GTSpan(0, 3),
-          doc: Some(GTDoc(GTSpan(0, 0), "Hello, world!")),
+        GtAny(
+          span: GtSpan(0, 3),
+          doc: Some(GtDoc(GtSpan(0, 0), "Hello, world!")),
           attributes: [
-            GTAttribute(
-              span: GTSpan(0, 2),
-              name: GTAttributeName(
-                span: GTSpan(0, 0),
+            GtAttribute(
+              span: GtSpan(0, 2),
+              name: GtAttributeName(
+                span: GtSpan(0, 0),
                 value: "example",
               ),
-              descriptor: Some(Assignment(GTAttributeAssignment(
-                span: GTSpan(0, 0),
-                value: Literal(GTLiteral(
-                  span: GTSpan(0, 0),
+              descriptor: Some(Assignment(GtAttributeAssignment(
+                span: GtSpan(0, 0),
+                value: Literal(GtLiteral(
+                  span: GtSpan(0, 0),
                   doc: None,
                   attributes: [],
                   value: String("value"),

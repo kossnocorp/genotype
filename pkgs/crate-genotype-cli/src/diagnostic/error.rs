@@ -2,7 +2,7 @@ use miette::Diagnostic;
 use thiserror::Error;
 
 #[derive(Error, Diagnostic, Debug, PartialEq)]
-pub enum GTCliError {
+pub enum GtCliError {
     #[error("missing command")]
     #[diagnostic(code(GTCL100))]
     MissingCommand,

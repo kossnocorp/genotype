@@ -1,25 +1,25 @@
 use crate::prelude::internal::*;
 
-impl TSConvert<TSPrimitive> for GTPrimitive {
-    fn convert(&self, _context: &mut TSConvertContext) -> TSPrimitive {
+impl TsConvert<TsPrimitive> for GtPrimitive {
+    fn convert(&self, _context: &mut TsConvertContext) -> TsPrimitive {
         match self.kind {
-            GTPrimitiveKind::Boolean => TSPrimitive::Boolean,
-            GTPrimitiveKind::String => TSPrimitive::String,
-            GTPrimitiveKind::Number => TSPrimitive::Number,
-            GTPrimitiveKind::Int8 => TSPrimitive::Number,
-            GTPrimitiveKind::Int16 => TSPrimitive::Number,
-            GTPrimitiveKind::Int32 => TSPrimitive::Number,
-            GTPrimitiveKind::Int64 => TSPrimitive::Number,
-            GTPrimitiveKind::Int128 => TSPrimitive::BigInt,
-            GTPrimitiveKind::IntSize => TSPrimitive::Number,
-            GTPrimitiveKind::IntU8 => TSPrimitive::Number,
-            GTPrimitiveKind::IntU16 => TSPrimitive::Number,
-            GTPrimitiveKind::IntU32 => TSPrimitive::Number,
-            GTPrimitiveKind::IntU64 => TSPrimitive::Number,
-            GTPrimitiveKind::IntU128 => TSPrimitive::BigInt,
-            GTPrimitiveKind::IntUSize => TSPrimitive::Number,
-            GTPrimitiveKind::Float32 => TSPrimitive::Number,
-            GTPrimitiveKind::Float64 => TSPrimitive::Number,
+            GtPrimitiveKind::Boolean => TsPrimitive::Boolean,
+            GtPrimitiveKind::String => TsPrimitive::String,
+            GtPrimitiveKind::Number => TsPrimitive::Number,
+            GtPrimitiveKind::Int8 => TsPrimitive::Number,
+            GtPrimitiveKind::Int16 => TsPrimitive::Number,
+            GtPrimitiveKind::Int32 => TsPrimitive::Number,
+            GtPrimitiveKind::Int64 => TsPrimitive::Number,
+            GtPrimitiveKind::Int128 => TsPrimitive::BigInt,
+            GtPrimitiveKind::IntSize => TsPrimitive::Number,
+            GtPrimitiveKind::IntU8 => TsPrimitive::Number,
+            GtPrimitiveKind::IntU16 => TsPrimitive::Number,
+            GtPrimitiveKind::IntU32 => TsPrimitive::Number,
+            GtPrimitiveKind::IntU64 => TsPrimitive::Number,
+            GtPrimitiveKind::IntU128 => TsPrimitive::BigInt,
+            GtPrimitiveKind::IntUSize => TsPrimitive::Number,
+            GtPrimitiveKind::Float32 => TsPrimitive::Number,
+            GtPrimitiveKind::Float64 => TsPrimitive::Number,
         }
     }
 }

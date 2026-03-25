@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSAlias {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsAlias {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -30,11 +30,11 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            RSAlias {
-                id: GTDefinitionId("module".into(), "Name".into()),
+            RsAlias {
+                id: GtDefinitionId("module".into(), "Name".into()),
                 doc: None,
                 name: "Name".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                descriptor: RsDescriptor::Primitive(RsPrimitive::String),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -45,11 +45,11 @@ mod tests {
     #[test]
     fn test_render_doc() {
         assert_snapshot!(
-            RSAlias {
-                id: GTDefinitionId("module".into(), "Name".into()),
+            RsAlias {
+                id: GtDefinitionId("module".into(), "Name".into()),
                 doc: Some("Hello, world!".into()),
                 name: "Name".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                descriptor: RsDescriptor::Primitive(RsPrimitive::String),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),

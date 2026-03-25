@@ -2,15 +2,15 @@ use crate::prelude::internal::*;
 use std::sync::LazyLock;
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct RSRenderContext<'a> {
+pub struct RsRenderContext<'a> {
     pub config: &'a RsConfigLang,
 }
 
-impl GtlRenderContext for RSRenderContext<'_> {}
+impl GtlRenderContext for RsRenderContext<'_> {}
 
 static RS_DEFAULT_CONFIG: LazyLock<RsConfigLang> = LazyLock::new(|| RsConfigLang::default());
 
-impl Default for RSRenderContext<'_> {
+impl Default for RsRenderContext<'_> {
     fn default() -> Self {
         Self {
             config: &RS_DEFAULT_CONFIG,
@@ -19,11 +19,11 @@ impl Default for RSRenderContext<'_> {
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
-pub struct RSRenderState {
+pub struct RsRenderState {
     pub indent: usize,
 }
 
-impl GtlRenderState for RSRenderState {
+impl GtlRenderState for RsRenderState {
     const INDENT: &'static str = "    ";
 
     fn indent_inc(&self) -> Self {
@@ -38,7 +38,7 @@ impl GtlRenderState for RSRenderState {
     }
 }
 
-impl Default for RSRenderState {
+impl Default for RsRenderState {
     fn default() -> Self {
         Self { indent: 0 }
     }

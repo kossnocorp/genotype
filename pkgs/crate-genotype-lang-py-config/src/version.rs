@@ -1,14 +1,14 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-pub enum PYVersion {
+pub enum PyVersion {
     #[serde(rename = "legacy")]
     Legacy,
     #[serde(rename = "latest")]
     Latest,
 }
 
-impl PYVersion {
+impl PyVersion {
     pub fn version_str(&self) -> &str {
         match self {
             Self::Legacy => "^3.8",
@@ -17,7 +17,7 @@ impl PYVersion {
     }
 }
 
-impl Default for PYVersion {
+impl Default for PyVersion {
     fn default() -> Self {
         Self::Latest
     }

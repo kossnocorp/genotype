@@ -4,12 +4,12 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct RSAlias {
-    pub id: GTDefinitionId,
+pub struct RsAlias {
+    pub id: GtDefinitionId,
     #[visit]
-    pub doc: Option<RSDoc>,
+    pub doc: Option<RsDoc>,
     #[visit]
-    pub name: RSIdentifier,
+    pub name: RsIdentifier,
     #[visit]
-    pub descriptor: RSDescriptor,
+    pub descriptor: RsDescriptor,
 }

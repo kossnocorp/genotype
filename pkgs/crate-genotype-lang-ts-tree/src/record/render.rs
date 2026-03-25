@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSRecord {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsRecord {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -25,9 +25,9 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            TSRecord {
-                key: TSRecordKey::Number,
-                descriptor: TSDescriptor::Primitive(TSPrimitive::String)
+            TsRecord {
+                key: TsRecordKey::Number,
+                descriptor: TsDescriptor::Primitive(TsPrimitive::String)
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),

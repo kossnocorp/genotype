@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSAlias {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsAlias {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -13,7 +13,7 @@ impl<'a> GtlRender<'a> for TSAlias {
         let name = self.name.render(state, context)?;
         let descriptor = self.descriptor.render(state, context)?;
 
-        TSDoc::with_doc(
+        TsDoc::with_doc(
             &self.doc,
             state,
             context,
@@ -31,10 +31,10 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            TSAlias {
+            TsAlias {
                 doc: None,
                 name: "Name".into(),
-                descriptor: TSDescriptor::Primitive(TSPrimitive::String)
+                descriptor: TsDescriptor::Primitive(TsPrimitive::String)
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -45,10 +45,10 @@ mod tests {
     #[test]
     fn test_render_doc() {
         assert_snapshot!(
-            TSAlias {
-                doc: Some(TSDoc("Hello, world!".into())),
+            TsAlias {
+                doc: Some(TsDoc("Hello, world!".into())),
                 name: "Name".into(),
-                descriptor: TSDescriptor::Primitive(TSPrimitive::String)
+                descriptor: TsDescriptor::Primitive(TsPrimitive::String)
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),

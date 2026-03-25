@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 use std::collections::HashSet;
 
-impl RSConvert<RSEnum> for GTUnion {
-    fn convert(&self, context: &mut RSConvertContext) -> Result<RSEnum> {
+impl RsConvert<RsEnum> for GtUnion {
+    fn convert(&self, context: &mut RsConvertContext) -> Result<RsEnum> {
         let doc = context.consume_doc();
         let name = if let Some(name) = context.claim_alias() {
             name
@@ -11,9 +11,9 @@ impl RSConvert<RSEnum> for GTUnion {
         };
         let id = context.build_definition_id(&name);
         context.drop_definition_id();
-        context.enter_parent(RSContextParent::Definition(name.clone()));
+        context.enter_parent(RsContextParent::Definition(name.clone()));
 
-        let mut variant_names: HashSet<RSIdentifier> = HashSet::new();
+        let mut variant_names: HashSet<RsIdentifier> = HashSet::new();
 
         let mut literals_count = 0;
         let mut variants = self
@@ -32,13 +32,13 @@ impl RSConvert<RSEnum> for GTUnion {
                 .flat_map(|variant| variant.attributes.iter().find(|attr| attr.0 == "default"));
             let count = default_attrs.clone().count();
             if count == 0 {
-                return Err(RSConverterError::MissingDefaultVariant(self.span.clone()).into());
+                return Err(RsConverterError::MissingDefaultVariant(self.span.clone()).into());
             } else if count > 1 {
-                return Err(RSConverterError::MultipleDefaultVariants(self.span.clone()).into());
+                return Err(RsConverterError::MultipleDefaultVariants(self.span.clone()).into());
             }
         }
 
-        let r#enum = RSEnum {
+        let r#enum = RsEnum {
             id,
             doc,
             name,
@@ -48,12 +48,12 @@ impl RSConvert<RSEnum> for GTUnion {
                     // a drop-in replacement and behaves the same for regular variants, but also
                     // adds support for literal variants.
                     let serde_mode = if literals_count > 0 {
-                        RSContextRenderDeriveSerdeMode::Litty
+                        RsContextRenderDeriveSerdeMode::Litty
                     } else {
-                        RSContextRenderDeriveSerdeMode::Serde
+                        RsContextRenderDeriveSerdeMode::Serde
                     };
                     context
-                        .render_derive(RSContextRenderDeriveTypeMode::UnionEnum, serde_mode)
+                        .render_derive(RsContextRenderDeriveTypeMode::UnionEnum, serde_mode)
                         .into()
                 },
                 r#"serde(untagged)"#.into(),
@@ -61,8 +61,8 @@ impl RSConvert<RSEnum> for GTUnion {
             variants,
         };
 
-        context.add_import(RSDependencyIdent::Serde, "Deserialize".into());
-        context.add_import(RSDependencyIdent::Serde, "Serialize".into());
+        context.add_import(RsDependencyIdent::Serde, "Deserialize".into());
+        context.add_import(RsDependencyIdent::Serde, "Serialize".into());
 
         context.exit_parent();
         Ok(r#enum)
@@ -70,36 +70,36 @@ impl RSConvert<RSEnum> for GTUnion {
 }
 
 fn convert_variant(
-    descriptor: &GTDescriptor,
-    variant_names: &mut HashSet<RSIdentifier>,
+    descriptor: &GtDescriptor,
+    variant_names: &mut HashSet<RsIdentifier>,
     literals_count: &mut usize,
-    context: &mut RSConvertContext,
-) -> Result<RSEnumVariant> {
+    context: &mut RsConvertContext,
+) -> Result<RsEnumVariant> {
     let mut attributes = vec![];
     let variant_name = name_variant_descriptor(descriptor, context)?;
     let variant_name = ensure_unique_variant_name(variant_name, variant_names);
 
-    context.enter_parent(RSContextParent::EnumVariant(variant_name.clone()));
+    context.enter_parent(RsContextParent::EnumVariant(variant_name.clone()));
 
-    if GTAttribute::find_flag(descriptor.attributes(), "default") {
-        attributes.push(RSAttribute("default".into()));
+    if GtAttribute::find_flag(descriptor.attributes(), "default") {
+        attributes.push(RsAttribute("default".into()));
     }
 
     let descriptor = match descriptor {
-        GTDescriptor::Literal(literal) => {
+        GtDescriptor::Literal(literal) => {
             let str = render_literal(literal);
-            attributes.push(RSAttribute(format!("literal({str})",)));
-            context.add_import(RSDependencyIdent::Litty, "literal".into());
+            attributes.push(RsAttribute(format!("literal({str})",)));
+            context.add_import(RsDependencyIdent::Litty, "literal".into());
             *literals_count += 1;
             None
         }
 
-        _ => Some(RSEnumVariantDescriptor::Descriptor(
+        _ => Some(RsEnumVariantDescriptor::Descriptor(
             descriptor.convert(context)?,
         )),
     };
 
-    let enum_variant = RSEnumVariant {
+    let enum_variant = RsEnumVariant {
         doc: None,
         attributes,
         name: variant_name,
@@ -111,14 +111,14 @@ fn convert_variant(
 }
 
 fn trim_variant_names(
-    enum_name: &RSIdentifier,
-    variants: &mut Vec<RSEnumVariant>,
-    variant_names: &mut HashSet<RSIdentifier>,
+    enum_name: &RsIdentifier,
+    variants: &mut Vec<RsEnumVariant>,
+    variant_names: &mut HashSet<RsIdentifier>,
 ) {
     for variant in variants.iter_mut() {
         if variant.name.0.starts_with(enum_name.0.as_ref()) {
             if let Some(trimmed_name) = variant.name.0.strip_prefix(enum_name.0.as_ref()) {
-                let trimmed_name = RSIdentifier(trimmed_name.into());
+                let trimmed_name = RsIdentifier(trimmed_name.into());
                 if !variant_names.contains(&trimmed_name) {
                     variant_names.remove(&variant.name);
                     variant_names.insert(trimmed_name.clone());
@@ -130,9 +130,9 @@ fn trim_variant_names(
 }
 
 fn ensure_unique_variant_name(
-    variant_name: RSIdentifier,
-    variant_names: &mut HashSet<RSIdentifier>,
-) -> RSIdentifier {
+    variant_name: RsIdentifier,
+    variant_names: &mut HashSet<RsIdentifier>,
+) -> RsIdentifier {
     let name = if !variant_names.contains(&variant_name) {
         variant_name
     } else {
@@ -144,7 +144,7 @@ fn ensure_unique_variant_name(
     name
 }
 
-fn enumerated_name(name: &RSIdentifier, variant_names: &HashSet<RSIdentifier>) -> RSIdentifier {
+fn enumerated_name(name: &RsIdentifier, variant_names: &HashSet<RsIdentifier>) -> RsIdentifier {
     let mut index = 2;
     loop {
         let enumerated_name = format!("{}{}", name.0, index).into();
@@ -156,47 +156,47 @@ fn enumerated_name(name: &RSIdentifier, variant_names: &HashSet<RSIdentifier>) -
 }
 
 fn name_variant_descriptor(
-    descriptor: &GTDescriptor,
-    context: &mut RSConvertContext,
-) -> Result<RSIdentifier> {
+    descriptor: &GtDescriptor,
+    context: &mut RsConvertContext,
+) -> Result<RsIdentifier> {
     // If `#[variant = "<name>"]` is present, use it as the variant name
-    if let Some(name) = GTAttribute::find_property_in(&descriptor.attributes(), "variant") {
+    if let Some(name) = GtAttribute::find_property_in(&descriptor.attributes(), "variant") {
         return Ok(name.into());
     }
 
     Ok(match descriptor {
-        GTDescriptor::Alias(alias) => alias.name.convert(context)?,
-        GTDescriptor::Reference(reference) => reference.identifier.convert(context)?,
-        GTDescriptor::InlineImport(import) => import.name.convert(context)?,
-        GTDescriptor::Object(object) => object.name.to_identifier().convert(context)?,
-        GTDescriptor::Literal(literal) => RSConvertNameSegment::Literal(literal.clone())
+        GtDescriptor::Alias(alias) => alias.name.convert(context)?,
+        GtDescriptor::Reference(reference) => reference.identifier.convert(context)?,
+        GtDescriptor::InlineImport(import) => import.name.convert(context)?,
+        GtDescriptor::Object(object) => object.name.to_identifier().convert(context)?,
+        GtDescriptor::Literal(literal) => RsConvertNameSegment::Literal(literal.clone())
             .render(true)
             .into(),
-        GTDescriptor::Branded(branded) => branded.name.convert(context)?,
-        GTDescriptor::Primitive(primitive) => match primitive.kind {
-            GTPrimitiveKind::Boolean => "Boolean".into(),
-            GTPrimitiveKind::String => "String".into(),
-            GTPrimitiveKind::Number => "Number".into(),
-            GTPrimitiveKind::Int8 => "Int8".into(),
-            GTPrimitiveKind::Int16 => "Int16".into(),
-            GTPrimitiveKind::Int32 => "Int32".into(),
-            GTPrimitiveKind::Int64 => "Int".into(),
-            GTPrimitiveKind::Int128 => "Int128".into(),
-            GTPrimitiveKind::IntSize => "IntSize".into(),
-            GTPrimitiveKind::IntU8 => "IntU8".into(),
-            GTPrimitiveKind::IntU16 => "IntU16".into(),
-            GTPrimitiveKind::IntU32 => "IntU32".into(),
-            GTPrimitiveKind::IntU64 => "IntU64".into(),
-            GTPrimitiveKind::IntU128 => "IntU128".into(),
-            GTPrimitiveKind::IntUSize => "IntUSize".into(),
-            GTPrimitiveKind::Float32 => "Float32".into(),
-            GTPrimitiveKind::Float64 => "Float".into(),
+        GtDescriptor::Branded(branded) => branded.name.convert(context)?,
+        GtDescriptor::Primitive(primitive) => match primitive.kind {
+            GtPrimitiveKind::Boolean => "Boolean".into(),
+            GtPrimitiveKind::String => "String".into(),
+            GtPrimitiveKind::Number => "Number".into(),
+            GtPrimitiveKind::Int8 => "Int8".into(),
+            GtPrimitiveKind::Int16 => "Int16".into(),
+            GtPrimitiveKind::Int32 => "Int32".into(),
+            GtPrimitiveKind::Int64 => "Int".into(),
+            GtPrimitiveKind::Int128 => "Int128".into(),
+            GtPrimitiveKind::IntSize => "IntSize".into(),
+            GtPrimitiveKind::IntU8 => "IntU8".into(),
+            GtPrimitiveKind::IntU16 => "IntU16".into(),
+            GtPrimitiveKind::IntU32 => "IntU32".into(),
+            GtPrimitiveKind::IntU64 => "IntU64".into(),
+            GtPrimitiveKind::IntU128 => "IntU128".into(),
+            GtPrimitiveKind::IntUSize => "IntUSize".into(),
+            GtPrimitiveKind::Float32 => "Float32".into(),
+            GtPrimitiveKind::Float64 => "Float".into(),
         },
-        GTDescriptor::Array(_) => "Vec".into(),
-        GTDescriptor::Union(_) => "Union".into(),
-        GTDescriptor::Record(_) => "Map".into(),
-        GTDescriptor::Tuple(_) => "Tuple".into(),
-        GTDescriptor::Any(_) => "Any".into(),
+        GtDescriptor::Array(_) => "Vec".into(),
+        GtDescriptor::Union(_) => "Union".into(),
+        GtDescriptor::Record(_) => "Map".into(),
+        GtDescriptor::Tuple(_) => "Tuple".into(),
+        GtDescriptor::Any(_) => "Any".into(),
     })
 }
 
@@ -208,10 +208,10 @@ mod tests {
 
     #[test]
     fn test_convert() {
-        let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Alias("Union".into()));
+        let mut context = RsConvertContext::empty("module".into());
+        context.enter_parent(RsContextParent::Alias("Union".into()));
 
-        let union = parse_get_named::<GTUnion>(
+        let union = parse_get_named::<GtUnion>(
             "Union",
             r#"
             Union: boolean | string
@@ -223,25 +223,25 @@ mod tests {
             .convert(&mut context)
             .unwrap(),
             @r#"
-        RSEnum(
-          id: GTDefinitionId(GTModuleId("module"), "Union"),
+        RsEnum(
+          id: GtDefinitionId(GtModuleId("module"), "Union"),
           doc: None,
           attributes: [
-            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
-            RSAttribute("serde(untagged)"),
+            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("serde(untagged)"),
           ],
-          name: RSIdentifier("Union"),
+          name: RsIdentifier("Union"),
           variants: [
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Boolean"),
+              name: RsIdentifier("Boolean"),
               descriptor: Some(Descriptor(Primitive(Boolean))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("String"),
+              name: RsIdentifier("String"),
               descriptor: Some(Descriptor(Primitive(String))),
             ),
           ],
@@ -253,8 +253,8 @@ mod tests {
             context.as_dependencies(),
             @r#"
         [
-          (Serde, RSIdentifier("Deserialize")),
-          (Serde, RSIdentifier("Serialize")),
+          (Serde, RsIdentifier("Deserialize")),
+          (Serde, RsIdentifier("Serialize")),
         ]
         "#
         );
@@ -262,11 +262,11 @@ mod tests {
 
     #[test]
     fn test_convert_doc() {
-        let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Alias("Union".into()));
+        let mut context = RsConvertContext::empty("module".into());
+        context.enter_parent(RsContextParent::Alias("Union".into()));
         context.provide_doc(Some("Hello, world!".into()));
 
-        let union = parse_get_named::<GTUnion>(
+        let union = parse_get_named::<GtUnion>(
             "Union",
             r#"
             Union: boolean | string
@@ -278,25 +278,25 @@ mod tests {
             .convert(&mut context)
             .unwrap(),
             @r#"
-        RSEnum(
-          id: GTDefinitionId(GTModuleId("module"), "Union"),
-          doc: Some(RSDoc("Hello, world!", false)),
+        RsEnum(
+          id: GtDefinitionId(GtModuleId("module"), "Union"),
+          doc: Some(RsDoc("Hello, world!", false)),
           attributes: [
-            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
-            RSAttribute("serde(untagged)"),
+            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("serde(untagged)"),
           ],
-          name: RSIdentifier("Union"),
+          name: RsIdentifier("Union"),
           variants: [
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Boolean"),
+              name: RsIdentifier("Boolean"),
               descriptor: Some(Descriptor(Primitive(Boolean))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("String"),
+              name: RsIdentifier("String"),
               descriptor: Some(Descriptor(Primitive(String))),
             ),
           ],
@@ -307,10 +307,10 @@ mod tests {
 
     #[test]
     fn test_literal_variants() {
-        let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Alias("AnimalKind".into()));
+        let mut context = RsConvertContext::empty("module".into());
+        context.enter_parent(RsContextParent::Alias("AnimalKind".into()));
 
-        let union = parse_get_named::<GTUnion>(
+        let union = parse_get_named::<GtUnion>(
             "AnimalKind",
             r#"
             AnimalKind: "dog" | "cat" | "bird"
@@ -319,37 +319,37 @@ mod tests {
         assert_ron_snapshot!(
             union.convert(&mut context).unwrap(),
             @r#"
-        RSEnum(
-          id: GTDefinitionId(GTModuleId("module"), "AnimalKind"),
+        RsEnum(
+          id: GtDefinitionId(GtModuleId("module"), "AnimalKind"),
           doc: None,
           attributes: [
-            RSAttribute("derive(Debug, Clone, PartialEq, Literals)"),
-            RSAttribute("serde(untagged)"),
+            RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
+            RsAttribute("serde(untagged)"),
           ],
-          name: RSIdentifier("AnimalKind"),
+          name: RsIdentifier("AnimalKind"),
           variants: [
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [
-                RSAttribute("literal(\"dog\")"),
+                RsAttribute("literal(\"dog\")"),
               ],
-              name: RSIdentifier("Dog"),
+              name: RsIdentifier("Dog"),
               descriptor: None,
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [
-                RSAttribute("literal(\"cat\")"),
+                RsAttribute("literal(\"cat\")"),
               ],
-              name: RSIdentifier("Cat"),
+              name: RsIdentifier("Cat"),
               descriptor: None,
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [
-                RSAttribute("literal(\"bird\")"),
+                RsAttribute("literal(\"bird\")"),
               ],
-              name: RSIdentifier("Bird"),
+              name: RsIdentifier("Bird"),
               descriptor: None,
             ),
           ],
@@ -361,17 +361,17 @@ mod tests {
             imports,
             @r#"
         [
-          RSUse(
+          RsUse(
             dependency: Litty,
             reference: Named([
-              Name(RSIdentifier("literal")),
+              Name(RsIdentifier("literal")),
             ]),
           ),
-          RSUse(
+          RsUse(
             dependency: Serde,
             reference: Named([
-              Name(RSIdentifier("Deserialize")),
-              Name(RSIdentifier("Serialize")),
+              Name(RsIdentifier("Deserialize")),
+              Name(RsIdentifier("Serialize")),
             ]),
           ),
         ]
@@ -380,10 +380,10 @@ mod tests {
 
     #[test]
     fn test_unique_name() {
-        let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Alias("Union".into()));
+        let mut context = RsConvertContext::empty("module".into());
+        context.enter_parent(RsContextParent::Alias("Union".into()));
 
-        let union = parse_get_named::<GTUnion>(
+        let union = parse_get_named::<GtUnion>(
             "Union",
             r#"
             Union: () | string | () | string | ()
@@ -394,48 +394,48 @@ mod tests {
             .convert(&mut context)
             .unwrap(),
             @r#"
-        RSEnum(
-          id: GTDefinitionId(GTModuleId("module"), "Union"),
+        RsEnum(
+          id: GtDefinitionId(GtModuleId("module"), "Union"),
           doc: None,
           attributes: [
-            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
-            RSAttribute("serde(untagged)"),
+            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("serde(untagged)"),
           ],
-          name: RSIdentifier("Union"),
+          name: RsIdentifier("Union"),
           variants: [
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Tuple"),
-              descriptor: Some(Descriptor(Tuple(RSTuple(
+              name: RsIdentifier("Tuple"),
+              descriptor: Some(Descriptor(Tuple(RsTuple(
                 descriptors: [],
               )))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("String"),
+              name: RsIdentifier("String"),
               descriptor: Some(Descriptor(Primitive(String))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Tuple2"),
-              descriptor: Some(Descriptor(Tuple(RSTuple(
+              name: RsIdentifier("Tuple2"),
+              descriptor: Some(Descriptor(Tuple(RsTuple(
                 descriptors: [],
               )))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("String2"),
+              name: RsIdentifier("String2"),
               descriptor: Some(Descriptor(Primitive(String))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Tuple3"),
-              descriptor: Some(Descriptor(Tuple(RSTuple(
+              name: RsIdentifier("Tuple3"),
+              descriptor: Some(Descriptor(Tuple(RsTuple(
                 descriptors: [],
               )))),
             ),
@@ -447,10 +447,10 @@ mod tests {
 
     #[test]
     fn test_numeric_name() {
-        let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Alias("Union".into()));
+        let mut context = RsConvertContext::empty("module".into());
+        context.enter_parent(RsContextParent::Alias("Union".into()));
 
-        let union = parse_get_named::<GTUnion>(
+        let union = parse_get_named::<GtUnion>(
             "Union",
             r#"
             Union: i32 | i64 | isize | f32 | f64
@@ -461,43 +461,43 @@ mod tests {
             .convert(&mut context)
             .unwrap(),
             @r#"
-        RSEnum(
-          id: GTDefinitionId(GTModuleId("module"), "Union"),
+        RsEnum(
+          id: GtDefinitionId(GtModuleId("module"), "Union"),
           doc: None,
           attributes: [
-            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
-            RSAttribute("serde(untagged)"),
+            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("serde(untagged)"),
           ],
-          name: RSIdentifier("Union"),
+          name: RsIdentifier("Union"),
           variants: [
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Int32"),
+              name: RsIdentifier("Int32"),
               descriptor: Some(Descriptor(Primitive(Int32))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Int"),
+              name: RsIdentifier("Int"),
               descriptor: Some(Descriptor(Primitive(Int64))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("IntSize"),
+              name: RsIdentifier("IntSize"),
               descriptor: Some(Descriptor(Primitive(IntSize))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Float32"),
+              name: RsIdentifier("Float32"),
               descriptor: Some(Descriptor(Primitive(Float32))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Float"),
+              name: RsIdentifier("Float"),
               descriptor: Some(Descriptor(Primitive(Float64))),
             ),
           ],
@@ -508,10 +508,10 @@ mod tests {
 
     #[test]
     fn test_literal_names() {
-        let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Alias("Union".into()));
+        let mut context = RsConvertContext::empty("module".into());
+        context.enter_parent(RsContextParent::Alias("Union".into()));
 
-        let union = parse_get_named::<GTUnion>(
+        let union = parse_get_named::<GtUnion>(
             "Union",
             r#"
             Union: null | "Hello" | true
@@ -522,37 +522,37 @@ mod tests {
             .convert(&mut context)
             .unwrap(),
             @r#"
-        RSEnum(
-          id: GTDefinitionId(GTModuleId("module"), "Union"),
+        RsEnum(
+          id: GtDefinitionId(GtModuleId("module"), "Union"),
           doc: None,
           attributes: [
-            RSAttribute("derive(Debug, Clone, PartialEq, Literals)"),
-            RSAttribute("serde(untagged)"),
+            RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
+            RsAttribute("serde(untagged)"),
           ],
-          name: RSIdentifier("Union"),
+          name: RsIdentifier("Union"),
           variants: [
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [
-                RSAttribute("literal(null)"),
+                RsAttribute("literal(null)"),
               ],
-              name: RSIdentifier("Null"),
+              name: RsIdentifier("Null"),
               descriptor: None,
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [
-                RSAttribute("literal(\"Hello\")"),
+                RsAttribute("literal(\"Hello\")"),
               ],
-              name: RSIdentifier("Hello"),
+              name: RsIdentifier("Hello"),
               descriptor: None,
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [
-                RSAttribute("literal(true)"),
+                RsAttribute("literal(true)"),
               ],
-              name: RSIdentifier("True"),
+              name: RsIdentifier("True"),
               descriptor: None,
             ),
           ],
@@ -563,10 +563,10 @@ mod tests {
 
     #[test]
     fn test_literal_integer_name() {
-        let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Alias("Version".into()));
+        let mut context = RsConvertContext::empty("module".into());
+        context.enter_parent(RsContextParent::Alias("Version".into()));
 
-        let union = parse_get_named::<GTUnion>(
+        let union = parse_get_named::<GtUnion>(
             "Version",
             r#"
             Version: 0 | 1
@@ -577,29 +577,29 @@ mod tests {
             .convert(&mut context)
             .unwrap(),
             @r#"
-        RSEnum(
-          id: GTDefinitionId(GTModuleId("module"), "Version"),
+        RsEnum(
+          id: GtDefinitionId(GtModuleId("module"), "Version"),
           doc: None,
           attributes: [
-            RSAttribute("derive(Debug, Clone, PartialEq, Literals)"),
-            RSAttribute("serde(untagged)"),
+            RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
+            RsAttribute("serde(untagged)"),
           ],
-          name: RSIdentifier("Version"),
+          name: RsIdentifier("Version"),
           variants: [
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [
-                RSAttribute("literal(0)"),
+                RsAttribute("literal(0)"),
               ],
-              name: RSIdentifier("Lit0"),
+              name: RsIdentifier("Lit0"),
               descriptor: None,
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [
-                RSAttribute("literal(1)"),
+                RsAttribute("literal(1)"),
               ],
-              name: RSIdentifier("Lit1"),
+              name: RsIdentifier("Lit1"),
               descriptor: None,
             ),
           ],
@@ -610,10 +610,10 @@ mod tests {
 
     #[test]
     fn test_literal_float_name() {
-        let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Alias("Version".into()));
+        let mut context = RsConvertContext::empty("module".into());
+        context.enter_parent(RsContextParent::Alias("Version".into()));
 
-        let union = parse_get_named::<GTUnion>(
+        let union = parse_get_named::<GtUnion>(
             "Version",
             r#"
             Version: 1.2 | 3.4
@@ -624,29 +624,29 @@ mod tests {
             .convert(&mut context)
             .unwrap(),
             @r#"
-        RSEnum(
-          id: GTDefinitionId(GTModuleId("module"), "Version"),
+        RsEnum(
+          id: GtDefinitionId(GtModuleId("module"), "Version"),
           doc: None,
           attributes: [
-            RSAttribute("derive(Debug, Clone, PartialEq, Literals)"),
-            RSAttribute("serde(untagged)"),
+            RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
+            RsAttribute("serde(untagged)"),
           ],
-          name: RSIdentifier("Version"),
+          name: RsIdentifier("Version"),
           variants: [
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [
-                RSAttribute("literal(1.2)"),
+                RsAttribute("literal(1.2)"),
               ],
-              name: RSIdentifier("Lit1_2"),
+              name: RsIdentifier("Lit1_2"),
               descriptor: None,
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [
-                RSAttribute("literal(3.4)"),
+                RsAttribute("literal(3.4)"),
               ],
-              name: RSIdentifier("Lit3_4"),
+              name: RsIdentifier("Lit3_4"),
               descriptor: None,
             ),
           ],
@@ -657,10 +657,10 @@ mod tests {
 
     #[test]
     fn test_literal_invalid_string_name() {
-        let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Alias("Version".into()));
+        let mut context = RsConvertContext::empty("module".into());
+        context.enter_parent(RsContextParent::Alias("Version".into()));
 
-        let union = parse_get_named::<GTUnion>(
+        let union = parse_get_named::<GtUnion>(
             "Version",
             r#"
             Version: "0" | "1"
@@ -671,29 +671,29 @@ mod tests {
             .convert(&mut context)
             .unwrap(),
             @r#"
-        RSEnum(
-          id: GTDefinitionId(GTModuleId("module"), "Version"),
+        RsEnum(
+          id: GtDefinitionId(GtModuleId("module"), "Version"),
           doc: None,
           attributes: [
-            RSAttribute("derive(Debug, Clone, PartialEq, Literals)"),
-            RSAttribute("serde(untagged)"),
+            RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
+            RsAttribute("serde(untagged)"),
           ],
-          name: RSIdentifier("Version"),
+          name: RsIdentifier("Version"),
           variants: [
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [
-                RSAttribute("literal(\"0\")"),
+                RsAttribute("literal(\"0\")"),
               ],
-              name: RSIdentifier("Lit0"),
+              name: RsIdentifier("Lit0"),
               descriptor: None,
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [
-                RSAttribute("literal(\"1\")"),
+                RsAttribute("literal(\"1\")"),
               ],
-              name: RSIdentifier("Lit1"),
+              name: RsIdentifier("Lit1"),
               descriptor: None,
             ),
           ],
@@ -704,10 +704,10 @@ mod tests {
 
     #[test]
     fn test_trimmed_variant_names() {
-        let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Alias("ServerMessage".into()));
+        let mut context = RsConvertContext::empty("module".into());
+        context.enter_parent(RsContextParent::Alias("ServerMessage".into()));
 
-        let union = parse_get_named::<GTUnion>(
+        let union = parse_get_named::<GtUnion>(
             "ServerMessage",
             r#"
             ServerMessage: ServerMessagePing | ServerMessagePong
@@ -718,33 +718,33 @@ mod tests {
         assert_ron_snapshot!(
             union.convert(&mut context).unwrap(),
             @r#"
-        RSEnum(
-          id: GTDefinitionId(GTModuleId("module"), "ServerMessage"),
+        RsEnum(
+          id: GtDefinitionId(GtModuleId("module"), "ServerMessage"),
           doc: None,
           attributes: [
-            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
-            RSAttribute("serde(untagged)"),
+            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("serde(untagged)"),
           ],
-          name: RSIdentifier("ServerMessage"),
+          name: RsIdentifier("ServerMessage"),
           variants: [
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Ping"),
-              descriptor: Some(Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(28, 45)),
-                identifier: RSIdentifier("ServerMessagePing"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "ServerMessagePing"),
+              name: RsIdentifier("Ping"),
+              descriptor: Some(Descriptor(Reference(RsReference(
+                id: GtReferenceId(GtModuleId("module"), GtSpan(28, 45)),
+                identifier: RsIdentifier("ServerMessagePing"),
+                definition_id: GtDefinitionId(GtModuleId("module"), "ServerMessagePing"),
               )))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Pong"),
-              descriptor: Some(Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(48, 65)),
-                identifier: RSIdentifier("ServerMessagePong"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "ServerMessagePong"),
+              name: RsIdentifier("Pong"),
+              descriptor: Some(Descriptor(Reference(RsReference(
+                id: GtReferenceId(GtModuleId("module"), GtSpan(48, 65)),
+                identifier: RsIdentifier("ServerMessagePong"),
+                definition_id: GtDefinitionId(GtModuleId("module"), "ServerMessagePong"),
               )))),
             ),
           ],
@@ -755,10 +755,10 @@ mod tests {
 
     #[test]
     fn test_trimmed_variant_names_conflicts() {
-        let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Alias("ServerMessage".into()));
+        let mut context = RsConvertContext::empty("module".into());
+        context.enter_parent(RsContextParent::Alias("ServerMessage".into()));
 
-        let union = parse_get_named::<GTUnion>(
+        let union = parse_get_named::<GtUnion>(
             "ServerMessage",
             r#"
             ServerMessage: ServerMessagePing | ServerMessagePong | Ping
@@ -770,43 +770,43 @@ mod tests {
         assert_ron_snapshot!(
             union.convert(&mut context).unwrap(),
             @r#"
-        RSEnum(
-          id: GTDefinitionId(GTModuleId("module"), "ServerMessage"),
+        RsEnum(
+          id: GtDefinitionId(GtModuleId("module"), "ServerMessage"),
           doc: None,
           attributes: [
-            RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
-            RSAttribute("serde(untagged)"),
+            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("serde(untagged)"),
           ],
-          name: RSIdentifier("ServerMessage"),
+          name: RsIdentifier("ServerMessage"),
           variants: [
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("ServerMessagePing"),
-              descriptor: Some(Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(28, 45)),
-                identifier: RSIdentifier("ServerMessagePing"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "ServerMessagePing"),
+              name: RsIdentifier("ServerMessagePing"),
+              descriptor: Some(Descriptor(Reference(RsReference(
+                id: GtReferenceId(GtModuleId("module"), GtSpan(28, 45)),
+                identifier: RsIdentifier("ServerMessagePing"),
+                definition_id: GtDefinitionId(GtModuleId("module"), "ServerMessagePing"),
               )))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Pong"),
-              descriptor: Some(Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(48, 65)),
-                identifier: RSIdentifier("ServerMessagePong"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "ServerMessagePong"),
+              name: RsIdentifier("Pong"),
+              descriptor: Some(Descriptor(Reference(RsReference(
+                id: GtReferenceId(GtModuleId("module"), GtSpan(48, 65)),
+                identifier: RsIdentifier("ServerMessagePong"),
+                definition_id: GtDefinitionId(GtModuleId("module"), "ServerMessagePong"),
               )))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Ping"),
-              descriptor: Some(Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(68, 72)),
-                identifier: RSIdentifier("Ping"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "Ping"),
+              name: RsIdentifier("Ping"),
+              descriptor: Some(Descriptor(Reference(RsReference(
+                id: GtReferenceId(GtModuleId("module"), GtSpan(68, 72)),
+                identifier: RsIdentifier("Ping"),
+                definition_id: GtDefinitionId(GtModuleId("module"), "Ping"),
               )))),
             ),
           ],
@@ -880,120 +880,120 @@ mod tests {
         assert_ron_snapshot!(
             convert_node_with(union, &mut context),
             @r#"
-        RSEnum(
-          id: GTDefinitionId(GTModuleId("module"), "Status"),
+        RsEnum(
+          id: GtDefinitionId(GtModuleId("module"), "Status"),
           doc: None,
           attributes: [
-            RSAttribute("derive(Debug, Clone, PartialEq, Literals)"),
-            RSAttribute("serde(untagged)"),
+            RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
+            RsAttribute("serde(untagged)"),
           ],
-          name: RSIdentifier("Status"),
+          name: RsIdentifier("Status"),
           variants: [
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Alias"),
-              descriptor: Some(Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(0, 0)),
-                identifier: RSIdentifier("Hello"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "Hello"),
+              name: RsIdentifier("Alias"),
+              descriptor: Some(Descriptor(Reference(RsReference(
+                id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
+                identifier: RsIdentifier("Hello"),
+                definition_id: GtDefinitionId(GtModuleId("module"), "Hello"),
               )))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Array"),
-              descriptor: Some(Descriptor(Vec(RSVec(
+              name: RsIdentifier("Array"),
+              descriptor: Some(Descriptor(Vec(RsVec(
                 descriptor: Primitive(Boolean),
               )))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Import"),
-              descriptor: Some(Descriptor(InlineUse(RSInlineUse(
-                path: RSPath(GTModuleId("path/to/module"), "src::module"),
-                name: RSIdentifier("Type"),
+              name: RsIdentifier("Import"),
+              descriptor: Some(Descriptor(InlineUse(RsInlineUse(
+                path: RsPath(GtModuleId("path/to/module"), "src::module"),
+                name: RsIdentifier("Type"),
               )))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [
-                RSAttribute("literal(\"ok\")"),
+                RsAttribute("literal(\"ok\")"),
               ],
-              name: RSIdentifier("Literal"),
+              name: RsIdentifier("Literal"),
               descriptor: None,
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Object"),
-              descriptor: Some(Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(0, 0)),
-                identifier: RSIdentifier("Status"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "Status"),
+              name: RsIdentifier("Object"),
+              descriptor: Some(Descriptor(Reference(RsReference(
+                id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
+                identifier: RsIdentifier("Status"),
+                definition_id: GtDefinitionId(GtModuleId("module"), "Status"),
               )))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Primitive"),
+              name: RsIdentifier("Primitive"),
               descriptor: Some(Descriptor(Primitive(Boolean))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Reference"),
-              descriptor: Some(Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(0, 0)),
-                identifier: RSIdentifier("Hello"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "Hello"),
+              name: RsIdentifier("Reference"),
+              descriptor: Some(Descriptor(Reference(RsReference(
+                id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
+                identifier: RsIdentifier("Hello"),
+                definition_id: GtDefinitionId(GtModuleId("module"), "Hello"),
               )))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Tuple"),
-              descriptor: Some(Descriptor(Tuple(RSTuple(
+              name: RsIdentifier("Tuple"),
+              descriptor: Some(Descriptor(Tuple(RsTuple(
                 descriptors: [
                   Primitive(String),
                   Primitive(Float64),
                 ],
               )))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Union"),
-              descriptor: Some(Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(0, 0)),
-                identifier: RSIdentifier("Status"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "Status"),
+              name: RsIdentifier("Union"),
+              descriptor: Some(Descriptor(Reference(RsReference(
+                id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
+                identifier: RsIdentifier("Status"),
+                definition_id: GtDefinitionId(GtModuleId("module"), "Status"),
               )))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Record"),
-              descriptor: Some(Descriptor(Map(RSMap(
+              name: RsIdentifier("Record"),
+              descriptor: Some(Descriptor(Map(RsMap(
                 key: Primitive(String),
                 descriptor: Primitive(Float64),
               )))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Whatever"),
-              descriptor: Some(Descriptor(Any(RSAny))),
+              name: RsIdentifier("Whatever"),
+              descriptor: Some(Descriptor(Any(RsAny))),
             ),
-            RSEnumVariant(
+            RsEnumVariant(
               doc: None,
               attributes: [],
-              name: RSIdentifier("Branded"),
-              descriptor: Some(Descriptor(Reference(RSReference(
-                id: GTReferenceId(GTModuleId("module"), GTSpan(0, 0)),
-                identifier: RSIdentifier("StatusStr"),
-                definition_id: GTDefinitionId(GTModuleId("module"), "StatusStr"),
+              name: RsIdentifier("Branded"),
+              descriptor: Some(Descriptor(Reference(RsReference(
+                id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
+                identifier: RsIdentifier("StatusStr"),
+                definition_id: GtDefinitionId(GtModuleId("module"), "StatusStr"),
               )))),
             ),
           ],
@@ -1018,30 +1018,30 @@ mod tests {
         assert_debug_snapshot!(
             convert_node_with(union, &mut context),
             @r#"
-        RSEnum {
-            id: GTDefinitionId(
-                GTModuleId(
+        RsEnum {
+            id: GtDefinitionId(
+                GtModuleId(
                     "module",
                 ),
                 "Status",
             ),
             doc: None,
             attributes: [
-                RSAttribute(
+                RsAttribute(
                     "derive(Debug, Clone, PartialEq, Serialize, Deserialize)",
                 ),
-                RSAttribute(
+                RsAttribute(
                     "serde(untagged)",
                 ),
             ],
-            name: RSIdentifier(
+            name: RsIdentifier(
                 "Status",
             ),
             variants: [
-                RSEnumVariant {
+                RsEnumVariant {
                     doc: None,
                     attributes: [],
-                    name: RSIdentifier(
+                    name: RsIdentifier(
                         "String",
                     ),
                     descriptor: Some(
@@ -1052,14 +1052,14 @@ mod tests {
                         ),
                     ),
                 },
-                RSEnumVariant {
+                RsEnumVariant {
                     doc: None,
                     attributes: [
-                        RSAttribute(
+                        RsAttribute(
                             "default",
                         ),
                     ],
-                    name: RSIdentifier(
+                    name: RsIdentifier(
                         "Number",
                     ),
                     descriptor: Some(
@@ -1090,7 +1090,7 @@ mod tests {
             convert_node_err_with(union, &mut context),
             @"
         MissingDefaultVariant(
-            GTSpan(
+            GtSpan(
                 0,
                 0,
             ),
@@ -1119,7 +1119,7 @@ mod tests {
             convert_node_err_with(union, &mut context),
             @"
         MultipleDefaultVariants(
-            GTSpan(
+            GtSpan(
                 0,
                 0,
             ),

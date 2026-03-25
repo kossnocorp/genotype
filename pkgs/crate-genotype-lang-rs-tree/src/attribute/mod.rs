@@ -3,16 +3,16 @@ use crate::prelude::internal::*;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct RSAttribute(pub String);
+pub struct RsAttribute(pub String);
 
-impl From<&str> for RSAttribute {
+impl From<&str> for RsAttribute {
     fn from(value: &str) -> Self {
-        RSAttribute(value.into())
+        RsAttribute(value.into())
     }
 }
 
-impl From<String> for RSAttribute {
+impl From<String> for RsAttribute {
     fn from(value: String) -> Self {
-        RSAttribute(value)
+        RsAttribute(value)
     }
 }

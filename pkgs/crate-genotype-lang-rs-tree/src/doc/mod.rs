@@ -4,16 +4,16 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct RSDoc(pub String, pub bool);
+pub struct RsDoc(pub String, pub bool);
 
-impl RSDoc {
+impl RsDoc {
     pub fn new<S: Into<String>>(doc: S, module: bool) -> Self {
-        RSDoc(doc.into(), module)
+        RsDoc(doc.into(), module)
     }
 }
 
-impl From<&str> for RSDoc {
+impl From<&str> for RsDoc {
     fn from(str: &str) -> Self {
-        RSDoc(str.into(), false)
+        RsDoc(str.into(), false)
     }
 }

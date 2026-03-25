@@ -1,10 +1,10 @@
 use crate::prelude::internal::*;
 
-pub fn to_parse_args(rule: Rule, code: &str) -> (Pairs<'_, Rule>, GTContext) {
+pub fn to_parse_args(rule: Rule, code: &str) -> (Pairs<'_, Rule>, GtContext) {
     let pairs = GenotypeParser::parse(rule, code).unwrap_or_else(|e| {
         panic!("Failed to parse code:\n{}\nError: {}", code, e);
     });
-    let context = GTContext::new("module".into());
+    let context = GtContext::new("module".into());
     (pairs, context)
 }
 

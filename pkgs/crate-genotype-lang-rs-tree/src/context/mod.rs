@@ -7,29 +7,29 @@ pub use convert::*;
 pub mod mock;
 
 #[derive(PartialEq)]
-pub enum RSContextRenderDeriveTypeMode {
+pub enum RsContextRenderDeriveTypeMode {
     Struct,
     UnionEnum,
 }
 
 #[derive(PartialEq)]
-pub enum RSContextRenderDeriveSerdeMode {
+pub enum RsContextRenderDeriveSerdeMode {
     Serde,
     Litty,
 }
 
-pub trait RSConvertContextMockable {
+pub trait RsConvertContextMockable {
     fn render_derive(
         &self,
-        _type_mode: RSContextRenderDeriveTypeMode,
-        _serde_mode: RSContextRenderDeriveSerdeMode,
+        _type_mode: RsContextRenderDeriveTypeMode,
+        _serde_mode: RsContextRenderDeriveSerdeMode,
     ) -> String {
         String::new()
     }
 }
 
-pub trait RSConvertContextConstraint:
-    RSConvertContextMockable
-    + GtlConvertContext<DependencyIdent = RSDependencyIdent, DependencyRef = RSIdentifier>
+pub trait RsConvertContextConstraint:
+    RsConvertContextMockable
+    + GtlConvertContext<DependencyIdent = RsDependencyIdent, DependencyRef = RsIdentifier>
 {
 }

@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl PYConvert<PYIdentifier> for GTIdentifier {
-    fn convert(&self, context: &mut PYConvertContext) -> PYIdentifier {
-        PYIdentifier(context.resolve_identifier(self).into())
+impl PyConvert<PyIdentifier> for GtIdentifier {
+    fn convert(&self, context: &mut PyConvertContext) -> PyIdentifier {
+        PyIdentifier(context.resolve_identifier(self).into())
     }
 }
 
@@ -14,23 +14,23 @@ mod tests {
     #[test]
     fn test_convert_base() {
         assert_ron_snapshot!(
-            GTIdentifier::new((0, 0).into(), "Foo".into())
-                .convert(&mut PYConvertContext::default()),
-            @r#"PYIdentifier("Foo")"#
+            GtIdentifier::new((0, 0).into(), "Foo".into())
+                .convert(&mut PyConvertContext::default()),
+            @r#"PyIdentifier("Foo")"#
         );
     }
 
     #[test]
     fn test_convert_resolve() {
-        let mut resolve = PYConvertResolve::default();
+        let mut resolve = PyConvertResolve::default();
         resolve.identifiers.insert(
-            GTIdentifier::new((0, 0).into(), "Foo".into()),
-            GTIdentifier::new((0, 0).into(), "foo.Bar".into()),
+            GtIdentifier::new((0, 0).into(), "Foo".into()),
+            GtIdentifier::new((0, 0).into(), "foo.Bar".into()),
         );
-        let mut context = PYConvertContext::new(resolve.clone(), Default::default());
+        let mut context = PyConvertContext::new(resolve.clone(), Default::default());
         assert_ron_snapshot!(
-            GTIdentifier::new((0, 0).into(), "Foo".into()).convert(&mut context),
-            @r#"PYIdentifier("foo.Bar")"#
+            GtIdentifier::new((0, 0).into(), "Foo".into()).convert(&mut context),
+            @r#"PyIdentifier("foo.Bar")"#
         );
     }
 }

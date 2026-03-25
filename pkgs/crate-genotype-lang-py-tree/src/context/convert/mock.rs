@@ -1,49 +1,49 @@
 use crate::prelude::internal::*;
 
-pub struct PYConvertContextMock {
-    imports: Vec<(PYDependencyIdent, PYIdentifier)>,
+pub struct PyConvertContextMock {
+    imports: Vec<(PyDependencyIdent, PyIdentifier)>,
 
     config: PyConfigLang,
 }
 
-impl PYConvertContextMock {
-    pub fn new(version: PYVersion) -> Self {
+impl PyConvertContextMock {
+    pub fn new(version: PyVersion) -> Self {
         Self {
             imports: Vec::new(),
             config: PyConfigLang::new(version),
         }
     }
 
-    pub fn with_imports(mut self, imports: Vec<(PYDependencyIdent, PYIdentifier)>) -> Self {
+    pub fn with_imports(mut self, imports: Vec<(PyDependencyIdent, PyIdentifier)>) -> Self {
         self.imports = imports;
         self
     }
 
-    pub fn as_imports(&self) -> &[(PYDependencyIdent, PYIdentifier)] {
+    pub fn as_imports(&self) -> &[(PyDependencyIdent, PyIdentifier)] {
         &self.imports
     }
 }
 
-impl PYConvertContextMockable for PYConvertContextMock {
-    fn is_version(&self, version: PYVersion) -> bool {
+impl PyConvertContextMockable for PyConvertContextMock {
+    fn is_version(&self, version: PyVersion) -> bool {
         self.config.version == version
     }
 }
 
-impl GtlConvertContext for PYConvertContextMock {
-    type DependencyIdent = PYDependencyIdent;
+impl GtlConvertContext for PyConvertContextMock {
+    type DependencyIdent = PyDependencyIdent;
 
-    type DependencyRef = PYIdentifier;
+    type DependencyRef = PyIdentifier;
 
     fn add_import(self: &mut Self, ident: Self::DependencyIdent, r#ref: Self::DependencyRef) {
         self.imports.push((ident, r#ref));
     }
 }
 
-impl PYConvertContextConstraint for PYConvertContextMock {}
+impl PyConvertContextConstraint for PyConvertContextMock {}
 
-impl Default for PYConvertContextMock {
+impl Default for PyConvertContextMock {
     fn default() -> Self {
-        Self::new(PYVersion::Latest)
+        Self::new(PyVersion::Latest)
     }
 }

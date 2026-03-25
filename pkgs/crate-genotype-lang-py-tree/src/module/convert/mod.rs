@@ -5,12 +5,12 @@ mod visitor;
 pub(crate) use visitor::*;
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
-pub struct PYConvertModule(pub PYModule);
+pub struct PyConvertModule(pub PyModule);
 
-impl PYConvertModule {
-    pub fn convert(module: &GTModule, resolve: &PYConvertResolve, config: &PyConfig) -> Self {
+impl PyConvertModule {
+    pub fn convert(module: &GtModule, resolve: &PyConvertResolve, config: &PyConfig) -> Self {
         // [TODO] Get rid of unnecessary clone
-        let mut context = PYConvertContext::new(resolve.clone(), config.clone());
+        let mut context = PyConvertContext::new(resolve.clone(), config.clone());
 
         let doc = module.doc.as_ref().map(|doc| doc.convert(&mut context));
 
@@ -28,16 +28,16 @@ impl PYConvertModule {
 
         let definitions = Self::sort_definitions(context.drain_definitions());
 
-        let mut module = PYModule {
+        let mut module = PyModule {
             doc,
             imports,
             definitions,
         };
 
-        let mut visitor = PYModuleVisitor::new(&module);
+        let mut visitor = PyModuleVisitor::new(&module);
         module.traverse(&mut visitor);
 
-        PYConvertModule(module)
+        PyConvertModule(module)
     }
 }
 
@@ -48,121 +48,121 @@ mod tests {
 
     #[test]
     fn test_convert() {
-        let mut resolve = PYConvertResolve::default();
+        let mut resolve = PyConvertResolve::default();
         resolve.globs.insert(
-            GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+            GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
             "module".into(),
         );
 
         assert_ron_snapshot!(
-            PYConvertModule::convert(
-                &GTModule {
+            PyConvertModule::convert(
+                &GtModule {
                     id: "module".into(),
                     doc: None,
                     imports: vec![
-                        GTImport {
+                        GtImport {
                             span: (0, 0).into(),
-                            path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
-                            reference: GTImportReference::Glob((0, 0).into())
+                            path: GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+                            reference: GtImportReference::Glob((0, 0).into())
                         },
-                        GTImport {
+                        GtImport {
                             span: (0, 0).into(),
-                            path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
-                            reference: GTImportReference::Names(
+                            path: GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+                            reference: GtImportReference::Names(
                                 (0, 0).into(),
                                 vec![
-                                    GTImportName::Name(
+                                    GtImportName::Name(
                                         (0, 0).into(),
-                                        GTIdentifier::new((0, 0).into(), "Name".into())
+                                        GtIdentifier::new((0, 0).into(), "Name".into())
                                     ),
-                                    GTImportName::Alias(
+                                    GtImportName::Alias(
                                         (0, 0).into(),
-                                        GTIdentifier::new((0, 0).into(), "Name".into()),
-                                        GTIdentifier::new((0, 0).into(), "Alias".into())
+                                        GtIdentifier::new((0, 0).into(), "Name".into()),
+                                        GtIdentifier::new((0, 0).into(), "Alias".into())
                                     )
                                 ]
                             )
                         }
                     ],
                     aliases: vec![
-                        GTAlias {
-                            id: GTDefinitionId("module".into(), "Name".into()),
+                        GtAlias {
+                            id: GtDefinitionId("module".into(), "Name".into()),
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
-                            name: GTIdentifier::new((0, 0).into(), "User".into()),
-                            descriptor: GTDescriptor::Object(GTObject {
+                            name: GtIdentifier::new((0, 0).into(), "User".into()),
+                            descriptor: GtDescriptor::Object(GtObject {
                                 span: (0, 0).into(),
                                 doc: None,
                                 attributes: vec![],
-                                name: GTIdentifier::new((0, 0).into(), "User".into()).into(),
+                                name: GtIdentifier::new((0, 0).into(), "User".into()).into(),
                                 extensions: vec![],
                                 properties: vec![
-                                    GTProperty {
+                                    GtProperty {
                                         span: (0, 0).into(),
                                         doc: None,
                                         attributes: vec![],
-                                        name: GTKey::new((0, 0).into(), "name".into()),
+                                        name: GtKey::new((0, 0).into(), "name".into()),
                                         descriptor: Gt::primitive_string().into(),
                                         required: true,
                                     },
-                                    GTProperty {
+                                    GtProperty {
                                         span: (0, 0).into(),
                                         doc: None,
                                         attributes: vec![],
-                                        name: GTKey::new((0, 0).into(), "age".into()),
+                                        name: GtKey::new((0, 0).into(), "age".into()),
                                         descriptor: Gt::primitive_i32().into(),
                                         required: false,
                                     }
                                 ]
                             }),
                         },
-                        GTAlias {
-                            id: GTDefinitionId("module".into(), "Book".into()),
+                        GtAlias {
+                            id: GtDefinitionId("module".into(), "Book".into()),
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
-                            name: GTIdentifier::new((0, 0).into(), "Order".into()),
-                            descriptor: GTDescriptor::Object(GTObject {
+                            name: GtIdentifier::new((0, 0).into(), "Order".into()),
+                            descriptor: GtDescriptor::Object(GtObject {
                                 span: (0, 0).into(),
                                 doc: None,
                                 attributes: vec![],
-                                name: GTIdentifier::new((0, 0).into(), "Order".into()).into(),
+                                name: GtIdentifier::new((0, 0).into(), "Order".into()).into(),
                                 extensions: vec![],
-                                properties: vec![GTProperty {
+                                properties: vec![GtProperty {
                                     span: (0, 0).into(),
                                     doc: None,
                                     attributes: vec![],
-                                    name: GTKey::new((0, 0).into(), "book".into()),
-                                    descriptor: GTDescriptor::Alias(Box::new(GTAlias {
-                                        id: GTDefinitionId("module".into(), "Book".into()),
+                                    name: GtKey::new((0, 0).into(), "book".into()),
+                                    descriptor: GtDescriptor::Alias(Box::new(GtAlias {
+                                        id: GtDefinitionId("module".into(), "Book".into()),
                                         span: (0, 0).into(),
                                         doc: None,
                                         attributes: vec![],
-                                        name: GTIdentifier::new((0, 0).into(), "Book".into()),
-                                        descriptor: GTDescriptor::Object(GTObject {
+                                        name: GtIdentifier::new((0, 0).into(), "Book".into()),
+                                        descriptor: GtDescriptor::Object(GtObject {
                                             span: (0, 0).into(),
                                             doc: None,
                                             attributes: vec![],
-                                            name: GTIdentifier::new((0, 0).into(), "Book".into())
+                                            name: GtIdentifier::new((0, 0).into(), "Book".into())
                                                 .into(),
                                             extensions: vec![],
                                             properties: vec![
-                                                GTProperty {
+                                                GtProperty {
                                                     span: (0, 0).into(),
                                                     doc: None,
                                                     attributes: vec![],
-                                                    name: GTKey::new((0, 0).into(), "title".into()),
-                                                    descriptor: GTDescriptor::Primitive(
+                                                    name: GtKey::new((0, 0).into(), "title".into()),
+                                                    descriptor: GtDescriptor::Primitive(
                                                         Gt::primitive_string()
                                                     ),
                                                     required: true,
                                                 },
-                                                GTProperty {
+                                                GtProperty {
                                                     span: (0, 0).into(),
                                                     doc: None,
                                                     attributes: vec![],
-                                                    name: GTKey::new(
+                                                    name: GtKey::new(
                                                         (0, 0).into(),
                                                         "author".into()
                                                     ),
@@ -176,12 +176,12 @@ mod tests {
                                 },]
                             }),
                         },
-                        GTAlias {
-                            id: GTDefinitionId("module".into(), "Order".into()),
+                        GtAlias {
+                            id: GtDefinitionId("module".into(), "Order".into()),
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
-                            name: GTIdentifier::new((0, 0).into(), "Name".into()),
+                            name: GtIdentifier::new((0, 0).into(), "Name".into()),
                             descriptor: Gt::primitive_string().into(),
                         },
                     ],
@@ -190,101 +190,101 @@ mod tests {
                 &Default::default(),
             ),
             @r#"
-        PYConvertModule(PYModule(
+        PyConvertModule(PyModule(
           doc: None,
           imports: [
-            PYImport(
-              dependency: Path(PYPath(".path.to.module")),
-              reference: Default(Some(PYIdentifier("module"))),
+            PyImport(
+              dependency: Path(PyPath(".path.to.module")),
+              reference: Default(Some(PyIdentifier("module"))),
             ),
-            PYImport(
-              dependency: Path(PYPath(".path.to.module")),
+            PyImport(
+              dependency: Path(PyPath(".path.to.module")),
               reference: Named([
-                Name(PYIdentifier("Name")),
-                Alias(PYIdentifier("Name"), PYIdentifier("Alias")),
+                Name(PyIdentifier("Name")),
+                Alias(PyIdentifier("Name"), PyIdentifier("Alias")),
               ]),
             ),
-            PYImport(
+            PyImport(
               dependency: Typing,
               reference: Named([
-                Name(PYIdentifier("Optional")),
+                Name(PyIdentifier("Optional")),
               ]),
             ),
-            PYImport(
+            PyImport(
               dependency: Runtime,
               reference: Named([
-                Name(PYIdentifier("Model")),
+                Name(PyIdentifier("Model")),
               ]),
             ),
           ],
           definitions: [
-            Class(PYClass(
+            Class(PyClass(
               doc: None,
-              name: PYIdentifier("User"),
+              name: PyIdentifier("User"),
               extensions: [],
               properties: [
-                PYProperty(
+                PyProperty(
                   doc: None,
-                  name: PYKey("name"),
+                  name: PyKey("name"),
                   descriptor: Primitive(String),
                   required: true,
                 ),
-                PYProperty(
+                PyProperty(
                   doc: None,
-                  name: PYKey("age"),
+                  name: PyKey("age"),
                   descriptor: Primitive(Int),
                   required: false,
                 ),
               ],
               references: [],
             )),
-            Class(PYClass(
+            Class(PyClass(
               doc: None,
-              name: PYIdentifier("Book"),
+              name: PyIdentifier("Book"),
               extensions: [],
               properties: [
-                PYProperty(
+                PyProperty(
                   doc: None,
-                  name: PYKey("title"),
+                  name: PyKey("title"),
                   descriptor: Primitive(String),
                   required: true,
                 ),
-                PYProperty(
+                PyProperty(
                   doc: None,
-                  name: PYKey("author"),
-                  descriptor: Reference(PYReference(
-                    identifier: PYIdentifier("Author"),
+                  name: PyKey("author"),
+                  descriptor: Reference(PyReference(
+                    identifier: PyIdentifier("Author"),
                     forward: true,
                   )),
                   required: true,
                 ),
               ],
               references: [
-                PYIdentifier("Author"),
+                PyIdentifier("Author"),
               ],
             )),
-            Class(PYClass(
+            Class(PyClass(
               doc: None,
-              name: PYIdentifier("Order"),
+              name: PyIdentifier("Order"),
               extensions: [],
               properties: [
-                PYProperty(
+                PyProperty(
                   doc: None,
-                  name: PYKey("book"),
-                  descriptor: Reference(PYReference(
-                    identifier: PYIdentifier("Book"),
+                  name: PyKey("book"),
+                  descriptor: Reference(PyReference(
+                    identifier: PyIdentifier("Book"),
                     forward: false,
                   )),
                   required: true,
                 ),
               ],
               references: [
-                PYIdentifier("Book"),
+                PyIdentifier("Book"),
               ],
             )),
-            Alias(PYAlias(
+            Alias(PyAlias(
               doc: None,
-              name: PYIdentifier("Name"),
+              name: PyIdentifier("Name"),
               descriptor: Primitive(String),
               references: [],
             )),
@@ -297,10 +297,10 @@ mod tests {
     #[test]
     fn test_convert_doc() {
         assert_ron_snapshot!(
-            PYConvertModule::convert(
-                &GTModule {
+            PyConvertModule::convert(
+                &GtModule {
                     id: "module".into(),
-                    doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
+                    doc: Some(GtDoc::new((0, 0).into(), "Hello, world!".into())),
                     imports: vec![],
                     aliases: vec![],
                 },
@@ -308,8 +308,8 @@ mod tests {
                 &Default::default(),
             ),
             @r#"
-        PYConvertModule(PYModule(
-          doc: Some(PYDoc("Hello, world!")),
+        PyConvertModule(PyModule(
+          doc: Some(PyDoc("Hello, world!")),
           imports: [],
           definitions: [],
         ))
@@ -320,63 +320,63 @@ mod tests {
     #[test]
     fn test_convert_reorder() {
         assert_ron_snapshot!(
-            PYConvertModule::convert(
-                &GTModule {
+            PyConvertModule::convert(
+                &GtModule {
                     id: "module".into(),
                     doc: None,
                     imports: vec![],
                     aliases: vec![
-                        GTAlias {
-                            id: GTDefinitionId("module".into(), "Message".into()),
+                        GtAlias {
+                            id: GtDefinitionId("module".into(), "Message".into()),
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
-                            name: GTIdentifier::new((0, 0).into(), "Message".into()),
+                            name: GtIdentifier::new((0, 0).into(), "Message".into()),
                             descriptor: Gt::descriptor(Gt::union(descriptor_nodes![
                                 Gt::reference("DM"),
                                 Gt::reference("Comment")
                             ]))
                         },
-                        GTAlias {
-                            id: GTDefinitionId("module".into(), "DM".into()),
+                        GtAlias {
+                            id: GtDefinitionId("module".into(), "DM".into()),
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
-                            name: GTIdentifier::new((0, 0).into(), "DM".into()),
-                            descriptor: GTObject {
+                            name: GtIdentifier::new((0, 0).into(), "DM".into()),
+                            descriptor: GtObject {
                                 span: (0, 0).into(),
                                 doc: None,
                                 attributes: vec![],
-                                name: GTIdentifier::new((0, 0).into(), "DM".into()).into(),
+                                name: GtIdentifier::new((0, 0).into(), "DM".into()).into(),
                                 extensions: vec![],
-                                properties: vec![GTProperty {
+                                properties: vec![GtProperty {
                                     span: (0, 0).into(),
                                     doc: None,
                                     attributes: vec![],
-                                    name: GTKey::new((0, 0).into(), "message".into()),
+                                    name: GtKey::new((0, 0).into(), "message".into()),
                                     descriptor: Gt::primitive_string().into(),
                                     required: true,
                                 }],
                             }
                             .into(),
                         },
-                        GTAlias {
-                            id: GTDefinitionId("module".into(), "Comment".into()),
+                        GtAlias {
+                            id: GtDefinitionId("module".into(), "Comment".into()),
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
-                            name: GTIdentifier::new((0, 0).into(), "Comment".into()),
-                            descriptor: GTObject {
+                            name: GtIdentifier::new((0, 0).into(), "Comment".into()),
+                            descriptor: GtObject {
                                 span: (0, 0).into(),
                                 doc: None,
                                 attributes: vec![],
-                                name: GTIdentifier::new((0, 0).into(), "Comment".into()).into(),
+                                name: GtIdentifier::new((0, 0).into(), "Comment".into()).into(),
                                 extensions: vec![],
-                                properties: vec![GTProperty {
+                                properties: vec![GtProperty {
                                     span: (0, 0).into(),
                                     doc: None,
                                     attributes: vec![],
-                                    name: GTKey::new((0, 0).into(), "message".into()),
+                                    name: GtKey::new((0, 0).into(), "message".into()),
                                     descriptor: Gt::primitive_string().into(),
                                     required: true,
                                 }],
@@ -389,64 +389,64 @@ mod tests {
                 &Default::default(),
             ),
             @r#"
-        PYConvertModule(PYModule(
+        PyConvertModule(PyModule(
           doc: None,
           imports: [
-            PYImport(
+            PyImport(
               dependency: Runtime,
               reference: Named([
-                Name(PYIdentifier("Model")),
+                Name(PyIdentifier("Model")),
               ]),
             ),
           ],
           definitions: [
-            Class(PYClass(
+            Class(PyClass(
               doc: None,
-              name: PYIdentifier("DM"),
+              name: PyIdentifier("DM"),
               extensions: [],
               properties: [
-                PYProperty(
+                PyProperty(
                   doc: None,
-                  name: PYKey("message"),
+                  name: PyKey("message"),
                   descriptor: Primitive(String),
                   required: true,
                 ),
               ],
               references: [],
             )),
-            Class(PYClass(
+            Class(PyClass(
               doc: None,
-              name: PYIdentifier("Comment"),
+              name: PyIdentifier("Comment"),
               extensions: [],
               properties: [
-                PYProperty(
+                PyProperty(
                   doc: None,
-                  name: PYKey("message"),
+                  name: PyKey("message"),
                   descriptor: Primitive(String),
                   required: true,
                 ),
               ],
               references: [],
             )),
-            Alias(PYAlias(
+            Alias(PyAlias(
               doc: None,
-              name: PYIdentifier("Message"),
-              descriptor: Union(PYUnion(
+              name: PyIdentifier("Message"),
+              descriptor: Union(PyUnion(
                 descriptors: [
-                  Reference(PYReference(
-                    identifier: PYIdentifier("DM"),
+                  Reference(PyReference(
+                    identifier: PyIdentifier("DM"),
                     forward: false,
                   )),
-                  Reference(PYReference(
-                    identifier: PYIdentifier("Comment"),
+                  Reference(PyReference(
+                    identifier: PyIdentifier("Comment"),
                     forward: false,
                   )),
                 ],
                 discriminator: None,
               )),
               references: [
-                PYIdentifier("DM"),
-                PYIdentifier("Comment"),
+                PyIdentifier("DM"),
+                PyIdentifier("Comment"),
               ],
             )),
           ],

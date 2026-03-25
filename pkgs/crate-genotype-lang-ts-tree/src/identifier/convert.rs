@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl TSConvert<TSIdentifier> for GTIdentifier {
-    fn convert(&self, context: &mut TSConvertContext) -> TSIdentifier {
-        TSIdentifier(context.resolve_identifier(self).into())
+impl TsConvert<TsIdentifier> for GtIdentifier {
+    fn convert(&self, context: &mut TsConvertContext) -> TsIdentifier {
+        TsIdentifier(context.resolve_identifier(self).into())
     }
 }
 
@@ -14,22 +14,22 @@ mod tests {
     #[test]
     fn test_convert_base() {
         assert_ron_snapshot!(
-            GTIdentifier::new((0, 0).into(), "Foo".into()).convert(&mut Default::default()),
-            @r#"TSIdentifier("Foo")"#
+            GtIdentifier::new((0, 0).into(), "Foo".into()).convert(&mut Default::default()),
+            @r#"TsIdentifier("Foo")"#
         );
     }
 
     #[test]
     fn test_convert_resolve() {
-        let mut resolve = TSConvertResolve::new();
+        let mut resolve = TsConvertResolve::new();
         resolve.identifiers.insert(
-            GTIdentifier::new((0, 0).into(), "Foo".into()),
-            GTIdentifier::new((0, 0).into(), "foo.Bar".into()),
+            GtIdentifier::new((0, 0).into(), "Foo".into()),
+            GtIdentifier::new((0, 0).into(), "foo.Bar".into()),
         );
         assert_ron_snapshot!(
-            GTIdentifier::new((0, 0).into(), "Foo".into())
-                .convert(&mut TSConvertContext::new(resolve, Default::default())),
-            @r#"TSIdentifier("foo.Bar")"#
+            GtIdentifier::new((0, 0).into(), "Foo".into())
+                .convert(&mut TsConvertContext::new(resolve, Default::default())),
+            @r#"TsIdentifier("foo.Bar")"#
         );
     }
 }

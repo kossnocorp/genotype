@@ -1,4 +1,4 @@
-use genotype_parser::GTModule;
+use genotype_parser::GtModule;
 use genotype_parser::visitor::Traverse;
 use genotype_path::{GtModulePath, GtSrcRelativePath};
 use miette::{NamedSource, Result};
@@ -16,14 +16,14 @@ mod resolve;
 pub use resolve::*;
 use serde::Serialize;
 
-use crate::{GTPResolve, visitor::GTPResolveVisitor};
+use crate::{GtpResolve, visitor::GtpResolveVisitor};
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GtProjectModule {
     pub path: GtModulePath,
-    pub module: GTModule,
+    pub module: GtModule,
     /// Project module resolve.
-    pub resolve: GTPModuleResolve,
+    pub resolve: GtpModuleResolve,
     /// Module source code.
     /// [TODO] After implementing workspace, find a better place for it.
     #[serde(serialize_with = "genotype_parser::miette_serde::serialize_named_source")]
@@ -33,16 +33,16 @@ pub struct GtProjectModule {
 
 impl GtProjectModule {
     pub fn try_new(
-        project_resolve: &GTPResolve,
-        modules: &Vec<GTProjectModuleParse>,
-        parse: GTProjectModuleParse,
+        project_resolve: &GtpResolve,
+        modules: &Vec<GtProjectModuleParse>,
+        parse: GtProjectModuleParse,
     ) -> Result<Self> {
-        let mut module_resolve = GTPModuleResolve::try_new(modules, &parse)
+        let mut module_resolve = GtpModuleResolve::try_new(modules, &parse)
             .map_err(|err| err.with_source_code(parse.1.source_code.clone()))?;
 
         // Combine these two ^v
 
-        let mut visitor = GTPResolveVisitor::new(parse.1.module.id.clone(), &project_resolve);
+        let mut visitor = GtpResolveVisitor::new(parse.1.module.id.clone(), &project_resolve);
         let mut parse = parse;
         parse.1.module.traverse(&mut visitor);
 

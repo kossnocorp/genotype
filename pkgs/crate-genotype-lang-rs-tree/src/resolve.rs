@@ -2,14 +2,14 @@ use crate::prelude::internal::*;
 use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct RSConvertResolve {
-    pub paths: HashMap<GTPath, GTPath>,
-    pub globs: HashMap<GTPath, String>,
-    pub identifiers: HashMap<GTIdentifier, GTIdentifier>,
-    pub imported: HashSet<GTIdentifier>,
+pub struct RsConvertResolve {
+    pub paths: HashMap<GtPath, GtPath>,
+    pub globs: HashMap<GtPath, String>,
+    pub identifiers: HashMap<GtIdentifier, GtIdentifier>,
+    pub imported: HashSet<GtIdentifier>,
 }
 
-impl Default for RSConvertResolve {
+impl Default for RsConvertResolve {
     fn default() -> Self {
         Self {
             paths: HashMap::new(),

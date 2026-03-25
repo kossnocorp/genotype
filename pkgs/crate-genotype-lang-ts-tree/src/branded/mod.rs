@@ -4,11 +4,11 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct TSBranded {
+pub struct TsBranded {
     #[visit]
-    pub doc: Option<TSDoc>,
+    pub doc: Option<TsDoc>,
     #[visit]
-    pub name: TSIdentifier,
+    pub name: TsIdentifier,
     #[visit]
-    pub primitive: TSPrimitive,
+    pub primitive: TsPrimitive,
 }

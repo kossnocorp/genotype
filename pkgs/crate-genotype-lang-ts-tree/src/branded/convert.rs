@@ -1,12 +1,12 @@
 use crate::prelude::internal::*;
 
-impl TSConvert<TSBranded> for GTBranded {
-    fn convert(&self, context: &mut TSConvertContext) -> TSBranded {
+impl TsConvert<TsBranded> for GtBranded {
+    fn convert(&self, context: &mut TsConvertContext) -> TsBranded {
         let doc = context.consume_doc();
         let name = self.name.convert(context);
         let primitive = self.primitive.convert(context);
 
-        TSBranded {
+        TsBranded {
             doc,
             name,
             primitive,
@@ -30,9 +30,9 @@ mod tests {
                 )
             ),
             @r#"
-        TSBranded(
+        TsBranded(
           doc: None,
-          name: TSIdentifier("UserId"),
+          name: TsIdentifier("UserId"),
           primitive: String,
         )
         "#
@@ -41,7 +41,7 @@ mod tests {
 
     #[test]
     fn test_doc() {
-        let mut context = TSConvertContext::default();
+        let mut context = TsConvertContext::default();
         context.provide_doc(Some("This is a user ID.".into()));
         assert_ron_snapshot!(
             convert_node_with(
@@ -52,9 +52,9 @@ mod tests {
                 &mut context
             ),
             @r#"
-        TSBranded(
-          doc: Some(TSDoc("This is a user ID.")),
-          name: TSIdentifier("UserId"),
+        TsBranded(
+          doc: Some(TsDoc("This is a user ID.")),
+          name: TsIdentifier("UserId"),
           primitive: String,
         )
         "#

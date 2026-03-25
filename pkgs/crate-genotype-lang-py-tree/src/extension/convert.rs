@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl PYConvert<PYExtension> for GTExtension {
-    fn convert(&self, context: &mut PYConvertContext) -> PYExtension {
-        PYExtension {
+impl PyConvert<PyExtension> for GtExtension {
+    fn convert(&self, context: &mut PyConvertContext) -> PyExtension {
+        PyExtension {
             reference: self.reference.convert(context),
         }
     }
@@ -16,15 +16,15 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTExtension {
+            GtExtension {
                 span: (0, 0).into(),
                 reference: Gt::reference("Name").into()
             }
-            .convert(&mut PYConvertContext::default()),
+            .convert(&mut PyConvertContext::default()),
             @r#"
-        PYExtension(
-          reference: PYReference(
-            identifier: PYIdentifier("Name"),
+        PyExtension(
+          reference: PyReference(
+            identifier: PyIdentifier("Name"),
             forward: true,
           ),
         )

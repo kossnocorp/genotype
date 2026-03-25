@@ -2,7 +2,7 @@ use crate::prelude::internal::*;
 
 /// Genotype node identifier. Used for error reporting and diagnostics.
 #[derive(Debug, PartialEq)]
-pub enum GTNode {
+pub enum GtNode {
     Any,
     Alias,
     Array,
@@ -30,7 +30,7 @@ pub enum GTNode {
     Branded,
 }
 
-impl GTNode {
+impl GtNode {
     pub fn name(&self) -> &'static str {
         match self {
             Self::Any => "any",
@@ -62,7 +62,7 @@ impl GTNode {
     }
 }
 
-impl Display for GTNode {
+impl Display for GtNode {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(formatter, "{}", self.name())
     }

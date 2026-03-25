@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSReference {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsReference {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -22,10 +22,10 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            RSReference {
-                id: GTReferenceId("module".into(), (0, 0).into()),
+            RsReference {
+                id: GtReferenceId("module".into(), (0, 0).into()),
                 identifier: "Foo".into(),
-                definition_id: GTDefinitionId("module".into(), "Foo".into())
+                definition_id: GtDefinitionId("module".into(), "Foo".into())
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),

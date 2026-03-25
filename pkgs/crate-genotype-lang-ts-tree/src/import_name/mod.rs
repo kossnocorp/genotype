@@ -4,13 +4,13 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub enum TSImportName {
-    Name(#[visit] TSIdentifier),
-    Alias(#[visit] TSIdentifier, #[visit] TSIdentifier),
+pub enum TsImportName {
+    Name(#[visit] TsIdentifier),
+    Alias(#[visit] TsIdentifier, #[visit] TsIdentifier),
 }
 
-impl From<&str> for TSImportName {
+impl From<&str> for TsImportName {
     fn from(str: &str) -> Self {
-        TSImportName::Name(str.into())
+        TsImportName::Name(str.into())
     }
 }

@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYUnion {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyUnion {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
     fn render(
         &self,
@@ -15,13 +15,13 @@ impl<'a> GtlRender<'a> for PYUnion {
             .iter()
             .map(|d| d.render(state, context))
             .collect::<Result<Vec<_>>>()?
-            .join(if let PYVersion::Legacy = context.config.version {
+            .join(if let PyVersion::Legacy = context.config.version {
                 ", "
             } else {
                 " | "
             });
 
-        let union = if let PYVersion::Legacy = context.config.version {
+        let union = if let PyVersion::Legacy = context.config.version {
             format!("Union[{}]", content)
         } else {
             content
@@ -46,10 +46,10 @@ mod tests {
     #[test]
     fn test_render_union() {
         assert_snapshot!(
-            PYUnion {
+            PyUnion {
                 descriptors: vec![
-                    PYDescriptor::Primitive(PYPrimitive::String),
-                    PYDescriptor::Primitive(PYPrimitive::Int),
+                    PyDescriptor::Primitive(PyPrimitive::String),
+                    PyDescriptor::Primitive(PyPrimitive::Int),
                 ],
                 discriminator: None
             }
@@ -62,17 +62,17 @@ mod tests {
     #[test]
     fn test_render_legacy() {
         assert_snapshot!(
-            PYUnion {
+            PyUnion {
                 descriptors: vec![
-                    PYDescriptor::Primitive(PYPrimitive::String),
-                    PYDescriptor::Primitive(PYPrimitive::Int),
+                    PyDescriptor::Primitive(PyPrimitive::String),
+                    PyDescriptor::Primitive(PyPrimitive::Int),
                 ],
                 discriminator: None
             }
             .render(
                 Default::default(),
-                &mut PYRenderContext {
-                    config: &PyConfigLang::new(PYVersion::Legacy),
+                &mut PyRenderContext {
+                    config: &PyConfigLang::new(PyVersion::Legacy),
                     ..Default::default()
                 }
             )
@@ -84,10 +84,10 @@ mod tests {
     #[test]
     fn test_render_discriminator() {
         assert_snapshot!(
-            PYUnion {
+            PyUnion {
                 descriptors: vec![
-                    PYDescriptor::Primitive(PYPrimitive::String),
-                    PYDescriptor::Primitive(PYPrimitive::Int),
+                    PyDescriptor::Primitive(PyPrimitive::String),
+                    PyDescriptor::Primitive(PyPrimitive::Int),
                 ],
                 discriminator: Some("type".into())
             }
@@ -100,17 +100,17 @@ mod tests {
     #[test]
     fn test_render_discriminator_legacy() {
         assert_snapshot!(
-            PYUnion {
+            PyUnion {
                 descriptors: vec![
-                    PYDescriptor::Primitive(PYPrimitive::String),
-                    PYDescriptor::Primitive(PYPrimitive::Int),
+                    PyDescriptor::Primitive(PyPrimitive::String),
+                    PyDescriptor::Primitive(PyPrimitive::Int),
                 ],
                 discriminator: Some("type".into())
             }
             .render(
                 Default::default(),
-                &mut PYRenderContext {
-                    config: &PyConfigLang::new(PYVersion::Legacy),
+                &mut PyRenderContext {
+                    config: &PyConfigLang::new(PyVersion::Legacy),
                     ..Default::default()
                 }
             )

@@ -3,29 +3,29 @@ use crate::prelude::internal::*;
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct RsProjectModule {
     pub path: GtPkgSrcRelativePath,
-    pub module: RSModule,
-    pub resolve: RSPModuleResolve,
+    pub module: RsModule,
+    pub resolve: RspModuleResolve,
 }
 
 impl GtlProjectModule<RsConfig> for RsProjectModule {
-    type Dependency = RSDependencyIdent;
+    type Dependency = RsDependencyIdent;
 
     fn generate(config: &RsConfig, module: &GtProjectModule) -> Result<Self> {
         let path = module.path.to_pkg_src_relative_path("rs");
 
-        let mut convert_resolve = RSConvertResolve::default();
+        let mut convert_resolve = RsConvertResolve::default();
         let mut prefixes: HashMap<String, u8> = HashMap::new();
 
         // [TODO] I'm pretty sure I can extract it and share with TypeScript and Python too
         for import in module.module.imports.iter() {
             match &import.reference {
-                GTImportReference::Glob(_) => {
+                GtImportReference::Glob(_) => {
                     let references = module
                         .resolve
                         .identifiers
                         .iter()
                         .filter(|(_, resolve)| {
-                            if let GTPModuleIdentifierSource::External(path) = &resolve.source {
+                            if let GtpModuleIdentifierSource::External(path) = &resolve.source {
                                 return import.path == *path;
                             }
                             false
@@ -52,7 +52,7 @@ impl GtlProjectModule<RsConfig> for RsProjectModule {
                             let identifier = (*reference).clone();
                             let span = identifier.0.clone();
                             let alias_str = format!("{}.{}", prefix, identifier.1);
-                            let alias = GTIdentifier::new(span, alias_str.into());
+                            let alias = GtIdentifier::new(span, alias_str.into());
                             convert_resolve
                                 .identifiers
                                 .insert(identifier.clone(), alias);
@@ -61,16 +61,16 @@ impl GtlProjectModule<RsConfig> for RsProjectModule {
                     }
                 }
 
-                GTImportReference::Name(_, identifier) => {
+                GtImportReference::Name(_, identifier) => {
                     convert_resolve.imported.insert(identifier.clone());
                 }
 
-                GTImportReference::Names(_, identifiers) => {
+                GtImportReference::Names(_, identifiers) => {
                     identifiers.iter().for_each(|name| {
                         convert_resolve.imported.insert(
                             match name {
-                                GTImportName::Name(_, identifier) => identifier,
-                                GTImportName::Alias(_, _, identifier) => identifier,
+                                GtImportName::Name(_, identifier) => identifier,
+                                GtImportName::Alias(_, _, identifier) => identifier,
                             }
                             .clone(),
                         );
@@ -80,9 +80,9 @@ impl GtlProjectModule<RsConfig> for RsProjectModule {
         }
 
         let definitions = module.resolve.definitions.clone();
-        let resolve = RSPModuleResolve { definitions };
+        let resolve = RspModuleResolve { definitions };
 
-        let module = RSConvertModule::convert(&module.module, &convert_resolve, &config)
+        let module = RsConvertModule::convert(&module.module, &convert_resolve, &config)
             .map_err(|err| err.with_source_code(module.source_code.clone()))?
             .0;
 

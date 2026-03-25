@@ -3,25 +3,25 @@ use genotype_parser::*;
 
 use crate::{GtjTreeConvert, GtjTreeConvertContext};
 
-impl GtjTreeConvert<GTTuple> for GtjTuple {
-    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTTuple {
+impl GtjTreeConvert<GtTuple> for GtjTuple {
+    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GtTuple {
         let name = context.claim_name(self.name.clone(), "Tuple");
 
         let descriptors =
-            context.enter_name_context(GTNamingContextName::Identifier(name.clone()), |context| {
+            context.enter_name_context(GtNamingContextName::Identifier(name.clone()), |context| {
                 self.descriptors
                     .iter()
                     .map(|descriptor| {
                         context.enter_name_context(
-                            GTNamingContextName::Transitive("Element".into()),
+                            GtNamingContextName::Transitive("Element".into()),
                             |context| descriptor.to_tree_with_context(context),
                         )
                     })
                     .collect()
             });
 
-        GTTuple {
-            span: GTSpan::default(),
+        GtTuple {
+            span: GtSpan::default(),
             doc: None,
             attributes: vec![],
             descriptors,
@@ -29,9 +29,9 @@ impl GtjTreeConvert<GTTuple> for GtjTuple {
     }
 }
 
-impl GtjTreeConvert<GTDescriptor> for GtjTuple {
-    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTDescriptor {
-        GTDescriptor::Tuple(self.to_tree_with_context(context))
+impl GtjTreeConvert<GtDescriptor> for GtjTuple {
+    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GtDescriptor {
+        GtDescriptor::Tuple(self.to_tree_with_context(context))
     }
 }
 
@@ -49,20 +49,20 @@ mod tests {
             doc: None,
         };
 
-        let descriptor_tree: GTDescriptor = tuple.to_tree_with_context(&mut Default::default());
+        let descriptor_tree: GtDescriptor = tuple.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(descriptor_tree, @"
-        Tuple(GTTuple(
-          span: GTSpan(0, 0),
+        Tuple(GtTuple(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
           descriptors: [],
         ))
         ");
 
-        let tuple_tree: GTTuple = tuple.to_tree_with_context(&mut Default::default());
+        let tuple_tree: GtTuple = tuple.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(tuple_tree, @"
-        GTTuple(
-          span: GTSpan(0, 0),
+        GtTuple(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
           descriptors: [],
@@ -83,15 +83,15 @@ mod tests {
             doc: None,
         };
 
-        let tuple_tree: GTTuple = tuple.to_tree_with_context(&mut Default::default());
+        let tuple_tree: GtTuple = tuple.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(tuple_tree, @"
-        GTTuple(
-          span: GTSpan(0, 0),
+        GtTuple(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
           descriptors: [
-            Primitive(GTPrimitive(
-              span: GTSpan(0, 0),
+            Primitive(GtPrimitive(
+              span: GtSpan(0, 0),
               kind: Number,
               doc: None,
               attributes: [],
@@ -117,18 +117,18 @@ mod tests {
             doc: None,
         };
 
-        let tuple_tree: GTTuple = tuple.to_tree_with_context(&mut context);
+        let tuple_tree: GtTuple = tuple.to_tree_with_context(&mut context);
         assert_ron_snapshot!(tuple_tree, @r#"
-        GTTuple(
-          span: GTSpan(0, 0),
+        GtTuple(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
           descriptors: [
-            Object(GTObject(
-              span: GTSpan(0, 0),
+            Object(GtObject(
+              span: GtSpan(0, 0),
               doc: None,
               attributes: [],
-              name: Named(GTIdentifier(GTSpan(0, 0), "RootElement")),
+              name: Named(GtIdentifier(GtSpan(0, 0), "RootElement")),
               extensions: [],
               properties: [],
             )),
@@ -169,35 +169,35 @@ mod tests {
             doc: None,
         };
 
-        let tuple_tree: GTTuple = tuple.to_tree_with_context(&mut context);
+        let tuple_tree: GtTuple = tuple.to_tree_with_context(&mut context);
         assert_ron_snapshot!(tuple_tree, @r#"
-        GTTuple(
-          span: GTSpan(0, 0),
+        GtTuple(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
           descriptors: [
-            Tuple(GTTuple(
-              span: GTSpan(0, 0),
+            Tuple(GtTuple(
+              span: GtSpan(0, 0),
               doc: None,
               attributes: [],
               descriptors: [
-                Object(GTObject(
-                  span: GTSpan(0, 0),
+                Object(GtObject(
+                  span: GtSpan(0, 0),
                   doc: None,
                   attributes: [],
-                  name: Named(GTIdentifier(GTSpan(0, 0), "RootElementElement")),
+                  name: Named(GtIdentifier(GtSpan(0, 0), "RootElementElement")),
                   extensions: [],
                   properties: [
-                    GTProperty(
-                      span: GTSpan(0, 0),
+                    GtProperty(
+                      span: GtSpan(0, 0),
                       doc: None,
                       attributes: [],
-                      name: GTKey(GTSpan(0, 0), "world"),
-                      descriptor: Object(GTObject(
-                        span: GTSpan(0, 0),
+                      name: GtKey(GtSpan(0, 0), "world"),
+                      descriptor: Object(GtObject(
+                        span: GtSpan(0, 0),
                         doc: None,
                         attributes: [],
-                        name: Named(GTIdentifier(GTSpan(0, 0), "RootElementElementWorld")),
+                        name: Named(GtIdentifier(GtSpan(0, 0), "RootElementElementWorld")),
                         extensions: [],
                         properties: [],
                       )),
@@ -228,18 +228,18 @@ mod tests {
             doc: None,
         };
 
-        let tuple_tree: GTTuple = tuple.to_tree_with_context(&mut context);
+        let tuple_tree: GtTuple = tuple.to_tree_with_context(&mut context);
         assert_ron_snapshot!(tuple_tree, @r#"
-        GTTuple(
-          span: GTSpan(0, 0),
+        GtTuple(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
           descriptors: [
-            Object(GTObject(
-              span: GTSpan(0, 0),
+            Object(GtObject(
+              span: GtSpan(0, 0),
               doc: None,
               attributes: [],
-              name: Named(GTIdentifier(GTSpan(0, 0), "Hello")),
+              name: Named(GtIdentifier(GtSpan(0, 0), "Hello")),
               extensions: [],
               properties: [],
             )),
@@ -280,35 +280,35 @@ mod tests {
             doc: None,
         };
 
-        let tuple_tree: GTTuple = tuple.to_tree_with_context(&mut context);
+        let tuple_tree: GtTuple = tuple.to_tree_with_context(&mut context);
         assert_ron_snapshot!(tuple_tree, @r#"
-        GTTuple(
-          span: GTSpan(0, 0),
+        GtTuple(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
           descriptors: [
-            Tuple(GTTuple(
-              span: GTSpan(0, 0),
+            Tuple(GtTuple(
+              span: GtSpan(0, 0),
               doc: None,
               attributes: [],
               descriptors: [
-                Object(GTObject(
-                  span: GTSpan(0, 0),
+                Object(GtObject(
+                  span: GtSpan(0, 0),
                   doc: None,
                   attributes: [],
-                  name: Named(GTIdentifier(GTSpan(0, 0), "HiElement")),
+                  name: Named(GtIdentifier(GtSpan(0, 0), "HiElement")),
                   extensions: [],
                   properties: [
-                    GTProperty(
-                      span: GTSpan(0, 0),
+                    GtProperty(
+                      span: GtSpan(0, 0),
                       doc: None,
                       attributes: [],
-                      name: GTKey(GTSpan(0, 0), "world"),
-                      descriptor: Object(GTObject(
-                        span: GTSpan(0, 0),
+                      name: GtKey(GtSpan(0, 0), "world"),
+                      descriptor: Object(GtObject(
+                        span: GtSpan(0, 0),
                         doc: None,
                         attributes: [],
-                        name: Named(GTIdentifier(GTSpan(0, 0), "HiElementWorld")),
+                        name: Named(GtIdentifier(GtSpan(0, 0), "HiElementWorld")),
                         extensions: [],
                         properties: [],
                       )),

@@ -4,10 +4,10 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct PYDoc(pub String);
+pub struct PyDoc(pub String);
 
-impl From<&str> for PYDoc {
+impl From<&str> for PyDoc {
     fn from(str: &str) -> Self {
-        PYDoc(str.into())
+        PyDoc(str.into())
     }
 }

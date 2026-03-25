@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSIdentifier {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsIdentifier {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -22,7 +22,7 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            RSIdentifier("Foo".into())
+            RsIdentifier("Foo".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"Foo"

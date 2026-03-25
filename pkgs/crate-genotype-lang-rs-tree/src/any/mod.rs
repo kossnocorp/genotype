@@ -4,4 +4,4 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct RSAny;
+pub struct RsAny;

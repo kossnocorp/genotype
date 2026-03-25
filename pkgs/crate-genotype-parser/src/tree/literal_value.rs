@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, Clone, Serialize)]
-pub enum GTLiteralValue {
+pub enum GtLiteralValue {
     Null,
     String(String),
     Integer(i64),
@@ -9,14 +9,14 @@ pub enum GTLiteralValue {
     Boolean(bool),
 }
 
-impl GTLiteralValue {
+impl GtLiteralValue {
     pub fn to_string(&self) -> String {
         match self {
-            GTLiteralValue::Null => "null".to_string(),
-            GTLiteralValue::String(value) => value.clone(),
-            GTLiteralValue::Integer(value) => value.to_string(),
-            GTLiteralValue::Float(value) => value.to_string(),
-            GTLiteralValue::Boolean(value) => value.to_string(),
+            GtLiteralValue::Null => "null".to_string(),
+            GtLiteralValue::String(value) => value.clone(),
+            GtLiteralValue::Integer(value) => value.to_string(),
+            GtLiteralValue::Float(value) => value.to_string(),
+            GtLiteralValue::Boolean(value) => value.to_string(),
         }
     }
 
@@ -33,16 +33,16 @@ impl GTLiteralValue {
     }
 }
 
-impl PartialEq for GTLiteralValue {
+impl PartialEq for GtLiteralValue {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
-            (GTLiteralValue::Null, GTLiteralValue::Null) => true,
+            (GtLiteralValue::Null, GtLiteralValue::Null) => true,
 
-            (GTLiteralValue::String(a), GTLiteralValue::String(b)) => a == b,
+            (GtLiteralValue::String(a), GtLiteralValue::String(b)) => a == b,
 
-            (GTLiteralValue::Integer(a), GTLiteralValue::Integer(b)) => a == b,
+            (GtLiteralValue::Integer(a), GtLiteralValue::Integer(b)) => a == b,
 
-            (GTLiteralValue::Float(a), GTLiteralValue::Float(b)) => {
+            (GtLiteralValue::Float(a), GtLiteralValue::Float(b)) => {
                 // Normalize -0.0 to 0.0
                 let a = if a == &-0.0 { 0.0 } else { *a };
                 let b = if b == &-0.0 { 0.0 } else { *b };
@@ -55,29 +55,29 @@ impl PartialEq for GTLiteralValue {
                 }
             }
 
-            (GTLiteralValue::Boolean(a), GTLiteralValue::Boolean(b)) => a == b,
+            (GtLiteralValue::Boolean(a), GtLiteralValue::Boolean(b)) => a == b,
 
             _ => false,
         }
     }
 }
 
-impl Eq for GTLiteralValue {}
+impl Eq for GtLiteralValue {}
 
-impl Hash for GTLiteralValue {
+impl Hash for GtLiteralValue {
     fn hash<H: Hasher>(&self, state: &mut H) {
         match self {
-            GTLiteralValue::Null => state.write_u8(0),
+            GtLiteralValue::Null => state.write_u8(0),
 
-            GTLiteralValue::String(value) => {
+            GtLiteralValue::String(value) => {
                 value.hash(state);
             }
 
-            GTLiteralValue::Integer(value) => {
+            GtLiteralValue::Integer(value) => {
                 value.hash(state);
             }
 
-            GTLiteralValue::Float(value) => {
+            GtLiteralValue::Float(value) => {
                 state.write_u8(3);
                 let mut bits = value.to_bits();
 
@@ -92,23 +92,23 @@ impl Hash for GTLiteralValue {
                 bits.hash(state);
             }
 
-            GTLiteralValue::Boolean(value) => {
+            GtLiteralValue::Boolean(value) => {
                 value.hash(state);
             }
         }
     }
 }
 
-impl GTLiteralValue {
-    pub fn parse(pair: Pair<'_, Rule>, _context: &mut GTContext) -> Result<Self, GTParseError> {
-        let span: GTSpan = pair.as_span().into();
-        let else_err = || GTParseError::Internal(span.clone(), GTNode::Literal);
+impl GtLiteralValue {
+    pub fn parse(pair: Pair<'_, Rule>, _context: &mut GtContext) -> Result<Self, GtParseError> {
+        let span: GtSpan = pair.as_span().into();
+        let else_err = || GtParseError::Internal(span.clone(), GtNode::Literal);
         let pair = pair.into_inner().next().ok_or_else(else_err)?;
 
         match pair.as_rule() {
             Rule::literal_string => {
                 let pair = pair.into_inner().next().ok_or_else(else_err)?;
-                Ok(GTLiteralValue::String(pair.as_str().into()))
+                Ok(GtLiteralValue::String(pair.as_str().into()))
             }
 
             Rule::literal_integer => {
@@ -117,7 +117,7 @@ impl GTLiteralValue {
                     .replace("_", "")
                     .parse()
                     .map_err(|_| else_err())?;
-                Ok(GTLiteralValue::Integer(value))
+                Ok(GtLiteralValue::Integer(value))
             }
 
             Rule::literal_float => {
@@ -126,15 +126,15 @@ impl GTLiteralValue {
                     .replace("_", "")
                     .parse()
                     .map_err(|_| else_err())?;
-                Ok(GTLiteralValue::Float(value))
+                Ok(GtLiteralValue::Float(value))
             }
 
             Rule::literal_boolean => {
                 let value = pair.as_str().parse().map_err(|_| else_err())?;
-                Ok(GTLiteralValue::Boolean(value))
+                Ok(GtLiteralValue::Boolean(value))
             }
 
-            Rule::literal_null => Ok(GTLiteralValue::Null),
+            Rule::literal_null => Ok(GtLiteralValue::Null),
 
             _ => Err(else_err()),
         }
@@ -150,20 +150,20 @@ mod tests {
     #[test]
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::literal, "420").unwrap();
-        let mut context = GTContext::new("module".into());
+        let mut context = GtContext::new("module".into());
         assert_eq!(
-            GTLiteralValue::Integer(420),
-            GTLiteralValue::parse(pairs.next().unwrap(), &mut context).unwrap()
+            GtLiteralValue::Integer(420),
+            GtLiteralValue::parse(pairs.next().unwrap(), &mut context).unwrap()
         );
     }
 
     #[test]
     fn test_error() {
         let mut pairs = GenotypeParser::parse(Rule::object, "{}").unwrap();
-        let mut context = GTContext::new("module".into());
+        let mut context = GtContext::new("module".into());
         assert_eq!(
-            GTParseError::Internal((0, 2).into(), GTNode::Literal),
-            GTLiteralValue::parse(pairs.next().unwrap(), &mut context).unwrap_err(),
+            GtParseError::Internal((0, 2).into(), GtNode::Literal),
+            GtLiteralValue::parse(pairs.next().unwrap(), &mut context).unwrap_err(),
         );
     }
 }

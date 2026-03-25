@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl TSConvert<TSKey> for GTKey {
-    fn convert(&self, _context: &mut TSConvertContext) -> TSKey {
-        TSKey(self.1.clone())
+impl TsConvert<TsKey> for GtKey {
+    fn convert(&self, _context: &mut TsConvertContext) -> TsKey {
+        TsKey(self.1.clone())
     }
 }
 
@@ -14,8 +14,8 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTKey::new((0, 0).into(), "foo".into()).convert(&mut Default::default()),
-            @r#"TSKey("foo")"#
+            GtKey::new((0, 0).into(), "foo".into()).convert(&mut Default::default()),
+            @r#"TsKey("foo")"#
         );
     }
 }

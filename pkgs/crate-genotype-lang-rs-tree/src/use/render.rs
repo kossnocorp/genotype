@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSUse {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsUse {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -14,7 +14,7 @@ impl<'a> GtlRender<'a> for RSUse {
         let reference = self.reference.render(state, context)?;
 
         Ok(match self.reference {
-            RSUseReference::Module => format!(r#"use {path};"#),
+            RsUseReference::Module => format!(r#"use {path};"#),
             _ => format!(r#"use {path}::{reference};"#),
         })
     }
@@ -23,16 +23,16 @@ impl<'a> GtlRender<'a> for RSUse {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_parser::GTModuleId;
+    use genotype_parser::GtModuleId;
     use insta::assert_snapshot;
 
     #[test]
     fn test_render_module() {
         assert_snapshot!(
-            RSUse {
-                reference: RSUseReference::Module,
-                dependency: RSDependencyIdent::Local(RSPath(
-                    GTModuleId("path/to/module".into()),
+            RsUse {
+                reference: RsUseReference::Module,
+                dependency: RsDependencyIdent::Local(RsPath(
+                    GtModuleId("path/to/module".into()),
                     "self::path::to::module".into()
                 ))
             }
@@ -45,10 +45,10 @@ mod tests {
     #[test]
     fn test_render_glob() {
         assert_snapshot!(
-            RSUse {
-                reference: RSUseReference::Glob,
-                dependency: RSDependencyIdent::Local(RSPath(
-                    GTModuleId("path/to/module".into()),
+            RsUse {
+                reference: RsUseReference::Glob,
+                dependency: RsDependencyIdent::Local(RsPath(
+                    GtModuleId("path/to/module".into()),
                     "self::path::to::module".into()
                 ))
             }
@@ -61,13 +61,13 @@ mod tests {
     #[test]
     fn test_render_named() {
         assert_snapshot!(
-            RSUse {
-                reference: RSUseReference::Named(vec![
-                    RSUseName::Name("Name".into()),
-                    RSUseName::Alias("Name".into(), "Alias".into()),
+            RsUse {
+                reference: RsUseReference::Named(vec![
+                    RsUseName::Name("Name".into()),
+                    RsUseName::Alias("Name".into(), "Alias".into()),
                 ]),
-                dependency: RSDependencyIdent::Local(RSPath(
-                    GTModuleId("path/to/module".into()),
+                dependency: RsDependencyIdent::Local(RsPath(
+                    GtModuleId("path/to/module".into()),
                     "self::path::to::module".into()
                 ))
             }

@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSExtension {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsExtension {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -22,7 +22,7 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            TSExtension {
+            TsExtension {
                 reference: "Foo".into()
             }
             .render(Default::default(), &mut Default::default())

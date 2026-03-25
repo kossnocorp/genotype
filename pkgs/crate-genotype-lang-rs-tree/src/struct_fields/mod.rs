@@ -3,17 +3,17 @@ use crate::prelude::internal::*;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub enum RSStructFields {
+pub enum RsStructFields {
     Unit,
-    Newtype(#[visit] Vec<RSDescriptor>),
-    Resolved(#[visit] Vec<RSField>),
+    Newtype(#[visit] Vec<RsDescriptor>),
+    Resolved(#[visit] Vec<RsField>),
     // Unresolved fields state. It represents fields extended struct fields as Rust has no
     // inheritance and the fields yet to be copied from the parent struct.
-    Unresolved(GTSpan, #[visit] Vec<RSReference>, #[visit] Vec<RSField>),
+    Unresolved(GtSpan, #[visit] Vec<RsReference>, #[visit] Vec<RsField>),
 }
 
-impl From<Vec<RSField>> for RSStructFields {
-    fn from(fields: Vec<RSField>) -> Self {
-        RSStructFields::Resolved(fields)
+impl From<Vec<RsField>> for RsStructFields {
+    fn from(fields: Vec<RsField>) -> Self {
+        RsStructFields::Resolved(fields)
     }
 }

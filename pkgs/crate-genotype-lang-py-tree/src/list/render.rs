@@ -1,16 +1,16 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYList {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyList {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
     fn render(
         &self,
         state: Self::RenderState,
         context: &mut Self::RenderContext,
     ) -> Result<String> {
-        let list = if let PYVersion::Legacy = context.config.version {
+        let list = if let PyVersion::Legacy = context.config.version {
             "List"
         } else {
             "list"
@@ -29,8 +29,8 @@ mod tests {
     #[test]
     fn test_render_array() {
         assert_snapshot!(
-            PYList {
-                descriptor: PYDescriptor::Primitive(PYPrimitive::String)
+            PyList {
+                descriptor: PyDescriptor::Primitive(PyPrimitive::String)
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -41,13 +41,13 @@ mod tests {
     #[test]
     fn test_render_legacy() {
         assert_snapshot!(
-            PYList {
-                descriptor: PYDescriptor::Primitive(PYPrimitive::String)
+            PyList {
+                descriptor: PyDescriptor::Primitive(PyPrimitive::String)
             }
             .render(
                 Default::default(),
-                &mut PYRenderContext {
-                    config: &PyConfigLang::new(PYVersion::Legacy),
+                &mut PyRenderContext {
+                    config: &PyConfigLang::new(PyVersion::Legacy),
                     ..Default::default()
                 }
             )

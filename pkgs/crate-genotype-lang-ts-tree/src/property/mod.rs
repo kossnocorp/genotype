@@ -4,12 +4,12 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct TSProperty {
+pub struct TsProperty {
     #[visit]
-    pub doc: Option<TSDoc>,
+    pub doc: Option<TsDoc>,
     #[visit]
-    pub name: TSKey,
+    pub name: TsKey,
     #[visit]
-    pub descriptor: TSDescriptor,
+    pub descriptor: TsDescriptor,
     pub required: bool,
 }

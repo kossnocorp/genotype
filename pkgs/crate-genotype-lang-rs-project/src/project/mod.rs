@@ -52,95 +52,95 @@ mod tests {
         [
           RsProjectModule(
             path: "author.rs",
-            module: RSModule(
-              id: GTModuleId("author"),
+            module: RsModule(
+              id: GtModuleId("author"),
               doc: None,
               imports: [
-                RSUse(
+                RsUse(
                   dependency: Serde,
                   reference: Named([
-                    Name(RSIdentifier("Deserialize")),
-                    Name(RSIdentifier("Serialize")),
+                    Name(RsIdentifier("Deserialize")),
+                    Name(RsIdentifier("Serialize")),
                   ]),
                 ),
               ],
               definitions: [
-                Struct(RSStruct(
-                  id: GTDefinitionId(GTModuleId("author"), "Author"),
+                Struct(RsStruct(
+                  id: GtDefinitionId(GtModuleId("author"), "Author"),
                   doc: None,
                   attributes: [
-                    RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+                    RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
                   ],
-                  name: RSIdentifier("Author"),
+                  name: RsIdentifier("Author"),
                   fields: Resolved([
-                    RSField(
+                    RsField(
                       doc: None,
                       attributes: [],
-                      name: RSFieldName("name"),
+                      name: RsFieldName("name"),
                       descriptor: Primitive(String),
                     ),
                   ]),
                 )),
               ],
             ),
-            resolve: RSPModuleResolve(
+            resolve: RspModuleResolve(
               definitions: {},
             ),
           ),
           RsProjectModule(
             path: "book.rs",
-            module: RSModule(
-              id: GTModuleId("book"),
+            module: RsModule(
+              id: GtModuleId("book"),
               doc: None,
               imports: [
-                RSUse(
-                  dependency: Local(RSPath(GTModuleId("author"), "super::author")),
+                RsUse(
+                  dependency: Local(RsPath(GtModuleId("author"), "super::author")),
                   reference: Named([
-                    Name(RSIdentifier("Author")),
+                    Name(RsIdentifier("Author")),
                   ]),
                 ),
-                RSUse(
+                RsUse(
                   dependency: Serde,
                   reference: Named([
-                    Name(RSIdentifier("Deserialize")),
-                    Name(RSIdentifier("Serialize")),
+                    Name(RsIdentifier("Deserialize")),
+                    Name(RsIdentifier("Serialize")),
                   ]),
                 ),
               ],
               definitions: [
-                Struct(RSStruct(
-                  id: GTDefinitionId(GTModuleId("book"), "Book"),
+                Struct(RsStruct(
+                  id: GtDefinitionId(GtModuleId("book"), "Book"),
                   doc: None,
                   attributes: [
-                    RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+                    RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
                   ],
-                  name: RSIdentifier("Book"),
+                  name: RsIdentifier("Book"),
                   fields: Resolved([
-                    RSField(
+                    RsField(
                       doc: None,
                       attributes: [],
-                      name: RSFieldName("title"),
+                      name: RsFieldName("title"),
                       descriptor: Primitive(String),
                     ),
-                    RSField(
+                    RsField(
                       doc: None,
                       attributes: [],
-                      name: RSFieldName("author"),
-                      descriptor: Reference(RSReference(
-                        id: GTReferenceId(GTModuleId("book"), GTSpan(56, 62)),
-                        identifier: RSIdentifier("Author"),
-                        definition_id: GTDefinitionId(GTModuleId("author"), "Author"),
+                      name: RsFieldName("author"),
+                      descriptor: Reference(RsReference(
+                        id: GtReferenceId(GtModuleId("book"), GtSpan(56, 62)),
+                        identifier: RsIdentifier("Author"),
+                        definition_id: GtDefinitionId(GtModuleId("author"), "Author"),
                       )),
                     ),
                   ]),
                 )),
               ],
             ),
-            resolve: RSPModuleResolve(
+            resolve: RspModuleResolve(
               definitions: {
-                GTDefinitionId(GTModuleId("author"), "Author"): GtProjectModuleDefinitionResolve(
+                GtDefinitionId(GtModuleId("author"), "Author"): GtProjectModuleDefinitionResolve(
                   references: [
-                    GTReferenceId(GTModuleId("book"), GTSpan(56, 62)),
+                    GtReferenceId(GtModuleId("book"), GtSpan(56, 62)),
                   ],
                   deps: [],
                 ),
@@ -163,52 +163,52 @@ mod tests {
         [
           RsProjectModule(
             path: "author.rs",
-            module: RSModule(
-              id: GTModuleId("author"),
+            module: RsModule(
+              id: GtModuleId("author"),
               doc: None,
               imports: [
-                RSUse(
+                RsUse(
                   dependency: Serde,
                   reference: Named([
-                    Name(RSIdentifier("Deserialize")),
-                    Name(RSIdentifier("Serialize")),
+                    Name(RsIdentifier("Deserialize")),
+                    Name(RsIdentifier("Serialize")),
                   ]),
                 ),
               ],
               definitions: [
-                Struct(RSStruct(
-                  id: GTDefinitionId(GTModuleId("author"), "Author"),
+                Struct(RsStruct(
+                  id: GtDefinitionId(GtModuleId("author"), "Author"),
                   doc: None,
                   attributes: [
-                    RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+                    RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
                   ],
-                  name: RSIdentifier("Author"),
+                  name: RsIdentifier("Author"),
                   fields: Resolved([
-                    RSField(
+                    RsField(
                       doc: None,
                       attributes: [],
-                      name: RSFieldName("name"),
-                      descriptor: Reference(RSReference(
-                        id: GTReferenceId(GTModuleId("author"), GTSpan(18, 28)),
-                        identifier: RSIdentifier("AuthorName"),
-                        definition_id: GTDefinitionId(GTModuleId("author"), "AuthorName"),
+                      name: RsFieldName("name"),
+                      descriptor: Reference(RsReference(
+                        id: GtReferenceId(GtModuleId("author"), GtSpan(18, 28)),
+                        identifier: RsIdentifier("AuthorName"),
+                        definition_id: GtDefinitionId(GtModuleId("author"), "AuthorName"),
                       )),
                     ),
                   ]),
                 )),
-                Alias(RSAlias(
-                  id: GTDefinitionId(GTModuleId("author"), "AuthorName"),
+                Alias(RsAlias(
+                  id: GtDefinitionId(GtModuleId("author"), "AuthorName"),
                   doc: None,
-                  name: RSIdentifier("AuthorName"),
+                  name: RsIdentifier("AuthorName"),
                   descriptor: Primitive(String),
                 )),
               ],
             ),
-            resolve: RSPModuleResolve(
+            resolve: RspModuleResolve(
               definitions: {
-                GTDefinitionId(GTModuleId("author"), "AuthorName"): GtProjectModuleDefinitionResolve(
+                GtDefinitionId(GtModuleId("author"), "AuthorName"): GtProjectModuleDefinitionResolve(
                   references: [
-                    GTReferenceId(GTModuleId("author"), GTSpan(18, 28)),
+                    GtReferenceId(GtModuleId("author"), GtSpan(18, 28)),
                   ],
                   deps: [],
                 ),
@@ -217,74 +217,74 @@ mod tests {
           ),
           RsProjectModule(
             path: "book.rs",
-            module: RSModule(
-              id: GTModuleId("book"),
+            module: RsModule(
+              id: GtModuleId("book"),
               doc: None,
               imports: [
-                RSUse(
-                  dependency: Local(RSPath(GTModuleId("author"), "super::author")),
+                RsUse(
+                  dependency: Local(RsPath(GtModuleId("author"), "super::author")),
                   reference: Module,
                 ),
-                RSUse(
+                RsUse(
                   dependency: Serde,
                   reference: Named([
-                    Name(RSIdentifier("Deserialize")),
-                    Name(RSIdentifier("Serialize")),
+                    Name(RsIdentifier("Deserialize")),
+                    Name(RsIdentifier("Serialize")),
                   ]),
                 ),
               ],
               definitions: [
-                Struct(RSStruct(
-                  id: GTDefinitionId(GTModuleId("book"), "Book"),
+                Struct(RsStruct(
+                  id: GtDefinitionId(GtModuleId("book"), "Book"),
                   doc: None,
                   attributes: [
-                    RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+                    RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
                   ],
-                  name: RSIdentifier("Book"),
+                  name: RsIdentifier("Book"),
                   fields: Resolved([
-                    RSField(
+                    RsField(
                       doc: None,
                       attributes: [],
-                      name: RSFieldName("title"),
+                      name: RsFieldName("title"),
                       descriptor: Primitive(String),
                     ),
-                    RSField(
+                    RsField(
                       doc: None,
                       attributes: [],
-                      name: RSFieldName("author"),
-                      descriptor: Reference(RSReference(
-                        id: GTReferenceId(GTModuleId("book"), GTSpan(51, 57)),
-                        identifier: RSIdentifier("author.Author"),
-                        definition_id: GTDefinitionId(GTModuleId("author"), "Author"),
+                      name: RsFieldName("author"),
+                      descriptor: Reference(RsReference(
+                        id: GtReferenceId(GtModuleId("book"), GtSpan(51, 57)),
+                        identifier: RsIdentifier("author.Author"),
+                        definition_id: GtDefinitionId(GtModuleId("author"), "Author"),
                       )),
                     ),
-                    RSField(
+                    RsField(
                       doc: None,
                       attributes: [
-                        RSAttribute("serde(rename = \"authorName\")"),
+                        RsAttribute("serde(rename = \"authorName\")"),
                       ],
-                      name: RSFieldName("author_name"),
-                      descriptor: Reference(RSReference(
-                        id: GTReferenceId(GTModuleId("book"), GTSpan(73, 83)),
-                        identifier: RSIdentifier("author.AuthorName"),
-                        definition_id: GTDefinitionId(GTModuleId("author"), "AuthorName"),
+                      name: RsFieldName("author_name"),
+                      descriptor: Reference(RsReference(
+                        id: GtReferenceId(GtModuleId("book"), GtSpan(73, 83)),
+                        identifier: RsIdentifier("author.AuthorName"),
+                        definition_id: GtDefinitionId(GtModuleId("author"), "AuthorName"),
                       )),
                     ),
                   ]),
                 )),
               ],
             ),
-            resolve: RSPModuleResolve(
+            resolve: RspModuleResolve(
               definitions: {
-                GTDefinitionId(GTModuleId("author"), "Author"): GtProjectModuleDefinitionResolve(
+                GtDefinitionId(GtModuleId("author"), "Author"): GtProjectModuleDefinitionResolve(
                   references: [
-                    GTReferenceId(GTModuleId("book"), GTSpan(51, 57)),
+                    GtReferenceId(GtModuleId("book"), GtSpan(51, 57)),
                   ],
                   deps: [],
                 ),
-                GTDefinitionId(GTModuleId("author"), "AuthorName"): GtProjectModuleDefinitionResolve(
+                GtDefinitionId(GtModuleId("author"), "AuthorName"): GtProjectModuleDefinitionResolve(
                   references: [
-                    GTReferenceId(GTModuleId("book"), GTSpan(73, 83)),
+                    GtReferenceId(GtModuleId("book"), GtSpan(73, 83)),
                   ],
                   deps: [],
                 ),

@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSImport {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsImport {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -25,9 +25,9 @@ mod tests {
     #[test]
     fn test_render_default() {
         assert_snapshot!(
-            TSImport {
+            TsImport {
                 path: "../path/to/module".into(),
-                reference: TSImportReference::Default("Name".into()),
+                reference: TsImportReference::Default("Name".into()),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -38,9 +38,9 @@ mod tests {
     #[test]
     fn test_render_glob() {
         assert_snapshot!(
-            TSImport {
+            TsImport {
                 path: "../path/to/module".into(),
-                reference: TSImportReference::Glob("name".into()),
+                reference: TsImportReference::Glob("name".into()),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -51,11 +51,11 @@ mod tests {
     #[test]
     fn test_render_named() {
         assert_snapshot!(
-            TSImport {
+            TsImport {
                 path: "../path/to/module".into(),
-                reference: TSImportReference::Named(vec![
-                    TSImportName::Name("Name".into()),
-                    TSImportName::Alias("Name".into(), "Alias".into()),
+                reference: TsImportReference::Named(vec![
+                    TsImportName::Name("Name".into()),
+                    TsImportName::Alias("Name".into(), "Alias".into()),
                 ])
             }
             .render(Default::default(), &mut Default::default())

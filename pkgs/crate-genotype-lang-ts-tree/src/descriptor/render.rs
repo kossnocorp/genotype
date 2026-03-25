@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSDescriptor {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsDescriptor {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -11,17 +11,17 @@ impl<'a> GtlRender<'a> for TSDescriptor {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         match self {
-            TSDescriptor::Array(array) => array.render(state, context),
-            TSDescriptor::InlineImport(import) => import.render(state, context),
-            TSDescriptor::Intersection(intersection) => intersection.render(state, context),
-            TSDescriptor::Literal(literal) => literal.render(state, context),
-            TSDescriptor::Primitive(primitive) => primitive.render(state, context),
-            TSDescriptor::Reference(name) => name.render(state, context),
-            TSDescriptor::Object(object) => object.render(state, context),
-            TSDescriptor::Tuple(tuple) => tuple.render(state, context),
-            TSDescriptor::Union(union) => union.render(state, context),
-            TSDescriptor::Record(record) => record.render(state, context),
-            TSDescriptor::Any(any) => any.render(state, context),
+            TsDescriptor::Array(array) => array.render(state, context),
+            TsDescriptor::InlineImport(import) => import.render(state, context),
+            TsDescriptor::Intersection(intersection) => intersection.render(state, context),
+            TsDescriptor::Literal(literal) => literal.render(state, context),
+            TsDescriptor::Primitive(primitive) => primitive.render(state, context),
+            TsDescriptor::Reference(name) => name.render(state, context),
+            TsDescriptor::Object(object) => object.render(state, context),
+            TsDescriptor::Tuple(tuple) => tuple.render(state, context),
+            TsDescriptor::Union(union) => union.render(state, context),
+            TsDescriptor::Record(record) => record.render(state, context),
+            TsDescriptor::Any(any) => any.render(state, context),
         }
     }
 }
@@ -34,8 +34,8 @@ mod tests {
     #[test]
     fn test_render_array() {
         assert_snapshot!(
-            TSDescriptor::Array(Box::new(TSArray {
-                descriptor: TSDescriptor::Primitive(TSPrimitive::Number)
+            TsDescriptor::Array(Box::new(TsArray {
+                descriptor: TsDescriptor::Primitive(TsPrimitive::Number)
             }))
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -46,7 +46,7 @@ mod tests {
     #[test]
     fn test_render_inline_import() {
         assert_snapshot!(
-            TSDescriptor::InlineImport(TSInlineImport {
+            TsDescriptor::InlineImport(TsInlineImport {
                 path: "../path/to/module".into(),
                 name: "Name".into(),
             })
@@ -59,13 +59,13 @@ mod tests {
     #[test]
     fn test_render_intersection() {
         assert_snapshot!(
-            TSDescriptor::Intersection(TSIntersection {
+            TsDescriptor::Intersection(TsIntersection {
                 descriptors: vec![
-                    TSObject {
-                        properties: vec![TSProperty {
+                    TsObject {
+                        properties: vec![TsProperty {
                             doc: None,
                             name: "hello".into(),
-                            descriptor: TSPrimitive::String.into(),
+                            descriptor: TsPrimitive::String.into(),
                             required: true,
                         }],
                     }
@@ -86,18 +86,18 @@ mod tests {
     #[test]
     fn test_render_object() {
         assert_snapshot!(
-            TSDescriptor::Object(TSObject {
+            TsDescriptor::Object(TsObject {
                 properties: vec![
-                    TSProperty {
+                    TsProperty {
                         doc: None,
                         name: "name".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                        descriptor: TsDescriptor::Primitive(TsPrimitive::String),
                         required: true
                     },
-                    TSProperty {
+                    TsProperty {
                         doc: None,
                         name: "age".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
+                        descriptor: TsDescriptor::Primitive(TsPrimitive::Number),
                         required: false
                     }
                 ]
@@ -116,13 +116,13 @@ mod tests {
     #[test]
     fn test_render_primitive() {
         assert_snapshot!(
-            TSDescriptor::Primitive(TSPrimitive::Boolean)
+            TsDescriptor::Primitive(TsPrimitive::Boolean)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"boolean"
         );
         assert_snapshot!(
-            TSDescriptor::Primitive(TSPrimitive::String)
+            TsDescriptor::Primitive(TsPrimitive::String)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"string"
@@ -132,7 +132,7 @@ mod tests {
     #[test]
     fn test_render_reference() {
         assert_snapshot!(
-            TSDescriptor::Reference("Name".into())
+            TsDescriptor::Reference("Name".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"Name"
@@ -142,10 +142,10 @@ mod tests {
     #[test]
     fn test_render_tuple() {
         assert_snapshot!(
-            TSDescriptor::Tuple(TSTuple {
+            TsDescriptor::Tuple(TsTuple {
                 descriptors: vec![
-                    TSDescriptor::Primitive(TSPrimitive::Number),
-                    TSDescriptor::Primitive(TSPrimitive::String)
+                    TsDescriptor::Primitive(TsPrimitive::Number),
+                    TsDescriptor::Primitive(TsPrimitive::String)
                 ]
             })
             .render(Default::default(), &mut Default::default())
@@ -157,10 +157,10 @@ mod tests {
     #[test]
     fn test_render_union() {
         assert_snapshot!(
-            TSDescriptor::Union(TSUnion {
+            TsDescriptor::Union(TsUnion {
                 descriptors: vec![
-                    TSDescriptor::Primitive(TSPrimitive::String),
-                    TSDescriptor::Primitive(TSPrimitive::Number),
+                    TsDescriptor::Primitive(TsPrimitive::String),
+                    TsDescriptor::Primitive(TsPrimitive::Number),
                 ]
             })
             .render(Default::default(), &mut Default::default())
@@ -172,9 +172,9 @@ mod tests {
     #[test]
     fn test_render_record() {
         assert_snapshot!(
-            TSDescriptor::Record(Box::new(TSRecord {
-                key: TSRecordKey::String,
-                descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
+            TsDescriptor::Record(Box::new(TsRecord {
+                key: TsRecordKey::String,
+                descriptor: TsDescriptor::Primitive(TsPrimitive::Number),
             }))
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -185,7 +185,7 @@ mod tests {
     #[test]
     fn test_render_any() {
         assert_snapshot!(
-            TSDescriptor::Any(TSAny)
+            TsDescriptor::Any(TsAny)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"any"

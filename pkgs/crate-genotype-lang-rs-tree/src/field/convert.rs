@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
-impl RSConvert<RSField> for GTProperty {
-    fn convert(&self, context: &mut RSConvertContext) -> Result<RSField> {
+impl RsConvert<RsField> for GtProperty {
+    fn convert(&self, context: &mut RsConvertContext) -> Result<RsField> {
         let doc = if let Some(doc) = &self.doc {
             Some(doc.convert(context)?)
         } else {
@@ -13,19 +13,19 @@ impl RSConvert<RSField> for GTProperty {
         // Allows for renaming fields
         let mut attributes = context.drain_field_attributes();
 
-        context.enter_parent(RSContextParent::Field(name.clone()));
+        context.enter_parent(RsContextParent::Field(name.clone()));
 
         let descriptor = self.descriptor.convert(context)?;
         let descriptor = if self.required {
             descriptor
         } else {
-            attributes.push(RSAttribute(
+            attributes.push(RsAttribute(
                 r#"serde(default, skip_serializing_if = "Option::is_none")"#.into(),
             ));
-            RSOption::new(descriptor).into()
+            RsOption::new(descriptor).into()
         };
 
-        let field = RSField {
+        let field = RsField {
             doc,
             attributes,
             name,
@@ -44,26 +44,26 @@ mod tests {
 
     #[test]
     fn test_convert() {
-        let mut context = RSConvertContext::empty("module".into());
+        let mut context = RsConvertContext::empty("module".into());
         assert_ron_snapshot!(
-            GTProperty {
+            GtProperty {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                name: GTKey::new((0, 0).into(), "name".into()),
+                name: GtKey::new((0, 0).into(), "name".into()),
                 descriptor: Gt::primitive_string().into(),
                 required: false,
             }
             .convert(&mut context)
             .unwrap(),
             @r#"
-        RSField(
+        RsField(
           doc: None,
           attributes: [
-            RSAttribute("serde(default, skip_serializing_if = \"Option::is_none\")"),
+            RsAttribute("serde(default, skip_serializing_if = \"Option::is_none\")"),
           ],
-          name: RSFieldName("name"),
-          descriptor: Option(RSOption(
+          name: RsFieldName("name"),
+          descriptor: Option(RsOption(
             descriptor: Primitive(String),
           )),
         )
@@ -73,27 +73,27 @@ mod tests {
 
     #[test]
     fn test_convert_rename_attribute() {
-        let mut context = RSConvertContext::empty("module".into());
+        let mut context = RsConvertContext::empty("module".into());
         assert_ron_snapshot!(
-            GTProperty {
+            GtProperty {
                 doc: None,
                 span: (0, 0).into(),
                 attributes: vec![],
-                name: GTKey::new((0, 0).into(), "helloWorld".into()),
+                name: GtKey::new((0, 0).into(), "helloWorld".into()),
                 descriptor: Gt::primitive_string().into(),
                 required: false,
             }
             .convert(&mut context)
             .unwrap(),
             @r#"
-        RSField(
+        RsField(
           doc: None,
           attributes: [
-            RSAttribute("serde(rename = \"helloWorld\")"),
-            RSAttribute("serde(default, skip_serializing_if = \"Option::is_none\")"),
+            RsAttribute("serde(rename = \"helloWorld\")"),
+            RsAttribute("serde(default, skip_serializing_if = \"Option::is_none\")"),
           ],
-          name: RSFieldName("hello_world"),
-          descriptor: Option(RSOption(
+          name: RsFieldName("hello_world"),
+          descriptor: Option(RsOption(
             descriptor: Primitive(String),
           )),
         )

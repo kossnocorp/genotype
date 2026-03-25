@@ -2,15 +2,15 @@ use crate::prelude::internal::*;
 use std::collections::HashMap;
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
-pub struct TSConvertModule(pub TSModule);
+pub struct TsConvertModule(pub TsModule);
 
-impl TSConvertModule {
+impl TsConvertModule {
     pub fn convert(
-        module: &GTModule,
-        resolve: TSConvertResolve,
+        module: &GtModule,
+        resolve: TsConvertResolve,
         dependencies_config: HashMap<String, String>,
     ) -> Self {
-        let mut context = TSConvertContext::new(resolve, dependencies_config);
+        let mut context = TsConvertContext::new(resolve, dependencies_config);
 
         let imports = module
             .imports
@@ -33,7 +33,7 @@ impl TSConvertModule {
             doc
         });
 
-        TSConvertModule(TSModule {
+        TsConvertModule(TsModule {
             doc,
             imports,
             definitions,
@@ -48,67 +48,67 @@ mod tests {
 
     #[test]
     fn test_convert() {
-        let mut resolve = TSConvertResolve::new();
+        let mut resolve = TsConvertResolve::new();
         resolve.globs.insert(
-            GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+            GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
             "module".into(),
         );
 
         assert_ron_snapshot!(
-            TSConvertModule::convert(
-                &GTModule {
+            TsConvertModule::convert(
+                &GtModule {
                     id: "module".into(),
                     doc: None,
                     imports: vec![
-                        GTImport {
+                        GtImport {
                             span: (0, 0).into(),
-                            path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
-                            reference: GTImportReference::Glob((0, 0).into())
+                            path: GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+                            reference: GtImportReference::Glob((0, 0).into())
                         },
-                        GTImport {
+                        GtImport {
                             span: (0, 0).into(),
-                            path: GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
-                            reference: GTImportReference::Names(
+                            path: GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+                            reference: GtImportReference::Names(
                                 (0, 0).into(),
                                 vec![
-                                    GTImportName::Name(
+                                    GtImportName::Name(
                                         (0, 0).into(),
-                                        GTIdentifier::new((0, 0).into(), "Name".into())
+                                        GtIdentifier::new((0, 0).into(), "Name".into())
                                     ),
-                                    GTImportName::Alias(
+                                    GtImportName::Alias(
                                         (0, 0).into(),
-                                        GTIdentifier::new((0, 0).into(), "Name".into()),
-                                        GTIdentifier::new((0, 0).into(), "Alias".into())
+                                        GtIdentifier::new((0, 0).into(), "Name".into()),
+                                        GtIdentifier::new((0, 0).into(), "Alias".into())
                                     )
                                 ]
                             )
                         }
                     ],
                     aliases: vec![
-                        GTAlias {
-                            id: GTDefinitionId("module".into(), "User".into()),
+                        GtAlias {
+                            id: GtDefinitionId("module".into(), "User".into()),
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
-                            name: GTIdentifier::new((0, 0).into(), "User".into()),
+                            name: GtIdentifier::new((0, 0).into(), "User".into()),
                             descriptor: Gt::object("User", vec![
                                 Gt::property("name", Gt::primitive_string()),
                                 Gt::property_optional("age", Gt::primitive_i32()),
                             ]).into(),
                         },
-                        GTAlias {
-                            id: GTDefinitionId("module".into(), "Order".into()),
+                        GtAlias {
+                            id: GtDefinitionId("module".into(), "Order".into()),
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
-                            name: GTIdentifier::new((0, 0).into(), "Order".into()),
+                            name: GtIdentifier::new((0, 0).into(), "Order".into()),
                             descriptor: Gt::object("Order", vec![
-                                Gt::property("book", GTDescriptor::Alias(Box::new(GTAlias {
-                                    id: GTDefinitionId("module".into(), "Book".into()),
+                                Gt::property("book", GtDescriptor::Alias(Box::new(GtAlias {
+                                    id: GtDefinitionId("module".into(), "Book".into()),
                                     span: (0, 0).into(),
                                     doc: None,
                                     attributes: vec![],
-                                    name: GTIdentifier::new((0, 0).into(), "Book".into()),
+                                    name: GtIdentifier::new((0, 0).into(), "Book".into()),
                                     descriptor: Gt::object("Book", vec![
                                         Gt::property("title", Gt::primitive_string()),
                                         Gt::property("author", Gt::reference("Author")),
@@ -116,12 +116,12 @@ mod tests {
                                 }))),
                             ]).into(),
                         },
-                        GTAlias {
-                            id: GTDefinitionId("module".into(), "Name".into()),
+                        GtAlias {
+                            id: GtDefinitionId("module".into(), "Name".into()),
                             span: (0, 0).into(),
                             doc: None,
                             attributes: vec![],
-                            name: GTIdentifier::new((0, 0).into(), "Name".into()),
+                            name: GtIdentifier::new((0, 0).into(), "Name".into()),
                             descriptor: Gt::primitive_string().into(),
                         },
                     ],
@@ -130,37 +130,37 @@ mod tests {
                 Default::default()
             ),
             @r#"
-        TSConvertModule(TSModule(
+        TsConvertModule(TsModule(
           doc: None,
           imports: [
-            TSImport(
-              path: TSPath("./path/to/module"),
+            TsImport(
+              path: TsPath("./path/to/module"),
               reference: Glob("module"),
             ),
-            TSImport(
-              path: TSPath("./path/to/module"),
+            TsImport(
+              path: TsPath("./path/to/module"),
               reference: Named([
-                Name(TSIdentifier("Name")),
-                Alias(TSIdentifier("Name"), TSIdentifier("Alias")),
+                Name(TsIdentifier("Name")),
+                Alias(TsIdentifier("Name"), TsIdentifier("Alias")),
               ]),
             ),
           ],
           definitions: [
-            Interface(TSInterface(
+            Interface(TsInterface(
               doc: None,
-              name: TSIdentifier("User"),
+              name: TsIdentifier("User"),
               extensions: [],
               properties: [
-                TSProperty(
+                TsProperty(
                   doc: None,
-                  name: TSKey("name"),
+                  name: TsKey("name"),
                   descriptor: Primitive(String),
                   required: true,
                 ),
-                TSProperty(
+                TsProperty(
                   doc: None,
-                  name: TSKey("age"),
-                  descriptor: Union(TSUnion(
+                  name: TsKey("age"),
+                  descriptor: Union(TsUnion(
                     descriptors: [
                       Primitive(Number),
                       Primitive(Undefined),
@@ -170,41 +170,41 @@ mod tests {
                 ),
               ],
             )),
-            Interface(TSInterface(
+            Interface(TsInterface(
               doc: None,
-              name: TSIdentifier("Order"),
+              name: TsIdentifier("Order"),
               extensions: [],
               properties: [
-                TSProperty(
+                TsProperty(
                   doc: None,
-                  name: TSKey("book"),
-                  descriptor: Reference(TSReference(TSIdentifier("Book"))),
+                  name: TsKey("book"),
+                  descriptor: Reference(TsReference(TsIdentifier("Book"))),
                   required: true,
                 ),
               ],
             )),
-            Interface(TSInterface(
+            Interface(TsInterface(
               doc: None,
-              name: TSIdentifier("Book"),
+              name: TsIdentifier("Book"),
               extensions: [],
               properties: [
-                TSProperty(
+                TsProperty(
                   doc: None,
-                  name: TSKey("title"),
+                  name: TsKey("title"),
                   descriptor: Primitive(String),
                   required: true,
                 ),
-                TSProperty(
+                TsProperty(
                   doc: None,
-                  name: TSKey("author"),
-                  descriptor: Reference(TSReference(TSIdentifier("Author"))),
+                  name: TsKey("author"),
+                  descriptor: Reference(TsReference(TsIdentifier("Author"))),
                   required: true,
                 ),
               ],
             )),
-            Alias(TSAlias(
+            Alias(TsAlias(
               doc: None,
-              name: TSIdentifier("Name"),
+              name: TsIdentifier("Name"),
               descriptor: Primitive(String),
             )),
           ],
@@ -216,19 +216,19 @@ mod tests {
     #[test]
     fn test_convert_doc() {
         assert_ron_snapshot!(
-            TSConvertModule::convert(
-                &GTModule {
+            TsConvertModule::convert(
+                &GtModule {
                     id: "module".into(),
-                    doc: Some(GTDoc::new((0, 0).into(), "Hello, world!".into())),
+                    doc: Some(GtDoc::new((0, 0).into(), "Hello, world!".into())),
                     imports: vec![],
                     aliases: vec![],
                 },
-                TSConvertResolve::new(),
+                TsConvertResolve::new(),
                 Default::default()
             ),
             @r#"
-        TSConvertModule(TSModule(
-          doc: Some(TSDoc("@file Hello, world!")),
+        TsConvertModule(TsModule(
+          doc: Some(TsDoc("@file Hello, world!")),
           imports: [],
           definitions: [],
         ))

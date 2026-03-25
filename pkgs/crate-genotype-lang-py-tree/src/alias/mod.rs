@@ -4,13 +4,13 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct PYAlias {
+pub struct PyAlias {
     #[visit]
-    pub doc: Option<PYDoc>,
+    pub doc: Option<PyDoc>,
     #[visit]
-    pub name: PYIdentifier,
+    pub name: PyIdentifier,
     #[visit]
-    pub descriptor: PYDescriptor,
+    pub descriptor: PyDescriptor,
     #[visit]
-    pub references: Vec<PYIdentifier>,
+    pub references: Vec<PyIdentifier>,
 }
