@@ -2,8 +2,8 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::parse::Parser;
 use syn::{
-    Data, DeriveInput, Error, Fields, Ident, Lit, Meta, MetaList, MetaNameValue, Token,
-    parse_macro_input, punctuated::Punctuated,
+    parse_macro_input, punctuated::Punctuated, Data, DeriveInput, Error, Fields, Ident, Lit, Meta,
+    MetaList, MetaNameValue, Token,
 };
 
 pub fn macro_derive_literals(input: TokenStream) -> TokenStream {
@@ -309,6 +309,15 @@ fn expand_literal_enum(
         LiteralsMode::DeserializeOnly => "Deserialize",
     };
 
+    let literal_value_ident = Ident::new(
+        &format!("__{}LittyLiteralValue{}", enum_ident, helper_suffix),
+        enum_ident.span(),
+    );
+    let literal_visitor_ident = Ident::new(
+        &format!("__{}LittyLiteralVisitor{}", enum_ident, helper_suffix),
+        enum_ident.span(),
+    );
+
     for variant in &variants {
         let variant_ident = &variant.ident;
         let helper_ident = Ident::new(
@@ -334,22 +343,22 @@ fn expand_literal_enum(
 
         let deserialize_match = match &variant.lit {
             Lit::Str(_) => quote! {
-                __LittyLiteralValue::Str(value) if value == <#helper_ident as litty::#trait_ident>::LIT => {
+                #literal_value_ident::Str(value) if value == <#helper_ident as litty::#trait_ident>::LIT => {
                     return Ok(#enum_ident::#variant_ident);
                 }
             },
             Lit::Bool(_) => quote! {
-                __LittyLiteralValue::Bool(value) if value == <#helper_ident as litty::#trait_ident>::LIT => {
+                #literal_value_ident::Bool(value) if value == <#helper_ident as litty::#trait_ident>::LIT => {
                     return Ok(#enum_ident::#variant_ident);
                 }
             },
             Lit::Int(_) => quote! {
-                __LittyLiteralValue::Int(value) if value == <#helper_ident as litty::#trait_ident>::LIT => {
+                #literal_value_ident::Int(value) if value == <#helper_ident as litty::#trait_ident>::LIT => {
                     return Ok(#enum_ident::#variant_ident);
                 }
             },
             Lit::Float(_) => quote! {
-                __LittyLiteralValue::Float(value) if value == <#helper_ident as litty::#trait_ident>::LIT => {
+                #literal_value_ident::Float(value) if value == <#helper_ident as litty::#trait_ident>::LIT => {
                     return Ok(#enum_ident::#variant_ident);
                 }
             },
@@ -375,17 +384,17 @@ fn expand_literal_enum(
     };
 
     let deserialize_impl = quote! {
-        enum __LittyLiteralValue {
+        enum #literal_value_ident {
             Str(String),
             Bool(bool),
             Int(i64),
             Float(f64),
         }
 
-        struct __LittyLiteralVisitor;
+        struct #literal_visitor_ident;
 
-        impl<'de> serde::de::Visitor<'de> for __LittyLiteralVisitor {
-            type Value = __LittyLiteralValue;
+        impl<'de> serde::de::Visitor<'de> for #literal_visitor_ident {
+            type Value = #literal_value_ident;
 
             fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
                 formatter.write_str("a string, bool, integer, or float literal")
@@ -395,28 +404,28 @@ fn expand_literal_enum(
             where
                 E: serde::de::Error,
             {
-                Ok(__LittyLiteralValue::Str(value.to_owned()))
+                Ok(#literal_value_ident::Str(value.to_owned()))
             }
 
             fn visit_string<E>(self, value: String) -> Result<Self::Value, E>
             where
                 E: serde::de::Error,
             {
-                Ok(__LittyLiteralValue::Str(value))
+                Ok(#literal_value_ident::Str(value))
             }
 
             fn visit_bool<E>(self, value: bool) -> Result<Self::Value, E>
             where
                 E: serde::de::Error,
             {
-                Ok(__LittyLiteralValue::Bool(value))
+                Ok(#literal_value_ident::Bool(value))
             }
 
             fn visit_i64<E>(self, value: i64) -> Result<Self::Value, E>
             where
                 E: serde::de::Error,
             {
-                Ok(__LittyLiteralValue::Int(value))
+                Ok(#literal_value_ident::Int(value))
             }
 
             fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E>
@@ -425,14 +434,14 @@ fn expand_literal_enum(
             {
                 let value = i64::try_from(value)
                     .map_err(|_| E::custom("integer literal is out of i64 range"))?;
-                Ok(__LittyLiteralValue::Int(value))
+                Ok(#literal_value_ident::Int(value))
             }
 
             fn visit_f64<E>(self, value: f64) -> Result<Self::Value, E>
             where
                 E: serde::de::Error,
             {
-                Ok(__LittyLiteralValue::Float(value))
+                Ok(#literal_value_ident::Float(value))
             }
         }
 
@@ -441,7 +450,7 @@ fn expand_literal_enum(
             where
                 D: serde::Deserializer<'__de>,
             {
-                let value = deserializer.deserialize_any(__LittyLiteralVisitor)?;
+                let value = deserializer.deserialize_any(#literal_visitor_ident)?;
 
                 match value {
                     #deserialize_arms
