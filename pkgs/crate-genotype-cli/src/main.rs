@@ -2,6 +2,7 @@ use clap::{Parser, Subcommand};
 use commands::{
     build::{GtBuildCommand, build_command},
     init::{GtInitCommand, init_command},
+    version::{GtVersionCommand, version_command},
 };
 use diagnostic::error::GtCliError;
 
@@ -22,6 +23,9 @@ enum Commands {
 
     /// Initializes a Genotype project
     Init(GtInitCommand),
+
+    /// Manage package versions in genotype.toml
+    Version(GtVersionCommand),
 }
 
 fn main() -> miette::Result<()> {
@@ -31,6 +35,8 @@ fn main() -> miette::Result<()> {
         Some(Commands::Build(args)) => build_command(args),
 
         Some(Commands::Init(args)) => init_command(args),
+
+        Some(Commands::Version(args)) => version_command(args),
 
         None => Err(GtCliError::MissingCommand.into()),
     }

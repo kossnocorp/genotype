@@ -557,6 +557,7 @@ dependencies = [
  "owo-colors",
  "pretty_assertions",
  "regex",
+ "semver",
  "thiserror 1.0.64",
  "toml 0.8.22",
 ]
@@ -573,14 +574,18 @@ dependencies = [
  "genotype_lang_rs_config",
  "genotype_lang_ts_config",
  "genotype_path",
+ "genotype_test",
  "heck",
  "insta",
  "miette",
  "pretty_assertions",
  "relative-path",
+ "semver",
  "serde",
  "thiserror 1.0.64",
  "toml 0.8.22",
+ "toml_edit",
+ "toml_ext",
 ]
 
 [[package]]
@@ -650,6 +655,7 @@ dependencies = [
  "thiserror 1.0.64",
  "toml 0.8.22",
  "toml_edit",
+ "toml_ext",
 ]
 
 [[package]]
@@ -701,12 +707,14 @@ dependencies = [
  "genotype_parser",
  "genotype_path",
  "genotype_project",
+ "genotype_test",
  "indexmap",
  "insta",
  "miette",
  "pretty_assertions",
  "serde",
  "thiserror 1.0.64",
+ "toml 0.8.22",
  "toml_edit",
 ]
 
@@ -766,6 +774,7 @@ dependencies = [
  "pretty_assertions",
  "serde",
  "thiserror 1.0.64",
+ "toml 0.8.22",
  "toml_edit",
 ]
 
@@ -827,9 +836,11 @@ dependencies = [
  "genotype_parser",
  "genotype_path",
  "genotype_project",
+ "genotype_test",
  "insta",
  "miette",
  "pretty_assertions",
+ "semver",
  "serde",
  "thiserror 1.0.64",
  "toml_edit",
@@ -1768,6 +1779,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
+name = "semver"
+version = "1.0.27"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d767eb0aabc880b29956c35734170f26ed551a859dbd361d140cdbeca61ab1e2"
+dependencies = [
+ "serde",
+ "serde_core",
+]
+
+[[package]]
 name = "serde"
 version = "1.0.228"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2184,6 +2205,17 @@ dependencies = [
  "toml_datetime 0.6.9",
  "toml_write",
  "winnow 0.7.9",
+]
+
+[[package]]
+name = "toml_ext"
+version = "0.1.0"
+dependencies = [
+ "insta",
+ "pretty_assertions",
+ "thiserror 1.0.64",
+ "toml 0.8.22",
+ "toml_edit",
 ]
 
 [[package]]

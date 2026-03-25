@@ -18,10 +18,17 @@ impl<'a> GtlProjectManifest<'a> for TsProject<'a> {
             .pkg_relative_src_file_path(&"index.ts".into())
             .as_str()
             .to_owned();
-        format!(
+
+        let mut source = format!(
             r#"types = "{types}"
 "#
-        )
+        );
+
+        if let Some(version) = self.config.version {
+            source.push_str(format!("version = \"{version}\"\n").as_str());
+        }
+
+        source
     }
 }
 

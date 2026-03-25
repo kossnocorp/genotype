@@ -9,9 +9,11 @@ use heck::{ToKebabCase, ToSnakeCase};
 use inquire::{
     MultiSelect, Text, list_option::ListOption, min_length, required, validator::Validation,
 };
+use miette::IntoDiagnostic;
 use miette::Result;
 use owo_colors::OwoColorize;
 use regex::Regex;
+use semver::Version;
 use std::fmt::{Display, Formatter};
 use std::fs::{create_dir_all, write};
 
@@ -25,7 +27,10 @@ pub fn init_command(args: &GtInitCommand) -> Result<()> {
     let mut config = GtConfig::default();
 
     let name = configure_name(&mut config)?;
-    configure_targers(&mut config, &name)?;
+
+    config.version = Some(Version::parse("0.1.0").into_diagnostic()?);
+
+    configure_targets(&mut config, &name)?;
 
     let root = args
         .path
@@ -34,11 +39,7 @@ pub fn init_command(args: &GtInitCommand) -> Result<()> {
 
     create_dir_all(root.as_str()).map_err(|_| GtCliError::FailedCreateDir(root.as_str().into()))?;
 
-    write(
-        root.join_path(&"genotype.toml".into()).as_str(),
-        toml::to_string(&config).map_err(|_| GtCliError::StringifyConfig)?,
-    )
-    .map_err(|_| GtCliError::FailedWrite("genotype.toml".into()))?;
+    config.save(&root.as_str().into())?;
 
     let src = root.join(&config.src);
 
@@ -87,7 +88,7 @@ fn configure_name(config: &mut GtConfig) -> Result<String> {
     Ok(name)
 }
 
-fn configure_targers(config: &mut GtConfig, name: &String) -> Result<()> {
+fn configure_targets(config: &mut GtConfig, name: &String) -> Result<()> {
     let targets = MultiSelect::new(
         "Choose the languages you want to target:",
         Target::VARIANTS.to_vec(),
@@ -132,10 +133,8 @@ fn configure_ts(config: &mut GtConfig, name: &String) -> Result<()> {
         .prompt()
         .map_err(|_| GtCliError::FailedReadline("TypeScript package name"))?;
 
-    let manifest = toml::map::Map::from_iter(vec![
-        ("name".into(), toml::Value::String(name.clone())),
-        ("version".into(), toml::Value::String("0.1.0".into())),
-    ]);
+    let manifest =
+        toml::map::Map::from_iter(vec![("name".into(), toml::Value::String(name.clone()))]);
 
     ts.common.manifest = manifest;
 
@@ -163,10 +162,8 @@ fn configure_py(config: &mut GtConfig, name: &String) -> Result<()> {
         .prompt()
         .map_err(|_| GtCliError::FailedReadline("Python package name"))?;
 
-    let manifest = toml::map::Map::from_iter(vec![
-        ("name".into(), toml::Value::String(name.clone())),
-        ("version".into(), toml::Value::String("0.1.0".into())),
-    ]);
+    let manifest =
+        toml::map::Map::from_iter(vec![("name".into(), toml::Value::String(name.clone()))]);
 
     py.common.manifest = manifest;
 
@@ -196,7 +193,6 @@ fn configure_rs(config: &mut GtConfig, name: &String) -> Result<()> {
 
     let manifest = toml::map::Map::from_iter(vec![
         ("name".into(), toml::Value::String(name.clone())),
-        ("version".into(), toml::Value::String("0.1.0".into())),
         ("edition".into(), toml::Value::String("2024".into())),
     ]);
 

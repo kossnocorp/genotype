@@ -75,7 +75,7 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
 mod tests {
     use super::*;
     use genotype_config::GtConfig;
-    use insta::assert_ron_snapshot;
+    use genotype_test::*;
 
     #[test]
     fn test_convert_base() {
@@ -298,5 +298,59 @@ mod tests {
         )
         "#
         );
+    }
+
+    #[test]
+    fn test_render_uses_global_version_by_default() {
+        let mut config = GtConfig::from_root("module", "./examples/basic");
+        config.version = Some("0.2.0".parse().unwrap());
+
+        let project = GtProject::load(&config).unwrap();
+
+        let dist = TsProject::generate(&project).unwrap().dist().unwrap();
+        let package_file = get_package_file(&dist);
+
+        assert_snapshot!(
+            package_file.source,
+            @r#"
+        {
+          "types": "src/index.ts",
+          "version": "0.2.0"
+        }
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_prefers_ts_manifest_version_over_global() {
+        let mut config = GtConfig::from_root("module", "./examples/basic");
+        config.version = Some("0.2.0".parse().unwrap());
+        config
+            .ts
+            .common
+            .manifest
+            .insert("version".into(), "0.3.0".into());
+
+        let project = GtProject::load(&config).unwrap();
+
+        let dist = TsProject::generate(&project).unwrap().dist().unwrap();
+        let package_file = get_package_file(&dist);
+
+        assert_snapshot!(
+            package_file.source,
+            @r#"
+        {
+          "types": "src/index.ts",
+          "version": "0.3.0"
+        }
+        "#
+        );
+    }
+
+    fn get_package_file<'a>(dist: &'a GtlProjectDist) -> &'a GtlProjectFile {
+        dist.files
+            .iter()
+            .find(|file| file.path.as_str().contains("package.json"))
+            .unwrap()
     }
 }

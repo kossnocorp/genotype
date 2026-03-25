@@ -32,6 +32,7 @@ inquire = "0.7.5"
 heck = "0.5.0"
 regex = "1.11.1"
 toml = { version = "0.8.19", features = ["preserve_order"] }
+semver = { version = "1.0.27", features = ["serde"] }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

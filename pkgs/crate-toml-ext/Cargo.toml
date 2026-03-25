@@ -1,0 +1,15 @@
+[package]
+name = "toml_ext"
+version = "0.1.0"
+edition = "2024"
+description = "TOML & TOML Edit extensions"
+license = "MIT"
+
+[dependencies]
+thiserror = "1.0.64"
+toml = { version = "0.8.19", features = ["preserve_order"] }
+toml_edit = { version = "0.22.26", features = ["serde"] }
+
+[dev-dependencies]
+insta = "1.46.3"
+pretty_assertions = "1.4.1"

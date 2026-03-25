@@ -24,6 +24,7 @@ version version:
     --exclude litty \
     --exclude litty_macro \
     --exclude litty_macro_tests \
+    --exclude toml_ext \
     --exclude genotype_runtime \
     --exclude genotype_json_types \
     --execute
@@ -35,6 +36,7 @@ publish:
   cargo release publish \
     --exclude litty \
     --exclude litty_macro \
+    --exclude toml_ext \
     --exclude genotype_runtime \
     --exclude genotype_json_types \
     --execute

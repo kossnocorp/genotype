@@ -426,6 +426,7 @@ mod tests {
           ],
           config: GtConfig(
             name: Some("module"),
+            version: None,
             root: "examples/basic",
             out: "dist",
             src: "",
@@ -757,6 +758,7 @@ mod tests {
           ],
           config: GtConfig(
             name: Some("module"),
+            version: None,
             root: "examples/basic",
             out: "dist",
             src: "",
@@ -961,6 +963,7 @@ mod tests {
           ],
           config: GtConfig(
             name: Some("module"),
+            version: None,
             root: "examples/process",
             out: "dist",
             src: "",

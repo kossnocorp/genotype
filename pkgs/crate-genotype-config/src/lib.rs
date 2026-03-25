@@ -1,16 +1,13 @@
-mod index;
-pub use index::*;
+mod config;
+pub use config::*;
 
 mod error;
 pub use error::*;
 
-mod find;
-pub use find::*;
+mod lang;
+pub use lang::*;
 
 mod pkg;
 pub use pkg::*;
-
-mod paths;
-pub use paths::*;
 
 pub mod prelude;
