@@ -748,4 +748,63 @@ mod tests {
         "
         );
     }
+
+    #[test]
+    fn test_render_uses_global_version_by_default() {
+        let mut config = GtConfig::from_root("module", "./examples/basic");
+        config.version = Some("0.2.0".parse().unwrap());
+
+        let project = GtProject::load(&config).unwrap();
+
+        let dist = RsProject::generate(&project).unwrap().dist().unwrap();
+        let cargo = get_cargo_file(&dist);
+
+        assert_snapshot!(
+            cargo.source,
+            @r#"
+        [package]
+        edition = "2024"
+        version = "0.2.0"
+
+        [dependencies]
+        serde = { version = "1", features = ["derive"] }
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_prefers_rs_manifest_version_over_global() {
+        let mut config = GtConfig::from_root("module", "./examples/basic");
+        config.version = Some("0.2.0".parse().unwrap());
+        config.rs.common.manifest = toml::from_str(
+            r#"[package]
+version = "0.3.0"
+"#,
+        )
+        .unwrap();
+
+        let project = GtProject::load(&config).unwrap();
+
+        let dist = RsProject::generate(&project).unwrap().dist().unwrap();
+        let cargo = get_cargo_file(&dist);
+
+        assert_snapshot!(
+            cargo.source,
+            @r#"
+        [package]
+        edition = "2024"
+        version = "0.3.0"
+
+        [dependencies]
+        serde = { version = "1", features = ["derive"] }
+        "#
+        );
+    }
+
+    fn get_cargo_file<'a>(dist: &'a GtlProjectDist) -> &'a GtlProjectFile {
+        dist.files
+            .iter()
+            .find(|file| file.path.as_str().contains("Cargo.toml"))
+            .unwrap()
+    }
 }

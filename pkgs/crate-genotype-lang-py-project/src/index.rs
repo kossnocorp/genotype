@@ -119,7 +119,7 @@ dist"#
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
+    use genotype_test::*;
 
     #[test]
     fn test_convert_base() {
@@ -447,5 +447,73 @@ mod tests {
         )
         "#
         );
+    }
+
+    #[test]
+    fn test_render_uses_global_version_by_default() {
+        let mut config = GtConfig::from_root("module", "./examples/basic");
+        config.version = Some("0.2.0".parse().unwrap());
+        let project = GtProject::load(&config).unwrap();
+
+        let dist = PyProject::generate(&project).unwrap().dist().unwrap();
+        let pyproject = get_project_file(&dist);
+
+        assert_snapshot!(
+            pyproject.source,
+            @r#"
+        [tool.poetry]
+        packages = [{ include = "module" }]
+        version = "0.2.0"
+
+        [tool.poetry.dependencies]
+        python = "^3.12"
+        genotype-runtime = "^0.4"
+
+        [build-system]
+        requires = ["poetry-core"]
+        build-backend = "poetry.core.masonry.api"
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_prefers_py_manifest_version_over_global() {
+        let mut config = GtConfig::from_root("module", "./examples/basic");
+        config.version = Some("0.2.0".parse().unwrap());
+        config.py.common.manifest = toml::from_str(
+            r#"[tool.poetry]
+version = "0.3.0"
+"#,
+        )
+        .unwrap();
+
+        let project = GtProject::load(&config).unwrap();
+
+        let dist = PyProject::generate(&project).unwrap().dist().unwrap();
+        let pyproject = get_project_file(&dist);
+
+        assert_snapshot!(
+            pyproject.source,
+            @r#"
+        [tool.poetry]
+        packages = [{ include = "module" }]
+        version = "0.3.0"
+
+        [tool.poetry.dependencies]
+        python = "^3.12"
+        genotype-runtime = "^0.4"
+
+        [build-system]
+        requires = ["poetry-core"]
+        build-backend = "poetry.core.masonry.api"
+        "#
+        );
+    }
+
+    fn get_project_file<'a>(dist: &'a GtlProjectDist) -> &'a GtlProjectFile {
+        dist.files
+            .iter()
+            .find(|file| file.path.as_str().contains("pyproject.toml"))
+            .unwrap()
     }
 }

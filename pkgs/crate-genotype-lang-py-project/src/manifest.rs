@@ -14,20 +14,33 @@ impl<'a> GtlProjectManifest<'a> for PyProject<'a> {
 
     fn base_manifest(&self) -> String {
         let module = self.config.target.module.as_str();
-        let version = self.config.target.lang.version.version_str();
+        let python_version = self.config.target.lang.version.version_str();
 
-        format!(
+        let mut source = format!(
             r#"[tool.poetry]
 packages = [{{ include = "{module}" }}]
+"#
+        );
 
+        if let Some(version) = self.config.version {
+            source.push_str(format!("version = \"{version}\"\n").as_str());
+        }
+
+        source.push_str(
+            format!(
+                r#"
 [tool.poetry.dependencies]
-python = "{version}"
+python = "{python_version}"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 "#
-        )
+            )
+            .as_str(),
+        );
+
+        source
     }
 }
 

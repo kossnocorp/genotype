@@ -12,12 +12,18 @@ impl<'a> GtlProjectManifest<'a> for RsProject<'a> {
     }
 
     fn base_manifest(&self) -> String {
-        format!(
+        let mut source = format!(
             r#"[package]
 edition = "2024"
-
 "#
-        )
+        );
+
+        if let Some(version) = self.config.version {
+            source.push_str(format!("version = \"{version}\"\n").as_str());
+        }
+
+        source.push('\n');
+        source
     }
 }
 

@@ -1,10 +1,4 @@
 use crate::prelude::internal::*;
-use figment::{
-    Figment,
-    providers::{Env, Format, Serialized, Toml},
-};
-
-pub const GTCONFIG_FILE: &str = "genotype.toml";
 
 impl GtConfig {
     pub fn load(path: &PathBuf) -> Result<Self> {
@@ -17,20 +11,14 @@ impl GtConfig {
         }
         .into_diagnostic()?;
 
-        let mut config: GtConfig = Figment::from(Serialized::defaults(GtConfig::default()))
-            // [TODO] Integrate with CLI:
-            // .merge(Serialized::defaults(GTConfig::parse()))
-            .merge(Toml::file(file))
-            .merge(Env::prefixed("GT_"))
-            .extract()
-            .into_diagnostic()?;
-
+        let config_toml_str = fs::read_to_string(file).into_diagnostic()?;
+        let mut config: GtConfig = Self::from_toml_str(&config_toml_str)?;
         config.root = GtRootPath::new(config_parent.join_normalized(config.root.relative_path()));
 
         Ok(config)
     }
 
-    fn find(path: &PathBuf) -> Result<PathBuf> {
+    pub fn find(path: &PathBuf) -> Result<PathBuf> {
         let mut current = if path.is_dir() {
             Some(path.as_path())
         } else {

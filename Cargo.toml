@@ -33,4 +33,5 @@ members = [
   "pkgs/crate-genotype-watcher",
   "pkgs/crate-genotype-path",
   "pkgs/crate-genotype-test",
+  "pkgs/crate-toml-ext",
 ]

@@ -83,7 +83,7 @@ impl RsProject<'_> {
                             .ok_or_else(|| {
                                 RsProjectError::BuildModulePath(format!(
                                     "Failed to find reference with id {module_id}/{referenced_id}",
-                                    module_id = current_definition_id.0 .0,
+                                    module_id = current_definition_id.0.0,
                                     referenced_id = current_definition_id.1
                                 ))
                             })
@@ -140,7 +140,7 @@ impl RsProject<'_> {
                                 span.clone(),
                                 format!(
                                     "Can't find module with id {id}",
-                                    id = current_definition_id.0 .0
+                                    id = current_definition_id.0.0
                                 ),
                             )
                         })?;
@@ -156,7 +156,7 @@ impl RsProject<'_> {
                                 span.clone(),
                                 format!(
                                     "Can't find definition {module_id}/{id}",
-                                    module_id = current_definition_id.0 .0,
+                                    module_id = current_definition_id.0.0,
                                     id = current_definition_id.1
                                 ),
                             )
@@ -271,7 +271,7 @@ impl RsProject<'_> {
                                     )]),
                                     dependency: RsDependencyIdent::Local(RsPath(
                                         referenced_definition_id.0.clone(),
-                                        format!("crate::{}", referenced_definition_id.0 .0).into(),
+                                        format!("crate::{}", referenced_definition_id.0.0).into(),
                                     )),
                                 });
                             }

@@ -2,8 +2,6 @@ use crate::prelude::internal::*;
 use miette::IntoDiagnostic;
 use std::str::FromStr;
 use toml_edit::*;
-
-mod toml_ext;
 use toml_ext::*;
 
 pub trait GtlProjectManifest<'a> {
@@ -50,12 +48,16 @@ pub trait GtlProjectManifest<'a> {
         // [TODO]
         let before_str = manifest.clone().to_string();
 
-        manifest.merge(&config_manifest)?;
+        manifest
+            .merge(&config_manifest)
+            .map_err(|err| GtlProjectError::ManifestAdjust(Self::FILE_NAME, err.to_string()))?;
 
         // [TODO]
         let after_str = manifest.clone().to_string();
 
-        let manifest_deps = manifest.drill_table_mut(Self::MANIFEST_DEPENDENCIES_KEY)?;
+        let manifest_deps = manifest
+            .drill_table_mut(Self::MANIFEST_DEPENDENCIES_KEY)
+            .map_err(|err| GtlProjectError::ManifestDepsAccess(Self::FILE_NAME))?;
 
         // let manifest_deps = manifest
         //     .entry(Self::MANIFEST_DEPENDENCIES_KEY)
