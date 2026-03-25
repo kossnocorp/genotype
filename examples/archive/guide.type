@@ -20,7 +20,7 @@
 // You define a structure by specifying its name followed by a block of
 // properties. It corresponds to an interface in TypeScript, struct in Rust,
 // C#, or properties form in JTD.
-Structure = {
+Structure: {
   // Properties are defined by the property name and its type:
   text: string,
 
@@ -47,7 +47,7 @@ User: {
 
 // Now, let's get back to the types.
 
-More = {
+More: {
   // Types can be defined nullable by adding a question mark:
   prop: string?,
   // This is equivalent to `string | null` in TypeScript and `Option<String>`
@@ -70,7 +70,7 @@ More = {
   }
 
   // Nested properties can be named:
-  anotherNested: AnotherNested = {
+  anotherNested: AnotherNested: {
     hello: string,
   }
 
@@ -85,12 +85,12 @@ More = {
 User: { name: string, age: number }
 
 // Enums are defined by listing all possible values:
-Color = "red" | "green" | "blue"
-Day = 0 | 1 | 2 | 3 | 4 | 5 | 6
+Color: "red" | "green" | "blue"
+Day: 0 | 1 | 2 | 3 | 4 | 5 | 6
 
 // You can define type aliases:
-List = [string]
-Age = number
+List: [string]
+Age: number
 
 // ...it will translate to simple type alias in TypeScript and newtype in Rust.
 // [TODO] Replace in Rust?
@@ -99,10 +99,10 @@ Age = number
 // in TypeScript?
 
 // Record/HashMap can be defined by [TODO]
-UserMap = { []: User }
+UserMap: { []: User }
 
 // By default the value is a string, but you can specify the type:
-UserMap = { [number]: User }
+UserMap: { [number]: User }
 // You can use string, number and float as keys.
 
 User: {
@@ -113,21 +113,21 @@ User: {
 
 // You can tag a structure:
 
-Comment = {
+Comment: {
   #type: "comment"
 }
 
 // You can reuse properties from other structures:
-Content = {
+Content: {
   text: string,
 }
 
-Post = {
+Post: {
   ...Content
   title: string,
 }
 
-Comment = {
+Comment: {
   ...Content
   user: User,
 }
@@ -135,14 +135,14 @@ Comment = {
 // [TODO] enum
 
 // [TODO] This can't translate to TypeScript
-State = {
+State: {
   Pending
   Active(ActivePayload)
   Failed(string)
   Finished(string)
 }
 
-ActivePayload = {
+ActivePayload: {
   startedAt: string,
 }
 

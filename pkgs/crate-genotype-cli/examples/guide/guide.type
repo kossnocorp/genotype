@@ -5,7 +5,7 @@
 //! comments in the target language.
 
 /// Comments before types and fields prefixed with `///` are treated as
-/// documentation comments for the type or field.
+/// documentation comments for a type or a field.
 User: {
   /// Full user name field
   name: /* Inline comments... */ string,
@@ -15,11 +15,11 @@ User: {
 
 // Btw, that was a simple object type alias `User` with a single field `name`.
 // It will translate to a corresponding type in the target language. For
-// instance. In Python, that will define `class Name`. In TypeScript, it will be
-// `interface Name`l In Rust, `struct Name`, etc.
+// instance. In Python, that will define `class User`. In TypeScript, it will be
+// `interface User`. In Rust, `struct User`, etc.
 
 // You can define type aliases for all kinds of types, for example, primitives
-// such as string, int, float, boolean, and null:
+// such as string, int, float, boolean, or null:
 Nothing: boolean
 
 Account: {
@@ -28,10 +28,10 @@ Account: {
     first: string,
     /// Fields can be optional:
     last?: string,
-  }
+  },
 
   /// You can also assign the name inline, which will create a separate type:
-  address: Address = {
+  address: Address: {
     street: string,
     city: string,
     zip: string,
@@ -83,7 +83,7 @@ Payload: {
   /// You can use literal types to define constants:
   version: 1,
   /// And branded types to define unique identifiers:
-  id: PayloadId = @string,
+  id: PayloadId: @string,
 }
 
 /// There's also a special type any that will translate into any JSON value:
