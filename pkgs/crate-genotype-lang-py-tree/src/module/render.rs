@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYModule {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyModule {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
     fn render(
         &self,
@@ -44,7 +44,7 @@ impl<'a> GtlRender<'a> for PYModule {
     }
 }
 
-impl GtlRenderModule for PYModule {
+impl GtlRenderModule for PyModule {
     fn join_definitions(definitions: &Vec<String>) -> String {
         definitions.join("\n\n\n")
     }
@@ -62,43 +62,43 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            PYModule {
+            PyModule {
                 doc: None,
                 imports: vec![
-                    PYImport {
-                        reference: PYImportReference::Default(Some("name".into())),
-                        dependency: PYDependencyIdent::Path(".path.to.module".into())
+                    PyImport {
+                        reference: PyImportReference::Default(Some("name".into())),
+                        dependency: PyDependencyIdent::Path(".path.to.module".into())
                     },
-                    PYImport {
-                        reference: PYImportReference::Named(vec![
-                            PYImportName::Name("Name".into()),
-                            PYImportName::Alias("Name".into(), "Alias".into()),
+                    PyImport {
+                        reference: PyImportReference::Named(vec![
+                            PyImportName::Name("Name".into()),
+                            PyImportName::Alias("Name".into(), "Alias".into()),
                         ]),
-                        dependency: PYDependencyIdent::Path(".path.to.module".into())
+                        dependency: PyDependencyIdent::Path(".path.to.module".into())
                     }
                 ],
                 definitions: vec![
-                    PYDefinition::Alias(PYAlias {
+                    PyDefinition::Alias(PyAlias {
                         doc: None,
                         name: "Name".into(),
-                        descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                        descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                         references: vec![],
                     }),
-                    PYDefinition::Class(PYClass {
+                    PyDefinition::Class(PyClass {
                         doc: None,
                         name: "Name".into(),
                         extensions: vec![],
                         properties: vec![
-                            PYProperty {
+                            PyProperty {
                                 doc: None,
                                 name: "name".into(),
-                                descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                                descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                                 required: true
                             },
-                            PYProperty {
+                            PyProperty {
                                 doc: None,
                                 name: "age".into(),
-                                descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
+                                descriptor: PyDescriptor::Primitive(PyPrimitive::Int),
                                 required: false
                             }
                         ],
@@ -126,16 +126,16 @@ mod tests {
     #[test]
     fn test_render_doc() {
         assert_snapshot!(
-            PYModule {
-                doc: Some(PYDoc("Hello, world!".into())),
-                imports: vec![PYImport {
-                    reference: PYImportReference::Default(Some("name".into())),
-                    dependency: PYDependencyIdent::Path(".path.to.module".into())
+            PyModule {
+                doc: Some(PyDoc("Hello, world!".into())),
+                imports: vec![PyImport {
+                    reference: PyImportReference::Default(Some("name".into())),
+                    dependency: PyDependencyIdent::Path(".path.to.module".into())
                 },],
-                definitions: vec![PYDefinition::Alias(PYAlias {
+                definitions: vec![PyDefinition::Alias(PyAlias {
                     doc: None,
                     name: "Name".into(),
-                    descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                    descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                     references: vec![],
                 })]
             }

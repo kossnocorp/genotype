@@ -1,36 +1,36 @@
 use crate::prelude::internal::*;
 
 use genotype_parser::{
-    GTDefinitionId, GTPathKind,
-    tree::{GTIdentifier, GTImportName, GTImportReference, GTPath},
+    GtDefinitionId, GtPathKind,
+    tree::{GtIdentifier, GtImportName, GtImportReference, GtPath},
 };
 use miette::Result;
 
-use crate::error::GTProjectError;
+use crate::error::GtProjectError;
 
 use super::*;
 
 /// Module resolve data. It describes relations between module entities. It allows to
 #[derive(Debug, PartialEq, Clone, Serialize)]
-pub struct GTPModuleResolve {
+pub struct GtpModuleResolve {
     /// Paths resolve.
-    pub paths: IndexMap<GTPath, GtModulePath>,
+    pub paths: IndexMap<GtPath, GtModulePath>,
     /// Identifiers resolve.
-    pub identifiers: IndexMap<GTIdentifier, GTPModuleIdentifierResolve>,
+    pub identifiers: IndexMap<GtIdentifier, GtpModuleIdentifierResolve>,
     /// Definitions resolve.
-    pub definitions: IndexMap<GTDefinitionId, GtProjectModuleDefinitionResolve>,
+    pub definitions: IndexMap<GtDefinitionId, GtProjectModuleDefinitionResolve>,
 }
 
-impl GTPModuleResolve {
+impl GtpModuleResolve {
     pub fn try_new(
-        modules: &Vec<GTProjectModuleParse>,
-        parse: &GTProjectModuleParse,
+        modules: &Vec<GtProjectModuleParse>,
+        parse: &GtProjectModuleParse,
     ) -> Result<Self> {
         // Resolve module dependencies by mapping local paths to project module paths
-        let mut paths: IndexMap<GTPath, GtModulePath> = IndexMap::new();
+        let mut paths: IndexMap<GtPath, GtModulePath> = IndexMap::new();
         for local_path in parse.1.resolve.deps.iter() {
             // Continue if the dependency is already resolved or it is a package path
-            if paths.contains_key(local_path) || local_path.kind() == GTPathKind::Package {
+            if paths.contains_key(local_path) || local_path.kind() == GtPathKind::Package {
                 continue;
             }
 
@@ -40,7 +40,7 @@ impl GTPModuleResolve {
         }
 
         // Resolve module references mapping identifiers to dependencies
-        let mut identifiers: IndexMap<GTIdentifier, GTPModuleIdentifierResolve> = IndexMap::new();
+        let mut identifiers: IndexMap<GtIdentifier, GtpModuleIdentifierResolve> = IndexMap::new();
         for reference in parse.1.resolve.references.iter() {
             // Continue if the reference is already resolved
             if identifiers.contains_key(reference) {
@@ -49,25 +49,25 @@ impl GTPModuleResolve {
 
             // Check if the reference is a package import
             let package_import = parse.1.module.imports.iter().find(|import| {
-                if import.path.kind() != GTPathKind::Package {
+                if import.path.kind() != GtPathKind::Package {
                     return false;
                 }
                 match &import.reference {
-                    GTImportReference::Name(_, name) => name.1 == reference.1,
+                    GtImportReference::Name(_, name) => name.1 == reference.1,
 
-                    GTImportReference::Names(_, names) => names.iter().any(|name| match name {
-                        GTImportName::Name(_, name) => name.1 == reference.1,
-                        GTImportName::Alias(_, _, alias) => alias.1 == reference.1,
+                    GtImportReference::Names(_, names) => names.iter().any(|name| match name {
+                        GtImportName::Name(_, name) => name.1 == reference.1,
+                        GtImportName::Alias(_, _, alias) => alias.1 == reference.1,
                     }),
 
-                    GTImportReference::Glob(_) => false,
+                    GtImportReference::Glob(_) => false,
                 }
             });
             if let Some(import) = package_import {
                 identifiers.insert(
                     reference.clone(),
-                    GTPModuleIdentifierResolve {
-                        source: GTPModuleIdentifierSource::Package(import.path.clone()),
+                    GtpModuleIdentifierResolve {
+                        source: GtpModuleIdentifierSource::Package(import.path.clone()),
                     },
                 );
                 continue;
@@ -83,8 +83,8 @@ impl GTPModuleResolve {
             {
                 identifiers.insert(
                     reference.clone(),
-                    GTPModuleIdentifierResolve {
-                        source: GTPModuleIdentifierSource::Local,
+                    GtpModuleIdentifierResolve {
+                        source: GtpModuleIdentifierSource::Local,
                     },
                 );
                 continue;
@@ -100,7 +100,7 @@ impl GTPModuleResolve {
                         }
 
                         match &import.reference {
-                            GTImportReference::Glob(_) => {
+                            GtImportReference::Glob(_) => {
                                 let module = modules
                                     .iter()
                                     .find(|module| module.0 == **module_resolve)
@@ -113,33 +113,33 @@ impl GTPModuleResolve {
                                     .any(|export| export.1 == reference.1)
                             }
 
-                            GTImportReference::Name(_, name) => name.1 == reference.1,
+                            GtImportReference::Name(_, name) => name.1 == reference.1,
 
-                            GTImportReference::Names(_, names) => {
+                            GtImportReference::Names(_, names) => {
                                 names.iter().any(|name| match name {
-                                    GTImportName::Name(_, name) => name.1 == reference.1,
+                                    GtImportName::Name(_, name) => name.1 == reference.1,
 
-                                    GTImportName::Alias(_, _, alias) => alias.1 == reference.1,
+                                    GtImportName::Alias(_, _, alias) => alias.1 == reference.1,
                                 })
                             }
                         }
                     });
                     !import.is_none()
                 })
-                .ok_or_else(|| GTProjectError::UndefinedType {
+                .ok_or_else(|| GtProjectError::UndefinedType {
                     span: reference.as_span(),
                     identifier: reference.as_string(),
                 })?;
 
             identifiers.insert(
                 reference.clone(),
-                GTPModuleIdentifierResolve {
-                    source: GTPModuleIdentifierSource::External(local_path.clone()),
+                GtpModuleIdentifierResolve {
+                    source: GtpModuleIdentifierSource::External(local_path.clone()),
                 },
             );
         }
 
-        Ok(GTPModuleResolve {
+        Ok(GtpModuleResolve {
             paths,
             identifiers,
             definitions: Default::default(),

@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl TSConvert<TSRecord> for GTRecord {
-    fn convert(&self, context: &mut TSConvertContext) -> TSRecord {
-        TSRecord {
+impl TsConvert<TsRecord> for GtRecord {
+    fn convert(&self, context: &mut TsConvertContext) -> TsRecord {
+        TsRecord {
             key: self.key.convert(context),
             descriptor: self.descriptor.convert(context),
         }
@@ -21,7 +21,7 @@ mod tests {
                 Gt::record(Gt::record_key_string(), Gt::primitive_string())
             ),
             @"
-        TSRecord(
+        TsRecord(
           key: String,
           descriptor: Primitive(String),
         )

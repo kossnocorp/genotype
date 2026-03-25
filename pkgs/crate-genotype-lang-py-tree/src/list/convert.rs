@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl PYConvert<PYList> for GTArray {
-    fn convert(&self, context: &mut PYConvertContext) -> PYList {
-        PYList {
+impl PyConvert<PyList> for GtArray {
+    fn convert(&self, context: &mut PyConvertContext) -> PyList {
+        PyList {
             descriptor: self.descriptor.convert(context),
         }
         .resolve(context)
@@ -20,7 +20,7 @@ mod tests {
         assert_ron_snapshot!(
             convert_node(Gt::array(Gt::primitive_boolean())),
             @"
-        PYList(
+        PyList(
           descriptor: Primitive(Boolean),
         )
         "
@@ -29,10 +29,10 @@ mod tests {
 
     #[test]
     fn test_convert_resolve() {
-        let mut context = PYConvertContext::new(
+        let mut context = PyConvertContext::new(
             Default::default(),
             PyConfig {
-                lang: PyConfigLang::new(PYVersion::Legacy),
+                lang: PyConfigLang::new(PyVersion::Legacy),
                 ..Default::default()
             },
         );
@@ -40,7 +40,7 @@ mod tests {
             Gt::array(Gt::primitive_string())
             .convert(&mut context),
             @"
-        PYList(
+        PyList(
           descriptor: Primitive(String),
         )
         "
@@ -49,7 +49,7 @@ mod tests {
             context.as_dependencies(),
             @r#"
         [
-          (Typing, PYIdentifier("List")),
+          (Typing, PyIdentifier("List")),
         ]
         "#
         );

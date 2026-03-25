@@ -4,9 +4,9 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct TSInlineImport {
+pub struct TsInlineImport {
     #[visit]
-    pub path: TSPath,
+    pub path: TsPath,
     #[visit]
-    pub name: TSIdentifier,
+    pub name: TsIdentifier,
 }

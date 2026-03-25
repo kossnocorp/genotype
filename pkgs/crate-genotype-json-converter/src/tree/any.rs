@@ -3,8 +3,8 @@ use genotype_parser::*;
 
 use crate::{GtjTreeConvert, GtjTreeConvertContext};
 
-impl GtjTreeConvert<GTDescriptor> for GtjAny {
-    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTDescriptor {
+impl GtjTreeConvert<GtDescriptor> for GtjAny {
+    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GtDescriptor {
         match self {
             GtjAny::GtjBoolean(boolean) => boolean.to_tree_with_context(context),
             GtjAny::GtjNumber(number) => number.to_tree_with_context(context),
@@ -30,10 +30,10 @@ mod tests {
             name: None,
             doc: None,
         };
-        let tree: GTDescriptor = boolean.to_tree_with_context(&mut Default::default());
+        let tree: GtDescriptor = boolean.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(tree, @"
-        Primitive(GTPrimitive(
-          span: GTSpan(0, 0),
+        Primitive(GtPrimitive(
+          span: GtSpan(0, 0),
           kind: Boolean,
           doc: None,
           attributes: [],
@@ -49,10 +49,10 @@ mod tests {
             doc: None,
         };
 
-        let tree: GTDescriptor = number.to_tree_with_context(&mut Default::default());
+        let tree: GtDescriptor = number.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(tree, @"
-        Primitive(GTPrimitive(
-          span: GTSpan(0, 0),
+        Primitive(GtPrimitive(
+          span: GtSpan(0, 0),
           kind: Number,
           doc: None,
           attributes: [],
@@ -68,10 +68,10 @@ mod tests {
             doc: None,
         };
 
-        let tree: GTDescriptor = string.to_tree_with_context(&mut Default::default());
+        let tree: GtDescriptor = string.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(tree, @"
-        Primitive(GTPrimitive(
-          span: GTSpan(0, 0),
+        Primitive(GtPrimitive(
+          span: GtSpan(0, 0),
           kind: String,
           doc: None,
           attributes: [],
@@ -92,14 +92,14 @@ mod tests {
             doc: None,
         };
 
-        let tree: GTDescriptor = array.to_tree_with_context(&mut Default::default());
+        let tree: GtDescriptor = array.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(tree, @"
-        Array(GTArray(
-          span: GTSpan(0, 0),
+        Array(GtArray(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
-          descriptor: Primitive(GTPrimitive(
-            span: GTSpan(0, 0),
+          descriptor: Primitive(GtPrimitive(
+            span: GtSpan(0, 0),
             kind: Number,
             doc: None,
             attributes: [],
@@ -117,13 +117,13 @@ mod tests {
             properties: vec![],
         };
 
-        let tree: GTDescriptor = object.to_tree_with_context(&mut Default::default());
+        let tree: GtDescriptor = object.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(tree, @r#"
-        Object(GTObject(
-          span: GTSpan(0, 0),
+        Object(GtObject(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
-          name: Named(GTIdentifier(GTSpan(0, 0), "Root")),
+          name: Named(GtIdentifier(GtSpan(0, 0), "Root")),
           extensions: [],
           properties: [],
         ))
@@ -139,10 +139,10 @@ mod tests {
             descriptors: vec![],
         };
 
-        let tree: GTDescriptor = union.to_tree_with_context(&mut Default::default());
+        let tree: GtDescriptor = union.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(tree, @"
-        Union(GTUnion(
-          span: GTSpan(0, 0),
+        Union(GtUnion(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
           descriptors: [],
@@ -159,10 +159,10 @@ mod tests {
             value: GtjLiteralValue::String("Hello".into()),
         };
 
-        let tree: GTDescriptor = literal.to_tree_with_context(&mut Default::default());
+        let tree: GtDescriptor = literal.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(tree, @r#"
-        Literal(GTLiteral(
-          span: GTSpan(0, 0),
+        Literal(GtLiteral(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
           value: String("Hello"),
@@ -179,10 +179,10 @@ mod tests {
             descriptors: vec![],
         };
 
-        let tree: GTDescriptor = tuple.to_tree_with_context(&mut Default::default());
+        let tree: GtDescriptor = tuple.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(tree, @"
-        Tuple(GTTuple(
-          span: GTSpan(0, 0),
+        Tuple(GtTuple(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
           descriptors: [],

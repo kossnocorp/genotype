@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSModule {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsModule {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -40,11 +40,11 @@ impl<'a> GtlRender<'a> for TSModule {
             str.push_str("\n");
         }
 
-        TSDoc::with_doc(&self.doc, state, context, str, true)
+        TsDoc::with_doc(&self.doc, state, context, str, true)
     }
 }
 
-impl GtlRenderModule for TSModule {}
+impl GtlRenderModule for TsModule {}
 
 #[cfg(test)]
 mod tests {
@@ -54,42 +54,42 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            TSModule {
+            TsModule {
                 doc: None,
                 imports: vec![
-                    TSImport {
+                    TsImport {
                         path: "../path/to/module".into(),
-                        reference: TSImportReference::Default("Name".into()),
+                        reference: TsImportReference::Default("Name".into()),
                     },
-                    TSImport {
+                    TsImport {
                         path: "../path/to/module".into(),
-                        reference: TSImportReference::Named(vec![
-                            TSImportName::Name("Name".into()),
-                            TSImportName::Alias("Name".into(), "Alias".into()),
+                        reference: TsImportReference::Named(vec![
+                            TsImportName::Name("Name".into()),
+                            TsImportName::Alias("Name".into(), "Alias".into()),
                         ])
                     }
                 ],
                 definitions: vec![
-                    TSDefinition::Alias(TSAlias {
+                    TsDefinition::Alias(TsAlias {
                         doc: None,
                         name: "Name".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                        descriptor: TsDescriptor::Primitive(TsPrimitive::String),
                     }),
-                    TSDefinition::Interface(TSInterface {
+                    TsDefinition::Interface(TsInterface {
                         doc: None,
                         name: "Name".into(),
                         extensions: vec![],
                         properties: vec![
-                            TSProperty {
+                            TsProperty {
                                 doc: None,
                                 name: "name".into(),
-                                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                                descriptor: TsDescriptor::Primitive(TsPrimitive::String),
                                 required: true
                             },
-                            TSProperty {
+                            TsProperty {
                                 doc: None,
                                 name: "age".into(),
-                                descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
+                                descriptor: TsDescriptor::Primitive(TsPrimitive::Number),
                                 required: false
                             }
                         ]
@@ -115,16 +115,16 @@ mod tests {
     #[test]
     fn test_render_doc() {
         assert_snapshot!(
-            TSModule {
-                doc: Some(TSDoc("Hello, world!".into())),
-                imports: vec![TSImport {
+            TsModule {
+                doc: Some(TsDoc("Hello, world!".into())),
+                imports: vec![TsImport {
                     path: "../path/to/module".into(),
-                    reference: TSImportReference::Default("Name".into()),
+                    reference: TsImportReference::Default("Name".into()),
                 },],
-                definitions: vec![TSDefinition::Alias(TSAlias {
+                definitions: vec![TsDefinition::Alias(TsAlias {
                     doc: None,
                     name: "Name".into(),
-                    descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                    descriptor: TsDescriptor::Primitive(TsPrimitive::String),
                 }),]
             }
             .render(Default::default(), &mut Default::default())

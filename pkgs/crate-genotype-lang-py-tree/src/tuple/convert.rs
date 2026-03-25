@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl PYConvert<PYTuple> for GTTuple {
-    fn convert(&self, context: &mut PYConvertContext) -> PYTuple {
-        PYTuple {
+impl PyConvert<PyTuple> for GtTuple {
+    fn convert(&self, context: &mut PyConvertContext) -> PyTuple {
+        PyTuple {
             descriptors: self
                 .descriptors
                 .iter()
@@ -27,7 +27,7 @@ mod tests {
                 Gt::primitive_string().into(),
             ])),
             @"
-        PYTuple(
+        PyTuple(
           descriptors: [
             Primitive(Boolean),
             Primitive(String),
@@ -39,10 +39,10 @@ mod tests {
 
     #[test]
     fn test_convert_resolve() {
-        let mut context = PYConvertContext::new(
-            PYConvertResolve::default(),
+        let mut context = PyConvertContext::new(
+            PyConvertResolve::default(),
             PyConfig {
-                lang: PyConfigLang::new(PYVersion::Legacy),
+                lang: PyConfigLang::new(PyVersion::Legacy),
                 ..Default::default()
             },
         );
@@ -51,7 +51,7 @@ mod tests {
                 Gt::primitive_string().into(),
             ]), &mut context),
             @"
-        PYTuple(
+        PyTuple(
           descriptors: [
             Primitive(String),
           ],
@@ -62,7 +62,7 @@ mod tests {
             context.as_dependencies(),
             @r#"
         [
-          (Typing, PYIdentifier("Tuple")),
+          (Typing, PyIdentifier("Tuple")),
         ]
         "#
         );

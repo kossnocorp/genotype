@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl TSConvert<TSObject> for GTObject {
-    fn convert(&self, context: &mut TSConvertContext) -> TSObject {
-        TSObject {
+impl TsConvert<TsObject> for GtObject {
+    fn convert(&self, context: &mut TsConvertContext) -> TsObject {
+        TsObject {
             properties: self
                 .properties
                 .iter()
@@ -25,18 +25,18 @@ mod tests {
                 Gt::property_optional("age", Gt::primitive_i32()),
             ])),
             @r#"
-        TSObject(
+        TsObject(
           properties: [
-            TSProperty(
+            TsProperty(
               doc: None,
-              name: TSKey("name"),
+              name: TsKey("name"),
               descriptor: Primitive(String),
               required: true,
             ),
-            TSProperty(
+            TsProperty(
               doc: None,
-              name: TSKey("age"),
-              descriptor: Union(TSUnion(
+              name: TsKey("age"),
+              descriptor: Union(TsUnion(
                 descriptors: [
                   Primitive(Number),
                   Primitive(Undefined),

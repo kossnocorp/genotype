@@ -4,24 +4,24 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct TSIdentifier(pub Arc<str>);
+pub struct TsIdentifier(pub Arc<str>);
 
-impl GtlDependencyRef for TSIdentifier {}
+impl GtlDependencyRef for TsIdentifier {}
 
-impl From<&str> for TSIdentifier {
+impl From<&str> for TsIdentifier {
     fn from(str: &str) -> Self {
-        TSIdentifier(str.into())
+        TsIdentifier(str.into())
     }
 }
 
-impl From<String> for TSIdentifier {
+impl From<String> for TsIdentifier {
     fn from(str: String) -> Self {
-        TSIdentifier(str.into())
+        TsIdentifier(str.into())
     }
 }
 
-impl From<Arc<str>> for TSIdentifier {
+impl From<Arc<str>> for TsIdentifier {
     fn from(str: Arc<str>) -> Self {
-        TSIdentifier(str)
+        TsIdentifier(str)
     }
 }

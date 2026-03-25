@@ -4,24 +4,24 @@ mod convert;
 mod render;
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, PartialOrd, Ord, Serialize, Visitor)]
-pub struct PYIdentifier(pub Arc<str>);
+pub struct PyIdentifier(pub Arc<str>);
 
-impl GtlDependencyRef for PYIdentifier {}
+impl GtlDependencyRef for PyIdentifier {}
 
-impl From<&str> for PYIdentifier {
+impl From<&str> for PyIdentifier {
     fn from(str: &str) -> Self {
-        PYIdentifier(str.into())
+        PyIdentifier(str.into())
     }
 }
 
-impl From<String> for PYIdentifier {
+impl From<String> for PyIdentifier {
     fn from(str: String) -> Self {
-        PYIdentifier(str.into())
+        PyIdentifier(str.into())
     }
 }
 
-impl From<Arc<str>> for PYIdentifier {
+impl From<Arc<str>> for PyIdentifier {
     fn from(str: Arc<str>) -> Self {
-        PYIdentifier(str)
+        PyIdentifier(str)
     }
 }

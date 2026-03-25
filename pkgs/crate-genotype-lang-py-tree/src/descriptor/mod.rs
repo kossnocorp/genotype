@@ -4,61 +4,61 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub enum PYDescriptor {
-    List(#[visit] Box<PYList>),
-    Literal(#[visit] PYLiteral),
-    Primitive(#[visit] PYPrimitive),
-    Reference(#[visit] PYReference),
-    Tuple(#[visit] PYTuple),
-    Union(#[visit] PYUnion),
-    Dict(#[visit] Box<PYDict>),
-    Any(#[visit] PYAny),
+pub enum PyDescriptor {
+    List(#[visit] Box<PyList>),
+    Literal(#[visit] PyLiteral),
+    Primitive(#[visit] PyPrimitive),
+    Reference(#[visit] PyReference),
+    Tuple(#[visit] PyTuple),
+    Union(#[visit] PyUnion),
+    Dict(#[visit] Box<PyDict>),
+    Any(#[visit] PyAny),
 }
 
-impl From<PYPrimitive> for PYDescriptor {
-    fn from(primitive: PYPrimitive) -> Self {
-        PYDescriptor::Primitive(primitive)
+impl From<PyPrimitive> for PyDescriptor {
+    fn from(primitive: PyPrimitive) -> Self {
+        PyDescriptor::Primitive(primitive)
     }
 }
 
-impl From<PYReference> for PYDescriptor {
-    fn from(reference: PYReference) -> Self {
-        PYDescriptor::Reference(reference)
+impl From<PyReference> for PyDescriptor {
+    fn from(reference: PyReference) -> Self {
+        PyDescriptor::Reference(reference)
     }
 }
 
-impl From<PYUnion> for PYDescriptor {
-    fn from(union: PYUnion) -> Self {
-        PYDescriptor::Union(union)
+impl From<PyUnion> for PyDescriptor {
+    fn from(union: PyUnion) -> Self {
+        PyDescriptor::Union(union)
     }
 }
 
-impl From<PYTuple> for PYDescriptor {
-    fn from(tuple: PYTuple) -> Self {
-        PYDescriptor::Tuple(tuple)
+impl From<PyTuple> for PyDescriptor {
+    fn from(tuple: PyTuple) -> Self {
+        PyDescriptor::Tuple(tuple)
     }
 }
 
-impl From<PYList> for PYDescriptor {
-    fn from(list: PYList) -> Self {
-        PYDescriptor::List(Box::new(list))
+impl From<PyList> for PyDescriptor {
+    fn from(list: PyList) -> Self {
+        PyDescriptor::List(Box::new(list))
     }
 }
 
-impl From<PYDict> for PYDescriptor {
-    fn from(dict: PYDict) -> Self {
-        PYDescriptor::Dict(Box::new(dict))
+impl From<PyDict> for PyDescriptor {
+    fn from(dict: PyDict) -> Self {
+        PyDescriptor::Dict(Box::new(dict))
     }
 }
 
-impl From<PYLiteral> for PYDescriptor {
-    fn from(literal: PYLiteral) -> Self {
-        PYDescriptor::Literal(literal)
+impl From<PyLiteral> for PyDescriptor {
+    fn from(literal: PyLiteral) -> Self {
+        PyDescriptor::Literal(literal)
     }
 }
 
-impl From<PYAny> for PYDescriptor {
-    fn from(any: PYAny) -> Self {
-        PYDescriptor::Any(any)
+impl From<PyAny> for PyDescriptor {
+    fn from(any: PyAny) -> Self {
+        PyDescriptor::Any(any)
     }
 }

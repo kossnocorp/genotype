@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSLiteral {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsLiteral {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -11,17 +11,17 @@ impl<'a> GtlRender<'a> for TSLiteral {
         _context: &mut Self::RenderContext,
     ) -> Result<String> {
         Ok(match self {
-            TSLiteral::Null => "null".to_string(),
-            TSLiteral::Boolean(value) => value.to_string(),
-            TSLiteral::Integer(value) => value.to_string(),
-            TSLiteral::Float(value) => {
+            TsLiteral::Null => "null".to_string(),
+            TsLiteral::Boolean(value) => value.to_string(),
+            TsLiteral::Integer(value) => value.to_string(),
+            TsLiteral::Float(value) => {
                 if value.fract() == 0.0 {
                     format!("{:.1}", value)
                 } else {
                     value.to_string()
                 }
             }
-            TSLiteral::String(value) => format!("\"{}\"", value.escape_default()),
+            TsLiteral::String(value) => format!("\"{}\"", value.escape_default()),
         })
     }
 }
@@ -34,7 +34,7 @@ mod tests {
     #[test]
     fn test_render_null() {
         assert_snapshot!(
-            TSLiteral::Null
+            TsLiteral::Null
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"null"
@@ -44,13 +44,13 @@ mod tests {
     #[test]
     fn test_render_boolean() {
         assert_snapshot!(
-            TSLiteral::Boolean(true)
+            TsLiteral::Boolean(true)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"true"
         );
         assert_snapshot!(
-            TSLiteral::Boolean(false)
+            TsLiteral::Boolean(false)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"false"
@@ -60,13 +60,13 @@ mod tests {
     #[test]
     fn test_render_integer() {
         assert_snapshot!(
-            TSLiteral::Integer(1)
+            TsLiteral::Integer(1)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"1"
         );
         assert_snapshot!(
-            TSLiteral::Integer(-1)
+            TsLiteral::Integer(-1)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"-1"
@@ -76,19 +76,19 @@ mod tests {
     #[test]
     fn test_render_float() {
         assert_snapshot!(
-            TSLiteral::Float(1.0)
+            TsLiteral::Float(1.0)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"1.0"
         );
         assert_snapshot!(
-            TSLiteral::Float(-1.1)
+            TsLiteral::Float(-1.1)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"-1.1"
         );
         assert_snapshot!(
-            TSLiteral::Float(1.23456789)
+            TsLiteral::Float(1.23456789)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"1.23456789"
@@ -98,13 +98,13 @@ mod tests {
     #[test]
     fn test_render_string() {
         assert_snapshot!(
-            TSLiteral::String("Hi!".into())
+            TsLiteral::String("Hi!".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @r#""Hi!""#
         );
         assert_snapshot!(
-            TSLiteral::String("Hello, \"world\"!\\".into())
+            TsLiteral::String("Hello, \"world\"!\\".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @r#""Hello, \"world\"!\\""#

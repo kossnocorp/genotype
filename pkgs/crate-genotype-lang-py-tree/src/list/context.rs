@@ -1,12 +1,12 @@
 use crate::prelude::internal::*;
 
-impl PYContextResolve for PYList {
+impl PyContextResolve for PyList {
     fn resolve<Context>(self, context: &mut Context) -> Self
     where
-        Context: PYConvertContextConstraint,
+        Context: PyConvertContextConstraint,
     {
-        if context.is_version(PYVersion::Legacy) {
-            context.add_import(PYDependencyIdent::Typing, "List".into());
+        if context.is_version(PyVersion::Legacy) {
+            context.add_import(PyDependencyIdent::Typing, "List".into());
         }
         self
     }
@@ -19,9 +19,9 @@ mod tests {
 
     #[test]
     fn test_resolve() {
-        let mut context = PYConvertContextMock::default();
-        let list = PYList {
-            descriptor: PYPrimitive::String.into(),
+        let mut context = PyConvertContextMock::default();
+        let list = PyList {
+            descriptor: PyPrimitive::String.into(),
         };
         list.resolve(&mut context);
         assert_eq!(context.as_imports(), vec![]);
@@ -29,14 +29,14 @@ mod tests {
 
     #[test]
     fn test_resolve_legacy() {
-        let mut context = PYConvertContextMock::new(PYVersion::Legacy);
-        let list = PYList {
-            descriptor: PYPrimitive::String.into(),
+        let mut context = PyConvertContextMock::new(PyVersion::Legacy);
+        let list = PyList {
+            descriptor: PyPrimitive::String.into(),
         };
         list.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
-            vec![(PYDependencyIdent::Typing, "List".into())]
+            vec![(PyDependencyIdent::Typing, "List".into())]
         );
     }
 }

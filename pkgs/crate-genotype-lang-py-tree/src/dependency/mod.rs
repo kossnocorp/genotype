@@ -1,18 +1,18 @@
 use crate::prelude::internal::*;
 
-pub struct PYDependency {}
+pub struct PyDependency {}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Visitor)]
-pub enum PYDependencyIdent {
-    Path(#[visit] PYPath),
+pub enum PyDependencyIdent {
+    Path(#[visit] PyPath),
     Runtime,
     Typing,
     TypingExtensions,
     Pydantic,
 }
 
-impl PYDependencyIdent {
-    pub fn as_path(&self) -> PYPath {
+impl PyDependencyIdent {
+    pub fn as_path(&self) -> PyPath {
         match self {
             Self::Path(path) => path.clone(),
             Self::Runtime => "genotype".into(),
@@ -22,17 +22,17 @@ impl PYDependencyIdent {
         }
     }
 
-    pub fn external(&self) -> Option<PYDependencyExternal> {
+    pub fn external(&self) -> Option<PyDependencyExternal> {
         match self {
-            Self::Runtime => Some(PYDependencyExternal {
+            Self::Runtime => Some(PyDependencyExternal {
                 name: "genotype-runtime".into(),
                 version: "^0.4".into(),
             }),
-            Self::TypingExtensions => Some(PYDependencyExternal {
+            Self::TypingExtensions => Some(PyDependencyExternal {
                 name: "typing-extensions".into(),
                 version: "^4".into(),
             }),
-            Self::Pydantic => Some(PYDependencyExternal {
+            Self::Pydantic => Some(PyDependencyExternal {
                 name: "pydantic".into(),
                 version: "^2.9".into(),
             }),
@@ -41,15 +41,15 @@ impl PYDependencyIdent {
     }
 }
 
-impl GtlDependencyIdent for PYDependencyIdent {}
+impl GtlDependencyIdent for PyDependencyIdent {}
 
-impl From<&str> for PYDependencyIdent {
+impl From<&str> for PyDependencyIdent {
     fn from(str: &str) -> Self {
-        PYDependencyIdent::Path(str.into())
+        PyDependencyIdent::Path(str.into())
     }
 }
 
-pub struct PYDependencyExternal {
+pub struct PyDependencyExternal {
     pub name: String,
     pub version: String,
 }

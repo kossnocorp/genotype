@@ -1,6 +1,6 @@
 use crate::prelude::internal::*;
 
-impl RSConvertContext {
+impl RsConvertContext {
     pub fn config(&self) -> &RsConfigLang {
         &self.config
     }

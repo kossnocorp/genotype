@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSDescriptor {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsDescriptor {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -11,15 +11,15 @@ impl<'a> GtlRender<'a> for RSDescriptor {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         Ok(match self {
-            RSDescriptor::Enum(r#enum) => r#enum.render(state, context)?,
-            RSDescriptor::Vec(array) => array.render(state, context)?,
-            RSDescriptor::Primitive(primitive) => primitive.render(state, context)?,
-            RSDescriptor::Reference(name) => name.render(state, context)?,
-            RSDescriptor::InlineUse(inline_use) => inline_use.render(state, context)?,
-            RSDescriptor::Tuple(tuple) => tuple.render(state, context)?,
-            RSDescriptor::Map(dict) => dict.render(state, context)?,
-            RSDescriptor::Option(option) => option.render(state, context)?,
-            RSDescriptor::Any(any) => any.render(state, context)?,
+            RsDescriptor::Enum(r#enum) => r#enum.render(state, context)?,
+            RsDescriptor::Vec(array) => array.render(state, context)?,
+            RsDescriptor::Primitive(primitive) => primitive.render(state, context)?,
+            RsDescriptor::Reference(name) => name.render(state, context)?,
+            RsDescriptor::InlineUse(inline_use) => inline_use.render(state, context)?,
+            RsDescriptor::Tuple(tuple) => tuple.render(state, context)?,
+            RsDescriptor::Map(dict) => dict.render(state, context)?,
+            RsDescriptor::Option(option) => option.render(state, context)?,
+            RsDescriptor::Any(any) => any.render(state, context)?,
         })
     }
 }
@@ -32,8 +32,8 @@ mod tests {
     #[test]
     fn test_render_array() {
         assert_snapshot!(
-            RSDescriptor::Vec(Box::new(RSVec {
-                descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize)
+            RsDescriptor::Vec(Box::new(RsVec {
+                descriptor: RsDescriptor::Primitive(RsPrimitive::IntSize)
             }))
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -44,13 +44,13 @@ mod tests {
     #[test]
     fn test_render_primitive() {
         assert_snapshot!(
-            RSDescriptor::Primitive(RSPrimitive::Boolean)
+            RsDescriptor::Primitive(RsPrimitive::Boolean)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"bool"
         );
         assert_snapshot!(
-            RSDescriptor::Primitive(RSPrimitive::String)
+            RsDescriptor::Primitive(RsPrimitive::String)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"String"
@@ -60,10 +60,10 @@ mod tests {
     #[test]
     fn test_render_reference() {
         assert_snapshot!(
-            RSDescriptor::Reference(RSReference {
-                id: GTReferenceId("module".into(), (0, 0).into()),
+            RsDescriptor::Reference(RsReference {
+                id: GtReferenceId("module".into(), (0, 0).into()),
                 identifier: "Name".into(),
-                definition_id: GTDefinitionId("module".into(), "Name".into())
+                definition_id: GtDefinitionId("module".into(), "Name".into())
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -74,8 +74,8 @@ mod tests {
     #[test]
     fn test_render_inline_use() {
         assert_snapshot!(
-            RSDescriptor::InlineUse(RSInlineUse {
-                path: RSPath("path/to/module".into(), "self::path::to::module".into()),
+            RsDescriptor::InlineUse(RsInlineUse {
+                path: RsPath("path/to/module".into(), "self::path::to::module".into()),
                 name: "Name".into()
             })
             .render(Default::default(), &mut Default::default())
@@ -87,10 +87,10 @@ mod tests {
     #[test]
     fn test_render_tuple() {
         assert_snapshot!(
-            RSDescriptor::Tuple(RSTuple {
+            RsDescriptor::Tuple(RsTuple {
                 descriptors: vec![
-                    RSDescriptor::Primitive(RSPrimitive::IntSize),
-                    RSDescriptor::Primitive(RSPrimitive::String)
+                    RsDescriptor::Primitive(RsPrimitive::IntSize),
+                    RsDescriptor::Primitive(RsPrimitive::String)
                 ]
             })
             .render(Default::default(), &mut Default::default())
@@ -102,9 +102,9 @@ mod tests {
     #[test]
     fn test_render_map() {
         assert_snapshot!(
-            RSDescriptor::Map(Box::new(RSMap {
-                key: RSPrimitive::String.into(),
-                descriptor: RSPrimitive::IntSize.into(),
+            RsDescriptor::Map(Box::new(RsMap {
+                key: RsPrimitive::String.into(),
+                descriptor: RsPrimitive::IntSize.into(),
             }))
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -115,8 +115,8 @@ mod tests {
     #[test]
     fn test_render_option() {
         assert_snapshot!(
-            RSDescriptor::Option(Box::new(RSOption::new(RSDescriptor::Primitive(
-                RSPrimitive::String
+            RsDescriptor::Option(Box::new(RsOption::new(RsDescriptor::Primitive(
+                RsPrimitive::String
             ))))
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -127,7 +127,7 @@ mod tests {
     #[test]
     fn test_render_any() {
         assert_snapshot!(
-            RSDescriptor::Any(RSAny)
+            RsDescriptor::Any(RsAny)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"Any"

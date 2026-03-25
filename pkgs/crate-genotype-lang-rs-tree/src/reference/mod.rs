@@ -4,16 +4,16 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct RSReference {
-    pub id: GTReferenceId,
+pub struct RsReference {
+    pub id: GtReferenceId,
     #[visit]
-    pub identifier: RSIdentifier,
-    pub definition_id: GTDefinitionId,
+    pub identifier: RsIdentifier,
+    pub definition_id: GtDefinitionId,
 }
 
-impl RSReference {
-    pub fn new(id: GTReferenceId, identifier: RSIdentifier, definition_id: GTDefinitionId) -> Self {
-        RSReference {
+impl RsReference {
+    pub fn new(id: GtReferenceId, identifier: RsIdentifier, definition_id: GtDefinitionId) -> Self {
+        RsReference {
             id,
             identifier,
             definition_id,

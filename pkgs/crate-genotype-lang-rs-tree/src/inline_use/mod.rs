@@ -4,9 +4,9 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct RSInlineUse {
+pub struct RsInlineUse {
     #[visit]
-    pub path: RSPath,
+    pub path: RsPath,
     #[visit]
-    pub name: RSIdentifier,
+    pub name: RsIdentifier,
 }

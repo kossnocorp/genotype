@@ -1,12 +1,12 @@
 use crate::prelude::internal::*;
 
-impl PYConvert<PYImportName> for GTImportName {
-    fn convert(&self, context: &mut PYConvertContext) -> PYImportName {
+impl PyConvert<PyImportName> for GtImportName {
+    fn convert(&self, context: &mut PyConvertContext) -> PyImportName {
         match self {
-            Self::Name(_, name) => PYImportName::Name(name.convert(context)),
+            Self::Name(_, name) => PyImportName::Name(name.convert(context)),
 
             Self::Alias(_, name, alias) => {
-                PYImportName::Alias(name.convert(context), alias.convert(context))
+                PyImportName::Alias(name.convert(context), alias.convert(context))
             }
         }
     }
@@ -20,25 +20,25 @@ mod tests {
     #[test]
     fn test_convert_name() {
         assert_ron_snapshot!(
-            GTImportName::Name(
+            GtImportName::Name(
                 (0, 0).into(),
-                GTIdentifier::new((0, 0).into(), "Name".into())
+                GtIdentifier::new((0, 0).into(), "Name".into())
             )
-            .convert(&mut PYConvertContext::default()),
-            @r#"Name(PYIdentifier("Name"))"#,
+            .convert(&mut PyConvertContext::default()),
+            @r#"Name(PyIdentifier("Name"))"#,
         );
     }
 
     #[test]
     fn test_convert_alias() {
         assert_ron_snapshot!(
-            GTImportName::Alias(
+            GtImportName::Alias(
                 (0, 0).into(),
-                GTIdentifier::new((0, 0).into(), "Name".into()),
-                GTIdentifier::new((0, 0).into(), "Alias".into())
+                GtIdentifier::new((0, 0).into(), "Name".into()),
+                GtIdentifier::new((0, 0).into(), "Alias".into())
             )
-            .convert(&mut PYConvertContext::default()),
-            @r#"Alias(PYIdentifier("Name"), PYIdentifier("Alias"))"#,
+            .convert(&mut PyConvertContext::default()),
+            @r#"Alias(PyIdentifier("Name"), PyIdentifier("Alias"))"#,
         );
     }
 }

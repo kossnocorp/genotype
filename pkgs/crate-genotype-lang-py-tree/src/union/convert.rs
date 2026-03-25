@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl PYConvert<PYUnion> for GTUnion {
-    fn convert(&self, context: &mut PYConvertContext) -> PYUnion {
-        PYUnion {
+impl PyConvert<PyUnion> for GtUnion {
+    fn convert(&self, context: &mut PyConvertContext) -> PyUnion {
+        PyUnion {
             descriptors: self
                 .descriptors
                 .iter()
@@ -28,7 +28,7 @@ mod tests {
                 Gt::primitive_string().into(),
             ])),
             @"
-        PYUnion(
+        PyUnion(
           descriptors: [
             Primitive(Boolean),
             Primitive(String),
@@ -41,10 +41,10 @@ mod tests {
 
     #[test]
     fn test_convert_resolve() {
-        let mut context = PYConvertContext::new(
-            PYConvertResolve::default(),
+        let mut context = PyConvertContext::new(
+            PyConvertResolve::default(),
             PyConfig {
-                lang: PyConfigLang::new(PYVersion::Legacy),
+                lang: PyConfigLang::new(PyVersion::Legacy),
                 ..Default::default()
             },
         );
@@ -53,7 +53,7 @@ mod tests {
                 Gt::primitive_string().into(),
             ]), &mut context),
             @"
-        PYUnion(
+        PyUnion(
           descriptors: [
             Primitive(String),
           ],
@@ -65,7 +65,7 @@ mod tests {
             context.as_dependencies(),
             @r#"
         [
-          (Typing, PYIdentifier("Union")),
+          (Typing, PyIdentifier("Union")),
         ]
         "#
         );

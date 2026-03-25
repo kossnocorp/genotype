@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSIntersection {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsIntersection {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -27,13 +27,13 @@ mod tests {
     #[test]
     fn test_render_union() {
         assert_snapshot!(
-            TSIntersection {
+            TsIntersection {
                 descriptors: vec![
-                    TSObject {
-                        properties: vec![TSProperty {
+                    TsObject {
+                        properties: vec![TsProperty {
                             doc: None,
                             name: "hello".into(),
-                            descriptor: TSPrimitive::String.into(),
+                            descriptor: TsPrimitive::String.into(),
                             required: true,
                         }],
                     }

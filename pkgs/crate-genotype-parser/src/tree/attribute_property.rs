@@ -1,27 +1,27 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
-pub struct GTAttributeProperty {
-    pub span: GTSpan,
+pub struct GtAttributeProperty {
+    pub span: GtSpan,
     #[visit]
-    pub name: GTAttributeKey,
-    pub value: GTAttributeValue,
+    pub name: GtAttributeKey,
+    pub value: GtAttributeValue,
 }
 
-impl GTAttributeProperty {
-    pub fn new(span: GTSpan, name: GTAttributeKey, value: GTAttributeValue) -> Self {
+impl GtAttributeProperty {
+    pub fn new(span: GtSpan, name: GtAttributeKey, value: GtAttributeValue) -> Self {
         Self { span, name, value }
     }
 }
 
-impl GTAttributeProperty {
-    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
-        let span: GTSpan = pair.as_span().into();
+impl GtAttributeProperty {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> GtNodeParseResult<Self> {
+        let span: GtSpan = pair.as_span().into();
 
         let mut inner = pair.into_inner();
         let pair = inner
             .next()
-            .ok_or_else(|| GTParseError::UnexpectedEnd(span.clone(), GTNode::AttributeProperty))?;
+            .ok_or_else(|| GtParseError::UnexpectedEnd(span.clone(), GtNode::AttributeProperty))?;
 
         let property = parse(inner, pair, ParseState::Name(span), context)?;
 
@@ -33,33 +33,33 @@ fn parse(
     mut inner: Pairs<'_, Rule>,
     pair: Pair<'_, Rule>,
     state: ParseState,
-    context: &mut GTContext,
-) -> GTNodeParseResult<GTAttributeProperty> {
+    context: &mut GtContext,
+) -> GtNodeParseResult<GtAttributeProperty> {
     match state {
         ParseState::Name(span) => {
-            let key = GTAttributeKey::parse(pair);
+            let key = GtAttributeKey::parse(pair);
 
             match inner.next() {
                 Some(pair) => parse(inner, pair, ParseState::Value(span, key), context),
 
-                None => Err(GTParseError::UnexpectedEnd(
+                None => Err(GtParseError::UnexpectedEnd(
                     span.clone(),
-                    GTNode::AttributeProperty,
+                    GtNode::AttributeProperty,
                 )),
             }
         }
 
         ParseState::Value(span, name) => {
-            let value = GTAttributeValue::parse(pair, context)?;
+            let value = GtAttributeValue::parse(pair, context)?;
 
-            Ok(GTAttributeProperty { span, name, value })
+            Ok(GtAttributeProperty { span, name, value })
         }
     }
 }
 
 enum ParseState {
-    Name(GTSpan),
-    Value(GTSpan, GTAttributeKey),
+    Name(GtSpan),
+    Value(GtSpan, GtAttributeKey),
 }
 
 #[cfg(test)]
@@ -73,18 +73,18 @@ mod tests {
     fn test_parse() {
         let mut pairs =
             GenotypeParser::parse(Rule::attribute_property, r#"hello = "world""#).unwrap();
-        let mut context = GTContext::new("module".into());
+        let mut context = GtContext::new("module".into());
         assert_ron_snapshot!(
-            GTAttributeProperty::parse(pairs.next().unwrap(), &mut context).unwrap(),
+            GtAttributeProperty::parse(pairs.next().unwrap(), &mut context).unwrap(),
             @r#"
-        GTAttributeProperty(
-          span: GTSpan(0, 15),
-          name: GTAttributeKey(
-            span: GTSpan(0, 5),
+        GtAttributeProperty(
+          span: GtSpan(0, 15),
+          name: GtAttributeKey(
+            span: GtSpan(0, 5),
             value: "hello",
           ),
-          value: Literal(GTLiteral(
-            span: GTSpan(8, 15),
+          value: Literal(GtLiteral(
+            span: GtSpan(8, 15),
             doc: None,
             attributes: [],
             value: String("world"),

@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSField {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsField {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -38,25 +38,25 @@ mod tests {
     #[test]
     fn test_render_primitive() {
         assert_snapshot!(
-            RSField {
+            RsField {
                 doc: None,
                 attributes: vec![],
                 name: "name".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                descriptor: RsDescriptor::Primitive(RsPrimitive::String),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
             @"pub name: String"
         );
         assert_snapshot!(
-            RSField {
+            RsField {
                 doc: None,
                 attributes: vec![],
                 name: "name".into(),
-                descriptor: RSReference {
-                    id: GTReferenceId("module".into(), (0, 0).into()),
+                descriptor: RsReference {
+                    id: GtReferenceId("module".into(), (0, 0).into()),
                     identifier: "Name".into(),
-                    definition_id: GTDefinitionId("module".into(), "Name".into())
+                    definition_id: GtDefinitionId("module".into(), "Name".into())
                 }
                 .into(),
             }
@@ -69,14 +69,14 @@ mod tests {
     #[test]
     fn test_render_indent() {
         assert_snapshot!(
-            RSField {
+            RsField {
                 doc: None,
                 attributes: vec![],
                 name: "name".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                descriptor: RsDescriptor::Primitive(RsPrimitive::String),
             }
             .render(
-                RSRenderState::default().indent_inc(),
+                RsRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),
@@ -87,11 +87,11 @@ mod tests {
     #[test]
     fn test_render_doc() {
         assert_snapshot!(
-            RSField {
+            RsField {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "name".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                descriptor: RsDescriptor::Primitive(RsPrimitive::String),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -101,14 +101,14 @@ mod tests {
         "
         );
         assert_snapshot!(
-            RSField {
+            RsField {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "name".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                descriptor: RsDescriptor::Primitive(RsPrimitive::String),
             }
             .render(
-                RSRenderState::default().indent_inc(),
+                RsRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),
@@ -122,11 +122,11 @@ mod tests {
     #[test]
     fn test_render_attributes() {
         assert_snapshot!(
-            RSField {
+            RsField {
                 doc: None,
-                attributes: vec![RSAttribute("derive(Clone)".into())],
+                attributes: vec![RsAttribute("derive(Clone)".into())],
                 name: "name".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                descriptor: RsDescriptor::Primitive(RsPrimitive::String),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -136,14 +136,14 @@ mod tests {
         "
         );
         assert_snapshot!(
-            RSField {
+            RsField {
                 doc: None,
-                attributes: vec![RSAttribute("derive(Clone)".into())],
+                attributes: vec![RsAttribute("derive(Clone)".into())],
                 name: "name".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                descriptor: RsDescriptor::Primitive(RsPrimitive::String),
             }
             .render(
-                RSRenderState::default().indent_inc(),
+                RsRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),
@@ -153,14 +153,14 @@ mod tests {
         "
         );
         assert_snapshot!(
-            RSField {
+            RsField {
                 doc: Some("Hello, world!".into()),
-                attributes: vec![RSAttribute("derive(Clone)".into())],
+                attributes: vec![RsAttribute("derive(Clone)".into())],
                 name: "name".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                descriptor: RsDescriptor::Primitive(RsPrimitive::String),
             }
             .render(
-                RSRenderState::default().indent_inc(),
+                RsRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),

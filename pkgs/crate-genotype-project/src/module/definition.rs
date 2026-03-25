@@ -9,7 +9,7 @@ use genotype_parser::*;
 #[derive(Default, Debug, PartialEq, Clone, Serialize)]
 pub struct GtProjectModuleDefinitionResolve {
     /// All definition references in the module.
-    pub references: HashSet<GTReferenceId>,
+    pub references: HashSet<GtReferenceId>,
     /// Identfiers the definition depends on.
-    pub deps: HashSet<GTIdentifier>,
+    pub deps: HashSet<GtIdentifier>,
 }

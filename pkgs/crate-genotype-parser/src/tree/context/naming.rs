@@ -1,23 +1,23 @@
 use crate::prelude::internal::*;
 
-impl GTContext {
-    pub fn enter_parent(&mut self, parent: GTContextParent) {
+impl GtContext {
+    pub fn enter_parent(&mut self, parent: GtContextParent) {
         self.parents.push(parent)
     }
 
-    pub fn exit_parent(&mut self, span: GTSpan, node: GTNode) -> GTNodeParseResult<()> {
+    pub fn exit_parent(&mut self, span: GtSpan, node: GtNode) -> GtNodeParseResult<()> {
         self.parents
             .pop()
-            .ok_or_else(|| GTParseError::Internal(span.clone(), node))?;
+            .ok_or_else(|| GtParseError::Internal(span.clone(), node))?;
         Ok(())
     }
 
     /// Builds the object name from the parents.
-    pub fn name_object(&mut self, span: GTSpan) -> GTNodeParseResult<GTObjectName> {
+    pub fn name_object(&mut self, span: GtSpan) -> GtNodeParseResult<GtObjectName> {
         // The alias is the immediate parent, so we can return it.
         if let Some(name) = self.claim_alias() {
             self.claim_name(name.1.as_ref());
-            return Ok(GTObjectName::Named(name));
+            return Ok(GtObjectName::Named(name));
         }
 
         let mut keys = vec![];
@@ -26,50 +26,50 @@ impl GTContext {
         for parent in self.parents.iter().rev() {
             match parent {
                 // If there's an property parent, we start building the keys path
-                GTContextParent::Property(key) => keys.insert(0, key.clone()),
+                GtContextParent::Property(key) => keys.insert(0, key.clone()),
 
                 // If we finally found an alias parent, we can stop building the name and retuen it.
-                GTContextParent::Alias(identifier) => {
+                GtContextParent::Alias(identifier) => {
                     let parent = if keys.len() == 0 {
                         // If there was no keys on the path, then the parent is an alias.
-                        GTObjectNameParent::Alias(identifier.clone())
+                        GtObjectNameParent::Alias(identifier.clone())
                     } else {
                         // Otherwise the parent is a property.
-                        GTObjectNameParent::Property(identifier.clone(), keys)
+                        GtObjectNameParent::Property(identifier.clone(), keys)
                     };
 
                     let identifier = parent.to_identifier(span.clone());
                     // [TODO] Ensure unique name
                     self.claim_name(identifier.1.as_ref());
 
-                    return Ok(GTObjectName::Alias(identifier, parent));
+                    return Ok(GtObjectName::Alias(identifier, parent));
                 }
 
                 // Nothing to do
-                GTContextParent::Anonymous => {}
+                GtContextParent::Anonymous => {}
             }
         }
 
         // Parents are in an invalid state, we can't resolve the object name.
-        Err(GTParseError::Internal(span.clone(), GTNode::ObjectName))
+        Err(GtParseError::Internal(span.clone(), GtNode::ObjectName))
     }
 
     /// Tries claiming the alias from the parent.
-    pub fn claim_alias(&self) -> Option<GTIdentifier> {
-        if let Some(GTContextParent::Alias(identifier)) = self.parents.last() {
+    pub fn claim_alias(&self) -> Option<GtIdentifier> {
+        if let Some(GtContextParent::Alias(identifier)) = self.parents.last() {
             return Some(identifier.clone());
         }
         None
     }
 
     /// It generates a definition id and name from the parents.
-    pub fn get_name(&mut self, span: &GTSpan, base_name: &str) -> GTIdentifier {
+    pub fn get_name(&mut self, span: &GtSpan, base_name: &str) -> GtIdentifier {
         let name = if let Some(name) = self.claim_alias() {
             // The alias is the immediate parent, so we can return it.
             name
         } else {
             // If the immediate parent is an anonymous parent, we'll have to use the base name.
-            let anonymous = if let Some(GTContextParent::Anonymous) = self.parents.last() {
+            let anonymous = if let Some(GtContextParent::Anonymous) = self.parents.last() {
                 true
             } else {
                 false
@@ -79,16 +79,16 @@ impl GTContext {
             for parent in self.parents.iter().rev() {
                 match parent {
                     // Add any keys on the path to the name segments.
-                    GTContextParent::Property(key) => segments.push(key.1.to_string()),
+                    GtContextParent::Property(key) => segments.push(key.1.to_string()),
 
                     // If we finally found an alias parent, we can stop building the name.
-                    GTContextParent::Alias(identifier) => {
+                    GtContextParent::Alias(identifier) => {
                         segments.push(identifier.1.to_string());
                         break;
                     }
 
                     // Ignore anonymous parents.
-                    GTContextParent::Anonymous => {}
+                    GtContextParent::Anonymous => {}
                 }
             }
 
@@ -108,14 +108,14 @@ impl GTContext {
     }
 
     /// Enumerates the name if it's already claimed.
-    fn ensure_unique_name(&self, span: &GTSpan, name: String) -> GTIdentifier {
+    fn ensure_unique_name(&self, span: &GtSpan, name: String) -> GtIdentifier {
         let name = if self.is_name_claimed(&name) {
             self.enumerate_name(&name)
         } else {
             name
         };
 
-        GTIdentifier::new(span.clone(), name.into())
+        GtIdentifier::new(span.clone(), name.into())
     }
 
     /// Enumerates the name if it's already claimed.
@@ -148,68 +148,68 @@ mod tests {
 
     #[test]
     fn test_object_name_named() {
-        let mut context = GTContext {
+        let mut context = GtContext {
             module_id: "module".into(),
-            resolve: GTModuleResolve::new(),
+            resolve: GtModuleResolve::new(),
             parents: vec![
-                GTContextParent::Alias(GTIdentifier::new((0, 5).into(), "Hi".into())),
-                GTContextParent::Alias(GTIdentifier::new((5, 10).into(), "Hello".into())),
+                GtContextParent::Alias(GtIdentifier::new((0, 5).into(), "Hi".into())),
+                GtContextParent::Alias(GtIdentifier::new((5, 10).into(), "Hello".into())),
             ],
             claimed_names: Default::default(),
             annotation: None,
         };
         assert_eq!(
             context.name_object((50, 55).into()).unwrap(),
-            GTObjectName::Named(GTIdentifier::new((5, 10).into(), "Hello".into()))
+            GtObjectName::Named(GtIdentifier::new((5, 10).into(), "Hello".into()))
         );
     }
 
     #[test]
     fn test_object_name_alias() {
-        let mut context = GTContext {
+        let mut context = GtContext {
             module_id: "module".into(),
-            resolve: GTModuleResolve::new(),
+            resolve: GtModuleResolve::new(),
             parents: vec![
-                GTContextParent::Alias(GTIdentifier::new((0, 5).into(), "Hi".into())),
-                GTContextParent::Alias(GTIdentifier::new((5, 10).into(), "Hello".into())),
-                GTContextParent::Anonymous,
+                GtContextParent::Alias(GtIdentifier::new((0, 5).into(), "Hi".into())),
+                GtContextParent::Alias(GtIdentifier::new((5, 10).into(), "Hello".into())),
+                GtContextParent::Anonymous,
             ],
             claimed_names: Default::default(),
             annotation: None,
         };
         assert_eq!(
             context.name_object((50, 55).into()).unwrap(),
-            GTObjectName::Alias(
-                GTIdentifier::new((50, 55).into(), "HelloObj".into()),
-                GTObjectNameParent::Alias(GTIdentifier::new((5, 10).into(), "Hello".into()))
+            GtObjectName::Alias(
+                GtIdentifier::new((50, 55).into(), "HelloObj".into()),
+                GtObjectNameParent::Alias(GtIdentifier::new((5, 10).into(), "Hello".into()))
             )
         );
     }
 
     #[test]
     fn test_object_name_property() {
-        let mut context = GTContext {
+        let mut context = GtContext {
             module_id: "module".into(),
-            resolve: GTModuleResolve::new(),
+            resolve: GtModuleResolve::new(),
             parents: vec![
-                GTContextParent::Alias(GTIdentifier::new((0, 5).into(), "Hi".into())),
-                GTContextParent::Alias(GTIdentifier::new((5, 10).into(), "Hello".into())),
-                GTContextParent::Anonymous,
-                GTContextParent::Property(GTKey::new((10, 15).into(), "cruel".into())),
-                GTContextParent::Property(GTKey::new((15, 20).into(), "world".into())),
+                GtContextParent::Alias(GtIdentifier::new((0, 5).into(), "Hi".into())),
+                GtContextParent::Alias(GtIdentifier::new((5, 10).into(), "Hello".into())),
+                GtContextParent::Anonymous,
+                GtContextParent::Property(GtKey::new((10, 15).into(), "cruel".into())),
+                GtContextParent::Property(GtKey::new((15, 20).into(), "world".into())),
             ],
             claimed_names: Default::default(),
             annotation: None,
         };
         assert_eq!(
             context.name_object((50, 55).into()).unwrap(),
-            GTObjectName::Alias(
-                GTIdentifier::new((50, 55).into(), "HelloCruelWorld".into()),
-                GTObjectNameParent::Property(
-                    GTIdentifier::new((5, 10).into(), "Hello".into()),
+            GtObjectName::Alias(
+                GtIdentifier::new((50, 55).into(), "HelloCruelWorld".into()),
+                GtObjectNameParent::Property(
+                    GtIdentifier::new((5, 10).into(), "Hello".into()),
                     vec![
-                        GTKey::new((10, 15).into(), "cruel".into()),
-                        GTKey::new((15, 20).into(), "world".into())
+                        GtKey::new((10, 15).into(), "cruel".into()),
+                        GtKey::new((15, 20).into(), "world".into())
                     ]
                 )
             )

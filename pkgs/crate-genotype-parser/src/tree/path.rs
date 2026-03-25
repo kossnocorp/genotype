@@ -2,17 +2,17 @@ use crate::prelude::internal::*;
 
 /// Unique module path reference. It defines a particular path reference in the source code.
 #[derive(Debug, Eq, Hash, Clone, Serialize, Visitor)]
-pub struct GTPath(
+pub struct GtPath(
     /// Where the path is defined in the source code.
-    pub GTSpan,
+    pub GtSpan,
     /// Module identifier. May be unresolved.
-    pub GTPathModuleId,
+    pub GtPathModuleId,
     /// Literal path string how it was defined in the source code.
     Arc<str>,
 );
 
-impl GTPath {
-    pub fn new(span: GTSpan, module_id: GTPathModuleId, path: Arc<str>) -> Self {
+impl GtPath {
+    pub fn new(span: GtSpan, module_id: GtPathModuleId, path: Arc<str>) -> Self {
         Self(span, module_id, path)
     }
 
@@ -21,16 +21,16 @@ impl GTPath {
         self.2.as_ref()
     }
 
-    pub fn kind(&self) -> GTPathKind {
+    pub fn kind(&self) -> GtPathKind {
         if self.2.starts_with('.') || self.2.starts_with("~") {
-            GTPathKind::Local
+            GtPathKind::Local
         } else {
-            GTPathKind::Package
+            GtPathKind::Package
         }
     }
 
     pub fn package_path(&self) -> Option<(String, Option<String>)> {
-        if self.kind() == GTPathKind::Package {
+        if self.kind() == GtPathKind::Package {
             Some(match self.2.find("/") {
                 Some(index) => (
                     self.2[..index].to_owned(),
@@ -44,32 +44,32 @@ impl GTPath {
     }
 }
 
-impl PartialEq for GTPath {
+impl PartialEq for GtPath {
     fn eq(&self, other: &Self) -> bool {
         self.0 == other.0 && self.2 == other.2
     }
 }
 
 #[derive(PartialEq)]
-pub enum GTPathKind {
+pub enum GtPathKind {
     /// Local path (starts with `.`, `..` or `~/`).
     Local,
     /// Package path (have to prefix).
     Package,
 }
 
-impl GTPath {
-    pub fn split_parse(pair: Pair<'_, Rule>) -> GTNodeParseResult<(GTPath, (GTSpan, String))> {
+impl GtPath {
+    pub fn split_parse(pair: Pair<'_, Rule>) -> GtNodeParseResult<(GtPath, (GtSpan, String))> {
         let span = pair.as_span();
         let span_start = span.start();
         let str = pair.as_str().to_string();
-        let else_err = || GTParseError::Internal(span.into(), GTNode::Path);
+        let else_err = || GtParseError::Internal(span.into(), GtNode::Path);
 
         let name_index = str.rfind("/").ok_or_else(else_err)?;
 
         let path_str = str.get(..name_index).ok_or_else(else_err)?;
         let path_span = (span_start, span_start + name_index).into();
-        let path = GTPath::parse(path_span, path_str)?;
+        let path = GtPath::parse(path_span, path_str)?;
 
         let name = str.get(name_index + 1..).ok_or_else(else_err)?;
         let name_span = (span_start + name_index + 1, span.end()).into();
@@ -77,10 +77,10 @@ impl GTPath {
         Ok((path, (name_span, name.into())))
     }
 
-    pub fn parse(span: GTSpan, path: &str) -> GTNodeParseResult<Self> {
+    pub fn parse(span: GtSpan, path: &str) -> GtNodeParseResult<Self> {
         match Self::normalize_path(path) {
-            Ok(path) => Ok(GTPath(span, GTPathModuleId::Unresolved, path.into())),
-            Err(_) => Err(GTParseError::Internal(span, GTNode::Path)),
+            Ok(path) => Ok(GtPath(span, GtPathModuleId::Unresolved, path.into())),
+            Err(_) => Err(GtParseError::Internal(span, GtNode::Path)),
         }
     }
 
@@ -130,11 +130,11 @@ impl GTPath {
     }
 }
 
-impl TryFrom<Pair<'_, Rule>> for GTPath {
-    type Error = GTParseError;
+impl TryFrom<Pair<'_, Rule>> for GtPath {
+    type Error = GtParseError;
 
     fn try_from(pair: Pair<'_, Rule>) -> Result<Self, Self::Error> {
-        GTPath::parse(pair.as_span().into(), pair.as_str())
+        GtPath::parse(pair.as_span().into(), pair.as_str())
     }
 }
 
@@ -150,7 +150,7 @@ mod tests {
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::path, "./hello/world/").unwrap();
         assert_eq!(
-            GTPath::parse((0, 14).into(), "./hello/world/"),
+            GtPath::parse((0, 14).into(), "./hello/world/"),
             pairs.next().unwrap().try_into()
         );
     }
@@ -158,11 +158,11 @@ mod tests {
     #[test]
     fn test_split() {
         let mut pairs = GenotypeParser::parse(Rule::inline_import, "./hello/World").unwrap();
-        let result = GTPath::split_parse(pairs.next().unwrap()).unwrap();
+        let result = GtPath::split_parse(pairs.next().unwrap()).unwrap();
         assert_eq!(
             result,
             (
-                GTPath::parse((0, 7).into(), "./hello").unwrap(),
+                GtPath::parse((0, 7).into(), "./hello").unwrap(),
                 ((8, 13).into(), "World".into())
             )
         );
@@ -171,31 +171,31 @@ mod tests {
     #[test]
     fn test_normalize_path() {
         assert_eq!(
-            GTPath::parse((0, 0).into(), "./path/to/../module")
+            GtPath::parse((0, 0).into(), "./path/to/../module")
                 .unwrap()
                 .source_str(),
             "./path/module"
         );
         assert_eq!(
-            GTPath::parse((0, 0).into(), "./path/./to/./module")
+            GtPath::parse((0, 0).into(), "./path/./to/./module")
                 .unwrap()
                 .source_str(),
             "./path/to/module"
         );
         assert_eq!(
-            GTPath::parse((0, 0).into(), "path/./to/./module/../module")
+            GtPath::parse((0, 0).into(), "path/./to/./module/../module")
                 .unwrap()
                 .source_str(),
             "path/to/module"
         );
         assert_eq!(
-            GTPath::parse((0, 0).into(), "./././path/./to/./module/../module")
+            GtPath::parse((0, 0).into(), "./././path/./to/./module/../module")
                 .unwrap()
                 .source_str(),
             "./path/to/module"
         );
         assert_eq!(
-            GTPath::parse((0, 0).into(), "../../../path/./to/./module/../module")
+            GtPath::parse((0, 0).into(), "../../../path/./to/./module/../module")
                 .unwrap()
                 .source_str(),
             "../../../path/to/module"
@@ -216,72 +216,72 @@ mod tests {
             }"#
             .into(),
         );
-        let parse = GTModule::parse("module".into(), source_code.clone()).unwrap();
+        let parse = GtModule::parse("module".into(), source_code.clone()).unwrap();
         assert_ron_snapshot!(
             parse.module,
             @r#"
-        GTModule(
-          id: GTModuleId("module"),
+        GtModule(
+          id: GtModuleId("module"),
           doc: None,
           imports: [
-            GTImport(
-              span: GTSpan(0, 14),
-              path: GTPath(GTSpan(4, 12), Unresolved, "author"),
-              reference: Glob(GTSpan(13, 14)),
+            GtImport(
+              span: GtSpan(0, 14),
+              path: GtPath(GtSpan(4, 12), Unresolved, "author"),
+              reference: Glob(GtSpan(13, 14)),
             ),
-            GTImport(
-              span: GTSpan(27, 51),
-              path: GTPath(GTSpan(31, 46), Unresolved, "../user"),
-              reference: Name(GTSpan(47, 51), GTIdentifier(GTSpan(47, 51), "User")),
+            GtImport(
+              span: GtSpan(27, 51),
+              path: GtPath(GtSpan(31, 46), Unresolved, "../user"),
+              reference: Name(GtSpan(47, 51), GtIdentifier(GtSpan(47, 51), "User")),
             ),
-            GTImport(
-              span: GTSpan(64, 107),
-              path: GTPath(GTSpan(68, 84), Unresolved, "./misc/order"),
-              reference: Names(GTSpan(85, 107), [
-                Name(GTSpan(86, 91), GTIdentifier(GTSpan(86, 91), "Order")),
-                Name(GTSpan(93, 106), GTIdentifier(GTSpan(93, 106), "SomethingElse")),
+            GtImport(
+              span: GtSpan(64, 107),
+              path: GtPath(GtSpan(68, 84), Unresolved, "./misc/order"),
+              reference: Names(GtSpan(85, 107), [
+                Name(GtSpan(86, 91), GtIdentifier(GtSpan(86, 91), "Order")),
+                Name(GtSpan(93, 106), GtIdentifier(GtSpan(93, 106), "SomethingElse")),
               ]),
             ),
           ],
           aliases: [
-            GTAlias(
-              id: GTDefinitionId(GTModuleId("module"), "Order"),
-              span: GTSpan(121, 225),
+            GtAlias(
+              id: GtDefinitionId(GtModuleId("module"), "Order"),
+              span: GtSpan(121, 225),
               doc: None,
               attributes: [],
-              name: GTIdentifier(GTSpan(121, 126), "Order"),
-              descriptor: Object(GTObject(
-                span: GTSpan(128, 225),
+              name: GtIdentifier(GtSpan(121, 126), "Order"),
+              descriptor: Object(GtObject(
+                span: GtSpan(128, 225),
                 doc: None,
                 attributes: [],
-                name: Named(GTIdentifier(GTSpan(121, 126), "Order")),
+                name: Named(GtIdentifier(GtSpan(121, 126), "Order")),
                 extensions: [],
                 properties: [
-                  GTProperty(
-                    span: GTSpan(146, 161),
+                  GtProperty(
+                    span: GtSpan(146, 161),
                     doc: None,
                     attributes: [],
-                    name: GTKey(GTSpan(146, 150), "book"),
-                    descriptor: InlineImport(GTInlineImport(
-                      span: GTSpan(152, 161),
+                    name: GtKey(GtSpan(146, 150), "book"),
+                    descriptor: InlineImport(GtInlineImport(
+                      span: GtSpan(152, 161),
                       doc: None,
                       attributes: [],
-                      name: GTIdentifier(GTSpan(157, 161), "Book"),
-                      path: GTPath(GTSpan(152, 156), Unresolved, "book"),
+                      name: GtIdentifier(GtSpan(157, 161), "Book"),
+                      path: GtPath(GtSpan(152, 156), Unresolved, "book"),
                     )),
                     required: true,
                   ),
-                  GTProperty(
-                    span: GTSpan(179, 211),
+                  GtProperty(
+                    span: GtSpan(179, 211),
                     doc: None,
                     attributes: [],
-                    name: GTKey(GTSpan(179, 183), "user"),
-                    descriptor: InlineImport(GTInlineImport(
-                      span: GTSpan(185, 211),
+                    name: GtKey(GtSpan(179, 183), "user"),
+                    descriptor: InlineImport(GtInlineImport(
+                      span: GtSpan(185, 211),
                       doc: None,
                       attributes: [],
-                      name: GTIdentifier(GTSpan(207, 211), "User"),
-                      path: GTPath(GTSpan(185, 206), Unresolved, "./misc/user"),
+                      name: GtIdentifier(GtSpan(207, 211), "User"),
+                      path: GtPath(GtSpan(185, 206), Unresolved, "./misc/user"),
                     )),
                     required: true,
                   ),

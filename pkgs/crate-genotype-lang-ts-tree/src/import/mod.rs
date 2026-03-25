@@ -4,17 +4,17 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct TSImport {
+pub struct TsImport {
     #[visit]
-    pub path: TSPath,
+    pub path: TsPath,
     #[visit]
-    pub reference: TSImportReference,
+    pub reference: TsImportReference,
 }
 
-impl TSImport {
-    pub fn new(path: TSPath, reference: TSImportReference) -> Self {
-        TSImport { path, reference }
+impl TsImport {
+    pub fn new(path: TsPath, reference: TsImportReference) -> Self {
+        TsImport { path, reference }
     }
 }
 
-impl GtlImport for TSImport {}
+impl GtlImport for TsImport {}

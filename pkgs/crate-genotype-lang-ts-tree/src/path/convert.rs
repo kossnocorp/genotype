@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl TSConvert<TSPath> for GTPath {
-    fn convert(&self, context: &mut TSConvertContext) -> TSPath {
-        TSPath(context.resolve_path(self).into())
+impl TsConvert<TsPath> for GtPath {
+    fn convert(&self, context: &mut TsConvertContext) -> TsPath {
+        TsPath(context.resolve_path(self).into())
     }
 }
 
@@ -15,25 +15,25 @@ mod tests {
     #[test]
     fn test_convert_base() {
         assert_ron_snapshot!(
-            GTPath::parse((0, 0).into(), "./path/to/module")
+            GtPath::parse((0, 0).into(), "./path/to/module")
                 .unwrap()
                 .convert(&mut Default::default()),
-            @r#"TSPath("./path/to/module")"#
+            @r#"TsPath("./path/to/module")"#
         );
     }
 
     #[test]
     fn test_convert_resolve() {
-        let mut resolve = TSConvertResolve::new();
+        let mut resolve = TsConvertResolve::new();
         resolve.paths.insert(
-            GTPath::parse((0, 0).into(), "./path/to/module").unwrap(),
-            GTPath::parse((0, 0).into(), "./path/to/module/index").unwrap(),
+            GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+            GtPath::parse((0, 0).into(), "./path/to/module/index").unwrap(),
         );
         assert_ron_snapshot!(
-            GTPath::parse((0, 0).into(), "./path/to/module")
+            GtPath::parse((0, 0).into(), "./path/to/module")
                 .unwrap()
-                .convert(&mut TSConvertContext::new(resolve, Default::default())),
-            @r#"TSPath("./path/to/module/index")"#
+                .convert(&mut TsConvertContext::new(resolve, Default::default())),
+            @r#"TsPath("./path/to/module/index")"#
         );
     }
 }

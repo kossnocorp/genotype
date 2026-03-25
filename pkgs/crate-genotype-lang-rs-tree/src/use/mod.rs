@@ -4,15 +4,15 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct RSUse {
+pub struct RsUse {
     #[visit]
-    pub dependency: RSDependencyIdent,
+    pub dependency: RsDependencyIdent,
     #[visit]
-    pub reference: RSUseReference,
+    pub reference: RsUseReference,
 }
 
-impl RSUse {
-    pub fn new(dependency: RSDependencyIdent, reference: RSUseReference) -> Self {
+impl RsUse {
+    pub fn new(dependency: RsDependencyIdent, reference: RsUseReference) -> Self {
         Self {
             dependency,
             reference,
@@ -20,4 +20,4 @@ impl RSUse {
     }
 }
 
-impl GtlImport for RSUse {}
+impl GtlImport for RsUse {}

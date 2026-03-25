@@ -6,15 +6,15 @@ pub mod hoisting;
 mod resolve;
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct TSConvertContext {
-    resolve: TSConvertResolve,
-    hoisted: Vec<TSDefinition>,
-    doc: Option<TSDoc>,
+pub struct TsConvertContext {
+    resolve: TsConvertResolve,
+    hoisted: Vec<TsDefinition>,
+    doc: Option<TsDoc>,
     dependencies_config: HashMap<String, String>,
 }
 
-impl TSConvertContext {
-    pub fn new(resolve: TSConvertResolve, dependencies_config: HashMap<String, String>) -> Self {
+impl TsConvertContext {
+    pub fn new(resolve: TsConvertResolve, dependencies_config: HashMap<String, String>) -> Self {
         Self {
             resolve,
             hoisted: vec![],
@@ -24,7 +24,7 @@ impl TSConvertContext {
     }
 }
 
-impl Default for TSConvertContext {
+impl Default for TsConvertContext {
     fn default() -> Self {
         Self::new(Default::default(), Default::default())
     }

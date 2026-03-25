@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSEnumVariantDescriptor {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsEnumVariantDescriptor {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -11,7 +11,7 @@ impl<'a> GtlRender<'a> for RSEnumVariantDescriptor {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         Ok(match self {
-            RSEnumVariantDescriptor::Descriptor(descriptor) => descriptor.render(state, context)?,
+            RsEnumVariantDescriptor::Descriptor(descriptor) => descriptor.render(state, context)?,
         })
     }
 }
@@ -24,13 +24,13 @@ mod tests {
     #[test]
     fn test_render_descriptor() {
         assert_snapshot!(
-            RSEnumVariantDescriptor::Descriptor(RSDescriptor::Primitive(RSPrimitive::Boolean))
+            RsEnumVariantDescriptor::Descriptor(RsDescriptor::Primitive(RsPrimitive::Boolean))
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"bool"
         );
         assert_snapshot!(
-            RSEnumVariantDescriptor::Descriptor(RSDescriptor::Primitive(RSPrimitive::String))
+            RsEnumVariantDescriptor::Descriptor(RsDescriptor::Primitive(RsPrimitive::String))
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"String"

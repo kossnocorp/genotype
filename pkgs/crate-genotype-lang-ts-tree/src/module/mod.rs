@@ -5,11 +5,11 @@ pub use convert::*;
 mod render;
 
 #[derive(Default, Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct TSModule {
+pub struct TsModule {
     #[visit]
-    pub doc: Option<TSDoc>,
+    pub doc: Option<TsDoc>,
     #[visit]
-    pub imports: Vec<TSImport>,
+    pub imports: Vec<TsImport>,
     #[visit]
-    pub definitions: Vec<TSDefinition>,
+    pub definitions: Vec<TsDefinition>,
 }

@@ -1,29 +1,29 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
-pub struct GTAttributeAssignment {
-    pub span: GTSpan,
-    pub value: GTAttributeValue,
+pub struct GtAttributeAssignment {
+    pub span: GtSpan,
+    pub value: GtAttributeValue,
 }
 
-impl GTAttributeAssignment {
-    pub fn new(span: GTSpan, value: GTAttributeValue) -> Self {
+impl GtAttributeAssignment {
+    pub fn new(span: GtSpan, value: GtAttributeValue) -> Self {
         Self { span, value }
     }
 }
 
-impl GTAttributeAssignment {
-    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
-        let span: GTSpan = pair.as_span().into();
+impl GtAttributeAssignment {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> GtNodeParseResult<Self> {
+        let span: GtSpan = pair.as_span().into();
 
         let mut inner = pair.into_inner();
         let pair = inner.next().ok_or_else(|| {
-            GTParseError::UnexpectedEnd(span.clone(), GTNode::AttributeAssignment)
+            GtParseError::UnexpectedEnd(span.clone(), GtNode::AttributeAssignment)
         })?;
 
-        Ok(GTAttributeAssignment {
+        Ok(GtAttributeAssignment {
             span,
-            value: GTAttributeValue::parse(pair, context)?,
+            value: GtAttributeValue::parse(pair, context)?,
         })
     }
 }
@@ -37,14 +37,14 @@ mod tests {
     #[test]
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::attribute_assignment, "= 42").unwrap();
-        let mut context = GTContext::new("module".into());
+        let mut context = GtContext::new("module".into());
         assert_ron_snapshot!(
-            GTAttributeAssignment::parse(pairs.next().unwrap(), &mut context).unwrap(),
+            GtAttributeAssignment::parse(pairs.next().unwrap(), &mut context).unwrap(),
             @"
-        GTAttributeAssignment(
-          span: GTSpan(0, 4),
-          value: Literal(GTLiteral(
-            span: GTSpan(2, 4),
+        GtAttributeAssignment(
+          span: GtSpan(0, 4),
+          value: Literal(GtLiteral(
+            span: GtSpan(2, 4),
             doc: None,
             attributes: [],
             value: Integer(42),

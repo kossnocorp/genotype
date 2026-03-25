@@ -3,20 +3,20 @@ use genotype_parser::*;
 
 use crate::{GtjTreeConvert, GtjTreeConvertContext};
 
-impl GtjTreeConvert<GTPrimitive> for GtjString {
-    fn to_tree_with_context(&self, _context: &mut GtjTreeConvertContext) -> GTPrimitive {
-        GTPrimitive {
+impl GtjTreeConvert<GtPrimitive> for GtjString {
+    fn to_tree_with_context(&self, _context: &mut GtjTreeConvertContext) -> GtPrimitive {
+        GtPrimitive {
             span: Default::default(),
             doc: None,
             attributes: vec![],
-            kind: GTPrimitiveKind::String,
+            kind: GtPrimitiveKind::String,
         }
     }
 }
 
-impl GtjTreeConvert<GTDescriptor> for GtjString {
-    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTDescriptor {
-        GTDescriptor::Primitive(self.to_tree_with_context(context))
+impl GtjTreeConvert<GtDescriptor> for GtjString {
+    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GtDescriptor {
+        GtDescriptor::Primitive(self.to_tree_with_context(context))
     }
 }
 
@@ -33,20 +33,20 @@ mod tests {
             doc: None,
         };
 
-        let descriptor_tree: GTDescriptor = string.to_tree_with_context(&mut Default::default());
+        let descriptor_tree: GtDescriptor = string.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(descriptor_tree, @"
-        Primitive(GTPrimitive(
-          span: GTSpan(0, 0),
+        Primitive(GtPrimitive(
+          span: GtSpan(0, 0),
           kind: String,
           doc: None,
           attributes: [],
         ))
         ");
 
-        let string_tree: GTPrimitive = string.to_tree_with_context(&mut Default::default());
+        let string_tree: GtPrimitive = string.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(string_tree, @"
-        GTPrimitive(
-          span: GTSpan(0, 0),
+        GtPrimitive(
+          span: GtSpan(0, 0),
           kind: String,
           doc: None,
           attributes: [],

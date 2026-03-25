@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYDictKey {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyDictKey {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
     fn render(
         &self,
@@ -11,10 +11,10 @@ impl<'a> GtlRender<'a> for PYDictKey {
         _context: &mut Self::RenderContext,
     ) -> Result<String> {
         Ok(match self {
-            PYDictKey::String => "str".into(),
-            PYDictKey::Int => "int".into(),
-            PYDictKey::Float => "float".into(),
-            PYDictKey::Boolean => "bool".into(),
+            PyDictKey::String => "str".into(),
+            PyDictKey::Int => "int".into(),
+            PyDictKey::Float => "float".into(),
+            PyDictKey::Boolean => "bool".into(),
         })
     }
 }
@@ -27,25 +27,25 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            PYDictKey::Boolean
+            PyDictKey::Boolean
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"bool"
         );
         assert_snapshot!(
-            PYDictKey::String
+            PyDictKey::String
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"str"
         );
         assert_snapshot!(
-            PYDictKey::Int
+            PyDictKey::Int
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"int"
         );
         assert_snapshot!(
-            PYDictKey::Float
+            PyDictKey::Float
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"float"

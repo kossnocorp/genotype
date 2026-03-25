@@ -1,10 +1,10 @@
 use crate::prelude::internal::*;
 use heck::ToLowerCamelCase;
 
-impl<'a> GtlRender<'a> for TSBranded {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsBranded {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -43,10 +43,10 @@ mod tests {
     #[test]
     fn test_render_primitive() {
         assert_snapshot!(
-            TSBranded {
+            TsBranded {
                 doc: None,
                 name: "Version".into(),
-                primitive: TSPrimitive::Number
+                primitive: TsPrimitive::Number
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -60,10 +60,10 @@ mod tests {
     #[test]
     fn test_render_doc() {
         assert_snapshot!(
-            TSBranded {
-                doc: Some(TSDoc("Object version.".into())),
+            TsBranded {
+                doc: Some(TsDoc("Object version.".into())),
                 name: "Version".into(),
-                primitive: TSPrimitive::Number
+                primitive: TsPrimitive::Number
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -78,13 +78,13 @@ mod tests {
     #[test]
     fn test_render_indent() {
         assert_snapshot!(
-            TSBranded {
-                doc: Some(TSDoc("Object version.".into())),
+            TsBranded {
+                doc: Some(TsDoc("Object version.".into())),
                 name: "Version".into(),
-                primitive: TSPrimitive::Number
+                primitive: TsPrimitive::Number
             }
             .render(
-                TSRenderState::default().indent_inc(),
+                TsRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),

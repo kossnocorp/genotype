@@ -4,9 +4,9 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct RSMap {
+pub struct RsMap {
     #[visit]
-    pub key: RSDescriptor,
+    pub key: RsDescriptor,
     #[visit]
-    pub descriptor: RSDescriptor,
+    pub descriptor: RsDescriptor,
 }

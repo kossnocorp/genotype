@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSAttribute {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsAttribute {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -22,7 +22,7 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            RSAttribute("derive".into())
+            RsAttribute("derive".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"#[derive]"
@@ -32,9 +32,9 @@ mod tests {
     #[test]
     fn test_render_indent() {
         assert_snapshot!(
-            RSAttribute("derive".into())
+            RsAttribute("derive".into())
                 .render(
-                    RSRenderState::default().indent_inc(),
+                    RsRenderState::default().indent_inc(),
                     &mut Default::default()
                 )
                 .unwrap(),

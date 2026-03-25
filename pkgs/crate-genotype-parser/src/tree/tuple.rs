@@ -1,22 +1,22 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct GTTuple {
-    pub span: GTSpan,
+pub struct GtTuple {
+    pub span: GtSpan,
     #[visit]
-    pub doc: Option<GTDoc>,
+    pub doc: Option<GtDoc>,
     #[visit]
-    pub attributes: Vec<GTAttribute>,
+    pub attributes: Vec<GtAttribute>,
     #[visit]
-    pub descriptors: Vec<GTDescriptor>,
+    pub descriptors: Vec<GtDescriptor>,
 }
 
-impl GTTuple {
-    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> Result<Self, GTParseError> {
+impl GtTuple {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> Result<Self, GtParseError> {
         let span = pair.as_span().into();
         let (doc, attributes) = context.take_annotation_or_default();
 
-        let mut tuple = GTTuple {
+        let mut tuple = GtTuple {
             span,
             doc,
             attributes,
@@ -24,7 +24,7 @@ impl GTTuple {
         };
 
         for pair in pair.into_inner() {
-            let descriptor = GTDescriptor::parse(pair, context)?;
+            let descriptor = GtDescriptor::parse(pair, context)?;
             tuple.descriptors.push(descriptor);
         }
 
@@ -40,21 +40,21 @@ mod tests {
     #[test]
     fn test_parse() {
         assert_ron_snapshot!(
-            parse_node!(GTTuple, to_parse_args(Rule::tuple, "(string, int)")),
+            parse_node!(GtTuple, to_parse_args(Rule::tuple, "(string, int)")),
             @"
-        GTTuple(
-          span: GTSpan(0, 13),
+        GtTuple(
+          span: GtSpan(0, 13),
           doc: None,
           attributes: [],
           descriptors: [
-            Primitive(GTPrimitive(
-              span: GTSpan(1, 7),
+            Primitive(GtPrimitive(
+              span: GtSpan(1, 7),
               kind: String,
               doc: None,
               attributes: [],
             )),
-            Primitive(GTPrimitive(
-              span: GTSpan(9, 12),
+            Primitive(GtPrimitive(
+              span: GtSpan(9, 12),
               kind: Int64,
               doc: None,
               attributes: [],
@@ -76,22 +76,22 @@ mod tests {
             )],
         ));
         assert_ron_snapshot!(
-            parse_node!(GTTuple, (to_parse_rules(Rule::tuple, "(string)"), &mut context)),
+            parse_node!(GtTuple, (to_parse_rules(Rule::tuple, "(string)"), &mut context)),
             @r#"
-        GTTuple(
-          span: GTSpan(0, 8),
-          doc: Some(GTDoc(GTSpan(0, 0), "Hello, world!")),
+        GtTuple(
+          span: GtSpan(0, 8),
+          doc: Some(GtDoc(GtSpan(0, 0), "Hello, world!")),
           attributes: [
-            GTAttribute(
-              span: GTSpan(0, 2),
-              name: GTAttributeName(
-                span: GTSpan(0, 0),
+            GtAttribute(
+              span: GtSpan(0, 2),
+              name: GtAttributeName(
+                span: GtSpan(0, 0),
                 value: "example",
               ),
-              descriptor: Some(Assignment(GTAttributeAssignment(
-                span: GTSpan(0, 0),
-                value: Literal(GTLiteral(
-                  span: GTSpan(0, 0),
+              descriptor: Some(Assignment(GtAttributeAssignment(
+                span: GtSpan(0, 0),
+                value: Literal(GtLiteral(
+                  span: GtSpan(0, 0),
                   doc: None,
                   attributes: [],
                   value: String("value"),
@@ -100,8 +100,8 @@ mod tests {
             ),
           ],
           descriptors: [
-            Primitive(GTPrimitive(
-              span: GTSpan(1, 7),
+            Primitive(GtPrimitive(
+              span: GtSpan(1, 7),
               kind: String,
               doc: None,
               attributes: [],

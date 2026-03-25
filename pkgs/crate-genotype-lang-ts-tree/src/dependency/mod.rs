@@ -1,18 +1,18 @@
 use crate::prelude::internal::*;
 
-pub struct TSDependency {}
+pub struct TsDependency {}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum TSDependencyIdent {
-    Local(TSPath),
+pub enum TsDependencyIdent {
+    Local(TsPath),
 }
 
-impl TSDependencyIdent {
-    pub fn as_path(&self) -> TSPath {
+impl TsDependencyIdent {
+    pub fn as_path(&self) -> TsPath {
         match self {
             Self::Local(path) => path.clone(),
         }
     }
 }
 
-impl GtlDependencyIdent for TSDependencyIdent {}
+impl GtlDependencyIdent for TsDependencyIdent {}

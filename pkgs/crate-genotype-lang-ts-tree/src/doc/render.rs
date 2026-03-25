@@ -1,10 +1,10 @@
 use crate::prelude::internal::*;
 
-impl TSDoc {
+impl TsDoc {
     pub fn with_doc(
-        doc: &Option<TSDoc>,
-        state: TSRenderState,
-        context: &mut TSRenderContext,
+        doc: &Option<TsDoc>,
+        state: TsRenderState,
+        context: &mut TsRenderContext,
         str: String,
         padded: bool,
     ) -> Result<String> {
@@ -17,10 +17,10 @@ impl TSDoc {
     }
 }
 
-impl<'a> GtlRender<'a> for TSDoc {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsDoc {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -51,7 +51,7 @@ mod tests {
     #[test]
     fn test_render_simple() {
         assert_snapshot!(
-            TSDoc("Hello, world!".into())
+            TsDoc("Hello, world!".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"/** Hello, world! */"
@@ -61,7 +61,7 @@ mod tests {
     #[test]
     fn test_render_multiline() {
         assert_snapshot!(
-            TSDoc(
+            TsDoc(
                 r#"Hello,
 cruel
 world!"#
@@ -80,14 +80,14 @@ world!"#
     #[test]
     fn test_render_indent() {
         assert_snapshot!(
-            TSDoc(
+            TsDoc(
                 r#"Hello,
 cruel
 world!"#
                     .into()
             )
             .render(
-                TSRenderState::default().indent_inc(),
+                TsRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),
@@ -102,8 +102,8 @@ world!"#
     #[test]
     fn test_with_doc_some() {
         assert_snapshot!(
-            TSDoc::with_doc(
-                &Some(TSDoc("Hello, world!".into())),
+            TsDoc::with_doc(
+                &Some(TsDoc("Hello, world!".into())),
                 Default::default(),
                 &mut Default::default(),
                 "type Name = string;".into(),
@@ -120,7 +120,7 @@ world!"#
     #[test]
     fn test_with_doc_none() {
         assert_snapshot!(
-            TSDoc::with_doc(
+            TsDoc::with_doc(
                 &None,
                 Default::default(),
                 &mut Default::default(),
@@ -135,8 +135,8 @@ world!"#
     #[test]
     fn test_with_doc_padded_some() {
         assert_snapshot!(
-            TSDoc::with_doc(
-                &Some(TSDoc("Hello, world!".into())),
+            TsDoc::with_doc(
+                &Some(TsDoc("Hello, world!".into())),
                 Default::default(),
                 &mut Default::default(),
                 "type Name = string;".into(),
@@ -154,7 +154,7 @@ world!"#
     #[test]
     fn test_with_doc_padded_none() {
         assert_snapshot!(
-            TSDoc::with_doc(
+            TsDoc::with_doc(
                 &None,
                 Default::default(),
                 &mut Default::default(),

@@ -4,68 +4,68 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub enum RSDescriptor {
-    Enum(#[visit] Box<RSEnum>),
-    Vec(#[visit] Box<RSVec>),
-    Primitive(#[visit] RSPrimitive),
-    Reference(#[visit] RSReference),
-    InlineUse(#[visit] RSInlineUse),
-    Tuple(#[visit] RSTuple),
-    Map(#[visit] Box<RSMap>),
-    Option(#[visit] Box<RSOption>),
-    Any(#[visit] RSAny),
+pub enum RsDescriptor {
+    Enum(#[visit] Box<RsEnum>),
+    Vec(#[visit] Box<RsVec>),
+    Primitive(#[visit] RsPrimitive),
+    Reference(#[visit] RsReference),
+    InlineUse(#[visit] RsInlineUse),
+    Tuple(#[visit] RsTuple),
+    Map(#[visit] Box<RsMap>),
+    Option(#[visit] Box<RsOption>),
+    Any(#[visit] RsAny),
 }
 
-impl From<RSEnum> for RSDescriptor {
-    fn from(r#enum: RSEnum) -> Self {
-        RSDescriptor::Enum(Box::new(r#enum))
+impl From<RsEnum> for RsDescriptor {
+    fn from(r#enum: RsEnum) -> Self {
+        RsDescriptor::Enum(Box::new(r#enum))
     }
 }
 
-impl From<RSPrimitive> for RSDescriptor {
-    fn from(primitive: RSPrimitive) -> Self {
-        RSDescriptor::Primitive(primitive)
+impl From<RsPrimitive> for RsDescriptor {
+    fn from(primitive: RsPrimitive) -> Self {
+        RsDescriptor::Primitive(primitive)
     }
 }
 
-impl From<RSReference> for RSDescriptor {
-    fn from(reference: RSReference) -> Self {
-        RSDescriptor::Reference(reference)
+impl From<RsReference> for RsDescriptor {
+    fn from(reference: RsReference) -> Self {
+        RsDescriptor::Reference(reference)
     }
 }
 
-impl From<RSInlineUse> for RSDescriptor {
-    fn from(inline_use: RSInlineUse) -> Self {
-        RSDescriptor::InlineUse(inline_use)
+impl From<RsInlineUse> for RsDescriptor {
+    fn from(inline_use: RsInlineUse) -> Self {
+        RsDescriptor::InlineUse(inline_use)
     }
 }
 
-impl From<RSTuple> for RSDescriptor {
-    fn from(tuple: RSTuple) -> Self {
-        RSDescriptor::Tuple(tuple)
+impl From<RsTuple> for RsDescriptor {
+    fn from(tuple: RsTuple) -> Self {
+        RsDescriptor::Tuple(tuple)
     }
 }
 
-impl From<RSVec> for RSDescriptor {
-    fn from(list: RSVec) -> Self {
-        RSDescriptor::Vec(Box::new(list))
+impl From<RsVec> for RsDescriptor {
+    fn from(list: RsVec) -> Self {
+        RsDescriptor::Vec(Box::new(list))
     }
 }
 
-impl From<RSMap> for RSDescriptor {
-    fn from(map: RSMap) -> Self {
-        RSDescriptor::Map(Box::new(map))
+impl From<RsMap> for RsDescriptor {
+    fn from(map: RsMap) -> Self {
+        RsDescriptor::Map(Box::new(map))
     }
 }
 
-impl From<RSOption> for RSDescriptor {
-    fn from(option: RSOption) -> Self {
-        RSDescriptor::Option(Box::new(option))
+impl From<RsOption> for RsDescriptor {
+    fn from(option: RsOption) -> Self {
+        RsDescriptor::Option(Box::new(option))
     }
 }
 
-impl From<RSAny> for RSDescriptor {
-    fn from(any: RSAny) -> Self {
-        RSDescriptor::Any(any)
+impl From<RsAny> for RsDescriptor {
+    fn from(any: RsAny) -> Self {
+        RsDescriptor::Any(any)
     }
 }

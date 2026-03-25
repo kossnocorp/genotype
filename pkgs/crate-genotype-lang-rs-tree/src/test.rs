@@ -1,19 +1,19 @@
 use crate::prelude::internal::*;
 
-pub fn convert_node<GtNode: RSConvert<Node>, Node>(gt_node: GtNode) -> Node {
+pub fn convert_node<GtNode: RsConvert<Node>, Node>(gt_node: GtNode) -> Node {
     gt_node.convert(&mut Default::default()).unwrap()
 }
 
-pub fn convert_node_with<GtNode: RSConvert<Node>, Node>(
+pub fn convert_node_with<GtNode: RsConvert<Node>, Node>(
     gt_node: GtNode,
-    context: &mut RSConvertContext,
+    context: &mut RsConvertContext,
 ) -> Node {
     gt_node.convert(context).unwrap()
 }
 
-pub fn convert_node_err_with<GtNode: RSConvert<Node>, Node>(
+pub fn convert_node_err_with<GtNode: RsConvert<Node>, Node>(
     gt_node: GtNode,
-    context: &mut RSConvertContext,
+    context: &mut RsConvertContext,
 ) -> miette::Report
 where
     Node: std::fmt::Debug,
@@ -25,13 +25,13 @@ where
 pub struct Gtrs {}
 
 impl Gtrs {
-    pub fn convert_context() -> RSConvertContext {
-        RSConvertContext::empty("module".into())
+    pub fn convert_context() -> RsConvertContext {
+        RsConvertContext::empty("module".into())
     }
 
-    pub fn convert_context_with_parent(parent_name: &str) -> RSConvertContext {
+    pub fn convert_context_with_parent(parent_name: &str) -> RsConvertContext {
         let mut context = Self::convert_context();
-        context.enter_parent(RSContextParent::Alias(parent_name.into()));
+        context.enter_parent(RsContextParent::Alias(parent_name.into()));
         context
     }
 }

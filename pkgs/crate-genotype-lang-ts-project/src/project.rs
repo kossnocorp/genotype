@@ -88,18 +88,18 @@ mod tests {
         [
           TsProjectModule(
             path: "author.ts",
-            module: TSModule(
+            module: TsModule(
               doc: None,
               imports: [],
               definitions: [
-                Interface(TSInterface(
+                Interface(TsInterface(
                   doc: None,
-                  name: TSIdentifier("Author"),
+                  name: TsIdentifier("Author"),
                   extensions: [],
                   properties: [
-                    TSProperty(
+                    TsProperty(
                       doc: None,
-                      name: TSKey("name"),
+                      name: TsKey("name"),
                       descriptor: Primitive(String),
                       required: true,
                     ),
@@ -110,32 +110,32 @@ mod tests {
           ),
           TsProjectModule(
             path: "book.ts",
-            module: TSModule(
+            module: TsModule(
               doc: None,
               imports: [
-                TSImport(
-                  path: TSPath("./author"),
+                TsImport(
+                  path: TsPath("./author"),
                   reference: Named([
-                    Name(TSIdentifier("Author")),
+                    Name(TsIdentifier("Author")),
                   ]),
                 ),
               ],
               definitions: [
-                Interface(TSInterface(
+                Interface(TsInterface(
                   doc: None,
-                  name: TSIdentifier("Book"),
+                  name: TsIdentifier("Book"),
                   extensions: [],
                   properties: [
-                    TSProperty(
+                    TsProperty(
                       doc: None,
-                      name: TSKey("title"),
+                      name: TsKey("title"),
                       descriptor: Primitive(String),
                       required: true,
                     ),
-                    TSProperty(
+                    TsProperty(
                       doc: None,
-                      name: TSKey("author"),
-                      descriptor: Reference(TSReference(TSIdentifier("Author"))),
+                      name: TsKey("author"),
+                      descriptor: Reference(TsReference(TsIdentifier("Author"))),
                       required: true,
                     ),
                   ],
@@ -159,26 +159,26 @@ mod tests {
         [
           TsProjectModule(
             path: "author.ts",
-            module: TSModule(
+            module: TsModule(
               doc: None,
               imports: [],
               definitions: [
-                Interface(TSInterface(
+                Interface(TsInterface(
                   doc: None,
-                  name: TSIdentifier("Author"),
+                  name: TsIdentifier("Author"),
                   extensions: [],
                   properties: [
-                    TSProperty(
+                    TsProperty(
                       doc: None,
-                      name: TSKey("name"),
-                      descriptor: Reference(TSReference(TSIdentifier("AuthorName"))),
+                      name: TsKey("name"),
+                      descriptor: Reference(TsReference(TsIdentifier("AuthorName"))),
                       required: true,
                     ),
                   ],
                 )),
-                Alias(TSAlias(
+                Alias(TsAlias(
                   doc: None,
-                  name: TSIdentifier("AuthorName"),
+                  name: TsIdentifier("AuthorName"),
                   descriptor: Primitive(String),
                 )),
               ],
@@ -186,36 +186,36 @@ mod tests {
           ),
           TsProjectModule(
             path: "book.ts",
-            module: TSModule(
+            module: TsModule(
               doc: None,
               imports: [
-                TSImport(
-                  path: TSPath("./author"),
+                TsImport(
+                  path: TsPath("./author"),
                   reference: Glob("author"),
                 ),
               ],
               definitions: [
-                Interface(TSInterface(
+                Interface(TsInterface(
                   doc: None,
-                  name: TSIdentifier("Book"),
+                  name: TsIdentifier("Book"),
                   extensions: [],
                   properties: [
-                    TSProperty(
+                    TsProperty(
                       doc: None,
-                      name: TSKey("title"),
+                      name: TsKey("title"),
                       descriptor: Primitive(String),
                       required: true,
                     ),
-                    TSProperty(
+                    TsProperty(
                       doc: None,
-                      name: TSKey("author"),
-                      descriptor: Reference(TSReference(TSIdentifier("author.Author"))),
+                      name: TsKey("author"),
+                      descriptor: Reference(TsReference(TsIdentifier("author.Author"))),
                       required: true,
                     ),
-                    TSProperty(
+                    TsProperty(
                       doc: None,
-                      name: TSKey("authorName"),
-                      descriptor: Reference(TSReference(TSIdentifier("author.AuthorName"))),
+                      name: TsKey("authorName"),
+                      descriptor: Reference(TsReference(TsIdentifier("author.AuthorName"))),
                       required: true,
                     ),
                   ],

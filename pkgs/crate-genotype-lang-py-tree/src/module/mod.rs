@@ -5,11 +5,11 @@ pub use convert::*;
 mod render;
 
 #[derive(Default, Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct PYModule {
+pub struct PyModule {
     #[visit]
-    pub doc: Option<PYDoc>,
+    pub doc: Option<PyDoc>,
     #[visit]
-    pub imports: Vec<PYImport>,
+    pub imports: Vec<PyImport>,
     #[visit]
-    pub definitions: Vec<PYDefinition>,
+    pub definitions: Vec<PyDefinition>,
 }

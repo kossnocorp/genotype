@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, Eq, PartialEq, Hash, Copy, Clone, Serialize, Deserialize)]
-pub struct GTSpan(pub usize, pub usize);
+pub struct GtSpan(pub usize, pub usize);
 
-impl GTSpan {
+impl GtSpan {
     pub fn offset(&self) -> usize {
         self.0
     }
@@ -13,26 +13,26 @@ impl GTSpan {
     }
 }
 
-impl From<(usize, usize)> for GTSpan {
+impl From<(usize, usize)> for GtSpan {
     fn from((start, end): (usize, usize)) -> Self {
-        GTSpan(start, end)
+        GtSpan(start, end)
     }
 }
 
-impl From<Span<'_>> for GTSpan {
+impl From<Span<'_>> for GtSpan {
     fn from(span: Span<'_>) -> Self {
-        GTSpan(span.start(), span.end())
+        GtSpan(span.start(), span.end())
     }
 }
 
-impl Into<SourceSpan> for GTSpan {
+impl Into<SourceSpan> for GtSpan {
     fn into(self) -> SourceSpan {
         (self.offset(), self.len()).into()
     }
 }
 
-impl Default for GTSpan {
+impl Default for GtSpan {
     fn default() -> Self {
-        GTSpan(0, 0)
+        GtSpan(0, 0)
     }
 }

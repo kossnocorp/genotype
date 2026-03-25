@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYExtension {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyExtension {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
     fn render(
         &self,
@@ -22,8 +22,8 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            PYExtension {
-                reference: PYReference::new("Foo".into(), false)
+            PyExtension {
+                reference: PyReference::new("Foo".into(), false)
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),

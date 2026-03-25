@@ -3,7 +3,7 @@ use indexmap::IndexMap;
 use miette::Result;
 use std::sync::{Arc, Mutex};
 
-use crate::path::GTWPath;
+use crate::path::GtwPath;
 
 pub mod source;
 pub use source::*;
@@ -14,28 +14,28 @@ pub use payload::*;
 pub mod kind;
 pub use kind::*;
 
-pub type GTWFiles = Arc<Mutex<IndexMap<GTWPath, GTWFile>>>;
+pub type GtwFiles = Arc<Mutex<IndexMap<GtwPath, GtwFile>>>;
 
-pub struct GTWFile {
-    source: GTWFileSource,
-    payload: GTWFilePayload,
+pub struct GtwFile {
+    source: GtwFileSource,
+    payload: GtwFilePayload,
 }
 
-impl GTWFile {
-    pub fn load(path: &GTWPath, source: GTWFileSource) -> Result<Self> {
-        match GTWFileKind::detect(path)? {
-            GTWFileKind::Config => {}
+impl GtwFile {
+    pub fn load(path: &GtwPath, source: GtwFileSource) -> Result<Self> {
+        match GtwFileKind::detect(path)? {
+            GtwFileKind::Config => {}
 
-            GTWFileKind::Module => {}
+            GtwFileKind::Module => {}
         }
 
-        Ok(GTWFile {
+        Ok(GtwFile {
             source,
-            payload: GTWFilePayload::Config(GtConfig::default()),
+            payload: GtwFilePayload::Config(GtConfig::default()),
         })
     }
 
-    pub fn same_hash(&self, source: &GTWFileSource) -> bool {
+    pub fn same_hash(&self, source: &GtwFileSource) -> bool {
         self.source.same_hash(source)
     }
 }

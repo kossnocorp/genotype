@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSAny {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsAny {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -22,7 +22,7 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            TSAny
+            TsAny
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"any"

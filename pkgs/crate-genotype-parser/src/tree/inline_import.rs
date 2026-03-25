@@ -1,32 +1,32 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct GTInlineImport {
-    pub span: GTSpan,
+pub struct GtInlineImport {
+    pub span: GtSpan,
     #[visit]
-    pub doc: Option<GTDoc>,
+    pub doc: Option<GtDoc>,
     #[visit]
-    pub attributes: Vec<GTAttribute>,
+    pub attributes: Vec<GtAttribute>,
     #[visit]
-    pub name: GTIdentifier,
+    pub name: GtIdentifier,
     #[visit]
-    pub path: GTPath,
+    pub path: GtPath,
 }
 
-impl GTInlineImport {
-    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> Result<Self, GTParseError> {
+impl GtInlineImport {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> Result<Self, GtParseError> {
         let span = pair.as_span().into();
-        let (path, (name_span, name)) = GTPath::split_parse(pair)?;
+        let (path, (name_span, name)) = GtPath::split_parse(pair)?;
         let (doc, attributes) = context.take_annotation_or_default();
 
         context.resolve.deps.insert(path.clone());
 
-        Ok(GTInlineImport {
+        Ok(GtInlineImport {
             span,
             doc,
             attributes,
             path,
-            name: GTIdentifier::new(name_span, name.into()),
+            name: GtIdentifier::new(name_span, name.into()),
         })
     }
 }
@@ -39,14 +39,14 @@ mod tests {
     #[test]
     fn test_parse() {
         assert_ron_snapshot!(
-            parse_node!(GTInlineImport, to_parse_args(Rule::inline_import, "./path/to/module/Name")),
+            parse_node!(GtInlineImport, to_parse_args(Rule::inline_import, "./path/to/module/Name")),
             @r#"
-        GTInlineImport(
-          span: GTSpan(0, 21),
+        GtInlineImport(
+          span: GtSpan(0, 21),
           doc: None,
           attributes: [],
-          name: GTIdentifier(GTSpan(17, 21), "Name"),
-          path: GTPath(GTSpan(0, 16), Unresolved, "./path/to/module"),
+          name: GtIdentifier(GtSpan(17, 21), "Name"),
+          path: GtPath(GtSpan(0, 16), Unresolved, "./path/to/module"),
         )
         "#
         );
@@ -62,13 +62,13 @@ mod tests {
             }"#
             .into(),
         );
-        let parse = GTModule::parse("module".into(), source_code).unwrap();
+        let parse = GtModule::parse("module".into(), source_code).unwrap();
         assert_ron_snapshot!(
             parse.resolve.deps,
             @r#"
         [
-          GTPath(GTSpan(31, 35), Unresolved, "book"),
-          GTPath(GTSpan(64, 75), Unresolved, "./misc/user"),
+          GtPath(GtSpan(31, 35), Unresolved, "book"),
+          GtPath(GtSpan(64, 75), Unresolved, "./misc/user"),
         ]
         "#
         );
@@ -84,13 +84,13 @@ mod tests {
             }"#
             .into(),
         );
-        let parse = GTModule::parse("module".into(), source_code).unwrap();
+        let parse = GtModule::parse("module".into(), source_code).unwrap();
         assert_ron_snapshot!(
             parse.resolve.deps,
             @r#"
         [
-          GTPath(GTSpan(31, 35), Unresolved, "book"),
-          GTPath(GTSpan(64, 85), Unresolved, "./misc/user"),
+          GtPath(GtSpan(31, 35), Unresolved, "book"),
+          GtPath(GtSpan(64, 85), Unresolved, "./misc/user"),
         ]
         "#
         );
@@ -108,24 +108,24 @@ mod tests {
         ));
         assert_ron_snapshot!(
             parse_node!(
-                GTInlineImport,
+                GtInlineImport,
                 (to_parse_rules(Rule::inline_import, "./path/to/module/Name"), &mut context)
             ),
             @r#"
-        GTInlineImport(
-          span: GTSpan(0, 21),
-          doc: Some(GTDoc(GTSpan(0, 0), "Hello, world!")),
+        GtInlineImport(
+          span: GtSpan(0, 21),
+          doc: Some(GtDoc(GtSpan(0, 0), "Hello, world!")),
           attributes: [
-            GTAttribute(
-              span: GTSpan(0, 2),
-              name: GTAttributeName(
-                span: GTSpan(0, 0),
+            GtAttribute(
+              span: GtSpan(0, 2),
+              name: GtAttributeName(
+                span: GtSpan(0, 0),
                 value: "example",
               ),
-              descriptor: Some(Assignment(GTAttributeAssignment(
-                span: GTSpan(0, 0),
-                value: Literal(GTLiteral(
-                  span: GTSpan(0, 0),
+              descriptor: Some(Assignment(GtAttributeAssignment(
+                span: GtSpan(0, 0),
+                value: Literal(GtLiteral(
+                  span: GtSpan(0, 0),
                   doc: None,
                   attributes: [],
                   value: String("value"),
@@ -133,8 +133,8 @@ mod tests {
               ))),
             ),
           ],
-          name: GTIdentifier(GTSpan(17, 21), "Name"),
-          path: GTPath(GTSpan(0, 16), Unresolved, "./path/to/module"),
+          name: GtIdentifier(GtSpan(17, 21), "Name"),
+          path: GtPath(GtSpan(0, 16), Unresolved, "./path/to/module"),
         )
         "#
         );

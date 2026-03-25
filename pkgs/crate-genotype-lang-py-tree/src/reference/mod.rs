@@ -4,15 +4,15 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct PYReference {
+pub struct PyReference {
     #[visit]
-    pub identifier: PYIdentifier,
+    pub identifier: PyIdentifier,
     pub forward: bool,
 }
 
-impl PYReference {
-    pub fn new(identifier: PYIdentifier, forward: bool) -> Self {
-        PYReference {
+impl PyReference {
+    pub fn new(identifier: PyIdentifier, forward: bool) -> Self {
+        PyReference {
             identifier,
             forward,
         }

@@ -2,7 +2,7 @@ use crate::prelude::internal::*;
 
 impl RsProject<'_> {
     pub fn modules_source(&self) -> Result<Vec<GtlProjectFile>> {
-        let mut context = RSRenderContext {
+        let mut context = RsRenderContext {
             config: &self.config.target.lang,
         };
         self.modules
@@ -33,16 +33,16 @@ impl RsProject<'_> {
         // Rust doesn't support inheritance in any acceptable way.
 
         let mut definitions_to_resolve: IndexMap<
-            GTDefinitionId,
-            (GTSpan, IndexSet<GTDefinitionId>),
+            GtDefinitionId,
+            (GtSpan, IndexSet<GtDefinitionId>),
         > = Default::default();
 
         // First, we collect all the definitions in all the modules that need to be resolved with
         // their extensions.
         for project_module in project_modules.iter() {
             for definition in project_module.module.definitions.iter() {
-                if let RSDefinition::Struct(r#struct) = definition {
-                    if let RSStructFields::Unresolved(span, references, _) = &r#struct.fields {
+                if let RsDefinition::Struct(r#struct) = definition {
+                    if let RsStructFields::Unresolved(span, references, _) = &r#struct.fields {
                         let reference_ids = references
                             .iter()
                             .map(|reference| reference.definition_id.clone())
@@ -81,30 +81,30 @@ impl RsProject<'_> {
                             .flat_map(|project_module| project_module.module.definitions.iter())
                             .find(|definition| definition.id() == referenced_id)
                             .ok_or_else(|| {
-                                RSProjectError::BuildModulePath(format!(
+                                RsProjectError::BuildModulePath(format!(
                                     "Failed to find reference with id {module_id}/{referenced_id}",
                                     module_id = current_definition_id.0 .0,
                                     referenced_id = current_definition_id.1
                                 ))
                             })
                             .and_then(|reference| match reference {
-                                RSDefinition::Struct(reference_struct) => {
+                                RsDefinition::Struct(reference_struct) => {
                                     match &reference_struct.fields {
-                                        RSStructFields::Resolved(resolved_fields) => {
+                                        RsStructFields::Resolved(resolved_fields) => {
                                             Ok(resolved_fields.clone())
                                         }
 
-                                        RSStructFields::Newtype(_) => {
-                                            Err(RSProjectError::TupleStructExtension(span.clone()))
+                                        RsStructFields::Newtype(_) => {
+                                            Err(RsProjectError::TupleStructExtension(span.clone()))
                                         }
 
-                                        RSStructFields::Unit => {
-                                            Err(RSProjectError::UnitStructExtension(span.clone()))
+                                        RsStructFields::Unit => {
+                                            Err(RsProjectError::UnitStructExtension(span.clone()))
                                         }
 
-                                        RSStructFields::Unresolved(span, _, _) => {
+                                        RsStructFields::Unresolved(span, _, _) => {
                                             // [TODO] Include the current struct too into the error.
-                                            Err(RSProjectError::FailedExtensionsResolve(
+                                            Err(RsProjectError::FailedExtensionsResolve(
                                                 span.clone(),
                                                 "Referenced extension is not resolved".into(),
                                             ))
@@ -115,7 +115,7 @@ impl RsProject<'_> {
                                 // [TODO] It should be possible to extend aliases too as long as
                                 // they reference other structs. Enums too but they must be handled
                                 // differently.
-                                _ => Err(RSProjectError::NonStructExtension(
+                                _ => Err(RsProjectError::NonStructExtension(
                                     span.clone(),
                                     reference.name().0.to_string(),
                                 )
@@ -126,7 +126,7 @@ impl RsProject<'_> {
                     }
 
                     // Collect the referenced definition field references.
-                    let mut visitor = RSProjectExtensionFieldsVisitor::new();
+                    let mut visitor = RsProjectExtensionFieldsVisitor::new();
                     for field in resolved_fields.iter_mut() {
                         field.traverse(&mut visitor);
                     }
@@ -136,7 +136,7 @@ impl RsProject<'_> {
                         .iter_mut()
                         .find(|module| module.module.id == current_definition_id.0)
                         .ok_or_else(|| {
-                            RSProjectError::FailedExtensionsResolve(
+                            RsProjectError::FailedExtensionsResolve(
                                 span.clone(),
                                 format!(
                                     "Can't find module with id {id}",
@@ -152,7 +152,7 @@ impl RsProject<'_> {
                         .iter_mut()
                         .find(|definition| definition.id() == current_definition_id)
                         .ok_or_else(|| {
-                            RSProjectError::FailedExtensionsResolve(
+                            RsProjectError::FailedExtensionsResolve(
                                 span.clone(),
                                 format!(
                                     "Can't find definition {module_id}/{id}",
@@ -162,28 +162,28 @@ impl RsProject<'_> {
                             )
                         })
                         .and_then(|definition| {
-                            if let RSDefinition::Struct(r#struct) = definition {
+                            if let RsDefinition::Struct(r#struct) = definition {
                                 match &r#struct.fields {
-                                    RSStructFields::Unresolved(_, references, own_fields) => {
+                                    RsStructFields::Unresolved(_, references, own_fields) => {
                                         let extension_references = references.clone();
 
                                         // [MARK] Here is where we copy the fields from all
                                         // the extensions into the current struct.
                                         resolved_fields.extend(own_fields.clone());
-                                        r#struct.fields = RSStructFields::Resolved(resolved_fields);
+                                        r#struct.fields = RsStructFields::Resolved(resolved_fields);
                                         // Return the references to the extension fields, so we can
                                         // remove them
 
                                         Ok(extension_references)
                                     }
 
-                                    _ => Err(RSProjectError::FailedExtensionsResolve(
+                                    _ => Err(RsProjectError::FailedExtensionsResolve(
                                         span.clone(),
                                         "Definition is already resolved".into(),
                                     )),
                                 }
                             } else {
-                                Err(RSProjectError::FailedExtensionsResolve(
+                                Err(RsProjectError::FailedExtensionsResolve(
                                     span.clone(),
                                     "Definition is not a struct".into(),
                                 ))
@@ -223,7 +223,7 @@ impl RsProject<'_> {
 
                         // Try finding existing use that imports the referenced definition.
                         let existing_use = module.module.imports.iter_mut().find(|import| {
-                            if let RSDependencyIdent::Local(path) = &import.dependency {
+                            if let RsDependencyIdent::Local(path) = &import.dependency {
                                 return path.0 == referenced_definition_id.0;
                             }
                             false
@@ -234,7 +234,7 @@ impl RsProject<'_> {
                             Some(r#use) => match &r#use.reference {
                                 // If that's a module use, we need to rewrite the existing
                                 // references.
-                                RSUseReference::Module => {
+                                RsUseReference::Module => {
                                     todo!(
                                         "Rewrite the copied extension references to the module import"
                                     );
@@ -242,7 +242,7 @@ impl RsProject<'_> {
 
                                 // If that's a named use, we need to add the referenced name to
                                 // the list.
-                                RSUseReference::Named(names) => {
+                                RsUseReference::Named(names) => {
                                     // If the name is already in the list, we don't need to
                                     // add it again.
                                     let already_imported = names.iter().any(|use_name| {
@@ -251,25 +251,25 @@ impl RsProject<'_> {
                                     if !already_imported {
                                         let mut names = names.clone();
                                         // [TODO] Pass through Rust renamer?
-                                        names.push(RSUseName::Name(
+                                        names.push(RsUseName::Name(
                                             referenced_definition_id.1.clone().into(),
                                         ));
-                                        r#use.reference = RSUseReference::Named(names);
+                                        r#use.reference = RsUseReference::Named(names);
                                     }
                                 }
 
                                 // If that's a glob, there's nothing to do as it imports everything.
-                                RSUseReference::Glob => {}
+                                RsUseReference::Glob => {}
                             },
 
                             // If there's none, add a new use.
                             None => {
                                 // Create new named import
-                                module.module.imports.push(RSUse {
-                                    reference: RSUseReference::Named(vec![RSUseName::Name(
+                                module.module.imports.push(RsUse {
+                                    reference: RsUseReference::Named(vec![RsUseName::Name(
                                         referenced_definition_id.1.clone().into(),
                                     )]),
-                                    dependency: RSDependencyIdent::Local(RSPath(
+                                    dependency: RsDependencyIdent::Local(RsPath(
                                         referenced_definition_id.0.clone(),
                                         format!("crate::{}", referenced_definition_id.0 .0).into(),
                                     )),
@@ -280,13 +280,13 @@ impl RsProject<'_> {
 
                     // Clean up references
                     module.module.imports.iter_mut().for_each(|r#use| {
-                        if let RSDependencyIdent::Local(path) = &r#use.dependency {
-                            if let RSUseReference::Named(names) = &r#use.reference {
+                        if let RsDependencyIdent::Local(path) = &r#use.dependency {
+                            if let RsUseReference::Named(names) = &r#use.reference {
                                 let mut names = names.clone();
                                 names.retain(|name| {
                                     let resolve = module.resolve.definitions.get(
                                         // [TODO] Avoid creating this in-place
-                                        &GTDefinitionId(path.0.clone(), name.name().clone().0),
+                                        &GtDefinitionId(path.0.clone(), name.name().clone().0),
                                     );
 
                                     if let Some(resolve) = resolve {
@@ -295,7 +295,7 @@ impl RsProject<'_> {
 
                                     false
                                 });
-                                r#use.reference = RSUseReference::Named(names);
+                                r#use.reference = RsUseReference::Named(names);
                             }
                         }
                     });
@@ -305,7 +305,7 @@ impl RsProject<'_> {
 
                 // Found no definition that doesn't reference any other definition.
                 None => {
-                    return Err(RSProjectError::CyclicExtensions(
+                    return Err(RsProjectError::CyclicExtensions(
                         definitions_to_resolve
                             .iter()
                             .map(|(_, (span, _))| span.clone())
@@ -326,7 +326,7 @@ impl RsProject<'_> {
                 .imports
                 .retain(|r#use| match &r#use.dependency {
                     // Only process local dependencies for now
-                    RSDependencyIdent::Local(path) => {
+                    RsDependencyIdent::Local(path) => {
                         project_module
                             .resolve
                             .definitions
@@ -346,12 +346,12 @@ impl RsProject<'_> {
     }
 }
 
-struct RSProjectExtensionFieldsVisitor {
+struct RsProjectExtensionFieldsVisitor {
     /// References pulled from the extension fields while traversing.
-    pulled_references: IndexSet<(GTReferenceId, GTDefinitionId)>,
+    pulled_references: IndexSet<(GtReferenceId, GtDefinitionId)>,
 }
 
-impl RSProjectExtensionFieldsVisitor {
+impl RsProjectExtensionFieldsVisitor {
     fn new() -> Self {
         Self {
             pulled_references: Default::default(),
@@ -359,8 +359,8 @@ impl RSProjectExtensionFieldsVisitor {
     }
 }
 
-impl RSVisitor for RSProjectExtensionFieldsVisitor {
-    fn visit_reference(&mut self, reference: &mut RSReference) {
+impl RsVisitor for RsProjectExtensionFieldsVisitor {
+    fn visit_reference(&mut self, reference: &mut RsReference) {
         self.pulled_references
             .insert((reference.id.clone(), reference.definition_id.clone()));
 

@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSEnumVariant {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsEnumVariant {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -40,11 +40,11 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            RSEnumVariant {
+            RsEnumVariant {
                 doc: None,
                 attributes: vec![],
                 name: "Variant".into(),
-                descriptor: Some(RSDescriptor::Primitive(RSPrimitive::Boolean).into()),
+                descriptor: Some(RsDescriptor::Primitive(RsPrimitive::Boolean).into()),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -55,14 +55,14 @@ mod tests {
     #[test]
     fn test_render_indent() {
         assert_snapshot!(
-            RSEnumVariant {
+            RsEnumVariant {
                 doc: None,
                 attributes: vec![],
                 name: "Variant".into(),
-                descriptor: Some(RSDescriptor::Primitive(RSPrimitive::Boolean).into()),
+                descriptor: Some(RsDescriptor::Primitive(RsPrimitive::Boolean).into()),
             }
             .render(
-                RSRenderState::default().indent_inc(),
+                RsRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),
@@ -73,11 +73,11 @@ mod tests {
     #[test]
     fn test_render_attributes() {
         assert_snapshot!(
-            RSEnumVariant {
+            RsEnumVariant {
                 doc: None,
-                attributes: vec![RSAttribute(r#"serde(rename = "variant")"#.into())],
+                attributes: vec![RsAttribute(r#"serde(rename = "variant")"#.into())],
                 name: "Variant".into(),
-                descriptor: Some(RSDescriptor::Primitive(RSPrimitive::Boolean).into()),
+                descriptor: Some(RsDescriptor::Primitive(RsPrimitive::Boolean).into()),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -91,11 +91,11 @@ mod tests {
     #[test]
     fn test_render_doc() {
         assert_snapshot!(
-            RSEnumVariant {
+            RsEnumVariant {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "Variant".into(),
-                descriptor: Some(RSDescriptor::Primitive(RSPrimitive::Boolean).into()),
+                descriptor: Some(RsDescriptor::Primitive(RsPrimitive::Boolean).into()),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -109,14 +109,14 @@ mod tests {
     #[test]
     fn test_render_mixed() {
         assert_snapshot!(
-            RSEnumVariant {
+            RsEnumVariant {
                 doc: Some("Hello, world!".into()),
-                attributes: vec![RSAttribute(r#"serde(rename = "variant")"#.into())],
+                attributes: vec![RsAttribute(r#"serde(rename = "variant")"#.into())],
                 name: "Variant".into(),
-                descriptor: Some(RSDescriptor::Primitive(RSPrimitive::Boolean).into()),
+                descriptor: Some(RsDescriptor::Primitive(RsPrimitive::Boolean).into()),
             }
             .render(
-                RSRenderState::default().indent_inc(),
+                RsRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),
@@ -131,14 +131,14 @@ mod tests {
     #[test]
     fn test_render_no_descriptor() {
         assert_snapshot!(
-            RSEnumVariant {
+            RsEnumVariant {
                 doc: Some("Hello, world!".into()),
-                attributes: vec![RSAttribute(r#"literal(3.14)"#.into())],
+                attributes: vec![RsAttribute(r#"literal(3.14)"#.into())],
                 name: "Variant".into(),
                 descriptor: None,
             }
             .render(
-                RSRenderState::default().indent_inc(),
+                RsRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),

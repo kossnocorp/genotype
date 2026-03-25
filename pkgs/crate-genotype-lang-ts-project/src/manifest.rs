@@ -28,7 +28,7 @@ impl<'a> GtlProjectManifest<'a> for TsProject<'a> {
 pub struct TsProjectManifestDependency;
 
 impl GtlProjectManifestDependency for TsProjectManifestDependency {
-    type DependencyIdent = TSDependencyIdent;
+    type DependencyIdent = TsDependencyIdent;
 
     fn as_kv(_ident: &Self::DependencyIdent) -> Option<(String, Value)> {
         None

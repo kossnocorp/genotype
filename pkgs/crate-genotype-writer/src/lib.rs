@@ -4,9 +4,9 @@ use genotype_config::*;
 use genotype_lang_core_project::*;
 use genotype_path::*;
 
-pub struct GTWriter;
+pub struct GtWriter;
 
-impl GTWriter {
+impl GtWriter {
     pub fn write(
         projects: &Vec<GtlProjectDist>,
         config: &GtConfig,

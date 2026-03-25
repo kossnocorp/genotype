@@ -5,7 +5,7 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct PYList {
+pub struct PyList {
     #[visit]
-    pub descriptor: PYDescriptor,
+    pub descriptor: PyDescriptor,
 }

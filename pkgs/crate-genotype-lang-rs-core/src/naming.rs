@@ -1,8 +1,8 @@
 use crate::RS_KEYWORDS;
 
-pub struct RSNaming;
+pub struct RsNaming;
 
-impl RSNaming {
+impl RsNaming {
     pub fn render(name: &str) -> String {
         if RS_KEYWORDS.contains(&name) {
             format!("r#{}", name)
@@ -19,8 +19,8 @@ mod tests {
 
     #[test]
     fn test_render() {
-        assert_eq!(RSNaming::render("foo"), "foo");
-        assert_eq!(RSNaming::render("type"), "r#type");
-        assert_eq!(RSNaming::render("r#type"), "r#type");
+        assert_eq!(RsNaming::render("foo"), "foo");
+        assert_eq!(RsNaming::render("type"), "r#type");
+        assert_eq!(RsNaming::render("r#type"), "r#type");
     }
 }

@@ -4,29 +4,29 @@ mod convert;
 mod render;
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
-pub struct TSPath(pub Arc<str>);
+pub struct TsPath(pub Arc<str>);
 
-impl TSPath {
+impl TsPath {
     pub fn is_external(&self) -> bool {
         !self.0.starts_with("./") && !self.0.starts_with("../") && !self.0.starts_with("/")
     }
 }
 
-impl From<&str> for TSPath {
+impl From<&str> for TsPath {
     fn from(str: &str) -> Self {
-        TSPath(str.into())
+        TsPath(str.into())
     }
 }
 
-impl From<String> for TSPath {
+impl From<String> for TsPath {
     fn from(str: String) -> Self {
-        TSPath(str.into())
+        TsPath(str.into())
     }
 }
 
-impl From<Arc<str>> for TSPath {
+impl From<Arc<str>> for TsPath {
     fn from(str: Arc<str>) -> Self {
-        TSPath(str)
+        TsPath(str)
     }
 }
 
@@ -37,9 +37,9 @@ mod tests {
 
     #[test]
     fn is_external() {
-        assert_eq!(TSPath::from("some/path").is_external(), true);
-        assert_eq!(TSPath::from("./some/path").is_external(), false);
-        assert_eq!(TSPath::from("../some/path").is_external(), false);
-        assert_eq!(TSPath::from("/some/path").is_external(), false);
+        assert_eq!(TsPath::from("some/path").is_external(), true);
+        assert_eq!(TsPath::from("./some/path").is_external(), false);
+        assert_eq!(TsPath::from("../some/path").is_external(), false);
+        assert_eq!(TsPath::from("/some/path").is_external(), false);
     }
 }

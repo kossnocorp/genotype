@@ -1,18 +1,18 @@
 use crate::prelude::internal::*;
 
-impl TSConvertContext {
-    pub fn hoist<HoistFn, Definition>(&mut self, mut hoist_fn: HoistFn) -> TSReference
+impl TsConvertContext {
+    pub fn hoist<HoistFn, Definition>(&mut self, mut hoist_fn: HoistFn) -> TsReference
     where
-        Definition: Into<TSDefinition>,
-        HoistFn: FnMut(&mut TSConvertContext) -> Definition,
+        Definition: Into<TsDefinition>,
+        HoistFn: FnMut(&mut TsConvertContext) -> Definition,
     {
         let definition = hoist_fn(self).into();
-        let reference = TSReference(definition.name());
+        let reference = TsReference(definition.name());
         self.hoisted.push(definition);
         reference
     }
 
-    pub fn drain_hoisted(&mut self) -> Vec<TSDefinition> {
+    pub fn drain_hoisted(&mut self) -> Vec<TsDefinition> {
         self.hoisted.drain(..).collect()
     }
 }

@@ -3,21 +3,21 @@ use heck::ToPascalCase;
 use unicode_xid::UnicodeXID;
 
 #[derive(Debug, PartialEq, Clone)]
-pub enum RSContextParent {
+pub enum RsContextParent {
     /// Alias parent. Defines the name that children can claim unless there is an anonymous parent
     /// between them.
-    Alias(RSIdentifier),
+    Alias(RsIdentifier),
     /// Anonymous parent that prevents children from taking the alias name, when they for example
     /// are part of a tuple.
     Anonymous,
-    Definition(RSIdentifier),
-    Field(RSFieldName),
-    EnumVariant(RSIdentifier),
+    Definition(RsIdentifier),
+    Field(RsFieldName),
+    EnumVariant(RsIdentifier),
     Hoist,
 }
 
-impl RSContextParent {
-    pub fn name(&self) -> RSConvertNameSegment {
+impl RsContextParent {
+    pub fn name(&self) -> RsConvertNameSegment {
         match self {
             Self::Alias(identifier) => identifier.0.clone(),
             Self::Definition(identifier) => identifier.0.clone(),
@@ -30,14 +30,14 @@ impl RSContextParent {
     }
 }
 
-impl From<RSFieldName> for RSContextParent {
-    fn from(key: RSFieldName) -> Self {
-        RSContextParent::Field(key)
+impl From<RsFieldName> for RsContextParent {
+    fn from(key: RsFieldName) -> Self {
+        RsContextParent::Field(key)
     }
 }
 
-impl RSConvertContext {
-    pub fn enter_parent(&mut self, parent: RSContextParent) {
+impl RsConvertContext {
+    pub fn enter_parent(&mut self, parent: RsContextParent) {
         self.parents.push(parent);
     }
 
@@ -46,16 +46,16 @@ impl RSConvertContext {
         self.parents.pop().expect("Expected parent to exist");
     }
 
-    pub fn name_child(&self, name: Option<RSConvertNameSegment>) -> RSIdentifier {
+    pub fn name_child(&self, name: Option<RsConvertNameSegment>) -> RsIdentifier {
         let mut segments = vec![];
         for parent in self.parents.iter().rev() {
             match parent {
                 // [TODO] Kill hoist and variant altogether?
-                RSContextParent::Hoist | RSContextParent::EnumVariant(_) => continue,
+                RsContextParent::Hoist | RsContextParent::EnumVariant(_) => continue,
 
                 _ => {
                     segments.push(parent.name());
-                    if let RSContextParent::Definition(_) = parent {
+                    if let RsContextParent::Definition(_) = parent {
                         break;
                     }
                 }
@@ -77,38 +77,38 @@ impl RSConvertContext {
 
     /// Tries claiming the alias from the parent, i.e. when naming literals:
     ///     HelloWorld = "hello-world"
-    pub fn claim_alias(&mut self) -> Option<RSIdentifier> {
-        if let Some(RSContextParent::Alias(identifier)) = self.parents.last() {
+    pub fn claim_alias(&mut self) -> Option<RsIdentifier> {
+        if let Some(RsContextParent::Alias(identifier)) = self.parents.last() {
             return Some(identifier.clone());
         }
         None
     }
 
     /// Renders a name segment from the given literal.
-    pub fn render_literal_name_segment(literal: &GTLiteralValue) -> String {
+    pub fn render_literal_name_segment(literal: &GtLiteralValue) -> String {
         match literal {
-            GTLiteralValue::Null => "Null".into(),
-            GTLiteralValue::String(value) => value.to_pascal_case(),
-            GTLiteralValue::Integer(value) => format!("{value}"),
-            GTLiteralValue::Float(value) => {
+            GtLiteralValue::Null => "Null".into(),
+            GtLiteralValue::String(value) => value.to_pascal_case(),
+            GtLiteralValue::Integer(value) => format!("{value}"),
+            GtLiteralValue::Float(value) => {
                 format!("{value}", value = format!("{:.}", value).replace('.', "_"))
             }
-            GTLiteralValue::Boolean(value) => format!("{value}").to_pascal_case(),
+            GtLiteralValue::Boolean(value) => format!("{value}").to_pascal_case(),
         }
     }
 }
 
-pub enum RSConvertNameSegment {
+pub enum RsConvertNameSegment {
     String(String),
-    Literal(GTLiteral),
+    Literal(GtLiteral),
 }
 
-impl RSConvertNameSegment {
+impl RsConvertNameSegment {
     pub fn render(&self, solo: bool) -> String {
         match self {
-            RSConvertNameSegment::String(value) => value.to_pascal_case(),
+            RsConvertNameSegment::String(value) => value.to_pascal_case(),
 
-            RSConvertNameSegment::Literal(literal) => {
+            RsConvertNameSegment::Literal(literal) => {
                 let prefix = if solo {
                     "Lit".to_string()
                 } else {
@@ -116,8 +116,8 @@ impl RSConvertNameSegment {
                 };
 
                 match &literal.value {
-                    GTLiteralValue::Null => "Null".into(),
-                    GTLiteralValue::String(value) => {
+                    GtLiteralValue::Null => "Null".into(),
+                    GtLiteralValue::String(value) => {
                         let str = value.to_pascal_case();
                         let first = str.chars().next().unwrap_or_default();
                         if first == '_' || UnicodeXID::is_xid_start(first) {
@@ -126,41 +126,41 @@ impl RSConvertNameSegment {
                             format!("{prefix}{str}")
                         }
                     }
-                    GTLiteralValue::Integer(value) => format!("{prefix}{value}"),
-                    GTLiteralValue::Float(value) => {
+                    GtLiteralValue::Integer(value) => format!("{prefix}{value}"),
+                    GtLiteralValue::Float(value) => {
                         format!(
                             "{value}",
                             value = format!("{prefix}{:.}", value).replace('.', "_")
                         )
                     }
-                    GTLiteralValue::Boolean(value) => format!("{value}").to_pascal_case(),
+                    GtLiteralValue::Boolean(value) => format!("{value}").to_pascal_case(),
                 }
             }
         }
     }
 }
 
-impl From<&str> for RSConvertNameSegment {
+impl From<&str> for RsConvertNameSegment {
     fn from(value: &str) -> Self {
-        RSConvertNameSegment::String(value.into())
+        RsConvertNameSegment::String(value.into())
     }
 }
 
-impl From<String> for RSConvertNameSegment {
+impl From<String> for RsConvertNameSegment {
     fn from(value: String) -> Self {
-        RSConvertNameSegment::String(value)
+        RsConvertNameSegment::String(value)
     }
 }
 
-impl From<Arc<str>> for RSConvertNameSegment {
+impl From<Arc<str>> for RsConvertNameSegment {
     fn from(value: Arc<str>) -> Self {
-        RSConvertNameSegment::String(value.to_string())
+        RsConvertNameSegment::String(value.to_string())
     }
 }
 
-impl From<GTLiteral> for RSConvertNameSegment {
-    fn from(value: GTLiteral) -> Self {
-        RSConvertNameSegment::Literal(value)
+impl From<GtLiteral> for RsConvertNameSegment {
+    fn from(value: GtLiteral) -> Self {
+        RsConvertNameSegment::Literal(value)
     }
 }
 
@@ -171,9 +171,9 @@ mod tests {
 
     #[test]
     fn test_name_child() {
-        let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Definition("Person".into()));
-        context.enter_parent(RSContextParent::Field("name".into()));
+        let mut context = RsConvertContext::empty("module".into());
+        context.enter_parent(RsContextParent::Definition("Person".into()));
+        context.enter_parent(RsContextParent::Field("name".into()));
         assert_eq!(
             context.name_child(Some("value".into())),
             "PersonNameValue".into()
@@ -182,26 +182,26 @@ mod tests {
 
     #[test]
     fn test_name_hoisted_child() {
-        let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Definition("Person".into()));
-        context.enter_parent(RSContextParent::Field("name".into()));
-        context.enter_parent(RSContextParent::Hoist);
-        context.enter_parent(RSContextParent::Definition("Name".into()));
+        let mut context = RsConvertContext::empty("module".into());
+        context.enter_parent(RsContextParent::Definition("Person".into()));
+        context.enter_parent(RsContextParent::Field("name".into()));
+        context.enter_parent(RsContextParent::Hoist);
+        context.enter_parent(RsContextParent::Definition("Name".into()));
         assert_eq!(context.name_child(Some("union".into())), "NameUnion".into());
     }
 
     #[test]
     fn test_name_literal_number_child() {
-        let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Definition("Person".into()));
-        context.enter_parent(RSContextParent::Field("v".into()));
+        let mut context = RsConvertContext::empty("module".into());
+        context.enter_parent(RsContextParent::Definition("Person".into()));
+        context.enter_parent(RsContextParent::Field("v".into()));
         assert_eq!(
             context.name_child(Some(
-                GTLiteral {
+                GtLiteral {
                     span: (0, 0).into(),
                     doc: None,
                     attributes: vec![],
-                    value: GTLiteralValue::Integer(1),
+                    value: GtLiteralValue::Integer(1),
                 }
                 .into()
             )),
@@ -211,14 +211,14 @@ mod tests {
 
     #[test]
     fn test_name_solo_literal_number_child() {
-        let context = RSConvertContext::empty("module".into());
+        let context = RsConvertContext::empty("module".into());
         assert_eq!(
             context.name_child(Some(
-                GTLiteral {
+                GtLiteral {
                     span: (0, 0).into(),
                     doc: None,
                     attributes: vec![],
-                    value: GTLiteralValue::Integer(1),
+                    value: GtLiteralValue::Integer(1),
                 }
                 .into()
             )),
@@ -228,16 +228,16 @@ mod tests {
 
     #[test]
     fn test_name_invalid_literal_child() {
-        let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Definition("Person".into()));
-        context.enter_parent(RSContextParent::Field("v".into()));
+        let mut context = RsConvertContext::empty("module".into());
+        context.enter_parent(RsContextParent::Definition("Person".into()));
+        context.enter_parent(RsContextParent::Field("v".into()));
         assert_eq!(
             context.name_child(Some(
-                GTLiteral {
+                GtLiteral {
                     span: (0, 0).into(),
                     doc: None,
                     attributes: vec![],
-                    value: GTLiteralValue::String("1".into()),
+                    value: GtLiteralValue::String("1".into()),
                 }
                 .into()
             )),
@@ -247,14 +247,14 @@ mod tests {
 
     #[test]
     fn test_name_solo_invalid_literal_child() {
-        let context = RSConvertContext::empty("module".into());
+        let context = RsConvertContext::empty("module".into());
         assert_eq!(
             context.name_child(Some(
-                GTLiteral {
+                GtLiteral {
                     span: (0, 0).into(),
                     doc: None,
                     attributes: vec![],
-                    value: GTLiteralValue::String("1".into()),
+                    value: GtLiteralValue::String("1".into()),
                 }
                 .into()
             )),
@@ -264,10 +264,10 @@ mod tests {
 
     #[test]
     fn test_claim_alias_deep() {
-        let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Alias("Person".into()));
+        let mut context = RsConvertContext::empty("module".into());
+        context.enter_parent(RsContextParent::Alias("Person".into()));
         assert_eq!(context.claim_alias(), Some("Person".into()));
-        context.enter_parent(RSContextParent::Anonymous);
+        context.enter_parent(RsContextParent::Anonymous);
         assert_eq!(context.claim_alias(), None);
     }
 }

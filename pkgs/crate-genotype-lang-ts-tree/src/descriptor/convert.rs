@@ -1,49 +1,49 @@
 use crate::prelude::internal::*;
 
-impl TSConvert<TSDescriptor> for GTDescriptor {
-    fn convert(&self, context: &mut TSConvertContext) -> TSDescriptor {
+impl TsConvert<TsDescriptor> for GtDescriptor {
+    fn convert(&self, context: &mut TsConvertContext) -> TsDescriptor {
         match self {
-            GTDescriptor::Alias(alias) => context.hoist(|context| alias.convert(context)).into(),
+            GtDescriptor::Alias(alias) => context.hoist(|context| alias.convert(context)).into(),
 
-            GTDescriptor::Array(array) => TSDescriptor::Array(Box::new(array.convert(context))),
+            GtDescriptor::Array(array) => TsDescriptor::Array(Box::new(array.convert(context))),
 
-            GTDescriptor::InlineImport(import) => {
-                TSDescriptor::InlineImport(import.convert(context))
+            GtDescriptor::InlineImport(import) => {
+                TsDescriptor::InlineImport(import.convert(context))
             }
 
-            GTDescriptor::Literal(literal) => TSDescriptor::Literal(literal.convert(context)),
+            GtDescriptor::Literal(literal) => TsDescriptor::Literal(literal.convert(context)),
 
-            GTDescriptor::Object(object) => {
-                let descriptor = TSDescriptor::Object(object.convert(context));
+            GtDescriptor::Object(object) => {
+                let descriptor = TsDescriptor::Object(object.convert(context));
                 if object.extensions.is_empty() {
                     descriptor
                 } else {
-                    let mut descriptors: Vec<TSDescriptor> = vec![descriptor];
+                    let mut descriptors: Vec<TsDescriptor> = vec![descriptor];
                     let extensions = object
                         .extensions
                         .iter()
-                        .map(|extension| TSDescriptor::from(extension.reference.convert(context)))
-                        .collect::<Vec<TSDescriptor>>();
+                        .map(|extension| TsDescriptor::from(extension.reference.convert(context)))
+                        .collect::<Vec<TsDescriptor>>();
                     descriptors.extend(extensions);
-                    TSDescriptor::Intersection(TSIntersection { descriptors })
+                    TsDescriptor::Intersection(TsIntersection { descriptors })
                 }
             }
 
-            GTDescriptor::Primitive(primitive) => {
-                TSDescriptor::Primitive(primitive.convert(context))
+            GtDescriptor::Primitive(primitive) => {
+                TsDescriptor::Primitive(primitive.convert(context))
             }
 
-            GTDescriptor::Reference(name) => TSDescriptor::Reference(name.convert(context)),
+            GtDescriptor::Reference(name) => TsDescriptor::Reference(name.convert(context)),
 
-            GTDescriptor::Tuple(tuple) => TSDescriptor::Tuple(tuple.convert(context)),
+            GtDescriptor::Tuple(tuple) => TsDescriptor::Tuple(tuple.convert(context)),
 
-            GTDescriptor::Union(union) => TSDescriptor::Union(union.convert(context)),
+            GtDescriptor::Union(union) => TsDescriptor::Union(union.convert(context)),
 
-            GTDescriptor::Record(record) => TSDescriptor::Record(Box::new(record.convert(context))),
+            GtDescriptor::Record(record) => TsDescriptor::Record(Box::new(record.convert(context))),
 
-            GTDescriptor::Any(any) => TSDescriptor::Any(any.convert(context)),
+            GtDescriptor::Any(any) => TsDescriptor::Any(any.convert(context)),
 
-            GTDescriptor::Branded(branded) => {
+            GtDescriptor::Branded(branded) => {
                 context.hoist(|context| branded.convert(context)).into()
             }
         }
@@ -60,25 +60,25 @@ mod tests {
     fn test_convert_alias() {
         let mut context = Default::default();
         assert_ron_snapshot!(
-            GTDescriptor::Alias(Box::new(GTAlias {
-                id: GTDefinitionId("module".into(), "Name".into()),
+            GtDescriptor::Alias(Box::new(GtAlias {
+                id: GtDefinitionId("module".into(), "Name".into()),
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                name: GTIdentifier::new((0, 0).into(), "Name".into()),
+                name: GtIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: Gt::primitive_boolean().into(),
             }))
             .convert(&mut context),
-            @r#"Reference(TSReference(TSIdentifier("Name")))"#
+            @r#"Reference(TsReference(TsIdentifier("Name")))"#
         );
         let hoisted = context.drain_hoisted();
         assert_ron_snapshot!(
             hoisted,
             @r#"
         [
-          Alias(TSAlias(
+          Alias(TsAlias(
             doc: None,
-            name: TSIdentifier("Name"),
+            name: TsIdentifier("Name"),
             descriptor: Primitive(Boolean),
           )),
         ]
@@ -91,7 +91,7 @@ mod tests {
         assert_ron_snapshot!(
             convert_node(Gt::descriptor(Gt::array(Gt::primitive_boolean()))),
             @"
-        Array(TSArray(
+        Array(TsArray(
           descriptor: Primitive(Boolean),
         ))
         "
@@ -105,9 +105,9 @@ mod tests {
                 Gt::inline_import("./path/to/module", "Name")
             )),
             @r#"
-        InlineImport(TSInlineImport(
-          path: TSPath("./path/to/module"),
-          name: TSIdentifier("Name"),
+        InlineImport(TsInlineImport(
+          path: TsPath("./path/to/module"),
+          name: TsIdentifier("Name"),
         ))
         "#
         );
@@ -121,18 +121,18 @@ mod tests {
                 Gt::property_optional("age", Gt::primitive_i32())
             ]))),
             @r#"
-        Object(TSObject(
+        Object(TsObject(
           properties: [
-            TSProperty(
+            TsProperty(
               doc: None,
-              name: TSKey("name"),
+              name: TsKey("name"),
               descriptor: Primitive(String),
               required: true,
             ),
-            TSProperty(
+            TsProperty(
               doc: None,
-              name: TSKey("age"),
-              descriptor: Union(TSUnion(
+              name: TsKey("age"),
+              descriptor: Union(TsUnion(
                 descriptors: [
                   Primitive(Number),
                   Primitive(Undefined),
@@ -146,8 +146,8 @@ mod tests {
         );
 
         assert_ron_snapshot!(
-            convert_node(Gt::descriptor(GTObject {
-                extensions: vec![GTExtension {
+            convert_node(Gt::descriptor(GtObject {
+                extensions: vec![GtExtension {
                     span: (0, 0).into(),
                     reference: Gt::reference("Good").into()
                 }],
@@ -156,19 +156,19 @@ mod tests {
                 ])
             })),
             @r#"
-        Intersection(TSIntersection(
+        Intersection(TsIntersection(
           descriptors: [
-            Object(TSObject(
+            Object(TsObject(
               properties: [
-                TSProperty(
+                TsProperty(
                   doc: None,
-                  name: TSKey("title"),
+                  name: TsKey("title"),
                   descriptor: Primitive(String),
                   required: true,
                 ),
               ],
             )),
-            Reference(TSReference(TSIdentifier("Good"))),
+            Reference(TsReference(TsIdentifier("Good"))),
           ],
         ))
         "#
@@ -187,7 +187,7 @@ mod tests {
     fn test_convert_reference() {
         assert_ron_snapshot!(
             convert_node(Gt::descriptor(Gt::reference("Name"))),
-            @r#"Reference(TSReference(TSIdentifier("Name")))"#
+            @r#"Reference(TsReference(TsIdentifier("Name")))"#
         );
     }
 
@@ -199,7 +199,7 @@ mod tests {
                 Gt::primitive_string().into(),
             ]))),
             @"
-        Tuple(TSTuple(
+        Tuple(TsTuple(
           descriptors: [
             Primitive(Boolean),
             Primitive(String),
@@ -217,7 +217,7 @@ mod tests {
                 Gt::primitive_string().into(),
             ]))),
             @"
-        Union(TSUnion(
+        Union(TsUnion(
           descriptors: [
             Primitive(Boolean),
             Primitive(String),
@@ -234,7 +234,7 @@ mod tests {
                 Gt::record(Gt::record_key_string(), Gt::primitive_string())
             )),
             @"
-        Record(TSRecord(
+        Record(TsRecord(
           key: String,
           descriptor: Primitive(String),
         ))
@@ -246,7 +246,7 @@ mod tests {
     fn test_convert_any() {
         assert_ron_snapshot!(
             convert_node(Gt::descriptor(Gt::any())),
-            @"Any(TSAny)"
+            @"Any(TsAny)"
         );
     }
 
@@ -257,16 +257,16 @@ mod tests {
             convert_node_with(Gt::descriptor(
                 Gt::branded("UserId", Gt::primitive_string())
             ), &mut context),
-            @r#"Reference(TSReference(TSIdentifier("UserId")))"#
+            @r#"Reference(TsReference(TsIdentifier("UserId")))"#
         );
         let hoisted = context.drain_hoisted();
         assert_ron_snapshot!(
             hoisted,
             @r#"
         [
-          Branded(TSBranded(
+          Branded(TsBranded(
             doc: None,
-            name: TSIdentifier("UserId"),
+            name: TsIdentifier("UserId"),
             primitive: String,
           )),
         ]

@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYImportName {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyImportName {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
     fn render(
         &self,
@@ -11,9 +11,9 @@ impl<'a> GtlRender<'a> for PYImportName {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         match self {
-            PYImportName::Name(name) => name.render(state, context),
+            PyImportName::Name(name) => name.render(state, context),
 
-            PYImportName::Alias(name, alias) => {
+            PyImportName::Alias(name, alias) => {
                 let name = name.render(state, context)?;
                 let alias = alias.render(state, context)?;
                 Ok(format!("{name} as {alias}"))
@@ -30,7 +30,7 @@ mod tests {
     #[test]
     fn test_render_name() {
         assert_snapshot!(
-            PYImportName::Name("Name".into())
+            PyImportName::Name("Name".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"Name"
@@ -40,7 +40,7 @@ mod tests {
     #[test]
     fn test_render_alias() {
         assert_snapshot!(
-            PYImportName::Alias("Name".into(), "Alias".into())
+            PyImportName::Alias("Name".into(), "Alias".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"Name as Alias"

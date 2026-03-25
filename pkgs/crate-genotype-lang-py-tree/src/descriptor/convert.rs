@@ -1,39 +1,39 @@
 use crate::prelude::internal::*;
 
-impl PYConvert<PYDescriptor> for GTDescriptor {
-    fn convert(&self, context: &mut PYConvertContext) -> PYDescriptor {
+impl PyConvert<PyDescriptor> for GtDescriptor {
+    fn convert(&self, context: &mut PyConvertContext) -> PyDescriptor {
         match self {
-            GTDescriptor::Alias(alias) => context.hoist(|context| alias.convert(context)).into(),
+            GtDescriptor::Alias(alias) => context.hoist(|context| alias.convert(context)).into(),
 
-            GTDescriptor::Array(array) => array.convert(context).into(),
+            GtDescriptor::Array(array) => array.convert(context).into(),
 
-            GTDescriptor::InlineImport(import) => {
+            GtDescriptor::InlineImport(import) => {
                 let reference = import.convert(context);
                 context.track_reference(&reference);
                 reference.into()
             }
 
-            GTDescriptor::Literal(literal) => literal.convert(context).into(),
+            GtDescriptor::Literal(literal) => literal.convert(context).into(),
 
-            GTDescriptor::Object(object) => context.hoist(|context| object.convert(context)).into(),
+            GtDescriptor::Object(object) => context.hoist(|context| object.convert(context)).into(),
 
-            GTDescriptor::Primitive(primitive) => primitive.convert(context).into(),
+            GtDescriptor::Primitive(primitive) => primitive.convert(context).into(),
 
-            GTDescriptor::Record(record) => record.convert(context).into(),
+            GtDescriptor::Record(record) => record.convert(context).into(),
 
-            GTDescriptor::Reference(name) => {
+            GtDescriptor::Reference(name) => {
                 let reference = name.convert(context);
                 context.track_reference(&reference);
                 reference.into()
             }
 
-            GTDescriptor::Tuple(tuple) => tuple.convert(context).into(),
+            GtDescriptor::Tuple(tuple) => tuple.convert(context).into(),
 
-            GTDescriptor::Union(union) => union.convert(context).into(),
+            GtDescriptor::Union(union) => union.convert(context).into(),
 
-            GTDescriptor::Any(any) => any.convert(context).into(),
+            GtDescriptor::Any(any) => any.convert(context).into(),
 
-            GTDescriptor::Branded(branded) => {
+            GtDescriptor::Branded(branded) => {
                 context.hoist(|context| branded.convert(context)).into()
             }
         }
@@ -48,20 +48,20 @@ mod tests {
 
     #[test]
     fn test_convert_alias() {
-        let mut context = PYConvertContext::default();
+        let mut context = PyConvertContext::default();
         assert_ron_snapshot!(
-            GTDescriptor::Alias(Box::new(GTAlias {
-                id: GTDefinitionId("module".into(), "Name".into()),
+            GtDescriptor::Alias(Box::new(GtAlias {
+                id: GtDefinitionId("module".into(), "Name".into()),
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                name: GTIdentifier::new((0, 0).into(), "Name".into()),
+                name: GtIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: Gt::primitive_boolean().into(),
             }))
             .convert(&mut context),
             @r#"
-        Reference(PYReference(
-          identifier: PYIdentifier("Name"),
+        Reference(PyReference(
+          identifier: PyIdentifier("Name"),
           forward: true,
         ))
         "#
@@ -71,9 +71,9 @@ mod tests {
             hoisted,
             @r#"
         [
-          Alias(PYAlias(
+          Alias(PyAlias(
             doc: None,
-            name: PYIdentifier("Name"),
+            name: PyIdentifier("Name"),
             descriptor: Primitive(Boolean),
             references: [],
           )),
@@ -87,7 +87,7 @@ mod tests {
         assert_ron_snapshot!(
             convert_node(Gt::descriptor(Gt::array(Gt::primitive_boolean()))),
             @"
-        List(PYList(
+        List(PyList(
           descriptor: Primitive(Boolean),
         ))
         "
@@ -96,15 +96,15 @@ mod tests {
 
     #[test]
     fn test_convert_inline_import() {
-        let mut context = PYConvertContext::default();
+        let mut context = PyConvertContext::default();
         assert_ron_snapshot!(
             convert_node_with(
                 Gt::descriptor(Gt::inline_import("./path/to/module", "Name")),
                 &mut context
             ),
             @r#"
-        Reference(PYReference(
-          identifier: PYIdentifier("Name"),
+        Reference(PyReference(
+          identifier: PyIdentifier("Name"),
           forward: false,
         ))
         "#
@@ -113,7 +113,7 @@ mod tests {
             context.as_dependencies(),
             @r#"
         [
-          (Path(PYPath(".path.to.module")), PYIdentifier("Name")),
+          (Path(PyPath(".path.to.module")), PyIdentifier("Name")),
         ]
         "#
         );
@@ -121,28 +121,28 @@ mod tests {
 
     #[test]
     fn test_convert_object() {
-        let mut context = PYConvertContext::default();
+        let mut context = PyConvertContext::default();
         assert_ron_snapshot!(
-            GTDescriptor::Object(GTObject {
+            GtDescriptor::Object(GtObject {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
+                name: GtObjectName::Named(GtIdentifier::new((0, 0).into(), "Person".into())),
                 extensions: vec![],
                 properties: vec![
-                    GTProperty {
+                    GtProperty {
                         span: (0, 0).into(),
                         doc: None,
                         attributes: vec![],
-                        name: GTKey::new((0, 0).into(), "name".into()),
+                        name: GtKey::new((0, 0).into(), "name".into()),
                         descriptor: Gt::primitive_string().into(),
                         required: true,
                     },
-                    GTProperty {
+                    GtProperty {
                         span: (0, 0).into(),
                         doc: None,
                         attributes: vec![],
-                        name: GTKey::new((0, 0).into(), "age".into()),
+                        name: GtKey::new((0, 0).into(), "age".into()),
                         descriptor: Gt::primitive_i32().into(),
                         required: false,
                     }
@@ -150,8 +150,8 @@ mod tests {
             })
             .convert(&mut context),
             @r#"
-        Reference(PYReference(
-          identifier: PYIdentifier("Person"),
+        Reference(PyReference(
+          identifier: PyIdentifier("Person"),
           forward: true,
         ))
         "#
@@ -161,20 +161,20 @@ mod tests {
             hoisted,
             @r#"
         [
-          Class(PYClass(
+          Class(PyClass(
             doc: None,
-            name: PYIdentifier("Person"),
+            name: PyIdentifier("Person"),
             extensions: [],
             properties: [
-              PYProperty(
+              PyProperty(
                 doc: None,
-                name: PYKey("name"),
+                name: PyKey("name"),
                 descriptor: Primitive(String),
                 required: true,
               ),
-              PYProperty(
+              PyProperty(
                 doc: None,
-                name: PYKey("age"),
+                name: PyKey("age"),
                 descriptor: Primitive(Int),
                 required: false,
               ),
@@ -189,8 +189,8 @@ mod tests {
     #[test]
     fn test_convert_primitive() {
         assert_ron_snapshot!(
-            GTDescriptor::Primitive(Gt::primitive_boolean())
-                .convert(&mut PYConvertContext::default()),
+            GtDescriptor::Primitive(Gt::primitive_boolean())
+                .convert(&mut PyConvertContext::default()),
             @"Primitive(Boolean)"
         );
     }
@@ -200,8 +200,8 @@ mod tests {
         assert_ron_snapshot!(
             convert_node(Gt::descriptor(Gt::reference("Name"))),
             @r#"
-        Reference(PYReference(
-          identifier: PYIdentifier("Name"),
+        Reference(PyReference(
+          identifier: PyIdentifier("Name"),
           forward: true,
         ))
         "#
@@ -216,7 +216,7 @@ mod tests {
                 Gt::primitive_string().into(),
             ]))),
             @"
-        Tuple(PYTuple(
+        Tuple(PyTuple(
           descriptors: [
             Primitive(Boolean),
             Primitive(String),
@@ -234,7 +234,7 @@ mod tests {
                 Gt::primitive_string().into(),
             ]))),
             @"
-        Union(PYUnion(
+        Union(PyUnion(
           descriptors: [
             Primitive(Boolean),
             Primitive(String),
@@ -247,7 +247,7 @@ mod tests {
 
     #[test]
     fn test_convert_branded() {
-        let mut context = PYConvertContext::default();
+        let mut context = PyConvertContext::default();
         assert_ron_snapshot!(
             convert_node_with(
                 Gt::descriptor(Gt::branded(
@@ -257,8 +257,8 @@ mod tests {
                 &mut context
             ),
             @r#"
-        Reference(PYReference(
-          identifier: PYIdentifier("UserId"),
+        Reference(PyReference(
+          identifier: PyIdentifier("UserId"),
           forward: true,
         ))
         "#
@@ -268,9 +268,9 @@ mod tests {
             hoisted,
             @r#"
         [
-          Newtype(PYNewtype(
+          Newtype(PyNewtype(
             doc: None,
-            name: PYIdentifier("UserId"),
+            name: PyIdentifier("UserId"),
             primitive: String,
           )),
         ]

@@ -7,26 +7,26 @@ use indexmap::IndexMap;
 use miette::Result;
 
 use crate::{
-    error::GTWError,
-    file::{GTWFile, GTWFileSource, GTWFiles},
-    path::GTWPath,
+    error::GtwError,
+    file::{GtwFile, GtwFileSource, GtwFiles},
+    path::GtwPath,
 };
 
-pub struct GTWorkspace {
+pub struct GtWorkspace {
     /// Workspace root path. It helps to format relative paths, i.e. to display
     /// errors in an editor, so that it can open the file.
-    path: GTWPath,
+    path: GtwPath,
     /// Workspace files map. It associated the absolute path with the file.
     /// Note that the file doesn't necessarily is inside the workspace path,
     /// as editors can open files outside the workspace.
-    files: GTWFiles,
+    files: GtwFiles,
 }
 
-impl<'a> GTWorkspace {
-    pub fn try_new(path_str: &String) -> Result<GTWorkspace> {
-        let path = GTWPath::try_new(path_str, None)?;
+impl<'a> GtWorkspace {
+    pub fn try_new(path_str: &String) -> Result<GtWorkspace> {
+        let path = GtwPath::try_new(path_str, None)?;
 
-        Ok(GTWorkspace {
+        Ok(GtWorkspace {
             path,
             files: Arc::new(Mutex::new(IndexMap::new())),
         })
@@ -35,13 +35,13 @@ impl<'a> GTWorkspace {
     pub fn load_file(
         &self,
         path_str: &String,
-        processing: Arc<Mutex<HashSet<GTWPath>>>,
+        processing: Arc<Mutex<HashSet<GtwPath>>>,
     ) -> Result<()> {
-        let path = GTWPath::try_new(path_str, Some(&self.path))?;
+        let path = GtwPath::try_new(path_str, Some(&self.path))?;
 
         // Check if the file is already processing
         {
-            let mut processing = processing.lock().map_err(|_| GTWError::FilesLock)?;
+            let mut processing = processing.lock().map_err(|_| GtwError::FilesLock)?;
             if processing.contains(&path) {
                 return Ok(());
             }
@@ -49,11 +49,11 @@ impl<'a> GTWorkspace {
         }
 
         // Load the source
-        let source = GTWFileSource::read(&path)?;
+        let source = GtwFileSource::read(&path)?;
 
         // Check if the file exists and needs no reloading
         {
-            let files = self.files.lock().map_err(|_| GTWError::FilesLock)?;
+            let files = self.files.lock().map_err(|_| GtwError::FilesLock)?;
             if let Some(file) = files.get(&path) {
                 if file.same_hash(&source) {
                     return Ok(());
@@ -62,11 +62,11 @@ impl<'a> GTWorkspace {
         }
 
         // Load the file
-        let file = GTWFile::load(&path, source)?;
+        let file = GtwFile::load(&path, source)?;
 
         // Update the files map
         {
-            let mut files = self.files.lock().map_err(|_| GTWError::FilesLock)?;
+            let mut files = self.files.lock().map_err(|_| GtwError::FilesLock)?;
             files.insert(path, file);
         }
 

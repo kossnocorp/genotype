@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl TSConvert<TSExtension> for GTExtension {
-    fn convert(&self, context: &mut TSConvertContext) -> TSExtension {
-        TSExtension {
+impl TsConvert<TsExtension> for GtExtension {
+    fn convert(&self, context: &mut TsConvertContext) -> TsExtension {
+        TsExtension {
             reference: self.reference.convert(context),
         }
     }
@@ -16,14 +16,14 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTExtension {
+            GtExtension {
                 span: (0, 0).into(),
                 reference: Gt::reference("Name"),
             }
             .convert(&mut Default::default()),
             @r#"
-        TSExtension(
-          reference: TSReference(TSIdentifier("Name")),
+        TsExtension(
+          reference: TsReference(TsIdentifier("Name")),
         )
         "#,
         );

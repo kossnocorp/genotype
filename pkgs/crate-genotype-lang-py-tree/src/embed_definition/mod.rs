@@ -3,14 +3,14 @@ use crate::prelude::internal::*;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct PYEmbedDefinition {
+pub struct PyEmbedDefinition {
     #[visit]
-    pub name: PYIdentifier,
+    pub name: PyIdentifier,
     pub embed: GtlEmbed,
 }
 
-impl PYEmbedDefinition {
-    pub fn new(name: PYIdentifier, embed: GtlEmbed) -> Self {
-        PYEmbedDefinition { name, embed }
+impl PyEmbedDefinition {
+    pub fn new(name: PyIdentifier, embed: GtlEmbed) -> Self {
+        PyEmbedDefinition { name, embed }
     }
 }

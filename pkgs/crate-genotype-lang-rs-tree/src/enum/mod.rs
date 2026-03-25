@@ -4,14 +4,14 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct RSEnum {
-    pub id: GTDefinitionId,
+pub struct RsEnum {
+    pub id: GtDefinitionId,
     #[visit]
-    pub doc: Option<RSDoc>,
+    pub doc: Option<RsDoc>,
     #[visit]
-    pub attributes: Vec<RSAttribute>,
+    pub attributes: Vec<RsAttribute>,
     #[visit]
-    pub name: RSIdentifier,
+    pub name: RsIdentifier,
     #[visit]
-    pub variants: Vec<RSEnumVariant>,
+    pub variants: Vec<RsEnumVariant>,
 }

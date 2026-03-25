@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYDoc {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyDoc {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
     fn render(
         &self,
@@ -30,7 +30,7 @@ mod tests {
     #[test]
     fn test_render_simple() {
         assert_snapshot!(
-            PYDoc("Hello, world!".into())
+            PyDoc("Hello, world!".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @r#""""Hello, world!""""#
@@ -40,7 +40,7 @@ mod tests {
     #[test]
     fn test_render_multiline() {
         assert_snapshot!(
-            PYDoc(
+            PyDoc(
                 r#"Hello,
 cruel
 world!"#
@@ -59,14 +59,14 @@ world!"#
     #[test]
     fn test_render_indent() {
         assert_snapshot!(
-            PYDoc(
+            PyDoc(
                 r#"Hello,
 cruel
 world!"#
                     .into()
             )
             .render(
-                PYRenderState::default().indent_inc(),
+                PyRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),

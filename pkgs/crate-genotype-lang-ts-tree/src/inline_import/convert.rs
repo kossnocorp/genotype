@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl TSConvert<TSInlineImport> for GTInlineImport {
-    fn convert(&self, context: &mut TSConvertContext) -> TSInlineImport {
-        TSInlineImport {
+impl TsConvert<TsInlineImport> for GtInlineImport {
+    fn convert(&self, context: &mut TsConvertContext) -> TsInlineImport {
+        TsInlineImport {
             path: self.path.convert(context),
             name: self.name.convert(context),
         }
@@ -20,9 +20,9 @@ mod tests {
         assert_ron_snapshot!(
             convert_node(Gt::inline_import("./path/to/module", "Name")),
             @r#"
-        TSInlineImport(
-          path: TSPath("./path/to/module"),
-          name: TSIdentifier("Name"),
+        TsInlineImport(
+          path: TsPath("./path/to/module"),
+          name: TsIdentifier("Name"),
         )
         "#
         );

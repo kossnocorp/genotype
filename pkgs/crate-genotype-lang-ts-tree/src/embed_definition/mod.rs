@@ -3,14 +3,14 @@ use crate::prelude::internal::*;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct TSEmbedDefinition {
+pub struct TsEmbedDefinition {
     #[visit]
-    pub name: TSIdentifier,
+    pub name: TsIdentifier,
     pub embed: GtlEmbed,
 }
 
-impl TSEmbedDefinition {
-    pub fn new(name: TSIdentifier, embed: GtlEmbed) -> Self {
-        TSEmbedDefinition { name, embed }
+impl TsEmbedDefinition {
+    pub fn new(name: TsIdentifier, embed: GtlEmbed) -> Self {
+        TsEmbedDefinition { name, embed }
     }
 }

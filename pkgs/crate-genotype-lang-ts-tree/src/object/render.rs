@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSObject {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsObject {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -33,7 +33,7 @@ mod tests {
     #[test]
     fn test_render_empty() {
         assert_snapshot!(
-            TSObject { properties: vec![] }
+            TsObject { properties: vec![] }
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"
@@ -46,18 +46,18 @@ mod tests {
     #[test]
     fn test_render_properties() {
         assert_snapshot!(
-            TSObject {
+            TsObject {
                 properties: vec![
-                    TSProperty {
+                    TsProperty {
                         doc: None,
                         name: "name".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                        descriptor: TsDescriptor::Primitive(TsPrimitive::String),
                         required: true
                     },
-                    TSProperty {
+                    TsProperty {
                         doc: None,
                         name: "age".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
+                        descriptor: TsDescriptor::Primitive(TsPrimitive::Number),
                         required: false
                     }
                 ]
@@ -76,24 +76,24 @@ mod tests {
     #[test]
     fn test_render_indent() {
         assert_snapshot!(
-            TSObject {
+            TsObject {
                 properties: vec![
-                    TSProperty {
+                    TsProperty {
                         doc: None,
                         name: "name".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                        descriptor: TsDescriptor::Primitive(TsPrimitive::String),
                         required: true
                     },
-                    TSProperty {
+                    TsProperty {
                         doc: None,
                         name: "age".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
+                        descriptor: TsDescriptor::Primitive(TsPrimitive::Number),
                         required: false
                     }
                 ]
             }
             .render(
-                TSRenderState::default().indent_inc(),
+                TsRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),

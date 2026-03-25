@@ -1,12 +1,12 @@
 use crate::prelude::internal::*;
 
-impl PYConvert<PYNewtype> for GTBranded {
-    fn convert(&self, context: &mut PYConvertContext) -> PYNewtype {
+impl PyConvert<PyNewtype> for GtBranded {
+    fn convert(&self, context: &mut PyConvertContext) -> PyNewtype {
         let doc = context.consume_doc();
         let name = self.name.convert(context);
         let primitive = self.primitive.convert(context);
 
-        PYNewtype {
+        PyNewtype {
             doc,
             name,
             primitive,
@@ -28,9 +28,9 @@ mod tests {
                 Gt::branded("UserId", Gt::primitive_string())
             ),
             @r#"
-        PYNewtype(
+        PyNewtype(
           doc: None,
-          name: PYIdentifier("UserId"),
+          name: PyIdentifier("UserId"),
           primitive: String,
         )
         "#
@@ -39,16 +39,16 @@ mod tests {
 
     #[test]
     fn test_convert_resolve() {
-        let mut context = PYConvertContext::default();
+        let mut context = PyConvertContext::default();
         assert_ron_snapshot!(
             convert_node_with(
                 Gt::branded("UserId", Gt::primitive_string()),
                 &mut context
             ),
             @r#"
-        PYNewtype(
+        PyNewtype(
           doc: None,
-          name: PYIdentifier("UserId"),
+          name: PyIdentifier("UserId"),
           primitive: String,
         )
         "#
@@ -57,7 +57,7 @@ mod tests {
             context.as_dependencies(),
             @r#"
         [
-          (Typing, PYIdentifier("NewType")),
+          (Typing, PyIdentifier("NewType")),
         ]
         "#
         );
@@ -65,17 +65,17 @@ mod tests {
 
     #[test]
     fn test_convert_doc() {
-        let mut context = PYConvertContext::default();
-        context.provide_doc(Some(PYDoc("Hello, world!".into())));
+        let mut context = PyConvertContext::default();
+        context.provide_doc(Some(PyDoc("Hello, world!".into())));
         assert_ron_snapshot!(
             convert_node_with(
                 Gt::branded("UserId", Gt::primitive_string()),
                 &mut context
             ),
             @r#"
-        PYNewtype(
-          doc: Some(PYDoc("Hello, world!")),
-          name: PYIdentifier("UserId"),
+        PyNewtype(
+          doc: Some(PyDoc("Hello, world!")),
+          name: PyIdentifier("UserId"),
           primitive: String,
         )
         "#

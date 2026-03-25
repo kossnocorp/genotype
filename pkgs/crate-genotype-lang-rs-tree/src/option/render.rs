@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSOption {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsOption {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -23,10 +23,10 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            RSOption {
-                descriptor: RSDescriptor::Primitive(RSPrimitive::String)
+            RsOption {
+                descriptor: RsDescriptor::Primitive(RsPrimitive::String)
             }
-            .render(RSRenderState::default(), &mut Default::default())
+            .render(RsRenderState::default(), &mut Default::default())
             .unwrap(),
             @"Option<String>"
         );

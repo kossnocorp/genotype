@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYReference {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyReference {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
     fn render(
         &self,
@@ -11,7 +11,7 @@ impl<'a> GtlRender<'a> for PYReference {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         let str = self.identifier.render(state, context)?;
-        if let PYVersion::Legacy = context.config.version {
+        if let PyVersion::Legacy = context.config.version {
             if self.forward {
                 return Ok(format!("\"{str}\""));
             }
@@ -28,7 +28,7 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            PYReference::new("Foo".into(), false)
+            PyReference::new("Foo".into(), false)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"Foo"
@@ -38,17 +38,17 @@ mod tests {
     #[test]
     fn test_render_forward() {
         assert_snapshot!(
-            PYReference::new("Foo".into(), true)
+            PyReference::new("Foo".into(), true)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"Foo"
         );
         assert_snapshot!(
-            PYReference::new("Foo".into(), true)
+            PyReference::new("Foo".into(), true)
                 .render(
                     Default::default(),
-                    &mut PYRenderContext {
-                        config: &PyConfigLang::new(PYVersion::Legacy),
+                    &mut PyRenderContext {
+                        config: &PyConfigLang::new(PyVersion::Legacy),
                         ..Default::default()
                     }
                 )

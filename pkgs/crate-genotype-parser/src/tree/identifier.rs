@@ -2,19 +2,19 @@ use crate::prelude::internal::*;
 
 /// Unique module identifier.
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
-pub struct GTIdentifier(
+pub struct GtIdentifier(
     /// Identifier position in the source code.
-    pub GTSpan,
+    pub GtSpan,
     /// Identifier name.
     pub Arc<str>,
 );
 
-impl GTIdentifier {
-    pub fn new(span: GTSpan, name: Arc<str>) -> Self {
+impl GtIdentifier {
+    pub fn new(span: GtSpan, name: Arc<str>) -> Self {
         Self(span, name)
     }
 
-    pub fn as_span(&self) -> GTSpan {
+    pub fn as_span(&self) -> GtSpan {
         self.0.clone()
     }
 
@@ -27,9 +27,9 @@ impl GTIdentifier {
     }
 }
 
-impl From<Pair<'_, Rule>> for GTIdentifier {
+impl From<Pair<'_, Rule>> for GtIdentifier {
     fn from(pair: Pair<'_, Rule>) -> Self {
-        GTIdentifier::new(pair.as_span().into(), pair.as_str().into())
+        GtIdentifier::new(pair.as_span().into(), pair.as_str().into())
     }
 }
 
@@ -43,7 +43,7 @@ mod tests {
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::name, "Hello").unwrap();
         assert_eq!(
-            GTIdentifier::new((0, 5).into(), "Hello".into()),
+            GtIdentifier::new((0, 5).into(), "Hello".into()),
             pairs.next().unwrap().into(),
         );
     }

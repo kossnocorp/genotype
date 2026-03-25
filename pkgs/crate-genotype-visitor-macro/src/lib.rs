@@ -20,7 +20,7 @@ pub fn derive_visitor(input: TokenStream) -> TokenStream {
     let Some(prefix) = type_prefix(&type_name) else {
         return syn::Error::new_spanned(
             &input.ident,
-            "Visitor derive expects a prefixed type name (e.g. GTAlias, PYModule)",
+            "Visitor derive expects a prefixed type name (e.g. GtAlias, PyModule)",
         )
         .to_compile_error()
         .into();

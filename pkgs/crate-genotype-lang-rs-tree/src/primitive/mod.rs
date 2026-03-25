@@ -4,7 +4,7 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub enum RSPrimitive {
+pub enum RsPrimitive {
     Unit,
     Boolean,
     String,

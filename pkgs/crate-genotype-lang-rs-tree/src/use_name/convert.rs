@@ -1,14 +1,14 @@
 use crate::prelude::internal::*;
 
-impl RSConvert<RSUseName> for GTImportName {
-    fn convert(&self, context: &mut RSConvertContext) -> Result<RSUseName> {
+impl RsConvert<RsUseName> for GtImportName {
+    fn convert(&self, context: &mut RsConvertContext) -> Result<RsUseName> {
         Ok(match self {
-            Self::Name(_, name) => RSUseName::Name(name.convert(context)?),
+            Self::Name(_, name) => RsUseName::Name(name.convert(context)?),
 
             Self::Alias(_, name, alias) => {
                 let name = name.convert(context)?;
                 let alias = alias.convert(context)?;
-                RSUseName::Alias(name, alias)
+                RsUseName::Alias(name, alias)
             }
         })
     }
@@ -22,27 +22,27 @@ mod tests {
     #[test]
     fn test_convert_name() {
         assert_ron_snapshot!(
-            GTImportName::Name(
+            GtImportName::Name(
                 (0, 0).into(),
-                GTIdentifier::new((0, 0).into(), "Name".into())
+                GtIdentifier::new((0, 0).into(), "Name".into())
             )
-            .convert(&mut RSConvertContext::empty("module".into()))
+            .convert(&mut RsConvertContext::empty("module".into()))
             .unwrap(),
-            @r#"Name(RSIdentifier("Name"))"#
+            @r#"Name(RsIdentifier("Name"))"#
         );
     }
 
     #[test]
     fn test_convert_alias() {
         assert_ron_snapshot!(
-            GTImportName::Alias(
+            GtImportName::Alias(
                 (0, 0).into(),
-                GTIdentifier::new((0, 0).into(), "Name".into()),
-                GTIdentifier::new((0, 0).into(), "Alias".into())
+                GtIdentifier::new((0, 0).into(), "Name".into()),
+                GtIdentifier::new((0, 0).into(), "Alias".into())
             )
-            .convert(&mut RSConvertContext::empty("module".into()))
+            .convert(&mut RsConvertContext::empty("module".into()))
             .unwrap(),
-            @r#"Alias(RSIdentifier("Name"), RSIdentifier("Alias"))"#
+            @r#"Alias(RsIdentifier("Name"), RsIdentifier("Alias"))"#
         );
     }
 }

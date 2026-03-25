@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYClass {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyClass {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
     fn render(
         &self,
@@ -18,11 +18,11 @@ impl<'a> GtlRender<'a> for PYClass {
     }
 }
 
-impl<'a> PYClass {
+impl<'a> PyClass {
     fn render_extensions(
         &self,
-        state: PYRenderState,
-        context: &mut PYRenderContext<'a>,
+        state: PyRenderState,
+        context: &mut PyRenderContext<'a>,
     ) -> Result<String> {
         let mut extensions = self
             .extensions
@@ -43,8 +43,8 @@ impl<'a> PYClass {
 
     fn render_body(
         &self,
-        state: PYRenderState,
-        context: &mut PYRenderContext<'a>,
+        state: PyRenderState,
+        context: &mut PyRenderContext<'a>,
     ) -> Result<String> {
         let mut body = vec![];
 
@@ -63,8 +63,8 @@ impl<'a> PYClass {
 
     fn render_properties(
         &self,
-        state: PYRenderState,
-        context: &mut PYRenderContext<'a>,
+        state: PyRenderState,
+        context: &mut PyRenderContext<'a>,
     ) -> Result<String> {
         Ok(self
             .properties
@@ -83,7 +83,7 @@ mod tests {
     #[test]
     fn test_render_empty() {
         assert_snapshot!(
-            PYClass {
+            PyClass {
                 doc: None,
                 name: "Name".into(),
                 extensions: vec![],
@@ -102,21 +102,21 @@ mod tests {
     #[test]
     fn test_render_properties() {
         assert_snapshot!(
-            PYClass {
+            PyClass {
                 doc: None,
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![
-                    PYProperty {
+                    PyProperty {
                         doc: None,
                         name: "name".into(),
-                        descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                        descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                         required: true
                     },
-                    PYProperty {
+                    PyProperty {
                         doc: None,
                         name: "age".into(),
-                        descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
+                        descriptor: PyDescriptor::Primitive(PyPrimitive::Int),
                         required: false
                     }
                 ],
@@ -135,28 +135,28 @@ mod tests {
     #[test]
     fn test_render_indent() {
         assert_snapshot!(
-            PYClass {
+            PyClass {
                 doc: None,
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![
-                    PYProperty {
+                    PyProperty {
                         doc: None,
                         name: "name".into(),
-                        descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                        descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                         required: true
                     },
-                    PYProperty {
+                    PyProperty {
                         doc: None,
                         name: "age".into(),
-                        descriptor: PYDescriptor::Primitive(PYPrimitive::Int),
+                        descriptor: PyDescriptor::Primitive(PyPrimitive::Int),
                         required: false
                     }
                 ],
                 references: vec![],
             }
             .render(
-                PYRenderState::default().indent_inc(),
+                PyRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),
@@ -171,17 +171,17 @@ mod tests {
     #[test]
     fn test_render_extensions() {
         assert_snapshot!(
-            PYClass {
+            PyClass {
                 doc: None,
                 name: "Name".into(),
                 extensions: vec![
-                    PYReference::new("Hello".into(), false).into(),
-                    PYReference::new("World".into(), false).into()
+                    PyReference::new("Hello".into(), false).into(),
+                    PyReference::new("World".into(), false).into()
                 ],
-                properties: vec![PYProperty {
+                properties: vec![PyProperty {
                     doc: None,
                     name: "name".into(),
-                    descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                    descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                     required: true
                 }],
                 references: vec![],
@@ -198,8 +198,8 @@ mod tests {
     #[test]
     fn test_render_doc_empty() {
         assert_snapshot!(
-            PYClass {
-                doc: Some(PYDoc("Hello, world!".into())),
+            PyClass {
+                doc: Some(PyDoc("Hello, world!".into())),
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![],
@@ -219,14 +219,14 @@ mod tests {
     #[test]
     fn test_render_doc_properties() {
         assert_snapshot!(
-            PYClass {
-                doc: Some(PYDoc("Hello, world!".into())),
+            PyClass {
+                doc: Some(PyDoc("Hello, world!".into())),
                 name: "Name".into(),
                 extensions: vec![],
-                properties: vec![PYProperty {
+                properties: vec![PyProperty {
                     doc: None,
                     name: "name".into(),
-                    descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                    descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                     required: true
                 }],
                 references: vec![],

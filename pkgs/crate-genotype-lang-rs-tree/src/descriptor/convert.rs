@@ -1,64 +1,64 @@
 use crate::prelude::internal::*;
 
-impl RSConvert<RSDescriptor> for GTDescriptor {
-    fn convert(&self, context: &mut RSConvertContext) -> Result<RSDescriptor> {
+impl RsConvert<RsDescriptor> for GtDescriptor {
+    fn convert(&self, context: &mut RsConvertContext) -> Result<RsDescriptor> {
         Ok(match self {
-            GTDescriptor::Alias(alias) => context
+            GtDescriptor::Alias(alias) => context
                 .hoist(|context| Ok((alias.convert(context)?, alias.span.clone())))?
                 .into(),
 
-            GTDescriptor::Array(array) => array.convert(context)?.into(),
+            GtDescriptor::Array(array) => array.convert(context)?.into(),
 
-            GTDescriptor::InlineImport(import) => import.convert(context)?.into(),
+            GtDescriptor::InlineImport(import) => import.convert(context)?.into(),
 
-            GTDescriptor::Literal(literal) => context
+            GtDescriptor::Literal(literal) => context
                 .hoist(|context| Ok((literal.convert(context)?, literal.span)))?
                 .into(),
 
-            GTDescriptor::Object(object) => context
+            GtDescriptor::Object(object) => context
                 .hoist(|context| Ok((object.convert(context)?, object.span.clone())))?
                 .into(),
 
-            GTDescriptor::Primitive(primitive) => primitive.convert(context)?.into(),
+            GtDescriptor::Primitive(primitive) => primitive.convert(context)?.into(),
 
-            GTDescriptor::Record(record) => record.convert(context)?.into(),
+            GtDescriptor::Record(record) => record.convert(context)?.into(),
 
-            GTDescriptor::Reference(name) => name.convert(context)?.into(),
+            GtDescriptor::Reference(name) => name.convert(context)?.into(),
 
-            GTDescriptor::Tuple(tuple) => tuple.convert(context)?.into(),
+            GtDescriptor::Tuple(tuple) => tuple.convert(context)?.into(),
 
-            GTDescriptor::Union(union) => context
+            GtDescriptor::Union(union) => context
                 .hoist(|context| Ok((union.convert(context)?, union.span.clone())))?
                 .into(),
 
-            GTDescriptor::Any(any) => any.convert(context)?.into(),
+            GtDescriptor::Any(any) => any.convert(context)?.into(),
 
-            GTDescriptor::Branded(branded) => context
+            GtDescriptor::Branded(branded) => context
                 .hoist(|context| Ok((branded.convert(context)?, branded.span.clone())))?
                 .into(),
         })
     }
 }
 
-impl RSConvert<RSDescriptor> for GTRecordKey {
-    fn convert(&self, _context: &mut RSConvertContext) -> Result<RSDescriptor> {
+impl RsConvert<RsDescriptor> for GtRecordKey {
+    fn convert(&self, _context: &mut RsConvertContext) -> Result<RsDescriptor> {
         Ok(match self {
-            GTRecordKey::String(_) => RSPrimitive::String.into(),
-            GTRecordKey::Number(_) => RSPrimitive::Float64.into(),
-            GTRecordKey::Int8(_) => RSPrimitive::Int8.into(),
-            GTRecordKey::Int16(_) => RSPrimitive::Int16.into(),
-            GTRecordKey::Int32(_) => RSPrimitive::Int32.into(),
-            GTRecordKey::Int64(_) => RSPrimitive::Int64.into(),
-            GTRecordKey::Int128(_) => RSPrimitive::Int128.into(),
-            GTRecordKey::IntSize(_) => RSPrimitive::IntSize.into(),
-            GTRecordKey::IntU8(_) => RSPrimitive::IntU8.into(),
-            GTRecordKey::IntU16(_) => RSPrimitive::IntU16.into(),
-            GTRecordKey::IntU32(_) => RSPrimitive::IntU32.into(),
-            GTRecordKey::IntU64(_) => RSPrimitive::IntU64.into(),
-            GTRecordKey::IntU128(_) => RSPrimitive::IntU128.into(),
-            GTRecordKey::IntUSize(_) => RSPrimitive::IntUSize.into(),
-            GTRecordKey::Float32(_) => RSPrimitive::Float32.into(),
-            GTRecordKey::Float64(_) => RSPrimitive::Float64.into(),
+            GtRecordKey::String(_) => RsPrimitive::String.into(),
+            GtRecordKey::Number(_) => RsPrimitive::Float64.into(),
+            GtRecordKey::Int8(_) => RsPrimitive::Int8.into(),
+            GtRecordKey::Int16(_) => RsPrimitive::Int16.into(),
+            GtRecordKey::Int32(_) => RsPrimitive::Int32.into(),
+            GtRecordKey::Int64(_) => RsPrimitive::Int64.into(),
+            GtRecordKey::Int128(_) => RsPrimitive::Int128.into(),
+            GtRecordKey::IntSize(_) => RsPrimitive::IntSize.into(),
+            GtRecordKey::IntU8(_) => RsPrimitive::IntU8.into(),
+            GtRecordKey::IntU16(_) => RsPrimitive::IntU16.into(),
+            GtRecordKey::IntU32(_) => RsPrimitive::IntU32.into(),
+            GtRecordKey::IntU64(_) => RsPrimitive::IntU64.into(),
+            GtRecordKey::IntU128(_) => RsPrimitive::IntU128.into(),
+            GtRecordKey::IntUSize(_) => RsPrimitive::IntUSize.into(),
+            GtRecordKey::Float32(_) => RsPrimitive::Float32.into(),
+            GtRecordKey::Float64(_) => RsPrimitive::Float64.into(),
         })
     }
 }
@@ -71,23 +71,23 @@ mod tests {
 
     #[test]
     fn test_convert_descriptor_alias() {
-        let mut context = RSConvertContext::empty("module".into());
+        let mut context = RsConvertContext::empty("module".into());
         assert_ron_snapshot!(
-            GTDescriptor::Alias(Box::new(GTAlias {
-                id: GTDefinitionId("module".into(), "Name".into()),
+            GtDescriptor::Alias(Box::new(GtAlias {
+                id: GtDefinitionId("module".into(), "Name".into()),
                 span: (0, 1).into(),
                 doc: None,
                 attributes: vec![],
-                name: GTIdentifier::new((0, 0).into(), "Name".into()),
+                name: GtIdentifier::new((0, 0).into(), "Name".into()),
                 descriptor: Gt::primitive_boolean().into(),
             }))
             .convert(&mut context)
             .unwrap(),
             @r#"
-        Reference(RSReference(
-          id: GTReferenceId(GTModuleId("module"), GTSpan(0, 1)),
-          identifier: RSIdentifier("Name"),
-          definition_id: GTDefinitionId(GTModuleId("module"), "Name"),
+        Reference(RsReference(
+          id: GtReferenceId(GtModuleId("module"), GtSpan(0, 1)),
+          identifier: RsIdentifier("Name"),
+          definition_id: GtDefinitionId(GtModuleId("module"), "Name"),
         ))
         "#
         );
@@ -96,10 +96,10 @@ mod tests {
             hoisted,
             @r#"
         [
-          Alias(RSAlias(
-            id: GTDefinitionId(GTModuleId("module"), "Name"),
+          Alias(RsAlias(
+            id: GtDefinitionId(GtModuleId("module"), "Name"),
             doc: None,
-            name: RSIdentifier("Name"),
+            name: RsIdentifier("Name"),
             descriptor: Primitive(Boolean),
           )),
         ]
@@ -111,10 +111,10 @@ mod tests {
     fn test_convert_descriptor_array() {
         assert_ron_snapshot!(
             Gt::descriptor(Gt::array(Gt::primitive_boolean()))
-            .convert(&mut RSConvertContext::empty("module".into()))
+            .convert(&mut RsConvertContext::empty("module".into()))
             .unwrap(),
             @"
-        Vec(RSVec(
+        Vec(RsVec(
           descriptor: Primitive(Boolean),
         ))
         "
@@ -128,9 +128,9 @@ mod tests {
                 Gt::descriptor(Gt::inline_import("./path/to/module", "Name"))
             ),
             @r#"
-        InlineUse(RSInlineUse(
-          path: RSPath(GTModuleId("path/to/module"), "super::path::to::module"),
-          name: RSIdentifier("Name"),
+        InlineUse(RsInlineUse(
+          path: RsPath(GtModuleId("path/to/module"), "super::path::to::module"),
+          name: RsIdentifier("Name"),
         ))
         "#
         );
@@ -138,28 +138,28 @@ mod tests {
 
     #[test]
     fn test_convert_descriptor_object() {
-        let mut context = RSConvertContext::empty("module".into());
+        let mut context = RsConvertContext::empty("module".into());
         assert_ron_snapshot!(
-            GTDescriptor::Object(GTObject {
+            GtDescriptor::Object(GtObject {
                 span: (0, 1).into(),
                 doc: None,
                 attributes: vec![],
-                name: GTObjectName::Named(GTIdentifier::new((0, 0).into(), "Person".into())),
+                name: GtObjectName::Named(GtIdentifier::new((0, 0).into(), "Person".into())),
                 extensions: vec![],
                 properties: vec![
-                    GTProperty {
+                    GtProperty {
                         span: (0, 0).into(),
                         doc: None,
                         attributes: vec![],
-                        name: GTKey::new((0, 0).into(), "name".into()),
+                        name: GtKey::new((0, 0).into(), "name".into()),
                         descriptor: Gt::primitive_string().into(),
                         required: true,
                     },
-                    GTProperty {
+                    GtProperty {
                         span: (0, 0).into(),
                         doc: None,
                         attributes: vec![],
-                        name: GTKey::new((0, 0).into(), "age".into()),
+                        name: GtKey::new((0, 0).into(), "age".into()),
                         descriptor: Gt::primitive_i32().into(),
                         required: false,
                     }
@@ -168,10 +168,10 @@ mod tests {
             .convert(&mut context)
             .unwrap(),
             @r#"
-        Reference(RSReference(
-          id: GTReferenceId(GTModuleId("module"), GTSpan(0, 1)),
-          identifier: RSIdentifier("Person"),
-          definition_id: GTDefinitionId(GTModuleId("module"), "Person"),
+        Reference(RsReference(
+          id: GtReferenceId(GtModuleId("module"), GtSpan(0, 1)),
+          identifier: RsIdentifier("Person"),
+          definition_id: GtDefinitionId(GtModuleId("module"), "Person"),
         ))
         "#
         );
@@ -180,27 +180,27 @@ mod tests {
             hoisted,
             @r#"
         [
-          Struct(RSStruct(
-            id: GTDefinitionId(GTModuleId("module"), "Person"),
+          Struct(RsStruct(
+            id: GtDefinitionId(GtModuleId("module"), "Person"),
             doc: None,
             attributes: [
-              RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+              RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
             ],
-            name: RSIdentifier("Person"),
+            name: RsIdentifier("Person"),
             fields: Resolved([
-              RSField(
+              RsField(
                 doc: None,
                 attributes: [],
-                name: RSFieldName("name"),
+                name: RsFieldName("name"),
                 descriptor: Primitive(String),
               ),
-              RSField(
+              RsField(
                 doc: None,
                 attributes: [
-                  RSAttribute("serde(default, skip_serializing_if = \"Option::is_none\")"),
+                  RsAttribute("serde(default, skip_serializing_if = \"Option::is_none\")"),
                 ],
-                name: RSFieldName("age"),
-                descriptor: Option(RSOption(
+                name: RsFieldName("age"),
+                descriptor: Option(RsOption(
                   descriptor: Primitive(Int32),
                 )),
               ),
@@ -224,10 +224,10 @@ mod tests {
         assert_ron_snapshot!(
             convert_node(Gt::descriptor(Gt::reference("Name"))),
             @r#"
-        Reference(RSReference(
-          id: GTReferenceId(GTModuleId("module"), GTSpan(0, 0)),
-          identifier: RSIdentifier("Name"),
-          definition_id: GTDefinitionId(GTModuleId("module"), "Name"),
+        Reference(RsReference(
+          id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
+          identifier: RsIdentifier("Name"),
+          definition_id: GtDefinitionId(GtModuleId("module"), "Name"),
         ))
         "#
         );
@@ -241,7 +241,7 @@ mod tests {
                 Gt::primitive_string().into(),
             ]))),
             @"
-        Tuple(RSTuple(
+        Tuple(RsTuple(
           descriptors: [
             Primitive(Boolean),
             Primitive(String),
@@ -260,10 +260,10 @@ mod tests {
                 Gt::primitive_string().into(),
             ])), &mut context),
             @r#"
-        Reference(RSReference(
-          id: GTReferenceId(GTModuleId("module"), GTSpan(0, 0)),
-          identifier: RSIdentifier("Union"),
-          definition_id: GTDefinitionId(GTModuleId("module"), "Union"),
+        Reference(RsReference(
+          id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
+          identifier: RsIdentifier("Union"),
+          definition_id: GtDefinitionId(GtModuleId("module"), "Union"),
         ))
         "#
         );
@@ -272,25 +272,25 @@ mod tests {
             hoisted,
             @r#"
         [
-          Enum(RSEnum(
-            id: GTDefinitionId(GTModuleId("module"), "Union"),
+          Enum(RsEnum(
+            id: GtDefinitionId(GtModuleId("module"), "Union"),
             doc: None,
             attributes: [
-              RSAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
-              RSAttribute("serde(untagged)"),
+              RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+              RsAttribute("serde(untagged)"),
             ],
-            name: RSIdentifier("Union"),
+            name: RsIdentifier("Union"),
             variants: [
-              RSEnumVariant(
+              RsEnumVariant(
                 doc: None,
                 attributes: [],
-                name: RSIdentifier("Boolean"),
+                name: RsIdentifier("Boolean"),
                 descriptor: Some(Descriptor(Primitive(Boolean))),
               ),
-              RSEnumVariant(
+              RsEnumVariant(
                 doc: None,
                 attributes: [],
-                name: RSIdentifier("String"),
+                name: RsIdentifier("String"),
                 descriptor: Some(Descriptor(Primitive(String))),
               ),
             ],

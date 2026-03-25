@@ -3,20 +3,20 @@ use genotype_parser::*;
 
 use crate::{GtjTreeConvert, GtjTreeConvertContext};
 
-impl GtjTreeConvert<GTArray> for GtjArray {
-    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTArray {
+impl GtjTreeConvert<GtArray> for GtjArray {
+    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GtArray {
         let name = context.claim_name(self.name.clone(), "Array");
 
         let descriptor =
-            context.enter_name_context(GTNamingContextName::Identifier(name.clone()), |context| {
+            context.enter_name_context(GtNamingContextName::Identifier(name.clone()), |context| {
                 context.enter_name_context(
-                    GTNamingContextName::Transitive("Element".into()),
+                    GtNamingContextName::Transitive("Element".into()),
                     |context| self.descriptor.to_tree_with_context(context),
                 )
             });
 
-        GTArray {
-            span: GTSpan::default(),
+        GtArray {
+            span: GtSpan::default(),
             doc: None,
             attributes: vec![],
             descriptor,
@@ -24,9 +24,9 @@ impl GtjTreeConvert<GTArray> for GtjArray {
     }
 }
 
-impl GtjTreeConvert<GTDescriptor> for GtjArray {
-    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTDescriptor {
-        GTDescriptor::Array(Box::new(self.to_tree_with_context(context)))
+impl GtjTreeConvert<GtDescriptor> for GtjArray {
+    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GtDescriptor {
+        GtDescriptor::Array(Box::new(self.to_tree_with_context(context)))
     }
 }
 
@@ -48,14 +48,14 @@ mod tests {
             doc: None,
         };
 
-        let descriptor_tree: GTDescriptor = array.to_tree_with_context(&mut Default::default());
+        let descriptor_tree: GtDescriptor = array.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(descriptor_tree, @"
-        Array(GTArray(
-          span: GTSpan(0, 0),
+        Array(GtArray(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
-          descriptor: Primitive(GTPrimitive(
-            span: GTSpan(0, 0),
+          descriptor: Primitive(GtPrimitive(
+            span: GtSpan(0, 0),
             kind: Number,
             doc: None,
             attributes: [],
@@ -63,14 +63,14 @@ mod tests {
         ))
         ");
 
-        let array_tree: GTArray = array.to_tree_with_context(&mut Default::default());
+        let array_tree: GtArray = array.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(array_tree, @"
-        GTArray(
-          span: GTSpan(0, 0),
+        GtArray(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
-          descriptor: Primitive(GTPrimitive(
-            span: GTSpan(0, 0),
+          descriptor: Primitive(GtPrimitive(
+            span: GtSpan(0, 0),
             kind: Number,
             doc: None,
             attributes: [],
@@ -95,17 +95,17 @@ mod tests {
             doc: None,
         };
 
-        let tree: GTDescriptor = array.to_tree_with_context(&mut context);
+        let tree: GtDescriptor = array.to_tree_with_context(&mut context);
         assert_ron_snapshot!(tree, @r#"
-        Array(GTArray(
-          span: GTSpan(0, 0),
+        Array(GtArray(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
-          descriptor: Object(GTObject(
-            span: GTSpan(0, 0),
+          descriptor: Object(GtObject(
+            span: GtSpan(0, 0),
             doc: None,
             attributes: [],
-            name: Named(GTIdentifier(GTSpan(0, 0), "RootElement")),
+            name: Named(GtIdentifier(GtSpan(0, 0), "RootElement")),
             extensions: [],
             properties: [],
           )),
@@ -145,33 +145,33 @@ mod tests {
             doc: None,
         };
 
-        let tree: GTArray = array.to_tree_with_context(&mut context);
+        let tree: GtArray = array.to_tree_with_context(&mut context);
         assert_ron_snapshot!(tree, @r#"
-        GTArray(
-          span: GTSpan(0, 0),
+        GtArray(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
-          descriptor: Array(GTArray(
-            span: GTSpan(0, 0),
+          descriptor: Array(GtArray(
+            span: GtSpan(0, 0),
             doc: None,
             attributes: [],
-            descriptor: Object(GTObject(
-              span: GTSpan(0, 0),
+            descriptor: Object(GtObject(
+              span: GtSpan(0, 0),
               doc: None,
               attributes: [],
-              name: Named(GTIdentifier(GTSpan(0, 0), "RootElementElement")),
+              name: Named(GtIdentifier(GtSpan(0, 0), "RootElementElement")),
               extensions: [],
               properties: [
-                GTProperty(
-                  span: GTSpan(0, 0),
+                GtProperty(
+                  span: GtSpan(0, 0),
                   doc: None,
                   attributes: [],
-                  name: GTKey(GTSpan(0, 0), "world"),
-                  descriptor: Object(GTObject(
-                    span: GTSpan(0, 0),
+                  name: GtKey(GtSpan(0, 0), "world"),
+                  descriptor: Object(GtObject(
+                    span: GtSpan(0, 0),
                     doc: None,
                     attributes: [],
-                    name: Named(GTIdentifier(GTSpan(0, 0), "RootElementElementWorld")),
+                    name: Named(GtIdentifier(GtSpan(0, 0), "RootElementElementWorld")),
                     extensions: [],
                     properties: [],
                   )),
@@ -200,17 +200,17 @@ mod tests {
             doc: None,
         };
 
-        let tree: GTArray = array.to_tree_with_context(&mut context);
+        let tree: GtArray = array.to_tree_with_context(&mut context);
         assert_ron_snapshot!(tree, @r#"
-        GTArray(
-          span: GTSpan(0, 0),
+        GtArray(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
-          descriptor: Object(GTObject(
-            span: GTSpan(0, 0),
+          descriptor: Object(GtObject(
+            span: GtSpan(0, 0),
             doc: None,
             attributes: [],
-            name: Named(GTIdentifier(GTSpan(0, 0), "HelloElement")),
+            name: Named(GtIdentifier(GtSpan(0, 0), "HelloElement")),
             extensions: [],
             properties: [],
           )),
@@ -250,33 +250,33 @@ mod tests {
             doc: None,
         };
 
-        let tree: GTArray = array.to_tree_with_context(&mut context);
+        let tree: GtArray = array.to_tree_with_context(&mut context);
         assert_ron_snapshot!(tree, @r#"
-        GTArray(
-          span: GTSpan(0, 0),
+        GtArray(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
-          descriptor: Array(GTArray(
-            span: GTSpan(0, 0),
+          descriptor: Array(GtArray(
+            span: GtSpan(0, 0),
             doc: None,
             attributes: [],
-            descriptor: Object(GTObject(
-              span: GTSpan(0, 0),
+            descriptor: Object(GtObject(
+              span: GtSpan(0, 0),
               doc: None,
               attributes: [],
-              name: Named(GTIdentifier(GTSpan(0, 0), "Hey")),
+              name: Named(GtIdentifier(GtSpan(0, 0), "Hey")),
               extensions: [],
               properties: [
-                GTProperty(
-                  span: GTSpan(0, 0),
+                GtProperty(
+                  span: GtSpan(0, 0),
                   doc: None,
                   attributes: [],
-                  name: GTKey(GTSpan(0, 0), "world"),
-                  descriptor: Object(GTObject(
-                    span: GTSpan(0, 0),
+                  name: GtKey(GtSpan(0, 0), "world"),
+                  descriptor: Object(GtObject(
+                    span: GtSpan(0, 0),
                     doc: None,
                     attributes: [],
-                    name: Named(GTIdentifier(GTSpan(0, 0), "HeyWorld")),
+                    name: Named(GtIdentifier(GtSpan(0, 0), "HeyWorld")),
                     extensions: [],
                     properties: [],
                   )),

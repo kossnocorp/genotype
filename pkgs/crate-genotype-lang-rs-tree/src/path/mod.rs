@@ -5,9 +5,9 @@ pub use convert::*;
 mod render;
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
-pub struct RSPath(pub GTModuleId, pub Arc<str>);
+pub struct RsPath(pub GtModuleId, pub Arc<str>);
 
-impl RSPath {
+impl RsPath {
     pub fn join(str: &str, other: &str) -> String {
         format!("{}::{}", str, other)
     }

@@ -3,14 +3,14 @@ use crate::prelude::internal::*;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub enum RSDefinition {
-    Alias(#[visit] RSAlias),
-    Struct(#[visit] RSStruct),
-    Enum(#[visit] RSEnum),
+pub enum RsDefinition {
+    Alias(#[visit] RsAlias),
+    Struct(#[visit] RsStruct),
+    Enum(#[visit] RsEnum),
 }
 
-impl RSDefinition {
-    pub fn name(&self) -> &RSIdentifier {
+impl RsDefinition {
+    pub fn name(&self) -> &RsIdentifier {
         match self {
             Self::Alias(alias) => &alias.name,
             Self::Struct(r#struct) => &r#struct.name,
@@ -18,7 +18,7 @@ impl RSDefinition {
         }
     }
 
-    pub fn doc(&self) -> &Option<RSDoc> {
+    pub fn doc(&self) -> &Option<RsDoc> {
         match self {
             Self::Alias(alias) => &alias.doc,
             Self::Struct(r#struct) => &r#struct.doc,
@@ -26,7 +26,7 @@ impl RSDefinition {
         }
     }
 
-    pub fn id(&self) -> &GTDefinitionId {
+    pub fn id(&self) -> &GtDefinitionId {
         match self {
             Self::Alias(alias) => &alias.id,
             Self::Struct(r#struct) => &r#struct.id,
@@ -35,42 +35,42 @@ impl RSDefinition {
     }
 }
 
-impl GtlDefinition for RSDefinition {}
+impl GtlDefinition for RsDefinition {}
 
-impl From<RSStruct> for RSDefinition {
-    fn from(r#struct: RSStruct) -> Self {
-        RSDefinition::Struct(r#struct)
+impl From<RsStruct> for RsDefinition {
+    fn from(r#struct: RsStruct) -> Self {
+        RsDefinition::Struct(r#struct)
     }
 }
 
-impl From<RSEnum> for RSDefinition {
-    fn from(r#enum: RSEnum) -> Self {
-        RSDefinition::Enum(r#enum)
+impl From<RsEnum> for RsDefinition {
+    fn from(r#enum: RsEnum) -> Self {
+        RsDefinition::Enum(r#enum)
     }
 }
 
 #[cfg(test)]
 mod tests {
     use crate::*;
-    use genotype_parser::GTDefinitionId;
+    use genotype_parser::GtDefinitionId;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_name() {
         assert_eq!(
-            *RSDefinition::Alias(RSAlias {
-                id: GTDefinitionId("module".into(), "Name".into()),
+            *RsDefinition::Alias(RsAlias {
+                id: GtDefinitionId("module".into(), "Name".into()),
                 doc: None,
                 name: "Name".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
+                descriptor: RsDescriptor::Primitive(RsPrimitive::Boolean),
             })
             .name(),
             "Name".into(),
         );
 
         assert_eq!(
-            *RSDefinition::Struct(RSStruct {
-                id: GTDefinitionId("module".into(), "Name".into()),
+            *RsDefinition::Struct(RsStruct {
+                id: GtDefinitionId("module".into(), "Name".into()),
                 doc: None,
                 attributes: vec![],
                 name: "Name".into(),
@@ -84,19 +84,19 @@ mod tests {
     #[test]
     fn test_doc() {
         assert_eq!(
-            *RSDefinition::Alias(RSAlias {
-                id: GTDefinitionId("module".into(), "Name".into()),
+            *RsDefinition::Alias(RsAlias {
+                id: GtDefinitionId("module".into(), "Name".into()),
                 doc: Some("Hello, world!".into()),
                 name: "Name".into(),
-                descriptor: RSDescriptor::Primitive(RSPrimitive::Boolean),
+                descriptor: RsDescriptor::Primitive(RsPrimitive::Boolean),
             })
             .doc(),
             Some("Hello, world!".into()),
         );
 
         assert_eq!(
-            *RSDefinition::Struct(RSStruct {
-                id: GTDefinitionId("module".into(), "Name".into()),
+            *RsDefinition::Struct(RsStruct {
+                id: GtDefinitionId("module".into(), "Name".into()),
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "Name".into(),

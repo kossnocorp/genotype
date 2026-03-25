@@ -3,13 +3,13 @@ use crate::prelude::internal::*;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct RSOption {
+pub struct RsOption {
     #[visit]
-    pub descriptor: RSDescriptor,
+    pub descriptor: RsDescriptor,
 }
 
-impl RSOption {
-    pub fn new(descriptor: RSDescriptor) -> Self {
+impl RsOption {
+    pub fn new(descriptor: RsDescriptor) -> Self {
         Self { descriptor }
     }
 }

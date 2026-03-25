@@ -1,11 +1,11 @@
 use crate::prelude::internal::*;
 
-impl PYContextResolve for PYAny {
+impl PyContextResolve for PyAny {
     fn resolve<Context>(self, context: &mut Context) -> Self
     where
-        Context: PYConvertContextConstraint,
+        Context: PyConvertContextConstraint,
     {
-        context.add_import(PYDependencyIdent::Typing, "Any".into());
+        context.add_import(PyDependencyIdent::Typing, "Any".into());
         self
     }
 }
@@ -17,12 +17,12 @@ mod tests {
 
     #[test]
     fn test_resolve() {
-        let mut context = PYConvertContextMock::default();
-        let alias = PYAny;
+        let mut context = PyConvertContextMock::default();
+        let alias = PyAny;
         alias.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
-            vec![(PYDependencyIdent::Typing, "Any".into())]
+            vec![(PyDependencyIdent::Typing, "Any".into())]
         );
     }
 }

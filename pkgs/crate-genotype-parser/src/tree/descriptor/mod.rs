@@ -3,89 +3,89 @@ use crate::prelude::internal::*;
 mod parser;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub enum GTDescriptor {
-    Alias(#[visit] Box<GTAlias>),
-    Array(#[visit] Box<GTArray>),
-    InlineImport(#[visit] GTInlineImport),
-    Literal(#[visit] GTLiteral),
-    Object(#[visit] GTObject),
-    Primitive(#[visit] GTPrimitive),
-    Reference(#[visit] GTReference),
-    Tuple(#[visit] GTTuple),
-    Union(#[visit] GTUnion),
-    Record(#[visit] Box<GTRecord>),
-    Any(#[visit] GTAny),
-    Branded(#[visit] GTBranded),
+pub enum GtDescriptor {
+    Alias(#[visit] Box<GtAlias>),
+    Array(#[visit] Box<GtArray>),
+    InlineImport(#[visit] GtInlineImport),
+    Literal(#[visit] GtLiteral),
+    Object(#[visit] GtObject),
+    Primitive(#[visit] GtPrimitive),
+    Reference(#[visit] GtReference),
+    Tuple(#[visit] GtTuple),
+    Union(#[visit] GtUnion),
+    Record(#[visit] Box<GtRecord>),
+    Any(#[visit] GtAny),
+    Branded(#[visit] GtBranded),
 }
 
-impl GTDescriptor {
-    fn span(&self) -> GTSpan {
+impl GtDescriptor {
+    fn span(&self) -> GtSpan {
         match &self {
-            GTDescriptor::Alias(alias) => alias.span,
-            GTDescriptor::Array(array) => array.span,
-            GTDescriptor::InlineImport(inline_import) => inline_import.span,
-            GTDescriptor::Literal(literal) => literal.span,
-            GTDescriptor::Object(object) => object.span,
-            GTDescriptor::Primitive(primitive) => primitive.span,
-            GTDescriptor::Reference(reference) => reference.span,
-            GTDescriptor::Tuple(tuple) => tuple.span,
-            GTDescriptor::Union(union) => union.span,
-            GTDescriptor::Record(record) => record.span,
-            GTDescriptor::Any(any) => any.span,
-            GTDescriptor::Branded(branded) => branded.span,
+            GtDescriptor::Alias(alias) => alias.span,
+            GtDescriptor::Array(array) => array.span,
+            GtDescriptor::InlineImport(inline_import) => inline_import.span,
+            GtDescriptor::Literal(literal) => literal.span,
+            GtDescriptor::Object(object) => object.span,
+            GtDescriptor::Primitive(primitive) => primitive.span,
+            GtDescriptor::Reference(reference) => reference.span,
+            GtDescriptor::Tuple(tuple) => tuple.span,
+            GtDescriptor::Union(union) => union.span,
+            GtDescriptor::Record(record) => record.span,
+            GtDescriptor::Any(any) => any.span,
+            GtDescriptor::Branded(branded) => branded.span,
         }
     }
 
-    fn node(&self) -> GTNode {
+    fn node(&self) -> GtNode {
         match &self {
-            GTDescriptor::Alias(_) => GTNode::Alias,
-            GTDescriptor::Array(_) => GTNode::Array,
-            GTDescriptor::InlineImport(_) => GTNode::InlineImport,
-            GTDescriptor::Literal(_) => GTNode::Literal,
-            GTDescriptor::Object(_) => GTNode::Object,
-            GTDescriptor::Primitive(_) => GTNode::Primitive,
-            GTDescriptor::Reference(_) => GTNode::Reference,
-            GTDescriptor::Tuple(_) => GTNode::Tuple,
-            GTDescriptor::Union(_) => GTNode::Union,
-            GTDescriptor::Record(_) => GTNode::Record,
-            GTDescriptor::Any(_) => GTNode::Any,
-            GTDescriptor::Branded(_) => GTNode::Branded,
+            GtDescriptor::Alias(_) => GtNode::Alias,
+            GtDescriptor::Array(_) => GtNode::Array,
+            GtDescriptor::InlineImport(_) => GtNode::InlineImport,
+            GtDescriptor::Literal(_) => GtNode::Literal,
+            GtDescriptor::Object(_) => GtNode::Object,
+            GtDescriptor::Primitive(_) => GtNode::Primitive,
+            GtDescriptor::Reference(_) => GtNode::Reference,
+            GtDescriptor::Tuple(_) => GtNode::Tuple,
+            GtDescriptor::Union(_) => GtNode::Union,
+            GtDescriptor::Record(_) => GtNode::Record,
+            GtDescriptor::Any(_) => GtNode::Any,
+            GtDescriptor::Branded(_) => GtNode::Branded,
         }
     }
 
-    pub fn attributes(&self) -> &Vec<GTAttribute> {
+    pub fn attributes(&self) -> &Vec<GtAttribute> {
         match &self {
-            GTDescriptor::Alias(alias) => &alias.attributes,
-            GTDescriptor::Array(array) => &array.attributes,
-            GTDescriptor::InlineImport(inline_import) => &inline_import.attributes,
-            GTDescriptor::Literal(literal) => &literal.attributes,
-            GTDescriptor::Object(object) => &object.attributes,
-            GTDescriptor::Primitive(primitive) => &primitive.attributes,
-            GTDescriptor::Reference(reference) => &reference.attributes,
-            GTDescriptor::Tuple(tuple) => &tuple.attributes,
-            GTDescriptor::Union(union) => &union.attributes,
-            GTDescriptor::Record(record) => &record.attributes,
-            GTDescriptor::Any(any) => &any.attributes,
-            GTDescriptor::Branded(branded) => &branded.attributes,
+            GtDescriptor::Alias(alias) => &alias.attributes,
+            GtDescriptor::Array(array) => &array.attributes,
+            GtDescriptor::InlineImport(inline_import) => &inline_import.attributes,
+            GtDescriptor::Literal(literal) => &literal.attributes,
+            GtDescriptor::Object(object) => &object.attributes,
+            GtDescriptor::Primitive(primitive) => &primitive.attributes,
+            GtDescriptor::Reference(reference) => &reference.attributes,
+            GtDescriptor::Tuple(tuple) => &tuple.attributes,
+            GtDescriptor::Union(union) => &union.attributes,
+            GtDescriptor::Record(record) => &record.attributes,
+            GtDescriptor::Any(any) => &any.attributes,
+            GtDescriptor::Branded(branded) => &branded.attributes,
         }
     }
 }
 
 //#region Alias
 
-impl From<GTAlias> for GTDescriptor {
-    fn from(alias: GTAlias) -> Self {
-        GTDescriptor::Alias(Box::new(alias))
+impl From<GtAlias> for GtDescriptor {
+    fn from(alias: GtAlias) -> Self {
+        GtDescriptor::Alias(Box::new(alias))
     }
 }
 
-impl TryFrom<GTDescriptor> for GTAlias {
-    type Error = GTParseError;
+impl TryFrom<GtDescriptor> for GtAlias {
+    type Error = GtParseError;
 
-    fn try_from(descriptor: GTDescriptor) -> Result<Self, GTParseError> {
+    fn try_from(descriptor: GtDescriptor) -> Result<Self, GtParseError> {
         match descriptor {
-            GTDescriptor::Alias(alias) => Ok(*alias),
-            _ => Err(GTParseError::UnmatchedDescriptor(
+            GtDescriptor::Alias(alias) => Ok(*alias),
+            _ => Err(GtParseError::UnmatchedDescriptor(
                 descriptor.span(),
                 descriptor.node(),
             )),
@@ -97,19 +97,19 @@ impl TryFrom<GTDescriptor> for GTAlias {
 
 //#region Array
 
-impl From<GTArray> for GTDescriptor {
-    fn from(array: GTArray) -> Self {
-        GTDescriptor::Array(Box::new(array))
+impl From<GtArray> for GtDescriptor {
+    fn from(array: GtArray) -> Self {
+        GtDescriptor::Array(Box::new(array))
     }
 }
 
-impl TryFrom<GTDescriptor> for GTArray {
-    type Error = GTParseError;
+impl TryFrom<GtDescriptor> for GtArray {
+    type Error = GtParseError;
 
-    fn try_from(descriptor: GTDescriptor) -> Result<Self, GTParseError> {
+    fn try_from(descriptor: GtDescriptor) -> Result<Self, GtParseError> {
         match descriptor {
-            GTDescriptor::Array(array) => Ok(*array),
-            _ => Err(GTParseError::UnmatchedDescriptor(
+            GtDescriptor::Array(array) => Ok(*array),
+            _ => Err(GtParseError::UnmatchedDescriptor(
                 descriptor.span(),
                 descriptor.node(),
             )),
@@ -121,19 +121,19 @@ impl TryFrom<GTDescriptor> for GTArray {
 
 //#region InlineImport
 
-impl From<GTInlineImport> for GTDescriptor {
-    fn from(inline_import: GTInlineImport) -> Self {
-        GTDescriptor::InlineImport(inline_import)
+impl From<GtInlineImport> for GtDescriptor {
+    fn from(inline_import: GtInlineImport) -> Self {
+        GtDescriptor::InlineImport(inline_import)
     }
 }
 
-impl TryFrom<GTDescriptor> for GTInlineImport {
-    type Error = GTParseError;
+impl TryFrom<GtDescriptor> for GtInlineImport {
+    type Error = GtParseError;
 
-    fn try_from(descriptor: GTDescriptor) -> Result<Self, GTParseError> {
+    fn try_from(descriptor: GtDescriptor) -> Result<Self, GtParseError> {
         match descriptor {
-            GTDescriptor::InlineImport(inline_import) => Ok(inline_import),
-            _ => Err(GTParseError::UnmatchedDescriptor(
+            GtDescriptor::InlineImport(inline_import) => Ok(inline_import),
+            _ => Err(GtParseError::UnmatchedDescriptor(
                 descriptor.span(),
                 descriptor.node(),
             )),
@@ -145,19 +145,19 @@ impl TryFrom<GTDescriptor> for GTInlineImport {
 
 //#region Object
 
-impl From<GTObject> for GTDescriptor {
-    fn from(object: GTObject) -> Self {
-        GTDescriptor::Object(object)
+impl From<GtObject> for GtDescriptor {
+    fn from(object: GtObject) -> Self {
+        GtDescriptor::Object(object)
     }
 }
 
-impl TryFrom<GTDescriptor> for GTObject {
-    type Error = GTParseError;
+impl TryFrom<GtDescriptor> for GtObject {
+    type Error = GtParseError;
 
-    fn try_from(descriptor: GTDescriptor) -> Result<Self, GTParseError> {
+    fn try_from(descriptor: GtDescriptor) -> Result<Self, GtParseError> {
         match descriptor {
-            GTDescriptor::Object(object) => Ok(object),
-            _ => Err(GTParseError::UnmatchedDescriptor(
+            GtDescriptor::Object(object) => Ok(object),
+            _ => Err(GtParseError::UnmatchedDescriptor(
                 descriptor.span(),
                 descriptor.node(),
             )),
@@ -169,19 +169,19 @@ impl TryFrom<GTDescriptor> for GTObject {
 
 //#region Literal
 
-impl From<GTLiteral> for GTDescriptor {
-    fn from(literal: GTLiteral) -> Self {
-        GTDescriptor::Literal(literal)
+impl From<GtLiteral> for GtDescriptor {
+    fn from(literal: GtLiteral) -> Self {
+        GtDescriptor::Literal(literal)
     }
 }
 
-impl TryFrom<GTDescriptor> for GTLiteral {
-    type Error = GTParseError;
+impl TryFrom<GtDescriptor> for GtLiteral {
+    type Error = GtParseError;
 
-    fn try_from(descriptor: GTDescriptor) -> Result<Self, GTParseError> {
+    fn try_from(descriptor: GtDescriptor) -> Result<Self, GtParseError> {
         match descriptor {
-            GTDescriptor::Literal(literal) => Ok(literal),
-            _ => Err(GTParseError::UnmatchedDescriptor(
+            GtDescriptor::Literal(literal) => Ok(literal),
+            _ => Err(GtParseError::UnmatchedDescriptor(
                 descriptor.span(),
                 descriptor.node(),
             )),
@@ -193,13 +193,13 @@ impl TryFrom<GTDescriptor> for GTLiteral {
 
 //#region Primitive
 
-impl TryFrom<GTDescriptor> for GTPrimitive {
-    type Error = GTParseError;
+impl TryFrom<GtDescriptor> for GtPrimitive {
+    type Error = GtParseError;
 
-    fn try_from(descriptor: GTDescriptor) -> Result<Self, GTParseError> {
+    fn try_from(descriptor: GtDescriptor) -> Result<Self, GtParseError> {
         match descriptor {
-            GTDescriptor::Primitive(primitive) => Ok(primitive),
-            _ => Err(GTParseError::UnmatchedDescriptor(
+            GtDescriptor::Primitive(primitive) => Ok(primitive),
+            _ => Err(GtParseError::UnmatchedDescriptor(
                 descriptor.span(),
                 descriptor.node(),
             )),
@@ -211,19 +211,19 @@ impl TryFrom<GTDescriptor> for GTPrimitive {
 
 //#region Reference
 
-impl From<GTReference> for GTDescriptor {
-    fn from(reference: GTReference) -> Self {
-        GTDescriptor::Reference(reference)
+impl From<GtReference> for GtDescriptor {
+    fn from(reference: GtReference) -> Self {
+        GtDescriptor::Reference(reference)
     }
 }
 
-impl TryFrom<GTDescriptor> for GTReference {
-    type Error = GTParseError;
+impl TryFrom<GtDescriptor> for GtReference {
+    type Error = GtParseError;
 
-    fn try_from(descriptor: GTDescriptor) -> Result<Self, GTParseError> {
+    fn try_from(descriptor: GtDescriptor) -> Result<Self, GtParseError> {
         match descriptor {
-            GTDescriptor::Reference(reference) => Ok(reference),
-            _ => Err(GTParseError::UnmatchedDescriptor(
+            GtDescriptor::Reference(reference) => Ok(reference),
+            _ => Err(GtParseError::UnmatchedDescriptor(
                 descriptor.span(),
                 descriptor.node(),
             )),
@@ -235,19 +235,19 @@ impl TryFrom<GTDescriptor> for GTReference {
 
 //#region Tuple
 
-impl From<GTTuple> for GTDescriptor {
-    fn from(tuple: GTTuple) -> Self {
-        GTDescriptor::Tuple(tuple)
+impl From<GtTuple> for GtDescriptor {
+    fn from(tuple: GtTuple) -> Self {
+        GtDescriptor::Tuple(tuple)
     }
 }
 
-impl TryFrom<GTDescriptor> for GTTuple {
-    type Error = GTParseError;
+impl TryFrom<GtDescriptor> for GtTuple {
+    type Error = GtParseError;
 
-    fn try_from(descriptor: GTDescriptor) -> Result<Self, GTParseError> {
+    fn try_from(descriptor: GtDescriptor) -> Result<Self, GtParseError> {
         match descriptor {
-            GTDescriptor::Tuple(tuple) => Ok(tuple),
-            _ => Err(GTParseError::UnmatchedDescriptor(
+            GtDescriptor::Tuple(tuple) => Ok(tuple),
+            _ => Err(GtParseError::UnmatchedDescriptor(
                 descriptor.span(),
                 descriptor.node(),
             )),
@@ -259,19 +259,19 @@ impl TryFrom<GTDescriptor> for GTTuple {
 
 //#region Union
 
-impl From<GTUnion> for GTDescriptor {
-    fn from(union: GTUnion) -> Self {
-        GTDescriptor::Union(union)
+impl From<GtUnion> for GtDescriptor {
+    fn from(union: GtUnion) -> Self {
+        GtDescriptor::Union(union)
     }
 }
 
-impl TryFrom<GTDescriptor> for GTUnion {
-    type Error = GTParseError;
+impl TryFrom<GtDescriptor> for GtUnion {
+    type Error = GtParseError;
 
-    fn try_from(descriptor: GTDescriptor) -> Result<Self, GTParseError> {
+    fn try_from(descriptor: GtDescriptor) -> Result<Self, GtParseError> {
         match descriptor {
-            GTDescriptor::Union(union) => Ok(union),
-            _ => Err(GTParseError::UnmatchedDescriptor(
+            GtDescriptor::Union(union) => Ok(union),
+            _ => Err(GtParseError::UnmatchedDescriptor(
                 descriptor.span(),
                 descriptor.node(),
             )),
@@ -283,19 +283,19 @@ impl TryFrom<GTDescriptor> for GTUnion {
 
 //#region Record
 
-impl From<GTRecord> for GTDescriptor {
-    fn from(record: GTRecord) -> Self {
-        GTDescriptor::Record(Box::new(record))
+impl From<GtRecord> for GtDescriptor {
+    fn from(record: GtRecord) -> Self {
+        GtDescriptor::Record(Box::new(record))
     }
 }
 
-impl TryFrom<GTDescriptor> for GTRecord {
-    type Error = GTParseError;
+impl TryFrom<GtDescriptor> for GtRecord {
+    type Error = GtParseError;
 
-    fn try_from(descriptor: GTDescriptor) -> Result<Self, GTParseError> {
+    fn try_from(descriptor: GtDescriptor) -> Result<Self, GtParseError> {
         match descriptor {
-            GTDescriptor::Record(record) => Ok(*record),
-            _ => Err(GTParseError::UnmatchedDescriptor(
+            GtDescriptor::Record(record) => Ok(*record),
+            _ => Err(GtParseError::UnmatchedDescriptor(
                 descriptor.span(),
                 descriptor.node(),
             )),
@@ -307,19 +307,19 @@ impl TryFrom<GTDescriptor> for GTRecord {
 
 //#region Any
 
-impl From<GTAny> for GTDescriptor {
-    fn from(any: GTAny) -> Self {
-        GTDescriptor::Any(any)
+impl From<GtAny> for GtDescriptor {
+    fn from(any: GtAny) -> Self {
+        GtDescriptor::Any(any)
     }
 }
 
-impl TryFrom<GTDescriptor> for GTAny {
-    type Error = GTParseError;
+impl TryFrom<GtDescriptor> for GtAny {
+    type Error = GtParseError;
 
-    fn try_from(descriptor: GTDescriptor) -> Result<Self, GTParseError> {
+    fn try_from(descriptor: GtDescriptor) -> Result<Self, GtParseError> {
         match descriptor {
-            GTDescriptor::Any(any) => Ok(any),
-            _ => Err(GTParseError::UnmatchedDescriptor(
+            GtDescriptor::Any(any) => Ok(any),
+            _ => Err(GtParseError::UnmatchedDescriptor(
                 descriptor.span(),
                 descriptor.node(),
             )),
@@ -331,19 +331,19 @@ impl TryFrom<GTDescriptor> for GTAny {
 
 //#region Branded
 
-impl From<GTBranded> for GTDescriptor {
-    fn from(branded: GTBranded) -> Self {
-        GTDescriptor::Branded(branded)
+impl From<GtBranded> for GtDescriptor {
+    fn from(branded: GtBranded) -> Self {
+        GtDescriptor::Branded(branded)
     }
 }
 
-impl TryFrom<GTDescriptor> for GTBranded {
-    type Error = GTParseError;
+impl TryFrom<GtDescriptor> for GtBranded {
+    type Error = GtParseError;
 
-    fn try_from(descriptor: GTDescriptor) -> Result<Self, GTParseError> {
+    fn try_from(descriptor: GtDescriptor) -> Result<Self, GtParseError> {
         match descriptor {
-            GTDescriptor::Branded(branded) => Ok(branded),
-            _ => Err(GTParseError::UnmatchedDescriptor(
+            GtDescriptor::Branded(branded) => Ok(branded),
+            _ => Err(GtParseError::UnmatchedDescriptor(
                 descriptor.span(),
                 descriptor.node(),
             )),

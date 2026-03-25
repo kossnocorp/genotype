@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
-impl TSConvertContext {
-    pub fn resolve_path(&self, path: &GTPath) -> String {
+impl TsConvertContext {
+    pub fn resolve_path(&self, path: &GtPath) -> String {
         // [TODO] Refactor `resolve_path` between Python, Rust and TypeScript
         if let Some((package_path, inner_path)) = path.package_path() {
             if let Some(dependency) = self.dependencies_config.get(&package_path) {
@@ -22,12 +22,12 @@ impl TSConvertContext {
         }
     }
 
-    pub fn resolve_glob(&self, import: &GTImport) -> String {
+    pub fn resolve_glob(&self, import: &GtImport) -> String {
         // [TODO] Add errors to TS convert!
         self.resolve.globs.get(&import.path).unwrap().clone()
     }
 
-    pub fn resolve_identifier(&self, identifier: &GTIdentifier) -> String {
+    pub fn resolve_identifier(&self, identifier: &GtIdentifier) -> String {
         self.resolve
             .identifiers
             .get(identifier)

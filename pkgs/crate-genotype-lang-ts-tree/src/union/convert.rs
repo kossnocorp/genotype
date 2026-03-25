@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl TSConvert<TSUnion> for GTUnion {
-    fn convert(&self, context: &mut TSConvertContext) -> TSUnion {
-        TSUnion {
+impl TsConvert<TsUnion> for GtUnion {
+    fn convert(&self, context: &mut TsConvertContext) -> TsUnion {
+        TsUnion {
             descriptors: self
                 .descriptors
                 .iter()
@@ -25,7 +25,7 @@ mod tests {
                 Gt::primitive_string().into(),
             ])),
             @"
-        TSUnion(
+        TsUnion(
           descriptors: [
             Primitive(Boolean),
             Primitive(String),

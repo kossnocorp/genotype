@@ -4,40 +4,40 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub enum TSDefinition {
-    Alias(#[visit] TSAlias),
-    Interface(#[visit] TSInterface),
-    Branded(#[visit] TSBranded),
-    Embed(#[visit] TSEmbedDefinition),
+pub enum TsDefinition {
+    Alias(#[visit] TsAlias),
+    Interface(#[visit] TsInterface),
+    Branded(#[visit] TsBranded),
+    Embed(#[visit] TsEmbedDefinition),
 }
 
-impl TSDefinition {
-    pub fn name(&self) -> TSIdentifier {
+impl TsDefinition {
+    pub fn name(&self) -> TsIdentifier {
         match self {
-            TSDefinition::Alias(alias) => alias.name.clone(),
-            TSDefinition::Interface(interface) => interface.name.clone(),
-            TSDefinition::Branded(branded) => branded.name.clone(),
-            TSDefinition::Embed(embed) => embed.name.clone(),
+            TsDefinition::Alias(alias) => alias.name.clone(),
+            TsDefinition::Interface(interface) => interface.name.clone(),
+            TsDefinition::Branded(branded) => branded.name.clone(),
+            TsDefinition::Embed(embed) => embed.name.clone(),
         }
     }
 }
 
-impl GtlDefinition for TSDefinition {}
+impl GtlDefinition for TsDefinition {}
 
-impl From<TSBranded> for TSDefinition {
-    fn from(branded: TSBranded) -> Self {
-        TSDefinition::Branded(branded)
+impl From<TsBranded> for TsDefinition {
+    fn from(branded: TsBranded) -> Self {
+        TsDefinition::Branded(branded)
     }
 }
 
-impl From<TSAlias> for TSDefinition {
-    fn from(alias: TSAlias) -> Self {
-        TSDefinition::Alias(alias)
+impl From<TsAlias> for TsDefinition {
+    fn from(alias: TsAlias) -> Self {
+        TsDefinition::Alias(alias)
     }
 }
 
-impl From<TSEmbedDefinition> for TSDefinition {
-    fn from(embed: TSEmbedDefinition) -> Self {
-        TSDefinition::Embed(embed)
+impl From<TsEmbedDefinition> for TsDefinition {
+    fn from(embed: TsEmbedDefinition) -> Self {
+        TsDefinition::Embed(embed)
     }
 }

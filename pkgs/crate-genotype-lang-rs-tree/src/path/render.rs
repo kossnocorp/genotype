@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSPath {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsPath {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -22,8 +22,8 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            RSPath(
-                GTModuleId("path/to/module".into()),
+            RsPath(
+                GtModuleId("path/to/module".into()),
                 "self::path::to::module".into()
             )
             .render(Default::default(), &mut Default::default())

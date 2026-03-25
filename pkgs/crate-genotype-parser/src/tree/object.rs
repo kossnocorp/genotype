@@ -1,35 +1,35 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct GTObject {
-    pub span: GTSpan,
+pub struct GtObject {
+    pub span: GtSpan,
     #[visit]
-    pub doc: Option<GTDoc>,
+    pub doc: Option<GtDoc>,
     #[visit]
-    pub attributes: Vec<GTAttribute>,
+    pub attributes: Vec<GtAttribute>,
     #[visit]
-    pub name: GTObjectName,
+    pub name: GtObjectName,
     #[visit]
-    pub extensions: Vec<GTExtension>,
+    pub extensions: Vec<GtExtension>,
     #[visit]
-    pub properties: Vec<GTProperty>,
+    pub properties: Vec<GtProperty>,
 }
 
-impl GTObject {
-    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
-        let span: GTSpan = pair.as_span().into();
+impl GtObject {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> GtNodeParseResult<Self> {
+        let span: GtSpan = pair.as_span().into();
         let (doc, attributes) = context.take_annotation_or_default();
 
         let name = context.name_object(span.clone())?;
 
         // It is an explicitly named object, so we need to add an anonymous parent so following
         // children don't get the object name.
-        let named = matches!(name, GTObjectName::Named(_));
+        let named = matches!(name, GtObjectName::Named(_));
         if named {
-            context.enter_parent(GTContextParent::Anonymous);
+            context.enter_parent(GtContextParent::Anonymous);
         }
 
-        let mut object = GTObject {
+        let mut object = GtObject {
             span: span.clone(),
             doc,
             attributes,
@@ -44,25 +44,25 @@ impl GTObject {
                 let property_pair = pair
                     .into_inner()
                     .next()
-                    .ok_or_else(|| GTParseError::UnexpectedEnd(span.clone(), GTNode::Object))?;
+                    .ok_or_else(|| GtParseError::UnexpectedEnd(span.clone(), GtNode::Object))?;
 
                 match property_pair.as_rule() {
                     Rule::required_property | Rule::optional_property => {
                         object
                             .properties
-                            .push(GTProperty::parse(property_pair, context)?);
+                            .push(GtProperty::parse(property_pair, context)?);
                     }
 
                     Rule::extension_property => {
                         object
                             .extensions
-                            .push(GTExtension::parse(property_pair, context)?);
+                            .push(GtExtension::parse(property_pair, context)?);
                     }
 
                     rule => {
-                        return Err(GTParseError::UnexpectedRule(
+                        return Err(GtParseError::UnexpectedRule(
                             property_pair.as_span().into(),
-                            GTNode::Object,
+                            GtNode::Object,
                             rule,
                         ));
                     }
@@ -71,7 +71,7 @@ impl GTObject {
         }
 
         if named {
-            context.exit_parent(span, GTNode::Object)?;
+            context.exit_parent(span, GtNode::Object)?;
         }
 
         Ok(object)
@@ -86,10 +86,10 @@ mod tests {
     #[test]
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::object, "{ hello: string }").unwrap();
-        let mut context = GTContext {
+        let mut context = GtContext {
             module_id: "module".into(),
-            resolve: GTModuleResolve::new(),
-            parents: vec![GTContextParent::Alias(GTIdentifier::new(
+            resolve: GtModuleResolve::new(),
+            parents: vec![GtContextParent::Alias(GtIdentifier::new(
                 (0, 5).into(),
                 "Hello".into(),
             ))],
@@ -97,22 +97,22 @@ mod tests {
             annotation: None,
         };
         assert_ron_snapshot!(
-            GTObject::parse(pairs.next().unwrap(), &mut context).unwrap(),
+            GtObject::parse(pairs.next().unwrap(), &mut context).unwrap(),
             @r#"
-        GTObject(
-          span: GTSpan(0, 17),
+        GtObject(
+          span: GtSpan(0, 17),
           doc: None,
           attributes: [],
-          name: Named(GTIdentifier(GTSpan(0, 5), "Hello")),
+          name: Named(GtIdentifier(GtSpan(0, 5), "Hello")),
           extensions: [],
           properties: [
-            GTProperty(
-              span: GTSpan(2, 15),
+            GtProperty(
+              span: GtSpan(2, 15),
               doc: None,
               attributes: [],
-              name: GTKey(GTSpan(2, 7), "hello"),
-              descriptor: Primitive(GTPrimitive(
-                span: GTSpan(9, 15),
+              name: GtKey(GtSpan(2, 7), "hello"),
+              descriptor: Primitive(GtPrimitive(
+                span: GtSpan(9, 15),
                 kind: String,
                 doc: None,
                 attributes: [],
@@ -135,13 +135,13 @@ mod tests {
             }"#
             .into(),
         );
-        let parse = GTModule::parse("module".into(), source_code).unwrap();
+        let parse = GtModule::parse("module".into(), source_code).unwrap();
         assert_ron_snapshot!(
             parse.resolve.deps,
             @r#"
         [
-          GTPath(GTSpan(31, 35), Unresolved, "book"),
-          GTPath(GTSpan(64, 75), Unresolved, "./misc/user"),
+          GtPath(GtSpan(31, 35), Unresolved, "book"),
+          GtPath(GtSpan(64, 75), Unresolved, "./misc/user"),
         ]
         "#
         );
@@ -157,13 +157,13 @@ mod tests {
             }"#
             .into(),
         );
-        let parse = GTModule::parse("module".into(), source_code).unwrap();
+        let parse = GtModule::parse("module".into(), source_code).unwrap();
         assert_ron_snapshot!(
             parse.resolve.deps,
             @r#"
         [
-          GTPath(GTSpan(31, 35), Unresolved, "book"),
-          GTPath(GTSpan(64, 85), Unresolved, "./misc/user"),
+          GtPath(GtSpan(31, 35), Unresolved, "book"),
+          GtPath(GtSpan(64, 85), Unresolved, "./misc/user"),
         ]
         "#
         );
@@ -172,33 +172,33 @@ mod tests {
     #[test]
     fn test_parse_name() {
         let mut pairs = GenotypeParser::parse(Rule::object, "{ hello: string }").unwrap();
-        let mut context = GTContext {
+        let mut context = GtContext {
             module_id: "module".into(),
-            resolve: GTModuleResolve::new(),
+            resolve: GtModuleResolve::new(),
             parents: vec![
-                GTContextParent::Alias(GTIdentifier::new((0, 5).into(), "Hello".into())),
-                GTContextParent::Anonymous,
+                GtContextParent::Alias(GtIdentifier::new((0, 5).into(), "Hello".into())),
+                GtContextParent::Anonymous,
             ],
             claimed_names: Default::default(),
             annotation: None,
         };
         assert_ron_snapshot!(
-            GTObject::parse(pairs.next().unwrap(), &mut context).unwrap(),
+            GtObject::parse(pairs.next().unwrap(), &mut context).unwrap(),
             @r#"
-        GTObject(
-          span: GTSpan(0, 17),
+        GtObject(
+          span: GtSpan(0, 17),
           doc: None,
           attributes: [],
-          name: Alias(GTIdentifier(GTSpan(0, 17), "HelloObj"), Alias(GTIdentifier(GTSpan(0, 5), "Hello"))),
+          name: Alias(GtIdentifier(GtSpan(0, 17), "HelloObj"), Alias(GtIdentifier(GtSpan(0, 5), "Hello"))),
           extensions: [],
           properties: [
-            GTProperty(
-              span: GTSpan(2, 15),
+            GtProperty(
+              span: GtSpan(2, 15),
               doc: None,
               attributes: [],
-              name: GTKey(GTSpan(2, 7), "hello"),
-              descriptor: Primitive(GTPrimitive(
-                span: GTSpan(9, 15),
+              name: GtKey(GtSpan(2, 7), "hello"),
+              descriptor: Primitive(GtPrimitive(
+                span: GtSpan(9, 15),
                 kind: String,
                 doc: None,
                 attributes: [],
@@ -214,7 +214,7 @@ mod tests {
     #[test]
     fn test_annotation() {
         let mut context = Gt::context();
-        context.enter_parent(GTContextParent::Alias(Gt::identifier("Hello")));
+        context.enter_parent(GtContextParent::Alias(Gt::identifier("Hello")));
         context.provide_annotation((
             Gt::some_doc("Hello, world!"),
             vec![Gt::attribute(
@@ -223,22 +223,22 @@ mod tests {
             )],
         ));
         assert_ron_snapshot!(
-            parse_node!(GTObject, (to_parse_rules(Rule::object, "{}"), &mut context)),
+            parse_node!(GtObject, (to_parse_rules(Rule::object, "{}"), &mut context)),
             @r#"
-        GTObject(
-          span: GTSpan(0, 2),
-          doc: Some(GTDoc(GTSpan(0, 0), "Hello, world!")),
+        GtObject(
+          span: GtSpan(0, 2),
+          doc: Some(GtDoc(GtSpan(0, 0), "Hello, world!")),
           attributes: [
-            GTAttribute(
-              span: GTSpan(0, 2),
-              name: GTAttributeName(
-                span: GTSpan(0, 0),
+            GtAttribute(
+              span: GtSpan(0, 2),
+              name: GtAttributeName(
+                span: GtSpan(0, 0),
                 value: "example",
               ),
-              descriptor: Some(Assignment(GTAttributeAssignment(
-                span: GTSpan(0, 0),
-                value: Literal(GTLiteral(
-                  span: GTSpan(0, 0),
+              descriptor: Some(Assignment(GtAttributeAssignment(
+                span: GtSpan(0, 0),
+                value: Literal(GtLiteral(
+                  span: GtSpan(0, 0),
                   doc: None,
                   attributes: [],
                   value: String("value"),
@@ -246,7 +246,7 @@ mod tests {
               ))),
             ),
           ],
-          name: Named(GTIdentifier(GTSpan(0, 0), "Hello")),
+          name: Named(GtIdentifier(GtSpan(0, 0), "Hello")),
           extensions: [],
           properties: [],
         )

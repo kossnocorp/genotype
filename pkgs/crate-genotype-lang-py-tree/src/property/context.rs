@@ -1,12 +1,12 @@
 use crate::prelude::internal::*;
 
-impl PYContextResolve for PYProperty {
+impl PyContextResolve for PyProperty {
     fn resolve<Context>(self, context: &mut Context) -> Self
     where
-        Context: PYConvertContextConstraint,
+        Context: PyConvertContextConstraint,
     {
         if !self.required {
-            context.add_import(PYDependencyIdent::Typing, "Optional".into());
+            context.add_import(PyDependencyIdent::Typing, "Optional".into());
         }
         self
     }
@@ -19,11 +19,11 @@ mod tests {
 
     #[test]
     fn test_resolve() {
-        let mut context = PYConvertContextMock::default();
-        let alias = PYProperty {
+        let mut context = PyConvertContextMock::default();
+        let alias = PyProperty {
             doc: None,
             name: "foo".into(),
-            descriptor: PYPrimitive::String.into(),
+            descriptor: PyPrimitive::String.into(),
             required: true,
         };
         alias.resolve(&mut context);
@@ -32,11 +32,11 @@ mod tests {
 
     #[test]
     fn test_resolve_optional() {
-        let mut context = PYConvertContextMock::default();
-        let alias = PYProperty {
+        let mut context = PyConvertContextMock::default();
+        let alias = PyProperty {
             doc: None,
             name: "foo".into(),
-            descriptor: PYPrimitive::String.into(),
+            descriptor: PyPrimitive::String.into(),
             required: false,
         };
         alias.resolve(&mut context);
@@ -44,7 +44,7 @@ mod tests {
             context.as_imports(),
             @r#"
         [
-          (Typing, PYIdentifier("Optional")),
+          (Typing, PyIdentifier("Optional")),
         ]
         "#
         );

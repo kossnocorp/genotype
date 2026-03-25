@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl RSConvert<RSVec> for GTArray {
-    fn convert(&self, context: &mut RSConvertContext) -> Result<RSVec> {
+impl RsConvert<RsVec> for GtArray {
+    fn convert(&self, context: &mut RsConvertContext) -> Result<RsVec> {
         let descriptor = self.descriptor.convert(context)?;
-        Ok(RSVec { descriptor })
+        Ok(RsVec { descriptor })
     }
 }
 
@@ -16,10 +16,10 @@ mod tests {
     fn test_convert() {
         assert_ron_snapshot!(
             Gt::array(Gt::primitive_boolean())
-            .convert(&mut RSConvertContext::empty("module".into()))
+            .convert(&mut RsConvertContext::empty("module".into()))
             .unwrap(),
             @"
-        RSVec(
+        RsVec(
           descriptor: Primitive(Boolean),
         )
         "

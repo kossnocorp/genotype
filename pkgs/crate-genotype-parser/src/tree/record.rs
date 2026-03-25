@@ -1,27 +1,27 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct GTRecord {
-    pub span: GTSpan,
+pub struct GtRecord {
+    pub span: GtSpan,
     #[visit]
-    pub doc: Option<GTDoc>,
+    pub doc: Option<GtDoc>,
     #[visit]
-    pub attributes: Vec<GTAttribute>,
+    pub attributes: Vec<GtAttribute>,
     #[visit]
-    pub key: GTRecordKey,
+    pub key: GtRecordKey,
     #[visit]
-    pub descriptor: GTDescriptor,
+    pub descriptor: GtDescriptor,
 }
 
-impl GTRecord {
-    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> Result<Self, GTParseError> {
-        let span: GTSpan = pair.as_span().into();
+impl GtRecord {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> Result<Self, GtParseError> {
+        let span: GtSpan = pair.as_span().into();
         let annotation = context.take_annotation_or_default();
 
         let mut inner = pair.into_inner();
         let pair = inner
             .next()
-            .ok_or_else(|| GTParseError::UnexpectedEnd(span.clone(), GTNode::Record))?;
+            .ok_or_else(|| GtParseError::UnexpectedEnd(span.clone(), GtNode::Record))?;
 
         let record = parse(inner, pair, context, ParseState::Key(span, annotation))?;
 
@@ -32,12 +32,12 @@ impl GTRecord {
 fn parse(
     mut inner: Pairs<'_, Rule>,
     pair: Pair<'_, Rule>,
-    context: &mut GTContext,
+    context: &mut GtContext,
     state: ParseState,
-) -> GTNodeParseResult<GTRecord> {
+) -> GtNodeParseResult<GtRecord> {
     match state {
         ParseState::Key(span, annotation) => {
-            let key = GTRecordKey::parse(pair)?;
+            let key = GtRecordKey::parse(pair)?;
 
             match inner.next() {
                 Some(pair) => parse(
@@ -47,15 +47,15 @@ fn parse(
                     ParseState::Descriptor(span, annotation, key),
                 ),
 
-                None => Err(GTParseError::UnexpectedEnd(span.clone(), GTNode::Record)),
+                None => Err(GtParseError::UnexpectedEnd(span.clone(), GtNode::Record)),
             }
         }
 
         ParseState::Descriptor(span, annotation, key) => {
-            let descriptor = GTDescriptor::parse(pair, context)?;
+            let descriptor = GtDescriptor::parse(pair, context)?;
             let (doc, attributes) = annotation;
 
-            Ok(GTRecord {
+            Ok(GtRecord {
                 span,
                 doc,
                 attributes,
@@ -67,8 +67,8 @@ fn parse(
 }
 
 enum ParseState {
-    Key(GTSpan, GTContextAnnotation),
-    Descriptor(GTSpan, GTContextAnnotation, GTRecordKey),
+    Key(GtSpan, GtContextAnnotation),
+    Descriptor(GtSpan, GtContextAnnotation, GtRecordKey),
 }
 
 #[cfg(test)]
@@ -79,17 +79,17 @@ mod tests {
     #[test]
     fn test_parse_default() {
         let mut pairs = GenotypeParser::parse(Rule::record, "{ []: string }").unwrap();
-        let mut context = GTContext::new("module".into());
+        let mut context = GtContext::new("module".into());
         assert_ron_snapshot!(
-            GTRecord::parse(pairs.next().unwrap(), &mut context).unwrap(),
+            GtRecord::parse(pairs.next().unwrap(), &mut context).unwrap(),
             @"
-        GTRecord(
-          span: GTSpan(0, 14),
+        GtRecord(
+          span: GtSpan(0, 14),
           doc: None,
           attributes: [],
-          key: String(GTSpan(2, 4)),
-          descriptor: Primitive(GTPrimitive(
-            span: GTSpan(6, 12),
+          key: String(GtSpan(2, 4)),
+          descriptor: Primitive(GtPrimitive(
+            span: GtSpan(6, 12),
             kind: String,
             doc: None,
             attributes: [],
@@ -102,17 +102,17 @@ mod tests {
     #[test]
     fn test_parse_typed() {
         let mut pairs = GenotypeParser::parse(Rule::record, "{ [int]: string }").unwrap();
-        let mut context = GTContext::new("module".into());
+        let mut context = GtContext::new("module".into());
         assert_ron_snapshot!(
-            GTRecord::parse(pairs.next().unwrap(), &mut context).unwrap(),
+            GtRecord::parse(pairs.next().unwrap(), &mut context).unwrap(),
             @"
-        GTRecord(
-          span: GTSpan(0, 17),
+        GtRecord(
+          span: GtSpan(0, 17),
           doc: None,
           attributes: [],
-          key: Int64(GTSpan(2, 7)),
-          descriptor: Primitive(GTPrimitive(
-            span: GTSpan(9, 15),
+          key: Int64(GtSpan(2, 7)),
+          descriptor: Primitive(GtPrimitive(
+            span: GtSpan(9, 15),
             kind: String,
             doc: None,
             attributes: [],
@@ -133,22 +133,22 @@ mod tests {
             )],
         ));
         assert_ron_snapshot!(
-            parse_node!(GTRecord, (to_parse_rules(Rule::record, "{ []: string }"), &mut context)),
+            parse_node!(GtRecord, (to_parse_rules(Rule::record, "{ []: string }"), &mut context)),
             @r#"
-        GTRecord(
-          span: GTSpan(0, 14),
-          doc: Some(GTDoc(GTSpan(0, 0), "Hello, world!")),
+        GtRecord(
+          span: GtSpan(0, 14),
+          doc: Some(GtDoc(GtSpan(0, 0), "Hello, world!")),
           attributes: [
-            GTAttribute(
-              span: GTSpan(0, 2),
-              name: GTAttributeName(
-                span: GTSpan(0, 0),
+            GtAttribute(
+              span: GtSpan(0, 2),
+              name: GtAttributeName(
+                span: GtSpan(0, 0),
                 value: "example",
               ),
-              descriptor: Some(Assignment(GTAttributeAssignment(
-                span: GTSpan(0, 0),
-                value: Literal(GTLiteral(
-                  span: GTSpan(0, 0),
+              descriptor: Some(Assignment(GtAttributeAssignment(
+                span: GtSpan(0, 0),
+                value: Literal(GtLiteral(
+                  span: GtSpan(0, 0),
                   doc: None,
                   attributes: [],
                   value: String("value"),
@@ -156,9 +156,9 @@ mod tests {
               ))),
             ),
           ],
-          key: String(GTSpan(2, 4)),
-          descriptor: Primitive(GTPrimitive(
-            span: GTSpan(6, 12),
+          key: String(GtSpan(2, 4)),
+          descriptor: Primitive(GtPrimitive(
+            span: GtSpan(6, 12),
             kind: String,
             doc: None,
             attributes: [],

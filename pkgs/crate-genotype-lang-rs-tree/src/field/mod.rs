@@ -4,13 +4,13 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct RSField {
+pub struct RsField {
     #[visit]
-    pub doc: Option<RSDoc>,
+    pub doc: Option<RsDoc>,
     #[visit]
-    pub attributes: Vec<RSAttribute>,
+    pub attributes: Vec<RsAttribute>,
     #[visit]
-    pub name: RSFieldName,
+    pub name: RsFieldName,
     #[visit]
-    pub descriptor: RSDescriptor,
+    pub descriptor: RsDescriptor,
 }

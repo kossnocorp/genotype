@@ -1,28 +1,28 @@
 use miette::Result;
 
-use crate::{error::GTWError, path::GTWPath};
+use crate::{error::GtwError, path::GtwPath};
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
-pub enum GTWFileKind {
+pub enum GtwFileKind {
     Config,
     Module,
 }
 
-impl GTWFileKind {
-    pub fn detect(path: &GTWPath) -> Result<Self> {
+impl GtwFileKind {
+    pub fn detect(path: &GtwPath) -> Result<Self> {
         let path = path.as_path();
         let ext = path.extension().and_then(|ext| ext.to_str());
         match ext {
             Some("toml") => {
                 if path.starts_with("genotype") {
-                    return Ok(GTWFileKind::Config);
+                    return Ok(GtwFileKind::Config);
                 }
             }
             Some("type") => {
-                return Ok(GTWFileKind::Module);
+                return Ok(GtwFileKind::Module);
             }
             _ => {}
         }
-        Err(GTWError::DetectKind(path.display().to_string()).into())
+        Err(GtwError::DetectKind(path.display().to_string()).into())
     }
 }

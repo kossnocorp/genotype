@@ -3,32 +3,32 @@ use genotype_parser::*;
 
 use crate::{GtjTreeConvert, GtjTreeConvertContext};
 
-impl GtjTreeConvert<GTObject> for GtjObject {
-    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTObject {
+impl GtjTreeConvert<GtObject> for GtjObject {
+    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GtObject {
         let name = context.claim_name(self.name.clone(), "Object");
 
         let properties =
-            context.enter_name_context(GTNamingContextName::Identifier(name.clone()), |context| {
+            context.enter_name_context(GtNamingContextName::Identifier(name.clone()), |context| {
                 self.properties
                     .iter()
                     .map(|property| property.to_tree_with_context(context))
                     .collect()
             });
 
-        GTObject {
+        GtObject {
             span: Default::default(),
             doc: None,
             attributes: vec![],
-            name: GTObjectName::Named(GTIdentifier(Default::default(), name.into())),
+            name: GtObjectName::Named(GtIdentifier(Default::default(), name.into())),
             properties,
             extensions: vec![],
         }
     }
 }
 
-impl GtjTreeConvert<GTDescriptor> for GtjObject {
-    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTDescriptor {
-        GTDescriptor::Object(self.to_tree_with_context(context))
+impl GtjTreeConvert<GtDescriptor> for GtjObject {
+    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GtDescriptor {
+        GtDescriptor::Object(self.to_tree_with_context(context))
     }
 }
 
@@ -46,25 +46,25 @@ mod tests {
             properties: vec![],
         };
 
-        let descriptor_tree: GTDescriptor = object.to_tree_with_context(&mut Default::default());
+        let descriptor_tree: GtDescriptor = object.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(descriptor_tree, @r#"
-        Object(GTObject(
-          span: GTSpan(0, 0),
+        Object(GtObject(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
-          name: Named(GTIdentifier(GTSpan(0, 0), "Hello")),
+          name: Named(GtIdentifier(GtSpan(0, 0), "Hello")),
           extensions: [],
           properties: [],
         ))
         "#);
 
-        let object_tree: GTObject = object.to_tree_with_context(&mut Default::default());
+        let object_tree: GtObject = object.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(object_tree, @r#"
-        GTObject(
-          span: GTSpan(0, 0),
+        GtObject(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
-          name: Named(GTIdentifier(GTSpan(0, 0), "Hello")),
+          name: Named(GtIdentifier(GtSpan(0, 0), "Hello")),
           extensions: [],
           properties: [],
         )
@@ -80,13 +80,13 @@ mod tests {
             properties: vec![],
         };
 
-        let object_tree: GTObject = object.to_tree_with_context(&mut Default::default());
+        let object_tree: GtObject = object.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(object_tree, @r#"
-        GTObject(
-          span: GTSpan(0, 0),
+        GtObject(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
-          name: Named(GTIdentifier(GTSpan(0, 0), "Root")),
+          name: Named(GtIdentifier(GtSpan(0, 0), "Root")),
           extensions: [],
           properties: [],
         )
@@ -112,22 +112,22 @@ mod tests {
             }],
         };
 
-        let object_tree: GTObject = object.to_tree_with_context(&mut Default::default());
+        let object_tree: GtObject = object.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(object_tree, @r#"
-        GTObject(
-          span: GTSpan(0, 0),
+        GtObject(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
-          name: Named(GTIdentifier(GTSpan(0, 0), "Root")),
+          name: Named(GtIdentifier(GtSpan(0, 0), "Root")),
           extensions: [],
           properties: [
-            GTProperty(
-              span: GTSpan(0, 0),
+            GtProperty(
+              span: GtSpan(0, 0),
               doc: None,
               attributes: [],
-              name: GTKey(GTSpan(0, 0), "null"),
-              descriptor: Primitive(GTPrimitive(
-                span: GTSpan(0, 0),
+              name: GtKey(GtSpan(0, 0), "null"),
+              descriptor: Primitive(GtPrimitive(
+                span: GtSpan(0, 0),
                 kind: Number,
                 doc: None,
                 attributes: [],
@@ -161,25 +161,25 @@ mod tests {
             doc: None,
         };
 
-        let object_tree: GTObject = object.to_tree_with_context(&mut context);
+        let object_tree: GtObject = object.to_tree_with_context(&mut context);
         assert_ron_snapshot!(object_tree, @r#"
-        GTObject(
-          span: GTSpan(0, 0),
+        GtObject(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
-          name: Named(GTIdentifier(GTSpan(0, 0), "Root")),
+          name: Named(GtIdentifier(GtSpan(0, 0), "Root")),
           extensions: [],
           properties: [
-            GTProperty(
-              span: GTSpan(0, 0),
+            GtProperty(
+              span: GtSpan(0, 0),
               doc: None,
               attributes: [],
-              name: GTKey(GTSpan(0, 0), "hello"),
-              descriptor: Object(GTObject(
-                span: GTSpan(0, 0),
+              name: GtKey(GtSpan(0, 0), "hello"),
+              descriptor: Object(GtObject(
+                span: GtSpan(0, 0),
                 doc: None,
                 attributes: [],
-                name: Named(GTIdentifier(GTSpan(0, 0), "RootHello")),
+                name: Named(GtIdentifier(GtSpan(0, 0), "RootHello")),
                 extensions: [],
                 properties: [],
               )),
@@ -223,37 +223,37 @@ mod tests {
             doc: None,
         };
 
-        let object_tree: GTObject = object.to_tree_with_context(&mut context);
+        let object_tree: GtObject = object.to_tree_with_context(&mut context);
         assert_ron_snapshot!(object_tree, @r#"
-        GTObject(
-          span: GTSpan(0, 0),
+        GtObject(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
-          name: Named(GTIdentifier(GTSpan(0, 0), "Root")),
+          name: Named(GtIdentifier(GtSpan(0, 0), "Root")),
           extensions: [],
           properties: [
-            GTProperty(
-              span: GTSpan(0, 0),
+            GtProperty(
+              span: GtSpan(0, 0),
               doc: None,
               attributes: [],
-              name: GTKey(GTSpan(0, 0), "hello"),
-              descriptor: Object(GTObject(
-                span: GTSpan(0, 0),
+              name: GtKey(GtSpan(0, 0), "hello"),
+              descriptor: Object(GtObject(
+                span: GtSpan(0, 0),
                 doc: None,
                 attributes: [],
-                name: Named(GTIdentifier(GTSpan(0, 0), "RootHello")),
+                name: Named(GtIdentifier(GtSpan(0, 0), "RootHello")),
                 extensions: [],
                 properties: [
-                  GTProperty(
-                    span: GTSpan(0, 0),
+                  GtProperty(
+                    span: GtSpan(0, 0),
                     doc: None,
                     attributes: [],
-                    name: GTKey(GTSpan(0, 0), "world"),
-                    descriptor: Object(GTObject(
-                      span: GTSpan(0, 0),
+                    name: GtKey(GtSpan(0, 0), "world"),
+                    descriptor: Object(GtObject(
+                      span: GtSpan(0, 0),
                       doc: None,
                       attributes: [],
-                      name: Named(GTIdentifier(GTSpan(0, 0), "RootHelloWorld")),
+                      name: Named(GtIdentifier(GtSpan(0, 0), "RootHelloWorld")),
                       extensions: [],
                       properties: [],
                     )),
@@ -290,25 +290,25 @@ mod tests {
             doc: None,
         };
 
-        let object_tree: GTObject = object.to_tree_with_context(&mut context);
+        let object_tree: GtObject = object.to_tree_with_context(&mut context);
         assert_ron_snapshot!(object_tree, @r#"
-        GTObject(
-          span: GTSpan(0, 0),
+        GtObject(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
-          name: Named(GTIdentifier(GTSpan(0, 0), "Hello")),
+          name: Named(GtIdentifier(GtSpan(0, 0), "Hello")),
           extensions: [],
           properties: [
-            GTProperty(
-              span: GTSpan(0, 0),
+            GtProperty(
+              span: GtSpan(0, 0),
               doc: None,
               attributes: [],
-              name: GTKey(GTSpan(0, 0), "world"),
-              descriptor: Object(GTObject(
-                span: GTSpan(0, 0),
+              name: GtKey(GtSpan(0, 0), "world"),
+              descriptor: Object(GtObject(
+                span: GtSpan(0, 0),
                 doc: None,
                 attributes: [],
-                name: Named(GTIdentifier(GTSpan(0, 0), "HelloWorld")),
+                name: Named(GtIdentifier(GtSpan(0, 0), "HelloWorld")),
                 extensions: [],
                 properties: [],
               )),
@@ -352,37 +352,37 @@ mod tests {
             doc: None,
         };
 
-        let object_tree: GTObject = object.to_tree_with_context(&mut context);
+        let object_tree: GtObject = object.to_tree_with_context(&mut context);
         assert_ron_snapshot!(object_tree, @r#"
-        GTObject(
-          span: GTSpan(0, 0),
+        GtObject(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
-          name: Named(GTIdentifier(GTSpan(0, 0), "Hello")),
+          name: Named(GtIdentifier(GtSpan(0, 0), "Hello")),
           extensions: [],
           properties: [
-            GTProperty(
-              span: GTSpan(0, 0),
+            GtProperty(
+              span: GtSpan(0, 0),
               doc: None,
               attributes: [],
-              name: GTKey(GTSpan(0, 0), "world"),
-              descriptor: Object(GTObject(
-                span: GTSpan(0, 0),
+              name: GtKey(GtSpan(0, 0), "world"),
+              descriptor: Object(GtObject(
+                span: GtSpan(0, 0),
                 doc: None,
                 attributes: [],
-                name: Named(GTIdentifier(GTSpan(0, 0), "Hi")),
+                name: Named(GtIdentifier(GtSpan(0, 0), "Hi")),
                 extensions: [],
                 properties: [
-                  GTProperty(
-                    span: GTSpan(0, 0),
+                  GtProperty(
+                    span: GtSpan(0, 0),
                     doc: None,
                     attributes: [],
-                    name: GTKey(GTSpan(0, 0), "world"),
-                    descriptor: Object(GTObject(
-                      span: GTSpan(0, 0),
+                    name: GtKey(GtSpan(0, 0), "world"),
+                    descriptor: Object(GtObject(
+                      span: GtSpan(0, 0),
                       doc: None,
                       attributes: [],
-                      name: Named(GTIdentifier(GTSpan(0, 0), "HiWorld")),
+                      name: Named(GtIdentifier(GtSpan(0, 0), "HiWorld")),
                       extensions: [],
                       properties: [],
                     )),

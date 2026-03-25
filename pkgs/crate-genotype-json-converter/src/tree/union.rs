@@ -3,25 +3,25 @@ use genotype_parser::*;
 
 use crate::{GtjTreeConvert, GtjTreeConvertContext};
 
-impl GtjTreeConvert<GTUnion> for GtjUnion {
-    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTUnion {
+impl GtjTreeConvert<GtUnion> for GtjUnion {
+    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GtUnion {
         let name = context.claim_name(self.name.clone(), "Union");
 
         let descriptors =
-            context.enter_name_context(GTNamingContextName::Identifier(name.clone()), |context| {
+            context.enter_name_context(GtNamingContextName::Identifier(name.clone()), |context| {
                 self.descriptors
                     .iter()
                     .map(|descriptor| {
                         context.enter_name_context(
-                            GTNamingContextName::Transitive("Member".into()),
+                            GtNamingContextName::Transitive("Member".into()),
                             |context| descriptor.to_tree_with_context(context),
                         )
                     })
                     .collect()
             });
 
-        GTUnion {
-            span: GTSpan::default(),
+        GtUnion {
+            span: GtSpan::default(),
             doc: None,
             attributes: vec![],
             descriptors,
@@ -29,9 +29,9 @@ impl GtjTreeConvert<GTUnion> for GtjUnion {
     }
 }
 
-impl GtjTreeConvert<GTDescriptor> for GtjUnion {
-    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GTDescriptor {
-        GTDescriptor::Union(self.to_tree_with_context(context))
+impl GtjTreeConvert<GtDescriptor> for GtjUnion {
+    fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> GtDescriptor {
+        GtDescriptor::Union(self.to_tree_with_context(context))
     }
 }
 
@@ -49,20 +49,20 @@ mod tests {
             doc: None,
         };
 
-        let descriptor_tree: GTDescriptor = union.to_tree_with_context(&mut Default::default());
+        let descriptor_tree: GtDescriptor = union.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(descriptor_tree, @"
-        Union(GTUnion(
-          span: GTSpan(0, 0),
+        Union(GtUnion(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
           descriptors: [],
         ))
         ");
 
-        let union_tree: GTUnion = union.to_tree_with_context(&mut Default::default());
+        let union_tree: GtUnion = union.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(union_tree, @"
-        GTUnion(
-          span: GTSpan(0, 0),
+        GtUnion(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
           descriptors: [],
@@ -83,15 +83,15 @@ mod tests {
             doc: None,
         };
 
-        let union_tree: GTUnion = union.to_tree_with_context(&mut Default::default());
+        let union_tree: GtUnion = union.to_tree_with_context(&mut Default::default());
         assert_ron_snapshot!(union_tree, @"
-        GTUnion(
-          span: GTSpan(0, 0),
+        GtUnion(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
           descriptors: [
-            Primitive(GTPrimitive(
-              span: GTSpan(0, 0),
+            Primitive(GtPrimitive(
+              span: GtSpan(0, 0),
               kind: Number,
               doc: None,
               attributes: [],
@@ -117,18 +117,18 @@ mod tests {
             doc: None,
         };
 
-        let union_tree: GTUnion = union.to_tree_with_context(&mut context);
+        let union_tree: GtUnion = union.to_tree_with_context(&mut context);
         assert_ron_snapshot!(union_tree, @r#"
-        GTUnion(
-          span: GTSpan(0, 0),
+        GtUnion(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
           descriptors: [
-            Object(GTObject(
-              span: GTSpan(0, 0),
+            Object(GtObject(
+              span: GtSpan(0, 0),
               doc: None,
               attributes: [],
-              name: Named(GTIdentifier(GTSpan(0, 0), "RootMember")),
+              name: Named(GtIdentifier(GtSpan(0, 0), "RootMember")),
               extensions: [],
               properties: [],
             )),
@@ -169,35 +169,35 @@ mod tests {
             doc: None,
         };
 
-        let union_tree: GTUnion = union.to_tree_with_context(&mut context);
+        let union_tree: GtUnion = union.to_tree_with_context(&mut context);
         assert_ron_snapshot!(union_tree, @r#"
-        GTUnion(
-          span: GTSpan(0, 0),
+        GtUnion(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
           descriptors: [
-            Union(GTUnion(
-              span: GTSpan(0, 0),
+            Union(GtUnion(
+              span: GtSpan(0, 0),
               doc: None,
               attributes: [],
               descriptors: [
-                Object(GTObject(
-                  span: GTSpan(0, 0),
+                Object(GtObject(
+                  span: GtSpan(0, 0),
                   doc: None,
                   attributes: [],
-                  name: Named(GTIdentifier(GTSpan(0, 0), "RootMemberMember")),
+                  name: Named(GtIdentifier(GtSpan(0, 0), "RootMemberMember")),
                   extensions: [],
                   properties: [
-                    GTProperty(
-                      span: GTSpan(0, 0),
+                    GtProperty(
+                      span: GtSpan(0, 0),
                       doc: None,
                       attributes: [],
-                      name: GTKey(GTSpan(0, 0), "world"),
-                      descriptor: Object(GTObject(
-                        span: GTSpan(0, 0),
+                      name: GtKey(GtSpan(0, 0), "world"),
+                      descriptor: Object(GtObject(
+                        span: GtSpan(0, 0),
                         doc: None,
                         attributes: [],
-                        name: Named(GTIdentifier(GTSpan(0, 0), "RootMemberMemberWorld")),
+                        name: Named(GtIdentifier(GtSpan(0, 0), "RootMemberMemberWorld")),
                         extensions: [],
                         properties: [],
                       )),
@@ -228,18 +228,18 @@ mod tests {
             doc: None,
         };
 
-        let union_tree: GTUnion = union.to_tree_with_context(&mut context);
+        let union_tree: GtUnion = union.to_tree_with_context(&mut context);
         assert_ron_snapshot!(union_tree, @r#"
-        GTUnion(
-          span: GTSpan(0, 0),
+        GtUnion(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
           descriptors: [
-            Object(GTObject(
-              span: GTSpan(0, 0),
+            Object(GtObject(
+              span: GtSpan(0, 0),
               doc: None,
               attributes: [],
-              name: Named(GTIdentifier(GTSpan(0, 0), "Hello")),
+              name: Named(GtIdentifier(GtSpan(0, 0), "Hello")),
               extensions: [],
               properties: [],
             )),
@@ -280,35 +280,35 @@ mod tests {
             doc: None,
         };
 
-        let union_tree: GTUnion = union.to_tree_with_context(&mut context);
+        let union_tree: GtUnion = union.to_tree_with_context(&mut context);
         assert_ron_snapshot!(union_tree, @r#"
-        GTUnion(
-          span: GTSpan(0, 0),
+        GtUnion(
+          span: GtSpan(0, 0),
           doc: None,
           attributes: [],
           descriptors: [
-            Union(GTUnion(
-              span: GTSpan(0, 0),
+            Union(GtUnion(
+              span: GtSpan(0, 0),
               doc: None,
               attributes: [],
               descriptors: [
-                Object(GTObject(
-                  span: GTSpan(0, 0),
+                Object(GtObject(
+                  span: GtSpan(0, 0),
                   doc: None,
                   attributes: [],
-                  name: Named(GTIdentifier(GTSpan(0, 0), "HiMember")),
+                  name: Named(GtIdentifier(GtSpan(0, 0), "HiMember")),
                   extensions: [],
                   properties: [
-                    GTProperty(
-                      span: GTSpan(0, 0),
+                    GtProperty(
+                      span: GtSpan(0, 0),
                       doc: None,
                       attributes: [],
-                      name: GTKey(GTSpan(0, 0), "world"),
-                      descriptor: Object(GTObject(
-                        span: GTSpan(0, 0),
+                      name: GtKey(GtSpan(0, 0), "world"),
+                      descriptor: Object(GtObject(
+                        span: GtSpan(0, 0),
                         doc: None,
                         attributes: [],
-                        name: Named(GTIdentifier(GTSpan(0, 0), "HiMemberWorld")),
+                        name: Named(GtIdentifier(GtSpan(0, 0), "HiMemberWorld")),
                         extensions: [],
                         properties: [],
                       )),

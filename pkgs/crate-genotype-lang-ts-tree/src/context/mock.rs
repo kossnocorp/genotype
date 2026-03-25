@@ -1,36 +1,36 @@
 use crate::prelude::internal::*;
 
-pub struct TSConvertContextMock {
-    imports: Vec<(TSDependencyIdent, TSIdentifier)>,
+pub struct TsConvertContextMock {
+    imports: Vec<(TsDependencyIdent, TsIdentifier)>,
 }
 
-impl TSConvertContextMock {
+impl TsConvertContextMock {
     pub fn new() -> Self {
         Self {
             imports: Vec::new(),
         }
     }
 
-    pub fn with_imports(mut self, imports: Vec<(TSDependencyIdent, TSIdentifier)>) -> Self {
+    pub fn with_imports(mut self, imports: Vec<(TsDependencyIdent, TsIdentifier)>) -> Self {
         self.imports = imports;
         self
     }
 
-    pub fn as_imports(&self) -> &[(TSDependencyIdent, TSIdentifier)] {
+    pub fn as_imports(&self) -> &[(TsDependencyIdent, TsIdentifier)] {
         &self.imports
     }
 }
 
-impl TSConvertContextMockable for TSConvertContextMock {}
+impl TsConvertContextMockable for TsConvertContextMock {}
 
-impl GtlConvertContext for TSConvertContextMock {
-    type DependencyIdent = TSDependencyIdent;
+impl GtlConvertContext for TsConvertContextMock {
+    type DependencyIdent = TsDependencyIdent;
 
-    type DependencyRef = TSIdentifier;
+    type DependencyRef = TsIdentifier;
 
     fn add_import(self: &mut Self, ident: Self::DependencyIdent, r#ref: Self::DependencyRef) {
         self.imports.push((ident, r#ref));
     }
 }
 
-impl TSConvertContextConstraint for TSConvertContextMock {}
+impl TsConvertContextConstraint for TsConvertContextMock {}

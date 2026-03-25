@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYAny {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyAny {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
     fn render(
         &self,
@@ -22,7 +22,7 @@ mod tests {
     #[test]
     fn test_render_primitive() {
         assert_snapshot!(
-            PYAny
+            PyAny
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"Any"

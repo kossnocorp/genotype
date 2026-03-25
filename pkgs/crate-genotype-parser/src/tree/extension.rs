@@ -1,23 +1,23 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct GTExtension {
-    pub span: GTSpan,
+pub struct GtExtension {
+    pub span: GtSpan,
     #[visit]
-    pub reference: GTReference,
+    pub reference: GtReference,
 }
 
-impl GTExtension {
-    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
+impl GtExtension {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> GtNodeParseResult<Self> {
         let span = pair.as_span().into();
 
         match pair.into_inner().next() {
-            Some(pair) => Ok(GTExtension {
+            Some(pair) => Ok(GtExtension {
                 span,
-                reference: GTReference::parse(pair, context)?,
+                reference: GtReference::parse(pair, context)?,
             }),
 
-            None => Err(GTParseError::Internal(span, GTNode::Extension)),
+            None => Err(GtParseError::Internal(span, GtNode::Extension)),
         }
     }
 }
@@ -31,18 +31,18 @@ mod tests {
     #[test]
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::extension_property, "...Hello").unwrap();
-        let mut context = GTContext::new("module".into());
+        let mut context = GtContext::new("module".into());
         assert_eq!(
-            GTExtension::parse(pairs.next().unwrap(), &mut context).unwrap(),
-            GTExtension {
+            GtExtension::parse(pairs.next().unwrap(), &mut context).unwrap(),
+            GtExtension {
                 span: (0, 8).into(),
-                reference: GTReference {
+                reference: GtReference {
                     span: (3, 8).into(),
                     doc: None,
                     attributes: vec![],
-                    id: GTReferenceId("module".into(), (3, 8).into()),
-                    definition_id: GTReferenceDefinitionId::Unresolved,
-                    identifier: GTIdentifier::new((3, 8).into(), "Hello".into()),
+                    id: GtReferenceId("module".into(), (3, 8).into()),
+                    definition_id: GtReferenceDefinitionId::Unresolved,
+                    identifier: GtIdentifier::new((3, 8).into(), "Hello".into()),
                 },
             }
         );
@@ -51,10 +51,10 @@ mod tests {
     #[test]
     fn test_error() {
         let mut pairs = GenotypeParser::parse(Rule::literal_boolean, "false").unwrap();
-        let mut context = GTContext::new("module".into());
+        let mut context = GtContext::new("module".into());
         assert_eq!(
-            GTExtension::parse(pairs.next().unwrap(), &mut context).unwrap_err(),
-            GTParseError::Internal((0, 5).into(), GTNode::Extension)
+            GtExtension::parse(pairs.next().unwrap(), &mut context).unwrap_err(),
+            GtParseError::Internal((0, 5).into(), GtNode::Extension)
         );
     }
 }

@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl RSConvert<RSIdentifier> for GTIdentifier {
-    fn convert(&self, context: &mut RSConvertContext) -> Result<RSIdentifier> {
-        Ok(RSIdentifier(context.resolve_identifier(self).into()))
+impl RsConvert<RsIdentifier> for GtIdentifier {
+    fn convert(&self, context: &mut RsConvertContext) -> Result<RsIdentifier> {
+        Ok(RsIdentifier(context.resolve_identifier(self).into()))
     }
 }
 
@@ -15,31 +15,31 @@ mod tests {
     #[test]
     fn test_convert_base() {
         assert_ron_snapshot!(
-            GTIdentifier::new((0, 0).into(), "Foo".into())
-                .convert(&mut RSConvertContext::empty("module".into()))
+            GtIdentifier::new((0, 0).into(), "Foo".into())
+                .convert(&mut RsConvertContext::empty("module".into()))
                 .unwrap(),
-            @r#"RSIdentifier("Foo")"#
+            @r#"RsIdentifier("Foo")"#
         );
     }
 
     #[test]
     fn test_convert_resolve() {
-        let mut resolve = RSConvertResolve::default();
+        let mut resolve = RsConvertResolve::default();
         resolve.identifiers.insert(
-            GTIdentifier::new((0, 0).into(), "Foo".into()),
-            GTIdentifier::new((0, 0).into(), "foo::Bar".into()),
+            GtIdentifier::new((0, 0).into(), "Foo".into()),
+            GtIdentifier::new((0, 0).into(), "foo::Bar".into()),
         );
-        let mut context = RSConvertContext::new(
+        let mut context = RsConvertContext::new(
             "module".into(),
             resolve.clone(),
             Default::default(),
             Default::default(),
         );
         assert_ron_snapshot!(
-            GTIdentifier::new((0, 0).into(), "Foo".into())
+            GtIdentifier::new((0, 0).into(), "Foo".into())
                 .convert(&mut context)
                 .unwrap(),
-            @r#"RSIdentifier("foo::Bar")"#
+            @r#"RsIdentifier("foo::Bar")"#
         );
     }
 }

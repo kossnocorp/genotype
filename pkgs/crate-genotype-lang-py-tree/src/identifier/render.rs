@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYIdentifier {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyIdentifier {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
     fn render(
         &self,
@@ -22,7 +22,7 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            PYIdentifier("Foo".into())
+            PyIdentifier("Foo".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"Foo"

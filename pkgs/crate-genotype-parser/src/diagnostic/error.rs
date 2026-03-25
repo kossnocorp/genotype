@@ -1,33 +1,33 @@
 use crate::prelude::internal::*;
 
 #[derive(Error, Diagnostic, Debug, PartialEq)]
-pub enum GTParseError {
+pub enum GtParseError {
     #[error("Failed to parse {1} node")]
     #[diagnostic(code("GTP001"))]
-    Internal(#[label("internal error")] GTSpan, GTNode),
+    Internal(#[label("internal error")] GtSpan, GtNode),
 
     #[error("Failed to parse {1} node")]
     #[diagnostic(code("GTP002"))]
-    InternalMessage(#[label("{2}")] GTSpan, GTNode, &'static str),
+    InternalMessage(#[label("{2}")] GtSpan, GtNode, &'static str),
 
     #[error("Encountered unexpected rule '{2:?}' while parsing '{1}' node")]
     #[diagnostic(code("GTP003"))]
-    UnexpectedRule(#[label("unexpected rule")] GTSpan, GTNode, Rule),
+    UnexpectedRule(#[label("unexpected rule")] GtSpan, GtNode, Rule),
 
     #[error("Failed to parse {1} node")]
     #[diagnostic(code("GTP004"))]
-    UnexpectedEnd(#[label("unexpected end")] GTSpan, GTNode),
+    UnexpectedEnd(#[label("unexpected end")] GtSpan, GtNode),
 
     #[error("Failed to parse {1} node")]
     #[diagnostic(code("GTP005"))]
-    UnknownValue(#[label("unknown value")] GTSpan, GTNode),
+    UnknownValue(#[label("unknown value")] GtSpan, GtNode),
 
     #[error("Failed to extract expected type from descriptor")]
-    UnmatchedDescriptor(#[label("incorrect type descriptor")] GTSpan, GTNode),
+    UnmatchedDescriptor(#[label("incorrect type descriptor")] GtSpan, GtNode),
 }
 
-impl GTParseError {
-    pub fn span(&self) -> GTSpan {
+impl GtParseError {
+    pub fn span(&self) -> GtSpan {
         match self {
             Self::Internal(span, _) => span.clone(),
             Self::InternalMessage(span, _, _) => span.clone(),
@@ -69,14 +69,14 @@ impl GTParseError {
 
 #[derive(Error, Debug, PartialEq)]
 #[error("Failed to parse module")]
-pub struct GTModuleParseError {
+pub struct GtModuleParseError {
     code: &'static str,
     source_code: NamedSource<String>,
     message: String,
-    span: GTSpan,
+    span: GtSpan,
 }
 
-impl GTModuleParseError {
+impl GtModuleParseError {
     pub fn from_pest_error(
         source_code: NamedSource<String>,
         error: pest::error::Error<Rule>,
@@ -97,7 +97,7 @@ impl GTModuleParseError {
         }
     }
 
-    pub fn from_node_error(source_code: NamedSource<String>, error: GTParseError) -> Self {
+    pub fn from_node_error(source_code: NamedSource<String>, error: GtParseError) -> Self {
         Self {
             code: "GTP002",
             source_code,
@@ -107,7 +107,7 @@ impl GTModuleParseError {
     }
 }
 
-impl Diagnostic for GTModuleParseError {
+impl Diagnostic for GtModuleParseError {
     fn source_code(&self) -> Option<&dyn SourceCode> {
         Some(&self.source_code)
     }

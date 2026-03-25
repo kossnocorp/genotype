@@ -4,16 +4,16 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct TSReference(pub TSIdentifier);
+pub struct TsReference(pub TsIdentifier);
 
-impl From<&str> for TSReference {
+impl From<&str> for TsReference {
     fn from(str: &str) -> Self {
-        TSReference(str.into())
+        TsReference(str.into())
     }
 }
 
-impl From<TSIdentifier> for TSReference {
-    fn from(identifier: TSIdentifier) -> Self {
-        TSReference(identifier)
+impl From<TsIdentifier> for TsReference {
+    fn from(identifier: TsIdentifier) -> Self {
+        TsReference(identifier)
     }
 }

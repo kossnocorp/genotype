@@ -1,18 +1,18 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct GTImport {
-    pub span: GTSpan,
+pub struct GtImport {
+    pub span: GtSpan,
     #[visit]
-    pub path: GTPath,
+    pub path: GtPath,
     #[visit]
-    pub reference: GTImportReference,
+    pub reference: GtImportReference,
 }
 
-impl GTImport {
-    pub fn parse(pair: Pair<'_, Rule>, context: &mut GTContext) -> GTNodeParseResult<Self> {
-        let span: GTSpan = pair.as_span().into();
-        let else_err = || GTParseError::Internal(span.clone(), GTNode::Import);
+impl GtImport {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> GtNodeParseResult<Self> {
+        let span: GtSpan = pair.as_span().into();
+        let else_err = || GtParseError::Internal(span.clone(), GtNode::Import);
 
         let mut inner = pair.into_inner();
         let pair = inner.next().ok_or_else(else_err)?;
@@ -29,17 +29,17 @@ impl GTImport {
 fn parse(
     mut inner: Pairs<'_, Rule>,
     pair: Pair<'_, Rule>,
-    context: &mut GTContext,
+    context: &mut GtContext,
     state: ParseState,
-) -> GTNodeParseResult<GTImport> {
+) -> GtNodeParseResult<GtImport> {
     match state {
         ParseState::Path(span) => {
-            let (path, _) = GTPath::split_parse(pair)?;
+            let (path, _) = GtPath::split_parse(pair)?;
             context.resolve.deps.insert(path.clone());
 
             match inner.next() {
                 Some(pair) => parse(inner, pair, context, ParseState::Names(span, path)),
-                None => Err(GTParseError::Internal(span.clone(), GTNode::Import)),
+                None => Err(GtParseError::Internal(span.clone(), GtNode::Import)),
             }
         }
 
@@ -47,10 +47,10 @@ fn parse(
             let ref_span = pair.as_span().into();
 
             match pair.as_rule() {
-                Rule::import_glob => Ok(GTImport {
+                Rule::import_glob => Ok(GtImport {
                     span,
                     path,
-                    reference: GTImportReference::Glob(ref_span),
+                    reference: GtImportReference::Glob(ref_span),
                 }),
 
                 Rule::import_names => {
@@ -62,38 +62,38 @@ fn parse(
 
                         let name = inner
                             .next()
-                            .ok_or_else(|| GTParseError::Internal(span.clone(), GTNode::Import))?
+                            .ok_or_else(|| GtParseError::Internal(span.clone(), GtNode::Import))?
                             .into();
 
                         if let Some(alias) = inner.next() {
-                            names.push(GTImportName::Alias(name_span, name, alias.into()));
+                            names.push(GtImportName::Alias(name_span, name, alias.into()));
                         } else {
-                            names.push(GTImportName::Name(name_span, name));
+                            names.push(GtImportName::Name(name_span, name));
                         }
                     }
 
-                    Ok(GTImport {
+                    Ok(GtImport {
                         span,
                         path,
-                        reference: GTImportReference::Names(ref_span, names),
+                        reference: GtImportReference::Names(ref_span, names),
                     })
                 }
 
-                Rule::name => Ok(GTImport {
+                Rule::name => Ok(GtImport {
                     span,
                     path,
-                    reference: GTImportReference::Name(ref_span, pair.into()),
+                    reference: GtImportReference::Name(ref_span, pair.into()),
                 }),
 
-                _ => Err(GTParseError::Internal(span, GTNode::Import)),
+                _ => Err(GtParseError::Internal(span, GtNode::Import)),
             }
         }
     }
 }
 
 enum ParseState {
-    Path(GTSpan),
-    Names(GTSpan, GTPath),
+    Path(GtSpan),
+    Names(GtSpan, GtPath),
 }
 
 #[cfg(test)]
@@ -109,13 +109,13 @@ mod tests {
     fn test_parse() {
         let mut pairs = GenotypeParser::parse(Rule::import, "use ./hello/World").unwrap();
         assert_eq!(
-            GTImport::parse(pairs.next().unwrap(), &mut GTContext::new("module".into())).unwrap(),
-            GTImport {
+            GtImport::parse(pairs.next().unwrap(), &mut GtContext::new("module".into())).unwrap(),
+            GtImport {
                 span: (0, 17).into(),
-                path: GTPath::parse((4, 11).into(), "./hello").unwrap(),
-                reference: GTImportReference::Name(
+                path: GtPath::parse((4, 11).into(), "./hello").unwrap(),
+                reference: GtImportReference::Name(
                     (12, 17).into(),
-                    GTIdentifier::new((12, 17).into(), "World".into())
+                    GtIdentifier::new((12, 17).into(), "World".into())
                 )
             }
         );
@@ -130,13 +130,13 @@ mod tests {
             use ./misc/order/{Order, SomethingElse}"#
                 .into(),
         );
-        let parse = GTModule::parse("module".into(), source_code).unwrap();
+        let parse = GtModule::parse("module".into(), source_code).unwrap();
         assert_eq!(
             parse.resolve.deps,
             IndexSet::<_, std::collections::hash_map::RandomState>::from_iter(vec![
-                GTPath::parse((4, 10).into(), "author").unwrap(),
-                GTPath::parse((29, 36).into(), "../user").unwrap(),
-                GTPath::parse((58, 70).into(), "./misc/order").unwrap()
+                GtPath::parse((4, 10).into(), "author").unwrap(),
+                GtPath::parse((29, 36).into(), "../user").unwrap(),
+                GtPath::parse((58, 70).into(), "./misc/order").unwrap()
             ])
         );
     }
@@ -150,13 +150,13 @@ mod tests {
             use ./././misc/order/{Order, SomethingElse}"#
                 .into(),
         );
-        let parse = GTModule::parse("module".into(), source_code).unwrap();
+        let parse = GtModule::parse("module".into(), source_code).unwrap();
         assert_eq!(
             parse.resolve.deps,
             IndexSet::<_, std::collections::hash_map::RandomState>::from_iter(vec![
-                GTPath::parse((4, 12).into(), "author").unwrap(),
-                GTPath::parse((31, 46).into(), "../user").unwrap(),
-                GTPath::parse((68, 84).into(), "./misc/order").unwrap(),
+                GtPath::parse((4, 12).into(), "author").unwrap(),
+                GtPath::parse((31, 46).into(), "../user").unwrap(),
+                GtPath::parse((68, 84).into(), "./misc/order").unwrap(),
             ])
         );
     }

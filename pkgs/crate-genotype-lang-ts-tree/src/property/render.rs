@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSProperty {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsProperty {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -18,7 +18,7 @@ impl<'a> GtlRender<'a> for TSProperty {
             if self.required { "" } else { "?" },
         );
 
-        TSDoc::with_doc(&self.doc, state, context, str, false)
+        TsDoc::with_doc(&self.doc, state, context, str, false)
     }
 }
 
@@ -30,10 +30,10 @@ mod tests {
     #[test]
     fn test_render_primitive() {
         assert_snapshot!(
-            TSProperty {
+            TsProperty {
                 doc: None,
                 name: "name".into(),
-                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                descriptor: TsDescriptor::Primitive(TsPrimitive::String),
                 required: true
             }
             .render(Default::default(), &mut Default::default())
@@ -41,10 +41,10 @@ mod tests {
             @"name: string"
         );
         assert_snapshot!(
-            TSProperty {
+            TsProperty {
                 doc: None,
                 name: "name".into(),
-                descriptor: TSDescriptor::Reference("Name".into()),
+                descriptor: TsDescriptor::Reference("Name".into()),
                 required: true
             }
             .render(Default::default(), &mut Default::default())
@@ -56,14 +56,14 @@ mod tests {
     #[test]
     fn test_render_indent() {
         assert_snapshot!(
-            TSProperty {
+            TsProperty {
                 doc: None,
                 name: "name".into(),
-                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                descriptor: TsDescriptor::Primitive(TsPrimitive::String),
                 required: true
             }
             .render(
-                TSRenderState::default().indent_inc(),
+                TsRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),
@@ -74,10 +74,10 @@ mod tests {
     #[test]
     fn test_render_required() {
         assert_snapshot!(
-            TSProperty {
+            TsProperty {
                 doc: None,
                 name: "name".into(),
-                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                descriptor: TsDescriptor::Primitive(TsPrimitive::String),
                 required: false
             }
             .render(Default::default(), &mut Default::default())
@@ -89,10 +89,10 @@ mod tests {
     #[test]
     fn test_render_doc() {
         assert_snapshot!(
-            TSProperty {
-                doc: Some(TSDoc("Hello, world!".into())),
+            TsProperty {
+                doc: Some(TsDoc("Hello, world!".into())),
                 name: "name".into(),
-                descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                descriptor: TsDescriptor::Primitive(TsPrimitive::String),
                 required: true
             }
             .render(Default::default(), &mut Default::default())

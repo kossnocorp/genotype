@@ -1,13 +1,13 @@
-use crate::version::PYVersion;
+use crate::version::PyVersion;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct PyConfigLang {
-    pub version: PYVersion,
+    pub version: PyVersion,
 }
 
 impl PyConfigLang {
-    pub fn new(version: PYVersion) -> Self {
+    pub fn new(version: PyVersion) -> Self {
         Self { version }
     }
 }
@@ -15,7 +15,7 @@ impl PyConfigLang {
 impl Default for PyConfigLang {
     fn default() -> Self {
         Self {
-            version: PYVersion::Latest,
+            version: PyVersion::Latest,
         }
     }
 }

@@ -5,12 +5,12 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct PYProperty {
+pub struct PyProperty {
     #[visit]
-    pub doc: Option<PYDoc>,
+    pub doc: Option<PyDoc>,
     #[visit]
-    pub name: PYKey,
+    pub name: PyKey,
     #[visit]
-    pub descriptor: PYDescriptor,
+    pub descriptor: PyDescriptor,
     pub required: bool,
 }

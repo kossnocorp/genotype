@@ -4,7 +4,7 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct RSVec {
+pub struct RsVec {
     #[visit]
-    pub descriptor: RSDescriptor,
+    pub descriptor: RsDescriptor,
 }

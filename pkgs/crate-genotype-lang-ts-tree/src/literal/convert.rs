@@ -1,13 +1,13 @@
 use crate::prelude::internal::*;
 
-impl TSConvert<TSLiteral> for GTLiteral {
-    fn convert(&self, _context: &mut TSConvertContext) -> TSLiteral {
+impl TsConvert<TsLiteral> for GtLiteral {
+    fn convert(&self, _context: &mut TsConvertContext) -> TsLiteral {
         match &self.value {
-            GTLiteralValue::Null => TSLiteral::Null,
-            GTLiteralValue::Boolean(value) => TSLiteral::Boolean(*value),
-            GTLiteralValue::Integer(value) => TSLiteral::Integer(*value),
-            GTLiteralValue::Float(value) => TSLiteral::Float(*value),
-            GTLiteralValue::String(value) => TSLiteral::String(value.clone()),
+            GtLiteralValue::Null => TsLiteral::Null,
+            GtLiteralValue::Boolean(value) => TsLiteral::Boolean(*value),
+            GtLiteralValue::Integer(value) => TsLiteral::Integer(*value),
+            GtLiteralValue::Float(value) => TsLiteral::Float(*value),
+            GtLiteralValue::String(value) => TsLiteral::String(value.clone()),
         }
     }
 }
@@ -20,51 +20,51 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GTLiteral {
+            GtLiteral {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                value: GTLiteralValue::Null,
+                value: GtLiteralValue::Null,
             }
             .convert(&mut Default::default()),
             @"Null"
         );
         assert_ron_snapshot!(
-            GTLiteral {
+            GtLiteral {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                value: GTLiteralValue::Boolean(true),
+                value: GtLiteralValue::Boolean(true),
             }
             .convert(&mut Default::default()),
             @"Boolean(true)"
         );
         assert_ron_snapshot!(
-            GTLiteral {
+            GtLiteral {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                value: GTLiteralValue::Integer(-123),
+                value: GtLiteralValue::Integer(-123),
             }
             .convert(&mut Default::default()),
             @"Integer(-123)"
         );
         assert_ron_snapshot!(
-            GTLiteral {
+            GtLiteral {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                value: GTLiteralValue::Float(1.23),
+                value: GtLiteralValue::Float(1.23),
             }
             .convert(&mut Default::default()),
             @"Float(1.23)"
         );
         assert_ron_snapshot!(
-            GTLiteral {
+            GtLiteral {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
-                value: GTLiteralValue::String("Hello, world!".into()),
+                value: GtLiteralValue::String("Hello, world!".into()),
             }
             .convert(&mut Default::default()),
             @r#"String("Hello, world!")"#

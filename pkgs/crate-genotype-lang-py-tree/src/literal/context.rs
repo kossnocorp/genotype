@@ -1,11 +1,11 @@
 use crate::prelude::internal::*;
 
-impl PYContextResolve for PYLiteral {
+impl PyContextResolve for PyLiteral {
     fn resolve<Context>(self, context: &mut Context) -> Self
     where
-        Context: PYConvertContextConstraint,
+        Context: PyConvertContextConstraint,
     {
-        context.add_import(PYDependencyIdent::Typing, "Literal".into());
+        context.add_import(PyDependencyIdent::Typing, "Literal".into());
         self
     }
 }
@@ -17,12 +17,12 @@ mod tests {
 
     #[test]
     fn test_resolve() {
-        let mut context = PYConvertContextMock::default();
-        let literal = PYLiteral::Boolean(true);
+        let mut context = PyConvertContextMock::default();
+        let literal = PyLiteral::Boolean(true);
         literal.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
-            vec![(PYDependencyIdent::Typing, "Literal".into())]
+            vec![(PyDependencyIdent::Typing, "Literal".into())]
         );
     }
 }

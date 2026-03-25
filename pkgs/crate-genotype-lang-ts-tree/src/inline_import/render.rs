@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSInlineImport {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsInlineImport {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -25,7 +25,7 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            TSInlineImport {
+            TsInlineImport {
                 path: "./path/to/module".into(),
                 name: "Name".into(),
             }

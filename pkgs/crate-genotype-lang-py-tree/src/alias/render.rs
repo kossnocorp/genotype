@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYAlias {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyAlias {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
     fn render(
         &self,
@@ -13,7 +13,7 @@ impl<'a> GtlRender<'a> for PYAlias {
         let name = self.name.render(state, context)?;
         let descriptor = self.descriptor.render(state, context)?;
 
-        let alias = if let PYVersion::Legacy = context.config.version {
+        let alias = if let PyVersion::Legacy = context.config.version {
             format!("{name} = {descriptor}")
         } else {
             format!("type {name} = {descriptor}")
@@ -36,10 +36,10 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            PYAlias {
+            PyAlias {
                 doc: None,
                 name: "Name".into(),
-                descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                 references: vec![],
             }
             .render(Default::default(), &mut Default::default())
@@ -51,16 +51,16 @@ mod tests {
     #[test]
     fn test_render_legacy() {
         assert_snapshot!(
-            PYAlias {
+            PyAlias {
                 doc: None,
                 name: "Name".into(),
-                descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                 references: vec![],
             }
             .render(
                 Default::default(),
-                &mut PYRenderContext {
-                    config: &PyConfigLang::new(PYVersion::Legacy),
+                &mut PyRenderContext {
+                    config: &PyConfigLang::new(PyVersion::Legacy),
                     ..Default::default()
                 }
             )
@@ -72,10 +72,10 @@ mod tests {
     #[test]
     fn test_render_doc() {
         assert_snapshot!(
-            PYAlias {
-                doc: Some(PYDoc("Hello, world!".into())),
+            PyAlias {
+                doc: Some(PyDoc("Hello, world!".into())),
                 name: "Name".into(),
-                descriptor: PYDescriptor::Primitive(PYPrimitive::String),
+                descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                 references: vec![],
             }
             .render(Default::default(), &mut Default::default())

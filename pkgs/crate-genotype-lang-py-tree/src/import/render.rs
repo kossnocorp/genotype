@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYImport {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyImport {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
     fn render(
         &self,
@@ -14,7 +14,7 @@ impl<'a> GtlRender<'a> for PYImport {
         let reference = self.reference.render(state, context)?;
 
         Ok(match self.reference {
-            PYImportReference::Default(_) => {
+            PyImportReference::Default(_) => {
                 if reference.is_empty() {
                     format!(r#"import {}"#, path)
                 } else {
@@ -37,18 +37,18 @@ mod tests {
     #[test]
     fn test_render_default() {
         assert_snapshot!(
-            PYImport {
-                reference: PYImportReference::Default(Some("name".into())),
-                dependency: PYDependencyIdent::Path(".path.to.module".into())
+            PyImport {
+                reference: PyImportReference::Default(Some("name".into())),
+                dependency: PyDependencyIdent::Path(".path.to.module".into())
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
             @"import .path.to.module as name"
         );
         assert_snapshot!(
-            PYImport {
-                reference: PYImportReference::Default(None),
-                dependency: PYDependencyIdent::Path(".path.to.module".into())
+            PyImport {
+                reference: PyImportReference::Default(None),
+                dependency: PyDependencyIdent::Path(".path.to.module".into())
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -59,9 +59,9 @@ mod tests {
     #[test]
     fn test_render_glob() {
         assert_snapshot!(
-            PYImport {
-                reference: PYImportReference::Glob,
-                dependency: PYDependencyIdent::Path(".path.to.module".into())
+            PyImport {
+                reference: PyImportReference::Glob,
+                dependency: PyDependencyIdent::Path(".path.to.module".into())
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -72,12 +72,12 @@ mod tests {
     #[test]
     fn test_render_named() {
         assert_snapshot!(
-            PYImport {
-                reference: PYImportReference::Named(vec![
-                    PYImportName::Name("Name".into()),
-                    PYImportName::Alias("Name".into(), "Alias".into()),
+            PyImport {
+                reference: PyImportReference::Named(vec![
+                    PyImportName::Name("Name".into()),
+                    PyImportName::Alias("Name".into(), "Alias".into()),
                 ]),
-                dependency: PYDependencyIdent::Path(".path.to.module".into())
+                dependency: PyDependencyIdent::Path(".path.to.module".into())
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),

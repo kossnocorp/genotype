@@ -4,7 +4,7 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct RSTuple {
+pub struct RsTuple {
     #[visit]
-    pub descriptors: Vec<RSDescriptor>,
+    pub descriptors: Vec<RsDescriptor>,
 }

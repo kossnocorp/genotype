@@ -1,18 +1,18 @@
 use crate::prelude::internal::*;
 
 #[derive(Default, Debug, PartialEq, Clone)]
-pub struct GTNamingContext {
+pub struct GtNamingContext {
     claimed: HashSet<String>,
-    stack: Vec<GTNamingContextName>,
+    stack: Vec<GtNamingContextName>,
 }
 
-impl GTNamingContext {
+impl GtNamingContext {
     pub fn new() -> Self {
         Default::default()
     }
 
     /// Pushes a name to the stack.
-    pub fn push_name(&mut self, name: GTNamingContextName) {
+    pub fn push_name(&mut self, name: GtNamingContextName) {
         self.stack.push(name);
     }
 
@@ -47,7 +47,7 @@ impl GTNamingContext {
         let mut stack = vec![];
         for name in self.stack.iter().rev() {
             stack.insert(0, name.as_identifier_string());
-            if let GTNamingContextName::Identifier(_) = name {
+            if let GtNamingContextName::Identifier(_) = name {
                 break;
             }
         }
@@ -88,18 +88,18 @@ impl GTNamingContext {
 }
 
 #[derive(Debug, PartialEq, Clone)]
-pub enum GTNamingContextName {
+pub enum GtNamingContextName {
     /// Identifier name.
     Identifier(String),
     /// Transitive name that does not constitute an identifier, i.e., property name.
     Transitive(String),
 }
 
-impl GTNamingContextName {
+impl GtNamingContextName {
     pub fn as_string(&self) -> String {
         match self {
-            GTNamingContextName::Identifier(name) => name,
-            GTNamingContextName::Transitive(name) => name,
+            GtNamingContextName::Identifier(name) => name,
+            GtNamingContextName::Transitive(name) => name,
         }
         .clone()
     }

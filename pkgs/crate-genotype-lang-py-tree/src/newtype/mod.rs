@@ -5,11 +5,11 @@ mod convert;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct PYNewtype {
+pub struct PyNewtype {
     #[visit]
-    pub doc: Option<PYDoc>,
+    pub doc: Option<PyDoc>,
     #[visit]
-    pub name: PYIdentifier,
+    pub name: PyIdentifier,
     #[visit]
-    pub primitive: PYPrimitive,
+    pub primitive: PyPrimitive,
 }

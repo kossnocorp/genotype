@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSTuple {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsTuple {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -28,10 +28,10 @@ mod tests {
     #[test]
     fn test_render_tuple() {
         assert_snapshot!(
-            RSTuple {
+            RsTuple {
                 descriptors: vec![
-                    RSDescriptor::Primitive(RSPrimitive::String),
-                    RSDescriptor::Primitive(RSPrimitive::IntSize),
+                    RsDescriptor::Primitive(RsPrimitive::String),
+                    RsDescriptor::Primitive(RsPrimitive::IntSize),
                 ]
             }
             .render(Default::default(), &mut Default::default())
@@ -43,7 +43,7 @@ mod tests {
     #[test]
     fn test_render_empty_tuple() {
         assert_snapshot!(
-            RSTuple {
+            RsTuple {
                 descriptors: vec![]
             }
             .render(Default::default(), &mut Default::default())

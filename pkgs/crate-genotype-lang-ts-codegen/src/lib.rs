@@ -8,14 +8,14 @@ pub mod prelude;
 
 #[derive(Default)]
 pub struct TsCodegen {
-    module: TSModule,
-    convert_context: TSConvertContext,
+    module: TsModule,
+    convert_context: TsConvertContext,
 }
 
 impl GtlCodegen for TsCodegen {
-    type Import = TSImport;
+    type Import = TsImport;
 
-    type Definition = TSDefinition;
+    type Definition = TsDefinition;
 
     fn register_import(&mut self, import: Self::Import) {
         self.module.imports.push(import);
@@ -25,7 +25,7 @@ impl GtlCodegen for TsCodegen {
         self.module.definitions.push(definition);
     }
 
-    fn inject_descriptor(&mut self, descriptor: GTDescriptor) -> Result<String> {
+    fn inject_descriptor(&mut self, descriptor: GtDescriptor) -> Result<String> {
         let descriptor = descriptor.convert(&mut self.convert_context);
 
         // [TODO] Drain imports when needed
@@ -50,8 +50,8 @@ mod tests {
     #[test]
     fn test_register_import() {
         let mut codegen = TsCodegen::default();
-        codegen.register_import(TSImport::new("dependency".into(), "Name".into()));
-        codegen.register_import(TSImport::new("another".into(), "AlsoName".into()));
+        codegen.register_import(TsImport::new("dependency".into(), "Name".into()));
+        codegen.register_import(TsImport::new("another".into(), "AlsoName".into()));
         assert_snapshot!(
             codegen.render_module().unwrap(),
             @r#"
@@ -65,10 +65,10 @@ mod tests {
     fn test_register_definition() {
         let mut codegen = TsCodegen::default();
         codegen.register_definition(
-            TSAlias {
+            TsAlias {
                 doc: None,
                 name: "Name".into(),
-                descriptor: TSAny.into(),
+                descriptor: TsAny.into(),
             }
             .into(),
         );
@@ -82,7 +82,7 @@ mod tests {
     #[test]
     fn test_inject_descriptor() {
         let mut codegen = TsCodegen::default();
-        let primitive = GTDescriptor::Primitive(Gt::primitive_string());
+        let primitive = GtDescriptor::Primitive(Gt::primitive_string());
         let result = codegen.inject_descriptor(primitive).unwrap();
         assert_snapshot!(
             result,
@@ -97,12 +97,12 @@ mod tests {
     #[test]
     fn test_inject_descriptor_with_hoisted() {
         let mut codegen = TsCodegen::default();
-        let alias = GTDescriptor::Alias(Box::new(GTAlias {
-            id: GTDefinitionId("module".into(), "Hello".into()),
+        let alias = GtDescriptor::Alias(Box::new(GtAlias {
+            id: GtDefinitionId("module".into(), "Hello".into()),
             span: Default::default(),
             doc: None,
             attributes: vec![],
-            name: GTIdentifier::new(Default::default(), "Hello".into()),
+            name: GtIdentifier::new(Default::default(), "Hello".into()),
             descriptor: Gt::primitive_string().into(),
         }));
         let result = codegen.inject_descriptor(alias).unwrap();

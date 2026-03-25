@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYImportReference {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyImportReference {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
     fn render(
         &self,
@@ -11,7 +11,7 @@ impl<'a> GtlRender<'a> for PYImportReference {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         Ok(match self {
-            PYImportReference::Default(name) => {
+            PyImportReference::Default(name) => {
                 if let Some(name) = name {
                     name.render(state, context)?
                 } else {
@@ -19,9 +19,9 @@ impl<'a> GtlRender<'a> for PYImportReference {
                 }
             }
 
-            PYImportReference::Glob => "*".into(),
+            PyImportReference::Glob => "*".into(),
 
-            PYImportReference::Named(names) => names
+            PyImportReference::Named(names) => names
                 .iter()
                 .map(|name| name.render(state, context))
                 .collect::<Result<Vec<_>>>()?
@@ -38,13 +38,13 @@ mod tests {
     #[test]
     fn test_render_default() {
         assert_snapshot!(
-            PYImportReference::Default(Some("Name".into()))
+            PyImportReference::Default(Some("Name".into()))
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"Name"
         );
         assert_snapshot!(
-            PYImportReference::Default(None)
+            PyImportReference::Default(None)
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @""
@@ -54,7 +54,7 @@ mod tests {
     #[test]
     fn test_render_glob() {
         assert_snapshot!(
-            PYImportReference::Glob
+            PyImportReference::Glob
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"*"
@@ -64,9 +64,9 @@ mod tests {
     #[test]
     fn test_render_named() {
         assert_snapshot!(
-            PYImportReference::Named(vec![
-                PYImportName::Name("Name".into()),
-                PYImportName::Alias("Name".into(), "Alias".into()),
+            PyImportReference::Named(vec![
+                PyImportName::Name("Name".into()),
+                PyImportName::Alias("Name".into(), "Alias".into()),
             ])
             .render(Default::default(), &mut Default::default())
             .unwrap(),

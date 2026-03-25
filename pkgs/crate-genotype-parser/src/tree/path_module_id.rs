@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize)]
-pub enum GTPathModuleId {
+pub enum GtPathModuleId {
     Unresolved,
-    Resolved(GTModuleId),
+    Resolved(GtModuleId),
 }

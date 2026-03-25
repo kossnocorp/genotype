@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSImportReference {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsImportReference {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -11,11 +11,11 @@ impl<'a> GtlRender<'a> for TSImportReference {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         Ok(match self {
-            TSImportReference::Default(name) => name.to_string(),
+            TsImportReference::Default(name) => name.to_string(),
 
-            TSImportReference::Glob(name) => format!("* as {}", name),
+            TsImportReference::Glob(name) => format!("* as {}", name),
 
-            TSImportReference::Named(names) => {
+            TsImportReference::Named(names) => {
                 let names = names
                     .iter()
                     .map(|name| name.render(state, context))
@@ -35,7 +35,7 @@ mod tests {
     #[test]
     fn test_render_default() {
         assert_snapshot!(
-            TSImportReference::Default("Name".into())
+            TsImportReference::Default("Name".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"Name"
@@ -45,7 +45,7 @@ mod tests {
     #[test]
     fn test_render_glob() {
         assert_snapshot!(
-            TSImportReference::Glob("name".into())
+            TsImportReference::Glob("name".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"* as name"
@@ -55,9 +55,9 @@ mod tests {
     #[test]
     fn test_render_named() {
         assert_snapshot!(
-            TSImportReference::Named(vec![
-                TSImportName::Name("Name".into()),
-                TSImportName::Alias("Name".into(), "Alias".into()),
+            TsImportReference::Named(vec![
+                TsImportName::Name("Name".into()),
+                TsImportName::Alias("Name".into(), "Alias".into()),
             ])
             .render(Default::default(), &mut Default::default())
             .unwrap(),

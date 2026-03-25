@@ -1,11 +1,11 @@
 use crate::prelude::internal::*;
 
-impl PYContextResolve for PYClass {
+impl PyContextResolve for PyClass {
     fn resolve<Context>(self, context: &mut Context) -> Self
     where
-        Context: PYConvertContextConstraint,
+        Context: PyConvertContextConstraint,
     {
-        context.add_import(PYDependencyIdent::Runtime, "Model".into());
+        context.add_import(PyDependencyIdent::Runtime, "Model".into());
         self
     }
 }
@@ -17,8 +17,8 @@ mod tests {
 
     #[test]
     fn test_resolve() {
-        let mut context = PYConvertContextMock::default();
-        let alias = PYClass {
+        let mut context = PyConvertContextMock::default();
+        let alias = PyClass {
             doc: None,
             name: "Foo".into(),
             extensions: vec![],
@@ -30,7 +30,7 @@ mod tests {
             context.as_imports(),
             @r#"
         [
-          (Runtime, PYIdentifier("Model")),
+          (Runtime, PyIdentifier("Model")),
         ]
         "#
         );

@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSStruct {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsStruct {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -37,8 +37,8 @@ mod tests {
     #[test]
     fn test_render_empty() {
         assert_snapshot!(
-            RSStruct {
-                id: GTDefinitionId("module".into(), "Name".into()),
+            RsStruct {
+                id: GtDefinitionId("module".into(), "Name".into()),
                 doc: None,
                 attributes: vec![],
                 name: "Name".into(),
@@ -53,23 +53,23 @@ mod tests {
     #[test]
     fn test_render_properties() {
         assert_snapshot!(
-            RSStruct {
-                id: GTDefinitionId("module".into(), "Name".into()),
+            RsStruct {
+                id: GtDefinitionId("module".into(), "Name".into()),
                 doc: None,
                 attributes: vec![],
                 name: "Name".into(),
                 fields: vec![
-                    RSField {
+                    RsField {
                         doc: None,
                         attributes: vec![],
                         name: "name".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                        descriptor: RsDescriptor::Primitive(RsPrimitive::String),
                     },
-                    RSField {
+                    RsField {
                         doc: None,
                         attributes: vec![],
                         name: "age".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize),
+                        descriptor: RsDescriptor::Primitive(RsPrimitive::IntSize),
                     }
                 ]
                 .into(),
@@ -88,29 +88,29 @@ mod tests {
     #[test]
     fn test_render_indent() {
         assert_snapshot!(
-            RSStruct {
-                id: GTDefinitionId("module".into(), "Person".into()),
+            RsStruct {
+                id: GtDefinitionId("module".into(), "Person".into()),
                 doc: None,
                 attributes: vec![],
                 name: "Name".into(),
                 fields: vec![
-                    RSField {
+                    RsField {
                         doc: None,
                         attributes: vec![],
                         name: "name".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                        descriptor: RsDescriptor::Primitive(RsPrimitive::String),
                     },
-                    RSField {
+                    RsField {
                         doc: None,
                         attributes: vec![],
                         name: "age".into(),
-                        descriptor: RSDescriptor::Primitive(RSPrimitive::IntSize),
+                        descriptor: RsDescriptor::Primitive(RsPrimitive::IntSize),
                     }
                 ]
                 .into(),
             }
             .render(
-                RSRenderState::default().indent_inc(),
+                RsRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),
@@ -126,8 +126,8 @@ mod tests {
     #[test]
     fn test_render_doc_empty() {
         assert_snapshot!(
-            RSStruct {
-                id: GTDefinitionId("module".into(), "Name".into()),
+            RsStruct {
+                id: GtDefinitionId("module".into(), "Name".into()),
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "Name".into(),
@@ -145,16 +145,16 @@ mod tests {
     #[test]
     fn test_render_doc_fields() {
         assert_snapshot!(
-            RSStruct {
-                id: GTDefinitionId("module".into(), "Name".into()),
+            RsStruct {
+                id: GtDefinitionId("module".into(), "Name".into()),
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "Name".into(),
-                fields: vec![RSField {
+                fields: vec![RsField {
                     doc: None,
                     attributes: vec![],
                     name: "name".into(),
-                    descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                    descriptor: RsDescriptor::Primitive(RsPrimitive::String),
                 }]
                 .into(),
             }
@@ -172,8 +172,8 @@ mod tests {
     #[test]
     fn test_render_literal_fields() {
         assert_snapshot!(
-            RSStruct {
-                id: GTDefinitionId("module".into(), "Name".into()),
+            RsStruct {
+                id: GtDefinitionId("module".into(), "Name".into()),
                 doc: None,
                 attributes: vec![
                     "derive(Debug, Clone, PartialEq)".into(),
@@ -181,11 +181,11 @@ mod tests {
                     "literals(ok = true, version = 1)".into(),
                 ],
                 name: "Name".into(),
-                fields: vec![RSField {
+                fields: vec![RsField {
                     doc: None,
                     attributes: vec![],
                     name: "message".into(),
-                    descriptor: RSDescriptor::Primitive(RSPrimitive::String),
+                    descriptor: RsDescriptor::Primitive(RsPrimitive::String),
                 }]
                 .into(),
             }

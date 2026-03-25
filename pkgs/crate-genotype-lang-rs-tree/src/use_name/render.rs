@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSUseName {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsUseName {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -11,8 +11,8 @@ impl<'a> GtlRender<'a> for RSUseName {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         Ok(match self {
-            RSUseName::Name(name) => name.render(state, context)?,
-            RSUseName::Alias(name, alias) => {
+            RsUseName::Name(name) => name.render(state, context)?,
+            RsUseName::Alias(name, alias) => {
                 format!(
                     "{name} as {alias}",
                     name = name.render(state, context)?,
@@ -31,7 +31,7 @@ mod tests {
     #[test]
     fn test_render_name() {
         assert_snapshot!(
-            RSUseName::Name("Name".into())
+            RsUseName::Name("Name".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"Name"
@@ -41,7 +41,7 @@ mod tests {
     #[test]
     fn test_render_alias() {
         assert_snapshot!(
-            RSUseName::Alias("Name".into(), "Alias".into())
+            RsUseName::Alias("Name".into(), "Alias".into())
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"Name as Alias"

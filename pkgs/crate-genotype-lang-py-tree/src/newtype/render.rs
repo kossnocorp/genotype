@@ -1,11 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYNewtype {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyNewtype {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
-    fn render(&self, state: PYRenderState, context: &mut PYRenderContext) -> Result<String> {
+    fn render(&self, state: PyRenderState, context: &mut PyRenderContext) -> Result<String> {
         let mut blocks = vec![];
 
         let name = self.name.render(state, context)?;
@@ -28,10 +28,10 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            PYNewtype {
+            PyNewtype {
                 doc: None,
                 name: "UserId".into(),
-                primitive: PYPrimitive::String,
+                primitive: PyPrimitive::String,
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -42,10 +42,10 @@ mod tests {
     #[test]
     fn test_render_doc() {
         assert_snapshot!(
-            PYNewtype {
-                doc: Some(PYDoc("Hello, world!".into())),
+            PyNewtype {
+                doc: Some(PyDoc("Hello, world!".into())),
                 name: "UserId".into(),
-                primitive: PYPrimitive::String,
+                primitive: PyPrimitive::String,
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),

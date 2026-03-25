@@ -1,17 +1,17 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PYPrimitive {
-    type RenderState = PYRenderState;
+impl<'a> GtlRender<'a> for PyPrimitive {
+    type RenderState = PyRenderState;
 
-    type RenderContext = PYRenderContext<'a>;
+    type RenderContext = PyRenderContext<'a>;
 
-    fn render(&self, _state: PYRenderState, _context: &mut PYRenderContext) -> Result<String> {
+    fn render(&self, _state: PyRenderState, _context: &mut PyRenderContext) -> Result<String> {
         Ok(match self {
-            PYPrimitive::Boolean => "bool",
-            PYPrimitive::String => "str",
-            PYPrimitive::Int => "int",
-            PYPrimitive::Float => "float",
-            PYPrimitive::None => "None",
+            PyPrimitive::Boolean => "bool",
+            PyPrimitive::String => "str",
+            PyPrimitive::Int => "int",
+            PyPrimitive::Float => "float",
+            PyPrimitive::None => "None",
         }
         .to_string())
     }
@@ -25,31 +25,31 @@ mod tests {
     #[test]
     fn test_render_primitive() {
         assert_snapshot!(
-            PYPrimitive::Boolean
+            PyPrimitive::Boolean
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"bool"
         );
         assert_snapshot!(
-            PYPrimitive::String
+            PyPrimitive::String
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"str"
         );
         assert_snapshot!(
-            PYPrimitive::Int
+            PyPrimitive::Int
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"int"
         );
         assert_snapshot!(
-            PYPrimitive::Float
+            PyPrimitive::Float
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"float"
         );
         assert_snapshot!(
-            PYPrimitive::None
+            PyPrimitive::None
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"None"

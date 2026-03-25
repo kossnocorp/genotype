@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl TSConvert<TSTuple> for GTTuple {
-    fn convert(&self, context: &mut TSConvertContext) -> TSTuple {
-        TSTuple {
+impl TsConvert<TsTuple> for GtTuple {
+    fn convert(&self, context: &mut TsConvertContext) -> TsTuple {
+        TsTuple {
             descriptors: self
                 .descriptors
                 .iter()
@@ -25,7 +25,7 @@ mod tests {
                 Gt::primitive_string().into(),
             ])),
             @"
-        TSTuple(
+        TsTuple(
           descriptors: [
             Primitive(Boolean),
             Primitive(String),

@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSInterface {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsInterface {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -34,7 +34,7 @@ impl<'a> GtlRender<'a> for TSInterface {
             "".into()
         };
 
-        TSDoc::with_doc(
+        TsDoc::with_doc(
             &self.doc,
             state,
             context,
@@ -57,7 +57,7 @@ mod tests {
     #[test]
     fn test_render_empty() {
         assert_snapshot!(
-            TSInterface {
+            TsInterface {
                 doc: None,
                 name: "Name".into(),
                 extensions: vec![],
@@ -75,21 +75,21 @@ mod tests {
     #[test]
     fn test_render_properties() {
         assert_snapshot!(
-            TSInterface {
+            TsInterface {
                 doc: None,
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![
-                    TSProperty {
+                    TsProperty {
                         doc: None,
                         name: "name".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                        descriptor: TsDescriptor::Primitive(TsPrimitive::String),
                         required: true
                     },
-                    TSProperty {
+                    TsProperty {
                         doc: None,
                         name: "age".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
+                        descriptor: TsDescriptor::Primitive(TsPrimitive::Number),
                         required: false
                     }
                 ]
@@ -108,27 +108,27 @@ mod tests {
     #[test]
     fn test_render_indent() {
         assert_snapshot!(
-            TSInterface {
+            TsInterface {
                 doc: None,
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![
-                    TSProperty {
+                    TsProperty {
                         doc: None,
                         name: "name".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                        descriptor: TsDescriptor::Primitive(TsPrimitive::String),
                         required: true
                     },
-                    TSProperty {
+                    TsProperty {
                         doc: None,
                         name: "age".into(),
-                        descriptor: TSDescriptor::Primitive(TSPrimitive::Number),
+                        descriptor: TsDescriptor::Primitive(TsPrimitive::Number),
                         required: false
                     }
                 ]
             }
             .render(
-                TSRenderState::default().indent_inc(),
+                TsRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),
@@ -144,14 +144,14 @@ mod tests {
     #[test]
     fn test_render_extensions() {
         assert_snapshot!(
-            TSInterface {
+            TsInterface {
                 doc: None,
                 name: "Name".into(),
                 extensions: vec!["Hello".into(), "World".into()],
-                properties: vec![TSProperty {
+                properties: vec![TsProperty {
                     doc: None,
                     name: "name".into(),
-                    descriptor: TSDescriptor::Primitive(TSPrimitive::String),
+                    descriptor: TsDescriptor::Primitive(TsPrimitive::String),
                     required: true
                 },]
             }
@@ -168,8 +168,8 @@ mod tests {
     #[test]
     fn test_render_doc() {
         assert_snapshot!(
-            TSInterface {
-                doc: Some(TSDoc("Hello, world!".into())),
+            TsInterface {
+                doc: Some(TsDoc("Hello, world!".into())),
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![]

@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TSRecordKey {
-    type RenderState = TSRenderState;
+impl<'a> GtlRender<'a> for TsRecordKey {
+    type RenderState = TsRenderState;
 
-    type RenderContext = TSRenderContext<'a>;
+    type RenderContext = TsRenderContext<'a>;
 
     fn render(
         &self,
@@ -11,9 +11,9 @@ impl<'a> GtlRender<'a> for TSRecordKey {
         _context: &mut Self::RenderContext,
     ) -> Result<String> {
         Ok(match self {
-            TSRecordKey::String => "string".into(),
-            TSRecordKey::Number => "number".into(),
-            TSRecordKey::Boolean => "boolean".into(),
+            TsRecordKey::String => "string".into(),
+            TsRecordKey::Number => "number".into(),
+            TsRecordKey::Boolean => "boolean".into(),
         })
     }
 }
@@ -26,19 +26,19 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            TSRecordKey::String
+            TsRecordKey::String
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"string"
         );
         assert_snapshot!(
-            TSRecordKey::Number
+            TsRecordKey::Number
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"number"
         );
         assert_snapshot!(
-            TSRecordKey::Boolean
+            TsRecordKey::Boolean
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"boolean"

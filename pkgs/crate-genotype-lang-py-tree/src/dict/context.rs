@@ -1,12 +1,12 @@
 use crate::prelude::internal::*;
 
-impl PYContextResolve for PYDict {
+impl PyContextResolve for PyDict {
     fn resolve<Context>(self, context: &mut Context) -> Self
     where
-        Context: PYConvertContextConstraint,
+        Context: PyConvertContextConstraint,
     {
-        if context.is_version(PYVersion::Legacy) {
-            context.add_import(PYDependencyIdent::Typing, "Dict".into());
+        if context.is_version(PyVersion::Legacy) {
+            context.add_import(PyDependencyIdent::Typing, "Dict".into());
         }
         self
     }
@@ -19,10 +19,10 @@ mod tests {
 
     #[test]
     fn test_resolve() {
-        let mut context = PYConvertContextMock::default();
-        let dict = PYDict {
-            key: PYDictKey::String,
-            descriptor: PYPrimitive::String.into(),
+        let mut context = PyConvertContextMock::default();
+        let dict = PyDict {
+            key: PyDictKey::String,
+            descriptor: PyPrimitive::String.into(),
         };
         dict.resolve(&mut context);
         assert_eq!(context.as_imports(), vec![]);
@@ -30,15 +30,15 @@ mod tests {
 
     #[test]
     fn test_resolve_legacy() {
-        let mut context = PYConvertContextMock::new(PYVersion::Legacy);
-        let dict = PYDict {
-            key: PYDictKey::String,
-            descriptor: PYPrimitive::String.into(),
+        let mut context = PyConvertContextMock::new(PyVersion::Legacy);
+        let dict = PyDict {
+            key: PyDictKey::String,
+            descriptor: PyPrimitive::String.into(),
         };
         dict.resolve(&mut context);
         assert_eq!(
             context.as_imports(),
-            vec![(PYDependencyIdent::Typing, "Dict".into())],
+            vec![(PyDependencyIdent::Typing, "Dict".into())],
         );
     }
 }

@@ -4,24 +4,24 @@ mod convert;
 mod render;
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, PartialOrd, Ord, Serialize, Visitor)]
-pub struct RSIdentifier(pub Arc<str>);
+pub struct RsIdentifier(pub Arc<str>);
 
-impl GtlDependencyRef for RSIdentifier {}
+impl GtlDependencyRef for RsIdentifier {}
 
-impl From<&str> for RSIdentifier {
+impl From<&str> for RsIdentifier {
     fn from(str: &str) -> Self {
-        RSIdentifier(str.into())
+        RsIdentifier(str.into())
     }
 }
 
-impl From<String> for RSIdentifier {
+impl From<String> for RsIdentifier {
     fn from(str: String) -> Self {
-        RSIdentifier(str.into())
+        RsIdentifier(str.into())
     }
 }
 
-impl From<Arc<str>> for RSIdentifier {
+impl From<Arc<str>> for RsIdentifier {
     fn from(str: Arc<str>) -> Self {
-        RSIdentifier(str)
+        RsIdentifier(str)
     }
 }

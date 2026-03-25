@@ -3,15 +3,15 @@ use crate::prelude::internal::*;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub enum PYDefinition {
-    Alias(#[visit] PYAlias),
-    Class(#[visit] PYClass),
-    Newtype(#[visit] PYNewtype),
-    Embed(#[visit] PYEmbedDefinition),
+pub enum PyDefinition {
+    Alias(#[visit] PyAlias),
+    Class(#[visit] PyClass),
+    Newtype(#[visit] PyNewtype),
+    Embed(#[visit] PyEmbedDefinition),
 }
 
-impl PYDefinition {
-    pub fn name(&self) -> &PYIdentifier {
+impl PyDefinition {
+    pub fn name(&self) -> &PyIdentifier {
         match self {
             Self::Alias(alias) => &alias.name,
             Self::Class(class) => &class.name,
@@ -20,7 +20,7 @@ impl PYDefinition {
         }
     }
 
-    pub fn doc(&self) -> &Option<PYDoc> {
+    pub fn doc(&self) -> &Option<PyDoc> {
         match self {
             Self::Alias(alias) => &alias.doc,
             Self::Class(class) => &class.doc,
@@ -29,7 +29,7 @@ impl PYDefinition {
         }
     }
 
-    pub fn references(&self) -> Vec<&PYIdentifier> {
+    pub fn references(&self) -> Vec<&PyIdentifier> {
         match self {
             Self::Alias(alias) => alias.references.iter().collect(),
             Self::Class(class) => class.references.iter().collect(),
@@ -38,29 +38,29 @@ impl PYDefinition {
     }
 }
 
-impl GtlDefinition for PYDefinition {}
+impl GtlDefinition for PyDefinition {}
 
-impl From<PYClass> for PYDefinition {
-    fn from(class: PYClass) -> Self {
-        PYDefinition::Class(class)
+impl From<PyClass> for PyDefinition {
+    fn from(class: PyClass) -> Self {
+        PyDefinition::Class(class)
     }
 }
 
-impl From<PYAlias> for PYDefinition {
-    fn from(alias: PYAlias) -> Self {
-        PYDefinition::Alias(alias)
+impl From<PyAlias> for PyDefinition {
+    fn from(alias: PyAlias) -> Self {
+        PyDefinition::Alias(alias)
     }
 }
 
-impl From<PYNewtype> for PYDefinition {
-    fn from(newtype: PYNewtype) -> Self {
-        PYDefinition::Newtype(newtype)
+impl From<PyNewtype> for PyDefinition {
+    fn from(newtype: PyNewtype) -> Self {
+        PyDefinition::Newtype(newtype)
     }
 }
 
-impl From<PYEmbedDefinition> for PYDefinition {
-    fn from(embed: PYEmbedDefinition) -> Self {
-        PYDefinition::Embed(embed)
+impl From<PyEmbedDefinition> for PyDefinition {
+    fn from(embed: PyEmbedDefinition) -> Self {
+        PyDefinition::Embed(embed)
     }
 }
 
@@ -72,10 +72,10 @@ mod tests {
     #[test]
     fn test_name() {
         assert_eq!(
-            *PYDefinition::Alias(PYAlias {
+            *PyDefinition::Alias(PyAlias {
                 doc: None,
                 name: "Name".into(),
-                descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
+                descriptor: PyDescriptor::Primitive(PyPrimitive::Boolean),
                 references: vec![],
             })
             .name(),
@@ -83,7 +83,7 @@ mod tests {
         );
 
         assert_eq!(
-            *PYDefinition::Class(PYClass {
+            *PyDefinition::Class(PyClass {
                 doc: None,
                 name: "Name".into(),
                 extensions: vec![],
@@ -95,7 +95,7 @@ mod tests {
         );
 
         assert_eq!(
-            *PYDefinition::Embed(PYEmbedDefinition {
+            *PyDefinition::Embed(PyEmbedDefinition {
                 name: "Name".into(),
                 embed: Default::default()
             })
@@ -107,30 +107,30 @@ mod tests {
     #[test]
     fn test_doc() {
         assert_eq!(
-            *PYDefinition::Alias(PYAlias {
-                doc: Some(PYDoc("Hello, world!".into())),
+            *PyDefinition::Alias(PyAlias {
+                doc: Some(PyDoc("Hello, world!".into())),
                 name: "Name".into(),
-                descriptor: PYDescriptor::Primitive(PYPrimitive::Boolean),
+                descriptor: PyDescriptor::Primitive(PyPrimitive::Boolean),
                 references: vec![],
             })
             .doc(),
-            Some(PYDoc("Hello, world!".into())),
+            Some(PyDoc("Hello, world!".into())),
         );
 
         assert_eq!(
-            *PYDefinition::Class(PYClass {
-                doc: Some(PYDoc("Hello, world!".into())),
+            *PyDefinition::Class(PyClass {
+                doc: Some(PyDoc("Hello, world!".into())),
                 name: "Name".into(),
                 extensions: vec![],
                 properties: vec![],
                 references: vec![],
             })
             .doc(),
-            Some(PYDoc("Hello, world!".into())),
+            Some(PyDoc("Hello, world!".into())),
         );
 
         assert_eq!(
-            *PYDefinition::Embed(PYEmbedDefinition {
+            *PyDefinition::Embed(PyEmbedDefinition {
                 name: "Name".into(),
                 embed: Default::default()
             })

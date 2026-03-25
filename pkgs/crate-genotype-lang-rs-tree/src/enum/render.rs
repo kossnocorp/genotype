@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RSEnum {
-    type RenderState = RSRenderState;
+impl<'a> GtlRender<'a> for RsEnum {
+    type RenderState = RsRenderState;
 
-    type RenderContext = RSRenderContext<'a>;
+    type RenderContext = RsRenderContext<'a>;
 
     fn render(
         &self,
@@ -41,23 +41,23 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
-            RSEnum {
-                id: GTDefinitionId("module".into(), "Union".into()),
+            RsEnum {
+                id: GtDefinitionId("module".into(), "Union".into()),
                 doc: None,
                 attributes: vec![],
                 name: "Union".into(),
                 variants: vec![
-                    RSEnumVariant {
+                    RsEnumVariant {
                         doc: None,
                         attributes: vec![],
                         name: "String".into(),
-                        descriptor: Some(RSDescriptor::Primitive(RSPrimitive::String).into()),
+                        descriptor: Some(RsDescriptor::Primitive(RsPrimitive::String).into()),
                     },
-                    RSEnumVariant {
+                    RsEnumVariant {
                         doc: None,
                         attributes: vec![],
                         name: "Int".into(),
-                        descriptor: Some(RSDescriptor::Primitive(RSPrimitive::IntSize).into()),
+                        descriptor: Some(RsDescriptor::Primitive(RsPrimitive::IntSize).into()),
                     },
                 ],
             }
@@ -75,28 +75,28 @@ mod tests {
     #[test]
     fn test_render_indent() {
         assert_snapshot!(
-            RSEnum {
-                id: GTDefinitionId("module".into(), "Union".into()),
+            RsEnum {
+                id: GtDefinitionId("module".into(), "Union".into()),
                 doc: None,
                 attributes: vec![],
                 name: "Union".into(),
                 variants: vec![
-                    RSEnumVariant {
+                    RsEnumVariant {
                         doc: None,
                         attributes: vec![],
                         name: "String".into(),
-                        descriptor: Some(RSDescriptor::Primitive(RSPrimitive::String).into()),
+                        descriptor: Some(RsDescriptor::Primitive(RsPrimitive::String).into()),
                     },
-                    RSEnumVariant {
+                    RsEnumVariant {
                         doc: None,
                         attributes: vec![],
                         name: "Int".into(),
-                        descriptor: Some(RSDescriptor::Primitive(RSPrimitive::IntSize).into()),
+                        descriptor: Some(RsDescriptor::Primitive(RsPrimitive::IntSize).into()),
                     },
                 ],
             }
             .render(
-                RSRenderState::default().indent_inc(),
+                RsRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),
@@ -112,23 +112,23 @@ mod tests {
     #[test]
     fn test_render_attributes() {
         assert_snapshot!(
-            RSEnum {
-                id: GTDefinitionId("module".into(), "Union".into()),
+            RsEnum {
+                id: GtDefinitionId("module".into(), "Union".into()),
                 doc: None,
-                attributes: vec![RSAttribute("derive(Deserialize, Serialize)".into())],
+                attributes: vec![RsAttribute("derive(Deserialize, Serialize)".into())],
                 name: "Union".into(),
                 variants: vec![
-                    RSEnumVariant {
+                    RsEnumVariant {
                         doc: None,
                         attributes: vec![],
                         name: "String".into(),
-                        descriptor: Some(RSDescriptor::Primitive(RSPrimitive::String).into()),
+                        descriptor: Some(RsDescriptor::Primitive(RsPrimitive::String).into()),
                     },
-                    RSEnumVariant {
+                    RsEnumVariant {
                         doc: None,
                         attributes: vec![],
                         name: "Int".into(),
-                        descriptor: Some(RSDescriptor::Primitive(RSPrimitive::IntSize).into()),
+                        descriptor: Some(RsDescriptor::Primitive(RsPrimitive::IntSize).into()),
                     },
                 ],
             }
@@ -147,23 +147,23 @@ mod tests {
     #[test]
     fn test_render_doc() {
         assert_snapshot!(
-            RSEnum {
-                id: GTDefinitionId("module".into(), "Union".into()),
+            RsEnum {
+                id: GtDefinitionId("module".into(), "Union".into()),
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "Union".into(),
                 variants: vec![
-                    RSEnumVariant {
+                    RsEnumVariant {
                         doc: None,
                         attributes: vec![],
                         name: "String".into(),
-                        descriptor: Some(RSDescriptor::Primitive(RSPrimitive::String).into()),
+                        descriptor: Some(RsDescriptor::Primitive(RsPrimitive::String).into()),
                     },
-                    RSEnumVariant {
+                    RsEnumVariant {
                         doc: None,
                         attributes: vec![],
                         name: "Int".into(),
-                        descriptor: Some(RSDescriptor::Primitive(RSPrimitive::IntSize).into()),
+                        descriptor: Some(RsDescriptor::Primitive(RsPrimitive::IntSize).into()),
                     },
                 ],
             }
@@ -182,28 +182,28 @@ mod tests {
     #[test]
     fn test_render_mixed() {
         assert_snapshot!(
-            RSEnum {
-                id: GTDefinitionId("module".into(), "Union".into()),
+            RsEnum {
+                id: GtDefinitionId("module".into(), "Union".into()),
                 doc: Some("Hello, world!".into()),
-                attributes: vec![RSAttribute("derive(Deserialize, Serialize)".into())],
+                attributes: vec![RsAttribute("derive(Deserialize, Serialize)".into())],
                 name: "Union".into(),
                 variants: vec![
-                    RSEnumVariant {
+                    RsEnumVariant {
                         doc: None,
                         attributes: vec![],
                         name: "String".into(),
-                        descriptor: Some(RSDescriptor::Primitive(RSPrimitive::String).into()),
+                        descriptor: Some(RsDescriptor::Primitive(RsPrimitive::String).into()),
                     },
-                    RSEnumVariant {
+                    RsEnumVariant {
                         doc: None,
                         attributes: vec![],
                         name: "Int".into(),
-                        descriptor: Some(RSDescriptor::Primitive(RSPrimitive::IntSize).into()),
+                        descriptor: Some(RsDescriptor::Primitive(RsPrimitive::IntSize).into()),
                     },
                 ],
             }
             .render(
-                RSRenderState::default().indent_inc(),
+                RsRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),
@@ -220,10 +220,10 @@ mod tests {
 
     #[test]
     fn test_render_no_descriptor() {
-        let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Alias("AnimalKind".into()));
+        let mut context = RsConvertContext::empty("module".into());
+        context.enter_parent(RsContextParent::Alias("AnimalKind".into()));
 
-        let union = parse_get_named::<GTUnion>(
+        let union = parse_get_named::<GtUnion>(
             "Misc",
             r#"
             Misc: "hello" | 123 | true | null
@@ -234,7 +234,7 @@ mod tests {
         assert_snapshot!(
             union
             .render(
-                RSRenderState::default().indent_inc(),
+                RsRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),
@@ -257,8 +257,8 @@ mod tests {
 
     #[test]
     fn test_render_literals() {
-        let mut context = RSConvertContext::empty("module".into());
-        context.enter_parent(RSContextParent::Alias("AnimalKind".into()));
+        let mut context = RsConvertContext::empty("module".into());
+        context.enter_parent(RsContextParent::Alias("AnimalKind".into()));
 
         let union = Gt::union(descriptor_nodes!(
             Gt::literal_string("hello"),
@@ -270,7 +270,7 @@ mod tests {
         assert_snapshot!(
             union
             .render(
-                RSRenderState::default().indent_inc(),
+                RsRenderState::default().indent_inc(),
                 &mut Default::default()
             )
             .unwrap(),

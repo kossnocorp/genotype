@@ -15,7 +15,7 @@ pub trait GtlCodegen: Default {
 
     fn register_definition(&mut self, definition: Self::Definition);
 
-    fn inject_descriptor(&mut self, descriptor: GTDescriptor) -> Result<String>;
+    fn inject_descriptor(&mut self, descriptor: GtDescriptor) -> Result<String>;
 
     fn render_module(&self) -> Result<String>;
 }

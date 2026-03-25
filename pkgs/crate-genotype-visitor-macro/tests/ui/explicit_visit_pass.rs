@@ -1,23 +1,23 @@
 use genotype_visitor_macro::Visitor;
 
 #[derive(Visitor)]
-struct GTLeaf;
+struct GtLeaf;
 
 #[derive(Visitor)]
-struct GTNode {
+struct GtNode {
     #[visit]
-    child: GTLeaf,
+    child: GtLeaf,
     #[visit]
-    maybe: Option<GTLeaf>,
+    maybe: Option<GtLeaf>,
     #[visit]
-    many: Vec<GTLeaf>,
+    many: Vec<GtLeaf>,
     #[visit]
-    boxed: Box<GTLeaf>,
+    boxed: Box<GtLeaf>,
     ignored: i32,
 }
 
 mod visitor {
-    use crate::{GTLeaf, GTNode};
+    use crate::{GtLeaf, GtNode};
 
     pub use genotype_visitor_macro::visitor;
 
@@ -56,20 +56,20 @@ mod visitor {
         }
     }
 
-    #[visitor(GTLeaf, GTNode)]
-    pub struct GTVisitor;
+    #[visitor(GtLeaf, GtNode)]
+    pub struct GtVisitor;
 }
 
 struct Walker;
 
-impl visitor::GTVisitor for Walker {}
+impl visitor::GtVisitor for Walker {}
 
 fn main() {
-    let mut node = GTNode {
-        child: GTLeaf,
-        maybe: Some(GTLeaf),
-        many: vec![GTLeaf],
-        boxed: Box::new(GTLeaf),
+    let mut node = GtNode {
+        child: GtLeaf,
+        maybe: Some(GtLeaf),
+        many: vec![GtLeaf],
+        boxed: Box::new(GtLeaf),
         ignored: 1,
     };
 

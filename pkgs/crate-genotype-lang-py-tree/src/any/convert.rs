@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
-impl PYConvert<PYAny> for GTAny {
-    fn convert(&self, resolve: &mut PYConvertContext) -> PYAny {
-        PYAny.resolve(resolve)
+impl PyConvert<PyAny> for GtAny {
+    fn convert(&self, resolve: &mut PyConvertContext) -> PyAny {
+        PyAny.resolve(resolve)
     }
 }
 
@@ -16,23 +16,23 @@ mod tests {
     fn test_convert() {
         assert_ron_snapshot!(
             convert_node(Gt::any()),
-            @"PYAny"
+            @"PyAny"
         );
     }
 
     #[test]
     fn test_convert_resolve() {
-        let mut context = PYConvertContext::default();
+        let mut context = PyConvertContext::default();
         assert_ron_snapshot!(
             convert_node_with(Gt::any(), &mut context),
-            @"PYAny"
+            @"PyAny"
         );
 
         assert_ron_snapshot!(
             context.as_dependencies(),
             @r#"
         [
-          (Typing, PYIdentifier("Any")),
+          (Typing, PyIdentifier("Any")),
         ]
         "#
         );

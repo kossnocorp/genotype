@@ -3,11 +3,11 @@ use crate::prelude::internal::*;
 mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
-pub struct TSAlias {
+pub struct TsAlias {
     #[visit]
-    pub doc: Option<TSDoc>,
+    pub doc: Option<TsDoc>,
     #[visit]
-    pub name: TSIdentifier,
+    pub name: TsIdentifier,
     #[visit]
-    pub descriptor: TSDescriptor,
+    pub descriptor: TsDescriptor,
 }
