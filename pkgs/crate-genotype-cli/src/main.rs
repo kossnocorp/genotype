@@ -1,16 +1,15 @@
-use clap::{Parser, Subcommand};
-use commands::{
-    build::{GtBuildCommand, build_command},
-    init::{GtInitCommand, init_command},
-    version::{GtVersionCommand, version_command},
-};
-use diagnostic::error::GtCliError;
+use prelude::internal::*;
 
-pub mod commands;
-pub mod diagnostic;
+mod commands;
+pub use commands::*;
+
+mod diagnostic;
+pub use diagnostic::*;
+
+pub mod prelude;
 
 #[derive(Parser)]
-#[command(version, about, long_about = None)]
+#[command(name = "gt", version, about, long_about = None)]
 struct Cli {
     #[command(subcommand)]
     command: Option<Commands>,
@@ -38,6 +37,11 @@ fn main() -> miette::Result<()> {
 
         Some(Commands::Version(args)) => version_command(args),
 
-        None => Err(GtCliError::MissingCommand.into()),
+        None => {
+            let mut command = Cli::command();
+            command.print_help().into_diagnostic()?;
+            println!();
+            Ok(())
+        }
     }
 }

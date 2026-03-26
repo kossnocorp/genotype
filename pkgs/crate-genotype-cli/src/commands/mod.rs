@@ -1,3 +1,8 @@
-pub mod build;
-pub mod init;
-pub mod version;
+mod build;
+pub use build::*;
+
+mod init;
+pub use init::*;
+
+mod version;
+pub use version::*;

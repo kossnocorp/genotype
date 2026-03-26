@@ -1,5 +1,4 @@
-use miette::Diagnostic;
-use thiserror::Error;
+use crate::prelude::internal::*;
 
 #[derive(Error, Diagnostic, Debug, PartialEq)]
 pub enum GtCliError {

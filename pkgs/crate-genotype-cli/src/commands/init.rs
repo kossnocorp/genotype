@@ -1,21 +1,4 @@
-use crate::diagnostic::error::GtCliError;
-use clap::Args;
-use genotype_config::*;
-use genotype_lang_py_config::*;
-use genotype_lang_rs_config::*;
-use genotype_lang_ts_config::*;
-use genotype_path::*;
-use heck::{ToKebabCase, ToSnakeCase};
-use inquire::{
-    MultiSelect, Text, list_option::ListOption, min_length, required, validator::Validation,
-};
-use miette::IntoDiagnostic;
-use miette::Result;
-use owo_colors::OwoColorize;
-use regex::Regex;
-use semver::Version;
-use std::fmt::{Display, Formatter};
-use std::fs::{create_dir_all, write};
+use crate::prelude::internal::*;
 
 #[derive(Args)]
 pub struct GtInitCommand {
