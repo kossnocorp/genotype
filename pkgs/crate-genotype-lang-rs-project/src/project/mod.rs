@@ -524,6 +524,81 @@ mod tests {
     }
 
     #[test]
+    fn test_render_recursive_box() {
+        let config = GtConfig::load(&"./examples/recursive".into()).unwrap();
+        let project = GtProject::load(&config).unwrap();
+
+        let dist = RsProject::generate(&project).unwrap().dist().unwrap();
+        let node_file = dist
+            .files
+            .iter()
+            .find(|file| file.path.as_str().contains("src/node.rs"))
+            .unwrap();
+
+        assert_snapshot!(
+            node_file.source,
+            @"
+        use serde::{Deserialize, Serialize};
+
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        pub struct Node {
+            pub value: String,
+            #[serde(default, skip_serializing_if = \"Option::is_none\")]
+            pub next: Option<Box<Node>>,
+        }
+            "
+        );
+    }
+
+    #[test]
+    fn test_render_recursive_box_with_extensions() {
+        let config = GtConfig::load(&"./examples/recursive".into()).unwrap();
+        let project = GtProject::load(&config).unwrap();
+
+        let dist = RsProject::generate(&project).unwrap().dist().unwrap();
+        let tree_file = dist
+            .files
+            .iter()
+            .find(|file| file.path.as_str().contains("src/tree.rs"))
+            .unwrap();
+
+        assert_snapshot!(
+            tree_file.source,
+            @r#"
+        use serde::{Deserialize, Serialize};
+
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        pub struct NodeMeta {
+            pub id: String,
+        }
+
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        pub struct TreeLinkFields {
+            #[serde(default, skip_serializing_if = "Option::is_none")]
+            pub parent: Option<TreeNode>,
+        }
+
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        pub struct TreeNode {
+            pub id: String,
+            #[serde(default, skip_serializing_if = "Option::is_none")]
+            pub parent: Option<Box<TreeNode>>,
+            pub payload: Box<TreePayload>,
+            pub children: Vec<TreeNode>,
+        }
+
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        pub struct TreePayload {
+            pub id: String,
+            #[serde(default, skip_serializing_if = "Option::is_none")]
+            pub owner: Option<Box<TreeNode>>,
+            pub kind: String,
+        }
+        "#
+        );
+    }
+
+    #[test]
     fn test_render_extensions() {
         let config = GtConfig::from_root("module", "./examples/extensions");
         let project = GtProject::load(&config).unwrap();

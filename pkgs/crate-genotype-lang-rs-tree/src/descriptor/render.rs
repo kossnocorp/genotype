@@ -11,6 +11,9 @@ impl<'a> GtlRender<'a> for RsDescriptor {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         Ok(match self {
+            RsDescriptor::Box(descriptor) => {
+                format!("Box<{}>", descriptor.render(state, context)?)
+            }
             RsDescriptor::Enum(r#enum) => r#enum.render(state, context)?,
             RsDescriptor::Vec(array) => array.render(state, context)?,
             RsDescriptor::Primitive(primitive) => primitive.render(state, context)?,
@@ -38,6 +41,16 @@ mod tests {
             .render(Default::default(), &mut Default::default())
             .unwrap(),
             @"Vec<isize>"
+        );
+    }
+
+    #[test]
+    fn test_render_box() {
+        assert_snapshot!(
+            RsDescriptor::boxed(RsDescriptor::Primitive(RsPrimitive::String))
+                .render(Default::default(), &mut Default::default())
+                .unwrap(),
+            @"Box<String>"
         );
     }
 

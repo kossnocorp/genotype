@@ -22,6 +22,7 @@ thiserror = "1.0.64"
 indexmap = { version = "2.6.0", features = ["serde"] }
 toml_edit = { version = "0.22.26", features = ["serde"] }
 serde = { version = "1.0.210", features = ["derive"] }
+petgraph = "0.8.3"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
