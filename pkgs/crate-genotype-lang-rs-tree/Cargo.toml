@@ -11,7 +11,6 @@ repository = "https://github.com/kossnocorp/genotype"
 genotype_config = { version = "0.15.0", path = "../crate-genotype-config" }
 genotype_lang_core_tree = { version = "0.15.0", path = "../crate-genotype-lang-core-tree" }
 genotype_lang_rs_config = { version = "0.15.0", path = "../crate-genotype-lang-rs-config" }
-genotype_lang_rs_core = { version = "0.15.0", path = "../crate-genotype-lang-rs-core" }
 genotype_parser = { version = "0.15.0", path = "../crate-genotype-parser" }
 miette = { version = "7.6.0", features = ["fancy", "serde"] }
 thiserror = "1.0.64"

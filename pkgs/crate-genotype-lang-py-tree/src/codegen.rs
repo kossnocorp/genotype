@@ -1,18 +1,13 @@
-use genotype_lang_core_codegen::*;
+use crate::*;
 use genotype_lang_core_tree::*;
-use genotype_lang_py_tree::*;
 use genotype_parser::*;
 use miette::{Context, Report};
-
-pub mod prelude;
 
 #[derive(Default)]
 pub struct PyCodegen {
     module: PyModule,
     convert_context: PyConvertContext,
 }
-
-impl PyCodegen {}
 
 impl GtlCodegen for PyCodegen {
     type Import = PyImport;
