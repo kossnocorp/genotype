@@ -1,7 +1,13 @@
 use crate::prelude::internal::*;
 use toml::Table;
 
-pub trait GtlConfig: Default {
+mod notice;
+pub use notice::*;
+
+mod health;
+pub use health::*;
+
+pub trait GtlConfig: GtlConfigHealth + Default {
     /// The target package path setting type.
     type PkgPath: GtlConfigPkgPathSetting;
 

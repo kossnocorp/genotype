@@ -1,6 +1,7 @@
 use crate::diagnostic::error::GtCliError;
 use clap::Args;
 use genotype_config::GtConfig;
+use genotype_lang_core_config::*;
 use genotype_lang_core_project::*;
 use genotype_lang_py_project::*;
 use genotype_lang_rs_project::*;
@@ -30,16 +31,19 @@ pub fn build_command(args: &GtBuildCommand) -> Result<()> {
     let mut langs = vec![];
 
     if project.config.ts_enabled() {
+        print_notices(&project.config.ts.health_check());
         let ts = TsProject::generate(&project)?.dist()?;
         langs.push(ts);
     }
 
     if project.config.python_enabled() {
+        print_notices(&project.config.py.health_check());
         let py = PyProject::generate(&project)?.dist()?;
         langs.push(py);
     }
 
     if project.config.rust_enabled() {
+        print_notices(&project.config.rs.health_check());
         let rs = RsProject::generate(&project)?.dist()?;
         langs.push(rs);
     }
@@ -69,4 +73,30 @@ fn write_dist(projects: &Vec<GtlProjectDist>) -> Result<(), Box<dyn std::error::
     }
 
     Ok(())
+}
+
+fn print_notices(notices: &Vec<GtlConfigNotice>) {
+    for notice in notices {
+        print_notice(notice);
+    }
+}
+
+fn print_notice(notice: &GtlConfigNotice) {
+    match notice.kind {
+        GtlConfigNoticeKind::Warning => {
+            eprintln!(
+                "{label}: {message}",
+                label = "Warning".yellow().bold(),
+                message = notice.message
+            );
+        }
+
+        GtlConfigNoticeKind::Info => {
+            println!(
+                "{label}: {message}",
+                label = "Info".blue().bold(),
+                message = notice.message
+            );
+        }
+    }
 }

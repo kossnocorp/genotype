@@ -12,7 +12,11 @@ genotype_path = { version = "0.15.0", path = "../crate-genotype-path" }
 genotype_lang_core_config = { version = "0.15.0", path = "../crate-genotype-lang-core-config" }
 serde = { version = "1.0.210", features = ["derive"] }
 relative-path = { version = "1.9.3", features = ["serde"] }
+toml_ext = { version = "0.1.0", path = "../crate-toml-ext" }
+indoc = "2.0.7"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
 insta = { version = "1.46.3", features = ["ron"] }
+toml = { version = "0.8.19" }
+genotype_test = { version = "0.15.0", path = "../crate-genotype-test" }

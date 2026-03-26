@@ -1,4 +1,5 @@
 use crate::prelude::internal::*;
+use genotype_lang_rs_config::RsConfigLang;
 use toml_edit::*;
 
 impl<'a> GtlProjectManifest<'a> for RsProject<'a> {
@@ -14,8 +15,9 @@ impl<'a> GtlProjectManifest<'a> for RsProject<'a> {
     fn base_manifest(&self) -> String {
         let mut source = format!(
             r#"[package]
-edition = "2024"
-"#
+edition = "{}"
+"#,
+            RsConfigLang::DEFAULT_EDITION
         );
 
         if let Some(version) = self.config.version {

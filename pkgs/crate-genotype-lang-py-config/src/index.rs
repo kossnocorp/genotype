@@ -21,3 +21,5 @@ impl GtlConfig for PyConfig {
         self.module.as_str()
     }
 }
+
+impl GtlConfigHealth for PyConfig {}

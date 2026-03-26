@@ -7,6 +7,8 @@ pub struct RsConfigLang {
 }
 
 impl RsConfigLang {
+    pub const DEFAULT_EDITION: &'static str = "2024";
+
     const DEFAULT_DERIVE: &'static [&str] = &[
         // [TODO] Implement Default for union enums
         // "Default",
