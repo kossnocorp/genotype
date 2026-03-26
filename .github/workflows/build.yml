@@ -30,6 +30,12 @@ jobs:
       - name: Run tests
         run: cargo nextest run --no-fail-fast
 
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Test examples
+        run: bash scripts/test-examples.sh
+
   # [TODO] Remove or reenable with practical setup
   # build:
   #   needs:
