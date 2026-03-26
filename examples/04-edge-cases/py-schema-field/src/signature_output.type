@@ -1,0 +1,7 @@
+/// Output JSON type.
+SignatureOutput: {
+  /// Output type.
+  type: "json",
+  /// JSON schema.
+  schema: string,
+}

@@ -115,7 +115,11 @@ mod tests {
             descriptor: Gt::primitive_string().into(),
         }));
         let result = codegen.inject_descriptor(alias).unwrap();
-        assert_snapshot!(result, "Hello");
+        assert_snapshot!(
+            result,
+            @"Hello"
+        );
+
         assert_snapshot!(
             codegen.render_module().unwrap(),
             @r#"
