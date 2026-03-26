@@ -8,6 +8,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      CARGO_INCREMENTAL: 0
 
     steps:
       - name: Check out repo
@@ -22,8 +24,11 @@ jobs:
       - name: Install cargo-nextest
         run: cargo install cargo-nextest --locked
 
+      - name: Compile tests
+        run: cargo nextest run --no-run
+
       - name: Run tests
-        run: cargo nextest run
+        run: cargo nextest run --no-fail-fast
 
   # [TODO] Remove or reenable with practical setup
   # build:
