@@ -1,3 +1,4 @@
 pub use crate::*;
 pub use genotype_path::*;
 pub use relative_path::RelativePathBuf;
+pub use serde::{Deserialize, Serialize};

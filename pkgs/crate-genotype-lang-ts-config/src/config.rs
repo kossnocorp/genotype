@@ -16,3 +16,5 @@ impl GtlConfig for TsConfig {
         &self.common
     }
 }
+
+impl GtlConfigHealth for TsConfig {}

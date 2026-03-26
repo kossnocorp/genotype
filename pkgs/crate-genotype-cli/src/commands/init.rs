@@ -191,10 +191,15 @@ fn configure_rs(config: &mut GtConfig, name: &String) -> Result<()> {
         .prompt()
         .map_err(|_| GtCliError::FailedReadline("Rust package name"))?;
 
-    let manifest = toml::map::Map::from_iter(vec![
+    let package = toml::map::Map::from_iter(vec![
         ("name".into(), toml::Value::String(name.clone())),
-        ("edition".into(), toml::Value::String("2024".into())),
+        (
+            "edition".into(),
+            toml::Value::String(RsConfigLang::DEFAULT_EDITION.into()),
+        ),
     ]);
+
+    let manifest = toml::map::Map::from_iter(vec![("package".into(), toml::Value::Table(package))]);
 
     rs.common.manifest = manifest;
 

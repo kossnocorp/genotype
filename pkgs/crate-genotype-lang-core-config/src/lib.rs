@@ -1,5 +1,5 @@
-mod index;
-pub use index::*;
+mod config;
+pub use config::*;
 
 mod common;
 pub use common::*;
