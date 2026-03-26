@@ -5,6 +5,7 @@ mod render;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
 pub enum RsDescriptor {
+    Box(#[visit] Box<RsDescriptor>),
     Enum(#[visit] Box<RsEnum>),
     Vec(#[visit] Box<RsVec>),
     Primitive(#[visit] RsPrimitive),
@@ -14,6 +15,12 @@ pub enum RsDescriptor {
     Map(#[visit] Box<RsMap>),
     Option(#[visit] Box<RsOption>),
     Any(#[visit] RsAny),
+}
+
+impl RsDescriptor {
+    pub fn boxed(descriptor: RsDescriptor) -> Self {
+        RsDescriptor::Box(Box::new(descriptor))
+    }
 }
 
 impl From<RsEnum> for RsDescriptor {
