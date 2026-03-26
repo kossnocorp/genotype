@@ -19,13 +19,7 @@ impl TsConvert<TsRecordKey> for GtRecordKey {
             | GtRecordKey::IntSize(_)
             | GtRecordKey::IntU64(_)
             | GtRecordKey::IntU128(_)
-            | GtRecordKey::IntUSize(_) => {
-                // [TODO] Return an error instead of panicking. It is not
-                // straightforward because it will require changing `TsConvert`
-                // to return `Result`.
-                // See: https://github.com/kossnocorp/genotype/issues/8
-                panic!("TypeScript records don't support BigInt as a key")
-            }
+            | GtRecordKey::IntUSize(_) => TsRecordKey::String,
         }
     }
 }
@@ -42,12 +36,64 @@ mod tests {
             @"String"
         );
         assert_ron_snapshot!(
+            GtRecordKey::Number((0, 0).into()).convert(&mut Default::default()),
+            @"Number"
+        );
+        assert_ron_snapshot!(
+            GtRecordKey::Int8((0, 0).into()).convert(&mut Default::default()),
+            @"Number"
+        );
+        assert_ron_snapshot!(
+            GtRecordKey::Int16((0, 0).into()).convert(&mut Default::default()),
+            @"Number"
+        );
+        assert_ron_snapshot!(
             GtRecordKey::Int32((0, 0).into()).convert(&mut Default::default()),
+            @"Number"
+        );
+        assert_ron_snapshot!(
+            GtRecordKey::IntU8((0, 0).into()).convert(&mut Default::default()),
+            @"Number"
+        );
+        assert_ron_snapshot!(
+            GtRecordKey::IntU16((0, 0).into()).convert(&mut Default::default()),
+            @"Number"
+        );
+        assert_ron_snapshot!(
+            GtRecordKey::IntU32((0, 0).into()).convert(&mut Default::default()),
+            @"Number"
+        );
+        assert_ron_snapshot!(
+            GtRecordKey::Float32((0, 0).into()).convert(&mut Default::default()),
             @"Number"
         );
         assert_ron_snapshot!(
             GtRecordKey::Float64((0, 0).into()).convert(&mut Default::default()),
             @"Number"
+        );
+        assert_ron_snapshot!(
+            GtRecordKey::Int64((0, 0).into()).convert(&mut Default::default()),
+            @"String"
+        );
+        assert_ron_snapshot!(
+            GtRecordKey::Int128((0, 0).into()).convert(&mut Default::default()),
+            @"String"
+        );
+        assert_ron_snapshot!(
+            GtRecordKey::IntSize((0, 0).into()).convert(&mut Default::default()),
+            @"String"
+        );
+        assert_ron_snapshot!(
+            GtRecordKey::IntU64((0, 0).into()).convert(&mut Default::default()),
+            @"String"
+        );
+        assert_ron_snapshot!(
+            GtRecordKey::IntU128((0, 0).into()).convert(&mut Default::default()),
+            @"String"
+        );
+        assert_ron_snapshot!(
+            GtRecordKey::IntUSize((0, 0).into()).convert(&mut Default::default()),
+            @"String"
         );
     }
 }
