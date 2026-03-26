@@ -354,11 +354,11 @@ mod tests {
             ),
             GtlProjectFile(
               path: "examples/basic/dist/py/module/author.py",
-              source: "from genotype import Model\n\n\nclass Author(Model):\n    name: str\n",
+              source: "from __future__ import annotations\n\n\nfrom genotype import Model\n\n\nclass Author(Model):\n    name: str\n",
             ),
             GtlProjectFile(
               path: "examples/basic/dist/py/module/book.py",
-              source: "from .author import Author\nfrom genotype import Model\n\n\nclass Book(Model):\n    title: str\n    author: Author\n",
+              source: "from __future__ import annotations\n\n\nfrom .author import Author\nfrom genotype import Model\n\n\nclass Book(Model):\n    title: str\n    author: Author\n",
             ),
           ],
         )
@@ -398,11 +398,11 @@ mod tests {
             ),
             GtlProjectFile(
               path: "examples/nested/dist/py/module/inventory.py",
-              source: "from .shop.goods.book import Book\nfrom genotype import Model\n\n\nclass Inventory(Model):\n    goods: list[Book]\n",
+              source: "from __future__ import annotations\n\n\nfrom .shop.goods.book import Book\nfrom genotype import Model\n\n\nclass Inventory(Model):\n    goods: list[Book]\n",
             ),
             GtlProjectFile(
               path: "examples/nested/dist/py/module/shop/goods/book.py",
-              source: "from genotype import Model\n\n\nclass Book(Model):\n    title: str\n",
+              source: "from __future__ import annotations\n\n\nfrom genotype import Model\n\n\nclass Book(Model):\n    title: str\n",
             ),
           ],
         )
@@ -441,10 +441,101 @@ mod tests {
             ),
             GtlProjectFile(
               path: "examples/dependencies/dist/py/module/prompt.py",
-              source: "from genotype_json import JsonAny\nfrom genotype import Model\n\n\nclass Prompt(Model):\n    content: str\n    output: JsonAny\n",
+              source: "from __future__ import annotations\n\n\nfrom genotype_json import JsonAny\nfrom genotype import Model\n\n\nclass Prompt(Model):\n    content: str\n    output: JsonAny\n",
             ),
           ],
         )
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_cyclic_lists() {
+        let config = GtConfig::from_root("module", "./examples/cyclic-lists");
+        let project = GtProject::load(&config).unwrap();
+
+        let dist = PyProject::generate(&project).unwrap().dist().unwrap();
+
+        let json = get_dist_file(&dist, "module/json.py");
+        assert_snapshot!(
+            json.source,
+            @r#"
+        from __future__ import annotations
+
+
+        from typing import Optional, Literal
+        from genotype import Model
+
+
+        class JsonBase(Model):
+            name: Optional[str] = None
+            doc: Optional[str] = None
+
+
+        class JsonNull(JsonBase, Model):
+            kind: Literal["null"]
+
+
+        class JsonBoolean(JsonBase, Model):
+            kind: Literal["boolean"]
+
+
+        class JsonNumber(JsonBase, Model):
+            kind: Literal["number"]
+
+
+        class JsonString(JsonBase, Model):
+            kind: Literal["string"]
+
+
+        class JsonLiteral(JsonBase, Model):
+            kind: Literal["literal"]
+            value: str | float | bool | Literal[None]
+
+
+        type JsonLiteralKind = Literal["string"] | Literal["number"] | Literal["boolean"] | Literal["null"]
+
+
+        class JsonTuple(JsonBase, Model):
+            kind: Literal["tuple"]
+            descriptors: list[JsonAny]
+
+
+        class JsonUnion(JsonBase, Model):
+            kind: Literal["union"]
+            descriptors: list[JsonAny]
+
+
+        class JsonProperty(Model):
+            kind: Literal["property"]
+            name: str
+            doc: Optional[str] = None
+            descriptor: JsonAny
+            required: Optional[bool] = None
+
+
+        class JsonObject(JsonBase, Model):
+            kind: Literal["object"]
+            properties: list[JsonProperty]
+
+
+        class JsonArray(JsonBase, Model):
+            kind: Literal["array"]
+            descriptor: JsonAny
+
+
+        type JsonAny = JsonNull | JsonBoolean | JsonNumber | JsonString | JsonArray | JsonObject | JsonUnion | JsonLiteral | JsonTuple
+        "#
+        );
+
+        let init = get_dist_file(&dist, "module/__init__.py");
+        assert_snapshot!(
+            init.source,
+            @r#"
+        from .json import JsonBase, JsonNull, JsonBoolean, JsonNumber, JsonString, JsonLiteral, JsonLiteralKind, JsonTuple, JsonUnion, JsonProperty, JsonObject, JsonArray, JsonAny
+
+
+        __all__ = ["JsonBase", "JsonNull", "JsonBoolean", "JsonNumber", "JsonString", "JsonLiteral", "JsonLiteralKind", "JsonTuple", "JsonUnion", "JsonProperty", "JsonObject", "JsonArray", "JsonAny"]
         "#
         );
     }
@@ -514,6 +605,13 @@ version = "0.3.0"
         dist.files
             .iter()
             .find(|file| file.path.as_str().contains("pyproject.toml"))
+            .unwrap()
+    }
+
+    fn get_dist_file<'a>(dist: &'a GtlProjectDist, path_suffix: &str) -> &'a GtlProjectFile {
+        dist.files
+            .iter()
+            .find(|file| file.path.as_str().ends_with(path_suffix))
             .unwrap()
     }
 }

@@ -16,6 +16,8 @@ impl<'a> GtlRender<'a> for PyModule {
             blocks.push(doc.render(state, context)?);
         }
 
+        blocks.push("from __future__ import annotations".into());
+
         let imports = Self::join_imports(
             &self
                 .imports
@@ -109,6 +111,9 @@ mod tests {
             .render(Default::default(), &mut Default::default())
             .unwrap(),
             @"
+        from __future__ import annotations
+
+
         import .path.to.module as name
         from .path.to.module import Name, Name as Alias
 
@@ -143,6 +148,9 @@ mod tests {
             .unwrap(),
             @r#"
         """Hello, world!"""
+
+
+        from __future__ import annotations
 
 
         import .path.to.module as name

@@ -56,6 +56,9 @@ mod tests {
         assert_snapshot!(
             codegen.render_module().unwrap(),
             @"
+        from __future__ import annotations
+
+
         from dependency import Name
         from another import AlsoName
         "
@@ -76,7 +79,12 @@ mod tests {
         );
         assert_snapshot!(
             codegen.render_module().unwrap(),
-            @"type Name = Any"
+            @r#"
+        from __future__ import annotations
+
+
+        type Name = Any
+        "#
         );
     }
 
@@ -91,7 +99,7 @@ mod tests {
         );
         assert_snapshot!(
             codegen.render_module().unwrap(),
-            @""
+            @"from __future__ import annotations"
         );
     }
 
@@ -110,7 +118,12 @@ mod tests {
         assert_snapshot!(result, "Hello");
         assert_snapshot!(
             codegen.render_module().unwrap(),
-            @"type Hello = str"
+            @r#"
+        from __future__ import annotations
+
+
+        type Hello = str
+        "#
         );
     }
 
@@ -133,6 +146,9 @@ mod tests {
         assert_snapshot!(
             codegen.render_module().unwrap(),
             @r#"
+        from __future__ import annotations
+
+
         from typing import Literal
 
 
