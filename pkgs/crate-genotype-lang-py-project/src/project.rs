@@ -342,7 +342,7 @@ mod tests {
             ),
             GtlProjectFile(
               path: "examples/basic/dist/py/pyproject.toml",
-              source: "[tool.poetry]\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.12\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
+              source: "[tool.poetry]\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.13\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
             ),
             GtlProjectFile(
               path: "examples/basic/dist/py/module/py.typed",
@@ -382,7 +382,7 @@ mod tests {
             ),
             GtlProjectFile(
               path: "examples/nested/dist/py/pyproject.toml",
-              source: "[tool.poetry]\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.12\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
+              source: "[tool.poetry]\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.13\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
             ),
             GtlProjectFile(
               path: "examples/nested/dist/py/module/py.typed",
@@ -429,7 +429,7 @@ mod tests {
             ),
             GtlProjectFile(
               path: "examples/dependencies/dist/py/pyproject.toml",
-              source: "[tool.poetry]\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.12\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
+              source: "[tool.poetry]\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.13\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
             ),
             GtlProjectFile(
               path: "examples/dependencies/dist/py/module/py.typed",
@@ -557,7 +557,7 @@ mod tests {
         version = "0.2.0"
 
         [tool.poetry.dependencies]
-        python = "^3.12"
+        python = "^3.13"
         genotype-runtime = "^0.4"
 
         [build-system]
@@ -591,12 +591,48 @@ version = "0.3.0"
         version = "0.3.0"
 
         [tool.poetry.dependencies]
-        python = "^3.12"
+        python = "^3.13"
         genotype-runtime = "^0.4"
 
         [build-system]
         requires = ["poetry-core"]
         build-backend = "poetry.core.masonry.api"
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_uv_manifest() {
+        let mut config = GtConfig::from_root("module", "./examples/basic");
+        config.py.lang.manager = genotype_lang_py_config::PyPackageManager::Uv;
+        config.version = Some("0.2.0".parse().unwrap());
+        config.py.common.manifest = toml::from_str(
+            r#"[project]
+name = "module"
+"#,
+        )
+        .unwrap();
+
+        let project = GtProject::load(&config).unwrap();
+
+        let dist = PyProject::generate(&project).unwrap().dist().unwrap();
+        let pyproject = get_project_file(&dist);
+
+        assert_snapshot!(
+            pyproject.source,
+            @r#"
+        [project]
+        requires-python = ">=3.13,<4"
+        version = "0.2.0"
+        name = "module"
+        dependencies = ["genotype-runtime>=0.4,<0.5"]
+
+        [build-system]
+        requires = ["hatchling"]
+        build-backend = "hatchling.build"
+
+        [tool.hatch.build.targets.wheel]
+        packages = ["module"]
         "#
         );
     }

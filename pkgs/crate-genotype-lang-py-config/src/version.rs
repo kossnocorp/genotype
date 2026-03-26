@@ -12,7 +12,7 @@ impl PyVersion {
     pub fn version_str(&self) -> &str {
         match self {
             Self::Legacy => "^3.8",
-            Self::Latest => "^3.12",
+            Self::Latest => "^3.13",
         }
     }
 }

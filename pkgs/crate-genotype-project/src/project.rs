@@ -443,6 +443,7 @@ mod tests {
             py: {
               "module": PyModuleName("module"),
               "version": latest,
+              "manager": poetry,
               "enabled": false,
               "out": "py",
               "manifest": {},
@@ -775,6 +776,7 @@ mod tests {
             py: {
               "module": PyModuleName("module"),
               "version": latest,
+              "manager": poetry,
               "enabled": false,
               "out": "py",
               "manifest": {},
@@ -980,6 +982,7 @@ mod tests {
             py: {
               "module": PyModuleName("module"),
               "version": latest,
+              "manager": poetry,
               "enabled": false,
               "out": "py",
               "manifest": {},

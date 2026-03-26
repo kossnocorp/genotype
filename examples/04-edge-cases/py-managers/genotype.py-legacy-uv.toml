@@ -1,0 +1,11 @@
+name = "genotype-test-py-managers"
+out = "dist/py-legacy-uv"
+
+[py]
+enabled = true
+version = "legacy"
+manager = "uv"
+
+[py.manifest.project]
+name = "module"
+version = "0.1.0"
