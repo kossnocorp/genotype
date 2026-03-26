@@ -1,6 +1,7 @@
 use crate::prelude::internal::*;
 
-pub mod visitor;
+mod visitor;
+pub use visitor::*;
 
 #[derive(Default)]
 // [TODO] Reorganize so that it works like `GtpModuleResolve` with maps organized by module id.

@@ -1,15 +1,5 @@
 use crate::prelude::internal::*;
 
-use genotype_parser::{
-    GtDefinitionId, GtPathKind,
-    tree::{GtIdentifier, GtImportName, GtImportReference, GtPath},
-};
-use miette::Result;
-
-use crate::error::GtProjectError;
-
-use super::*;
-
 /// Module resolve data. It describes relations between module entities. It allows to
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GtpModuleResolve {
