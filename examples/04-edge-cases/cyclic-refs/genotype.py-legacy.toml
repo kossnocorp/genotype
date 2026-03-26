@@ -1,0 +1,10 @@
+name = "genotype-test-cyclic-refs"
+out = "dist/py-legacy"
+
+[py]
+enabled = true
+version = "legacy"
+
+[py.manifest]
+name = "module"
+version = "0.1.0"

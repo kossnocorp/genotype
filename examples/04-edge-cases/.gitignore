@@ -1,0 +1,4 @@
+dist/
+.venv/
+uv.lock
+*.egg-info/

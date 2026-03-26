@@ -29,7 +29,6 @@ impl PyVisitor for PyModuleVisitor {
     fn visit_reference(&mut self, reference: &mut PyReference) {
         if self.definitions.contains(&reference.identifier) {
             reference.forward = !self.scope.contains(&reference.identifier);
-            self.scope.insert(reference.identifier.clone());
         }
     }
 }
