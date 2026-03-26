@@ -55,25 +55,7 @@ pub trait GtlProjectManifest<'a> {
         // [TODO]
         let after_str = manifest.clone().to_string();
 
-        let manifest_deps = manifest
-            .drill_table_mut(Self::MANIFEST_DEPENDENCIES_KEY)
-            .map_err(|err| GtlProjectError::ManifestDepsAccess(Self::FILE_NAME))?;
-
-        // let manifest_deps = manifest
-        //     .entry(Self::MANIFEST_DEPENDENCIES_KEY)
-        //     .or_insert(Item::Table(Table::new()))
-        //     .as_table_mut()
-        //     .ok_or_else(|| GtlProjectError::ManifestDepsAccess(Self::FILE_NAME))?;
-
-        for dep in deps.iter() {
-            if let Some((key, value)) = Self::Dependency::as_kv(dep) {
-                manifest_deps[&key] = value.into();
-            }
-        }
-
-        if manifest_deps.is_empty() {
-            manifest.remove(Self::MANIFEST_DEPENDENCIES_KEY);
-        }
+        self.insert_dependencies(&mut manifest, deps)?;
 
         // [TODO]
         let final_str = manifest.to_string();
@@ -99,6 +81,30 @@ pub trait GtlProjectManifest<'a> {
             path: self.config().pkg_file_path(&Self::FILE_NAME.into()),
             source,
         })
+    }
+
+    fn insert_dependencies(
+        &self,
+        manifest: &mut DocumentMut,
+        deps: &'a Vec<
+            <<Self as GtlProjectManifest<'a>>::Dependency as GtlProjectManifestDependency>::DependencyIdent,
+        >,
+    ) -> Result<()> {
+        let manifest_deps = manifest
+            .drill_table_mut(Self::MANIFEST_DEPENDENCIES_KEY)
+            .map_err(|_| GtlProjectError::ManifestDepsAccess(Self::FILE_NAME))?;
+
+        for dep in deps.iter() {
+            if let Some((key, value)) = Self::Dependency::as_kv(dep) {
+                manifest_deps[&key] = value.into();
+            }
+        }
+
+        if manifest_deps.is_empty() {
+            manifest.remove(Self::MANIFEST_DEPENDENCIES_KEY);
+        }
+
+        Ok(())
     }
 }
 

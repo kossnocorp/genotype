@@ -1,0 +1,12 @@
+[project]
+name = "genotype-test-py-managers"
+version = "0.1.0"
+requires-python = ">=3.8"
+dependencies = ["genotype-runtime"]
+
+[tool.uv.sources]
+genotype-runtime = { path = "../../../pkgs/pip-genotype-runtime", editable = true }
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"

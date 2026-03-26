@@ -162,8 +162,10 @@ fn configure_py(config: &mut GtConfig, name: &String) -> Result<()> {
         .prompt()
         .map_err(|_| GtCliError::FailedReadline("Python package name"))?;
 
-    let manifest =
-        toml::map::Map::from_iter(vec![("name".into(), toml::Value::String(name.clone()))]);
+    py.lang.manager = PyPackageManager::Uv;
+
+    let project = toml::map::Map::from_iter(vec![("name".into(), toml::Value::String(name))]);
+    let manifest = toml::map::Map::from_iter(vec![("project".into(), toml::Value::Table(project))]);
 
     py.common.manifest = manifest;
 

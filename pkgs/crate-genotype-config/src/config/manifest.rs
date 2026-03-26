@@ -34,7 +34,8 @@ impl Default for GtConfigSetVersionProps {
 type VersionUpdates = HashMap<GtConfigVersionTarget, Version>;
 
 const TS_MANIFEST_VERSION_PATH: &str = "version";
-const PY_MANIFEST_VERSION_PATH: &str = "tool.poetry.version";
+const PY_MANIFEST_VERSION_PATH_POETRY: &str = "tool.poetry.version";
+const PY_MANIFEST_VERSION_PATH_UV: &str = "project.version";
 const RS_MANIFEST_VERSION_PATH: &str = "package.version";
 
 impl GtConfig {
@@ -134,7 +135,7 @@ impl GtConfig {
                 }
 
                 GtConfigVersionTarget::Lang(lang) => {
-                    let path = target_version_path(lang);
+                    let path = self.target_version_path(lang);
 
                     let item = self
                         .lang_manifest_mut(lang)
@@ -170,7 +171,7 @@ impl GtConfig {
 
     pub fn lang_manifest_version(&self, lang: GtConfigLang) -> Result<Option<Version>> {
         let manifest = self.lang_manifest(lang);
-        let path = target_version_path(lang);
+        let path = self.target_version_path(lang);
 
         if let Some(version_val) = manifest.get_path(path) {
             let version = parse_target_version_toml_val(version_val)?;
@@ -202,11 +203,16 @@ fn bump_version(version: &Version, part: GtConfigVersionPart) -> Version {
     next
 }
 
-fn target_version_path(lang: GtConfigLang) -> &'static str {
-    match lang {
-        GtConfigLang::Ts => TS_MANIFEST_VERSION_PATH,
-        GtConfigLang::Py => PY_MANIFEST_VERSION_PATH,
-        GtConfigLang::Rs => RS_MANIFEST_VERSION_PATH,
+impl GtConfig {
+    fn target_version_path(&self, lang: GtConfigLang) -> &'static str {
+        match lang {
+            GtConfigLang::Ts => TS_MANIFEST_VERSION_PATH,
+            GtConfigLang::Py => match self.py.lang.manager {
+                PyPackageManager::Poetry => PY_MANIFEST_VERSION_PATH_POETRY,
+                PyPackageManager::Uv => PY_MANIFEST_VERSION_PATH_UV,
+            },
+            GtConfigLang::Rs => RS_MANIFEST_VERSION_PATH,
+        }
     }
 }
 
@@ -342,6 +348,41 @@ version = "0.1.1"
         enabled = true
 
         [rs.manifest.package]
+        version = "0.2.0"
+        "#
+        );
+    }
+
+    #[test]
+    fn test_set_py_uv_manifest_version() {
+        let mut config = GtConfig::from_toml_str(
+            r#"
+[py]
+enabled = true
+manager = "uv"
+
+[py.manifest.project]
+version = "0.1.0"
+"#,
+        )
+        .unwrap();
+
+        config
+            .set_manifest_version(GtConfigSetVersionProps {
+                version: Version::parse("0.2.0").unwrap(),
+                ..Default::default()
+            })
+            .unwrap();
+
+        assert_snapshot!(
+            config.to_toml_str_pruned().unwrap(),
+            @r#"
+
+        [py]
+        manager = "uv"
+        enabled = true
+
+        [py.manifest.project]
         version = "0.2.0"
         "#
         );
@@ -581,6 +622,38 @@ version = "0.1.2"
         enabled = true
 
         [rs.manifest.package]
+        version = "0.2.0"
+        "#
+        );
+    }
+
+    #[test]
+    fn test_bump_py_uv_manifest_version() {
+        let mut config = GtConfig::from_toml_str(
+            r#"
+[py]
+enabled = true
+manager = "uv"
+
+[py.manifest.project]
+version = "0.1.2"
+"#,
+        )
+        .unwrap();
+
+        config
+            .bump_manifest_version(GtConfigVersionPart::Minor)
+            .unwrap();
+
+        assert_snapshot!(
+            config.to_toml_str_pruned().unwrap(),
+            @r#"
+
+        [py]
+        manager = "uv"
+        enabled = true
+
+        [py.manifest.project]
         version = "0.2.0"
         "#
         );

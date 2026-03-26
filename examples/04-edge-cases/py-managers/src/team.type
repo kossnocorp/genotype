@@ -1,0 +1,6 @@
+use ./profile/Profile
+
+Team: {
+  name: string,
+  members: [Profile],
+}

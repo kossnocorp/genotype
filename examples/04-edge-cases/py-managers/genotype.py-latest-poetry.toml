@@ -1,0 +1,11 @@
+name = "genotype-test-py-managers"
+out = "dist/py-latest-poetry"
+
+[py]
+enabled = true
+version = "latest"
+manager = "poetry"
+
+[py.manifest.tool.poetry]
+name = "module"
+version = "0.1.0"
