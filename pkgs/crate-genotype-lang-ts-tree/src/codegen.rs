@@ -1,10 +1,7 @@
-use genotype_lang_core_codegen::*;
+use crate::*;
 use genotype_lang_core_tree::*;
-use genotype_lang_ts_tree::*;
 use genotype_parser::*;
 use miette::Result;
-
-pub mod prelude;
 
 #[derive(Default)]
 pub struct TsCodegen {
@@ -27,8 +24,6 @@ impl GtlCodegen for TsCodegen {
 
     fn inject_descriptor(&mut self, descriptor: GtDescriptor) -> Result<String> {
         let descriptor = descriptor.convert(&mut self.convert_context);
-
-        // [TODO] Drain imports when needed
 
         let definitions = self.convert_context.drain_hoisted();
         self.module.definitions.extend(definitions);

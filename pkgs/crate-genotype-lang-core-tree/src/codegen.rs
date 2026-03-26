@@ -1,4 +1,4 @@
-use genotype_lang_core_tree::*;
+use crate::*;
 use genotype_parser::*;
 use miette::Result;
 

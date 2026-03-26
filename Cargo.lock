@@ -561,7 +561,6 @@ dependencies = [
  "genotype_lang_ts_project",
  "genotype_path",
  "genotype_project",
- "genotype_writer",
  "heck",
  "inquire",
  "insta",
@@ -628,17 +627,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "genotype_lang_core_codegen"
-version = "0.15.0"
-dependencies = [
- "genotype_lang_core_tree",
- "genotype_parser",
- "insta",
- "miette",
- "pretty_assertions",
-]
-
-[[package]]
 name = "genotype_lang_core_config"
 version = "0.15.0"
 dependencies = [
@@ -677,24 +665,11 @@ dependencies = [
 name = "genotype_lang_core_tree"
 version = "0.15.0"
 dependencies = [
+ "genotype_parser",
  "insta",
  "miette",
  "pretty_assertions",
  "serde",
-]
-
-[[package]]
-name = "genotype_lang_py_codegen"
-version = "0.15.0"
-dependencies = [
- "genotype_lang_core_codegen",
- "genotype_lang_core_tree",
- "genotype_lang_py_tree",
- "genotype_parser",
- "genotype_test",
- "insta",
- "miette",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -762,14 +737,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "genotype_lang_rs_core"
-version = "0.15.0"
-dependencies = [
- "insta",
- "pretty_assertions",
-]
-
-[[package]]
 name = "genotype_lang_rs_project"
 version = "0.15.0"
 dependencies = [
@@ -801,7 +768,6 @@ dependencies = [
  "genotype_config",
  "genotype_lang_core_tree",
  "genotype_lang_rs_config",
- "genotype_lang_rs_core",
  "genotype_parser",
  "genotype_test",
  "heck",
@@ -811,20 +777,6 @@ dependencies = [
  "serde",
  "thiserror 1.0.64",
  "unicode-xid",
-]
-
-[[package]]
-name = "genotype_lang_ts_codegen"
-version = "0.15.0"
-dependencies = [
- "genotype_lang_core_codegen",
- "genotype_lang_core_tree",
- "genotype_lang_ts_tree",
- "genotype_parser",
- "genotype_test",
- "insta",
- "miette",
- "pretty_assertions",
 ]
 
 [[package]]
@@ -998,17 +950,6 @@ dependencies = [
  "rayon",
  "sha2",
  "thiserror 1.0.64",
-]
-
-[[package]]
-name = "genotype_writer"
-version = "0.15.0"
-dependencies = [
- "genotype_config",
- "genotype_lang_core_project",
- "genotype_path",
- "insta",
- "pretty_assertions",
 ]
 
 [[package]]
