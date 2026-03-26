@@ -53,7 +53,29 @@ impl GtlProjectManifestDependency for RsProjectManifestDependency {
             Self::DependencyIdent::Serde => {
                 Some(("serde".into(), Self::dependency_value("1", vec!["derive"])))
             }
+            Self::DependencyIdent::OrderedFloat => Some((
+                "ordered-float".into(),
+                Self::dependency_value("5", vec!["serde"]),
+            )),
             _ => None,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use insta::assert_snapshot;
+
+    use super::*;
+
+    #[test]
+    fn test_ordered_float_dependency() {
+        let (_, value) =
+            RsProjectManifestDependency::as_kv(&RsDependencyIdent::OrderedFloat).unwrap();
+
+        assert_snapshot!(
+            value.to_string(),
+            @r#"{ version = "5", features = ["serde"] }"#
+        );
     }
 }

@@ -39,3 +39,4 @@ pretty_assertions = "1.4.1"
 insta = { version = "1.46.3", features = ["ron"] }
 trybuild = "1.0.111"
 serde = { version = "1.0.210", features = ["derive"] }
+ordered-float = { version = "4", features = ["serde"] }

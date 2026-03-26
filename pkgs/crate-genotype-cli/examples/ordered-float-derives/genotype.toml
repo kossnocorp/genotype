@@ -1,0 +1,5 @@
+src = "."
+
+[rs]
+enabled = true
+derive = ["Debug", "Clone", "PartialEq", "PartialOrd", "Eq", "Hash", "Ord"]

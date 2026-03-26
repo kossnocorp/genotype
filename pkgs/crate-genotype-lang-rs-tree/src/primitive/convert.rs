@@ -1,11 +1,16 @@
 use crate::prelude::internal::*;
 
 impl RsConvert<RsPrimitive> for GtPrimitive {
-    fn convert(&self, _resolve: &mut RsConvertContext) -> Result<RsPrimitive> {
+    fn convert(&self, context: &mut RsConvertContext) -> Result<RsPrimitive> {
         Ok(match self.kind {
             GtPrimitiveKind::Boolean => RsPrimitive::Boolean,
             GtPrimitiveKind::String => RsPrimitive::String,
-            GtPrimitiveKind::Number => RsPrimitive::Float64,
+            GtPrimitiveKind::Number => {
+                if context.config().needs_ordered_floats() {
+                    context.add_import(RsDependencyIdent::OrderedFloat, "OrderedFloat".into());
+                }
+                RsPrimitive::Float64
+            }
             GtPrimitiveKind::Int8 => RsPrimitive::Int8,
             GtPrimitiveKind::Int16 => RsPrimitive::Int16,
             GtPrimitiveKind::Int32 => RsPrimitive::Int32,
@@ -18,8 +23,18 @@ impl RsConvert<RsPrimitive> for GtPrimitive {
             GtPrimitiveKind::IntU64 => RsPrimitive::IntU64,
             GtPrimitiveKind::IntU128 => RsPrimitive::IntU128,
             GtPrimitiveKind::IntUSize => RsPrimitive::IntUSize,
-            GtPrimitiveKind::Float32 => RsPrimitive::Float32,
-            GtPrimitiveKind::Float64 => RsPrimitive::Float64,
+            GtPrimitiveKind::Float32 => {
+                if context.config().needs_ordered_floats() {
+                    context.add_import(RsDependencyIdent::OrderedFloat, "OrderedFloat".into());
+                }
+                RsPrimitive::Float32
+            }
+            GtPrimitiveKind::Float64 => {
+                if context.config().needs_ordered_floats() {
+                    context.add_import(RsDependencyIdent::OrderedFloat, "OrderedFloat".into());
+                }
+                RsPrimitive::Float64
+            }
         })
     }
 }
@@ -126,6 +141,32 @@ mod tests {
                 .convert(&mut RsConvertContext::empty("module".into()))
                 .unwrap(),
             @"Float64"
+        );
+    }
+
+    #[test]
+    fn test_convert_float_adds_ordered_float_import_when_needed() {
+        let mut context = RsConvertContext::new(
+            "module".into(),
+            Default::default(),
+            RsConfigLang {
+                derive: vec!["Debug".into(), "Eq".into()],
+            },
+            Default::default(),
+        );
+
+        assert_ron_snapshot!(
+            Gt::primitive_f64().convert(&mut context).unwrap(),
+            @"Float64"
+        );
+
+        assert_ron_snapshot!(
+            context.as_dependencies(),
+            @r#"
+        [
+          (OrderedFloat, RsIdentifier("OrderedFloat")),
+        ]
+        "#
         );
     }
 }

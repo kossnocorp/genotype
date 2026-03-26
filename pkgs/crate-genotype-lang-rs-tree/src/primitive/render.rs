@@ -8,7 +8,7 @@ impl<'a> GtlRender<'a> for RsPrimitive {
     fn render(
         &self,
         _state: Self::RenderState,
-        _context: &mut Self::RenderContext,
+        context: &mut Self::RenderContext,
     ) -> Result<String> {
         Ok(match self {
             RsPrimitive::Unit => "()",
@@ -26,8 +26,20 @@ impl<'a> GtlRender<'a> for RsPrimitive {
             RsPrimitive::IntU64 => "u64",
             RsPrimitive::IntU128 => "u128",
             RsPrimitive::IntUSize => "usize",
-            RsPrimitive::Float32 => "f32",
-            RsPrimitive::Float64 => "f64",
+            RsPrimitive::Float32 => {
+                if context.config.needs_ordered_floats() {
+                    "OrderedFloat<f32>"
+                } else {
+                    "f32"
+                }
+            }
+            RsPrimitive::Float64 => {
+                if context.config.needs_ordered_floats() {
+                    "OrderedFloat<f64>"
+                } else {
+                    "f64"
+                }
+            }
         }
         .to_string())
     }
@@ -141,6 +153,28 @@ mod tests {
                 .render(Default::default(), &mut Default::default())
                 .unwrap(),
             @"f64"
+        );
+    }
+
+    #[test]
+    fn test_render_float_primitive_with_ordered_float() {
+        let config = RsConfigLang {
+            derive: vec!["Debug".into(), "Eq".into()],
+        };
+        let mut context = RsRenderContext { config: &config };
+
+        assert_snapshot!(
+            RsPrimitive::Float32
+                .render(Default::default(), &mut context)
+                .unwrap(),
+            @"OrderedFloat<f32>"
+        );
+
+        assert_snapshot!(
+            RsPrimitive::Float64
+                .render(Default::default(), &mut context)
+                .unwrap(),
+            @"OrderedFloat<f64>"
         );
     }
 }

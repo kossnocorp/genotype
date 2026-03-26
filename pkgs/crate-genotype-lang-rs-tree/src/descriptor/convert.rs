@@ -41,10 +41,15 @@ impl RsConvert<RsDescriptor> for GtDescriptor {
 }
 
 impl RsConvert<RsDescriptor> for GtRecordKey {
-    fn convert(&self, _context: &mut RsConvertContext) -> Result<RsDescriptor> {
+    fn convert(&self, context: &mut RsConvertContext) -> Result<RsDescriptor> {
         Ok(match self {
             GtRecordKey::String(_) => RsPrimitive::String.into(),
-            GtRecordKey::Number(_) => RsPrimitive::Float64.into(),
+            GtRecordKey::Number(_) => {
+                if context.config().needs_ordered_floats() {
+                    context.add_import(RsDependencyIdent::OrderedFloat, "OrderedFloat".into());
+                }
+                RsPrimitive::Float64.into()
+            }
             GtRecordKey::Int8(_) => RsPrimitive::Int8.into(),
             GtRecordKey::Int16(_) => RsPrimitive::Int16.into(),
             GtRecordKey::Int32(_) => RsPrimitive::Int32.into(),
@@ -57,8 +62,18 @@ impl RsConvert<RsDescriptor> for GtRecordKey {
             GtRecordKey::IntU64(_) => RsPrimitive::IntU64.into(),
             GtRecordKey::IntU128(_) => RsPrimitive::IntU128.into(),
             GtRecordKey::IntUSize(_) => RsPrimitive::IntUSize.into(),
-            GtRecordKey::Float32(_) => RsPrimitive::Float32.into(),
-            GtRecordKey::Float64(_) => RsPrimitive::Float64.into(),
+            GtRecordKey::Float32(_) => {
+                if context.config().needs_ordered_floats() {
+                    context.add_import(RsDependencyIdent::OrderedFloat, "OrderedFloat".into());
+                }
+                RsPrimitive::Float32.into()
+            }
+            GtRecordKey::Float64(_) => {
+                if context.config().needs_ordered_floats() {
+                    context.add_import(RsDependencyIdent::OrderedFloat, "OrderedFloat".into());
+                }
+                RsPrimitive::Float64.into()
+            }
         })
     }
 }
@@ -363,6 +378,32 @@ mod tests {
         assert_ron_snapshot!(
             convert_node(Gt::record_key_f64()),
             @"Primitive(Float64)"
+        );
+    }
+
+    #[test]
+    fn test_convert_record_key_float_import_when_needed() {
+        let mut context = RsConvertContext::new(
+            "module".into(),
+            Default::default(),
+            RsConfigLang {
+                derive: vec!["Debug".into(), "Eq".into()],
+            },
+            Default::default(),
+        );
+
+        assert_ron_snapshot!(
+            convert_node_with(Gt::record_key_f64(), &mut context),
+            @"Primitive(Float64)"
+        );
+
+        assert_ron_snapshot!(
+            context.as_dependencies(),
+            @r#"
+        [
+          (OrderedFloat, RsIdentifier("OrderedFloat")),
+        ]
+        "#
         );
     }
 }
