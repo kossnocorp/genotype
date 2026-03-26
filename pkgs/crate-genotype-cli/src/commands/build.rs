@@ -17,10 +17,14 @@ pub struct GtBuildCommand {
     /// What to build
     #[arg(default_value = ".")]
     path: PathBuf,
+
+    /// Path to genotype config file
+    #[arg(long)]
+    config: Option<PathBuf>,
 }
 
 pub fn build_command(args: &GtBuildCommand) -> Result<()> {
-    let config = GtConfig::load(&args.path)?;
+    let config = GtConfig::load_with(&args.path, args.config.as_ref())?;
     let project = GtProject::load(&config)?;
 
     let mut langs = vec![];

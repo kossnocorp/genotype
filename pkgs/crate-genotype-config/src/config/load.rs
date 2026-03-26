@@ -2,7 +2,18 @@ use crate::prelude::internal::*;
 
 impl GtConfig {
     pub fn load(path: &PathBuf) -> Result<Self> {
-        let file = Self::find(path)?;
+        Self::load_with(path, None)
+    }
+
+    pub fn load_with(path: &PathBuf, config_path: Option<&PathBuf>) -> Result<Self> {
+        let file = if let Some(config_path) = config_path {
+            if !config_path.is_file() {
+                return Err(GtConfigError::MissingConfig(config_path.clone())).into_diagnostic();
+            }
+            config_path.clone()
+        } else {
+            Self::find(path)?
+        };
 
         let config_parent = if let Some(parent) = file.parent() {
             RelativePathBuf::from_path(parent)
