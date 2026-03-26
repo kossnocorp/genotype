@@ -6,6 +6,7 @@ pub enum RsDependencyIdent {
     Runtime,
     Litty,
     Serde,
+    OrderedFloat,
     Std(String),
 }
 
@@ -16,6 +17,7 @@ impl RsDependencyIdent {
             Self::Runtime => "genotype_runtime".into(),
             Self::Litty => "litty".into(),
             Self::Serde => "serde".into(),
+            Self::OrderedFloat => "ordered_float".into(),
             Self::Std(path) => format!("std::{path}"),
         }
     }
@@ -36,6 +38,11 @@ impl RsDependencyIdent {
                 name: "serde".into(),
                 version: "1".into(),
                 features: vec!["derive".into()],
+            }),
+            Self::OrderedFloat => Some(RsDependencyExternal {
+                name: "ordered-float".into(),
+                version: "5".into(),
+                features: vec!["serde".into()],
             }),
             _ => None,
         }

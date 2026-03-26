@@ -1,0 +1,37 @@
+use std::path::PathBuf;
+use std::process::Command;
+
+#[test]
+fn ordered_float_derive_generated_rust_compiles() {
+    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let example_dir = manifest_dir.join("examples/ordered-float-derives");
+    let dist_dir = example_dir.join("dist");
+
+    if dist_dir.exists() {
+        std::fs::remove_dir_all(&dist_dir).unwrap();
+    }
+
+    let output = Command::new(env!("CARGO_BIN_EXE_gt"))
+        .arg("build")
+        .arg("examples/ordered-float-derives")
+        .current_dir(&manifest_dir)
+        .output()
+        .unwrap();
+
+    assert!(
+        output.status.success(),
+        "gt build failed:\nstdout:\n{}\nstderr:\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    unsafe {
+        std::env::set_var(
+            "GENOTYPE_CLI_MANIFEST_DIR",
+            manifest_dir.to_string_lossy().as_ref(),
+        );
+    }
+
+    let t = trybuild::TestCases::new();
+    t.pass("tests/trybuild/ordered_float_derive_generated.rs");
+}
