@@ -1,0 +1,3 @@
+CollectionSettings: {
+  package?: ./package/PackgesSettings,
+}

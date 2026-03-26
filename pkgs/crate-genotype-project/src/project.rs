@@ -130,7 +130,7 @@ impl<'a> GtProject<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
+    use insta::{assert_debug_snapshot, assert_ron_snapshot};
 
     #[test]
     fn test_glob() {
@@ -998,6 +998,28 @@ mod tests {
             },
           ),
         )
+        "#
+        );
+    }
+
+    #[test]
+    fn test_error_undefined_inline_import_type() {
+        let config = GtConfig::from_entry(
+            "module",
+            "./examples/errors/undefined-inline",
+            "collection.type",
+        );
+        let error = GtProject::load(&config).unwrap_err();
+        assert_debug_snapshot!(
+          error,
+          @r#"
+        UndefinedType {
+            span: GtSpan(
+                44,
+                59,
+            ),
+            identifier: "PackgesSettings",
+        }
         "#
         );
     }

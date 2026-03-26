@@ -1,7 +1,4 @@
-use genotype_parser::GtModule;
-use genotype_parser::visitor::Traverse;
-use genotype_path::{GtModulePath, GtSrcRelativePath};
-use miette::{NamedSource, Result};
+use crate::prelude::internal::*;
 
 mod definition;
 pub use definition::*;
@@ -15,8 +12,6 @@ pub use parse::*;
 mod resolve;
 pub use resolve::*;
 use serde::Serialize;
-
-use crate::{GtpResolve, visitor::GtpResolveVisitor};
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GtProjectModule {
@@ -45,6 +40,12 @@ impl GtProjectModule {
         let mut visitor = GtpResolveVisitor::new(parse.1.module.id.clone(), &project_resolve);
         let mut parse = parse;
         parse.1.module.traverse(&mut visitor);
+
+        if let Some(error) = visitor.error() {
+            return Err(
+                miette::Report::new(error.clone()).with_source_code(parse.1.source_code.clone())
+            );
+        }
 
         module_resolve.definitions = visitor.drain_definitions();
 
