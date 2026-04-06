@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-EDGE_CASES_DIR="$ROOT_DIR/examples/04-edge-cases"
+EDGE_CASES_DIR="$ROOT_DIR/examples/04-tests"
 
 shopt -s nullglob
 example_dirs=("$EDGE_CASES_DIR"/*)
