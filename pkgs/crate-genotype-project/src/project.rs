@@ -437,6 +437,7 @@ mod tests {
               "manifest": {},
               "dependencies": {},
               "mode": types,
+              "prefer": interface,
               "tsconfig": TsConfigLangTsconfig(
                 allowImportingTsExtensions: false,
               ),
@@ -771,6 +772,7 @@ mod tests {
               "manifest": {},
               "dependencies": {},
               "mode": types,
+              "prefer": interface,
               "tsconfig": TsConfigLangTsconfig(
                 allowImportingTsExtensions: false,
               ),
@@ -978,6 +980,7 @@ mod tests {
               "manifest": {},
               "dependencies": {},
               "mode": types,
+              "prefer": interface,
               "tsconfig": TsConfigLangTsconfig(
                 allowImportingTsExtensions: false,
               ),

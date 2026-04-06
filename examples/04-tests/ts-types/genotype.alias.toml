@@ -1,0 +1,10 @@
+name = "genotype-test-ts-types"
+out = "dist/ts-alias"
+
+[ts]
+enabled = true
+prefer = "alias"
+
+[ts.manifest]
+name = "genotype-test-ts-types-alias"
+version = "0.1.0"

@@ -73,31 +73,61 @@ impl<'a> GtlRender<'a> for TsInterface {
             .collect::<Vec<_>>()
             .join("\n");
 
-        let extensions = self
-            .extensions
-            .iter()
-            .map(|extension| extension.render(state, context))
-            .collect::<Result<Vec<_>>>()?
-            .join(", ");
+        let object = format!(
+            "{{\n{properties}{}{}",
+            if properties.len() > 0 { "\n" } else { "" },
+            state.indent_format("}")
+        );
 
-        let extends = if extensions.len() > 0 {
-            format!(" extends {}", extensions)
-        } else {
-            "".into()
-        };
+        match context.config.prefer {
+            TsPrefer::Interface => {
+                let extensions = self
+                    .extensions
+                    .iter()
+                    .map(|extension| extension.render(state, context))
+                    .collect::<Result<Vec<_>>>()?
+                    .join(", ");
 
-        TsDoc::with_doc(
-            &self.doc,
-            state,
-            context,
-            format!(
-                "{}export interface {name}{extends} {{\n{properties}{}{}",
-                state.indent_str(),
-                if properties.len() > 0 { "\n" } else { "" },
-                state.indent_format("}")
-            ),
-            false,
-        )
+                let extends = if extensions.len() > 0 {
+                    format!(" extends {extensions}")
+                } else {
+                    "".into()
+                };
+
+                TsDoc::with_doc(
+                    &self.doc,
+                    state,
+                    context,
+                    format!(
+                        "{}export interface {name}{extends} {object}",
+                        state.indent_str(),
+                    ),
+                    false,
+                )
+            }
+
+            TsPrefer::Alias => {
+                let extensions = self
+                    .extensions
+                    .iter()
+                    .map(|extension| extension.render(state, context))
+                    .collect::<Result<Vec<_>>>()?;
+
+                let descriptor = if extensions.is_empty() {
+                    object
+                } else {
+                    format!("{} & {object}", extensions.join(" & "))
+                };
+
+                TsDoc::with_doc(
+                    &self.doc,
+                    state,
+                    context,
+                    format!("{}export type {name} = {descriptor};", state.indent_str()),
+                    false,
+                )
+            }
+        }
     }
 }
 
@@ -194,6 +224,63 @@ mod tests {
         /** Hello, world! */
         export interface Name {
         }
+        "
+        );
+    }
+
+    #[test]
+    fn test_render_alias_preference() {
+        let mut context = TsRenderContext {
+            config: &TsConfigLang {
+                prefer: TsPrefer::Alias,
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        assert_snapshot!(
+            render_node_with(
+                Tst::interface(
+                    "Name",
+                    vec![
+                        Tst::property("name", Tst::primitive_string()),
+                        Tst::property_optional("age", Tst::primitive_number()),
+                    ],
+                ),
+                &mut context,
+            ),
+            @"
+        export type Name = {
+          name: string;
+          age?: number;
+        };
+        "
+        );
+    }
+
+    #[test]
+    fn test_render_alias_preference_extensions() {
+        let mut context = TsRenderContext {
+            config: &TsConfigLang {
+                prefer: TsPrefer::Alias,
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        assert_snapshot!(
+            render_node_with(
+                TsInterface {
+                    extensions: vec![Tst::extension("Hello"), Tst::extension("World")],
+                    properties: vec![Tst::property("name", Tst::primitive_string())],
+                    ..Tst::interface("Name", vec![])
+                },
+                &mut context,
+            ),
+            @"
+        export type Name = Hello & World & {
+          name: string;
+        };
         "
         );
     }

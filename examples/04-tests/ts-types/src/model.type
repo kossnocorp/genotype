@@ -1,0 +1,12 @@
+Base: {
+  id: string,
+}
+
+Payload: {
+  ...Base,
+  kind: "payload",
+  title: string,
+  enabled: boolean,
+}
+
+Envelope: Payload

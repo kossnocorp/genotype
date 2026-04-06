@@ -4,6 +4,8 @@ use crate::prelude::internal::*;
 pub struct TsConfigLang {
     #[serde(default)]
     pub mode: TsMode,
+    #[serde(default)]
+    pub prefer: TsPrefer,
     pub tsconfig: TsConfigLangTsconfig,
 }
 
@@ -13,6 +15,14 @@ pub enum TsMode {
     #[default]
     Types,
     Zod,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum TsPrefer {
+    #[default]
+    Interface,
+    Alias,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, PartialEq, Clone)]
@@ -49,9 +59,15 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     #[test]
+    fn test_default_prefer_interface() {
+        assert_eq!(TsConfigLang::default().prefer, TsPrefer::Interface);
+    }
+
+    #[test]
     fn format_module_path() {
         let config = TsConfigLang {
             mode: Default::default(),
+            prefer: Default::default(),
             tsconfig: TsConfigLangTsconfig {
                 allow_importing_ts_extensions: true,
             },
@@ -63,6 +79,7 @@ mod tests {
 
         let config = TsConfigLang {
             mode: Default::default(),
+            prefer: Default::default(),
             tsconfig: TsConfigLangTsconfig {
                 allow_importing_ts_extensions: false,
             },
@@ -77,6 +94,7 @@ mod tests {
     fn format_import_path() {
         let config = TsConfigLang {
             mode: Default::default(),
+            prefer: Default::default(),
             tsconfig: TsConfigLangTsconfig {
                 allow_importing_ts_extensions: true,
             },
@@ -85,6 +103,7 @@ mod tests {
 
         let config = TsConfigLang {
             mode: Default::default(),
+            prefer: Default::default(),
             tsconfig: TsConfigLangTsconfig {
                 allow_importing_ts_extensions: false,
             },

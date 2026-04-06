@@ -412,6 +412,38 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_render_prefer_alias() {
+        let mut config = GtConfig::from_root("module", "./examples/basic");
+        config.ts.lang.prefer = TsPrefer::Alias;
+
+        let project = GtProject::load(&config).unwrap();
+        let dist = TsProject::generate(&project).unwrap().dist().unwrap();
+
+        let author_file = get_dist_file(&dist, "src/author.ts");
+        assert_snapshot!(
+            author_file.source,
+            @r#"
+        export type Author = {
+          name: string;
+        };
+        "#
+        );
+
+        let book_file = get_dist_file(&dist, "src/book.ts");
+        assert_snapshot!(
+            book_file.source,
+            @r#"
+        import { Author } from "./author.js";
+
+        export type Book = {
+          title: string;
+          author: Author;
+        };
+        "#
+        );
+    }
+
     fn get_package_file<'a>(dist: &'a GtlProjectDist) -> &'a GtlProjectFile {
         dist.files
             .iter()
