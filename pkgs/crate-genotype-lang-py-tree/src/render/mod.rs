@@ -4,7 +4,6 @@ use std::sync::LazyLock;
 #[derive(Debug, PartialEq)]
 pub struct PyRenderContext<'a> {
     pub config: &'a PyConfigLang,
-    pub resolve: GtlRenderResolve<'a, PyRenderState, PyRenderContext<'a>>,
 }
 
 impl GtlRenderContext for PyRenderContext<'_> {}
@@ -15,7 +14,6 @@ impl Default for PyRenderContext<'_> {
     fn default() -> Self {
         Self {
             config: &PY_DEFAULT_CONFIG,
-            resolve: GtlRenderResolve::default(),
         }
     }
 }

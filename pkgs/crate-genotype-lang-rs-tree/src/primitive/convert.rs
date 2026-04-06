@@ -7,7 +7,10 @@ impl RsConvert<RsPrimitive> for GtPrimitive {
             GtPrimitiveKind::String => RsPrimitive::String,
             GtPrimitiveKind::Number => {
                 if context.config().needs_ordered_floats() {
-                    context.add_import(RsDependencyIdent::OrderedFloat, "OrderedFloat".into());
+                    context.push_import(RsUse::new(
+                        RsDependencyIdent::OrderedFloat,
+                        "OrderedFloat".into(),
+                    ));
                 }
                 RsPrimitive::Float64
             }
@@ -25,13 +28,19 @@ impl RsConvert<RsPrimitive> for GtPrimitive {
             GtPrimitiveKind::IntUSize => RsPrimitive::IntUSize,
             GtPrimitiveKind::Float32 => {
                 if context.config().needs_ordered_floats() {
-                    context.add_import(RsDependencyIdent::OrderedFloat, "OrderedFloat".into());
+                    context.push_import(RsUse::new(
+                        RsDependencyIdent::OrderedFloat,
+                        "OrderedFloat".into(),
+                    ));
                 }
                 RsPrimitive::Float32
             }
             GtPrimitiveKind::Float64 => {
                 if context.config().needs_ordered_floats() {
-                    context.add_import(RsDependencyIdent::OrderedFloat, "OrderedFloat".into());
+                    context.push_import(RsUse::new(
+                        RsDependencyIdent::OrderedFloat,
+                        "OrderedFloat".into(),
+                    ));
                 }
                 RsPrimitive::Float64
             }
@@ -161,10 +170,15 @@ mod tests {
         );
 
         assert_ron_snapshot!(
-            context.as_dependencies(),
+            context.imports(),
             @r#"
         [
-          (OrderedFloat, RsIdentifier("OrderedFloat")),
+          RsUse(
+            dependency: OrderedFloat,
+            reference: Named([
+              Name(RsIdentifier("OrderedFloat")),
+            ]),
+          ),
         ]
         "#
         );

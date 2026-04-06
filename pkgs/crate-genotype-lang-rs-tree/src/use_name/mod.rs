@@ -25,6 +25,8 @@ impl RsUseName {
     }
 }
 
+impl GtlImportRefName for RsUseName {}
+
 impl From<&str> for RsUseName {
     fn from(str: &str) -> Self {
         RsUseName::Name(str.into())

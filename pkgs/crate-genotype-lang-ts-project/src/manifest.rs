@@ -13,20 +13,21 @@ impl<'a> GtlProjectManifest<'a> for TsProject<'a> {
     }
 
     fn base_manifest(&self) -> String {
-        let types = self
+        let entry = self
             .config
             .pkg_relative_src_file_path(&"index.ts".into())
             .as_str()
             .to_owned();
 
-        let mut source = format!(
-            r#"types = "{types}"
+        let mut source = r#"type = "module"
 "#
-        );
+        .to_string();
 
         if let Some(version) = self.config.version {
             source.push_str(format!("version = \"{version}\"\n").as_str());
         }
+
+        source.push_str(format!("\n[exports]\n\".\" = \"./{entry}\"\n").as_str());
 
         source
     }
@@ -37,7 +38,10 @@ pub struct TsProjectManifestDependency;
 impl GtlProjectManifestDependency for TsProjectManifestDependency {
     type DependencyIdent = TsDependencyIdent;
 
-    fn as_kv(_ident: &Self::DependencyIdent) -> Option<(String, Value)> {
-        None
+    fn as_kv(ident: &Self::DependencyIdent) -> Option<(String, Value)> {
+        match ident {
+            TsDependencyIdent::Zod => Some(("zod".into(), "^4".into())),
+            TsDependencyIdent::Local(_) => None,
+        }
     }
 }

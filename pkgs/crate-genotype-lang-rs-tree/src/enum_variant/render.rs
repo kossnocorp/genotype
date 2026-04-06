@@ -142,11 +142,11 @@ mod tests {
                 &mut Default::default()
             )
             .unwrap(),
-            @r#"
+            @"
         /// Hello, world!
         #[literal(3.14)]
         Variant,
-        "#
+        "
         );
     }
 }

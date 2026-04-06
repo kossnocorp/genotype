@@ -1,8 +1,18 @@
 use crate::prelude::internal::*;
 
-#[derive(Default, Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 pub struct TsConfigLang {
+    #[serde(default)]
+    pub mode: TsMode,
     pub tsconfig: TsConfigLangTsconfig,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum TsMode {
+    #[default]
+    Types,
+    Zod,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize, PartialEq, Clone)]
@@ -41,6 +51,7 @@ mod tests {
     #[test]
     fn format_module_path() {
         let config = TsConfigLang {
+            mode: Default::default(),
             tsconfig: TsConfigLangTsconfig {
                 allow_importing_ts_extensions: true,
             },
@@ -51,6 +62,7 @@ mod tests {
         );
 
         let config = TsConfigLang {
+            mode: Default::default(),
             tsconfig: TsConfigLangTsconfig {
                 allow_importing_ts_extensions: false,
             },
@@ -64,6 +76,7 @@ mod tests {
     #[test]
     fn format_import_path() {
         let config = TsConfigLang {
+            mode: Default::default(),
             tsconfig: TsConfigLangTsconfig {
                 allow_importing_ts_extensions: true,
             },
@@ -71,6 +84,7 @@ mod tests {
         assert_eq!(config.format_import_path("foo"), "foo.ts");
 
         let config = TsConfigLang {
+            mode: Default::default(),
             tsconfig: TsConfigLangTsconfig {
                 allow_importing_ts_extensions: false,
             },

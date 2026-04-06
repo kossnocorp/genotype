@@ -6,7 +6,7 @@ mod render;
 #[derive(Debug, Eq, PartialEq, Hash, Clone, PartialOrd, Ord, Serialize, Visitor)]
 pub struct RsIdentifier(pub Arc<str>);
 
-impl GtlDependencyRef for RsIdentifier {}
+impl GtlImportRef for RsIdentifier {}
 
 impl From<&str> for RsIdentifier {
     fn from(str: &str) -> Self {

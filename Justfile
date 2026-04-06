@@ -13,6 +13,12 @@ build:
 build-watch:
   bacon
 
+check:
+  cargo check
+
+check-watch:
+  bacon check
+
 build-json-types:
   cargo run --bin gt -- build pkgs/npm-genotype-json-types
 

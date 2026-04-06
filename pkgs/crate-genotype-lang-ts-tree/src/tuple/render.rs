@@ -16,27 +16,46 @@ impl<'a> GtlRender<'a> for TsTuple {
             .map(|d| d.render(state, context))
             .collect::<Result<Vec<_>>>()?
             .join(", ");
-        Ok(format!("[{}]", descriptors))
+        Ok(if context.is_zod_mode() {
+            format!("z.tuple([{}])", descriptors)
+        } else {
+            format!("[{}]", descriptors)
+        })
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use insta::assert_snapshot;
 
     #[test]
     fn test_render_tuple() {
         assert_snapshot!(
-            TsTuple {
-                descriptors: vec![
-                    TsDescriptor::Primitive(TsPrimitive::String),
-                    TsDescriptor::Primitive(TsPrimitive::Number),
-                ]
-            }
-            .render(Default::default(), &mut Default::default())
-            .unwrap(),
+            render_node(
+                Tst::tuple(vec_into![
+                    Tst::primitive_string(),
+                    Tst::primitive_number(),
+                ]),
+            ),
             @"[string, number]"
+        );
+    }
+
+    #[test]
+    fn test_render_tuple_zod_mode() {
+        let mut context = Tst::render_context_zod();
+
+        assert_snapshot!(
+            render_node_with(
+                Tst::tuple(vec_into![
+                    Tst::primitive_string(),
+                    Tst::primitive_number(),
+                ]),
+                &mut context,
+            ),
+            @"z.tuple([z.string(), z.number()])"
         );
     }
 }

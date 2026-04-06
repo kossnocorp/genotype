@@ -10,6 +10,10 @@ impl<'a> GtlRender<'a> for TsExtension {
         state: Self::RenderState,
         context: &mut Self::RenderContext,
     ) -> Result<String> {
+        if context.is_zod_mode() {
+            return self.reference.identifier.render(state, context);
+        }
+
         self.reference.render(state, context)
     }
 }
@@ -17,16 +21,23 @@ impl<'a> GtlRender<'a> for TsExtension {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
         assert_snapshot!(
-            TsExtension {
-                reference: "Foo".into()
-            }
-            .render(Default::default(), &mut Default::default())
-            .unwrap(),
+            render_node(Tst::extension("Foo")),
+            @"Foo"
+        );
+    }
+
+    #[test]
+    fn test_render_zod_mode() {
+        let mut context = Tst::render_context_zod();
+
+        assert_snapshot!(
+            render_node_with(Tst::extension("Foo"), &mut context),
             @"Foo"
         );
     }

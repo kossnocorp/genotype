@@ -26,14 +26,13 @@ impl<'a> GtlRender<'a> for TsImportName {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use insta::assert_snapshot;
 
     #[test]
     fn test_render_name() {
         assert_snapshot!(
-            TsImportName::Name("Name".into())
-                .render(Default::default(), &mut Default::default())
-                .unwrap(),
+            render_node(Tst::import_name("Name")),
             @"Name"
         );
     }
@@ -41,9 +40,7 @@ mod tests {
     #[test]
     fn test_render_alias() {
         assert_snapshot!(
-            TsImportName::Alias("Name".into(), "Alias".into())
-                .render(Default::default(), &mut Default::default())
-                .unwrap(),
+            render_node(Tst::import_alias("Name", "Alias")),
             @"Name as Alias"
         );
     }

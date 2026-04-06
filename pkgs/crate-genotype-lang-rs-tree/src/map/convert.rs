@@ -2,10 +2,10 @@ use crate::prelude::internal::*;
 
 impl RsConvert<RsMap> for GtRecord {
     fn convert(&self, context: &mut RsConvertContext) -> Result<RsMap> {
-        context.add_import(
+        context.push_import(RsUse::new(
             RsDependencyIdent::Std("collections".into()),
             "BTreeMap".into(),
-        );
+        ));
         Ok(RsMap {
             key: self.key.convert(context)?,
             descriptor: self.descriptor.convert(context)?,
@@ -50,10 +50,15 @@ mod tests {
         "
         );
         assert_ron_snapshot!(
-            context.as_dependencies(),
+            context.imports(),
             @r#"
         [
-          (Std("collections"), RsIdentifier("BTreeMap")),
+          RsUse(
+            dependency: Std("collections"),
+            reference: Named([
+              Name(RsIdentifier("BTreeMap")),
+            ]),
+          ),
         ]
         "#
         );

@@ -86,10 +86,15 @@ mod tests {
             @"Boolean(false)"
         );
         assert_ron_snapshot!(
-            context.as_dependencies(),
+            context.imports(),
             @r#"
         [
-          (Typing, PyIdentifier("Literal")),
+          PyImport(
+            dependency: Typing,
+            reference: Named([
+              Name(PyIdentifier("Literal")),
+            ]),
+          ),
         ]
         "#
         );

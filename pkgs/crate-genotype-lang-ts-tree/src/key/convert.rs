@@ -9,12 +9,13 @@ impl TsConvert<TsKey> for GtKey {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GtKey::new((0, 0).into(), "foo".into()).convert(&mut Default::default()),
+            convert_node(GtKey::new((0, 0).into(), "foo".into())),
             @r#"TsKey("foo")"#
         );
     }

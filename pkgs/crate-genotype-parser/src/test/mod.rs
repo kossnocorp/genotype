@@ -487,18 +487,29 @@ impl Gt {
             descriptors,
         }
     }
+
+    pub fn import(path: &str, reference: GtImportReference) -> GtImport {
+        GtImport {
+            span: (0, 0).into(),
+            path: Self::path(path),
+            reference,
+        }
+    }
+
+    pub fn import_reference_name(name: &str) -> GtImportReference {
+        GtImportReference::Name((0, 0).into(), Self::identifier(name))
+    }
+
+    pub fn module(imports: Vec<GtImport>, aliases: Vec<GtAlias>) -> GtModule {
+        GtModule {
+            id: "module".into(),
+            doc: None,
+            imports,
+            aliases,
+        }
+    }
 }
 
-#[macro_export]
-macro_rules! node_with {
-    ($node:expr $(, $field:ident = $value:expr )* $(,)?) => {{
-        let mut node = $node;
-        $(
-            node.$field = $value;
-        )*
-        node
-    }};
-}
 #[macro_export]
 macro_rules! attribute_node {
     // key = value
@@ -516,7 +527,18 @@ macro_rules! attribute_node {
 }
 
 #[macro_export]
-macro_rules! descriptor_nodes {
+macro_rules! assign {
+    ($node:expr $(, $field:ident = $value:expr )* $(,)?) => {{
+        let mut strct = $node;
+        $(
+            strct.$field = $value;
+        )*
+        strct
+    }};
+}
+
+#[macro_export]
+macro_rules! vec_into {
     ($($item:expr),* $(,)?) => {
         vec![
             $(

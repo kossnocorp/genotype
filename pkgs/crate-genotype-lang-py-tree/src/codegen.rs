@@ -79,12 +79,12 @@ mod tests {
         );
         assert_snapshot!(
             codegen.render_module().unwrap(),
-            @r#"
+            @"
         from __future__ import annotations
 
 
         type Name = Any
-        "#
+        "
         );
     }
 
@@ -122,12 +122,12 @@ mod tests {
 
         assert_snapshot!(
             codegen.render_module().unwrap(),
-            @r#"
+            @"
         from __future__ import annotations
 
 
         type Hello = str
-        "#
+        "
         );
     }
 

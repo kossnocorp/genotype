@@ -64,7 +64,7 @@ impl RsConvert<RsStruct> for GtObject {
                 "literals({})",
                 literal_fields.join(", ")
             )));
-            context.add_import(RsDependencyIdent::Litty, "Literals".into());
+            context.push_import(RsUse::new(RsDependencyIdent::Litty, "Literals".into()));
         }
 
         let r#struct = RsStruct {
@@ -76,8 +76,8 @@ impl RsConvert<RsStruct> for GtObject {
         };
 
         if literal_fields.is_empty() {
-            context.add_import(RsDependencyIdent::Serde, "Deserialize".into());
-            context.add_import(RsDependencyIdent::Serde, "Serialize".into());
+            context.push_import(RsUse::new(RsDependencyIdent::Serde, "Deserialize".into()));
+            context.push_import(RsUse::new(RsDependencyIdent::Serde, "Serialize".into()));
         }
 
         context.exit_parent();
@@ -87,7 +87,7 @@ impl RsConvert<RsStruct> for GtObject {
 
 impl RsConvert<RsStruct> for GtLiteral {
     fn convert(&self, context: &mut RsConvertContext) -> Result<RsStruct> {
-        context.add_import(RsDependencyIdent::Litty, "literal".into());
+        context.push_import(RsUse::new(RsDependencyIdent::Litty, "literal".into()));
 
         let doc = context.consume_doc();
         let name = if let Some(name) = context.claim_alias() {
@@ -230,11 +230,21 @@ mod tests {
         "#
         );
         assert_ron_snapshot!(
-            context.as_dependencies(),
+            context.imports(),
             @r#"
         [
-          (Serde, RsIdentifier("Deserialize")),
-          (Serde, RsIdentifier("Serialize")),
+          RsUse(
+            dependency: Serde,
+            reference: Named([
+              Name(RsIdentifier("Deserialize")),
+            ]),
+          ),
+          RsUse(
+            dependency: Serde,
+            reference: Named([
+              Name(RsIdentifier("Serialize")),
+            ]),
+          ),
         ]
         "#
         );
@@ -300,10 +310,15 @@ mod tests {
         "#
         );
         assert_ron_snapshot!(
-            context.as_dependencies(),
+            context.imports(),
             @r#"
         [
-          (Litty, RsIdentifier("Literals")),
+          RsUse(
+            dependency: Litty,
+            reference: Named([
+              Name(RsIdentifier("Literals")),
+            ]),
+          ),
         ]
         "#
         );
@@ -578,10 +593,15 @@ mod tests {
         "#
         );
         assert_ron_snapshot!(
-            context.as_dependencies(),
+            context.imports(),
             @r#"
         [
-          (Litty, RsIdentifier("literal")),
+          RsUse(
+            dependency: Litty,
+            reference: Named([
+              Name(RsIdentifier("literal")),
+            ]),
+          ),
         ]
         "#
         );
@@ -714,10 +734,15 @@ mod tests {
         "#
         );
         assert_ron_snapshot!(
-            context.as_dependencies(),
+            context.imports(),
             @r#"
         [
-          (Litty, RsIdentifier("literal")),
+          RsUse(
+            dependency: Litty,
+            reference: Named([
+              Name(RsIdentifier("literal")),
+            ]),
+          ),
         ]
         "#
         );

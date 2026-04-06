@@ -3,10 +3,10 @@ use crate::prelude::internal::*;
 mod convert;
 mod render;
 
-#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Visitor)]
 pub struct TsIdentifier(pub Arc<str>);
 
-impl GtlDependencyRef for TsIdentifier {}
+impl GtlImportRef for TsIdentifier {}
 
 impl From<&str> for TsIdentifier {
     fn from(str: &str) -> Self {

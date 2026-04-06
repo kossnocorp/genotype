@@ -1,0 +1,11 @@
+{
+  "name": "genotype-test-cyclic-refs",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@types/node": "^25.5.2",
+    "genotype-test-cyclic-refs-ts-zod": "file:./dist/ts-zod/ts/",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
+  }
+}

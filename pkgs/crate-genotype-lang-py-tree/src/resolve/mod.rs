@@ -4,7 +4,5 @@ mod convert;
 pub use convert::*;
 
 pub trait PyContextResolve {
-    fn resolve<Context>(self, context: &mut Context) -> Self
-    where
-        Context: PyConvertContextConstraint;
+    fn resolve(self, context: &mut PyConvertContext) -> Self;
 }

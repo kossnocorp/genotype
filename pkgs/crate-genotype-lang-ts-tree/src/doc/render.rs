@@ -46,14 +46,13 @@ impl<'a> GtlRender<'a> for TsDoc {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use insta::assert_snapshot;
 
     #[test]
     fn test_render_simple() {
         assert_snapshot!(
-            TsDoc("Hello, world!".into())
-                .render(Default::default(), &mut Default::default())
-                .unwrap(),
+            render_node(Tst::doc("Hello, world!")),
             @"/** Hello, world! */"
         );
     }
@@ -61,14 +60,14 @@ mod tests {
     #[test]
     fn test_render_multiline() {
         assert_snapshot!(
-            TsDoc(
+            render_node(
+                TsDoc(
                 r#"Hello,
 cruel
 world!"#
                     .into()
-            )
-            .render(Default::default(), &mut Default::default())
-            .unwrap(),
+            ),
+            ),
             @"
         /** Hello,
          * cruel
@@ -101,11 +100,12 @@ world!"#
 
     #[test]
     fn test_with_doc_some() {
+        let mut context = Tst::render_context();
         assert_snapshot!(
             TsDoc::with_doc(
-                &Some(TsDoc("Hello, world!".into())),
+                &Tst::some_doc("Hello, world!"),
                 Default::default(),
-                &mut Default::default(),
+                &mut context,
                 "type Name = string;".into(),
                 false
             )
@@ -119,11 +119,12 @@ world!"#
 
     #[test]
     fn test_with_doc_none() {
+        let mut context = Tst::render_context();
         assert_snapshot!(
             TsDoc::with_doc(
                 &None,
                 Default::default(),
-                &mut Default::default(),
+                &mut context,
                 "type Name = string;".into(),
                 false
             )
@@ -134,11 +135,12 @@ world!"#
 
     #[test]
     fn test_with_doc_padded_some() {
+        let mut context = Tst::render_context();
         assert_snapshot!(
             TsDoc::with_doc(
-                &Some(TsDoc("Hello, world!".into())),
+                &Tst::some_doc("Hello, world!"),
                 Default::default(),
-                &mut Default::default(),
+                &mut context,
                 "type Name = string;".into(),
                 true
             )
@@ -153,11 +155,12 @@ world!"#
 
     #[test]
     fn test_with_doc_padded_none() {
+        let mut context = Tst::render_context();
         assert_snapshot!(
             TsDoc::with_doc(
                 &None,
                 Default::default(),
-                &mut Default::default(),
+                &mut context,
                 "type Name = string;".into(),
                 true
             )

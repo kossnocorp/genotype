@@ -9,12 +9,13 @@ impl TsConvert<TsIdentifier> for GtIdentifier {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_base() {
         assert_ron_snapshot!(
-            GtIdentifier::new((0, 0).into(), "Foo".into()).convert(&mut Default::default()),
+            convert_node(GtIdentifier::new((0, 0).into(), "Foo".into())),
             @r#"TsIdentifier("Foo")"#
         );
     }
@@ -26,9 +27,12 @@ mod tests {
             GtIdentifier::new((0, 0).into(), "Foo".into()),
             GtIdentifier::new((0, 0).into(), "foo.Bar".into()),
         );
+        let mut context = TsConvertContext::new(resolve, &Default::default());
         assert_ron_snapshot!(
-            GtIdentifier::new((0, 0).into(), "Foo".into())
-                .convert(&mut TsConvertContext::new(resolve, Default::default())),
+            convert_node_with(
+                GtIdentifier::new((0, 0).into(), "Foo".into()),
+                &mut context,
+            ),
             @r#"TsIdentifier("foo.Bar")"#
         );
     }

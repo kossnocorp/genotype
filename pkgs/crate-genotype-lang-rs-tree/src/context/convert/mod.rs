@@ -26,7 +26,6 @@ pub struct RsConvertContext {
     hoisting: bool,
     hoist_defined: Vec<RsIdentifier>,
     hoisted: Vec<RsDefinition>,
-    dependencies: Vec<(RsDependencyIdent, RsIdentifier)>,
     doc: Option<RsDoc>,
     parents: Vec<RsContextParent>,
     module_id: GtModuleId,
@@ -35,36 +34,16 @@ pub struct RsConvertContext {
     dependencies_config: HashMap<String, String>,
 }
 
-impl RsConvertContextMockable for RsConvertContext {
-    fn render_derive(
-        &self,
-        mode: RsContextRenderDeriveTypeMode,
-        serde_mode: RsContextRenderDeriveSerdeMode,
-    ) -> String {
-        let mut traits = self
-            .config
-            .derive
-            .iter()
-            .filter(|f| mode != RsContextRenderDeriveTypeMode::UnionEnum || *f != "Default")
-            .map(|derive| derive.as_str())
-            .collect::<Vec<&str>>();
+#[derive(PartialEq)]
+pub enum RsContextRenderDeriveTypeMode {
+    Struct,
+    UnionEnum,
+}
 
-        // All types need to have serialize and deserialize derive macros.
-        match serde_mode {
-            RsContextRenderDeriveSerdeMode::Serde => {
-                traits.push("Serialize");
-                traits.push("Deserialize");
-            }
-
-            RsContextRenderDeriveSerdeMode::Litty => {
-                // Literals combines SerializeLiterals and DeserializeLiterals.
-                traits.push("Literals");
-            }
-        }
-        let traits = traits.join(", ");
-
-        format!("derive({traits})")
-    }
+#[derive(PartialEq)]
+pub enum RsContextRenderDeriveSerdeMode {
+    Serde,
+    Litty,
 }
 
 impl RsConvertContext {
@@ -94,7 +73,6 @@ impl RsConvertContext {
             hoisting: false,
             hoist_defined: vec![],
             hoisted: vec![],
-            dependencies: vec![],
             doc: None,
             parents: vec![],
             field_attributes: vec![],
@@ -140,9 +118,34 @@ impl RsConvertContext {
         }
     }
 
-    #[cfg(test)]
-    pub fn as_dependencies(&self) -> Vec<(RsDependencyIdent, RsIdentifier)> {
-        self.dependencies.clone().into_iter().collect()
+    pub fn render_derive(
+        &self,
+        mode: RsContextRenderDeriveTypeMode,
+        serde_mode: RsContextRenderDeriveSerdeMode,
+    ) -> String {
+        let mut traits = self
+            .config
+            .derive
+            .iter()
+            .filter(|f| mode != RsContextRenderDeriveTypeMode::UnionEnum || *f != "Default")
+            .map(|derive| derive.as_str())
+            .collect::<Vec<&str>>();
+
+        // All types need to have serialize and deserialize derive macros.
+        match serde_mode {
+            RsContextRenderDeriveSerdeMode::Serde => {
+                traits.push("Serialize");
+                traits.push("Deserialize");
+            }
+
+            RsContextRenderDeriveSerdeMode::Litty => {
+                // Literals combines SerializeLiterals and DeserializeLiterals.
+                traits.push("Literals");
+            }
+        }
+        let traits = traits.join(", ");
+
+        format!("derive({traits})")
     }
 
     pub fn push_defined(&mut self, identifier: &RsIdentifier) {
@@ -151,34 +154,6 @@ impl RsConvertContext {
         } else {
             self.defined.push(identifier.clone());
         }
-    }
-
-    pub fn push_import(&mut self, import: RsUse) {
-        self.imports.push(import);
-    }
-
-    pub fn drain_imports(&mut self) -> Vec<RsUse> {
-        let mut imports: Vec<_> = self.imports.drain(..).collect();
-
-        let dependencies = self.dependencies.drain(..);
-        for (dependency, name) in dependencies {
-            let import = imports
-                .iter_mut()
-                .find(|import| import.dependency == dependency);
-
-            if let Some(import) = import {
-                if let RsUseReference::Named(names) = &mut import.reference {
-                    names.push(name.into());
-                    continue;
-                }
-            }
-            imports.push(RsUse {
-                reference: RsUseReference::Named(vec![name.into()]),
-                dependency,
-            });
-        }
-
-        imports
     }
 
     pub fn push_definition(&mut self, definition: RsDefinition) {
@@ -193,19 +168,16 @@ impl RsConvertContext {
 }
 
 impl GtlConvertContext for RsConvertContext {
-    type DependencyIdent = RsDependencyIdent;
+    type Import = RsUse;
 
-    type DependencyRef = RsIdentifier;
+    fn imports(&self) -> &Vec<Self::Import> {
+        &self.imports
+    }
 
-    fn add_import(self: &mut Self, ident: Self::DependencyIdent, r#ref: Self::DependencyRef) {
-        let dependency = (ident, r#ref);
-        if !self.dependencies.contains(&dependency) {
-            self.dependencies.push(dependency);
-        }
+    fn imports_mut(&mut self) -> &mut Vec<Self::Import> {
+        &mut self.imports
     }
 }
-
-impl RsConvertContextConstraint for RsConvertContext {}
 
 #[cfg(test)]
 mod tests {

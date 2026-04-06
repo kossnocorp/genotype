@@ -45,8 +45,14 @@ mod tests {
     #[test]
     fn test_register_import() {
         let mut codegen = TsCodegen::default();
-        codegen.register_import(TsImport::new("dependency".into(), "Name".into()));
-        codegen.register_import(TsImport::new("another".into(), "AlsoName".into()));
+        codegen.register_import(TsImport::new(
+            TsDependencyIdent::Local("dependency".into()),
+            "Name".into(),
+        ));
+        codegen.register_import(TsImport::new(
+            TsDependencyIdent::Local("another".into()),
+            "AlsoName".into(),
+        ));
         assert_snapshot!(
             codegen.render_module().unwrap(),
             @r#"
@@ -69,8 +75,7 @@ mod tests {
         );
         assert_snapshot!(
             codegen.render_module().unwrap(),
-            @r#"export type Name = any;
-        "#
+            @"export type Name = any;"
         );
     }
 
@@ -107,8 +112,7 @@ mod tests {
         );
         assert_snapshot!(
             codegen.render_module().unwrap(),
-            @r#"export type Hello = string;
-        "#
+            @"export type Hello = string;"
         );
     }
 }

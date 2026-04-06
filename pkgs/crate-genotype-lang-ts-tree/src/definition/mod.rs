@@ -20,6 +20,38 @@ impl TsDefinition {
             TsDefinition::Embed(embed) => embed.name.clone(),
         }
     }
+
+    pub fn scan_dependencies(&self) -> TsDefinitionDependenciesScanVisitor {
+        let mut visitor = TsDefinitionDependenciesScanVisitor::new();
+        self.clone().traverse(&mut visitor);
+        visitor
+    }
+}
+
+pub struct TsDefinitionDependenciesScanVisitor {
+    pub dependencies: HashSet<TsIdentifier>,
+}
+
+impl TsDefinitionDependenciesScanVisitor {
+    pub fn new() -> TsDefinitionDependenciesScanVisitor {
+        TsDefinitionDependenciesScanVisitor {
+            dependencies: HashSet::new(),
+        }
+    }
+}
+
+impl TsVisitor for TsDefinitionDependenciesScanVisitor {
+    fn visit_extension(&mut self, node: &mut TsExtension) {
+        self.dependencies.insert(node.reference.identifier.clone());
+    }
+
+    fn visit_inline_import(&mut self, node: &mut TsInlineImport) {
+        self.dependencies.insert(node.name.clone());
+    }
+
+    fn visit_reference(&mut self, node: &mut TsReference) {
+        self.dependencies.insert(node.identifier.clone());
+    }
 }
 
 impl GtlDefinition for TsDefinition {}
@@ -39,5 +71,11 @@ impl From<TsAlias> for TsDefinition {
 impl From<TsEmbedDefinition> for TsDefinition {
     fn from(embed: TsEmbedDefinition) -> Self {
         TsDefinition::Embed(embed)
+    }
+}
+
+impl From<TsInterface> for TsDefinition {
+    fn from(interface: TsInterface) -> Self {
+        TsDefinition::Interface(interface)
     }
 }

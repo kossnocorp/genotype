@@ -60,16 +60,16 @@ mod tests {
     fn test_convert_alias() {
         let mut context = Default::default();
         assert_ron_snapshot!(
-            GtDescriptor::Alias(Box::new(GtAlias {
-                id: GtDefinitionId("module".into(), "Name".into()),
-                span: (0, 0).into(),
-                doc: None,
-                attributes: vec![],
-                name: GtIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: Gt::primitive_boolean().into(),
-            }))
-            .convert(&mut context),
-            @r#"Reference(TsReference(TsIdentifier("Name")))"#
+            convert_node_with(
+                GtDescriptor::Alias(Box::new(Gt::alias("Name", Gt::primitive_boolean()))),
+                &mut context,
+            ),
+            @r#"
+        Reference(TsReference(
+          identifier: TsIdentifier("Name"),
+          rel: Regular,
+        ))
+        "#
         );
         let hoisted = context.drain_hoisted();
         assert_ron_snapshot!(
@@ -168,7 +168,10 @@ mod tests {
                 ),
               ],
             )),
-            Reference(TsReference(TsIdentifier("Good"))),
+            Reference(TsReference(
+              identifier: TsIdentifier("Good"),
+              rel: Regular,
+            )),
           ],
         ))
         "#
@@ -187,7 +190,12 @@ mod tests {
     fn test_convert_reference() {
         assert_ron_snapshot!(
             convert_node(Gt::descriptor(Gt::reference("Name"))),
-            @r#"Reference(TsReference(TsIdentifier("Name")))"#
+            @r#"
+        Reference(TsReference(
+          identifier: TsIdentifier("Name"),
+          rel: Regular,
+        ))
+        "#
         );
     }
 
@@ -257,7 +265,12 @@ mod tests {
             convert_node_with(Gt::descriptor(
                 Gt::branded("UserId", Gt::primitive_string())
             ), &mut context),
-            @r#"Reference(TsReference(TsIdentifier("UserId")))"#
+            @r#"
+        Reference(TsReference(
+          identifier: TsIdentifier("UserId"),
+          rel: Regular,
+        ))
+        "#
         );
         let hoisted = context.drain_hoisted();
         assert_ron_snapshot!(

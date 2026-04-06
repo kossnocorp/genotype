@@ -9,6 +9,8 @@ pub enum PyImportName {
     Alias(#[visit] PyIdentifier, #[visit] PyIdentifier),
 }
 
+impl GtlImportRefName for PyImportName {}
+
 impl From<&str> for PyImportName {
     fn from(str: &str) -> Self {
         PyImportName::Name(str.into())

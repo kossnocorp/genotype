@@ -17,12 +17,15 @@ pub trait GtlProject<'a> {
         &'a self,
     ) -> Vec<<<Self as GtlProject<'a>>::Module as GtlProjectModule<Self::LangConfig>>::Dependency>
     {
-        self.modules()
-            .iter()
-            .flat_map(|module| module.dependencies())
-            .collect::<IndexSet<_>>()
-            .into_iter()
-            .collect::<Vec<_>>()
+        let mut dependencies = vec![];
+        for module in self.modules().iter() {
+            for dependency in module.dependencies() {
+                if !dependencies.contains(&dependency) {
+                    dependencies.push(dependency);
+                }
+            }
+        }
+        dependencies
     }
 }
 

@@ -25,20 +25,13 @@ impl TsConvert<TsProperty> for GtProperty {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use genotype_test::*;
 
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GtProperty {
-                span: (0, 0).into(),
-                doc: None,
-                attributes: vec![],
-                name: GtKey::new((0, 0).into(), "name".into()),
-                descriptor: Gt::primitive_string().into(),
-                required: true,
-            }
-            .convert(&mut Default::default()),
+            convert_node(Gt::property("name", Gt::primitive_string())),
             @r#"
         TsProperty(
           doc: None,
@@ -53,15 +46,10 @@ mod tests {
     #[test]
     fn test_convert_doc() {
         assert_ron_snapshot!(
-            GtProperty {
-                span: (0, 0).into(),
-                doc: Some(GtDoc::new((0, 0).into(), "Hello, world!".into())),
-                attributes: vec![],
-                name: GtKey::new((0, 0).into(), "name".into()),
-                descriptor: Gt::primitive_string().into(),
-                required: true,
-            }
-            .convert(&mut Default::default()),
+            convert_node(assign!(
+                Gt::property("name", Gt::primitive_string()),
+                doc = Gt::some_doc("Hello, world!")
+            )),
             @r#"
         TsProperty(
           doc: Some(TsDoc("Hello, world!")),
@@ -76,15 +64,10 @@ mod tests {
     #[test]
     fn test_convert_optional() {
         assert_ron_snapshot!(
-            GtProperty {
-                span: (0, 0).into(),
-                doc: Some(GtDoc::new((0, 0).into(), "Hello, world!".into())),
-                attributes: vec![],
-                name: GtKey::new((0, 0).into(), "name".into()),
-                descriptor: Gt::primitive_string().into(),
-                required: false,
-            }
-            .convert(&mut Default::default()),
+            convert_node(assign!(
+                Gt::property_optional("name", Gt::primitive_string()),
+                doc = Gt::some_doc("Hello, world!")
+            )),
             @r#"
         TsProperty(
           doc: Some(TsDoc("Hello, world!")),

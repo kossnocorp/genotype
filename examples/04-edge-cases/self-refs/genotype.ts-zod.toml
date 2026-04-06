@@ -1,0 +1,10 @@
+name = "genotype-test-self-refs"
+out = "dist/ts-zod"
+
+[ts]
+enabled = true
+mode = "zod"
+
+[ts.manifest]
+name = "genotype-test-self-refs-ts-zod"
+version = "0.1.0"

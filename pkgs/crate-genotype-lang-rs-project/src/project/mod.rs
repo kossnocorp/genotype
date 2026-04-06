@@ -537,16 +537,16 @@ mod tests {
 
         assert_snapshot!(
             node_file.source,
-            @"
+            @r#"
         use serde::{Deserialize, Serialize};
 
         #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
         pub struct Node {
             pub value: String,
-            #[serde(default, skip_serializing_if = \"Option::is_none\")]
+            #[serde(default, skip_serializing_if = "Option::is_none")]
             pub next: Option<Box<Node>>,
         }
-            "
+        "#
         );
     }
 

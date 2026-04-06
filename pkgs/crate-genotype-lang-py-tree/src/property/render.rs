@@ -118,7 +118,7 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            @"schema_: str = Field(alias=\"schema\")"
+            @r#"schema_: str = Field(alias="schema")"#
         );
     }
 
@@ -133,7 +133,7 @@ mod tests {
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
-            @"schema_: Optional[str] = Field(default=None, alias=\"schema\")"
+            @r#"schema_: Optional[str] = Field(default=None, alias="schema")"#
         );
     }
 

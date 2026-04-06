@@ -260,7 +260,7 @@ mod tests {
         let mut context = RsConvertContext::empty("module".into());
         context.enter_parent(RsContextParent::Alias("AnimalKind".into()));
 
-        let union = Gt::union(descriptor_nodes!(
+        let union = Gt::union(vec_into!(
             Gt::literal_string("hello"),
             Gt::literal_boolean(true),
             Gt::primitive_boolean()

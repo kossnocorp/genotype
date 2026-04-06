@@ -29,10 +29,15 @@ mod tests {
         );
 
         assert_ron_snapshot!(
-            context.as_dependencies(),
+            context.imports(),
             @r#"
         [
-          (Typing, PyIdentifier("Any")),
+          PyImport(
+            dependency: Typing,
+            reference: Named([
+              Name(PyIdentifier("Any")),
+            ]),
+          ),
         ]
         "#
         );

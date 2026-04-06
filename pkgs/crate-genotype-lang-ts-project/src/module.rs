@@ -4,6 +4,7 @@ use crate::prelude::internal::*;
 pub struct TsProjectModule {
     pub path: GtPkgSrcRelativePath,
     pub module: TsModule,
+    pub mode: TsMode,
 }
 
 impl GtlProjectModule<TsConfig> for TsProjectModule {
@@ -55,14 +56,21 @@ impl GtlProjectModule<TsConfig> for TsProjectModule {
             }
         }
 
-        let module =
-            TsConvertModule::convert(&module.module, resolve, config.common.dependencies.clone()).0;
+        let module = TsConvertModule::convert(&module.module, resolve, config).0;
 
-        Ok(Self { path, module })
+        Ok(Self {
+            path,
+            module,
+            mode: config.lang.mode.clone(),
+        })
     }
 
     fn dependencies(&self) -> Vec<Self::Dependency> {
-        vec![]
+        if self.mode == TsMode::Zod {
+            vec![TsDependencyIdent::Zod]
+        } else {
+            vec![]
+        }
     }
 }
 

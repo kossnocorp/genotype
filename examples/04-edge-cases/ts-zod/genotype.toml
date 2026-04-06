@@ -1,0 +1,9 @@
+name = "genotype-test-ts-zod"
+
+[ts]
+enabled = true
+mode = "zod"
+
+[ts.manifest]
+name = "genotype-test-cyclic-refs-pkg"
+version = "0.1.0"

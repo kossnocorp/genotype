@@ -1,12 +1,9 @@
 use crate::prelude::internal::*;
 
 impl PyContextResolve for PyDict {
-    fn resolve<Context>(self, context: &mut Context) -> Self
-    where
-        Context: PyConvertContextConstraint,
-    {
+    fn resolve(self, context: &mut PyConvertContext) -> Self {
         if context.is_version(PyVersion::Legacy) {
-            context.add_import(PyDependencyIdent::Typing, "Dict".into());
+            context.push_import(PyImport::new(PyDependencyIdent::Typing, "Dict".into()));
         }
         self
     }
@@ -15,30 +12,44 @@ impl PyContextResolve for PyDict {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use genotype_test::*;
 
     #[test]
     fn test_resolve() {
-        let mut context = PyConvertContextMock::default();
+        let mut context = PyConvertContext::default();
         let dict = PyDict {
             key: PyDictKey::String,
             descriptor: PyPrimitive::String.into(),
         };
         dict.resolve(&mut context);
-        assert_eq!(context.as_imports(), vec![]);
+        assert_ron_snapshot!(
+            context.imports(),
+            @"[]"
+        );
     }
 
     #[test]
     fn test_resolve_legacy() {
-        let mut context = PyConvertContextMock::new(PyVersion::Legacy);
+        let mut config = PyConfig::default();
+        config.lang.version = PyVersion::Legacy;
+        let mut context = PyConvertContext::new(Default::default(), config);
         let dict = PyDict {
             key: PyDictKey::String,
             descriptor: PyPrimitive::String.into(),
         };
         dict.resolve(&mut context);
-        assert_eq!(
-            context.as_imports(),
-            vec![(PyDependencyIdent::Typing, "Dict".into())],
+        assert_ron_snapshot!(
+            context.imports(),
+            @r#"
+        [
+          PyImport(
+            dependency: Typing,
+            reference: Named([
+              Name(PyIdentifier("Dict")),
+            ]),
+          ),
+        ]
+        "#
         );
     }
 }

@@ -183,7 +183,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GtIdentifier::new((0, 0).into(), "Book".into()),
-                descriptor: Gt::descriptor(Gt::union(descriptor_nodes![
+                descriptor: Gt::descriptor(Gt::union(vec_into![
                     Gt::object(
                         "BookObj",
                         vec![Gt::property("author", Gt::primitive_string())]

@@ -20,14 +20,13 @@ impl<'a> GtlRender<'a> for TsPath {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use insta::assert_snapshot;
 
     #[test]
     fn render_basic() {
         assert_snapshot!(
-            TsPath("./path/to/module".into())
-                .render(Default::default(), &mut Default::default())
-                .unwrap(),
+            render_node(Tst::path("./path/to/module")),
             @"./path/to/module.js"
         );
     }
@@ -45,9 +44,7 @@ mod tests {
             ..Default::default()
         };
         assert_snapshot!(
-            TsPath("./path/to/module".into())
-                .render(Default::default(), &mut ctx)
-                .unwrap(),
+            render_node_with(Tst::path("./path/to/module"), &mut ctx),
             @"./path/to/module.ts"
         );
     }
@@ -55,9 +52,7 @@ mod tests {
     #[test]
     fn render_external() {
         assert_snapshot!(
-            TsPath("path/to/module".into())
-                .render(Default::default(), &mut Default::default())
-                .unwrap(),
+            render_node(Tst::path("path/to/module")),
             @"path/to/module"
         );
     }

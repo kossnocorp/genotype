@@ -436,6 +436,7 @@ mod tests {
               "out": "ts",
               "manifest": {},
               "dependencies": {},
+              "mode": types,
               "tsconfig": TsConfigLangTsconfig(
                 allowImportingTsExtensions: false,
               ),
@@ -769,6 +770,7 @@ mod tests {
               "out": "ts",
               "manifest": {},
               "dependencies": {},
+              "mode": types,
               "tsconfig": TsConfigLangTsconfig(
                 allowImportingTsExtensions: false,
               ),
@@ -975,6 +977,7 @@ mod tests {
               "out": "ts",
               "manifest": {},
               "dependencies": {},
+              "mode": types,
               "tsconfig": TsConfigLangTsconfig(
                 allowImportingTsExtensions: false,
               ),

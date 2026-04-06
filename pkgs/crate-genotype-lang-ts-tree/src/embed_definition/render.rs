@@ -17,20 +17,20 @@ impl<'a> GtlRender<'a> for TsEmbedDefinition {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
         assert_snapshot!(
-            TsEmbedDefinition {
-                name: "Name".into(),
-                embed: r#"const hello = {
+            render_node(
+                Tst::embed_definition(
+                    "Name",
+                    r#"const hello = {
   name: "World"
-};"#
-                .into()
-            }
-            .render(Default::default(), &mut Default::default())
-            .unwrap(),
+};"#,
+                ),
+            ),
             @r#"
         const hello = {
           name: "World"
@@ -42,13 +42,12 @@ mod tests {
     #[test]
     fn test_render_indent() {
         assert_snapshot!(
-            TsEmbedDefinition {
-                name: "Name".into(),
-                embed: r#"const hello = {
+            Tst::embed_definition(
+                "Name",
+                r#"const hello = {
   name: "World"
-};"#
-                .into()
-            }
+};"#,
+            )
             .render(
                 TsRenderState::default().indent_inc(),
                 &mut Default::default()

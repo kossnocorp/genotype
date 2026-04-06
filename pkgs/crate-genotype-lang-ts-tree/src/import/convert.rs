@@ -20,7 +20,7 @@ impl TsConvert<TsImport> for GtImport {
         };
 
         TsImport {
-            path: self.path.convert(context),
+            dependency: TsDependencyIdent::Local(self.path.convert(context)),
             reference,
         }
     }
@@ -29,6 +29,7 @@ impl TsConvert<TsImport> for GtImport {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use insta::assert_ron_snapshot;
 
     #[test]
@@ -38,16 +39,19 @@ mod tests {
             GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
             "module".into(),
         );
+        let mut context = TsConvertContext::new(resolve, &Default::default());
         assert_ron_snapshot!(
-            GtImport {
-                span: (0, 0).into(),
-                path: GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
-                reference: GtImportReference::Glob((0, 0).into())
-            }
-            .convert(&mut TsConvertContext::new(resolve, Default::default())),
+            convert_node_with(
+                GtImport {
+                    span: (0, 0).into(),
+                    path: GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+                    reference: GtImportReference::Glob((0, 0).into())
+                },
+                &mut context,
+            ),
             @r#"
         TsImport(
-          path: TsPath("./path/to/module"),
+          dependency: Local(TsPath("./path/to/module")),
           reference: Glob("module"),
         )
         "#
@@ -57,7 +61,7 @@ mod tests {
     #[test]
     fn test_convert_names() {
         assert_ron_snapshot!(
-            GtImport {
+            convert_node(GtImport {
                 span: (0, 0).into(),
                 path: GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 reference: GtImportReference::Names(
@@ -74,11 +78,10 @@ mod tests {
                         )
                     ]
                 )
-            }
-            .convert(&mut Default::default()),
+            }),
             @r#"
         TsImport(
-          path: TsPath("./path/to/module"),
+          dependency: Local(TsPath("./path/to/module")),
           reference: Named([
             Name(TsIdentifier("Name")),
             Alias(TsIdentifier("Name"), TsIdentifier("Alias")),
@@ -91,15 +94,14 @@ mod tests {
     #[test]
     fn test_convert_name() {
         assert_ron_snapshot!(
-            GtImport {
+            convert_node(GtImport {
                 span: (0, 0).into(),
                 path: GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
                 reference: GtIdentifier::new((0, 0).into(), "Name".into()).into()
-            }
-            .convert(&mut Default::default()),
+            }),
             @r#"
         TsImport(
-          path: TsPath("./path/to/module"),
+          dependency: Local(TsPath("./path/to/module")),
           reference: Named([
             Name(TsIdentifier("Name")),
           ]),
