@@ -22,11 +22,13 @@ impl PyModuleVisitor {
 }
 
 impl PyVisitor for PyModuleVisitor {
-    fn visit_definition(&mut self, definition: &mut PyDefinition) {
+    fn visit_definition(&mut self, definition: &PyDefinition) {
         self.scope.insert(definition.name().clone());
     }
+}
 
-    fn visit_reference(&mut self, reference: &mut PyReference) {
+impl PyVisitorMut for PyModuleVisitor {
+    fn visit_reference_mut(&mut self, reference: &mut PyReference) {
         if self.definitions.contains(&reference.identifier) {
             reference.forward = !self.scope.contains(&reference.identifier);
         }

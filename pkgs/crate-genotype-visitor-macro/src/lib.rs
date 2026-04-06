@@ -1,7 +1,12 @@
 use heck::ToSnakeCase;
 use proc_macro::TokenStream;
 use quote::{format_ident, quote};
-use syn::{Data, DeriveInput, Fields, ItemStruct, parse_macro_input};
+use syn::{
+    parse::{Parse, ParseStream},
+    parse_macro_input,
+    punctuated::Punctuated,
+    Data, DeriveInput, Fields, Ident, ItemStruct, Token,
+};
 
 #[proc_macro_derive(Visitor, attributes(visit))]
 pub fn derive_visitor(input: TokenStream) -> TokenStream {
@@ -27,77 +32,20 @@ pub fn derive_visitor(input: TokenStream) -> TokenStream {
     };
 
     let visitor_trait_ident = format_ident!("{}Visitor", prefix);
+    let visitor_mut_trait_ident = format_ident!("{}VisitorMut", prefix);
     let visit_method_ident = format_ident!("visit_{}", type_method_suffix(&type_name));
+    let visit_method_mut_ident = format_ident!("visit_{}_mut", type_method_suffix(&type_name));
     let ident = input.ident.clone();
 
-    let (children, is_enum) = match &input.data {
-        Data::Struct(data_struct) => (struct_children(&data_struct.fields), false),
+    let (children, children_mut, is_enum) = match &input.data {
+        Data::Struct(data_struct) => (
+            struct_children(&data_struct.fields, TraversalMode::Immutable),
+            struct_children(&data_struct.fields, TraversalMode::Mutable),
+            false,
+        ),
         Data::Enum(data_enum) => (
-            data_enum
-                .variants
-                .iter()
-                .map(|variant| {
-                    let variant_ident = &variant.ident;
-
-                    match &variant.fields {
-                        Fields::Named(fields) => {
-                            let names = fields
-                                .named
-                                .iter()
-                                .filter_map(|field| {
-                                    if has_visit_attr(field) {
-                                        field.ident.clone()
-                                    } else {
-                                        None
-                                    }
-                                })
-                                .collect::<Vec<_>>();
-
-                            let all_names = fields
-                                .named
-                                .iter()
-                                .map(|field| field.ident.clone().expect("named field"))
-                                .collect::<Vec<_>>();
-
-                            quote! {
-                                Self::#variant_ident { #(#all_names),* } => {
-                                    #(crate::visitor::Traverse::traverse(#names, visitor);)*
-                                }
-                            }
-                        }
-                        Fields::Unnamed(fields) => {
-                            let names = fields
-                                .unnamed
-                                .iter()
-                                .enumerate()
-                                .map(|(index, _)| format_ident!("field_{index}"))
-                                .collect::<Vec<_>>();
-
-                            let traversable = fields
-                                .unnamed
-                                .iter()
-                                .enumerate()
-                                .filter_map(|(index, field)| {
-                                    if has_visit_attr(field) {
-                                        Some(format_ident!("field_{index}"))
-                                    } else {
-                                        None
-                                    }
-                                })
-                                .collect::<Vec<_>>();
-
-                            quote! {
-                                Self::#variant_ident(#(#names),*) => {
-                                    #(crate::visitor::Traverse::traverse(#traversable, visitor);)*
-                                }
-                            }
-                        }
-                        Fields::Unit => {
-                            quote! { Self::#variant_ident => {} }
-                        }
-                    }
-                })
-                .collect::<Vec<_>>(),
+            enum_children(data_enum, TraversalMode::Immutable),
+            enum_children(data_enum, TraversalMode::Mutable),
             true,
         ),
         _ => {
@@ -113,10 +61,23 @@ pub fn derive_visitor(input: TokenStream) -> TokenStream {
             where
                 V: crate::visitor::#visitor_trait_ident + ?Sized,
             {
-                fn traverse(&mut self, visitor: &mut V) {
+                fn traverse(&self, visitor: &mut V) {
                     visitor.#visit_method_ident(self);
                     match self {
                         #(#children),*
+                    }
+                }
+            }
+
+            impl<V> crate::visitor::TraverseMut<V> for #ident
+            where
+                V: crate::visitor::#visitor_mut_trait_ident + ?Sized,
+            {
+                fn traverse_mut(&mut self, visitor: &mut V) {
+                    visitor.#visit_method_ident(self);
+                    visitor.#visit_method_mut_ident(self);
+                    match self {
+                        #(#children_mut),*
                     }
                 }
             }
@@ -127,9 +88,20 @@ pub fn derive_visitor(input: TokenStream) -> TokenStream {
             where
                 V: crate::visitor::#visitor_trait_ident + ?Sized,
             {
-                fn traverse(&mut self, visitor: &mut V) {
+                fn traverse(&self, visitor: &mut V) {
                     visitor.#visit_method_ident(self);
                     #(#children)*
+                }
+            }
+
+            impl<V> crate::visitor::TraverseMut<V> for #ident
+            where
+                V: crate::visitor::#visitor_mut_trait_ident + ?Sized,
+            {
+                fn traverse_mut(&mut self, visitor: &mut V) {
+                    visitor.#visit_method_ident(self);
+                    visitor.#visit_method_mut_ident(self);
+                    #(#children_mut)*
                 }
             }
         }
@@ -140,7 +112,7 @@ pub fn derive_visitor(input: TokenStream) -> TokenStream {
 
 #[proc_macro_attribute]
 pub fn visitor(args: TokenStream, input: TokenStream) -> TokenStream {
-    let nodes = parse_macro_input!(args with syn::punctuated::Punctuated::<syn::Type, syn::Token![,]>::parse_terminated);
+    let args = parse_macro_input!(args as VisitorArgs);
     let item = parse_macro_input!(input as ItemStruct);
 
     if !item.fields.is_empty() {
@@ -151,8 +123,10 @@ pub fn visitor(args: TokenStream, input: TokenStream) -> TokenStream {
 
     let vis = item.vis;
     let trait_ident = item.ident;
+    let trait_mut_ident = args.mut_trait;
 
-    let methods = nodes
+    let methods = args
+        .nodes
         .iter()
         .map(|node| {
             let type_ident = match node {
@@ -172,7 +146,33 @@ pub fn visitor(args: TokenStream, input: TokenStream) -> TokenStream {
             let method_ident =
                 format_ident!("visit_{}", type_method_suffix(&type_ident.to_string()));
             quote! {
-                fn #method_ident(&mut self, _node: &mut #node) {}
+                fn #method_ident(&mut self, _node: &#node) {}
+            }
+        })
+        .collect::<Vec<_>>();
+
+    let mut_methods = args
+        .nodes
+        .iter()
+        .map(|node| {
+            let type_ident = match node {
+                syn::Type::Path(path) => path
+                    .path
+                    .segments
+                    .last()
+                    .map(|segment| segment.ident.clone()),
+                _ => None,
+            };
+
+            let Some(type_ident) = type_ident else {
+                return syn::Error::new_spanned(node, "visitor node must be a named type")
+                    .to_compile_error();
+            };
+
+            let method_mut_ident =
+                format_ident!("visit_{}_mut", type_method_suffix(&type_ident.to_string()));
+            quote! {
+                fn #method_mut_ident(&mut self, _node: &mut #node) {}
             }
         })
         .collect::<Vec<_>>();
@@ -181,11 +181,61 @@ pub fn visitor(args: TokenStream, input: TokenStream) -> TokenStream {
         #vis trait #trait_ident {
             #(#methods)*
         }
+
+        #vis trait #trait_mut_ident: #trait_ident {
+            #(#mut_methods)*
+        }
     }
     .into()
 }
 
-fn struct_children(fields: &Fields) -> Vec<proc_macro2::TokenStream> {
+struct VisitorArgs {
+    nodes: Punctuated<syn::Type, Token![,]>,
+    mut_trait: Ident,
+}
+
+impl Parse for VisitorArgs {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
+        let nodes_ident: Ident = input.parse()?;
+        if nodes_ident != "nodes" {
+            return Err(syn::Error::new(
+                nodes_ident.span(),
+                "expected `nodes(...)` as the first argument",
+            ));
+        }
+
+        let content;
+        syn::parenthesized!(content in input);
+        let nodes = content.parse_terminated(syn::Type::parse, Token![,])?;
+
+        input.parse::<Token![,]>()?;
+
+        let mut_trait_ident: Ident = input.parse()?;
+        if mut_trait_ident != "mut_trait" {
+            return Err(syn::Error::new(
+                mut_trait_ident.span(),
+                "expected `mut_trait = <TraitName>` as the second argument",
+            ));
+        }
+
+        input.parse::<Token![=]>()?;
+        let mut_trait: Ident = input.parse()?;
+
+        if !input.is_empty() {
+            return Err(input.error("unexpected tokens after `mut_trait = ...`"));
+        }
+
+        Ok(Self { nodes, mut_trait })
+    }
+}
+
+#[derive(Clone, Copy)]
+enum TraversalMode {
+    Immutable,
+    Mutable,
+}
+
+fn struct_children(fields: &Fields, mode: TraversalMode) -> Vec<proc_macro2::TokenStream> {
     match fields {
         Fields::Named(fields) => fields
             .named
@@ -196,9 +246,14 @@ fn struct_children(fields: &Fields) -> Vec<proc_macro2::TokenStream> {
                 }
 
                 let field_ident = field.ident.clone().expect("named field");
-                Some(quote! {
-                    crate::visitor::Traverse::traverse(&mut self.#field_ident, visitor);
-                })
+                match mode {
+                    TraversalMode::Immutable => Some(quote! {
+                        crate::visitor::Traverse::traverse(&self.#field_ident, visitor);
+                    }),
+                    TraversalMode::Mutable => Some(quote! {
+                        crate::visitor::TraverseMut::traverse_mut(&mut self.#field_ident, visitor);
+                    }),
+                }
             })
             .collect(),
         Fields::Unnamed(fields) => fields
@@ -211,13 +266,100 @@ fn struct_children(fields: &Fields) -> Vec<proc_macro2::TokenStream> {
                 }
 
                 let index = syn::Index::from(index);
-                Some(quote! {
-                    crate::visitor::Traverse::traverse(&mut self.#index, visitor);
-                })
+                match mode {
+                    TraversalMode::Immutable => Some(quote! {
+                        crate::visitor::Traverse::traverse(&self.#index, visitor);
+                    }),
+                    TraversalMode::Mutable => Some(quote! {
+                        crate::visitor::TraverseMut::traverse_mut(&mut self.#index, visitor);
+                    }),
+                }
             })
             .collect(),
         Fields::Unit => Vec::new(),
     }
+}
+
+fn enum_children(data_enum: &syn::DataEnum, mode: TraversalMode) -> Vec<proc_macro2::TokenStream> {
+    data_enum
+        .variants
+        .iter()
+        .map(|variant| {
+            let variant_ident = &variant.ident;
+
+            match &variant.fields {
+                Fields::Named(fields) => {
+                    let names = fields
+                        .named
+                        .iter()
+                        .filter_map(|field| {
+                            if has_visit_attr(field) {
+                                field.ident.clone()
+                            } else {
+                                None
+                            }
+                        })
+                        .collect::<Vec<_>>();
+
+                    let all_names = fields
+                        .named
+                        .iter()
+                        .map(|field| field.ident.clone().expect("named field"))
+                        .collect::<Vec<_>>();
+
+                    match mode {
+                        TraversalMode::Immutable => quote! {
+                            Self::#variant_ident { #(#all_names),* } => {
+                                #(crate::visitor::Traverse::traverse(#names, visitor);)*
+                            }
+                        },
+                        TraversalMode::Mutable => quote! {
+                            Self::#variant_ident { #(#all_names),* } => {
+                                #(crate::visitor::TraverseMut::traverse_mut(#names, visitor);)*
+                            }
+                        },
+                    }
+                }
+                Fields::Unnamed(fields) => {
+                    let names = fields
+                        .unnamed
+                        .iter()
+                        .enumerate()
+                        .map(|(index, _)| format_ident!("field_{index}"))
+                        .collect::<Vec<_>>();
+
+                    let traversable = fields
+                        .unnamed
+                        .iter()
+                        .enumerate()
+                        .filter_map(|(index, field)| {
+                            if has_visit_attr(field) {
+                                Some(format_ident!("field_{index}"))
+                            } else {
+                                None
+                            }
+                        })
+                        .collect::<Vec<_>>();
+
+                    match mode {
+                        TraversalMode::Immutable => quote! {
+                            Self::#variant_ident(#(#names),*) => {
+                                #(crate::visitor::Traverse::traverse(#traversable, visitor);)*
+                            }
+                        },
+                        TraversalMode::Mutable => quote! {
+                            Self::#variant_ident(#(#names),*) => {
+                                #(crate::visitor::TraverseMut::traverse_mut(#traversable, visitor);)*
+                            }
+                        },
+                    }
+                }
+                Fields::Unit => {
+                    quote! { Self::#variant_ident => {} }
+                }
+            }
+        })
+        .collect::<Vec<_>>()
 }
 
 fn has_visit_attr(field: &syn::Field) -> bool {

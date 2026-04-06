@@ -32,8 +32,10 @@ impl<'a> GtpResolveVisitor<'a> {
     }
 }
 
-impl GtVisitor for GtpResolveVisitor<'_> {
-    fn visit_import(&mut self, import: &mut GtImport) {
+impl GtVisitor for GtpResolveVisitor<'_> {}
+
+impl GtVisitorMut for GtpResolveVisitor<'_> {
+    fn visit_import_mut(&mut self, import: &mut GtImport) {
         if self.error.is_some() {
             return;
         }
@@ -45,7 +47,7 @@ impl GtVisitor for GtpResolveVisitor<'_> {
         }
     }
 
-    fn visit_inline_import(&mut self, import: &mut GtInlineImport) {
+    fn visit_inline_import_mut(&mut self, import: &mut GtInlineImport) {
         if self.error.is_some() {
             return;
         }
@@ -75,7 +77,7 @@ impl GtVisitor for GtpResolveVisitor<'_> {
         }
     }
 
-    fn visit_reference(&mut self, reference: &mut GtReference) {
+    fn visit_reference_mut(&mut self, reference: &mut GtReference) {
         if self.error.is_some() {
             return;
         }

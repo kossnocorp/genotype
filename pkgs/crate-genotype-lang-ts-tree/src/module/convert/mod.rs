@@ -48,7 +48,7 @@ impl TsConvertModule {
         };
 
         let mut visitor = TsModuleConvertVisitor::new(&module);
-        module.traverse(&mut visitor);
+        module.traverse_mut(&mut visitor);
 
         TsConvertModule(module)
     }

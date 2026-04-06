@@ -37,7 +37,7 @@ where
     Type: TryFrom<GtDescriptor>,
     Type::Error: Debug,
 {
-    let mut module = parse_module(source_code);
+    let module = parse_module(source_code);
     let mut visitor = UnwrapNamedVisitor::new(name);
     module.traverse(&mut visitor);
 
@@ -67,7 +67,7 @@ impl UnwrapNamedVisitor {
 }
 
 impl GtVisitor for UnwrapNamedVisitor {
-    fn visit_alias(&mut self, alias: &mut GtAlias) {
+    fn visit_alias(&mut self, alias: &GtAlias) {
         if alias.name.1.as_ref() == self.name.as_str() {
             if let Some(_) = self.descriptor {
                 panic!("multiple descriptors with the same name found");

@@ -12,10 +12,14 @@ mod visitor {
     pub use genotype_visitor_macro::visitor;
 
     pub trait Traverse<V: ?Sized> {
-        fn traverse(&mut self, visitor: &mut V);
+        fn traverse(&self, visitor: &mut V);
     }
 
-    #[visitor(GtNode)]
+    pub trait TraverseMut<V: ?Sized> {
+        fn traverse_mut(&mut self, visitor: &mut V);
+    }
+
+    #[visitor(nodes(GtNode), mut_trait = GtVisitorMut)]
     pub struct GtVisitor;
 }
 

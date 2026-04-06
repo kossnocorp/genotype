@@ -23,14 +23,16 @@ impl TsModuleConvertVisitor {
     }
 }
 
-impl TsVisitor for TsModuleConvertVisitor {
-    fn visit_definition(&mut self, definition: &mut TsDefinition) {
+impl TsVisitor for TsModuleConvertVisitor {}
+
+impl TsVisitorMut for TsModuleConvertVisitor {
+    fn visit_definition_mut(&mut self, definition: &mut TsDefinition) {
         let name = definition.name();
         self.scope.insert(name.clone());
         self.current_definition = Some(name);
     }
 
-    fn visit_reference(&mut self, reference: &mut TsReference) {
+    fn visit_reference_mut(&mut self, reference: &mut TsReference) {
         if !self.definitions.contains(&reference.identifier) {
             return;
         }
@@ -66,7 +68,7 @@ mod tests {
         );
 
         let mut visitor = TsModuleConvertVisitor::new(&module);
-        module.traverse(&mut visitor);
+        module.traverse_mut(&mut visitor);
 
         assert_ron_snapshot!(module, @r#"
         TsModule(
@@ -102,7 +104,7 @@ mod tests {
         );
 
         let mut visitor = TsModuleConvertVisitor::new(&module);
-        module.traverse(&mut visitor);
+        module.traverse_mut(&mut visitor);
 
         assert_ron_snapshot!(module, @r#"
         TsModule(
@@ -146,7 +148,7 @@ mod tests {
         );
 
         let mut visitor = TsModuleConvertVisitor::new(&module);
-        module.traverse(&mut visitor);
+        module.traverse_mut(&mut visitor);
 
         assert_ron_snapshot!(module, @r#"
         TsModule(

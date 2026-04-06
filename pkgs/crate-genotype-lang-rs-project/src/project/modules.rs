@@ -131,7 +131,7 @@ impl RsProject<'_> {
                     // Collect the referenced definition field references.
                     let mut visitor = RsProjectExtensionFieldsVisitor::new();
                     for field in resolved_fields.iter_mut() {
-                        field.traverse(&mut visitor);
+                        field.traverse_mut(&mut visitor);
                     }
 
                     // Find the module that contains the current definition id.
@@ -660,8 +660,10 @@ impl RsProjectExtensionFieldsVisitor {
     }
 }
 
-impl RsVisitor for RsProjectExtensionFieldsVisitor {
-    fn visit_reference(&mut self, reference: &mut RsReference) {
+impl RsVisitor for RsProjectExtensionFieldsVisitor {}
+
+impl RsVisitorMut for RsProjectExtensionFieldsVisitor {
+    fn visit_reference_mut(&mut self, reference: &mut RsReference) {
         self.pulled_references
             .insert((reference.id.clone(), reference.definition_id.clone()));
 

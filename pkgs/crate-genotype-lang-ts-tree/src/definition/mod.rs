@@ -23,7 +23,7 @@ impl TsDefinition {
 
     pub fn scan_dependencies(&self) -> TsDefinitionDependenciesScanVisitor {
         let mut visitor = TsDefinitionDependenciesScanVisitor::new();
-        self.clone().traverse(&mut visitor);
+        self.traverse(&mut visitor);
         visitor
     }
 }
@@ -41,15 +41,15 @@ impl TsDefinitionDependenciesScanVisitor {
 }
 
 impl TsVisitor for TsDefinitionDependenciesScanVisitor {
-    fn visit_extension(&mut self, node: &mut TsExtension) {
+    fn visit_extension(&mut self, node: &TsExtension) {
         self.dependencies.insert(node.reference.identifier.clone());
     }
 
-    fn visit_inline_import(&mut self, node: &mut TsInlineImport) {
+    fn visit_inline_import(&mut self, node: &TsInlineImport) {
         self.dependencies.insert(node.name.clone());
     }
 
-    fn visit_reference(&mut self, node: &mut TsReference) {
+    fn visit_reference(&mut self, node: &TsReference) {
         self.dependencies.insert(node.identifier.clone());
     }
 }

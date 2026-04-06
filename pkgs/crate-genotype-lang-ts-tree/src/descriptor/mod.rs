@@ -21,7 +21,7 @@ pub enum TsDescriptor {
 impl TsDescriptor {
     pub fn scan_references(&self) -> TsDescriptorReferencesScanVisitor {
         let mut visitor = TsDescriptorReferencesScanVisitor::new();
-        self.clone().traverse(&mut visitor);
+        self.traverse(&mut visitor);
         visitor
     }
 }
@@ -41,7 +41,7 @@ impl TsDescriptorReferencesScanVisitor {
 }
 
 impl TsVisitor for TsDescriptorReferencesScanVisitor {
-    fn visit_reference(&mut self, node: &mut TsReference) {
+    fn visit_reference(&mut self, node: &TsReference) {
         match node.rel {
             TsReferenceRel::SelfRecursive => self.has_self_recursive = true,
             TsReferenceRel::Forward => self.has_forward = true,

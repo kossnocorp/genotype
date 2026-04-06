@@ -39,7 +39,7 @@ impl GtProjectModule {
 
         let mut visitor = GtpResolveVisitor::new(parse.1.module.id.clone(), &project_resolve);
         let mut parse = parse;
-        parse.1.module.traverse(&mut visitor);
+        parse.1.module.traverse_mut(&mut visitor);
 
         if let Some(error) = visitor.error() {
             return Err(

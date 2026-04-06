@@ -35,7 +35,7 @@ impl PyConvertModule {
         };
 
         let mut visitor = PyModuleVisitor::new(&module);
-        module.traverse(&mut visitor);
+        module.traverse_mut(&mut visitor);
 
         PyConvertModule(module)
     }
