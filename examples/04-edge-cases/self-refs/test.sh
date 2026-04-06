@@ -55,12 +55,10 @@ done
 
 echo
 
-# TODO: Fix self-refs for Python 3.11 and below
-# build_for_python "legacy"
-# for version in "${LEGACY_VERSIONS[@]}"; do
-# 	run_python_tests_for "legacy" "$version"
-# done
-echo "🟡 Unimplemented for legacy Python, skipping..."
+build_for_python "legacy"
+for version in "${LEGACY_VERSIONS[@]}"; do
+	run_python_tests_for "legacy" "$version"
+done
 
 #endregion
 

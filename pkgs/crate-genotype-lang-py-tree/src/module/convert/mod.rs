@@ -34,7 +34,7 @@ impl PyConvertModule {
             definitions,
         };
 
-        let mut visitor = PyModuleVisitor::new(&module);
+        let mut visitor = PyModuleVisitor::new(&module, config.lang.version == PyVersion::Legacy);
         module.traverse_mut(&mut visitor);
 
         PyConvertModule(module)

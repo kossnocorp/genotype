@@ -1,5 +1,19 @@
 use crate::prelude::internal::*;
 
+struct LegacyAliasSelfReferenceVisitor {
+    name: PyIdentifier,
+}
+
+impl PyVisitor for LegacyAliasSelfReferenceVisitor {}
+
+impl PyVisitorMut for LegacyAliasSelfReferenceVisitor {
+    fn visit_reference_mut(&mut self, reference: &mut PyReference) {
+        if reference.identifier == self.name {
+            reference.forward = true;
+        }
+    }
+}
+
 impl PyConvert<PyDefinition> for GtAlias {
     fn convert(&self, context: &mut PyConvertContext) -> PyDefinition {
         let doc = self.doc.as_ref().map(|doc| doc.convert(context));
@@ -39,6 +53,11 @@ impl PyConvert<PyDefinition> for GtAlias {
                     }
                 }
 
+                if context.is_version(PyVersion::Legacy) {
+                    let mut visitor = LegacyAliasSelfReferenceVisitor { name: name.clone() };
+                    descriptor.traverse_mut(&mut visitor);
+                }
+
                 let references = context.pop_references_scope();
 
                 PyDefinition::Alias(PyAlias {
@@ -55,20 +74,13 @@ impl PyConvert<PyDefinition> for GtAlias {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_test::*;
 
     #[test]
     fn test_convert_alias() {
         assert_ron_snapshot!(
-            GtAlias {
-                id: GtDefinitionId("module".into(), "Name".into()),
-                span: (0, 0).into(),
-                doc: None,
-                attributes: vec![],
-                name: GtIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: Gt::primitive_boolean().into()
-            }
-            .convert(&mut PyConvertContext::default()),
+            convert_node(
+                 Gt::alias("Name", Gt::primitive_boolean())
+            ),
             @r#"
         Alias(PyAlias(
           doc: None,
@@ -83,39 +95,18 @@ mod tests {
     #[test]
     fn test_convert_class() {
         assert_ron_snapshot!(
-            GtAlias {
-                id: GtDefinitionId("module".into(), "Book".into()),
-                span: (0, 0).into(),
-                doc: None,
-                attributes: vec![],
-                name: GtIdentifier::new((0, 0).into(), "Book".into()),
-                descriptor: GtDescriptor::Object(GtObject {
-                    span: (0, 0).into(),
-                    doc: None,
-                    attributes: vec![],
-                    name: GtIdentifier::new((0, 0).into(), "Book".into()).into(),
-                    extensions: vec![],
-                    properties: vec![
-                        GtProperty {
-                            span: (0, 0).into(),
-                            doc: None,
-                            attributes: vec![],
-                            name: GtKey::new((0, 0).into(), "title".into()),
-                            descriptor: Gt::primitive_string().into(),
-                            required: true,
-                        },
-                        GtProperty {
-                            span: (0, 0).into(),
-                            doc: None,
-                            attributes: vec![],
-                            name: GtKey::new((0, 0).into(), "author".into()),
-                            descriptor: Gt::primitive_string().into(),
-                            required: true,
-                        }
-                    ]
-                })
-            }
-            .convert(&mut PyConvertContext::default()),
+            convert_node(
+                Gt::alias(
+                    "Book",
+                    Gt::object(
+                        "Book",
+                        vec![
+                            Gt::property("title", Gt::primitive_string()),
+                            Gt::property("author", Gt::primitive_string()),
+                        ],
+                    ),
+                )
+            ),
             @r#"
         Class(PyClass(
           doc: None,
@@ -144,17 +135,12 @@ mod tests {
     #[test]
     fn test_convert_branded() {
         assert_ron_snapshot!(
-            GtAlias {
-                id: GtDefinitionId("module".into(), "UserId".into()),
-                span: (0, 0).into(),
-                doc: None,
-                attributes: vec![],
-                name: GtIdentifier::new((0, 0).into(), "UserId".into()),
-                descriptor: Gt::descriptor(
-                    Gt::branded("UserId", Gt::primitive_string())
+            convert_node(
+                Gt::alias(
+                    "UserId",
+                    Gt::descriptor(Gt::branded("UserId", Gt::primitive_string())),
                 )
-            }
-            .convert(&mut PyConvertContext::default()),
+            ),
             @r#"
         Newtype(PyNewtype(
           doc: None,
@@ -170,20 +156,16 @@ mod tests {
         let mut context = PyConvertContext::default();
 
         assert_ron_snapshot!(
-            GtAlias {
-                id: GtDefinitionId("module".into(), "Book".into()),
-                span: (0, 0).into(),
-                doc: None,
-                attributes: vec![],
-                name: GtIdentifier::new((0, 0).into(), "Book".into()),
-                descriptor: Gt::descriptor(Gt::union(vec_into![
-                    Gt::object("BookObj", vec![
-                        Gt::property("author", Gt::primitive_string())
-                    ]),
-                    Gt::primitive_string()
-                ])),
-            }
-            .convert(&mut context),
+            convert_node_with(
+                Gt::alias(
+                    "Book",
+                    Gt::descriptor(Gt::union(vec_into![
+                        Gt::object("BookObj", vec![Gt::property("author", Gt::primitive_string())]),
+                        Gt::primitive_string(),
+                    ])),
+                ),
+                &mut context,
+            ),
             @r#"
         Alias(PyAlias(
           doc: None,
@@ -231,24 +213,13 @@ mod tests {
 
     #[test]
     fn test_convert_resolve() {
-        let mut context = PyConvertContext::new(
-            Default::default(),
-            PyConfig {
-                lang: PyConfigLang::new(PyVersion::Legacy),
-                ..Default::default()
-            },
-        );
+        let mut context = Pyt::convert_context_legacy();
 
         assert_ron_snapshot!(
-            GtAlias {
-                id: GtDefinitionId("module".into(), "Order".into()),
-                span: (0, 0).into(),
-                doc: None,
-                attributes: vec![],
-                name: GtIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: Gt::primitive_string().into(),
-            }
-            .convert(&mut context),
+            convert_node_with(
+                Gt::alias("Name", Gt::primitive_string()),
+                &mut context,
+            ),
             @r#"
         Alias(PyAlias(
           doc: None,
@@ -270,15 +241,10 @@ mod tests {
         let mut context = PyConvertContext::default();
 
         assert_ron_snapshot!(
-            GtAlias {
-                id: GtDefinitionId("module".into(), "Name".into()),
-                span: (0, 0).into(),
-                doc: None,
-                attributes: vec![],
-                name: GtIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: Gt::primitive_string().into(),
-            }
-            .convert(&mut context),
+            convert_node_with(
+                Gt::alias("Name", Gt::primitive_string()),
+                &mut context,
+            ),
             @r#"
         Alias(PyAlias(
           doc: None,
@@ -304,23 +270,10 @@ mod tests {
         let mut context = PyConvertContext::default();
 
         assert_ron_snapshot!(
-            GtAlias {
-                id: GtDefinitionId("module".into(), "Name".into()),
-                span: (0, 0).into(),
-                doc: None,
-                attributes: vec![],
-                name: GtIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: GtObject {
-                    name: GtObjectName::Named(GtIdentifier::new((0, 0).into(), "Name".into())),
-                    doc: None,
-                    attributes: vec![],
-                    span: (0, 0).into(),
-                    extensions: vec![],
-                    properties: vec![],
-                }
-                .into(),
-            }
-            .convert(&mut context),
+            convert_node_with(
+                Gt::alias("Name", Gt::object("Name", vec![])),
+                &mut context,
+            ),
             @r#"
         Class(PyClass(
           doc: None,
@@ -345,32 +298,15 @@ mod tests {
     #[test]
     fn test_convert_discriminator() {
         assert_ron_snapshot!(
-            GtAlias {
-                id: GtDefinitionId("module".into(), "Message".into()),
-                span: (0, 0).into(),
-                doc: None,
-                attributes: vec![GtAttribute {
-                    span: (0, 0).into(),
-                    name: GtAttributeName::new((0, 0).into(), "discriminator".into()),
-                    descriptor: Some(GtAttributeDescriptor::Assignment(
-                        GtAttributeAssignment::new(
-                            (0, 0).into(),
-                            GtAttributeValue::Literal(GtLiteral {
-                                span: (0, 0).into(),
-                                doc: None,
-                                attributes: vec![],
-                                value: GtLiteralValue::String("type".into()),
-                            })
-                        )
-                    ))
-                }],
-                name: GtIdentifier::new((0, 0).into(), "Message".into()),
-                descriptor: Gt::descriptor(Gt::union(vec_into![
-                    Gt::reference("Reply"),
-                    Gt::reference("DM")
-                ])),
-            }
-            .convert(&mut PyConvertContext::default()),
+            convert_node(
+                assign!(
+                    Gt::alias("Message", Gt::descriptor(Gt::union(vec_into![
+                        Gt::reference("Reply"),
+                        Gt::reference("DM"),
+                    ]))),
+                    attributes = vec![attribute_node!(discriminator = "type")]
+                )
+            ),
             @r#"
         Alias(PyAlias(
           doc: None,
@@ -398,17 +334,85 @@ mod tests {
     }
 
     #[test]
+    fn test_convert_legacy_self_ref_alias_array() {
+        assert_ron_snapshot!(
+            convert_node_with(
+                Gt::alias("SelfRefArray", Gt::array(Gt::reference("SelfRefArray"))),
+                &mut Pyt::convert_context_legacy(),
+            ),
+            @r#"
+        Alias(PyAlias(
+          doc: None,
+          name: PyIdentifier("SelfRefArray"),
+          descriptor: List(PyList(
+            descriptor: Reference(PyReference(
+              identifier: PyIdentifier("SelfRefArray"),
+              forward: true,
+            )),
+          )),
+          references: [
+            PyIdentifier("SelfRefArray"),
+          ],
+        ))
+        "#
+        );
+    }
+
+    #[test]
+    fn test_convert_legacy_self_ref_alias_tuple() {
+        assert_ron_snapshot!(
+            convert_node_with(
+                Gt::alias(
+                    "SelfRefTuple",
+                    Gt::union(vec![
+                        Gt::literal_null().into(),
+                        Gt::tuple(vec![
+                            Gt::primitive_string().into(),
+                            Gt::array(Gt::reference("SelfRefTuple")).into(),
+                        ])
+                        .into(),
+                    ]),
+                ),
+                &mut Pyt::convert_context_legacy(),
+            ),
+            @r#"
+        Alias(PyAlias(
+          doc: None,
+          name: PyIdentifier("SelfRefTuple"),
+          descriptor: Union(PyUnion(
+            descriptors: [
+              Literal(r#None),
+              Tuple(PyTuple(
+                descriptors: [
+                  Primitive(String),
+                  List(PyList(
+                    descriptor: Reference(PyReference(
+                      identifier: PyIdentifier("SelfRefTuple"),
+                      forward: true,
+                    )),
+                  )),
+                ],
+              )),
+            ],
+            discriminator: None,
+          )),
+          references: [
+            PyIdentifier("SelfRefTuple"),
+          ],
+        ))
+        "#
+        );
+    }
+
+    #[test]
     fn test_convert_doc_alias() {
         assert_ron_snapshot!(
-            GtAlias {
-                id: GtDefinitionId("module".into(), "Name".into()),
-                span: (0, 0).into(),
-                doc: Some(GtDoc::new((0, 0).into(), "Hello, world!".into())),
-                attributes: vec![],
-                name: GtIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: Gt::primitive_boolean().into(),
-            }
-            .convert(&mut PyConvertContext::default()),
+            convert_node(
+                assign!(
+                    Gt::alias("Name", Gt::primitive_boolean()),
+                    doc = Gt::some_doc("Hello, world!")
+                ),
+            ),
             @r#"
         Alias(PyAlias(
           doc: Some(PyDoc("Hello, world!")),
