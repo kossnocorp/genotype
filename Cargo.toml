@@ -18,7 +18,7 @@ members = [
   "pkgs/crate-genotype-runtime",
   "pkgs/npm-genotype-json-types/dist/rs",
   "pkgs/crate-genotype-json-converter",
-  "pkgs/npm-genotype-lsp",
+  "pkgs/crate-genotype-lsp",
   "pkgs/crate-genotype-parser",
   "pkgs/crate-genotype-project",
   "pkgs/crate-genotype-visitor-macro",

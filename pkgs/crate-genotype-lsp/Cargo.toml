@@ -12,7 +12,7 @@ name = "gts"
 path = "src/main.rs"
 
 [dependencies]
-async-lsp = { version = "0.2.1", features = ["tokio"] }
+async-lsp = { version = "0.2.3", features = ["tokio"] }
 futures = "0.3.31"
 tokio = { version = "1.42.0", features = ["full"] }
 tokio-util = { version = "0.7.13", features = ["compat"] }
