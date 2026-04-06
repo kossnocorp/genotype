@@ -6,7 +6,7 @@ mod render;
 #[derive(Debug, Eq, PartialEq, Hash, Clone, PartialOrd, Ord, Serialize, Visitor)]
 pub struct PyIdentifier(pub Arc<str>);
 
-impl GtlDependencyRef for PyIdentifier {}
+impl GtlImportRef for PyIdentifier {}
 
 impl From<&str> for PyIdentifier {
     fn from(str: &str) -> Self {

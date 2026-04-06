@@ -9,15 +9,13 @@ impl TsConvert<TsPath> for GtPath {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use insta::assert_ron_snapshot;
-    use pretty_assertions::assert_eq;
 
     #[test]
     fn test_convert_base() {
         assert_ron_snapshot!(
-            GtPath::parse((0, 0).into(), "./path/to/module")
-                .unwrap()
-                .convert(&mut Default::default()),
+            convert_node(GtPath::parse((0, 0).into(), "./path/to/module").unwrap()),
             @r#"TsPath("./path/to/module")"#
         );
     }
@@ -29,10 +27,12 @@ mod tests {
             GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
             GtPath::parse((0, 0).into(), "./path/to/module/index").unwrap(),
         );
+        let mut context = TsConvertContext::new(resolve, &Default::default());
         assert_ron_snapshot!(
-            GtPath::parse((0, 0).into(), "./path/to/module")
-                .unwrap()
-                .convert(&mut TsConvertContext::new(resolve, Default::default())),
+            convert_node_with(
+                GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+                &mut context,
+            ),
             @r#"TsPath("./path/to/module/index")"#
         );
     }

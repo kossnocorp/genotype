@@ -1,0 +1,7 @@
+SelfRefObject: {
+  self: SelfRefObject,
+}
+
+SelfRefArray: [SelfRefArray]
+
+SelfRefTuple: null | (string, [SelfRefTuple])

@@ -2,3 +2,4 @@ dist/
 .venv/
 uv.lock
 *.egg-info/
+pnpm-lock.yaml

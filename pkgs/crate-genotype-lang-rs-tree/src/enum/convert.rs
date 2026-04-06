@@ -61,8 +61,8 @@ impl RsConvert<RsEnum> for GtUnion {
             variants,
         };
 
-        context.add_import(RsDependencyIdent::Serde, "Deserialize".into());
-        context.add_import(RsDependencyIdent::Serde, "Serialize".into());
+        context.push_import(RsUse::new(RsDependencyIdent::Serde, "Deserialize".into()));
+        context.push_import(RsUse::new(RsDependencyIdent::Serde, "Serialize".into()));
 
         context.exit_parent();
         Ok(r#enum)
@@ -89,7 +89,7 @@ fn convert_variant(
         GtDescriptor::Literal(literal) => {
             let str = render_literal(literal);
             attributes.push(RsAttribute(format!("literal({str})",)));
-            context.add_import(RsDependencyIdent::Litty, "literal".into());
+            context.push_import(RsUse::new(RsDependencyIdent::Litty, "literal".into()));
             *literals_count += 1;
             None
         }
@@ -250,11 +250,21 @@ mod tests {
         );
 
         assert_ron_snapshot!(
-            context.as_dependencies(),
+            context.imports(),
             @r#"
         [
-          (Serde, RsIdentifier("Deserialize")),
-          (Serde, RsIdentifier("Serialize")),
+          RsUse(
+            dependency: Serde,
+            reference: Named([
+              Name(RsIdentifier("Deserialize")),
+            ]),
+          ),
+          RsUse(
+            dependency: Serde,
+            reference: Named([
+              Name(RsIdentifier("Serialize")),
+            ]),
+          ),
         ]
         "#
         );
@@ -818,61 +828,55 @@ mod tests {
     #[test]
     fn test_attr_variant_assignment() {
         let mut context = Gtrs::convert_context_with_parent("Status");
-        let union = Gt::union(descriptor_nodes![
-            node_with!(
+        let union = Gt::union(vec_into![
+            assign!(
                 Gt::alias("Hello", Gt::primitive_string()),
                 attributes = vec![attribute_node!(variant = "Alias")]
             ),
-            node_with!(
+            assign!(
                 Gt::array(Gt::primitive_boolean()),
                 attributes = vec![attribute_node!(variant = "Array")]
             ),
-            node_with!(
+            assign!(
                 Gt::inline_import("src/module", "Type"),
                 attributes = vec![attribute_node!(variant = "Import")]
             ),
-            node_with!(
+            assign!(
                 Gt::literal_string("ok"),
                 attributes = vec![attribute_node!(variant = "Literal")]
             ),
-            node_with!(
+            assign!(
                 Gt::object(
                     "Status",
-                    descriptor_nodes![Gt::property("kind", Gt::primitive_string())]
+                    vec_into![Gt::property("kind", Gt::primitive_string())]
                 ),
                 attributes = vec![attribute_node!(variant = "Object")]
             ),
-            node_with!(
+            assign!(
                 Gt::primitive_boolean(),
                 attributes = vec![attribute_node!(variant = "Primitive")]
             ),
-            node_with!(
+            assign!(
                 Gt::reference("Hello"),
                 attributes = vec![attribute_node!(variant = "Reference")]
             ),
-            node_with!(
-                Gt::tuple(descriptor_nodes![
-                    Gt::primitive_string(),
-                    Gt::primitive_f64(),
-                ]),
+            assign!(
+                Gt::tuple(vec_into![Gt::primitive_string(), Gt::primitive_f64(),]),
                 attributes = vec![attribute_node!(variant = "Tuple")]
             ),
-            node_with!(
-                Gt::union(descriptor_nodes![
-                    Gt::primitive_string(),
-                    Gt::primitive_f64(),
-                ]),
+            assign!(
+                Gt::union(vec_into![Gt::primitive_string(), Gt::primitive_f64(),]),
                 attributes = vec![attribute_node!(variant = "Union")]
             ),
-            node_with!(
+            assign!(
                 Gt::record(Gt::record_key_string(), Gt::primitive_f64()),
                 attributes = vec![attribute_node!(variant = "Record")]
             ),
-            node_with!(
+            assign!(
                 Gt::any(),
                 attributes = vec![attribute_node!(variant = "Whatever")]
             ),
-            node_with!(
+            assign!(
                 Gt::branded("StatusStr", Gt::primitive_string()),
                 attributes = vec![attribute_node!(variant = "Branded")]
             )
@@ -1008,9 +1012,9 @@ mod tests {
         let mut config = RsConfigLang::default();
         config.derive.push("Default".into());
         context.assign_config(config);
-        let union = Gt::union(descriptor_nodes![
+        let union = Gt::union(vec_into![
             Gt::primitive_string(),
-            node_with!(
+            assign!(
                 Gt::primitive_number(),
                 attributes = vec![attribute_node!(default)]
             ),
@@ -1082,10 +1086,7 @@ mod tests {
         let mut config = RsConfigLang::default();
         config.derive.push("Default".into());
         context.assign_config(config);
-        let union = Gt::union(descriptor_nodes![
-            Gt::primitive_string(),
-            Gt::primitive_number()
-        ]);
+        let union = Gt::union(vec_into![Gt::primitive_string(), Gt::primitive_number()]);
         assert_debug_snapshot!(
             convert_node_err_with(union, &mut context),
             @"
@@ -1105,12 +1106,12 @@ mod tests {
         let mut config = RsConfigLang::default();
         config.derive.push("Default".into());
         context.assign_config(config);
-        let union = Gt::union(descriptor_nodes![
-            node_with!(
+        let union = Gt::union(vec_into![
+            assign!(
                 Gt::primitive_string(),
                 attributes = vec![attribute_node!(default)]
             ),
-            node_with!(
+            assign!(
                 Gt::primitive_number(),
                 attributes = vec![attribute_node!(default)]
             )

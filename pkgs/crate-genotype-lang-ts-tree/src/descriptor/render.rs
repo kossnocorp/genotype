@@ -29,16 +29,13 @@ impl<'a> GtlRender<'a> for TsDescriptor {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use insta::assert_snapshot;
 
     #[test]
     fn test_render_array() {
         assert_snapshot!(
-            TsDescriptor::Array(Box::new(TsArray {
-                descriptor: TsDescriptor::Primitive(TsPrimitive::Number)
-            }))
-            .render(Default::default(), &mut Default::default())
-            .unwrap(),
+            render_node(Tst::descriptor(Tst::array(Tst::primitive_number()))),
             @"Array<number>"
         );
     }
@@ -46,12 +43,9 @@ mod tests {
     #[test]
     fn test_render_inline_import() {
         assert_snapshot!(
-            TsDescriptor::InlineImport(TsInlineImport {
-                path: "../path/to/module".into(),
-                name: "Name".into(),
-            })
-            .render(Default::default(), &mut Default::default())
-            .unwrap(),
+            render_node(
+                Tst::descriptor(Tst::inline_import("../path/to/module", "Name")),
+            ),
             @r#"import("../path/to/module.js").Name"#
         );
     }
@@ -59,22 +53,12 @@ mod tests {
     #[test]
     fn test_render_intersection() {
         assert_snapshot!(
-            TsDescriptor::Intersection(TsIntersection {
-                descriptors: vec![
-                    TsObject {
-                        properties: vec![TsProperty {
-                            doc: None,
-                            name: "hello".into(),
-                            descriptor: TsPrimitive::String.into(),
-                            required: true,
-                        }],
-                    }
-                    .into(),
-                    "World".into(),
-                ]
-            })
-            .render(Default::default(), &mut Default::default())
-            .unwrap(),
+            render_node(
+                Tst::descriptor(Tst::intersection(vec_into![
+                    Tst::object(vec![Tst::property("hello", Tst::primitive_string())]),
+                    Tst::reference("World"),
+                ])),
+            ),
             @"
         {
           hello: string
@@ -86,24 +70,12 @@ mod tests {
     #[test]
     fn test_render_object() {
         assert_snapshot!(
-            TsDescriptor::Object(TsObject {
-                properties: vec![
-                    TsProperty {
-                        doc: None,
-                        name: "name".into(),
-                        descriptor: TsDescriptor::Primitive(TsPrimitive::String),
-                        required: true
-                    },
-                    TsProperty {
-                        doc: None,
-                        name: "age".into(),
-                        descriptor: TsDescriptor::Primitive(TsPrimitive::Number),
-                        required: false
-                    }
-                ]
-            })
-            .render(Default::default(), &mut Default::default())
-            .unwrap(),
+            render_node(
+                Tst::descriptor(Tst::object(vec![
+                    Tst::property("name", Tst::primitive_string()),
+                    Tst::property_optional("age", Tst::primitive_number()),
+                ])),
+            ),
             @"
         {
           name: string,
@@ -116,15 +88,11 @@ mod tests {
     #[test]
     fn test_render_primitive() {
         assert_snapshot!(
-            TsDescriptor::Primitive(TsPrimitive::Boolean)
-                .render(Default::default(), &mut Default::default())
-                .unwrap(),
+            render_node(Tst::descriptor(Tst::primitive_boolean())),
             @"boolean"
         );
         assert_snapshot!(
-            TsDescriptor::Primitive(TsPrimitive::String)
-                .render(Default::default(), &mut Default::default())
-                .unwrap(),
+            render_node(Tst::descriptor(Tst::primitive_string())),
             @"string"
         );
     }
@@ -132,9 +100,7 @@ mod tests {
     #[test]
     fn test_render_reference() {
         assert_snapshot!(
-            TsDescriptor::Reference("Name".into())
-                .render(Default::default(), &mut Default::default())
-                .unwrap(),
+            render_node(Tst::descriptor(Tst::reference("Name"))),
             @"Name"
         );
     }
@@ -142,14 +108,12 @@ mod tests {
     #[test]
     fn test_render_tuple() {
         assert_snapshot!(
-            TsDescriptor::Tuple(TsTuple {
-                descriptors: vec![
-                    TsDescriptor::Primitive(TsPrimitive::Number),
-                    TsDescriptor::Primitive(TsPrimitive::String)
-                ]
-            })
-            .render(Default::default(), &mut Default::default())
-            .unwrap(),
+            render_node(
+                Tst::descriptor(Tst::tuple(vec_into![
+                    Tst::primitive_number(),
+                    Tst::primitive_string(),
+                ])),
+            ),
             @"[number, string]"
         );
     }
@@ -157,14 +121,12 @@ mod tests {
     #[test]
     fn test_render_union() {
         assert_snapshot!(
-            TsDescriptor::Union(TsUnion {
-                descriptors: vec![
-                    TsDescriptor::Primitive(TsPrimitive::String),
-                    TsDescriptor::Primitive(TsPrimitive::Number),
-                ]
-            })
-            .render(Default::default(), &mut Default::default())
-            .unwrap(),
+            render_node(
+                Tst::descriptor(Tst::union(vec_into![
+                    Tst::primitive_string(),
+                    Tst::primitive_number(),
+                ])),
+            ),
             @"string | number"
         );
     }
@@ -172,12 +134,9 @@ mod tests {
     #[test]
     fn test_render_record() {
         assert_snapshot!(
-            TsDescriptor::Record(Box::new(TsRecord {
-                key: TsRecordKey::String,
-                descriptor: TsDescriptor::Primitive(TsPrimitive::Number),
-            }))
-            .render(Default::default(), &mut Default::default())
-            .unwrap(),
+            render_node(
+                Tst::descriptor(Tst::record(Tst::record_key_string(), Tst::primitive_number())),
+            ),
             @"Record<string, number>"
         );
     }
@@ -185,9 +144,7 @@ mod tests {
     #[test]
     fn test_render_any() {
         assert_snapshot!(
-            TsDescriptor::Any(TsAny)
-                .render(Default::default(), &mut Default::default())
-                .unwrap(),
+            render_node(Tst::descriptor(Tst::any())),
             @"any"
         );
     }

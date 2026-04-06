@@ -12,7 +12,10 @@ impl PyConvert<PyReference> for GtInlineImport {
     fn convert(&self, context: &mut PyConvertContext) -> PyReference {
         let name = self.name.convert(context);
         let path = self.path.convert(context);
-        context.add_import(PyDependencyIdent::Path(path), name.clone());
+        context.push_import(PyImport::new(
+            PyDependencyIdent::Path(path),
+            PyImportReference::Named(vec![name.clone().into()]),
+        ));
         PyReference::new(name, false)
     }
 }
@@ -66,10 +69,15 @@ mod tests {
         );
 
         assert_ron_snapshot!(
-            context.as_dependencies(),
+            context.imports(),
             @r#"
         [
-          (Path(PyPath(".path.to.module")), PyIdentifier("Name")),
+          PyImport(
+            dependency: Path(PyPath(".path.to.module")),
+            reference: Named([
+              Name(PyIdentifier("Name")),
+            ]),
+          ),
         ]
         "#
         );

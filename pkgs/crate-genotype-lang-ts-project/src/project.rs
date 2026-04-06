@@ -45,16 +45,20 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
             source: exports.join(""),
         };
 
-        let package_json = self.generate_manifest(&vec![])?;
+        let package_json = self.generate_manifest(&self.dependencies())?;
 
         let project_modules = self
             .modules
             .iter()
             .map(|module| {
                 let path = self.config.pkg_src_file_path(&module.path);
+                let mut context = TsRenderContext {
+                    config: &self.config.target.lang,
+                    ..Default::default()
+                };
                 let source = module
                     .module
-                    .render(Default::default(), &mut Default::default())
+                    .render(Default::default(), &mut context)
                     .unwrap();
                 GtlProjectFile { path, source }
             })
@@ -107,6 +111,7 @@ mod tests {
                 )),
               ],
             ),
+            mode: types,
           ),
           TsProjectModule(
             path: "book.ts",
@@ -114,7 +119,7 @@ mod tests {
               doc: None,
               imports: [
                 TsImport(
-                  path: TsPath("./author"),
+                  dependency: Local(TsPath("./author")),
                   reference: Named([
                     Name(TsIdentifier("Author")),
                   ]),
@@ -135,13 +140,17 @@ mod tests {
                     TsProperty(
                       doc: None,
                       name: TsKey("author"),
-                      descriptor: Reference(TsReference(TsIdentifier("Author"))),
+                      descriptor: Reference(TsReference(
+                        identifier: TsIdentifier("Author"),
+                        rel: Regular,
+                      )),
                       required: true,
                     ),
                   ],
                 )),
               ],
             ),
+            mode: types,
           ),
         ]
         "#
@@ -171,7 +180,10 @@ mod tests {
                     TsProperty(
                       doc: None,
                       name: TsKey("name"),
-                      descriptor: Reference(TsReference(TsIdentifier("AuthorName"))),
+                      descriptor: Reference(TsReference(
+                        identifier: TsIdentifier("AuthorName"),
+                        rel: Forward,
+                      )),
                       required: true,
                     ),
                   ],
@@ -183,6 +195,7 @@ mod tests {
                 )),
               ],
             ),
+            mode: types,
           ),
           TsProjectModule(
             path: "book.ts",
@@ -190,7 +203,7 @@ mod tests {
               doc: None,
               imports: [
                 TsImport(
-                  path: TsPath("./author"),
+                  dependency: Local(TsPath("./author")),
                   reference: Glob("author"),
                 ),
               ],
@@ -209,19 +222,26 @@ mod tests {
                     TsProperty(
                       doc: None,
                       name: TsKey("author"),
-                      descriptor: Reference(TsReference(TsIdentifier("author.Author"))),
+                      descriptor: Reference(TsReference(
+                        identifier: TsIdentifier("author.Author"),
+                        rel: Regular,
+                      )),
                       required: true,
                     ),
                     TsProperty(
                       doc: None,
                       name: TsKey("authorName"),
-                      descriptor: Reference(TsReference(TsIdentifier("author.AuthorName"))),
+                      descriptor: Reference(TsReference(
+                        identifier: TsIdentifier("author.AuthorName"),
+                        rel: Regular,
+                      )),
                       required: true,
                     ),
                   ],
                 )),
               ],
             ),
+            mode: types,
           ),
         ]
         "#
@@ -244,7 +264,7 @@ mod tests {
             ),
             GtlProjectFile(
               path: "examples/basic/dist/ts/package.json",
-              source: "{\n  \"types\": \"src/index.ts\"\n}",
+              source: "{\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./src/index.ts\"\n  }\n}",
             ),
             GtlProjectFile(
               path: "examples/basic/dist/ts/src/index.ts",
@@ -284,7 +304,7 @@ mod tests {
             ),
             GtlProjectFile(
               path: "examples/dependencies/dist/ts/package.json",
-              source: "{\n  \"types\": \"src/index.ts\"\n}",
+              source: "{\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./src/index.ts\"\n  }\n}",
             ),
             GtlProjectFile(
               path: "examples/dependencies/dist/ts/src/index.ts",
@@ -314,8 +334,11 @@ mod tests {
             package_file.source,
             @r#"
         {
-          "types": "src/index.ts",
-          "version": "0.2.0"
+          "type": "module",
+          "version": "0.2.0",
+          "exports": {
+            ".": "./src/index.ts"
+          }
         }
         "#
         );
@@ -340,9 +363,51 @@ mod tests {
             package_file.source,
             @r#"
         {
-          "types": "src/index.ts",
-          "version": "0.3.0"
+          "type": "module",
+          "version": "0.3.0",
+          "exports": {
+            ".": "./src/index.ts"
+          }
         }
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_zod_mode() {
+        let mut config = GtConfig::from_root("module", "./examples/basic");
+        config.ts.lang.mode = TsMode::Zod;
+
+        let project = GtProject::load(&config).unwrap();
+        let dist = TsProject::generate(&project).unwrap().dist().unwrap();
+
+        let package_file = get_package_file(&dist);
+        assert_snapshot!(
+            package_file.source,
+            @r#"
+        {
+          "type": "module",
+          "exports": {
+            ".": "./src/index.ts"
+          },
+          "dependencies": {
+            "zod": "^4"
+          }
+        }
+        "#
+        );
+
+        let author_file = get_dist_file(&dist, "src/author.ts");
+        assert_snapshot!(
+            author_file.source,
+            @r#"
+        import { z } from "zod";
+
+        export const Author = z.object({
+          name: z.string()
+        });
+
+        export type Author = z.infer<typeof Author>;
         "#
         );
     }
@@ -351,6 +416,13 @@ mod tests {
         dist.files
             .iter()
             .find(|file| file.path.as_str().contains("package.json"))
+            .unwrap()
+    }
+
+    fn get_dist_file<'a>(dist: &'a GtlProjectDist, path_suffix: &str) -> &'a GtlProjectFile {
+        dist.files
+            .iter()
+            .find(|file| file.path.as_str().ends_with(path_suffix))
             .unwrap()
     }
 }

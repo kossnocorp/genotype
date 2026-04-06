@@ -11,7 +11,7 @@ impl<'a> GtlRender<'a> for TsImport {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         let reference = self.reference.render(state, context)?;
-        let path = self.path.render(state, context)?;
+        let path = self.dependency.as_path().render(state, context)?;
 
         Ok(format!(r#"import {reference} from "{path}";"#))
     }
@@ -20,17 +20,11 @@ impl<'a> GtlRender<'a> for TsImport {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_snapshot;
 
     #[test]
     fn test_render_default() {
         assert_snapshot!(
-            TsImport {
-                path: "../path/to/module".into(),
-                reference: TsImportReference::Default("Name".into()),
-            }
-            .render(Default::default(), &mut Default::default())
-            .unwrap(),
+            render_node(Tst::import_default("../path/to/module", "Name")),
             @r#"import Name from "../path/to/module.js";"#
         );
     }
@@ -38,12 +32,7 @@ mod tests {
     #[test]
     fn test_render_glob() {
         assert_snapshot!(
-            TsImport {
-                path: "../path/to/module".into(),
-                reference: TsImportReference::Glob("name".into()),
-            }
-            .render(Default::default(), &mut Default::default())
-            .unwrap(),
+            render_node(Tst::import_glob("../path/to/module", "name")),
             @r#"import * as name from "../path/to/module.js";"#
         );
     }
@@ -51,15 +40,12 @@ mod tests {
     #[test]
     fn test_render_named() {
         assert_snapshot!(
-            TsImport {
-                path: "../path/to/module".into(),
-                reference: TsImportReference::Named(vec![
-                    TsImportName::Name("Name".into()),
-                    TsImportName::Alias("Name".into(), "Alias".into()),
-                ])
-            }
-            .render(Default::default(), &mut Default::default())
-            .unwrap(),
+            render_node(
+                Tst::import_named(
+                    "../path/to/module",
+                    vec![Tst::import_name("Name"), Tst::import_alias("Name", "Alias")],
+                ),
+            ),
             @r#"import { Name, Name as Alias } from "../path/to/module.js";"#
         );
     }

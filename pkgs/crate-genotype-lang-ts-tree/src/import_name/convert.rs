@@ -15,16 +15,16 @@ impl TsConvert<TsImportName> for GtImportName {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_name() {
         assert_ron_snapshot!(
-            GtImportName::Name(
+            convert_node(GtImportName::Name(
                 (0, 0).into(),
                 GtIdentifier::new((0, 0).into(), "Name".into())
-            )
-            .convert(&mut Default::default()),
+            )),
             @r#"Name(TsIdentifier("Name"))"#,
         );
     }
@@ -32,12 +32,11 @@ mod tests {
     #[test]
     fn test_convert_alias() {
         assert_ron_snapshot!(
-            GtImportName::Alias(
+            convert_node(GtImportName::Alias(
                 (0, 0).into(),
                 GtIdentifier::new((0, 0).into(), "Name".into()),
                 GtIdentifier::new((0, 0).into(), "Alias".into())
-            )
-            .convert(&mut Default::default()),
+            )),
             @r#"Alias(TsIdentifier("Name"), TsIdentifier("Alias"))"#,
         );
     }

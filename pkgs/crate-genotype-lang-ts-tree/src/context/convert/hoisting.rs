@@ -7,7 +7,7 @@ impl TsConvertContext {
         HoistFn: FnMut(&mut TsConvertContext) -> Definition,
     {
         let definition = hoist_fn(self).into();
-        let reference = TsReference(definition.name());
+        let reference = TsReference::new(definition.name(), TsReferenceRel::Regular);
         self.hoisted.push(definition);
         reference
     }

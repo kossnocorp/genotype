@@ -11,3 +11,17 @@ pub enum RsUseReference {
     /// Named use, i.e. `use super::collection::{Collection, CollectionItem};`
     Named(#[visit] Vec<RsUseName>),
 }
+
+impl GtlImportRef for RsUseReference {}
+
+impl From<&str> for RsUseReference {
+    fn from(str: &str) -> Self {
+        RsUseReference::Named(vec![str.into()])
+    }
+}
+
+impl From<RsIdentifier> for RsUseReference {
+    fn from(identifier: RsIdentifier) -> Self {
+        RsUseReference::Named(vec![identifier.into()])
+    }
+}

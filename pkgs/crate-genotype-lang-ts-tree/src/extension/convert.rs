@@ -11,19 +11,22 @@ impl TsConvert<TsExtension> for GtExtension {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use genotype_test::*;
 
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GtExtension {
+            convert_node(GtExtension {
                 span: (0, 0).into(),
                 reference: Gt::reference("Name"),
-            }
-            .convert(&mut Default::default()),
+            }),
             @r#"
         TsExtension(
-          reference: TsReference(TsIdentifier("Name")),
+          reference: TsReference(
+            identifier: TsIdentifier("Name"),
+            rel: Regular,
+          ),
         )
         "#,
         );

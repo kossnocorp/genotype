@@ -11,24 +11,35 @@ impl<'a> GtlRender<'a> for TsArray {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         let descriptor = self.descriptor.render(state, context)?;
-        Ok(format!("Array<{descriptor}>"))
+        Ok(if context.is_zod_mode() {
+            format!("z.array({descriptor})")
+        } else {
+            format!("Array<{descriptor}>")
+        })
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use insta::assert_snapshot;
 
     #[test]
     fn test_render_array() {
         assert_snapshot!(
-            TsArray {
-                descriptor: TsDescriptor::Primitive(TsPrimitive::String)
-            }
-            .render(Default::default(), &mut Default::default())
-            .unwrap(),
+            render_node(Tst::array(Tst::primitive_string())),
             @"Array<string>"
+        );
+    }
+
+    #[test]
+    fn test_render_array_zod_mode() {
+        let mut context = Tst::render_context_zod();
+
+        assert_snapshot!(
+            render_node_with(Tst::array(Tst::primitive_string()), &mut context),
+            @"z.array(z.string())"
         );
     }
 }

@@ -46,7 +46,10 @@ impl RsConvert<RsDescriptor> for GtRecordKey {
             GtRecordKey::String(_) => RsPrimitive::String.into(),
             GtRecordKey::Number(_) => {
                 if context.config().needs_ordered_floats() {
-                    context.add_import(RsDependencyIdent::OrderedFloat, "OrderedFloat".into());
+                    context.push_import(RsUse::new(
+                        RsDependencyIdent::OrderedFloat,
+                        "OrderedFloat".into(),
+                    ));
                 }
                 RsPrimitive::Float64.into()
             }
@@ -64,13 +67,19 @@ impl RsConvert<RsDescriptor> for GtRecordKey {
             GtRecordKey::IntUSize(_) => RsPrimitive::IntUSize.into(),
             GtRecordKey::Float32(_) => {
                 if context.config().needs_ordered_floats() {
-                    context.add_import(RsDependencyIdent::OrderedFloat, "OrderedFloat".into());
+                    context.push_import(RsUse::new(
+                        RsDependencyIdent::OrderedFloat,
+                        "OrderedFloat".into(),
+                    ));
                 }
                 RsPrimitive::Float32.into()
             }
             GtRecordKey::Float64(_) => {
                 if context.config().needs_ordered_floats() {
-                    context.add_import(RsDependencyIdent::OrderedFloat, "OrderedFloat".into());
+                    context.push_import(RsUse::new(
+                        RsDependencyIdent::OrderedFloat,
+                        "OrderedFloat".into(),
+                    ));
                 }
                 RsPrimitive::Float64.into()
             }
@@ -398,10 +407,15 @@ mod tests {
         );
 
         assert_ron_snapshot!(
-            context.as_dependencies(),
+            context.imports(),
             @r#"
         [
-          (OrderedFloat, RsIdentifier("OrderedFloat")),
+          RsUse(
+            dependency: OrderedFloat,
+            reference: Named([
+              Name(RsIdentifier("OrderedFloat")),
+            ]),
+          ),
         ]
         "#
         );

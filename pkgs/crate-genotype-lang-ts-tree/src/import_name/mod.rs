@@ -9,6 +9,8 @@ pub enum TsImportName {
     Alias(#[visit] TsIdentifier, #[visit] TsIdentifier),
 }
 
+impl GtlImportRefName for TsImportName {}
+
 impl From<&str> for TsImportName {
     fn from(str: &str) -> Self {
         TsImportName::Name(str.into())

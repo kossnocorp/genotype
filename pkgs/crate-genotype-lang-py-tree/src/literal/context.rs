@@ -1,11 +1,8 @@
 use crate::prelude::internal::*;
 
 impl PyContextResolve for PyLiteral {
-    fn resolve<Context>(self, context: &mut Context) -> Self
-    where
-        Context: PyConvertContextConstraint,
-    {
-        context.add_import(PyDependencyIdent::Typing, "Literal".into());
+    fn resolve(self, context: &mut PyConvertContext) -> Self {
+        context.push_import(PyImport::new(PyDependencyIdent::Typing, "Literal".into()));
         self
     }
 }
@@ -13,16 +10,25 @@ impl PyContextResolve for PyLiteral {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
+    use genotype_test::*;
 
     #[test]
     fn test_resolve() {
-        let mut context = PyConvertContextMock::default();
+        let mut context = PyConvertContext::default();
         let literal = PyLiteral::Boolean(true);
         literal.resolve(&mut context);
-        assert_eq!(
-            context.as_imports(),
-            vec![(PyDependencyIdent::Typing, "Literal".into())]
+        assert_ron_snapshot!(
+            context.imports(),
+            @r#"
+        [
+          PyImport(
+            dependency: Typing,
+            reference: Named([
+              Name(PyIdentifier("Literal")),
+            ]),
+          ),
+        ]
+        "#
         );
     }
 }

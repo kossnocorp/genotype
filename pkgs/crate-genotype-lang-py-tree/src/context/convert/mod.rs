@@ -4,11 +4,6 @@ use indexmap::IndexSet;
 mod hoisting;
 mod references;
 
-#[cfg(test)]
-mod mock;
-#[cfg(test)]
-pub use mock::*;
-
 pub struct PyConvertContext {
     resolve: PyConvertResolve,
     config: PyConfig,
@@ -19,7 +14,6 @@ pub struct PyConvertContext {
     hoisting: bool,
     hoist_defined: Vec<PyIdentifier>,
     hoisted: Vec<PyDefinition>,
-    dependencies: Vec<(PyDependencyIdent, PyIdentifier)>,
     doc: Option<PyDoc>,
     references: Vec<IndexSet<PyIdentifier>>,
 }
@@ -35,7 +29,6 @@ impl PyConvertContext {
             hoisting: false,
             hoist_defined: vec![],
             hoisted: vec![],
-            dependencies: vec![],
             doc: None,
             references: vec![],
         }
@@ -79,9 +72,8 @@ impl PyConvertContext {
         }
     }
 
-    #[cfg(test)]
-    pub fn as_dependencies(&self) -> Vec<(PyDependencyIdent, PyIdentifier)> {
-        self.dependencies.clone().into_iter().collect()
+    pub fn is_version(&self, version: PyVersion) -> bool {
+        self.config.lang.version == version
     }
 
     pub fn push_defined(&mut self, identifier: &PyIdentifier) {
@@ -108,34 +100,6 @@ impl PyConvertContext {
         !is_defined
     }
 
-    pub fn push_import(&mut self, import: PyImport) {
-        self.imports.push(import);
-    }
-
-    pub fn drain_imports(&mut self) -> Vec<PyImport> {
-        let mut imports: Vec<_> = self.imports.drain(..).collect();
-
-        let dependencies = self.dependencies.drain(..);
-        for (dependency, name) in dependencies {
-            let import = imports
-                .iter_mut()
-                .find(|import| import.dependency == dependency);
-
-            if let Some(import) = import {
-                if let PyImportReference::Named(names) = &mut import.reference {
-                    names.push(name.into());
-                    continue;
-                }
-            }
-            imports.push(PyImport {
-                reference: PyImportReference::Named(vec![name.into()]),
-                dependency,
-            });
-        }
-
-        imports
-    }
-
     pub fn push_definition(&mut self, definition: PyDefinition) {
         self.definitions.push(definition);
         let hoisted_definitions = self.drain_hoisted();
@@ -147,26 +111,17 @@ impl PyConvertContext {
     }
 }
 
-impl PyConvertContextMockable for PyConvertContext {
-    fn is_version(&self, version: PyVersion) -> bool {
-        self.config.lang.version == version
-    }
-}
-
 impl GtlConvertContext for PyConvertContext {
-    type DependencyIdent = PyDependencyIdent;
+    type Import = PyImport;
 
-    type DependencyRef = PyIdentifier;
+    fn imports(&self) -> &Vec<Self::Import> {
+        &self.imports
+    }
 
-    fn add_import(self: &mut Self, ident: Self::DependencyIdent, r#ref: Self::DependencyRef) {
-        let dependency = (ident, r#ref);
-        if !self.dependencies.contains(&dependency) {
-            self.dependencies.push(dependency);
-        }
+    fn imports_mut(&mut self) -> &mut Vec<Self::Import> {
+        &mut self.imports
     }
 }
-
-impl PyConvertContextConstraint for PyConvertContext {}
 
 impl Default for PyConvertContext {
     fn default() -> Self {

@@ -9,6 +9,3 @@ pub use state::*;
 
 mod module;
 pub use module::*;
-
-mod resolve;
-pub use resolve::*;

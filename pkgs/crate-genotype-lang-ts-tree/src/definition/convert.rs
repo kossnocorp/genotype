@@ -44,15 +44,7 @@ mod tests {
     #[test]
     fn test_convert_alias() {
         assert_ron_snapshot!(
-            GtAlias {
-                id: GtDefinitionId("module".into(), "Name".into()),
-                span: (0, 0).into(),
-                doc: None,
-                attributes: vec![],
-                name: GtIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: Gt::primitive_boolean().into(),
-            }
-            .convert(&mut Default::default()),
+            convert_node(Gt::alias("Name", Gt::primitive_boolean())),
             @r#"
         Alias(TsAlias(
           doc: None,
@@ -131,7 +123,10 @@ mod tests {
           name: TsIdentifier("Book"),
           extensions: [
             TsExtension(
-              reference: TsReference(TsIdentifier("Good")),
+              reference: TsReference(
+                identifier: TsIdentifier("Good"),
+                rel: Regular,
+              ),
             ),
           ],
           properties: [
@@ -148,7 +143,7 @@ mod tests {
 
         assert_ron_snapshot!(
             convert_node(Gt::alias("Book", Gt::union(
-                descriptor_nodes![
+                vec_into![
                     GtObject {
                         name: GtObjectName::Alias(
                             GtIdentifier::new((0, 0).into(), "BookAuthorObj".into()),
@@ -183,7 +178,10 @@ mod tests {
                       ),
                     ],
                   )),
-                  Reference(TsReference(TsIdentifier("Good"))),
+                  Reference(TsReference(
+                    identifier: TsIdentifier("Good"),
+                    rel: Regular,
+                  )),
                 ],
               )),
               Primitive(String),
@@ -197,10 +195,10 @@ mod tests {
     #[test]
     fn test_convert_doc_interface() {
         assert_ron_snapshot!(
-            convert_node(GtAlias {
-                doc: Gt::some_doc("Hello, world!"),
-                ..Gt::alias("Book", Gt::object("Book", vec![]))
-            }),
+            convert_node(assign!(
+                Gt::alias("Book", Gt::object("Book", vec![])),
+                doc = Gt::some_doc("Hello, world!")
+            )),
             @r#"
         Interface(TsInterface(
           doc: Some(TsDoc("Hello, world!")),
@@ -215,15 +213,10 @@ mod tests {
     #[test]
     fn test_convert_doc_alias() {
         assert_ron_snapshot!(
-            GtAlias {
-                id: GtDefinitionId("module".into(), "Name".into()),
-                span: (0, 0).into(),
-                doc: Some(GtDoc::new((0, 0).into(), "Hello, world!".into())),
-                attributes: vec![],
-                name: GtIdentifier::new((0, 0).into(), "Name".into()),
-                descriptor: Gt::primitive_boolean().into(),
-            }
-            .convert(&mut Default::default()),
+            convert_node(assign!(
+                Gt::alias("Name", Gt::primitive_boolean()),
+                doc = Gt::some_doc("Hello, world!")
+            )),
             @r#"
         Alias(TsAlias(
           doc: Some(TsDoc("Hello, world!")),
@@ -237,17 +230,10 @@ mod tests {
     #[test]
     fn test_convert_doc_branded() {
         assert_ron_snapshot!(
-            GtAlias {
-                id: GtDefinitionId("module".into(), "BookId".into()),
-                span: (0, 0).into(),
-                doc: Some(GtDoc::new((0, 0).into(), "Hello, world!".into())),
-                attributes: vec![],
-                name: GtIdentifier::new((0, 0).into(), "BookId".into()),
-                descriptor: Gt::descriptor(
-                    Gt::branded("BookId", Gt::primitive_string())
-                )
-            }
-            .convert(&mut Default::default()),
+            convert_node(assign!(
+                Gt::alias("BookId", Gt::branded("BookId", Gt::primitive_string())),
+                doc = Gt::some_doc("Hello, world!")
+            )),
             @r#"
         Branded(TsBranded(
           doc: Some(TsDoc("Hello, world!")),

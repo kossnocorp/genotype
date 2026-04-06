@@ -27,72 +27,73 @@ impl TsConvert<TsRecordKey> for GtRecordKey {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            GtRecordKey::String((0, 0).into()).convert(&mut Default::default()),
+            convert_node(GtRecordKey::String((0, 0).into())),
             @"String"
         );
         assert_ron_snapshot!(
-            GtRecordKey::Number((0, 0).into()).convert(&mut Default::default()),
+            convert_node(GtRecordKey::Number((0, 0).into())),
             @"Number"
         );
         assert_ron_snapshot!(
-            GtRecordKey::Int8((0, 0).into()).convert(&mut Default::default()),
+            convert_node(GtRecordKey::Int8((0, 0).into())),
             @"Number"
         );
         assert_ron_snapshot!(
-            GtRecordKey::Int16((0, 0).into()).convert(&mut Default::default()),
+            convert_node(GtRecordKey::Int16((0, 0).into())),
             @"Number"
         );
         assert_ron_snapshot!(
-            GtRecordKey::Int32((0, 0).into()).convert(&mut Default::default()),
+            convert_node(GtRecordKey::Int32((0, 0).into())),
             @"Number"
         );
         assert_ron_snapshot!(
-            GtRecordKey::IntU8((0, 0).into()).convert(&mut Default::default()),
+            convert_node(GtRecordKey::IntU8((0, 0).into())),
             @"Number"
         );
         assert_ron_snapshot!(
-            GtRecordKey::IntU16((0, 0).into()).convert(&mut Default::default()),
+            convert_node(GtRecordKey::IntU16((0, 0).into())),
             @"Number"
         );
         assert_ron_snapshot!(
-            GtRecordKey::IntU32((0, 0).into()).convert(&mut Default::default()),
+            convert_node(GtRecordKey::IntU32((0, 0).into())),
             @"Number"
         );
         assert_ron_snapshot!(
-            GtRecordKey::Float32((0, 0).into()).convert(&mut Default::default()),
+            convert_node(GtRecordKey::Float32((0, 0).into())),
             @"Number"
         );
         assert_ron_snapshot!(
-            GtRecordKey::Float64((0, 0).into()).convert(&mut Default::default()),
+            convert_node(GtRecordKey::Float64((0, 0).into())),
             @"Number"
         );
         assert_ron_snapshot!(
-            GtRecordKey::Int64((0, 0).into()).convert(&mut Default::default()),
+            convert_node(GtRecordKey::Int64((0, 0).into())),
             @"String"
         );
         assert_ron_snapshot!(
-            GtRecordKey::Int128((0, 0).into()).convert(&mut Default::default()),
+            convert_node(GtRecordKey::Int128((0, 0).into())),
             @"String"
         );
         assert_ron_snapshot!(
-            GtRecordKey::IntSize((0, 0).into()).convert(&mut Default::default()),
+            convert_node(GtRecordKey::IntSize((0, 0).into())),
             @"String"
         );
         assert_ron_snapshot!(
-            GtRecordKey::IntU64((0, 0).into()).convert(&mut Default::default()),
+            convert_node(GtRecordKey::IntU64((0, 0).into())),
             @"String"
         );
         assert_ron_snapshot!(
-            GtRecordKey::IntU128((0, 0).into()).convert(&mut Default::default()),
+            convert_node(GtRecordKey::IntU128((0, 0).into())),
             @"String"
         );
         assert_ron_snapshot!(
-            GtRecordKey::IntUSize((0, 0).into()).convert(&mut Default::default()),
+            convert_node(GtRecordKey::IntUSize((0, 0).into())),
             @"String"
         );
     }

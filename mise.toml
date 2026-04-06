@@ -1,10 +1,16 @@
 [tools]
 # Stack
+# Rust
 rust = { version = "latest", channel = "stable", components = "rustfmt,clippy" }
+# Node.js
 node = "lts"
 pnpm = "latest"
+oxfmt = "latest"
+# Python
 python = "latest"
 uv = "latest"
+ty = "latest"
+ruff = "latest"
 
 # Tools
 cargo-binstall = "latest"
@@ -17,7 +23,6 @@ cargo-binstall = "latest"
 "cargo:just-lsp" = "latest"
 watchexec = "latest"
 opencode = "latest"
-oxfmt = "latest"
 shfmt = "latest"
 
 [settings]

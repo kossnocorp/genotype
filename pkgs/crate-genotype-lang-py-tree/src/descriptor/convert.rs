@@ -110,10 +110,15 @@ mod tests {
         "#
         );
         assert_ron_snapshot!(
-            context.as_dependencies(),
+            context.imports(),
             @r#"
         [
-          (Path(PyPath(".path.to.module")), PyIdentifier("Name")),
+          PyImport(
+            dependency: Path(PyPath(".path.to.module")),
+            reference: Named([
+              Name(PyIdentifier("Name")),
+            ]),
+          ),
         ]
         "#
         );

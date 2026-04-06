@@ -2,7 +2,7 @@ use crate::prelude::internal::*;
 
 impl RsConvert<RsAny> for GtAny {
     fn convert(&self, resolve: &mut RsConvertContext) -> Result<RsAny> {
-        resolve.add_import(RsDependencyIdent::Runtime, "Any".into());
+        resolve.push_import(RsUse::new(RsDependencyIdent::Runtime, "Any".into()));
         Ok(RsAny)
     }
 }
@@ -29,10 +29,15 @@ mod tests {
             @"RsAny"
         );
         assert_ron_snapshot!(
-            context.as_dependencies(),
+            context.imports(),
             @r#"
         [
-          (Runtime, RsIdentifier("Any")),
+          RsUse(
+            dependency: Runtime,
+            reference: Named([
+              Name(RsIdentifier("Any")),
+            ]),
+          ),
         ]
         "#
         );

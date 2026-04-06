@@ -17,14 +17,13 @@ impl<'a> GtlRender<'a> for TsKey {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use insta::assert_snapshot;
 
     #[test]
     fn test_render() {
         assert_snapshot!(
-            TsKey("foo".into())
-                .render(Default::default(), &mut Default::default())
-                .unwrap(),
+            render_node(Tst::key("foo")),
             @"foo"
         );
     }

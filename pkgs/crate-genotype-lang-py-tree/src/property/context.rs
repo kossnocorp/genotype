@@ -1,16 +1,13 @@
 use crate::prelude::internal::*;
 
 impl PyContextResolve for PyProperty {
-    fn resolve<Context>(self, context: &mut Context) -> Self
-    where
-        Context: PyConvertContextConstraint,
-    {
+    fn resolve(self, context: &mut PyConvertContext) -> Self {
         if self.name.0.as_ref() == "schema" {
-            context.add_import(PyDependencyIdent::Pydantic, "Field".into());
+            context.push_import(PyImport::new(PyDependencyIdent::Pydantic, "Field".into()));
         }
 
         if !self.required {
-            context.add_import(PyDependencyIdent::Typing, "Optional".into());
+            context.push_import(PyImport::new(PyDependencyIdent::Typing, "Optional".into()));
         }
 
         self
@@ -24,7 +21,7 @@ mod tests {
 
     #[test]
     fn test_resolve() {
-        let mut context = PyConvertContextMock::default();
+        let mut context = PyConvertContext::default();
         let alias = PyProperty {
             doc: None,
             name: "foo".into(),
@@ -32,12 +29,12 @@ mod tests {
             required: true,
         };
         alias.resolve(&mut context);
-        assert_ron_snapshot!(context.as_imports(), @"[]");
+        assert_ron_snapshot!(context.imports(), @"[]");
     }
 
     #[test]
     fn test_resolve_optional() {
-        let mut context = PyConvertContextMock::default();
+        let mut context = PyConvertContext::default();
         let alias = PyProperty {
             doc: None,
             name: "foo".into(),
@@ -46,10 +43,15 @@ mod tests {
         };
         alias.resolve(&mut context);
         assert_ron_snapshot!(
-            context.as_imports(),
+            context.imports(),
             @r#"
         [
-          (Typing, PyIdentifier("Optional")),
+          PyImport(
+            dependency: Typing,
+            reference: Named([
+              Name(PyIdentifier("Optional")),
+            ]),
+          ),
         ]
         "#
         );
@@ -57,7 +59,7 @@ mod tests {
 
     #[test]
     fn test_resolve_schema() {
-        let mut context = PyConvertContextMock::default();
+        let mut context = PyConvertContext::default();
         let alias = PyProperty {
             doc: None,
             name: "schema".into(),
@@ -66,10 +68,15 @@ mod tests {
         };
         alias.resolve(&mut context);
         assert_ron_snapshot!(
-            context.as_imports(),
+            context.imports(),
             @r#"
         [
-          (Pydantic, PyIdentifier("Field")),
+          PyImport(
+            dependency: Pydantic,
+            reference: Named([
+              Name(PyIdentifier("Field")),
+            ]),
+          ),
         ]
         "#
         );
@@ -77,7 +84,7 @@ mod tests {
 
     #[test]
     fn test_resolve_schema_optional() {
-        let mut context = PyConvertContextMock::default();
+        let mut context = PyConvertContext::default();
         let alias = PyProperty {
             doc: None,
             name: "schema".into(),
@@ -86,11 +93,21 @@ mod tests {
         };
         alias.resolve(&mut context);
         assert_ron_snapshot!(
-            context.as_imports(),
+            context.imports(),
             @r#"
         [
-          (Pydantic, PyIdentifier("Field")),
-          (Typing, PyIdentifier("Optional")),
+          PyImport(
+            dependency: Pydantic,
+            reference: Named([
+              Name(PyIdentifier("Field")),
+            ]),
+          ),
+          PyImport(
+            dependency: Typing,
+            reference: Named([
+              Name(PyIdentifier("Optional")),
+            ]),
+          ),
         ]
         "#
         );

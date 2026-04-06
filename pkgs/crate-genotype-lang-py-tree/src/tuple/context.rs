@@ -1,12 +1,9 @@
 use crate::prelude::internal::*;
 
 impl PyContextResolve for PyTuple {
-    fn resolve<Context>(self, context: &mut Context) -> Self
-    where
-        Context: PyConvertContextConstraint,
-    {
+    fn resolve(self, context: &mut PyConvertContext) -> Self {
         if context.is_version(PyVersion::Legacy) {
-            context.add_import(PyDependencyIdent::Typing, "Tuple".into());
+            context.push_import(PyImport::new(PyDependencyIdent::Typing, "Tuple".into()));
         }
         self
     }
@@ -19,26 +16,33 @@ mod tests {
 
     #[test]
     fn test_resolve() {
-        let mut context = PyConvertContextMock::default();
+        let mut context = PyConvertContext::default();
         let tuple = PyTuple {
             descriptors: vec![PyPrimitive::String.into()],
         };
         tuple.resolve(&mut context);
-        assert_ron_snapshot!(context.as_imports(), @"[]");
+        assert_ron_snapshot!(context.imports(), @"[]");
     }
 
     #[test]
     fn test_resolve_legacy() {
-        let mut context = PyConvertContextMock::new(PyVersion::Legacy);
+        let mut config = PyConfig::default();
+        config.lang.version = PyVersion::Legacy;
+        let mut context = PyConvertContext::new(Default::default(), config);
         let tuple = PyTuple {
             descriptors: vec![PyPrimitive::String.into()],
         };
         tuple.resolve(&mut context);
         assert_ron_snapshot!(
-            context.as_imports(),
+            context.imports(),
             @r#"
         [
-          (Typing, PyIdentifier("Tuple")),
+          PyImport(
+            dependency: Typing,
+            reference: Named([
+              Name(PyIdentifier("Tuple")),
+            ]),
+          ),
         ]
         "#
         );

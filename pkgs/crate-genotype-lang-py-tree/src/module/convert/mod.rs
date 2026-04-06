@@ -332,7 +332,7 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GtIdentifier::new((0, 0).into(), "Message".into()),
-                            descriptor: Gt::descriptor(Gt::union(descriptor_nodes![
+                            descriptor: Gt::descriptor(Gt::union(vec_into![
                                 Gt::reference("DM"),
                                 Gt::reference("Comment")
                             ]))

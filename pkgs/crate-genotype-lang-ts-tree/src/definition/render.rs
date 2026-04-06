@@ -22,18 +22,13 @@ impl<'a> GtlRender<'a> for TsDefinition {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use insta::assert_snapshot;
 
     #[test]
     fn test_render_alias() {
         assert_snapshot!(
-            TsDefinition::Alias(TsAlias {
-                doc: None,
-                name: "Name".into(),
-                descriptor: TsDescriptor::Primitive(TsPrimitive::String),
-            })
-            .render(Default::default(), &mut Default::default())
-            .unwrap(),
+            render_node(Tst::definition(Tst::alias("Name", Tst::primitive_string()))),
             @"export type Name = string;"
         );
     }
@@ -41,27 +36,15 @@ mod tests {
     #[test]
     fn test_render_interface() {
         assert_snapshot!(
-            TsDefinition::Interface(TsInterface {
-                doc: None,
-                name: "Name".into(),
-                extensions: vec![],
-                properties: vec![
-                    TsProperty {
-                        doc: None,
-                        name: "name".into(),
-                        descriptor: TsDescriptor::Primitive(TsPrimitive::String),
-                        required: true
-                    },
-                    TsProperty {
-                        doc: None,
-                        name: "age".into(),
-                        descriptor: TsDescriptor::Primitive(TsPrimitive::Number),
-                        required: false
-                    }
-                ]
-            })
-            .render(Default::default(), &mut Default::default())
-            .unwrap(),
+            render_node(
+                Tst::definition(Tst::interface(
+                    "Name",
+                    vec![
+                        Tst::property("name", Tst::primitive_string()),
+                        Tst::property_optional("age", Tst::primitive_number()),
+                    ],
+                )),
+            ),
             @"
         export interface Name {
           name: string;
@@ -74,13 +57,9 @@ mod tests {
     #[test]
     fn test_render_branded() {
         assert_snapshot!(
-            TsDefinition::Branded(TsBranded {
-                doc: None,
-                name: "Version".into(),
-                primitive: TsPrimitive::Number
-            })
-            .render(Default::default(), &mut Default::default())
-            .unwrap(),
+            render_node(
+                Tst::definition(Tst::branded("Version", Tst::primitive_number())),
+            ),
             @"
         export type Version = number & { [versionBrand]: true };
         declare const versionBrand: unique symbol;
@@ -91,15 +70,14 @@ mod tests {
     #[test]
     fn test_render_embed() {
         assert_snapshot!(
-            TsDefinition::Embed(TsEmbedDefinition {
-                name: "Name".into(),
-                embed: r#"const hello = {
+            render_node(
+                Tst::definition(Tst::embed_definition(
+                    "Name",
+                    r#"const hello = {
   name: "World"
-};"#
-                .into()
-            })
-            .render(Default::default(), &mut Default::default())
-            .unwrap(),
+};"#,
+                )),
+            ),
             @r#"
         const hello = {
           name: "World"

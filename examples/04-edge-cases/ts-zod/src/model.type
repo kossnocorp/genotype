@@ -1,0 +1,36 @@
+Id: @string
+
+Tag: "alpha" | "beta" | "release"
+
+Coordinates: (float, float)
+
+Metadata: { []: string }
+
+Attachment: {
+  name: string,
+  size: int,
+}
+
+Payload: {
+  id: Id,
+  kind: "payload",
+  title: string,
+  count: int,
+  ratio: float,
+  enabled: boolean,
+  tags: [Tag],
+  coordinates: Coordinates,
+  metadata: Metadata,
+  attachment?: Attachment,
+  extra: any,
+}
+
+Summary: {
+  ...Payload,
+  kind: "summary",
+  note: string | null,
+}
+
+Envelope:
+  | Payload
+  | Summary

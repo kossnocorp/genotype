@@ -30,14 +30,13 @@ impl<'a> GtlRender<'a> for TsImportReference {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use insta::assert_snapshot;
 
     #[test]
     fn test_render_default() {
         assert_snapshot!(
-            TsImportReference::Default("Name".into())
-                .render(Default::default(), &mut Default::default())
-                .unwrap(),
+            render_node(Tst::import_reference_default("Name")),
             @"Name"
         );
     }
@@ -45,9 +44,7 @@ mod tests {
     #[test]
     fn test_render_glob() {
         assert_snapshot!(
-            TsImportReference::Glob("name".into())
-                .render(Default::default(), &mut Default::default())
-                .unwrap(),
+            render_node(Tst::import_reference_glob("name")),
             @"* as name"
         );
     }
@@ -55,12 +52,12 @@ mod tests {
     #[test]
     fn test_render_named() {
         assert_snapshot!(
-            TsImportReference::Named(vec![
-                TsImportName::Name("Name".into()),
-                TsImportName::Alias("Name".into(), "Alias".into()),
-            ])
-            .render(Default::default(), &mut Default::default())
-            .unwrap(),
+            render_node(
+                Tst::import_reference_named(vec![
+                    Tst::import_name("Name"),
+                    Tst::import_alias("Name", "Alias"),
+                ]),
+            ),
             @"{ Name, Name as Alias }"
         );
     }

@@ -7,6 +7,7 @@ pub use crate::prelude::internal::{Traverse, Visitor};
     TsArray,
     TsBranded,
     TsDefinition,
+    TsDependencyIdent,
     TsDescriptor,
     TsDoc,
     TsEmbedDefinition,

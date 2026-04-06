@@ -17,6 +17,14 @@ impl<'a> GtlRender<'a> for TsObject {
             .collect::<Result<Vec<_>>>()?
             .join(",\n");
 
+        if context.is_zod_mode() {
+            return Ok(format!(
+                "z.object({{\n{properties}{}{}",
+                if properties.len() > 0 { "\n" } else { "" },
+                state.indent_format("})")
+            ));
+        }
+
         Ok(format!(
             "{{\n{properties}{}{}",
             if properties.len() > 0 { "\n" } else { "" },
@@ -28,14 +36,13 @@ impl<'a> GtlRender<'a> for TsObject {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test::*;
     use insta::assert_snapshot;
 
     #[test]
     fn test_render_empty() {
         assert_snapshot!(
-            TsObject { properties: vec![] }
-                .render(Default::default(), &mut Default::default())
-                .unwrap(),
+            render_node(Tst::object(vec![])),
             @"
         {
         }
@@ -46,24 +53,12 @@ mod tests {
     #[test]
     fn test_render_properties() {
         assert_snapshot!(
-            TsObject {
-                properties: vec![
-                    TsProperty {
-                        doc: None,
-                        name: "name".into(),
-                        descriptor: TsDescriptor::Primitive(TsPrimitive::String),
-                        required: true
-                    },
-                    TsProperty {
-                        doc: None,
-                        name: "age".into(),
-                        descriptor: TsDescriptor::Primitive(TsPrimitive::Number),
-                        required: false
-                    }
-                ]
-            }
-            .render(Default::default(), &mut Default::default())
-            .unwrap(),
+            render_node(
+                Tst::object(vec![
+                    Tst::property("name", Tst::primitive_string()),
+                    Tst::property_optional("age", Tst::primitive_number()),
+                ]),
+            ),
             @"
         {
           name: string,
@@ -76,22 +71,10 @@ mod tests {
     #[test]
     fn test_render_indent() {
         assert_snapshot!(
-            TsObject {
-                properties: vec![
-                    TsProperty {
-                        doc: None,
-                        name: "name".into(),
-                        descriptor: TsDescriptor::Primitive(TsPrimitive::String),
-                        required: true
-                    },
-                    TsProperty {
-                        doc: None,
-                        name: "age".into(),
-                        descriptor: TsDescriptor::Primitive(TsPrimitive::Number),
-                        required: false
-                    }
-                ]
-            }
+            Tst::object(vec![
+                Tst::property("name", Tst::primitive_string()),
+                Tst::property_optional("age", Tst::primitive_number()),
+            ])
             .render(
                 TsRenderState::default().indent_inc(),
                 &mut Default::default()
@@ -102,6 +85,62 @@ mod tests {
             name: string,
             age?: number
           }
+        "
+        );
+    }
+
+    #[test]
+    fn test_render_zod_mode() {
+        let mut context = Tst::render_context_zod();
+
+        assert_snapshot!(
+            render_node_with(
+                Tst::object(vec![Tst::property("name", Tst::primitive_string())]),
+                &mut context,
+            ),
+            @"
+        z.object({
+          name: z.string()
+        })
+        "
+        );
+    }
+
+    #[test]
+    fn test_render_zod_mode_multiple_fields() {
+        let mut context = Tst::render_context_zod();
+
+        assert_snapshot!(
+            render_node_with(
+                Tst::object(vec![
+                    Tst::property("name", Tst::primitive_string()),
+                    Tst::property_optional(
+                        "address",
+                        Tst::object(vec![Tst::property("name", Tst::primitive_string())]),
+                    ),
+                ]),
+                &mut context,
+            ),
+            @"
+        z.object({
+          name: z.string(),
+          address: z.object({
+            name: z.string()
+          }).optional()
+        })
+        "
+        );
+    }
+
+    #[test]
+    fn test_render_zod_mode_no_fields() {
+        let mut context = Tst::render_context_zod();
+
+        assert_snapshot!(
+            render_node_with(Tst::object(vec![]), &mut context),
+            @"
+        z.object({
+        })
         "
         );
     }
