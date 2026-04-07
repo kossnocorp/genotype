@@ -1,0 +1,17 @@
+//! edge case module docs
+/// edge case line docs
+use ../shared/{Thing as Other, Next}
+
+#[tag(which = "a", what = "b")]
+Edge:
+  | #[name = first] { [u32]: ["x" | "y"] }
+  | #[name = second] {
+    ...Base,
+    maybe?: @string,
+    number: -1.5e+10,
+    none: null,
+    from: ../../author/Author,
+  } |
+
+InlinePath: ./folder/Type
+Quoted: "line\\n\"quote\""

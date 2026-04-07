@@ -1,0 +1,10 @@
+name = "genotype-examples-05-demo"
+
+[ts]
+enabled = true
+
+[rust]
+enabled = true
+
+[python]
+enabled = true

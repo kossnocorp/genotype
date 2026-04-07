@@ -1,6 +1,6 @@
 packages:
-  - "pkgs/npm-genotype-lsp"
-  - "pkgs/npm-genotype-lsp/npm/*"
+  - "pkgs/crate-genotype-lsp"
+  - "pkgs/crate-genotype-lsp/npm/*"
   - "pkgs/npm-vscode-genotype"
   - "pkgs/npm-vscode-genotype/server"
   - "pkgs/npm-vscode-genotype/client"

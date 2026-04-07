@@ -1,0 +1,27 @@
+>OrgId: @int
+#^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#     ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#      ^ source.genotype meta.alias.genotype
+#       ^ source.genotype meta.alias.genotype storage.modifier.branded.genotype
+#        ^^^ source.genotype meta.alias.genotype storage.type.primitive.genotype
+>
+>UserId: @string
+#^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#      ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#       ^ source.genotype meta.alias.genotype
+#        ^ source.genotype meta.alias.genotype storage.modifier.branded.genotype
+#         ^^^^^^ source.genotype meta.alias.genotype storage.type.primitive.genotype
+>
+>Const: @float
+#^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#     ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#      ^ source.genotype meta.alias.genotype
+#       ^ source.genotype meta.alias.genotype storage.modifier.branded.genotype
+#        ^^^^^ source.genotype meta.alias.genotype storage.type.primitive.genotype
+>
+>Yes: @boolean
+#^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#   ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#    ^ source.genotype meta.alias.genotype
+#     ^ source.genotype meta.alias.genotype storage.modifier.branded.genotype
+#      ^^^^^^^ source.genotype meta.alias.genotype storage.type.primitive.genotype

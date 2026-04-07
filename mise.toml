@@ -1,3 +1,7 @@
+experimental_monorepo_root = true
+[monorepo]
+config_roots = ["pkgs/*"]
+
 [tools]
 # Stack
 # Rust
@@ -32,3 +36,7 @@ idiomatic_version_file_enable_tools = ["rust"] # Use rust-toolchain.toml
 
 [env]
 _.file = "./.env"
+MISE_EXPERIMENTAL = true # Enable monorepo root support
+
+[tasks.build]
+run = "cargo build"

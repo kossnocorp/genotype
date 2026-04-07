@@ -1,0 +1,87 @@
+>use author/*
+#^^^ source.genotype meta.import.genotype keyword.control.import.genotype
+#   ^ source.genotype meta.import.genotype
+#    ^^^^^^ source.genotype meta.import.genotype entity.name.namespace.genotype
+#          ^ source.genotype meta.import.genotype punctuation.separator.path.genotype
+#           ^ source.genotype meta.import.genotype keyword.operator.wildcard.genotype
+>use ../../author/{Author, Genre, Something as Else}
+#^^^ source.genotype meta.import.genotype keyword.control.import.genotype
+#   ^ source.genotype meta.import.genotype
+#    ^^^ source.genotype meta.import.genotype keyword.operator.path.parent.genotype
+#       ^^^ source.genotype meta.import.genotype keyword.operator.path.parent.genotype
+#          ^^^^^^ source.genotype meta.import.genotype entity.name.namespace.genotype
+#                ^ source.genotype meta.import.genotype punctuation.separator.path.genotype
+#                 ^ source.genotype meta.import.genotype meta.import.names.genotype punctuation.section.block.begin.genotype
+#                  ^^^^^^ source.genotype meta.import.genotype meta.import.names.genotype entity.name.type.genotype
+#                        ^ source.genotype meta.import.genotype meta.import.names.genotype punctuation.separator.comma.genotype
+#                         ^ source.genotype meta.import.genotype meta.import.names.genotype
+#                          ^^^^^ source.genotype meta.import.genotype meta.import.names.genotype entity.name.type.genotype
+#                               ^ source.genotype meta.import.genotype meta.import.names.genotype punctuation.separator.comma.genotype
+#                                ^ source.genotype meta.import.genotype meta.import.names.genotype
+#                                 ^^^^^^^^^ source.genotype meta.import.genotype meta.import.names.genotype entity.name.type.genotype
+#                                          ^ source.genotype meta.import.genotype meta.import.names.genotype
+#                                           ^^ source.genotype meta.import.genotype meta.import.names.genotype keyword.control.import.as.genotype
+#                                             ^ source.genotype meta.import.genotype meta.import.names.genotype
+#                                              ^^^^ source.genotype meta.import.genotype meta.import.names.genotype entity.name.type.alias.genotype
+#                                                  ^ source.genotype meta.import.genotype meta.import.names.genotype punctuation.section.block.end.genotype
+>use author/Author
+#^^^ source.genotype meta.import.genotype keyword.control.import.genotype
+#   ^ source.genotype meta.import.genotype
+#    ^^^^^^ source.genotype meta.import.genotype entity.name.namespace.genotype
+#          ^ source.genotype meta.import.genotype punctuation.separator.path.genotype
+#           ^^^^^^ source.genotype meta.import.genotype entity.name.type.genotype
+>
+>Book: {
+#^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#    ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#     ^ source.genotype meta.alias.genotype
+#      ^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.section.block.begin.genotype
+>  title: string,
+#^^ source.genotype meta.alias.genotype meta.object.type.genotype
+#  ^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype variable.other.property.genotype
+#       ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype punctuation.separator.key-value.genotype
+#        ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype
+#         ^^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype storage.type.primitive.genotype
+#               ^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.separator.comma.genotype
+>  author: ../../author/Author,
+#^^ source.genotype meta.alias.genotype meta.object.type.genotype
+#  ^^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype variable.other.property.genotype
+#        ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype punctuation.separator.key-value.genotype
+#         ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype
+#          ^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype meta.inline-import.genotype keyword.operator.path.parent.genotype
+#             ^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype meta.inline-import.genotype keyword.operator.path.parent.genotype
+#                ^^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype meta.inline-import.genotype entity.name.namespace.genotype
+#                      ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype meta.inline-import.genotype punctuation.separator.path.genotype
+#                       ^^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype meta.inline-import.genotype entity.name.type.genotype
+#                             ^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.separator.comma.genotype
+>  genre: Genre,
+#^^ source.genotype meta.alias.genotype meta.object.type.genotype
+#  ^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype variable.other.property.genotype
+#       ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype punctuation.separator.key-value.genotype
+#        ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype
+#         ^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype entity.name.type.genotype
+#              ^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.separator.comma.genotype
+>}
+#^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.section.block.end.genotype
+>
+>Author: ../../author/Author
+#^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#      ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#       ^ source.genotype meta.alias.genotype
+#        ^^^ source.genotype meta.alias.genotype meta.inline-import.genotype keyword.operator.path.parent.genotype
+#           ^^^ source.genotype meta.alias.genotype meta.inline-import.genotype keyword.operator.path.parent.genotype
+#              ^^^^^^ source.genotype meta.alias.genotype meta.inline-import.genotype entity.name.namespace.genotype
+#                    ^ source.genotype meta.alias.genotype meta.inline-import.genotype punctuation.separator.path.genotype
+#                     ^^^^^^ source.genotype meta.alias.genotype meta.inline-import.genotype entity.name.type.genotype
+>
+>Authors: [../../author/Author]
+#^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#       ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#        ^ source.genotype meta.alias.genotype
+#         ^ source.genotype meta.alias.genotype meta.array.type.genotype punctuation.section.brackets.begin.genotype
+#          ^^^ source.genotype meta.alias.genotype meta.array.type.genotype meta.inline-import.genotype keyword.operator.path.parent.genotype
+#             ^^^ source.genotype meta.alias.genotype meta.array.type.genotype meta.inline-import.genotype keyword.operator.path.parent.genotype
+#                ^^^^^^ source.genotype meta.alias.genotype meta.array.type.genotype meta.inline-import.genotype entity.name.namespace.genotype
+#                      ^ source.genotype meta.alias.genotype meta.array.type.genotype meta.inline-import.genotype punctuation.separator.path.genotype
+#                       ^^^^^^ source.genotype meta.alias.genotype meta.array.type.genotype meta.inline-import.genotype entity.name.type.genotype
+#                             ^ source.genotype meta.alias.genotype meta.array.type.genotype punctuation.section.brackets.end.genotype

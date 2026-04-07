@@ -1,0 +1,29 @@
+[tasks."gen/syntax-test-links"]
+run = "scripts/link-syntax-tests.sh"
+sources = ["./../../examples/02-syntax/*.type"]
+outputs = ["./tests/syntax/*.type"]
+
+[tasks.build]
+run = "pnpm exec tsc"
+
+[tasks.publish]
+run = "pnpx @vscode/vsce publish"
+depends = "build"
+
+[tasks.version]
+usage = '''
+arg "<version>" help="Version to apply"
+'''
+run = "pnpm version {{usage.version}}"
+
+[tasks."test/grammar"]
+run = '''
+pnpm exec vscode-tmgrammar-snap "tests/syntax/*.type" --scope source.genotype
+'''
+depends = "gen/syntax-test-links"
+
+[tasks."test/grammar:update"]
+run = '''
+pnpm exec vscode-tmgrammar-snap "tests/syntax/*.type" --scope source.genotype --updateSnapshot
+'''
+depends = "gen/syntax-test-links"

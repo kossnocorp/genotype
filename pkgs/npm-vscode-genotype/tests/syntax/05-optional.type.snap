@@ -1,0 +1,21 @@
+>Hello: {
+#^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#     ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#      ^ source.genotype meta.alias.genotype
+#       ^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.section.block.begin.genotype
+>  name: string,
+#^^ source.genotype meta.alias.genotype meta.object.type.genotype
+#  ^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype variable.other.property.genotype
+#      ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype punctuation.separator.key-value.genotype
+#       ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype
+#        ^^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype storage.type.primitive.genotype
+#              ^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.separator.comma.genotype
+>  age?: int
+#^^ source.genotype meta.alias.genotype meta.object.type.genotype
+#  ^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype variable.other.property.genotype
+#     ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype keyword.operator.optional.genotype
+#      ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype punctuation.separator.key-value.genotype
+#       ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype
+#        ^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype storage.type.primitive.genotype
+>}
+#^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.section.block.end.genotype

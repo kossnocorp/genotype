@@ -1,0 +1,5 @@
+>Anything: any
+#^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#        ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#         ^ source.genotype meta.alias.genotype
+#          ^^^ source.genotype meta.alias.genotype storage.type.any.genotype

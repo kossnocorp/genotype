@@ -1,0 +1,268 @@
+>Int8: i8
+#^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#    ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#     ^ source.genotype meta.alias.genotype
+#      ^^ source.genotype meta.alias.genotype storage.type.primitive.genotype
+>Int16: i16
+#^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#     ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#      ^ source.genotype meta.alias.genotype
+#       ^^^ source.genotype meta.alias.genotype storage.type.primitive.genotype
+>Int32: i32
+#^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#     ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#      ^ source.genotype meta.alias.genotype
+#       ^^^ source.genotype meta.alias.genotype storage.type.primitive.genotype
+>Int64: i64
+#^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#     ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#      ^ source.genotype meta.alias.genotype
+#       ^^^ source.genotype meta.alias.genotype storage.type.primitive.genotype
+>Int128: i128
+#^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#      ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#       ^ source.genotype meta.alias.genotype
+#        ^^^^ source.genotype meta.alias.genotype storage.type.primitive.genotype
+>IntSize: isize
+#^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#       ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#        ^ source.genotype meta.alias.genotype
+#         ^^^^^ source.genotype meta.alias.genotype storage.type.primitive.genotype
+>IntU8: u8
+#^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#     ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#      ^ source.genotype meta.alias.genotype
+#       ^^ source.genotype meta.alias.genotype storage.type.primitive.genotype
+>IntU16: u16
+#^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#      ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#       ^ source.genotype meta.alias.genotype
+#        ^^^ source.genotype meta.alias.genotype storage.type.primitive.genotype
+>IntU32: u32
+#^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#      ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#       ^ source.genotype meta.alias.genotype
+#        ^^^ source.genotype meta.alias.genotype storage.type.primitive.genotype
+>IntU64: u64
+#^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#      ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#       ^ source.genotype meta.alias.genotype
+#        ^^^ source.genotype meta.alias.genotype storage.type.primitive.genotype
+>IntU128: u128
+#^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#       ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#        ^ source.genotype meta.alias.genotype
+#         ^^^^ source.genotype meta.alias.genotype storage.type.primitive.genotype
+>IntUSize: usize
+#^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#        ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#         ^ source.genotype meta.alias.genotype
+#          ^^^^^ source.genotype meta.alias.genotype storage.type.primitive.genotype
+>Float32: f32
+#^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#       ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#        ^ source.genotype meta.alias.genotype
+#         ^^^ source.genotype meta.alias.genotype storage.type.primitive.genotype
+>Float64: f64
+#^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#       ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#        ^ source.genotype meta.alias.genotype
+#         ^^^ source.genotype meta.alias.genotype storage.type.primitive.genotype
+>
+>Int8Record: { [i8]: string }
+#^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#          ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#           ^ source.genotype meta.alias.genotype
+#            ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.begin.genotype
+#             ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#              ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.begin.genotype
+#               ^^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype storage.type.primitive.genotype
+#                 ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.end.genotype
+#                  ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.separator.key-value.genotype
+#                   ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                    ^^^^^^ source.genotype meta.alias.genotype meta.record.type.genotype storage.type.primitive.genotype
+#                          ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                           ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.end.genotype
+>Int16Record: { [i16]: string }
+#^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#           ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#            ^ source.genotype meta.alias.genotype
+#             ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.begin.genotype
+#              ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#               ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.begin.genotype
+#                ^^^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype storage.type.primitive.genotype
+#                   ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.end.genotype
+#                    ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.separator.key-value.genotype
+#                     ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                      ^^^^^^ source.genotype meta.alias.genotype meta.record.type.genotype storage.type.primitive.genotype
+#                            ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                             ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.end.genotype
+>Int32Record: { [i32]: string }
+#^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#           ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#            ^ source.genotype meta.alias.genotype
+#             ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.begin.genotype
+#              ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#               ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.begin.genotype
+#                ^^^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype storage.type.primitive.genotype
+#                   ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.end.genotype
+#                    ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.separator.key-value.genotype
+#                     ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                      ^^^^^^ source.genotype meta.alias.genotype meta.record.type.genotype storage.type.primitive.genotype
+#                            ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                             ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.end.genotype
+>Int64Record: { [i64]: string }
+#^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#           ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#            ^ source.genotype meta.alias.genotype
+#             ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.begin.genotype
+#              ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#               ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.begin.genotype
+#                ^^^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype storage.type.primitive.genotype
+#                   ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.end.genotype
+#                    ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.separator.key-value.genotype
+#                     ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                      ^^^^^^ source.genotype meta.alias.genotype meta.record.type.genotype storage.type.primitive.genotype
+#                            ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                             ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.end.genotype
+>Int128Record: { [i128]: string }
+#^^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#            ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#             ^ source.genotype meta.alias.genotype
+#              ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.begin.genotype
+#               ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.begin.genotype
+#                 ^^^^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype storage.type.primitive.genotype
+#                     ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.end.genotype
+#                      ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.separator.key-value.genotype
+#                       ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                        ^^^^^^ source.genotype meta.alias.genotype meta.record.type.genotype storage.type.primitive.genotype
+#                              ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                               ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.end.genotype
+>IntSizeRecord: { [isize]: string }
+#^^^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#             ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#              ^ source.genotype meta.alias.genotype
+#               ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.begin.genotype
+#                ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                 ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.begin.genotype
+#                  ^^^^^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype storage.type.primitive.genotype
+#                       ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.end.genotype
+#                        ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.separator.key-value.genotype
+#                         ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                          ^^^^^^ source.genotype meta.alias.genotype meta.record.type.genotype storage.type.primitive.genotype
+#                                ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                                 ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.end.genotype
+>IntU8Record: { [u8]: string }
+#^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#           ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#            ^ source.genotype meta.alias.genotype
+#             ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.begin.genotype
+#              ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#               ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.begin.genotype
+#                ^^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype storage.type.primitive.genotype
+#                  ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.end.genotype
+#                   ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.separator.key-value.genotype
+#                    ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                     ^^^^^^ source.genotype meta.alias.genotype meta.record.type.genotype storage.type.primitive.genotype
+#                           ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                            ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.end.genotype
+>IntU16Record: { [u16]: string }
+#^^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#            ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#             ^ source.genotype meta.alias.genotype
+#              ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.begin.genotype
+#               ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.begin.genotype
+#                 ^^^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype storage.type.primitive.genotype
+#                    ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.end.genotype
+#                     ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.separator.key-value.genotype
+#                      ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                       ^^^^^^ source.genotype meta.alias.genotype meta.record.type.genotype storage.type.primitive.genotype
+#                             ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                              ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.end.genotype
+>IntU32Record: { [u32]: string }
+#^^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#            ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#             ^ source.genotype meta.alias.genotype
+#              ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.begin.genotype
+#               ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.begin.genotype
+#                 ^^^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype storage.type.primitive.genotype
+#                    ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.end.genotype
+#                     ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.separator.key-value.genotype
+#                      ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                       ^^^^^^ source.genotype meta.alias.genotype meta.record.type.genotype storage.type.primitive.genotype
+#                             ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                              ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.end.genotype
+>IntU64Record: { [u64]: string }
+#^^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#            ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#             ^ source.genotype meta.alias.genotype
+#              ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.begin.genotype
+#               ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.begin.genotype
+#                 ^^^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype storage.type.primitive.genotype
+#                    ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.end.genotype
+#                     ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.separator.key-value.genotype
+#                      ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                       ^^^^^^ source.genotype meta.alias.genotype meta.record.type.genotype storage.type.primitive.genotype
+#                             ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                              ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.end.genotype
+>IntU128Record: { [u128]: string }
+#^^^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#             ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#              ^ source.genotype meta.alias.genotype
+#               ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.begin.genotype
+#                ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                 ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.begin.genotype
+#                  ^^^^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype storage.type.primitive.genotype
+#                      ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.end.genotype
+#                       ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.separator.key-value.genotype
+#                        ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                         ^^^^^^ source.genotype meta.alias.genotype meta.record.type.genotype storage.type.primitive.genotype
+#                               ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                                ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.end.genotype
+>IntUSizeRecord: { [usize]: string }
+#^^^^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#              ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#               ^ source.genotype meta.alias.genotype
+#                ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.begin.genotype
+#                 ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                  ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.begin.genotype
+#                   ^^^^^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype storage.type.primitive.genotype
+#                        ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.end.genotype
+#                         ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.separator.key-value.genotype
+#                          ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                           ^^^^^^ source.genotype meta.alias.genotype meta.record.type.genotype storage.type.primitive.genotype
+#                                 ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                                  ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.end.genotype
+>Float32Record: { [f32]: string }
+#^^^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#             ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#              ^ source.genotype meta.alias.genotype
+#               ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.begin.genotype
+#                ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                 ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.begin.genotype
+#                  ^^^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype storage.type.primitive.genotype
+#                     ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.end.genotype
+#                      ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.separator.key-value.genotype
+#                       ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                        ^^^^^^ source.genotype meta.alias.genotype meta.record.type.genotype storage.type.primitive.genotype
+#                              ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                               ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.end.genotype
+>Float64Record: { [f64]: string }
+#^^^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#             ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#              ^ source.genotype meta.alias.genotype
+#               ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.begin.genotype
+#                ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                 ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.begin.genotype
+#                  ^^^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype storage.type.primitive.genotype
+#                     ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.end.genotype
+#                      ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.separator.key-value.genotype
+#                       ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                        ^^^^^^ source.genotype meta.alias.genotype meta.record.type.genotype storage.type.primitive.genotype
+#                              ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                               ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.end.genotype
+>

@@ -2,14 +2,19 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "VS Code extension",
+      "name": "vscode:dev",
       "type": "extensionHost",
       "request": "launch",
-      "preLaunchTask": "Build VS Code extension",
-      "args": ["--extensionDevelopmentPath=${workspaceRoot}/vscode"],
-      "outFiles": ["${workspaceRoot}/vscode/dist/**/*.js"],
+      "preLaunchTask": "vscode:build",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/pkgs/npm-vscode-genotype",
+        "${workspaceFolder}/examples/05-demo"
+      ],
+      "outFiles": ["${workspaceFolder}/pkgs/npm-vscode-genotype/dist/**/*.js"],
       "autoAttachChildProcesses": true
     },
+
+    // TODO: Revamp
     {
       "name": "CLI",
       "type": "lldb",

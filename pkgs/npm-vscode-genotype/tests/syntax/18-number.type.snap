@@ -1,0 +1,20 @@
+>Hello: number
+#^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#     ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#      ^ source.genotype meta.alias.genotype
+#       ^^^^^^ source.genotype meta.alias.genotype storage.type.primitive.genotype
+>
+>World: { [number]: string }
+#^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#     ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#      ^ source.genotype meta.alias.genotype
+#       ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.begin.genotype
+#        ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#         ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.begin.genotype
+#          ^^^^^^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype storage.type.primitive.genotype
+#                ^ source.genotype meta.alias.genotype meta.record.type.genotype meta.record.key.genotype punctuation.section.brackets.end.genotype
+#                 ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.separator.key-value.genotype
+#                  ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                   ^^^^^^ source.genotype meta.alias.genotype meta.record.type.genotype storage.type.primitive.genotype
+#                         ^ source.genotype meta.alias.genotype meta.record.type.genotype
+#                          ^ source.genotype meta.alias.genotype meta.record.type.genotype punctuation.section.block.end.genotype
