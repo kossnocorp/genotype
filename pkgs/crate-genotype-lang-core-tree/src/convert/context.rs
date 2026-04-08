@@ -31,8 +31,8 @@ pub trait GtlConvertContext {
                     .iter_mut()
                     .find(|i| i.dependency() == import.dependency());
 
-                if let Some(same_dep_import) = same_dep_import {
-                    if let Some(same_dep_ref_names) = same_dep_import.ref_names_mut() {
+                if let Some(same_dep_import) = same_dep_import
+                    && let Some(same_dep_ref_names) = same_dep_import.ref_names_mut() {
                         for name in import_ref_names {
                             if !same_dep_ref_names.contains(name) {
                                 same_dep_ref_names.push(name.clone());
@@ -40,7 +40,6 @@ pub trait GtlConvertContext {
                         }
                         continue;
                     }
-                }
             }
 
             imports.push(import);

@@ -39,7 +39,7 @@ const PY_MANIFEST_VERSION_PATH_UV: &str = "project.version";
 const RS_MANIFEST_VERSION_PATH: &str = "package.version";
 
 impl GtConfig {
-    pub fn set_manifest_version<'a>(&'a mut self, props: GtConfigSetVersionProps) -> Result<()> {
+    pub fn set_manifest_version(&mut self, props: GtConfigSetVersionProps) -> Result<()> {
         let GtConfigSetVersionProps {
             version,
             ts,
@@ -50,7 +50,7 @@ impl GtConfig {
         let mut updates: VersionUpdates = HashMap::new();
 
         if let Some(cur_global_version) = &self.version {
-            ensure_can_set_version(&cur_global_version, &version)?;
+            ensure_can_set_version(cur_global_version, &version)?;
             updates.insert(GtConfigVersionTarget::Global, version.clone());
         }
 
@@ -141,7 +141,7 @@ impl GtConfig {
                         .lang_manifest_mut(lang)
                         .drill_str_mut(path)
                         .into_diagnostic()?;
-                    *item = toml::Value::String(next_version.to_string()).into();
+                    *item = toml::Value::String(next_version.to_string());
                 }
             }
         }
@@ -149,7 +149,7 @@ impl GtConfig {
         Ok(())
     }
 
-    pub fn lang_manifest_mut<'a>(&'a mut self, lang: GtConfigLang) -> &'a mut toml::Table {
+    pub fn lang_manifest_mut(&mut self, lang: GtConfigLang) -> &mut toml::Table {
         match lang {
             GtConfigLang::Ts => &mut self.ts.common.manifest,
 
@@ -159,7 +159,7 @@ impl GtConfig {
         }
     }
 
-    pub fn lang_manifest<'a>(&'a self, lang: GtConfigLang) -> &'a toml::Table {
+    pub fn lang_manifest(&self, lang: GtConfigLang) -> &toml::Table {
         match lang {
             GtConfigLang::Ts => &self.ts.common.manifest,
 

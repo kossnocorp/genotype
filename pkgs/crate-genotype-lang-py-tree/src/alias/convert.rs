@@ -38,19 +38,16 @@ impl PyConvert<PyDefinition> for GtAlias {
                 let mut descriptor = self.descriptor.convert(context);
 
                 for attribute in self.attributes.iter() {
-                    if let PyDescriptor::Union(union) = &mut descriptor {
-                        if let Some(assignment) = attribute.get_assigned("discriminator") {
-                            if let GtAttributeValue::Literal(literal) = &assignment.value {
-                                if let GtLiteralValue::String(value) = &literal.value {
+                    if let PyDescriptor::Union(union) = &mut descriptor
+                        && let Some(assignment) = attribute.get_assigned("discriminator")
+                            && let GtAttributeValue::Literal(literal) = &assignment.value
+                                && let GtLiteralValue::String(value) = &literal.value {
                                     union.discriminator = value.clone().into();
                                     // [TODO] Resolve right now is a mess, instead of resolving in
                                     // convert functions, it should be resolved in the end or by
                                     // the parent.
                                     union.clone().resolve(context);
                                 }
-                            }
-                        }
-                    }
                 }
 
                 if context.is_version(PyVersion::Legacy) {

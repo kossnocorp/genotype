@@ -33,9 +33,9 @@ impl GtlProjectModule<PyConfig> for PyProjectModule {
                         })
                         .collect::<Vec<_>>();
 
-                    if references.len() > 0 {
+                    if !references.is_empty() {
                         let str = import.path.source_str();
-                        let name = str.split('/').last().unwrap_or(str).to_string();
+                        let name = str.split('/').next_back().unwrap_or(str).to_string();
                         let prefix = if let Some(count) = prefixes.get(&name) {
                             let prefix = format!("{}{}", name, count);
                             prefixes.insert(name.clone(), count + 1);
@@ -49,7 +49,7 @@ impl GtlProjectModule<PyConfig> for PyProjectModule {
 
                         references.iter().for_each(|(reference, _)| {
                             let identifier = (*reference).clone();
-                            let span = identifier.0.clone();
+                            let span = identifier.0;
                             let alias_str = format!("{}.{}", prefix, identifier.1);
                             let alias = GtIdentifier::new(span, alias_str.into());
                             resolve.identifiers.insert(identifier.clone(), alias);
@@ -76,7 +76,7 @@ impl GtlProjectModule<PyConfig> for PyProjectModule {
             }
         }
 
-        let module = PyConvertModule::convert(&module.module, &resolve, &config).0;
+        let module = PyConvertModule::convert(&module.module, &resolve, config).0;
 
         Ok(Self { name, path, module })
     }

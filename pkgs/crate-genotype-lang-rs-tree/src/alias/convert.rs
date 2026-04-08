@@ -33,14 +33,14 @@ impl RsConvert<RsDefinition> for GtAlias {
 
             _ => {
                 let descriptor = self.descriptor.convert(context)?;
-                let alias = RsDefinition::Alias(RsAlias {
+                
+
+                RsDefinition::Alias(RsAlias {
                     id: self.id.clone(),
                     doc,
                     name,
                     descriptor,
-                });
-
-                alias
+                })
             }
         };
 

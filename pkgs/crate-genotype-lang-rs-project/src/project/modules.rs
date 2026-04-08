@@ -28,7 +28,7 @@ impl RsProject<'_> {
     ) -> Result<Vec<RsProjectModule>> {
         let mut project_modules = modules
             .iter()
-            .map(|module| RsProjectModule::generate(&config, module))
+            .map(|module| RsProjectModule::generate(config, module))
             .collect::<Result<Vec<RsProjectModule>, _>>()?;
 
         // Now when we generated modules, we need to go through all structs and resolve the fields.
@@ -44,16 +44,15 @@ impl RsProject<'_> {
         // their extensions.
         for project_module in project_modules.iter() {
             for definition in project_module.module.definitions.iter() {
-                if let RsDefinition::Struct(r#struct) = definition {
-                    if let RsStructFields::Unresolved(span, references, _) = &r#struct.fields {
+                if let RsDefinition::Struct(r#struct) = definition
+                    && let RsStructFields::Unresolved(span, references, _) = &r#struct.fields {
                         let reference_ids = references
                             .iter()
                             .map(|reference| reference.definition_id.clone())
                             .collect::<IndexSet<_>>();
                         definitions_to_resolve
-                            .insert(r#struct.id.clone(), (span.clone(), reference_ids));
+                            .insert(r#struct.id.clone(), (*span, reference_ids));
                     }
-                }
             }
         }
 
@@ -98,17 +97,17 @@ impl RsProject<'_> {
                                         }
 
                                         RsStructFields::Newtype(_) => {
-                                            Err(RsProjectError::TupleStructExtension(span.clone()))
+                                            Err(RsProjectError::TupleStructExtension(*span))
                                         }
 
                                         RsStructFields::Unit => {
-                                            Err(RsProjectError::UnitStructExtension(span.clone()))
+                                            Err(RsProjectError::UnitStructExtension(*span))
                                         }
 
                                         RsStructFields::Unresolved(span, _, _) => {
                                             // [TODO] Include the current struct too into the error.
                                             Err(RsProjectError::FailedExtensionsResolve(
-                                                span.clone(),
+                                                *span,
                                                 "Referenced extension is not resolved".into(),
                                             ))
                                         }
@@ -119,10 +118,9 @@ impl RsProject<'_> {
                                 // they reference other structs. Enums too but they must be handled
                                 // differently.
                                 _ => Err(RsProjectError::NonStructExtension(
-                                    span.clone(),
+                                    *span,
                                     reference.name().0.to_string(),
-                                )
-                                .into()),
+                                )),
                             })?;
 
                         resolved_fields.extend(referenced_fields);
@@ -140,7 +138,7 @@ impl RsProject<'_> {
                         .find(|module| module.module.id == current_definition_id.0)
                         .ok_or_else(|| {
                             RsProjectError::FailedExtensionsResolve(
-                                span.clone(),
+                                *span,
                                 format!(
                                     "Can't find module with id {id}",
                                     id = current_definition_id.0.0
@@ -156,7 +154,7 @@ impl RsProject<'_> {
                         .find(|definition| definition.id() == current_definition_id)
                         .ok_or_else(|| {
                             RsProjectError::FailedExtensionsResolve(
-                                span.clone(),
+                                *span,
                                 format!(
                                     "Can't find definition {module_id}/{id}",
                                     module_id = current_definition_id.0.0,
@@ -181,13 +179,13 @@ impl RsProject<'_> {
                                     }
 
                                     _ => Err(RsProjectError::FailedExtensionsResolve(
-                                        span.clone(),
+                                        *span,
                                         "Definition is already resolved".into(),
                                     )),
                                 }
                             } else {
                                 Err(RsProjectError::FailedExtensionsResolve(
-                                    span.clone(),
+                                    *span,
                                     "Definition is not a struct".into(),
                                 ))
                             }
@@ -283,8 +281,8 @@ impl RsProject<'_> {
 
                     // Clean up references
                     module.module.imports.iter_mut().for_each(|r#use| {
-                        if let RsDependencyIdent::Local(path) = &r#use.dependency {
-                            if let RsUseReference::Named(names) = &r#use.reference {
+                        if let RsDependencyIdent::Local(path) = &r#use.dependency
+                            && let RsUseReference::Named(names) = &r#use.reference {
                                 let mut names = names.clone();
                                 names.retain(|name| {
                                     let resolve = module.resolve.definitions.get(
@@ -293,14 +291,13 @@ impl RsProject<'_> {
                                     );
 
                                     if let Some(resolve) = resolve {
-                                        return resolve.references.len() > 0;
+                                        return !resolve.references.is_empty();
                                     }
 
                                     false
                                 });
                                 r#use.reference = RsUseReference::Named(names);
                             }
-                        }
                     });
 
                     current_definition_id.clone()
@@ -311,7 +308,7 @@ impl RsProject<'_> {
                     return Err(RsProjectError::CyclicExtensions(
                         definitions_to_resolve
                             .iter()
-                            .map(|(_, (span, _))| span.clone())
+                            .map(|(_, (span, _))| *span)
                             .collect(),
                     ))
                     .into_diagnostic();

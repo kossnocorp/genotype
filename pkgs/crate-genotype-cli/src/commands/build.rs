@@ -50,13 +50,11 @@ fn write_dist(projects: &Vec<GtlProjectDist>) -> Result<(), Box<dyn std::error::
     for project in projects {
         project
             .files
-            .iter()
-            .map(|module| {
+            .iter().try_for_each(|module| {
                 let dir = module.path.relative_path().parent().unwrap();
                 create_dir_all(dir.to_path(""))?;
                 write(module.path.relative_path().to_path(""), &module.source)
-            })
-            .collect::<Result<(), _>>()?;
+            })?;
     }
 
     Ok(())

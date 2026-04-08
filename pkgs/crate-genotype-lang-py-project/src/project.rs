@@ -18,7 +18,7 @@ impl<'a> GtlProject<'a> for PyProject<'a> {
         let modules = project
             .modules
             .iter()
-            .map(|module| PyProjectModule::generate(&config.target, module))
+            .map(|module| PyProjectModule::generate(config.target, module))
             .collect::<Result<_, _>>()?;
 
         Ok(Self { modules, config })

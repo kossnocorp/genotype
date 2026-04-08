@@ -20,7 +20,7 @@ impl GtObject {
         let span: GtSpan = pair.as_span().into();
         let (doc, attributes) = context.take_annotation_or_default();
 
-        let name = context.name_object(span.clone())?;
+        let name = context.name_object(span)?;
 
         // It is an explicitly named object, so we need to add an anonymous parent so following
         // children don't get the object name.
@@ -30,7 +30,7 @@ impl GtObject {
         }
 
         let mut object = GtObject {
-            span: span.clone(),
+            span: span,
             doc,
             attributes,
             name,
@@ -44,7 +44,7 @@ impl GtObject {
                 let property_pair = pair
                     .into_inner()
                     .next()
-                    .ok_or_else(|| GtParseError::UnexpectedEnd(span.clone(), GtNode::Object))?;
+                    .ok_or_else(|| GtParseError::UnexpectedEnd(span, GtNode::Object))?;
 
                 match property_pair.as_rule() {
                     Rule::required_property | Rule::optional_property => {

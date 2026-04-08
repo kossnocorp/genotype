@@ -16,7 +16,7 @@ impl PyConvertContext {
     }
 
     pub fn drain_hoisted(&mut self) -> Vec<PyDefinition> {
-        self.defined.extend(self.hoist_defined.drain(..));
+        self.defined.append(&mut self.hoist_defined);
         self.hoisted.drain(..).collect()
     }
 }

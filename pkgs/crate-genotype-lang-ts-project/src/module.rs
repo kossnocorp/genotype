@@ -30,9 +30,9 @@ impl GtlProjectModule<TsConfig> for TsProjectModule {
                     })
                     .collect::<Vec<_>>();
 
-                if references.len() > 0 {
+                if !references.is_empty() {
                     let str = import.path.source_str();
-                    let name = str.split('/').last().unwrap_or(str).to_string();
+                    let name = str.split('/').next_back().unwrap_or(str).to_string();
                     let prefix = if let Some(count) = prefixes.get(&name) {
                         let prefix = format!("{}{}", name, count);
                         prefixes.insert(name.clone(), count + 1);
@@ -46,7 +46,7 @@ impl GtlProjectModule<TsConfig> for TsProjectModule {
 
                     references.iter().for_each(|(reference, _)| {
                         let identifier = (*reference).clone();
-                        let span = identifier.0.clone();
+                        let span = identifier.0;
                         let alias = format!("{}.{}", prefix, identifier.1);
                         resolve
                             .identifiers

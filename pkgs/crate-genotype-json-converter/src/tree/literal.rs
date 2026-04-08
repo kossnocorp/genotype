@@ -7,8 +7,8 @@ impl GtjTreeConvert<GtLiteral> for GtjLiteral {
     fn to_tree_with_context(&self, _context: &mut GtjTreeConvertContext) -> GtLiteral {
         let value = match &self.value {
             GtjLiteralValue::Null => GtLiteralValue::Null,
-            GtjLiteralValue::Boolean(boolean) => GtLiteralValue::Boolean(boolean.clone()),
-            GtjLiteralValue::Number(number) => GtLiteralValue::Float(number.clone()),
+            GtjLiteralValue::Boolean(boolean) => GtLiteralValue::Boolean(*boolean),
+            GtjLiteralValue::Number(number) => GtLiteralValue::Float(*number),
             GtjLiteralValue::String(string) => GtLiteralValue::String(string.clone()),
         };
         GtLiteral {

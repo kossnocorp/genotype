@@ -8,7 +8,7 @@ impl GtContext {
     pub fn exit_parent(&mut self, span: GtSpan, node: GtNode) -> GtNodeParseResult<()> {
         self.parents
             .pop()
-            .ok_or_else(|| GtParseError::Internal(span.clone(), node))?;
+            .ok_or_else(|| GtParseError::Internal(span, node))?;
         Ok(())
     }
 
@@ -30,7 +30,7 @@ impl GtContext {
 
                 // If we finally found an alias parent, we can stop building the name and retuen it.
                 GtContextParent::Alias(identifier) => {
-                    let parent = if keys.len() == 0 {
+                    let parent = if keys.is_empty() {
                         // If there was no keys on the path, then the parent is an alias.
                         GtObjectNameParent::Alias(identifier.clone())
                     } else {
@@ -38,7 +38,7 @@ impl GtContext {
                         GtObjectNameParent::Property(identifier.clone(), keys)
                     };
 
-                    let identifier = parent.to_identifier(span.clone());
+                    let identifier = parent.to_identifier(span);
                     // [TODO] Ensure unique name
                     self.claim_name(identifier.1.as_ref());
 
@@ -51,7 +51,7 @@ impl GtContext {
         }
 
         // Parents are in an invalid state, we can't resolve the object name.
-        Err(GtParseError::Internal(span.clone(), GtNode::ObjectName))
+        Err(GtParseError::Internal(span, GtNode::ObjectName))
     }
 
     /// Tries claiming the alias from the parent.
@@ -94,11 +94,11 @@ impl GtContext {
 
             segments.reverse();
 
-            if segments.len() == 0 || anonymous {
+            if segments.is_empty() || anonymous {
                 segments.push(base_name.to_string().to_pascal_case());
             }
 
-            let name = segments.join("").into();
+            let name = segments.join("");
             self.ensure_unique_name(span, name)
         };
 
@@ -115,7 +115,7 @@ impl GtContext {
             name
         };
 
-        GtIdentifier::new(span.clone(), name.into())
+        GtIdentifier::new(*span, name.into())
     }
 
     /// Enumerates the name if it's already claimed.

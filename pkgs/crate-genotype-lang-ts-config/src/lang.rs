@@ -34,12 +34,11 @@ pub struct TsConfigLangTsconfig {
 impl TsConfigLang {
     pub fn format_module_path(&self, path: &GtPkgSrcRelativePath) -> String {
         let mut path = path.as_str().to_string();
-        if !self.tsconfig.allow_importing_ts_extensions {
-            if path.ends_with(".ts") {
+        if !self.tsconfig.allow_importing_ts_extensions
+            && path.ends_with(".ts") {
                 let len = path.len();
                 path.replace_range(len - 2..len, "js");
             }
-        }
         path
     }
 

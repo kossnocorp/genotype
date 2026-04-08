@@ -18,7 +18,7 @@ impl GtArray {
         let pair = pair
             .into_inner()
             .next()
-            .ok_or_else(|| GtParseError::Internal(span.clone(), GtNode::Array))?;
+            .ok_or_else(|| GtParseError::Internal(span, GtNode::Array))?;
         let descriptor = GtDescriptor::parse(pair, context)?;
         Ok(GtArray {
             span,

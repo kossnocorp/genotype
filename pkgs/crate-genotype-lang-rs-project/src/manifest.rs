@@ -40,7 +40,7 @@ impl RsProjectManifestDependency {
             table.insert("version", version.into());
             let features = Value::Array(Array::from_iter(features));
             table.insert("features", features);
-            Value::InlineTable(table).into()
+            Value::InlineTable(table)
         }
     }
 }

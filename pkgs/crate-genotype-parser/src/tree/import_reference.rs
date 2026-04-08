@@ -9,6 +9,6 @@ pub enum GtImportReference {
 
 impl From<GtIdentifier> for GtImportReference {
     fn from(identifier: GtIdentifier) -> Self {
-        GtImportReference::Name(identifier.0.clone(), identifier)
+        GtImportReference::Name(identifier.0, identifier)
     }
 }

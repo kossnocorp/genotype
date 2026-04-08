@@ -17,7 +17,7 @@ impl GtlConfig for PyConfig {
         &self.common
     }
 
-    fn src_dir_name<'a>(&'a self) -> &'a str {
+    fn src_dir_name(&self) -> &str {
         self.module.as_str()
     }
 }

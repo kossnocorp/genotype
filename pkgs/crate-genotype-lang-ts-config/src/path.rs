@@ -7,7 +7,7 @@ pub struct TsPkgPath(GtDistRelativePath);
 impl GtlConfigPkgPathSetting for TsPkgPath {
     const DEFAULT: &'static str = "ts";
 
-    fn path<'a>(&'a self) -> &'a GtDistRelativePath {
+    fn path(&self) -> &GtDistRelativePath {
         &self.0
     }
 }

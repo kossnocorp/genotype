@@ -8,10 +8,6 @@ impl GtContext {
     }
 
     pub fn take_annotation_or_default(&mut self) -> GtContextAnnotation {
-        if let Some(annotation) = self.annotation.take() {
-            annotation
-        } else {
-            (None, vec![])
-        }
+        self.annotation.take().unwrap_or_default()
     }
 }

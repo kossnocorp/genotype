@@ -46,7 +46,7 @@ impl Display for GtPrimitiveKind {
 }
 
 impl GtPrimitiveKind {
-    pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> GtNodeParseResult<Self> {
+    pub fn parse(pair: Pair<'_, Rule>, _context: &mut GtContext) -> GtNodeParseResult<Self> {
         let span = pair.as_span().into();
         match pair.as_str() {
             "boolean" => Ok(GtPrimitiveKind::Boolean),

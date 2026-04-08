@@ -87,7 +87,7 @@ packages = ["{module}"]
             PyPackageManager::Poetry => {
                 let manifest_deps = manifest["tool"]["poetry"]["dependencies"]
                     .as_table_mut()
-                    .ok_or_else(|| GtlProjectError::ManifestDepsAccess(Self::FILE_NAME))?;
+                    .ok_or(GtlProjectError::ManifestDepsAccess(Self::FILE_NAME))?;
 
                 for dep in deps.iter() {
                     if let Some((key, value)) = Self::Dependency::as_kv(dep) {
@@ -105,7 +105,7 @@ packages = ["{module}"]
             PyPackageManager::Uv => {
                 let project = manifest["project"]
                     .as_table_mut()
-                    .ok_or_else(|| GtlProjectError::ManifestDepsAccess(Self::FILE_NAME))?;
+                    .ok_or(GtlProjectError::ManifestDepsAccess(Self::FILE_NAME))?;
 
                 let mut project_deps = deps
                     .iter()

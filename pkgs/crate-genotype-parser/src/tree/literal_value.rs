@@ -102,7 +102,7 @@ impl Hash for GtLiteralValue {
 impl GtLiteralValue {
     pub fn parse(pair: Pair<'_, Rule>, _context: &mut GtContext) -> Result<Self, GtParseError> {
         let span: GtSpan = pair.as_span().into();
-        let else_err = || GtParseError::Internal(span.clone(), GtNode::Literal);
+        let else_err = || GtParseError::Internal(span, GtNode::Literal);
         let pair = pair.into_inner().next().ok_or_else(else_err)?;
 
         match pair.as_rule() {

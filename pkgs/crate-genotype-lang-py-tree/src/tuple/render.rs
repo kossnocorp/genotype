@@ -22,7 +22,7 @@ impl<'a> GtlRender<'a> for PyTuple {
             .map(|d| d.render(state, context))
             .collect::<Result<Vec<_>>>()?
             .join(", ");
-        let descriptors = if descriptors.len() > 0 {
+        let descriptors = if !descriptors.is_empty() {
             descriptors
         } else {
             "()".into()

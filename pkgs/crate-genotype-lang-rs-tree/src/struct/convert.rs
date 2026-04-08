@@ -33,13 +33,13 @@ impl RsConvert<RsStruct> for GtObject {
 
         // If object has extension, we need to set fields to unresolved as Rust has no inheritance
         // and we need to copy fields from the parent struct after all the modules are known.
-        let fields = if self.extensions.len() > 0 {
+        let fields = if !self.extensions.is_empty() {
             let references = self
                 .extensions
                 .iter()
                 .map(|e| e.reference.convert(context))
                 .collect::<Result<Vec<_>>>()?;
-            RsStructFields::Unresolved(self.span.clone(), references, fields)
+            RsStructFields::Unresolved(self.span, references, fields)
         } else {
             RsStructFields::Resolved(fields)
         };

@@ -20,7 +20,7 @@ impl TomlExtDocDrill for DocumentMut {
         let mut table = self.as_table_mut();
         let mut keys = path.split('.');
 
-        while let Some(key) = keys.next() {
+        for key in keys {
             if !table.contains_key(key) {
                 table[key] = Item::Table(toml_edit::Table::new());
             }
@@ -43,8 +43,8 @@ impl TomlExtDocDrill for DocumentMut {
             .last()
             .ok_or_else(|| TomlExtError::InvalidPath(path.to_string()))?;
         let table_path = &table_path_arr[..table_path_arr.len() - 1].join(".");
-        let table = self.drill_table_mut(&table_path)?;
-        let item = table.entry(*entry_key).or_insert(Item::None);
+        let table = self.drill_table_mut(table_path)?;
+        let item = table.entry(entry_key).or_insert(Item::None);
         Ok(item)
     }
 }
@@ -103,7 +103,7 @@ impl TomlExtTableDrill for Table {
             .last()
             .ok_or_else(|| TomlExtError::InvalidPath(path.to_string()))?;
         let table_path = &table_path_arr[..table_path_arr.len() - 1].join(".");
-        let table = self.drill_table_mut(&table_path)?;
+        let table = self.drill_table_mut(table_path)?;
         let item = table.entry(*entry_key).or_insert(Value::String("".into()));
         Ok(item)
     }

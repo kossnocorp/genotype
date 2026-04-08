@@ -116,7 +116,7 @@ impl GtpModuleResolve {
                             }
                         }
                     });
-                    !import.is_none()
+                    import.is_some()
                 })
                 .ok_or_else(|| GtProjectError::UndefinedType {
                     span: reference.as_span(),

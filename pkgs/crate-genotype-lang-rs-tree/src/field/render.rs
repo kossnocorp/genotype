@@ -16,7 +16,7 @@ impl<'a> GtlRender<'a> for RsField {
             blocks.push(doc.render(state, context)?);
         }
 
-        if self.attributes.len() > 0 {
+        if !self.attributes.is_empty() {
             for attribute in &self.attributes {
                 blocks.push(attribute.render(state, context)?);
             }

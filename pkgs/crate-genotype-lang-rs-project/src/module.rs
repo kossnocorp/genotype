@@ -39,9 +39,9 @@ impl GtlProjectModule<RsConfig> for RsProjectModule {
                         })
                         .collect::<Vec<_>>();
 
-                    if references.len() > 0 {
+                    if !references.is_empty() {
                         let str = import.path.source_str();
-                        let name = str.split('/').last().unwrap_or(str).to_string();
+                        let name = str.split('/').next_back().unwrap_or(str).to_string();
                         let prefix = if let Some(count) = prefixes.get(&name) {
                             let prefix = format!("{}{}", name, count);
                             prefixes.insert(name.clone(), count + 1);
@@ -57,7 +57,7 @@ impl GtlProjectModule<RsConfig> for RsProjectModule {
 
                         references.iter().for_each(|(reference, _)| {
                             let identifier = (*reference).clone();
-                            let span = identifier.0.clone();
+                            let span = identifier.0;
                             let alias_str = format!("{}.{}", prefix, identifier.1);
                             let alias = GtIdentifier::new(span, alias_str.into());
                             convert_resolve
@@ -102,7 +102,7 @@ impl GtlProjectModule<RsConfig> for RsProjectModule {
         let definitions = module.resolve.definitions.clone();
         let resolve = RspModuleResolve { definitions };
 
-        let module = RsConvertModule::convert(&module.module, &convert_resolve, &config)
+        let module = RsConvertModule::convert(&module.module, &convert_resolve, config)
             .map_err(|err| err.with_source_code(module.source_code.clone()))?
             .0;
 

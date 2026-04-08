@@ -8,7 +8,7 @@ pub struct RsRenderContext<'a> {
 
 impl GtlRenderContext for RsRenderContext<'_> {}
 
-static RS_DEFAULT_CONFIG: LazyLock<RsConfigLang> = LazyLock::new(|| RsConfigLang::default());
+static RS_DEFAULT_CONFIG: LazyLock<RsConfigLang> = LazyLock::new(RsConfigLang::default);
 
 impl Default for RsRenderContext<'_> {
     fn default() -> Self {
@@ -19,6 +19,7 @@ impl Default for RsRenderContext<'_> {
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Default)]
 pub struct RsRenderState {
     pub indent: usize,
 }
@@ -38,8 +39,3 @@ impl GtlRenderState for RsRenderState {
     }
 }
 
-impl Default for RsRenderState {
-    fn default() -> Self {
-        Self { indent: 0 }
-    }
-}

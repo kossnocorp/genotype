@@ -34,7 +34,7 @@ impl TsRenderContext<'_> {
     }
 }
 
-static TS_DEFAULT_CONFIG: LazyLock<TsConfigLang> = LazyLock::new(|| TsConfigLang::default());
+static TS_DEFAULT_CONFIG: LazyLock<TsConfigLang> = LazyLock::new(TsConfigLang::default);
 
 impl Default for TsRenderContext<'_> {
     fn default() -> Self {
@@ -46,6 +46,7 @@ impl Default for TsRenderContext<'_> {
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Default)]
 pub struct TsRenderState {
     indent: usize,
 }
@@ -63,11 +64,6 @@ impl<'a> GtlRenderState for TsRenderState {
     }
 }
 
-impl Default for TsRenderState {
-    fn default() -> Self {
-        Self { indent: 0 }
-    }
-}
 
 #[cfg(test)]
 mod tests {

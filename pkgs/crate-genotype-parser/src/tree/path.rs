@@ -81,7 +81,7 @@ impl GtPath {
     pub fn parse(span: GtSpan, module_id: &GtModuleId, path: &str) -> GtNodeParseResult<Self> {
         match Self::normalize_path(path) {
             Ok(path) => Ok(GtPath {
-                span: span.clone(),
+                span: span,
                 id: GtPathModuleId::new(span, module_id.clone()),
                 path: path.into(),
             }),
@@ -131,7 +131,7 @@ impl GtPath {
         }
         normalized.push(result);
 
-        normalized.into_os_string().into_string().into()
+        normalized.into_os_string().into_string()
     }
 }
 

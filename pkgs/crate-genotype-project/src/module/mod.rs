@@ -37,7 +37,7 @@ impl GtProjectModule {
 
         // Combine these two ^v
 
-        let mut visitor = GtpResolveVisitor::new(parse.1.module.id.clone(), &project_resolve);
+        let mut visitor = GtpResolveVisitor::new(parse.1.module.id.clone(), project_resolve);
         let parse = parse;
         parse.1.module.traverse(&mut visitor);
 

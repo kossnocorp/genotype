@@ -4,7 +4,7 @@ impl RsConvert<RsReference> for GtReference {
     fn convert(&self, context: &mut RsConvertContext) -> Result<RsReference> {
         let identifier = self.identifier.convert(context)?;
         let Some(definition_id) = context.resolve_reference_definition_id(self) else {
-            return Err(RsConverterError::UnresolvedReference(self.span.clone()).into());
+            return Err(RsConverterError::UnresolvedReference(self.span).into());
         };
 
         Ok(RsReference {

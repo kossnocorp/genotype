@@ -16,9 +16,9 @@ impl Display for GtPrimitive {
     }
 }
 
-impl Into<GtDescriptor> for GtPrimitive {
-    fn into(self) -> GtDescriptor {
-        GtDescriptor::Primitive(self)
+impl From<GtPrimitive> for GtDescriptor {
+    fn from(val: GtPrimitive) -> Self {
+        GtDescriptor::Primitive(val)
     }
 }
 

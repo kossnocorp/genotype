@@ -43,7 +43,7 @@ pub fn init_command(args: &GtInitCommand) -> Result<()> {
     Ok(())
 }
 
-const GUIDE_FILES: &'static [(&str, &str)] = &[
+const GUIDE_FILES: &[(&str, &str)] = &[
     (
         "guide.type",
         include_str!("../../examples/guide/guide.type"),
@@ -77,7 +77,7 @@ fn configure_targets(config: &mut GtConfig, name: &String) -> Result<()> {
         Target::VARIANTS.to_vec(),
     )
     .with_validator(|targets: &[ListOption<&Target>]| {
-        Ok(if targets.len() < 1 {
+        Ok(if targets.is_empty() {
             Validation::Invalid("Please select at least one language".into())
         } else {
             Validation::Valid
@@ -88,9 +88,9 @@ fn configure_targets(config: &mut GtConfig, name: &String) -> Result<()> {
 
     for target in targets {
         match target {
-            Target::TypeScript => configure_ts(config, &name)?,
-            Target::Python => configure_py(config, &name)?,
-            Target::Rust => configure_rs(config, &name)?,
+            Target::TypeScript => configure_ts(config, name)?,
+            Target::Python => configure_py(config, name)?,
+            Target::Rust => configure_rs(config, name)?,
         }
     }
 

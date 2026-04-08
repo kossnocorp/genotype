@@ -91,7 +91,7 @@ impl RsConvertContext {
             GtLiteralValue::String(value) => value.to_pascal_case(),
             GtLiteralValue::Integer(value) => format!("{value}"),
             GtLiteralValue::Float(value) => {
-                format!("{value}", value = format!("{:.}", value).replace('.', "_"))
+                format!("{:.}", value).replace('.', "_").to_string()
             }
             GtLiteralValue::Boolean(value) => format!("{value}").to_pascal_case(),
         }
@@ -128,10 +128,7 @@ impl RsConvertNameSegment {
                     }
                     GtLiteralValue::Integer(value) => format!("{prefix}{value}"),
                     GtLiteralValue::Float(value) => {
-                        format!(
-                            "{value}",
-                            value = format!("{prefix}{:.}", value).replace('.', "_")
-                        )
+                        format!("{prefix}{:.}", value).replace('.', "_").to_string()
                     }
                     GtLiteralValue::Boolean(value) => format!("{value}").to_pascal_case(),
                 }

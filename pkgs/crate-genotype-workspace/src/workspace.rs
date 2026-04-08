@@ -54,11 +54,10 @@ impl<'a> GtWorkspace {
         // Check if the file exists and needs no reloading
         {
             let files = self.files.lock().map_err(|_| GtwError::FilesLock)?;
-            if let Some(file) = files.get(&path) {
-                if file.same_hash(&source) {
+            if let Some(file) = files.get(&path)
+                && file.same_hash(&source) {
                     return Ok(());
                 }
-            }
         }
 
         // Load the file

@@ -27,34 +27,29 @@ impl GtAttribute {
     }
 
     pub fn get_assigned(&self, name: &str) -> Option<&GtAttributeAssignment> {
-        if self.is_it(name) {
-            if let Some(GtAttributeDescriptor::Assignment(assignment)) = &self.descriptor {
-                return Some(&assignment);
+        if self.is_it(name)
+            && let Some(GtAttributeDescriptor::Assignment(assignment)) = &self.descriptor {
+                return Some(assignment);
             }
-        }
         None
     }
 
     pub fn find_property(&self, name: &str) -> Option<String> {
         match &self.descriptor {
             Some(GtAttributeDescriptor::Assignment(assignment)) => {
-                if self.name.value.as_ref() == name {
-                    if let GtAttributeValue::Literal(literal) = &assignment.value {
-                        if let GtLiteralValue::String(string) = &literal.value {
+                if self.name.value.as_ref() == name
+                    && let GtAttributeValue::Literal(literal) = &assignment.value
+                        && let GtLiteralValue::String(string) = &literal.value {
                             return Some(string.clone());
                         }
-                    }
-                }
             }
             Some(GtAttributeDescriptor::Properties(properties)) => {
                 for property in properties.iter() {
-                    if property.name.value.as_ref() == name {
-                        if let GtAttributeValue::Literal(literal) = &property.value {
-                            if let GtLiteralValue::String(string) = &literal.value {
+                    if property.name.value.as_ref() == name
+                        && let GtAttributeValue::Literal(literal) = &property.value
+                            && let GtLiteralValue::String(string) = &literal.value {
                                 return Some(string.clone());
                             }
-                        }
-                    }
                 }
             }
             _ => {}
@@ -85,7 +80,7 @@ impl GtAttribute {
         let mut inner = pair.into_inner();
         let pair = inner
             .next()
-            .ok_or_else(|| GtParseError::UnexpectedEnd(span.clone(), GtNode::Attribute))?;
+            .ok_or_else(|| GtParseError::UnexpectedEnd(span, GtNode::Attribute))?;
 
         parse(inner, pair, ParseState::Name(span), context)
     }
@@ -100,7 +95,7 @@ fn parse(
     match state {
         ParseState::Name(span) => {
             let name_span: GtSpan = pair.as_span().into();
-            let name = GtAttributeName::new(name_span.clone(), pair.as_str().into());
+            let name = GtAttributeName::new(name_span, pair.as_str().into());
 
             match inner.next() {
                 Some(pair) => parse(inner, pair, ParseState::Descriptor(span, name), context),

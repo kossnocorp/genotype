@@ -32,6 +32,12 @@ pub struct TsDefinitionDependenciesScanVisitor {
     pub dependencies: HashSet<TsIdentifier>,
 }
 
+impl Default for TsDefinitionDependenciesScanVisitor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl TsDefinitionDependenciesScanVisitor {
     pub fn new() -> TsDefinitionDependenciesScanVisitor {
         TsDefinitionDependenciesScanVisitor {

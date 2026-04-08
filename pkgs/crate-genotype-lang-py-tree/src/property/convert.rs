@@ -3,7 +3,7 @@ use crate::prelude::internal::*;
 impl PyConvert<PyProperty> for GtProperty {
     fn convert(&self, context: &mut PyConvertContext) -> PyProperty {
         PyProperty {
-            doc: self.doc.as_ref().and_then(|doc| Some(doc.convert(context))),
+            doc: self.doc.as_ref().map(|doc| doc.convert(context)),
             name: self.name.convert(context),
             descriptor: self.descriptor.convert(context),
             required: self.required,

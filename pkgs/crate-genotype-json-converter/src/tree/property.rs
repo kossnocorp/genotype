@@ -18,8 +18,7 @@ impl GtjTreeConvert<GtProperty> for GtjProperty {
             name: GtKey(Default::default(), self.name.clone().into()),
             doc: self
                 .doc
-                .clone()
-                .and_then(|content| Some(GtDoc(Default::default(), content))),
+                .clone().map(|content| GtDoc(Default::default(), content)),
         }
     }
 }

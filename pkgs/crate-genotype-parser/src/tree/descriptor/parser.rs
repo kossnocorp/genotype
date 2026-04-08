@@ -17,12 +17,12 @@ impl GtDescriptor {
             let mut descriptor_inner = pair.into_inner();
             let next_pair = descriptor_inner
                 .next()
-                .ok_or_else(|| GtParseError::UnexpectedEnd(span.clone(), GtNode::Descriptor))?;
+                .ok_or_else(|| GtParseError::UnexpectedEnd(span, GtNode::Descriptor))?;
 
             let descriptor = parse(
                 descriptor_inner,
                 next_pair,
-                ParseState::Annotation(span.clone(), None, vec![]),
+                ParseState::Annotation(span, None, vec![]),
                 context,
             )?;
 
@@ -30,7 +30,7 @@ impl GtDescriptor {
         }
 
         if is_union {
-            context.exit_parent(span.clone(), GtNode::Descriptor)?;
+            context.exit_parent(span, GtNode::Descriptor)?;
         }
 
         match descriptors.as_slice() {
@@ -138,7 +138,7 @@ fn parse(
 
                 rule => {
                     return Err(GtParseError::UnexpectedRule(
-                        span.clone(),
+                        span,
                         GtNode::Descriptor,
                         rule,
                     ));

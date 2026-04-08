@@ -15,7 +15,7 @@ impl GtIdentifier {
     }
 
     pub fn as_span(&self) -> GtSpan {
-        self.0.clone()
+        self.0
     }
 
     pub fn as_str(&self) -> &str {

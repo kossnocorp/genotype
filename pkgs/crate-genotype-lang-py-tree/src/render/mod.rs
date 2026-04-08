@@ -8,7 +8,7 @@ pub struct PyRenderContext<'a> {
 
 impl GtlRenderContext for PyRenderContext<'_> {}
 
-static PY_DEFAULT_CONFIG: LazyLock<PyConfigLang> = LazyLock::new(|| PyConfigLang::default());
+static PY_DEFAULT_CONFIG: LazyLock<PyConfigLang> = LazyLock::new(PyConfigLang::default);
 
 impl Default for PyRenderContext<'_> {
     fn default() -> Self {
@@ -19,6 +19,7 @@ impl Default for PyRenderContext<'_> {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Default)]
 pub struct PyRenderState {
     pub indent: usize,
 }
@@ -38,8 +39,3 @@ impl GtlRenderState for PyRenderState {
     }
 }
 
-impl Default for PyRenderState {
-    fn default() -> Self {
-        Self { indent: 0 }
-    }
-}

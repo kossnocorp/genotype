@@ -5,8 +5,8 @@ pub fn render_literal(literal: &GtLiteral) -> String {
         GtLiteralValue::Null => "null".to_string(),
         GtLiteralValue::Boolean(value) => value.to_string(),
         GtLiteralValue::Integer(value) => value.to_string(),
-        GtLiteralValue::Float(value) => GtLiteralValue::render_float(&value),
-        GtLiteralValue::String(value) => GtLiteralValue::render_string(&value),
+        GtLiteralValue::Float(value) => GtLiteralValue::render_float(value),
+        GtLiteralValue::String(value) => GtLiteralValue::render_string(value),
     }
 }
 

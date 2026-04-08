@@ -7,7 +7,7 @@ pub struct PyPkgPath(GtDistRelativePath);
 impl GtlConfigPkgPathSetting for PyPkgPath {
     const DEFAULT: &'static str = "py";
 
-    fn path<'a>(&'a self) -> &'a GtDistRelativePath {
+    fn path(&self) -> &GtDistRelativePath {
         &self.0
     }
 }

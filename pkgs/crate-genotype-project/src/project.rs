@@ -29,8 +29,7 @@ impl<'a> GtProject<'a> {
                     .map_err(|_| GtProjectError::Unknown)
                     .and_then(|path| {
                         path.strip_prefix(src_path.relative_path().normalize())
-                            .map_err(|_| GtProjectError::Unknown)
-                            .and_then(|path| Ok(GtModulePath::new(path.into())))
+                            .map_err(|_| GtProjectError::Unknown).map(|path| GtModulePath::new(path.into()))
                     })
             })
             .collect::<Result<Vec<_>, _>>()
@@ -75,7 +74,7 @@ impl<'a> GtProject<'a> {
 
         // [TODO] It's needed for tests, hide behind cfg(test), keep or replace with something like
         // set? Using HashSet will require Eq which will consequently break tests.
-        modules.sort_by(|a, b| a.path.as_str().cmp(&b.path.as_str()));
+        modules.sort_by(|a, b| a.path.as_str().cmp(b.path.as_str()));
 
         Ok(GtProject { modules, config })
     }
@@ -97,7 +96,7 @@ impl<'a> GtProject<'a> {
         }
 
         let result = GtProjectModuleParse::try_new(&config, module_path).and_then(|parse| {
-            parse.deps().and_then(|deps| {
+            parse.deps().map(|deps| {
                 // Iterate each module dependency and load it in a thread.
                 for dep in deps {
                     let config = Arc::clone(&config);
@@ -115,7 +114,7 @@ impl<'a> GtProject<'a> {
                     modules.push(Ok(parse));
                 }
 
-                Ok(())
+                ()
             })
         });
 

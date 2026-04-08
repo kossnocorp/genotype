@@ -29,12 +29,12 @@ pub enum GtParseError {
 impl GtParseError {
     pub fn span(&self) -> GtSpan {
         match self {
-            Self::Internal(span, _) => span.clone(),
-            Self::InternalMessage(span, _, _) => span.clone(),
-            Self::UnexpectedRule(span, _, _) => span.clone(),
-            Self::UnexpectedEnd(span, _) => span.clone(),
-            Self::UnknownValue(span, _) => span.clone(),
-            Self::UnmatchedDescriptor(span, _) => span.clone(),
+            Self::Internal(span, _) => *span,
+            Self::InternalMessage(span, _, _) => *span,
+            Self::UnexpectedRule(span, _, _) => *span,
+            Self::UnexpectedEnd(span, _) => *span,
+            Self::UnknownValue(span, _) => *span,
+            Self::UnmatchedDescriptor(span, _) => *span,
         }
     }
 

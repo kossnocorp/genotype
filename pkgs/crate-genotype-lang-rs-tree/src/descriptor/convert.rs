@@ -4,7 +4,7 @@ impl RsConvert<RsDescriptor> for GtDescriptor {
     fn convert(&self, context: &mut RsConvertContext) -> Result<RsDescriptor> {
         Ok(match self {
             GtDescriptor::Alias(alias) => context
-                .hoist(|context| Ok((alias.convert(context)?, alias.span.clone())))?
+                .hoist(|context| Ok((alias.convert(context)?, alias.span)))?
                 .into(),
 
             GtDescriptor::Array(array) => array.convert(context)?.into(),
@@ -16,7 +16,7 @@ impl RsConvert<RsDescriptor> for GtDescriptor {
                 .into(),
 
             GtDescriptor::Object(object) => context
-                .hoist(|context| Ok((object.convert(context)?, object.span.clone())))?
+                .hoist(|context| Ok((object.convert(context)?, object.span)))?
                 .into(),
 
             GtDescriptor::Primitive(primitive) => primitive.convert(context)?.into(),
@@ -28,13 +28,13 @@ impl RsConvert<RsDescriptor> for GtDescriptor {
             GtDescriptor::Tuple(tuple) => tuple.convert(context)?.into(),
 
             GtDescriptor::Union(union) => context
-                .hoist(|context| Ok((union.convert(context)?, union.span.clone())))?
+                .hoist(|context| Ok((union.convert(context)?, union.span)))?
                 .into(),
 
             GtDescriptor::Any(any) => any.convert(context)?.into(),
 
             GtDescriptor::Branded(branded) => context
-                .hoist(|context| Ok((branded.convert(context)?, branded.span.clone())))?
+                .hoist(|context| Ok((branded.convert(context)?, branded.span)))?
                 .into(),
         })
     }

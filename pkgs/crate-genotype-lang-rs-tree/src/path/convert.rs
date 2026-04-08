@@ -9,7 +9,7 @@ pub fn rs_parse_module_path(path: String) -> String {
 impl RsConvert<RsPath> for GtPath {
     fn convert(&self, context: &mut RsConvertContext) -> Result<RsPath> {
         let Some(module_id) = context.resolve_path_module_id(self) else {
-            return Err(RsConverterError::UnresolvedPath(self.span.clone()).into());
+            return Err(RsConverterError::UnresolvedPath(self.span).into());
         };
 
         Ok(RsPath(

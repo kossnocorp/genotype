@@ -16,7 +16,7 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
         let modules = project
             .modules
             .iter()
-            .map(|module| TsProjectModule::generate(&config.target, module))
+            .map(|module| TsProjectModule::generate(config.target, module))
             .collect::<Result<_, _>>()?;
 
         Ok(Self { modules, config })

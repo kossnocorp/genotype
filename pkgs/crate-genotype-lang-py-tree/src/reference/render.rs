@@ -11,11 +11,10 @@ impl<'a> GtlRender<'a> for PyReference {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         let str = self.identifier.render(state, context)?;
-        if let PyVersion::Legacy = context.config.version {
-            if self.forward {
+        if let PyVersion::Legacy = context.config.version
+            && self.forward {
                 return Ok(format!("\"{str}\""));
             }
-        }
         Ok(str)
     }
 }

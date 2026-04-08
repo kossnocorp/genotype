@@ -20,14 +20,14 @@ impl<'a> GtlRender<'a> for TsObject {
         if context.is_zod_mode() {
             return Ok(format!(
                 "z.object({{\n{properties}{}{}",
-                if properties.len() > 0 { "\n" } else { "" },
+                if !properties.is_empty() { "\n" } else { "" },
                 state.indent_format("})")
             ));
         }
 
         Ok(format!(
             "{{\n{properties}{}{}",
-            if properties.len() > 0 { "\n" } else { "" },
+            if !properties.is_empty() { "\n" } else { "" },
             state.indent_format("}")
         ))
     }

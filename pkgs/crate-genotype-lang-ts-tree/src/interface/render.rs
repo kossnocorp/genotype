@@ -22,7 +22,7 @@ impl<'a> GtlRender<'a> for TsInterface {
 
             let object_shape = format!(
                 "{{\n{properties}{}{}",
-                if properties.len() > 0 { "\n" } else { "" },
+                if !properties.is_empty() { "\n" } else { "" },
                 state.indent_format("}")
             );
 
@@ -75,7 +75,7 @@ impl<'a> GtlRender<'a> for TsInterface {
 
         let object = format!(
             "{{\n{properties}{}{}",
-            if properties.len() > 0 { "\n" } else { "" },
+            if !properties.is_empty() { "\n" } else { "" },
             state.indent_format("}")
         );
 
@@ -88,7 +88,7 @@ impl<'a> GtlRender<'a> for TsInterface {
                     .collect::<Result<Vec<_>>>()?
                     .join(", ");
 
-                let extends = if extensions.len() > 0 {
+                let extends = if !extensions.is_empty() {
                     format!(" extends {extensions}")
                 } else {
                     "".into()

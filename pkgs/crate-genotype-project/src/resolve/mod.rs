@@ -73,7 +73,7 @@ impl TryFrom<&Vec<GtProjectModuleParse>> for GtpResolve {
 
                 imports
                     .entry(module.1.module.id.clone())
-                    .or_insert(Default::default())
+                    .or_default()
                     .extend(definitions.clone());
             });
 
@@ -100,7 +100,7 @@ impl TryFrom<&Vec<GtProjectModuleParse>> for GtpResolve {
                 if let Some(definitions) = definitions.get(&module_id) {
                     imports
                         .entry(module.1.module.id.clone())
-                        .or_insert(Default::default())
+                        .or_default()
                         .extend(definitions.clone());
                 }
             }

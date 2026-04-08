@@ -22,12 +22,12 @@ impl GtAlias {
 
         let pair = inner
             .next()
-            .ok_or_else(|| GtParseError::Internal(span.clone(), GtNode::Alias))?;
+            .ok_or_else(|| GtParseError::Internal(span, GtNode::Alias))?;
         let alias = parse(
             inner,
             pair,
             context,
-            ParseState::Annotation(span.clone(), annotation),
+            ParseState::Annotation(span, annotation),
         )?;
 
         context.exit_parent(span, GtNode::Alias)?;

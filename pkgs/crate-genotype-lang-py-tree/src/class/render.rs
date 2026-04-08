@@ -34,7 +34,7 @@ impl<'a> PyClass {
 
         let extensions = extensions.join(", ");
 
-        Ok(if extensions.len() > 0 {
+        Ok(if !extensions.is_empty() {
             format!("({extensions})")
         } else {
             "".into()
@@ -52,7 +52,7 @@ impl<'a> PyClass {
             body.push(doc.render(state.indent_inc(), context)?);
         }
 
-        if self.properties.len() > 0 {
+        if !self.properties.is_empty() {
             body.push(self.render_properties(state, context)?);
         } else {
             body.push(state.indent_inc().indent_format("pass"));

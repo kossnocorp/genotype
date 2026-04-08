@@ -6,7 +6,9 @@ use std::fmt;
 use std::hash::{Hash, Hasher};
 
 #[derive(Clone, Debug)]
+#[derive(Default)]
 pub enum Any {
+    #[default]
     Null,
     Bool(bool),
     Int(i64),
@@ -16,11 +18,6 @@ pub enum Any {
     Object(BTreeMap<String, Any>),
 }
 
-impl Default for Any {
-    fn default() -> Self {
-        Any::Null
-    }
-}
 
 impl PartialEq for Any {
     fn eq(&self, other: &Self) -> bool {

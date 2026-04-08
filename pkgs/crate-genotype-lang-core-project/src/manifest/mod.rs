@@ -26,7 +26,7 @@ pub trait GtlProjectManifest<'a> {
     ) -> Result<GtlProjectFile> {
         let base_manifest = self.base_manifest();
         // [TODO]
-        let base_str = base_manifest.clone();
+        let _base_str = base_manifest.clone();
 
         let mut manifest = DocumentMut::from_str(&base_manifest)
             .map_err(|err| GtlProjectError::ManifestTomlParse("the base manifest", err))
@@ -44,21 +44,21 @@ pub trait GtlProjectManifest<'a> {
         //         .into_diagnostic()?;
 
         // [TODO]
-        let cfg_str = config_manifest.to_string();
+        let _cfg_str = config_manifest.to_string();
         // [TODO]
-        let before_str = manifest.clone().to_string();
+        let _before_str = manifest.clone().to_string();
 
         manifest
             .merge(&config_manifest)
             .map_err(|err| GtlProjectError::ManifestAdjust(Self::FILE_NAME, err.to_string()))?;
 
         // [TODO]
-        let after_str = manifest.clone().to_string();
+        let _after_str = manifest.clone().to_string();
 
         self.insert_dependencies(&mut manifest, deps)?;
 
         // [TODO]
-        let final_str = manifest.to_string();
+        let _final_str = manifest.to_string();
 
         // let after_insert = manifest.to_string();
 

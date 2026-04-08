@@ -20,7 +20,6 @@ impl From<&str> for GtlEmbed {
     fn from(code: &str) -> Self {
         GtlEmbed(
             code.split("\n")
-                .into_iter()
                 .map(|line| line.into())
                 .collect(),
         )

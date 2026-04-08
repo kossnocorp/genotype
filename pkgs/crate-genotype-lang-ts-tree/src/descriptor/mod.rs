@@ -31,6 +31,12 @@ pub struct TsDescriptorReferencesScanVisitor {
     pub has_forward: bool,
 }
 
+impl Default for TsDescriptorReferencesScanVisitor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl TsDescriptorReferencesScanVisitor {
     pub fn new() -> Self {
         TsDescriptorReferencesScanVisitor {

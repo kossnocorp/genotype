@@ -12,7 +12,7 @@ impl<'a> GtlRender<'a> for RsStructFields {
     ) -> Result<String> {
         match self {
             RsStructFields::Newtype(descriptors) => {
-                if descriptors.len() == 0 {
+                if descriptors.is_empty() {
                     return Ok("()".into());
                 }
 
@@ -30,7 +30,7 @@ impl<'a> GtlRender<'a> for RsStructFields {
             }
 
             RsStructFields::Resolved(fields) => {
-                if fields.len() == 0 {
+                if fields.is_empty() {
                     return Ok(" {}".into());
                 }
 
@@ -53,7 +53,7 @@ impl<'a> GtlRender<'a> for RsStructFields {
             RsStructFields::Unit => Ok(";".into()),
 
             RsStructFields::Unresolved(span, _, _) => {
-                Err(RsError::UnresolvedStructFields(span.clone()).into())
+                Err(RsError::UnresolvedStructFields(*span).into())
             }
         }
     }

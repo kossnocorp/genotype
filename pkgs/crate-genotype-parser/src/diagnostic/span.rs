@@ -1,6 +1,7 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, Eq, PartialEq, Hash, Copy, Clone, Serialize, Deserialize)]
+#[derive(Default)]
 pub struct GtSpan(pub usize, pub usize);
 
 impl GtSpan {
@@ -25,14 +26,9 @@ impl From<Span<'_>> for GtSpan {
     }
 }
 
-impl Into<SourceSpan> for GtSpan {
-    fn into(self) -> SourceSpan {
-        (self.offset(), self.len()).into()
+impl From<GtSpan> for SourceSpan {
+    fn from(val: GtSpan) -> Self {
+        (val.offset(), val.len()).into()
     }
 }
 
-impl Default for GtSpan {
-    fn default() -> Self {
-        GtSpan(0, 0)
-    }
-}

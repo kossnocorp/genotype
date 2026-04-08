@@ -21,7 +21,7 @@ impl GtReference {
         context.resolve.references.insert(identifier.clone());
 
         Ok(GtReference {
-            span: span.clone(),
+            span: span,
             doc,
             attributes,
             id: GtReferenceId(context.module_id.clone(), span),

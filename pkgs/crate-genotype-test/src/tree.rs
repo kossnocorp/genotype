@@ -69,7 +69,7 @@ impl UnwrapNamedVisitor {
 impl GtVisitor for UnwrapNamedVisitor {
     fn visit_alias(&mut self, alias: &GtAlias) {
         if alias.name.1.as_ref() == self.name.as_str() {
-            if let Some(_) = self.descriptor {
+            if self.descriptor.is_some() {
                 panic!("multiple descriptors with the same name found");
             }
             self.descriptor = Some(alias.descriptor.clone());

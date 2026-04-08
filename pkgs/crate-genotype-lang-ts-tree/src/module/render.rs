@@ -41,7 +41,7 @@ impl<'a> GtlRender<'a> for TsModule {
         str.push_str(&definitions);
 
         if has_imports || has_definitions {
-            str.push_str("\n");
+            str.push('\n');
         }
 
         TsDoc::with_doc(&self.doc, state, context, str, true)

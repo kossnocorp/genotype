@@ -18,12 +18,12 @@ pub trait GtlConfig: GtlConfigHealth + Default {
     /// Target-specific source directory name. For instance, TypeScript and Rust packages will not
     /// have to override this method, but Python package source directory has the package module
     /// name, i.e. ""
-    fn src_dir_name<'a>(&'a self) -> &'a str {
+    fn src_dir_name(&self) -> &str {
         "src"
     }
 
     /// Returns the target package directory path relative to the dist directory, i.e. "rs".
-    fn dist_relative_pkg_path<'a>(&'a self) -> &'a GtDistRelativePath {
+    fn dist_relative_pkg_path(&self) -> &GtDistRelativePath {
         self.common().out.path()
     }
 

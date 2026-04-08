@@ -5,7 +5,7 @@ pub use genotype_lang_py_config::*;
 pub use genotype_lang_rs_config::*;
 pub use genotype_lang_ts_config::*;
 pub use genotype_path::*;
-pub use miette::{Diagnostic, IntoDiagnostic, Result};
+pub use miette::{IntoDiagnostic, Result};
 pub use relative_path::RelativePathBuf;
 pub use semver::Version;
 pub use serde::{Deserialize, Serialize};

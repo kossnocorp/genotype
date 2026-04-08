@@ -7,4 +7,3 @@ pub use indexmap::IndexMap;
 pub use miette::{Diagnostic, NamedSource, Result};
 pub use serde::Serialize;
 pub use std::collections::HashMap;
-pub use std::path::PathBuf;

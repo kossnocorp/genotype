@@ -32,9 +32,9 @@ impl RsConvert<RsEnum> for GtUnion {
                 .flat_map(|variant| variant.attributes.iter().find(|attr| attr.0 == "default"));
             let count = default_attrs.clone().count();
             if count == 0 {
-                return Err(RsConverterError::MissingDefaultVariant(self.span.clone()).into());
+                return Err(RsConverterError::MissingDefaultVariant(self.span).into());
             } else if count > 1 {
-                return Err(RsConverterError::MultipleDefaultVariants(self.span.clone()).into());
+                return Err(RsConverterError::MultipleDefaultVariants(self.span).into());
             }
         }
 
@@ -116,8 +116,8 @@ fn trim_variant_names(
     variant_names: &mut HashSet<RsIdentifier>,
 ) {
     for variant in variants.iter_mut() {
-        if variant.name.0.starts_with(enum_name.0.as_ref()) {
-            if let Some(trimmed_name) = variant.name.0.strip_prefix(enum_name.0.as_ref()) {
+        if variant.name.0.starts_with(enum_name.0.as_ref())
+            && let Some(trimmed_name) = variant.name.0.strip_prefix(enum_name.0.as_ref()) {
                 let trimmed_name = RsIdentifier(trimmed_name.into());
                 if !variant_names.contains(&trimmed_name) {
                     variant_names.remove(&variant.name);
@@ -125,7 +125,6 @@ fn trim_variant_names(
                     variant.name = trimmed_name;
                 }
             }
-        }
     }
 }
 
@@ -160,7 +159,7 @@ fn name_variant_descriptor(
     context: &mut RsConvertContext,
 ) -> Result<RsIdentifier> {
     // If `#[variant = "<name>"]` is present, use it as the variant name
-    if let Some(name) = GtAttribute::find_property_in(&descriptor.attributes(), "variant") {
+    if let Some(name) = GtAttribute::find_property_in(descriptor.attributes(), "variant") {
         return Ok(name.into());
     }
 
