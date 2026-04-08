@@ -65,6 +65,7 @@ runs:
       run: |
           export active_rust_toolchain=$(rustup show active-toolchain | cut -d' ' -f1)
           rustup component add --toolchain ${active_rust_toolchain} rustfmt clippy
+      shell: bash
 
     - name: Run Install
       run: mise :install
