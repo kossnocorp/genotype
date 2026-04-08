@@ -23,19 +23,35 @@ jobs:
 
       - name: Check Code Formatting
         run: mise :format:check
+        id: format
+        continue-on-error: true
 
       - name: Lint Code
         run: mise :lint
+        id: lint
+        continue-on-error: true
 
       - name: Run Unit Tests
         run: mise :test/unit
+        id: test-unit
+        continue-on-error: true
 
       - name: Run System Tests
         run: mise :test/system
+        id: test-system
+        continue-on-error: true
 
       - name: Save Cache
         if: always()
         uses: ./.github/actions/cache-save
+
+      - name: Fail if QA Failed
+        if: |
+          steps.format.outcome == 'failure' ||
+          steps.lint.outcome == 'failure' ||
+          steps.test-unit.outcome == 'failure' ||
+          steps.test-system.outcome == 'failure'
+        run: exit 1
 
   build:
     name: Build
