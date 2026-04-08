@@ -89,11 +89,11 @@ jobs:
       - name: Upload CLI Binaries
         uses: actions/upload-artifact@v6
         with:
-          path: target/release/${{ matrix.cli-name }}
+          path: target/${{ matrix.target }}/release/${{ matrix.cli-name }}
           name: ${{ matrix.cli-name }}-${{ matrix.target }}-${{ inputs.sha || github.sha }}
 
       - name: Upload LSP Binaries
         uses: actions/upload-artifact@v6
         with:
-          path: target/release/${{ matrix.lsp-name }}
+          path: target/${{ matrix.target }}/release/${{ matrix.lsp-name }}
           name: ${{ matrix.lsp-name }}-${{ matrix.target }}-${{ inputs.sha || github.sha }}
