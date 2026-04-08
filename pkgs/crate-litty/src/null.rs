@@ -23,7 +23,7 @@ pub trait LitNull {
     }
 
     fn lit_hash<H: Hasher>(state: &mut H) {
-        ().hash(state);
+        0_u8.hash(state)
     }
 
     fn lit_fmt(f: &mut Formatter<'_>) -> fmt::Result {

@@ -1,14 +1,14 @@
 use crate::prelude::internal::*;
 
 impl GtConfig {
-    pub fn save(&self, path: &PathBuf) -> Result<()> {
+    pub fn save(&self, path: &Path) -> Result<()> {
         let file = if path.is_dir() {
             match Self::find(path) {
                 Ok(file) => file,
                 Err(_) => path.join(GTCONFIG_FILE),
             }
         } else if path.ends_with(GTCONFIG_FILE) {
-            path.clone()
+            path.to_path_buf()
         } else {
             Self::find(path)?
         };

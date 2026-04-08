@@ -14,10 +14,7 @@ pub struct GtpModuleResolve {
 }
 
 impl GtpModuleResolve {
-    pub fn try_new(
-        modules: &Vec<GtProjectModuleParse>,
-        parse: &GtProjectModuleParse,
-    ) -> Result<Self> {
+    pub fn try_new(modules: &[GtProjectModuleParse], parse: &GtProjectModuleParse) -> Result<Self> {
         // Resolve module dependencies by mapping local paths to project module paths
         let mut paths: IndexMap<GtPath, GtModulePath> = IndexMap::new();
         for local_path in parse.1.resolve.deps.iter() {

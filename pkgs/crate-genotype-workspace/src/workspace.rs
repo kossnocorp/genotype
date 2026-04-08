@@ -22,7 +22,7 @@ pub struct GtWorkspace {
     files: GtwFiles,
 }
 
-impl<'a> GtWorkspace {
+impl GtWorkspace {
     pub fn try_new(path_str: &String) -> Result<GtWorkspace> {
         let path = GtwPath::try_new(path_str, None)?;
 

@@ -20,7 +20,7 @@ impl<'a> GtlRender<'a> for TsPath {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     use insta::assert_snapshot;
 
     #[test]
@@ -37,7 +37,6 @@ mod tests {
             config: &TsConfigLang {
                 tsconfig: TsConfigLangTsconfig {
                     allow_importing_ts_extensions: true,
-                    ..Default::default()
                 },
                 ..Default::default()
             },

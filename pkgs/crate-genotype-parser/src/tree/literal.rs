@@ -11,12 +11,6 @@ pub struct GtLiteral {
 }
 
 impl GtLiteral {
-    pub fn to_string(&self) -> String {
-        self.value.to_string()
-    }
-}
-
-impl GtLiteral {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> Result<Self, GtParseError> {
         let span: GtSpan = pair.as_span().into();
         let value = GtLiteralValue::parse(pair, context)?;
@@ -28,6 +22,12 @@ impl GtLiteral {
             attributes,
             value,
         })
+    }
+}
+
+impl Display for GtLiteral {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.value)
     }
 }
 

@@ -112,7 +112,7 @@ fn convert_variant(
 
 fn trim_variant_names(
     enum_name: &RsIdentifier,
-    variants: &mut Vec<RsEnumVariant>,
+    variants: &mut [RsEnumVariant],
     variant_names: &mut HashSet<RsIdentifier>,
 ) {
     for variant in variants.iter_mut() {

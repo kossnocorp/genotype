@@ -36,7 +36,6 @@ impl<'a> GtlRender<'a> for RsEnum {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_test::prelude::*;
 
     #[test]
     fn test_render() {

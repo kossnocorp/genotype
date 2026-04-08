@@ -47,11 +47,11 @@ impl<'a> GtlRender<'a> for PyModule {
 }
 
 impl GtlRenderModule for PyModule {
-    fn join_definitions(definitions: &Vec<String>) -> String {
+    fn join_definitions(definitions: &[String]) -> String {
         definitions.join("\n\n\n")
     }
 
-    fn join_blocks(blocks: &Vec<String>) -> String {
+    fn join_blocks(blocks: &[String]) -> String {
         blocks.join("\n\n\n") + "\n"
     }
 }

@@ -1,4 +1,3 @@
-use genotype_config::GtConfig;
 use indexmap::IndexMap;
 use miette::Result;
 use std::sync::{Arc, Mutex};
@@ -18,6 +17,7 @@ pub type GtwFiles = Arc<Mutex<IndexMap<GtwPath, GtwFile>>>;
 
 pub struct GtwFile {
     source: GtwFileSource,
+    #[allow(dead_code)]
     payload: GtwFilePayload,
 }
 
@@ -31,7 +31,7 @@ impl GtwFile {
 
         Ok(GtwFile {
             source,
-            payload: GtwFilePayload::Config(GtConfig::default()),
+            payload: GtwFilePayload::Config(Box::default()),
         })
     }
 

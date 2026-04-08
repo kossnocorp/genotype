@@ -58,6 +58,7 @@ mod tests {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
+                #[allow(clippy::approx_constant)]
                 value: GtLiteralValue::Float(3.14),
             }),
             "3.14"
@@ -67,6 +68,7 @@ mod tests {
                 span: (0, 0).into(),
                 doc: None,
                 attributes: vec![],
+                #[allow(clippy::approx_constant)]
                 value: GtLiteralValue::Float(3.1415),
             }),
             "3.1415"

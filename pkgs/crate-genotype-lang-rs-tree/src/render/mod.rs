@@ -29,7 +29,6 @@ impl GtlRenderState for RsRenderState {
     fn indent_inc(&self) -> Self {
         Self {
             indent: self.indent + 1,
-            ..*self
         }
     }
 

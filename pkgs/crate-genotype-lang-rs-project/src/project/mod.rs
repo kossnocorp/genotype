@@ -38,6 +38,8 @@ impl<'a> GtlProject<'a> for RsProject<'a> {
 
 #[cfg(test)]
 mod tests {
+    use std::path::Path;
+
     use super::*;
     use genotype_test::*;
 
@@ -525,7 +527,7 @@ mod tests {
 
     #[test]
     fn test_render_recursive_box() {
-        let config = GtConfig::load(&"./examples/recursive".into()).unwrap();
+        let config = GtConfig::load(Path::new("./examples/recursive")).unwrap();
         let project = GtProject::load(&config).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
@@ -552,7 +554,7 @@ mod tests {
 
     #[test]
     fn test_render_recursive_box_with_extensions() {
-        let config = GtConfig::load(&"./examples/recursive".into()).unwrap();
+        let config = GtConfig::load(Path::new("./examples/recursive")).unwrap();
         let project = GtProject::load(&config).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
@@ -748,7 +750,7 @@ mod tests {
 
     #[test]
     fn test_render_dependencies() {
-        let config = GtConfig::load(&"./examples/dependencies".into()).unwrap();
+        let config = GtConfig::load(Path::new("./examples/dependencies")).unwrap();
         let project = GtProject::load(&config).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();

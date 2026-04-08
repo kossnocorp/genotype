@@ -11,6 +11,10 @@ impl GtSpan {
     pub fn len(&self) -> usize {
         self.1 - self.0
     }
+
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
 }
 
 impl From<(usize, usize)> for GtSpan {

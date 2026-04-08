@@ -119,7 +119,7 @@ mod tests {
 
         if let Err(err) = pairs {
             println!("{}", err);
-            assert!(false, "Failed to parse code");
+            panic!("Failed to parse code");
         }
     }
 }

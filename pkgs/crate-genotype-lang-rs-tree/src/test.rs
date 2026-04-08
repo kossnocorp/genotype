@@ -49,10 +49,11 @@ impl Rst {
         path_module_ids: Vec<(GtPathModuleId, GtModuleId)>,
         reference_definition_ids: Vec<(GtReferenceId, GtDefinitionId)>,
     ) -> RsConvertResolve {
-        let mut resolve = RsConvertResolve::default();
-        resolve.path_module_ids = HashMap::from_iter(path_module_ids);
-        resolve.reference_definition_ids = HashMap::from_iter(reference_definition_ids);
-        resolve
+        RsConvertResolve {
+            path_module_ids: HashMap::from_iter(path_module_ids),
+            reference_definition_ids: HashMap::from_iter(reference_definition_ids),
+            ..Default::default()
+        }
     }
 
     pub fn convert_context_with_resolve(resolve: RsConvertResolve) -> RsConvertContext {

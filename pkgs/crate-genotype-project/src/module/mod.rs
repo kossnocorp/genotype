@@ -22,14 +22,14 @@ pub struct GtProjectModule {
     /// Module source code.
     /// [TODO] After implementing workspace, find a better place for it.
     #[serde(serialize_with = "genotype_parser::miette_serde::serialize_named_source")]
-    #[deprecated]
+    // TODO: Use #[deprecated] and remove usage
     pub source_code: NamedSource<String>,
 }
 
 impl GtProjectModule {
     pub fn try_new(
         project_resolve: &GtpResolve,
-        modules: &Vec<GtProjectModuleParse>,
+        modules: &[GtProjectModuleParse],
         parse: GtProjectModuleParse,
     ) -> Result<Self> {
         let mut module_resolve = GtpModuleResolve::try_new(modules, &parse)

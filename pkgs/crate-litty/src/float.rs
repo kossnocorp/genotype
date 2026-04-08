@@ -56,7 +56,7 @@ impl<'de, T: LitFloat> de::Visitor<'de> for LitFloatVisitor<T> {
         E: de::Error,
     {
         // Handle exact equality for floats
-        if (v - T::LIT).abs() < std::f64::EPSILON {
+        if (v - T::LIT).abs() < f64::EPSILON {
             Ok(())
         } else {
             Err(E::custom(format!("expected {}, got {}", T::LIT, v)))
@@ -115,6 +115,7 @@ mod tests {
     struct Pi;
 
     impl LitFloat for Pi {
+        #[allow(clippy::approx_constant)]
         const LIT: f64 = 3.14159;
     }
 

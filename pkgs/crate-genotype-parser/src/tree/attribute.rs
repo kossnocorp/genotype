@@ -60,7 +60,7 @@ impl GtAttribute {
         None
     }
 
-    pub fn find_property_in(attributes: &Vec<GtAttribute>, name: &str) -> Option<String> {
+    pub fn find_property_in(attributes: &[GtAttribute], name: &str) -> Option<String> {
         for attr in attributes.iter() {
             if let Some(value) = attr.find_property(name) {
                 return Some(value);
@@ -69,7 +69,7 @@ impl GtAttribute {
         None
     }
 
-    pub fn find_flag(attributes: &Vec<GtAttribute>, name: &str) -> bool {
+    pub fn find_flag(attributes: &[GtAttribute], name: &str) -> bool {
         attributes
             .iter()
             .any(|attr| attr.is_it(name) && attr.descriptor.is_none())
@@ -136,7 +136,6 @@ mod tests {
     use crate::*;
     use insta::assert_ron_snapshot;
     use pest::Parser;
-    
 
     #[test]
     fn test_parse_simple() {

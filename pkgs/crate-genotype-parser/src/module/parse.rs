@@ -11,12 +11,12 @@ pub struct GtModuleParse {
     /// Module source code.
     /// [TODO] After implementing workspace, find a better place for it.
     #[serde(serialize_with = "crate::miette_serde::serialize_named_source")]
-    #[deprecated]
+    // TODO: Use #[deprecated] and remove usage
     pub source_code: NamedSource<String>,
 }
 
 impl GtModule {
-    pub fn parse<'a>(id: GtModuleId, source_code: NamedSource<String>) -> Result<GtModuleParse> {
+    pub fn parse(id: GtModuleId, source_code: NamedSource<String>) -> Result<GtModuleParse> {
         match parse_gt_code(source_code.inner()) {
             Ok(mut pairs) => match pairs.next() {
                 Some(pair) => match Self::parse_pairs(id.clone(), pair) {

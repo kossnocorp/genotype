@@ -22,7 +22,7 @@ pub fn init_command(args: &GtInitCommand) -> Result<()> {
 
     create_dir_all(root.as_str()).map_err(|_| GtCliError::FailedCreateDir(root.as_str().into()))?;
 
-    config.save(&root.as_str().into())?;
+    config.save(Path::new(&root.as_str()))?;
 
     let src = root.join(&config.src);
 
@@ -71,7 +71,7 @@ fn configure_name(config: &mut GtConfig) -> Result<String> {
     Ok(name)
 }
 
-fn configure_targets(config: &mut GtConfig, name: &String) -> Result<()> {
+fn configure_targets(config: &mut GtConfig, name: &str) -> Result<()> {
     let targets = MultiSelect::new(
         "Choose the languages you want to target:",
         Target::VARIANTS.to_vec(),
@@ -97,7 +97,7 @@ fn configure_targets(config: &mut GtConfig, name: &String) -> Result<()> {
     Ok(())
 }
 
-fn configure_ts(config: &mut GtConfig, name: &String) -> Result<()> {
+fn configure_ts(config: &mut GtConfig, name: &str) -> Result<()> {
     let mut ts = TsConfig::default();
 
     let default_name = name.to_kebab_case();
@@ -126,7 +126,7 @@ fn configure_ts(config: &mut GtConfig, name: &String) -> Result<()> {
     Ok(())
 }
 
-fn configure_py(config: &mut GtConfig, name: &String) -> Result<()> {
+fn configure_py(config: &mut GtConfig, name: &str) -> Result<()> {
     let mut py = PyConfig::default();
 
     let default_name = name.to_kebab_case();
@@ -157,7 +157,7 @@ fn configure_py(config: &mut GtConfig, name: &String) -> Result<()> {
     Ok(())
 }
 
-fn configure_rs(config: &mut GtConfig, name: &String) -> Result<()> {
+fn configure_rs(config: &mut GtConfig, name: &str) -> Result<()> {
     let mut rs = RsConfig::default();
 
     let default_name = name.to_snake_case();

@@ -87,7 +87,6 @@ dist"#
 
         let mut render_context = PyRenderContext {
             config: &self.config.target.lang,
-            ..Default::default()
         };
 
         let project_modules = self

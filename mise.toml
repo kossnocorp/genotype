@@ -65,11 +65,20 @@ depends = [
   # TODO: Add JS/Python linters
 ]
 
+[tasks."lint:watch"]
+depends = [
+   "lint/rust:watch",
+  # TODO: Add JS/Python linters
+]
+
 [tasks."lint/rust"]
 run = "cargo clippy --all-targets --all-features"
 
 [tasks."lint/rust:fix"]
 run = "cargo clippy --all-targets --all-features --fix"
+
+[tasks."lint/rust:watch"]
+run = "watchexec -e rs,Cargo.toml,Cargo.lock -rc reset -- cargo clippy --all-targets --all-features"
 
 [tasks.format]
 depends = [

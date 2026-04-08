@@ -10,16 +10,6 @@ pub enum GtLiteralValue {
 }
 
 impl GtLiteralValue {
-    pub fn to_string(&self) -> String {
-        match self {
-            GtLiteralValue::Null => "null".to_string(),
-            GtLiteralValue::String(value) => value.clone(),
-            GtLiteralValue::Integer(value) => value.to_string(),
-            GtLiteralValue::Float(value) => value.to_string(),
-            GtLiteralValue::Boolean(value) => value.to_string(),
-        }
-    }
-
     pub fn render_float(value: &f64) -> String {
         if value.fract() == 0.0 {
             format!("{:.1}", value)
@@ -28,8 +18,20 @@ impl GtLiteralValue {
         }
     }
 
-    pub fn render_string(value: &String) -> String {
+    pub fn render_string(value: &str) -> String {
         format!("\"{}\"", value.escape_default())
+    }
+}
+
+impl Display for GtLiteralValue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            GtLiteralValue::Null => write!(f, "null"),
+            GtLiteralValue::String(value) => write!(f, "{}", Self::render_string(value)),
+            GtLiteralValue::Integer(value) => write!(f, "{}", value),
+            GtLiteralValue::Float(value) => write!(f, "{}", Self::render_float(value)),
+            GtLiteralValue::Boolean(value) => write!(f, "{}", value),
+        }
     }
 }
 

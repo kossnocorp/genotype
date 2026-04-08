@@ -165,6 +165,8 @@ impl TsConvertModule {
         let mut low_links: HashMap<TsIdentifier, usize> = HashMap::new();
         let mut comps: Vec<Vec<TsIdentifier>> = vec![];
 
+        // TODO: Get rid of this mess here!
+        #[allow(clippy::too_many_arguments)]
         fn visit(
             node: TsIdentifier,
             idx: &mut usize,

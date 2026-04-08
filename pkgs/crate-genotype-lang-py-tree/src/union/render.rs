@@ -73,7 +73,6 @@ mod tests {
                 Default::default(),
                 &mut PyRenderContext {
                     config: &PyConfigLang::new(PyVersion::Legacy),
-                    ..Default::default()
                 }
             )
             .unwrap(),
@@ -111,7 +110,6 @@ mod tests {
                 Default::default(),
                 &mut PyRenderContext {
                     config: &PyConfigLang::new(PyVersion::Legacy),
-                    ..Default::default()
                 }
             )
             .unwrap(),

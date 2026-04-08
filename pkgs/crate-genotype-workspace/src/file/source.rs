@@ -7,6 +7,7 @@ use crate::{error::GtwError, path::GtwPath};
 
 pub struct GtwFileSource {
     hash: String,
+    #[allow(dead_code)]
     content: String,
 }
 

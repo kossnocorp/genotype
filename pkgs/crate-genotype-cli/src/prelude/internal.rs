@@ -21,5 +21,5 @@ pub use regex::Regex;
 pub use semver::Version;
 pub use std::fmt::{Display, Formatter};
 pub use std::fs::{create_dir_all, write};
-pub use std::path::PathBuf;
+pub use std::path::{Path, PathBuf};
 pub use thiserror::Error;

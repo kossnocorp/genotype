@@ -69,11 +69,7 @@ impl GtContext {
             name
         } else {
             // If the immediate parent is an anonymous parent, we'll have to use the base name.
-            let anonymous = if let Some(GtContextParent::Anonymous) = self.parents.last() {
-                true
-            } else {
-                false
-            };
+            let anonymous = matches!(self.parents.last(), Some(GtContextParent::Anonymous));
 
             let mut segments: Vec<String> = vec![];
             for parent in self.parents.iter().rev() {

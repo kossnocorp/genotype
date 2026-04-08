@@ -7,7 +7,7 @@ pub struct TsRenderContext<'a> {
     pub mode_override: Option<TsMode>,
 }
 
-impl<'a> GtlRenderContext for TsRenderContext<'_> {}
+impl GtlRenderContext for TsRenderContext<'_> {}
 
 impl TsRenderContext<'_> {
     pub fn is_zod_mode(&self) -> bool {
@@ -50,11 +50,10 @@ pub struct TsRenderState {
     indent: usize,
 }
 
-impl<'a> GtlRenderState for TsRenderState {
+impl GtlRenderState for TsRenderState {
     fn indent_inc(&self) -> Self {
         Self {
             indent: self.indent + 1,
-            ..*self
         }
     }
 

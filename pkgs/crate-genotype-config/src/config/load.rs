@@ -1,11 +1,11 @@
 use crate::prelude::internal::*;
 
 impl GtConfig {
-    pub fn load(path: &PathBuf) -> Result<Self> {
+    pub fn load(path: &Path) -> Result<Self> {
         Self::load_with(path, None)
     }
 
-    pub fn load_with(path: &PathBuf, config_path: Option<&PathBuf>) -> Result<Self> {
+    pub fn load_with(path: &Path, config_path: Option<&PathBuf>) -> Result<Self> {
         let file = if let Some(config_path) = config_path {
             if !config_path.is_file() {
                 return Err(GtConfigError::MissingConfig(config_path.clone())).into_diagnostic();
@@ -29,9 +29,9 @@ impl GtConfig {
         Ok(config)
     }
 
-    pub fn find(path: &PathBuf) -> Result<PathBuf> {
-        let mut current = if path.is_dir() {
-            Some(path.as_path())
+    pub fn find(path: &Path) -> Result<PathBuf> {
+        let mut current: Option<&Path> = if path.is_dir() {
+            Some(path)
         } else {
             path.parent()
         };
@@ -44,6 +44,6 @@ impl GtConfig {
             current = dir.parent();
         }
 
-        Err(GtConfigError::MissingConfig(path.clone())).into_diagnostic()
+        Err(GtConfigError::MissingConfig(path.to_path_buf())).into_diagnostic()
     }
 }

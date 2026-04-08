@@ -11,7 +11,7 @@ pub use semver::Version;
 pub use serde::{Deserialize, Serialize};
 pub use std::collections::HashMap;
 pub use std::fs;
-pub use std::path::PathBuf;
+pub use std::path::{Path, PathBuf};
 pub use std::str::FromStr;
 pub use toml_edit::DocumentMut;
 pub use toml_ext::*;

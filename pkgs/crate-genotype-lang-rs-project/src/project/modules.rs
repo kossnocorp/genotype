@@ -24,7 +24,7 @@ impl RsProject<'_> {
 
     pub fn generate_modules(
         config: &RsConfig,
-        modules: &Vec<GtProjectModule>,
+        modules: &[GtProjectModule],
     ) -> Result<Vec<RsProjectModule>> {
         let mut project_modules = modules
             .iter()
@@ -348,7 +348,7 @@ impl RsProject<'_> {
         Ok(project_modules)
     }
 
-    fn box_recursive_type_references(project_modules: &mut Vec<RsProjectModule>) {
+    fn box_recursive_type_references(project_modules: &mut [RsProjectModule]) {
         let mut graph: Graph<GtDefinitionId, (), petgraph::Directed> = Graph::new();
         let mut graph_nodes: IndexMap<GtDefinitionId, NodeIndex> = Default::default();
 

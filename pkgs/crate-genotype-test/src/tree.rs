@@ -7,7 +7,7 @@ use relative_path::RelativePathBuf;
 use std::fmt::Debug;
 use std::vec;
 
-#[deprecated(note = "Use `Gt` factory methods instead")]
+// TODO: #[deprecated(note = "Use `Gt` factory methods instead")] and get rid of this
 pub fn parse_module(source_code: &str) -> GtModule {
     let id = GtModuleId("module".into());
 
@@ -31,7 +31,7 @@ pub fn parse_module(source_code: &str) -> GtModule {
     modules.first().unwrap().module.clone()
 }
 
-#[deprecated(note = "Use `Gt` factory methods instead")]
+// TODO: Use #[deprecated(note = "Use `Gt` factory methods instead")] and get rid of this
 pub fn parse_get_named<Type>(name: &str, source_code: &str) -> Type
 where
     Type: TryFrom<GtDescriptor>,

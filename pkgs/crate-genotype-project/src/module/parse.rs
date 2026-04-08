@@ -4,7 +4,7 @@ use std::fs::read_to_string;
 #[derive(Debug, PartialEq, Clone)]
 pub struct GtProjectModuleParse(pub GtModulePath, pub GtModuleParse);
 
-impl<'a> GtProjectModuleParse {
+impl GtProjectModuleParse {
     pub fn try_new(config: &GtConfig, module_path: GtModulePath) -> Result<Self> {
         let cwd_relative_module_path = config.src_path().join(&module_path.clone().into());
         let code = read_to_string(cwd_relative_module_path.as_str())

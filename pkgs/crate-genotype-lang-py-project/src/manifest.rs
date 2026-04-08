@@ -159,9 +159,7 @@ fn poetry_req_to_uv_req(req: &str) -> String {
         format!("{}", numbers[0] + 1)
     } else if numbers.len() == 1 {
         "1".into()
-    } else if numbers.len() == 2 {
-        format!("0.{}", numbers[1] + 1)
-    } else if numbers[1] > 0 {
+    } else if numbers.len() == 2 || numbers[1] > 0 {
         format!("0.{}", numbers[1] + 1)
     } else {
         format!("0.0.{}", numbers[2] + 1)

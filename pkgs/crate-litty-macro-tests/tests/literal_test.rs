@@ -41,6 +41,7 @@ fn test_int() {
 }
 
 #[test]
+#[allow(clippy::approx_constant)]
 fn test_float() {
     #[literal(3.14159)]
     pub struct Pi;
@@ -99,6 +100,7 @@ fn test_eq() {
 }
 
 #[test]
+#[allow(clippy::approx_constant)]
 fn test_debug() {
     #[literal("a")]
     pub struct A;
