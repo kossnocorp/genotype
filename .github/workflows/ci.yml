@@ -1,4 +1,4 @@
-name: Test, lint and build
+name: CI
 
 on:
   push:
@@ -6,35 +6,40 @@ on:
       - main
 
 jobs:
-  test:
+  qa:
+    name: QA
     runs-on: ubuntu-latest
     env:
       CARGO_INCREMENTAL: 0
 
     steps:
-      - name: Check out repo
-        uses: actions/checkout@v4
+      - name: Git Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.sha || github.sha }}
 
-      - name: Set up Rust
-        uses: ./.github/actions/rust-setup
+      - name: Set Up Dev Env
+        uses: ./.github/actions/setup
 
-      - name: Run Clippy
-        run: cargo clippy --all-targets --all-features -- --cap-lints=warn
+      - name: Lint Code
+        run: mise :lint
 
-      - name: Install cargo-nextest
-        run: cargo install cargo-nextest --locked
+      - name: Run Unit Tests
+        run: mise :test/unit
 
-      - name: Compile tests
-        run: cargo nextest run --no-run
+      - name: Run System Tests
+        run: mise :test/system
 
-      - name: Run tests
-        run: cargo nextest run --no-fail-fast
+      - name: Save Cache
+        if: always()
+        uses: ./.github/actions/cache-save
 
-      - name: Set up uv
-        uses: astral-sh/setup-uv@v5
-
-      - name: Test examples
-        run: bash scripts/test-examples.sh
+  build:
+    name: Build
+    needs: qa
+    uses: ./.github/workflows/ci-build.yml
+    with:
+      sha: ${{ github.event.pull_request.head.sha || github.sha }}
 
   # [TODO] Remove or reenable with practical setup
   # build:

@@ -1,0 +1,42 @@
+name: Save Cache
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Save mise State (Tasks)
+      uses: actions/cache/save@v5
+      with:
+        path: ~/.local/state/mise
+        key: mise-state-${{ runner.os }}-${{ github.sha }}
+
+    - name: Save Cargo Cache
+      uses: actions/cache/save@v5
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Get pnpm Store Path
+      id: pnpm-store
+      run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Save pnpm cache
+      uses: actions/cache/save@v5
+      with:
+        path: |
+          ${{ steps.pnpm-store.outputs.STORE_PATH }}
+          node_modules
+        key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+    - name: Save uv Cache
+      uses: actions/cache/save@v5
+      with:
+        path: |
+          ~/.cache/uv
+          ~/.local/share/uv
+          .venv
+        key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}

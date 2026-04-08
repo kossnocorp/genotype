@@ -11,7 +11,7 @@ node = "lts"
 pnpm = "latest"
 oxfmt = "latest"
 # Python
-python = "latest"
+python = "3.13.13"
 uv = "latest"
 ty = "latest"
 ruff = "latest"
@@ -31,6 +31,7 @@ shfmt = "latest"
 gh = "latest"
 
 [settings]
+lockfile = true
 experimental = true
 python.uv_venv_auto = true
 idiomatic_version_file_enable_tools = ["rust"] # Use rust-toolchain.toml
@@ -38,6 +39,52 @@ idiomatic_version_file_enable_tools = ["rust"] # Use rust-toolchain.toml
 [env]
 _.file = "./.env"
 MISE_EXPERIMENTAL = true # Enable monorepo root support
+_.python.venv = { create = true, path = '.venv' }
+
+[tasks.install]
+depends = ["install/pnpm", "install/uv"]
+
+[tasks."install/pnpm"]
+run = "pnpm install"
+
+[tasks."install/uv"]
+run = "uv sync"
 
 [tasks.build]
 run = "cargo build"
+
+[tasks.lint]
+depends = [
+   "lint/rust",
+  # TODO: Add JS/Python linters
+]
+
+[tasks."lint/rust"]
+run = "cargo clippy --all-targets --all-features"
+
+[tasks."test/unit"]
+depends = [
+  "test/unit/rust",
+  # TODO: Add JS/Python unit tests
+]
+
+[tasks."test/unit:watch"]
+depends = [
+  "test/unit/rust:watch",
+  # TODO: Add JS/Python unit tests
+]
+
+[tasks."test/unit/rust"]
+run = "cargo nextest run --no-fail-fast"
+
+[tasks."test/unit/rust:watch"]
+run = "watchexec -e rs,Cargo.toml,Cargo.lock -rc reset -- cargo nextest run --no-fail-fast"
+
+[tasks."test/system"]
+depends = [
+  "test/system/examples"
+  # TODO: Add more system tests
+]
+
+[tasks."test/system/examples"]
+run = "./scripts/test-examples.sh"

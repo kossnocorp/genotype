@@ -1,0 +1,85 @@
+name: Build
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      sha:
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: Build Binaries
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            cli-name: gt
+            lsp-name: gts
+
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            cli-name: gt
+            lsp-name: gts
+
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            cli-name: gt.exe
+            lsp-name: gts.exe
+
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.sha || github.sha }}
+
+      - name: Set Up Dev Env
+        uses: ./.github/actions/setup
+
+      - name: Restore Target Cache
+        uses: actions/cache/restore@v5
+        with:
+          path: target
+          key: ${{ runner.os }}-target-${{ matrix.target }}-${{ hashFiles('Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-target-${{ matrix.target }}-
+
+      - name: Cache target
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ runner.os }}-target-${{ matrix.target }}-${{ hashFiles('cli/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-target-${{ matrix.target }}-
+
+      - name: Add Target
+        run: rustup target add ${{ matrix.target }}
+
+      - name: Build CLI
+        # TODO: Move to mise task
+        run: cargo build --release --package genotype_cli --target ${{ matrix.target }}
+
+      - name: Build LSP
+        # TODO: Move to mise task
+        run: cargo build --release --package genotype_lsp --target ${{ matrix.target }}
+
+      - name: Save Target Cache
+        if: always()
+        uses: actions/cache/save@v5
+        with:
+          path: target
+          key: ${{ runner.os }}-target-${{ matrix.target }}-${{ hashFiles('Cargo.lock') }}
+
+      - name: Upload CLI Binaries
+        uses: actions/upload-artifact@v6
+        with:
+          path: target/release/${{ matrix.cli-name }}
+          name: ${{ matrix.cli-name }}-${{ matrix.target }}-${{ inputs.sha || github.sha }}
+
+      - name: Upload LSP Binaries
+        uses: actions/upload-artifact@v6
+        with:
+          path: target/release/${{ matrix.lsp-name }}
+          name: ${{ matrix.lsp-name }}-${{ matrix.target }}-${{ inputs.sha || github.sha }}
