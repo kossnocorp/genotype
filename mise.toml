@@ -76,6 +76,7 @@ run = "cargo clippy --all-targets --all-features"
 
 [tasks."lint/rust:fix"]
 run = "cargo clippy --all-targets --all-features --fix"
+depends_post = "format/rust"
 
 [tasks."lint/rust:watch"]
 run = "watchexec -e rs,Cargo.toml,Cargo.lock -rc reset -- cargo clippy --all-targets --all-features"
