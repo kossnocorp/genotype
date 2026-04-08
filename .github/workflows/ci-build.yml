@@ -15,20 +15,49 @@ jobs:
     strategy:
       matrix:
         include:
+          # Linux
+
+          # x86
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             cli-name: gt
             lsp-name: gts
 
-          - os: macos-latest
+          # ARM
+          # TODO: Enable when GitHub Actions supports ARM on Linux runners: https://github.com/actions/runner-images?tab=readme-ov-file#available-images
+          # - os: <TODO>
+          #   target: aarch64-unknown-linux-gnu
+          #   cli-name: gt
+          #   lsp-name: gts
+
+          # macOS
+
+          # x86
+          - os: macos-26-intel
             target: x86_64-apple-darwin
             cli-name: gt
             lsp-name: gts
 
+          # ARM
+          - os: macos-26
+            target: aarch64-apple-darwin
+            cli-name: gt
+            lsp-name: gts
+
+          # Windows
+
+          # x86
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             cli-name: gt.exe
             lsp-name: gts.exe
+
+          # ARM
+          # TODO: Enable when GitHub Actions supports ARM on Linux runners: https://github.com/actions/runner-images?tab=readme-ov-file#available-images
+          # - os: <TODO>
+          #   target: aarch64-pc-windows-msvc
+          #   cli-name: gt.exe
+          #   lsp-name: gts.exe
 
     steps:
       - name: Git Checkout
