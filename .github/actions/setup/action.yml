@@ -58,6 +58,14 @@ runs:
         key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
         restore-keys: uv-${{ runner.os }}-
 
+    # NOTE: This is workaround for mise action messing up with rustup state:
+    # - https://github.com/jdx/mise-action/issues/184
+    # - https://github.com/jdx/mise-action/issues/215
+    - name: Install Rust Components
+      run: |
+          export active_rust_toolchain=$(rustup show active-toolchain | cut -d' ' -f1)
+          rustup component add --toolchain ${active_rust_toolchain} rustfmt clippy
+
     - name: Run Install
       run: mise :install
       shell: bash
