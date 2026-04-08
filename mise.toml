@@ -59,8 +59,35 @@ depends = [
   # TODO: Add JS/Python linters
 ]
 
+[tasks."lint:fix"]
+depends = [
+   "lint/rust:fix",
+  # TODO: Add JS/Python linters
+]
+
 [tasks."lint/rust"]
 run = "cargo clippy --all-targets --all-features"
+
+[tasks."lint/rust:fix"]
+run = "cargo clippy --all-targets --all-features --fix"
+
+[tasks.format]
+depends = [
+   "format/rust",
+   # TODO: Add JS/Python formatters
+]
+
+[tasks."format:check"]
+depends = [
+   "format/rust:check",
+   # TODO: Add JS/Python formatters
+]
+
+[tasks."format/rust"]
+run = "cargo fmt --all"
+
+[tasks."format/rust:check"]
+run = "cargo fmt --all --check"
 
 [tasks."test/unit"]
 depends = [

@@ -21,6 +21,9 @@ jobs:
       - name: Set Up Dev Env
         uses: ./.github/actions/setup
 
+      - name: Check Code Formatting
+        run: mise :format:check
+
       - name: Lint Code
         run: mise :lint
 
