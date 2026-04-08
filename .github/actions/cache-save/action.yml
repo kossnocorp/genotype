@@ -10,12 +10,21 @@ runs:
         path: ~/.local/state/mise
         key: mise-state-${{ runner.os }}-${{ github.sha }}
 
+    - name: Save rustup Cache
+      uses: actions/cache/save@v5
+      with:
+        path: ~/.rustup
+        key: rustup-${{ runner.os }}-${{ hashFiles('**/rust-toolchain.toml') }}
+
     - name: Save Cargo Cache
       uses: actions/cache/save@v5
       with:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
+          ~/.cargo/bin
+          ~/.cargo/binstall
+          ~/.cargo/env
           target
         key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
 

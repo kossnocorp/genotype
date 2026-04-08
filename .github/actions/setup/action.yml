@@ -14,12 +14,22 @@ runs:
         key: mise-state-${{ runner.os }}-${{ github.sha }}
         restore-keys: mise-state-${{ runner.os }}-
 
+    - name: Restore rustup Cache
+      uses: actions/cache/restore@v5
+      with:
+        path: ~/.rustup
+        key: rustup-${{ runner.os }}-${{ hashFiles('**/rust-toolchain.toml') }}
+        restore-keys: rustup-${{ runner.os }}-
+
     - name: Restore Cargo Cache
       uses: actions/cache/restore@v5
       with:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
+          ~/.cargo/bin
+          ~/.cargo/binstall
+          ~/.cargo/env
           target
         key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: cargo-${{ runner.os }}-
