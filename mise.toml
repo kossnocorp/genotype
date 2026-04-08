@@ -28,6 +28,7 @@ cargo-binstall = "latest"
 watchexec = "latest"
 opencode = "latest"
 shfmt = "latest"
+gh = "latest"
 
 [settings]
 experimental = true
