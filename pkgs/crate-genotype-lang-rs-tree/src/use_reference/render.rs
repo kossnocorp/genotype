@@ -22,9 +22,10 @@ impl<'a> GtlRender<'a> for RsUseReference {
                     .collect::<Result<Vec<String>>>()?
                     .join(", ");
                 if names.len() == 1
-                    && let Some(RsUseName::Name(_)) = names.first() {
-                        return Ok(names_str);
-                    }
+                    && let Some(RsUseName::Name(_)) = names.first()
+                {
+                    return Ok(names_str);
+                }
 
                 format!("{{{}}}", names_str)
             }

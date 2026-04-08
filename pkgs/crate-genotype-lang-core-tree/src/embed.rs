@@ -18,11 +18,7 @@ impl GtlEmbed {
 
 impl From<&str> for GtlEmbed {
     fn from(code: &str) -> Self {
-        GtlEmbed(
-            code.split("\n")
-                .map(|line| line.into())
-                .collect(),
-        )
+        GtlEmbed(code.split("\n").map(|line| line.into()).collect())
     }
 }
 

@@ -48,13 +48,11 @@ pub fn build_command(args: &GtBuildCommand) -> Result<()> {
 
 fn write_dist(projects: &Vec<GtlProjectDist>) -> Result<(), Box<dyn std::error::Error>> {
     for project in projects {
-        project
-            .files
-            .iter().try_for_each(|module| {
-                let dir = module.path.relative_path().parent().unwrap();
-                create_dir_all(dir.to_path(""))?;
-                write(module.path.relative_path().to_path(""), &module.source)
-            })?;
+        project.files.iter().try_for_each(|module| {
+            let dir = module.path.relative_path().parent().unwrap();
+            create_dir_all(dir.to_path(""))?;
+            write(module.path.relative_path().to_path(""), &module.source)
+        })?;
     }
 
     Ok(())

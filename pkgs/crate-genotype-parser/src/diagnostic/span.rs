@@ -1,7 +1,6 @@
 use crate::prelude::internal::*;
 
-#[derive(Debug, Eq, PartialEq, Hash, Copy, Clone, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Eq, PartialEq, Hash, Copy, Clone, Serialize, Deserialize, Default)]
 pub struct GtSpan(pub usize, pub usize);
 
 impl GtSpan {
@@ -31,4 +30,3 @@ impl From<GtSpan> for SourceSpan {
         (val.offset(), val.len()).into()
     }
 }
-

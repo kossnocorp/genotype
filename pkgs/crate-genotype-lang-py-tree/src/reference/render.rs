@@ -12,9 +12,10 @@ impl<'a> GtlRender<'a> for PyReference {
     ) -> Result<String> {
         let str = self.identifier.render(state, context)?;
         if let PyVersion::Legacy = context.config.version
-            && self.forward {
-                return Ok(format!("\"{str}\""));
-            }
+            && self.forward
+        {
+            return Ok(format!("\"{str}\""));
+        }
         Ok(str)
     }
 }

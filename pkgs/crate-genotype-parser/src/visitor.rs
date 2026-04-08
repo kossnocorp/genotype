@@ -1,6 +1,6 @@
 use crate::prelude::internal::*;
 
-pub use genotype_visitor_macro::{visitor, Visitor};
+pub use genotype_visitor_macro::{Visitor, visitor};
 
 pub trait Traverse<V: ?Sized> {
     fn traverse(&self, visitor: &mut V);

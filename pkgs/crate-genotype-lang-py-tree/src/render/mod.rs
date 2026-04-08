@@ -18,8 +18,7 @@ impl Default for PyRenderContext<'_> {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
-#[derive(Default)]
+#[derive(Clone, Copy, Debug, PartialEq, Default)]
 pub struct PyRenderState {
     pub indent: usize,
 }
@@ -38,4 +37,3 @@ impl GtlRenderState for PyRenderState {
         self.indent
     }
 }
-

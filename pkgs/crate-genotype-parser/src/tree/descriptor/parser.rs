@@ -137,11 +137,7 @@ fn parse(
                 Rule::branded => GtDescriptor::Branded(GtBranded::parse(pair, context)?),
 
                 rule => {
-                    return Err(GtParseError::UnexpectedRule(
-                        span,
-                        GtNode::Descriptor,
-                        rule,
-                    ));
+                    return Err(GtParseError::UnexpectedRule(span, GtNode::Descriptor, rule));
                 }
             };
 

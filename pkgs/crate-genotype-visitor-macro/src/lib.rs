@@ -2,10 +2,10 @@ use heck::ToSnakeCase;
 use proc_macro::TokenStream;
 use quote::{format_ident, quote};
 use syn::{
+    Data, DeriveInput, Fields, Ident, ItemStruct, Token,
     parse::{Parse, ParseStream},
     parse_macro_input,
     punctuated::Punctuated,
-    Data, DeriveInput, Fields, Ident, ItemStruct, Token,
 };
 
 #[proc_macro_derive(Visitor, attributes(visit))]

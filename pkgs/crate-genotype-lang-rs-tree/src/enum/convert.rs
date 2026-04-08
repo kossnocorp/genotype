@@ -117,14 +117,15 @@ fn trim_variant_names(
 ) {
     for variant in variants.iter_mut() {
         if variant.name.0.starts_with(enum_name.0.as_ref())
-            && let Some(trimmed_name) = variant.name.0.strip_prefix(enum_name.0.as_ref()) {
-                let trimmed_name = RsIdentifier(trimmed_name.into());
-                if !variant_names.contains(&trimmed_name) {
-                    variant_names.remove(&variant.name);
-                    variant_names.insert(trimmed_name.clone());
-                    variant.name = trimmed_name;
-                }
+            && let Some(trimmed_name) = variant.name.0.strip_prefix(enum_name.0.as_ref())
+        {
+            let trimmed_name = RsIdentifier(trimmed_name.into());
+            if !variant_names.contains(&trimmed_name) {
+                variant_names.remove(&variant.name);
+                variant_names.insert(trimmed_name.clone());
+                variant.name = trimmed_name;
             }
+        }
     }
 }
 

@@ -55,9 +55,10 @@ impl<'a> GtWorkspace {
         {
             let files = self.files.lock().map_err(|_| GtwError::FilesLock)?;
             if let Some(file) = files.get(&path)
-                && file.same_hash(&source) {
-                    return Ok(());
-                }
+                && file.same_hash(&source)
+            {
+                return Ok(());
+            }
         }
 
         // Load the file

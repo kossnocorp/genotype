@@ -45,8 +45,7 @@ impl Default for TsRenderContext<'_> {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Debug)]
-#[derive(Default)]
+#[derive(Clone, Copy, PartialEq, Debug, Default)]
 pub struct TsRenderState {
     indent: usize,
 }
@@ -63,7 +62,6 @@ impl<'a> GtlRenderState for TsRenderState {
         self.indent
     }
 }
-
 
 #[cfg(test)]
 mod tests {

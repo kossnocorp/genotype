@@ -1,6 +1,6 @@
 use litty_macro::{
-    deserialize_literal, literal, serialize_literal, DeserializeLiterals, Literals,
-    SerializeLiterals,
+    DeserializeLiterals, Literals, SerializeLiterals, deserialize_literal, literal,
+    serialize_literal,
 };
 use pretty_assertions::assert_eq;
 use serde::{Deserialize, Serialize};

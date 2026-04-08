@@ -4,7 +4,7 @@ pub(crate) mod internal {
     pub use crate::*;
     pub use genotype_lang_core_tree::*;
     pub use genotype_lang_ts_config::*;
-    pub use genotype_parser::visitor::{visitor, Traverse, TraverseMut, Visitor};
+    pub use genotype_parser::visitor::{Traverse, TraverseMut, Visitor, visitor};
     pub use genotype_parser::*;
     pub use miette::Result;
     pub use serde::Serialize;

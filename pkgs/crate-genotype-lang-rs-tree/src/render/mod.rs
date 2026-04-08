@@ -18,8 +18,7 @@ impl Default for RsRenderContext<'_> {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Debug)]
-#[derive(Default)]
+#[derive(Clone, Copy, PartialEq, Debug, Default)]
 pub struct RsRenderState {
     pub indent: usize,
 }
@@ -38,4 +37,3 @@ impl GtlRenderState for RsRenderState {
         self.indent
     }
 }
-

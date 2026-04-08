@@ -5,8 +5,7 @@ use std::collections::BTreeMap;
 use std::fmt;
 use std::hash::{Hash, Hasher};
 
-#[derive(Clone, Debug)]
-#[derive(Default)]
+#[derive(Clone, Debug, Default)]
 pub enum Any {
     #[default]
     Null,
@@ -17,7 +16,6 @@ pub enum Any {
     Array(Vec<Any>),
     Object(BTreeMap<String, Any>),
 }
-
 
 impl PartialEq for Any {
     fn eq(&self, other: &Self) -> bool {

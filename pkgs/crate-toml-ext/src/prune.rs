@@ -18,10 +18,11 @@ impl TomlExtPrune for Table {
 
             if !original_has_key
                 && let Some(default_item) = default_item
-                    && items_equal(current_item, default_item) {
-                        self.remove(&key);
-                        continue;
-                    }
+                && items_equal(current_item, default_item)
+            {
+                self.remove(&key);
+                continue;
+            }
 
             if let Some(default_item) = default_item {
                 match (current_item, default_item) {
@@ -76,10 +77,11 @@ fn prune_inline_defaults(
 
         if !original_has_key
             && let Some(default_item) = default_item
-                && values_equal(current_item, default_item) {
-                    current.remove(&key);
-                    continue;
-                }
+            && values_equal(current_item, default_item)
+        {
+            current.remove(&key);
+            continue;
+        }
     }
 }
 

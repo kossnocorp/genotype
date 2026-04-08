@@ -45,14 +45,14 @@ impl RsProject<'_> {
         for project_module in project_modules.iter() {
             for definition in project_module.module.definitions.iter() {
                 if let RsDefinition::Struct(r#struct) = definition
-                    && let RsStructFields::Unresolved(span, references, _) = &r#struct.fields {
-                        let reference_ids = references
-                            .iter()
-                            .map(|reference| reference.definition_id.clone())
-                            .collect::<IndexSet<_>>();
-                        definitions_to_resolve
-                            .insert(r#struct.id.clone(), (*span, reference_ids));
-                    }
+                    && let RsStructFields::Unresolved(span, references, _) = &r#struct.fields
+                {
+                    let reference_ids = references
+                        .iter()
+                        .map(|reference| reference.definition_id.clone())
+                        .collect::<IndexSet<_>>();
+                    definitions_to_resolve.insert(r#struct.id.clone(), (*span, reference_ids));
+                }
             }
         }
 
@@ -282,22 +282,23 @@ impl RsProject<'_> {
                     // Clean up references
                     module.module.imports.iter_mut().for_each(|r#use| {
                         if let RsDependencyIdent::Local(path) = &r#use.dependency
-                            && let RsUseReference::Named(names) = &r#use.reference {
-                                let mut names = names.clone();
-                                names.retain(|name| {
-                                    let resolve = module.resolve.definitions.get(
-                                        // [TODO] Avoid creating this in-place
-                                        &GtDefinitionId(path.0.clone(), name.name().clone().0),
-                                    );
+                            && let RsUseReference::Named(names) = &r#use.reference
+                        {
+                            let mut names = names.clone();
+                            names.retain(|name| {
+                                let resolve = module.resolve.definitions.get(
+                                    // [TODO] Avoid creating this in-place
+                                    &GtDefinitionId(path.0.clone(), name.name().clone().0),
+                                );
 
-                                    if let Some(resolve) = resolve {
-                                        return !resolve.references.is_empty();
-                                    }
+                                if let Some(resolve) = resolve {
+                                    return !resolve.references.is_empty();
+                                }
 
-                                    false
-                                });
-                                r#use.reference = RsUseReference::Named(names);
-                            }
+                                false
+                            });
+                            r#use.reference = RsUseReference::Named(names);
+                        }
                     });
 
                     current_definition_id.clone()

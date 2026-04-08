@@ -29,7 +29,8 @@ impl<'a> GtProject<'a> {
                     .map_err(|_| GtProjectError::Unknown)
                     .and_then(|path| {
                         path.strip_prefix(src_path.relative_path().normalize())
-                            .map_err(|_| GtProjectError::Unknown).map(|path| GtModulePath::new(path.into()))
+                            .map_err(|_| GtProjectError::Unknown)
+                            .map(|path| GtModulePath::new(path.into()))
                     })
             })
             .collect::<Result<Vec<_>, _>>()

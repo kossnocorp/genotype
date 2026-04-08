@@ -2,8 +2,8 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::parse::Parser;
 use syn::{
-    parse_macro_input, punctuated::Punctuated, Data, DeriveInput, Error, Fields, Ident, Lit, Meta,
-    MetaList, MetaNameValue, Token,
+    Data, DeriveInput, Error, Fields, Ident, Lit, Meta, MetaList, MetaNameValue, Token,
+    parse_macro_input, punctuated::Punctuated,
 };
 
 pub fn macro_derive_literals(input: TokenStream) -> TokenStream {

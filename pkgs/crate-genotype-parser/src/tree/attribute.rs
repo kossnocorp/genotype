@@ -28,9 +28,10 @@ impl GtAttribute {
 
     pub fn get_assigned(&self, name: &str) -> Option<&GtAttributeAssignment> {
         if self.is_it(name)
-            && let Some(GtAttributeDescriptor::Assignment(assignment)) = &self.descriptor {
-                return Some(assignment);
-            }
+            && let Some(GtAttributeDescriptor::Assignment(assignment)) = &self.descriptor
+        {
+            return Some(assignment);
+        }
         None
     }
 
@@ -39,17 +40,19 @@ impl GtAttribute {
             Some(GtAttributeDescriptor::Assignment(assignment)) => {
                 if self.name.value.as_ref() == name
                     && let GtAttributeValue::Literal(literal) = &assignment.value
-                        && let GtLiteralValue::String(string) = &literal.value {
-                            return Some(string.clone());
-                        }
+                    && let GtLiteralValue::String(string) = &literal.value
+                {
+                    return Some(string.clone());
+                }
             }
             Some(GtAttributeDescriptor::Properties(properties)) => {
                 for property in properties.iter() {
                     if property.name.value.as_ref() == name
                         && let GtAttributeValue::Literal(literal) = &property.value
-                            && let GtLiteralValue::String(string) = &literal.value {
-                                return Some(string.clone());
-                            }
+                        && let GtLiteralValue::String(string) = &literal.value
+                    {
+                        return Some(string.clone());
+                    }
                 }
             }
             _ => {}

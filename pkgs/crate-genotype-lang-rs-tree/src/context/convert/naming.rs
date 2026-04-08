@@ -90,9 +90,7 @@ impl RsConvertContext {
             GtLiteralValue::Null => "Null".into(),
             GtLiteralValue::String(value) => value.to_pascal_case(),
             GtLiteralValue::Integer(value) => format!("{value}"),
-            GtLiteralValue::Float(value) => {
-                format!("{:.}", value).replace('.', "_").to_string()
-            }
+            GtLiteralValue::Float(value) => format!("{:.}", value).replace('.', "_").to_string(),
             GtLiteralValue::Boolean(value) => format!("{value}").to_pascal_case(),
         }
     }

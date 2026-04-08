@@ -28,7 +28,9 @@ pub trait GtRelativePath {
     where
         Self: Sized,
     {
-        self.relative_path().parent().map(|parent| Self::new(parent.into()))
+        self.relative_path()
+            .parent()
+            .map(|parent| Self::new(parent.into()))
     }
 
     fn parents(&self) -> Successors<Self, fn(&Self) -> Option<Self>>

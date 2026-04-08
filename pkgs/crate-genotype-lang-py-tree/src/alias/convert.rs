@@ -40,14 +40,15 @@ impl PyConvert<PyDefinition> for GtAlias {
                 for attribute in self.attributes.iter() {
                     if let PyDescriptor::Union(union) = &mut descriptor
                         && let Some(assignment) = attribute.get_assigned("discriminator")
-                            && let GtAttributeValue::Literal(literal) = &assignment.value
-                                && let GtLiteralValue::String(value) = &literal.value {
-                                    union.discriminator = value.clone().into();
-                                    // [TODO] Resolve right now is a mess, instead of resolving in
-                                    // convert functions, it should be resolved in the end or by
-                                    // the parent.
-                                    union.clone().resolve(context);
-                                }
+                        && let GtAttributeValue::Literal(literal) = &assignment.value
+                        && let GtLiteralValue::String(value) = &literal.value
+                    {
+                        union.discriminator = value.clone().into();
+                        // [TODO] Resolve right now is a mess, instead of resolving in
+                        // convert functions, it should be resolved in the end or by
+                        // the parent.
+                        union.clone().resolve(context);
+                    }
                 }
 
                 if context.is_version(PyVersion::Legacy) {
