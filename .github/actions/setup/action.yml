@@ -1,5 +1,10 @@
 name: Set Up Dev Env
 
+inputs:
+  target-key:
+    required: true
+    description: "Key for caching target directory."
+
 runs:
   using: "composite"
 
@@ -30,9 +35,15 @@ runs:
           ~/.cargo/bin
           ~/.cargo/binstall
           ~/.cargo/env
-          target
-        key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
-        restore-keys: cargo-${{ runner.os }}-
+        key: cargo-${{ runner.os }}
+        restore-keys: cargo-${{ runner.os }}
+
+    - name: Restore Target Cache
+      uses: actions/cache/restore@v5
+      with:
+        path: target
+        key: target-${{ runner.os }}-${{ inputs.target-key }}
+        restore-keys: target-${{ runner.os }}-
 
     - name: Get pnpm Store Path
       id: pnpm-store
@@ -70,15 +81,3 @@ runs:
     - name: Run Install
       run: mise :install
       shell: bash
-
-    # TODO: Re-enable?
-
-    # - name: Set Up Rust
-    #   uses: dtolnay/rust-toolchain@stable
-    #   with:
-    #     components: clippy
-
-    # - name: Cache Rust dependencies
-    #   uses: Swatinem/rust-cache@v2
-    #   with:
-    #     cache-on-failure: true

@@ -67,13 +67,8 @@ jobs:
 
       - name: Set Up Dev Env
         uses: ./.github/actions/setup
-
-      - name: Restore Target Cache
-        uses: actions/cache/restore@v5
         with:
-          path: target
-          key: ${{ runner.os }}-target-${{ matrix.target }}-${{ hashFiles('Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-target-${{ matrix.target }}-
+          target-key: build-${{ matrix.target }}
 
       - name: Add Target
         run: rustup target add ${{ matrix.target }}
@@ -87,11 +82,9 @@ jobs:
         run: cargo build --release --package genotype_lsp --target ${{ matrix.target }}
 
       - name: Save Target Cache
-        if: always()
-        uses: actions/cache/save@v5
+        uses: ./.github/actions/cache-save/target
         with:
-          path: target
-          key: ${{ runner.os }}-target-${{ matrix.target }}-${{ hashFiles('Cargo.lock') }}
+          target-key: build-${{ matrix.target }}
 
       - name: Upload CLI Binaries
         uses: actions/upload-artifact@v6

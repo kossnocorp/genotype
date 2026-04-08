@@ -1,5 +1,10 @@
 name: Save Cache
 
+inputs:
+  target-key:
+    required: true
+    description: "Key for caching target directory."
+
 runs:
   using: "composite"
 
@@ -25,8 +30,12 @@ runs:
           ~/.cargo/bin
           ~/.cargo/binstall
           ~/.cargo/env
-          target
-        key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+        key: cargo-${{ runner.os }}
+
+    - name: Save Target Cache
+      uses: ./.github/actions/cache-save/target
+      with:
+        target-key: ${{ inputs.target-key }}
 
     - name: Get pnpm Store Path
       id: pnpm-store

@@ -1,5 +1,7 @@
 # Rust
-target/
+/target/
+/pkgs/*/target/
+/pkgs/*/examples/*/target/
 # Node.js
 node_modules/
 /tmp/
