@@ -10,7 +10,6 @@ impl RsConvert<RsIdentifier> for GtIdentifier {
 mod tests {
     use super::*;
     use insta::assert_ron_snapshot;
-    
 
     #[test]
     fn test_convert_base() {

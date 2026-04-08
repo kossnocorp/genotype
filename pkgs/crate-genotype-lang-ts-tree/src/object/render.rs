@@ -36,7 +36,7 @@ impl<'a> GtlRender<'a> for TsObject {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     use insta::assert_snapshot;
 
     #[test]

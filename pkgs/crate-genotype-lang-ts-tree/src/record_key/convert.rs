@@ -27,7 +27,7 @@ impl TsConvert<TsRecordKey> for GtRecordKey {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     use insta::assert_ron_snapshot;
 
     #[test]

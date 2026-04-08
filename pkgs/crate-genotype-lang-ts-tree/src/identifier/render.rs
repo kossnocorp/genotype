@@ -16,7 +16,7 @@ impl<'a> GtlRender<'a> for TsIdentifier {
 
 #[cfg(test)]
 mod tests {
-    
+
     use crate::test::*;
     use insta::assert_snapshot;
 

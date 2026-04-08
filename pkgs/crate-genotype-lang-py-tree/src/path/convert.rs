@@ -16,7 +16,6 @@ impl PyConvert<PyPath> for GtPath {
 mod tests {
     use super::*;
     use insta::assert_ron_snapshot;
-    
 
     #[test]
     fn test_convert_base() {

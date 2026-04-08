@@ -30,9 +30,10 @@ impl GtAttributeDescriptor {
         let span: GtSpan = pair.as_span().into();
 
         let mut inner = pair.into_inner();
-        let pair = inner
-            .next()
-            .ok_or(GtParseError::UnexpectedEnd(span, GtNode::AttributeDescriptor))?;
+        let pair = inner.next().ok_or(GtParseError::UnexpectedEnd(
+            span,
+            GtNode::AttributeDescriptor,
+        ))?;
 
         match pair.as_rule() {
             Rule::attribute_assignment => Ok(GtAttributeDescriptor::Assignment(

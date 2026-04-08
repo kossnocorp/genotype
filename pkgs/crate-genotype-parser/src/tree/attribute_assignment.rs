@@ -17,9 +17,10 @@ impl GtAttributeAssignment {
         let span: GtSpan = pair.as_span().into();
 
         let mut inner = pair.into_inner();
-        let pair = inner
-            .next()
-            .ok_or(GtParseError::UnexpectedEnd(span, GtNode::AttributeAssignment))?;
+        let pair = inner.next().ok_or(GtParseError::UnexpectedEnd(
+            span,
+            GtNode::AttributeAssignment,
+        ))?;
 
         Ok(GtAttributeAssignment {
             span,

@@ -14,7 +14,7 @@ impl TsConvert<TsLiteral> for GtLiteral {
 
 #[cfg(test)]
 mod tests {
-    
+
     use crate::test::*;
     use genotype_test::Gt;
     use insta::assert_ron_snapshot;

@@ -64,7 +64,6 @@ mod tests {
     use crate::*;
     use insta::assert_ron_snapshot;
     use pest::Parser;
-    
 
     #[test]
     fn test_parse() {

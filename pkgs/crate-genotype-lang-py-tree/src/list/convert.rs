@@ -12,7 +12,7 @@ impl PyConvert<PyList> for GtArray {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     use genotype_test::*;
 
     #[test]

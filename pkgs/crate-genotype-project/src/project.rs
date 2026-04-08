@@ -114,8 +114,6 @@ impl<'a> GtProject<'a> {
                     let mut modules = modules.lock().expect("Failed to lock modules");
                     modules.push(Ok(parse));
                 }
-
-                
             })
         });
 

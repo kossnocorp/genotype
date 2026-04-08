@@ -211,7 +211,7 @@ impl<'de> Deserialize<'de> for Any {
 mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
-    
+
     use std::{collections::BTreeMap, hash::DefaultHasher};
 
     #[test]

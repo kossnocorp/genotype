@@ -29,7 +29,8 @@ impl<'a> GtpResolveVisitor<'a> {
 
     pub fn drain_definitions(&self) -> IndexMap<GtDefinitionId, GtProjectModuleDefinitionResolve> {
         self.definitions
-            .get(&self.module_id).cloned()
+            .get(&self.module_id)
+            .cloned()
             .unwrap_or_default()
     }
 

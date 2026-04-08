@@ -9,7 +9,7 @@ impl TsConvert<TsPath> for GtPath {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     use insta::assert_ron_snapshot;
 
     #[test]

@@ -27,7 +27,7 @@ impl<'a> GtlRender<'a> for TsUnion {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     use insta::assert_snapshot;
 
     #[test]

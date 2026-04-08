@@ -29,7 +29,7 @@ impl<'a> GtlRender<'a> for TsImportReference {
 
 #[cfg(test)]
 mod tests {
-    
+
     use crate::test::*;
     use insta::assert_snapshot;
 
