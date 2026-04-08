@@ -8,7 +8,7 @@ impl GtContext {
     pub fn exit_parent(&mut self, span: GtSpan, node: GtNode) -> GtNodeParseResult<()> {
         self.parents
             .pop()
-            .ok_or_else(|| GtParseError::Internal(span, node))?;
+            .ok_or(GtParseError::Internal(span, node))?;
         Ok(())
     }
 

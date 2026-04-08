@@ -22,7 +22,7 @@ impl GtAlias {
 
         let pair = inner
             .next()
-            .ok_or_else(|| GtParseError::Internal(span, GtNode::Alias))?;
+            .ok_or(GtParseError::Internal(span, GtNode::Alias))?;
         let alias = parse(
             inner,
             pair,

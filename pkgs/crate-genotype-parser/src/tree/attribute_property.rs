@@ -21,7 +21,7 @@ impl GtAttributeProperty {
         let mut inner = pair.into_inner();
         let pair = inner
             .next()
-            .ok_or_else(|| GtParseError::UnexpectedEnd(span, GtNode::AttributeProperty))?;
+            .ok_or(GtParseError::UnexpectedEnd(span, GtNode::AttributeProperty))?;
 
         let property = parse(inner, pair, ParseState::Name(span), context)?;
 
@@ -64,7 +64,7 @@ mod tests {
     use crate::*;
     use insta::assert_ron_snapshot;
     use pest::Parser;
-    use pretty_assertions::assert_eq;
+    
 
     #[test]
     fn test_parse() {

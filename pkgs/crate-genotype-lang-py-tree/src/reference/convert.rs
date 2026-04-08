@@ -23,7 +23,7 @@ impl PyConvert<PyReference> for GtInlineImport {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test::*;
+    
     use genotype_test::*;
 
     #[test]

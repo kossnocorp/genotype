@@ -637,7 +637,7 @@ name = "module"
         );
     }
 
-    fn get_project_file<'a>(dist: &'a GtlProjectDist) -> &'a GtlProjectFile {
+    fn get_project_file(dist: &GtlProjectDist) -> &GtlProjectFile {
         dist.files
             .iter()
             .find(|file| file.path.as_str().contains("pyproject.toml"))

@@ -444,7 +444,7 @@ mod tests {
         );
     }
 
-    fn get_package_file<'a>(dist: &'a GtlProjectDist) -> &'a GtlProjectFile {
+    fn get_package_file(dist: &GtlProjectDist) -> &GtlProjectFile {
         dist.files
             .iter()
             .find(|file| file.path.as_str().contains("package.json"))

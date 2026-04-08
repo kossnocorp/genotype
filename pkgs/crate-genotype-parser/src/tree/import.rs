@@ -62,7 +62,7 @@ fn parse(
 
                         let name = inner
                             .next()
-                            .ok_or_else(|| GtParseError::Internal(span, GtNode::Import))?
+                            .ok_or(GtParseError::Internal(span, GtNode::Import))?
                             .into();
 
                         if let Some(alias) = inner.next() {

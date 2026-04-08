@@ -30,7 +30,7 @@ impl GtObject {
         }
 
         let mut object = GtObject {
-            span: span,
+            span,
             doc,
             attributes,
             name,
@@ -44,7 +44,7 @@ impl GtObject {
                 let property_pair = pair
                     .into_inner()
                     .next()
-                    .ok_or_else(|| GtParseError::UnexpectedEnd(span, GtNode::Object))?;
+                    .ok_or(GtParseError::UnexpectedEnd(span, GtNode::Object))?;
 
                 match property_pair.as_rule() {
                     Rule::required_property | Rule::optional_property => {

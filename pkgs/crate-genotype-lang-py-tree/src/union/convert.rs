@@ -17,7 +17,7 @@ impl PyConvert<PyUnion> for GtUnion {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test::*;
+    
     use genotype_test::*;
 
     #[test]

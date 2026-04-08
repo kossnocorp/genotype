@@ -22,7 +22,7 @@ impl GtProperty {
 
         let pair = inner
             .next()
-            .ok_or_else(|| GtParseError::Internal(span, GtNode::Property))?;
+            .ok_or(GtParseError::Internal(span, GtNode::Property))?;
         let property = parse(inner, pair, ParseState::Doc(span, required, None), context)?;
 
         context.exit_parent(span, GtNode::Property)?;

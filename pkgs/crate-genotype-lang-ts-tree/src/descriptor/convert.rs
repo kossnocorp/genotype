@@ -149,7 +149,7 @@ mod tests {
             convert_node(Gt::descriptor(GtObject {
                 extensions: vec![GtExtension {
                     span: (0, 0).into(),
-                    reference: Gt::reference_anon("Good").into()
+                    reference: Gt::reference_anon("Good")
                 }],
                 ..Gt::object("Book", vec![
                     Gt::property("title", Gt::primitive_string()),

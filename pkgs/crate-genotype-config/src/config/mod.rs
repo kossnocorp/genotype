@@ -138,8 +138,8 @@ enabled = true
         )
         .unwrap();
 
-        assert_eq!(config.python_enabled(), true);
-        assert_eq!(config.rust_enabled(), true);
+        assert!(config.python_enabled());
+        assert!(config.rust_enabled());
     }
 
     #[test]
@@ -155,7 +155,7 @@ enabled = true
         )
         .unwrap();
 
-        assert_eq!(config.python_enabled(), true);
-        assert_eq!(config.rust_enabled(), true);
+        assert!(config.python_enabled());
+        assert!(config.rust_enabled());
     }
 }

@@ -19,7 +19,7 @@ impl GtAttributeAssignment {
         let mut inner = pair.into_inner();
         let pair = inner
             .next()
-            .ok_or_else(|| GtParseError::UnexpectedEnd(span, GtNode::AttributeAssignment))?;
+            .ok_or(GtParseError::UnexpectedEnd(span, GtNode::AttributeAssignment))?;
 
         Ok(GtAttributeAssignment {
             span,

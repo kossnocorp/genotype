@@ -18,7 +18,7 @@ impl TomlExtDocDrill for DocumentMut {
         Self: Sized,
     {
         let mut table = self.as_table_mut();
-        let mut keys = path.split('.');
+        let keys = path.split('.');
 
         for key in keys {
             if !table.contains_key(key) {

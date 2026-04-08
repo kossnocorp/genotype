@@ -344,8 +344,7 @@ mod tests {
                         attributes: vec![],
                         id: GtReferenceId("module".into(), (2, 9).into()),
                         identifier: GtIdentifier::new((0, 0).into(), "Model".into())
-                    }
-                    .into(),
+                    },
                 }],
                 properties: vec![
                     GtProperty {
@@ -447,8 +446,7 @@ mod tests {
                         attributes: vec![],
                         id: GtReferenceId("module".into(), (2, 9).into()),
                         identifier: GtIdentifier::new((0, 0).into(), "Model".into())
-                    }
-                    .into(),
+                    },
                 }],
                 properties: vec![
                     GtProperty {

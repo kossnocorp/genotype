@@ -17,7 +17,7 @@ impl GtDescriptor {
             let mut descriptor_inner = pair.into_inner();
             let next_pair = descriptor_inner
                 .next()
-                .ok_or_else(|| GtParseError::UnexpectedEnd(span, GtNode::Descriptor))?;
+                .ok_or(GtParseError::UnexpectedEnd(span, GtNode::Descriptor))?;
 
             let descriptor = parse(
                 descriptor_inner,

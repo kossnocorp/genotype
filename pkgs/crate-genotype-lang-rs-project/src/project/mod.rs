@@ -303,7 +303,7 @@ mod tests {
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
 
-        assert_equal!(dist.files.iter().count(), 5);
+        assert_equal!(dist.files.len(), 5);
 
         assert_debug_snapshot!(
           dist.files[0].path,
@@ -401,7 +401,7 @@ mod tests {
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
 
-        assert_equal!(dist.files.iter().count(), 7);
+        assert_equal!(dist.files.len(), 7);
 
         assert_debug_snapshot!(
           dist.files[0].path,
@@ -605,7 +605,7 @@ mod tests {
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
 
-        assert_equal!(dist.files.iter().count(), 6);
+        assert_equal!(dist.files.len(), 6);
 
         assert_debug_snapshot!(
           dist.files[0].path,
@@ -753,7 +753,7 @@ mod tests {
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
 
-        assert_equal!(dist.files.iter().count(), 4);
+        assert_equal!(dist.files.len(), 4);
 
         assert_debug_snapshot!(
           dist.files[0].path,
@@ -876,7 +876,7 @@ version = "0.3.0"
         );
     }
 
-    fn get_cargo_file<'a>(dist: &'a GtlProjectDist) -> &'a GtlProjectFile {
+    fn get_cargo_file(dist: &GtlProjectDist) -> &GtlProjectFile {
         dist.files
             .iter()
             .find(|file| file.path.as_str().contains("Cargo.toml"))

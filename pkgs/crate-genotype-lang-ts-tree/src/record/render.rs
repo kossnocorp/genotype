@@ -24,7 +24,7 @@ impl<'a> GtlRender<'a> for TsRecord {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test::*;
+    
     use insta::assert_snapshot;
 
     #[test]

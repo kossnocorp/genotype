@@ -115,7 +115,7 @@ impl<'a> GtProject<'a> {
                     modules.push(Ok(parse));
                 }
 
-                ()
+                
             })
         });
 
@@ -928,7 +928,7 @@ mod tests {
 
     #[test]
     fn test_process_anonymous() {
-        let module_path: GtModulePath = "anonymous.type".into();
+        let _module_path: GtModulePath = "anonymous.type".into();
         let config = GtConfig::from_entry("module", "./examples/process", "anonymous.type");
         let project = GtProject::load(&config);
         assert_ron_snapshot!(

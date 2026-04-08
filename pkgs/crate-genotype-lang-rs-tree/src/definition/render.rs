@@ -87,7 +87,7 @@ mod tests {
                         name: "Boolean".into(),
                         attributes: vec![],
                         descriptor: Some(RsEnumVariantDescriptor::Descriptor(
-                            RsDescriptor::Primitive(RsPrimitive::Boolean).into()
+                            RsDescriptor::Primitive(RsPrimitive::Boolean)
                         )),
                     },
                     RsEnumVariant {
@@ -95,7 +95,7 @@ mod tests {
                         name: "String".into(),
                         attributes: vec![],
                         descriptor: Some(RsEnumVariantDescriptor::Descriptor(
-                            RsDescriptor::Primitive(RsPrimitive::String).into()
+                            RsDescriptor::Primitive(RsPrimitive::String)
                         )),
                     }
                 ],

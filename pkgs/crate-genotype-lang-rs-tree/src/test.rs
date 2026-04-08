@@ -50,8 +50,8 @@ impl Rst {
         reference_definition_ids: Vec<(GtReferenceId, GtDefinitionId)>,
     ) -> RsConvertResolve {
         let mut resolve = RsConvertResolve::default();
-        resolve.path_module_ids = HashMap::from_iter(path_module_ids.into_iter());
-        resolve.reference_definition_ids = HashMap::from_iter(reference_definition_ids.into_iter());
+        resolve.path_module_ids = HashMap::from_iter(path_module_ids);
+        resolve.reference_definition_ids = HashMap::from_iter(reference_definition_ids);
         resolve
     }
 

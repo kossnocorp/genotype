@@ -20,7 +20,7 @@ impl RsConvert<RsTuple> for GtTuple {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test::*;
+    
     use genotype_test::*;
 
     #[test]

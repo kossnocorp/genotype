@@ -21,7 +21,7 @@ impl GtRecord {
         let mut inner = pair.into_inner();
         let pair = inner
             .next()
-            .ok_or_else(|| GtParseError::UnexpectedEnd(span, GtNode::Record))?;
+            .ok_or(GtParseError::UnexpectedEnd(span, GtNode::Record))?;
 
         let record = parse(inner, pair, context, ParseState::Key(span, annotation))?;
 

@@ -18,7 +18,7 @@ mod tests {
         assert_ron_snapshot!(
             GtExtension {
                 span: (0, 0).into(),
-                reference: Gt::reference_anon("Name").into()
+                reference: Gt::reference_anon("Name")
             }
             .convert(&mut PyConvertContext::default()),
             @r#"

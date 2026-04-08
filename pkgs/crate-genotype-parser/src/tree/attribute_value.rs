@@ -25,7 +25,7 @@ impl GtAttributeValue {
         let mut inner = pair.into_inner();
         let pair = inner
             .next()
-            .ok_or_else(|| GtParseError::UnexpectedEnd(span, GtNode::AttributeValue))?;
+            .ok_or(GtParseError::UnexpectedEnd(span, GtNode::AttributeValue))?;
 
         match pair.as_rule() {
             Rule::literal => Ok(GtAttributeValue::Literal(GtLiteral::parse(pair, context)?)),

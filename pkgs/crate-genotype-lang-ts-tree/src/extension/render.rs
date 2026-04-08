@@ -20,7 +20,7 @@ impl<'a> GtlRender<'a> for TsExtension {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    
     use crate::test::*;
     use insta::assert_snapshot;
 
