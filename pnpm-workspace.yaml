@@ -1,6 +1,10 @@
 packages:
+  - "pkgs/app-website"
   - "pkgs/crate-genotype-lsp"
   - "pkgs/crate-genotype-lsp/npm/*"
   - "pkgs/npm-vscode-genotype"
   - "pkgs/npm-vscode-genotype/server"
   - "pkgs/npm-vscode-genotype/client"
+allowBuilds:
+  esbuild: true
+  sharp: true

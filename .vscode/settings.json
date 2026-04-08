@@ -7,5 +7,8 @@
   "editor.defaultFormatter": "oxc.oxc-vscode",
   "[shellscript]": {
     "editor.defaultFormatter": "mkhl.shfmt"
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
   }
 }

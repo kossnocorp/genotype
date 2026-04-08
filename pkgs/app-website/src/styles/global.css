@@ -1,0 +1,64 @@
+@layer base, starlight, theme, components, utilities;
+
+@import '@astrojs/starlight-tailwind';
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+@font-face {
+  font-family: "MonaSans";
+  src: url("/mona-sans.woff2") format("woff2-variations");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  font-variation-settings:
+      "wdth" 92,
+      "wght" 420;
+}
+
+@font-face {
+  font-family: "MonaspaceNeon";
+  src: url("/monaspace-neon.woff2") format("woff2-variations");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  font-variation-settings:
+    "wdth" 80,
+    "wght" 290;
+  font-size-adjust: 0.53;
+}
+
+@theme {
+  --font-sans: 'MonaSans';
+  --font-mono: 'MonaspaceNeon';
+}
+
+/* Dark mode colors. */
+:root {
+	--sl-color-accent-low: #10282a;
+	--sl-color-accent: #00797e;
+	--sl-color-accent-high: #b3cfd0;
+	--sl-color-white: #ffffff;
+	--sl-color-gray-1: #e9efef;
+	--sl-color-gray-2: #bdc3c4;
+	--sl-color-gray-3: #828e8f;
+	--sl-color-gray-4: #4f5b5b;
+	--sl-color-gray-5: #2f3b3b;
+	--sl-color-gray-6: #1e292a;
+	--sl-color-black: #141919;
+}
+
+/* Light mode colors. */
+:root[data-theme='light'] {
+	--sl-color-accent-low: #c7dcdd;
+	--sl-color-accent: #00787d;
+	--sl-color-accent-high: #10393b;
+	--sl-color-white: #141919;
+	--sl-color-gray-1: #1e292a;
+	--sl-color-gray-2: #2f3b3b;
+	--sl-color-gray-3: #4f5b5b;
+	--sl-color-gray-4: #828e8f;
+	--sl-color-gray-5: #bdc3c4;
+	--sl-color-gray-6: #e9efef;
+	--sl-color-gray-7: #f4f7f7;
+	--sl-color-black: #ffffff;
+}

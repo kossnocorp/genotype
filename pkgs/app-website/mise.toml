@@ -1,0 +1,5 @@
+[tasks.dev]
+run = "pnpm exec astro dev --host 0.0.0.0"
+
+[tasks.build]
+run = "pnpm exec astro build"
