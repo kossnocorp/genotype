@@ -46,14 +46,6 @@ jobs:
           key: ${{ runner.os }}-target-${{ matrix.target }}-${{ hashFiles('Cargo.lock') }}
           restore-keys: ${{ runner.os }}-target-${{ matrix.target }}-
 
-      - name: Cache target
-        uses: actions/cache@v4
-        with:
-          path: target
-          key: ${{ runner.os }}-target-${{ matrix.target }}-${{ hashFiles('cli/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-target-${{ matrix.target }}-
-
       - name: Add Target
         run: rustup target add ${{ matrix.target }}
 
