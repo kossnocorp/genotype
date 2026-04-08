@@ -29,22 +29,25 @@ impl RsConvert<RsUse> for GtImport {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
 
     #[test]
     fn test_convert_glob() {
         let mut resolve = RsConvertResolve::default();
         resolve.globs.insert(
-            GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+            GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module").unwrap(),
             "module".into(),
         );
-        let mut context = RsConvertContext::empty("module".into());
+        resolve.path_module_ids.insert(
+            GtPathModuleId::new((0, 0).into(), "module".into()),
+            "module/path".into(),
+        );
+        let mut context = Rst::convert_context_with_resolve(resolve);
         assert_ron_snapshot!(
             GtImport {
                 span: (0, 0).into(),
                 path: GtPath::new(
                     (0, 0).into(),
-                    GtPathModuleId::Resolved("module/path".into()),
+                    GtPathModuleId::new((0, 0).into(), "module".into()),
                     "./path/to/module".into()
                 ),
                 reference: GtImportReference::Glob((0, 0).into())
@@ -62,12 +65,17 @@ mod tests {
 
     #[test]
     fn test_convert_names() {
+        let mut resolve = RsConvertResolve::default();
+        resolve.path_module_ids.insert(
+            GtPathModuleId::new((0, 0).into(), "module".into()),
+            "module/path".into(),
+        );
         assert_ron_snapshot!(
             GtImport {
                 span: (0, 0).into(),
                 path: GtPath::new(
                     (0, 0).into(),
-                    GtPathModuleId::Resolved("module/path".into()),
+                    GtPathModuleId::new((0, 0).into(), "module".into()),
                     "./path/to/module".into()
                 ),
                 reference: GtImportReference::Names(
@@ -85,7 +93,7 @@ mod tests {
                     ]
                 )
             }
-            .convert(&mut RsConvertContext::empty("module".into()))
+            .convert(&mut Rst::convert_context_with_resolve(resolve))
             .unwrap(),
             @r#"
         RsUse(
@@ -101,17 +109,22 @@ mod tests {
 
     #[test]
     fn test_convert_name() {
+        let mut resolve = RsConvertResolve::default();
+        resolve.path_module_ids.insert(
+            GtPathModuleId::new((0, 0).into(), "module".into()),
+            "module/path".into(),
+        );
         assert_ron_snapshot!(
             GtImport {
                 span: (0, 0).into(),
                 path: GtPath::new(
                     (0, 0).into(),
-                    GtPathModuleId::Resolved("module/path".into()),
+                    GtPathModuleId::new((0, 0).into(), "module".into()),
                     "./path/to/module".into()
                 ),
                 reference: GtIdentifier::new((0, 0).into(), "Name".into()).into()
             }
-            .convert(&mut RsConvertContext::empty("module".into()))
+            .convert(&mut Rst::convert_context_with_resolve(resolve))
             .unwrap(),
             @r#"
         RsUse(

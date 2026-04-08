@@ -1,5 +1,7 @@
 use crate::prelude::internal::*;
 
+pub use genotype_test::*;
+
 pub fn convert_node<GtNode: RsConvert<Node>, Node>(gt_node: GtNode) -> Node {
     gt_node.convert(&mut Default::default()).unwrap()
 }
@@ -22,9 +24,9 @@ where
     result.unwrap_err()
 }
 
-pub struct Gtrs {}
+pub struct Rst {}
 
-impl Gtrs {
+impl Rst {
     pub fn convert_context() -> RsConvertContext {
         RsConvertContext::empty("module".into())
     }
@@ -33,5 +35,14 @@ impl Gtrs {
         let mut context = Self::convert_context();
         context.enter_parent(RsContextParent::Alias(parent_name.into()));
         context
+    }
+
+    pub fn convert_context_with_resolve(resolve: RsConvertResolve) -> RsConvertContext {
+        RsConvertContext::new(
+            "module".into(),
+            resolve,
+            Default::default(),
+            Default::default(),
+        )
     }
 }

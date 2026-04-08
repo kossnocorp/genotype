@@ -35,30 +35,12 @@ impl<'a> GtpResolveVisitor<'a> {
 impl GtVisitor for GtpResolveVisitor<'_> {}
 
 impl GtVisitorMut for GtpResolveVisitor<'_> {
-    fn visit_import_mut(&mut self, import: &mut GtImport) {
-        if self.error.is_some() {
-            return;
-        }
-
-        if let GtPathModuleId::Unresolved = &import.path.1 {
-            let module_paths = self.resolve.paths.get(&self.module_id).unwrap();
-            let module_id = module_paths.get(import.path.source_str()).unwrap();
-            import.path.1 = GtPathModuleId::Resolved(module_id.clone());
-        }
-    }
-
     fn visit_inline_import_mut(&mut self, import: &mut GtInlineImport) {
         if self.error.is_some() {
             return;
         }
 
-        if let GtPathModuleId::Unresolved = &import.path.1 {
-            let module_paths = self.resolve.paths.get(&self.module_id).unwrap();
-            let module_id = module_paths.get(import.path.source_str()).unwrap();
-            import.path.1 = GtPathModuleId::Resolved(module_id.clone());
-        }
-
-        let GtPathModuleId::Resolved(module_id) = &import.path.1 else {
+        let Some(module_id) = self.resolve.path_module_ids.get(&import.path.id) else {
             return;
         };
 

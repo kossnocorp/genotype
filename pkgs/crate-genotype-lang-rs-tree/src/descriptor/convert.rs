@@ -90,8 +90,6 @@ impl RsConvert<RsDescriptor> for GtRecordKey {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test::*;
-    use genotype_test::*;
 
     #[test]
     fn test_convert_descriptor_alias() {
@@ -147,13 +145,20 @@ mod tests {
 
     #[test]
     fn test_convert_descriptor_inline_import() {
+        let mut resolve = RsConvertResolve::default();
+        resolve.path_module_ids.insert(
+            GtPathModuleId::new((0, 0).into(), "module".into()),
+            "module/path".into(),
+        );
+        let mut context = Rst::convert_context_with_resolve(resolve);
         assert_ron_snapshot!(
-            convert_node(
-                Gt::descriptor(Gt::inline_import("./path/to/module", "Name"))
+            convert_node_with(
+                Gt::descriptor(Gt::inline_import("./path/to/module", "Name")),
+                &mut context
             ),
             @r#"
         InlineUse(RsInlineUse(
-          path: RsPath(GtModuleId("path/to/module"), "super::path::to::module"),
+          path: RsPath(GtModuleId("module/path"), "super::path::to::module"),
           name: RsIdentifier("Name"),
         ))
         "#
@@ -277,7 +282,7 @@ mod tests {
 
     #[test]
     fn test_convert_descriptor_union() {
-        let mut context = Gtrs::convert_context_with_parent("Union");
+        let mut context = Rst::convert_context_with_parent("Union");
         assert_ron_snapshot!(
             convert_node_with(Gt::descriptor(Gt::union(vec![
                 Gt::primitive_boolean().into(),

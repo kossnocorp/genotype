@@ -1068,12 +1068,26 @@ mod tests {
             imports: [
               GtImport(
                 span: GtSpan(0, 12),
-                path: GtPath(GtSpan(4, 10), Unresolved, "author"),
+                path: GtPath(
+                  span: GtSpan(4, 10),
+                  id: GtPathModuleId(
+                    span: GtSpan(4, 10),
+                    module_id: GtModuleId("module"),
+                  ),
+                  path: "author",
+                ),
                 reference: Glob(GtSpan(11, 12)),
               ),
               GtImport(
                 span: GtSpan(13, 64),
-                path: GtPath(GtSpan(17, 29), Unresolved, "../../author"),
+                path: GtPath(
+                  span: GtSpan(17, 29),
+                  id: GtPathModuleId(
+                    span: GtSpan(17, 29),
+                    module_id: GtModuleId("module"),
+                  ),
+                  path: "../../author",
+                ),
                 reference: Names(GtSpan(30, 64), [
                   Name(GtSpan(31, 37), GtIdentifier(GtSpan(31, 37), "Author")),
                   Name(GtSpan(39, 44), GtIdentifier(GtSpan(39, 44), "Genre")),
@@ -1082,7 +1096,14 @@ mod tests {
               ),
               GtImport(
                 span: GtSpan(65, 82),
-                path: GtPath(GtSpan(69, 75), Unresolved, "author"),
+                path: GtPath(
+                  span: GtSpan(69, 75),
+                  id: GtPathModuleId(
+                    span: GtSpan(69, 75),
+                    module_id: GtModuleId("module"),
+                  ),
+                  path: "author",
+                ),
                 reference: Name(GtSpan(76, 82), GtIdentifier(GtSpan(76, 82), "Author")),
               ),
             ],
@@ -1123,7 +1144,14 @@ mod tests {
                         doc: None,
                         attributes: [],
                         name: GtIdentifier(GtSpan(132, 138), "Author"),
-                        path: GtPath(GtSpan(119, 131), Unresolved, "../../author"),
+                        path: GtPath(
+                          span: GtSpan(119, 131),
+                          id: GtPathModuleId(
+                            span: GtSpan(119, 131),
+                            module_id: GtModuleId("module"),
+                          ),
+                          path: "../../author",
+                        ),
                       )),
                       required: true,
                     ),
@@ -1156,7 +1184,14 @@ mod tests {
                   doc: None,
                   attributes: [],
                   name: GtIdentifier(GtSpan(180, 186), "Author"),
-                  path: GtPath(GtSpan(167, 179), Unresolved, "../../author"),
+                  path: GtPath(
+                    span: GtSpan(167, 179),
+                    id: GtPathModuleId(
+                      span: GtSpan(167, 179),
+                      module_id: GtModuleId("module"),
+                    ),
+                    path: "../../author",
+                  ),
                 )),
               ),
               GtAlias(
@@ -1174,7 +1209,14 @@ mod tests {
                     doc: None,
                     attributes: [],
                     name: GtIdentifier(GtSpan(211, 217), "Author"),
-                    path: GtPath(GtSpan(198, 210), Unresolved, "../../author"),
+                    path: GtPath(
+                      span: GtSpan(198, 210),
+                      id: GtPathModuleId(
+                        span: GtSpan(198, 210),
+                        module_id: GtModuleId("module"),
+                      ),
+                      path: "../../author",
+                    ),
                   )),
                 )),
               ),
@@ -1182,12 +1224,54 @@ mod tests {
           ),
           resolve: GtModuleResolve(
             deps: [
-              GtPath(GtSpan(4, 10), Unresolved, "author"),
-              GtPath(GtSpan(17, 29), Unresolved, "../../author"),
-              GtPath(GtSpan(69, 75), Unresolved, "author"),
-              GtPath(GtSpan(119, 131), Unresolved, "../../author"),
-              GtPath(GtSpan(167, 179), Unresolved, "../../author"),
-              GtPath(GtSpan(198, 210), Unresolved, "../../author"),
+              GtPath(
+                span: GtSpan(4, 10),
+                id: GtPathModuleId(
+                  span: GtSpan(4, 10),
+                  module_id: GtModuleId("module"),
+                ),
+                path: "author",
+              ),
+              GtPath(
+                span: GtSpan(17, 29),
+                id: GtPathModuleId(
+                  span: GtSpan(17, 29),
+                  module_id: GtModuleId("module"),
+                ),
+                path: "../../author",
+              ),
+              GtPath(
+                span: GtSpan(69, 75),
+                id: GtPathModuleId(
+                  span: GtSpan(69, 75),
+                  module_id: GtModuleId("module"),
+                ),
+                path: "author",
+              ),
+              GtPath(
+                span: GtSpan(119, 131),
+                id: GtPathModuleId(
+                  span: GtSpan(119, 131),
+                  module_id: GtModuleId("module"),
+                ),
+                path: "../../author",
+              ),
+              GtPath(
+                span: GtSpan(167, 179),
+                id: GtPathModuleId(
+                  span: GtSpan(167, 179),
+                  module_id: GtModuleId("module"),
+                ),
+                path: "../../author",
+              ),
+              GtPath(
+                span: GtSpan(198, 210),
+                id: GtPathModuleId(
+                  span: GtSpan(198, 210),
+                  module_id: GtModuleId("module"),
+                ),
+                path: "../../author",
+              ),
             ],
             exports: [
               GtIdentifier(GtSpan(84, 88), "Book"),

@@ -40,14 +40,14 @@ mod tests {
     fn test_convert_glob() {
         let mut resolve = PyConvertResolve::default();
         resolve.globs.insert(
-            GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+            GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module").unwrap(),
             "module".into(),
         );
         let mut context = PyConvertContext::default();
         assert_ron_snapshot!(
             GtImport {
                 span: (0, 0).into(),
-                path: GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+                path: GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module").unwrap(),
                 reference: GtImportReference::Glob((0, 0).into())
             }
             .convert(&mut context),
@@ -65,7 +65,7 @@ mod tests {
         assert_ron_snapshot!(
             GtImport {
                 span: (0, 0).into(),
-                path: GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+                path: GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module").unwrap(),
                 reference: GtImportReference::Names(
                     (0, 0).into(),
                     vec![
@@ -99,7 +99,7 @@ mod tests {
         assert_ron_snapshot!(
             GtImport {
                 span: (0, 0).into(),
-                path: GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+                path: GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module").unwrap(),
                 reference: GtIdentifier::new((0, 0).into(), "Name".into()).into()
             }
             .convert(&mut PyConvertContext::default()),

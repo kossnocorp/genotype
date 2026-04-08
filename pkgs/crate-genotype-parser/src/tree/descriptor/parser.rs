@@ -480,7 +480,14 @@ mod tests {
             ),
           ],
           name: GtIdentifier(GtSpan(47, 51), "Name"),
-          path: GtPath(GtSpan(30, 46), Unresolved, "./path/to/module"),
+          path: GtPath(
+            span: GtSpan(30, 46),
+            id: GtPathModuleId(
+              span: GtSpan(30, 46),
+              module_id: GtModuleId("module"),
+            ),
+            path: "./path/to/module",
+          ),
         ))
         "#
         );

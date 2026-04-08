@@ -827,7 +827,14 @@ mod tests {
 
     #[test]
     fn test_attr_variant_assignment() {
-        let mut context = Gtrs::convert_context_with_parent("Status");
+        let mut resolve = RsConvertResolve::default();
+        resolve.path_module_ids.insert(
+            GtPathModuleId::new((0, 0).into(), "module".into()),
+            "module/path".into(),
+        );
+        let mut context = Rst::convert_context_with_resolve(resolve);
+        context.enter_parent(RsContextParent::Alias("Status".into()));
+
         let union = Gt::union(vec_into![
             assign!(
                 Gt::alias("Hello", Gt::primitive_string()),
@@ -916,7 +923,7 @@ mod tests {
               attributes: [],
               name: RsIdentifier("Import"),
               descriptor: Some(Descriptor(InlineUse(RsInlineUse(
-                path: RsPath(GtModuleId("path/to/module"), "src::module"),
+                path: RsPath(GtModuleId("module/path"), "src::module"),
                 name: RsIdentifier("Type"),
               )))),
             ),
@@ -1008,7 +1015,7 @@ mod tests {
 
     #[test]
     fn test_attr_default() {
-        let mut context = Gtrs::convert_context_with_parent("Status");
+        let mut context = Rst::convert_context_with_parent("Status");
         let mut config = RsConfigLang::default();
         config.derive.push("Default".into());
         context.assign_config(config);
@@ -1082,7 +1089,7 @@ mod tests {
 
     #[test]
     fn test_attr_default_missing_err() {
-        let mut context = Gtrs::convert_context_with_parent("Status");
+        let mut context = Rst::convert_context_with_parent("Status");
         let mut config = RsConfigLang::default();
         config.derive.push("Default".into());
         context.assign_config(config);
@@ -1102,7 +1109,7 @@ mod tests {
 
     #[test]
     fn test_attr_default_multiple_err() {
-        let mut context = Gtrs::convert_context_with_parent("Status");
+        let mut context = Rst::convert_context_with_parent("Status");
         let mut config = RsConfigLang::default();
         config.derive.push("Default".into());
         context.assign_config(config);

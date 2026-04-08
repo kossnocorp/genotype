@@ -21,7 +21,7 @@ mod tests {
     #[test]
     fn test_convert_base() {
         assert_ron_snapshot!(
-            GtPath::parse((0, 0).into(), "./path/to/module")
+            GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module")
                 .unwrap()
                 .convert(&mut PyConvertContext::default()),
             @r#"PyPath(".path.to.module")"#
@@ -31,7 +31,7 @@ mod tests {
     #[test]
     fn test_convert_absolute() {
         assert_ron_snapshot!(
-            GtPath::parse((0, 0).into(), "module/path")
+            GtPath::parse((0, 0).into(), &"module".into(), "module/path")
                 .unwrap()
                 .convert(&mut PyConvertContext::default()),
             @r#"PyPath("module.path")"#
@@ -41,7 +41,7 @@ mod tests {
     #[test]
     fn test_convert_up() {
         assert_ron_snapshot!(
-            GtPath::parse((0, 0).into(), "../path/to/module")
+            GtPath::parse((0, 0).into(), &"module".into(), "../path/to/module")
                 .unwrap()
                 .convert(&mut PyConvertContext::default()),
             @r#"PyPath("..path.to.module")"#
@@ -52,12 +52,12 @@ mod tests {
     fn test_convert_resolve() {
         let mut resolve = PyConvertResolve::default();
         resolve.paths.insert(
-            GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
-            GtPath::parse((0, 0).into(), "./path/to/another/module").unwrap(),
+            GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module").unwrap(),
+            GtPath::parse((0, 0).into(), &"module".into(), "./path/to/another/module").unwrap(),
         );
         let mut context = PyConvertContext::new(resolve, Default::default());
         assert_ron_snapshot!(
-            GtPath::parse((0, 0).into(), "./path/to/module")
+            GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module")
                 .unwrap()
                 .convert(&mut context),
             @r#"PyPath(".path.to.another.module")"#

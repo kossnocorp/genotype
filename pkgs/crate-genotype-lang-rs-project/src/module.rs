@@ -18,6 +18,13 @@ impl GtlProjectModule<RsConfig> for RsProjectModule {
 
         // [TODO] I'm pretty sure I can extract it and share with TypeScript and Python too
         for import in module.module.imports.iter() {
+            if import.path.kind() == GtPathKind::Package {
+                convert_resolve.path_module_ids.insert(
+                    import.path.id.clone(),
+                    GtModuleId(import.path.source_str().to_owned().into()),
+                );
+            }
+
             match &import.reference {
                 GtImportReference::Glob(_) => {
                     let references = module
@@ -78,6 +85,12 @@ impl GtlProjectModule<RsConfig> for RsProjectModule {
                 }
             }
         }
+
+        module.resolve.paths.iter().for_each(|(path, module_path)| {
+            convert_resolve
+                .path_module_ids
+                .insert(path.id.clone(), module_path.clone().into());
+        });
 
         let definitions = module.resolve.definitions.clone();
         let resolve = RspModuleResolve { definitions };

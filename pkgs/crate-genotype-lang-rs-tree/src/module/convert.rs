@@ -59,8 +59,12 @@ mod tests {
     fn test_convert() {
         let mut resolve = RsConvertResolve::default();
         resolve.globs.insert(
-            GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+            GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module").unwrap(),
             "module".into(),
+        );
+        resolve.path_module_ids.insert(
+            GtPathModuleId::new((0, 0).into(), "module".into()),
+            "module/path".into(),
         );
 
         assert_ron_snapshot!(
@@ -73,7 +77,7 @@ mod tests {
                             span: (0, 0).into(),
                             path: GtPath::new(
                                 (0, 0).into(),
-                                GtPathModuleId::Resolved("module/path".into()),
+                                GtPathModuleId::new((0, 0).into(), "module".into()),
                                 "./path/to/module".into()
                             ),
                             reference: GtImportReference::Glob((0, 0).into())
@@ -82,7 +86,7 @@ mod tests {
                             span: (0, 0).into(),
                             path: GtPath::new(
                                 (0, 0).into(),
-                                GtPathModuleId::Resolved("module/path".into()),
+                                GtPathModuleId::new((0, 0).into(), "module".into()),
                                 "./path/to/module".into()
                             ),
                             reference: GtImportReference::Names(

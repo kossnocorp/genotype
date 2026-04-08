@@ -255,7 +255,7 @@ impl Gt {
     }
 
     pub fn path_module_id() -> GtPathModuleId {
-        GtPathModuleId::Resolved("path/to/module".into())
+        GtPathModuleId::new((0, 0).into(), "module".into())
     }
 
     pub fn object(name: &str, properties: Vec<GtProperty>) -> GtObject {

@@ -14,6 +14,8 @@ pub struct GtpResolve {
     /// Map of local path to module id for each module. It allows to quickly resolve the module id
     /// from any local path.
     pub paths: HashMap<GtModuleId, HashMap<String, GtModuleId>>,
+    /// Map of path id to referenced module id.
+    pub path_module_ids: HashMap<GtPathModuleId, GtModuleId>,
 }
 
 impl GtpResolve {
@@ -39,6 +41,7 @@ impl TryFrom<&Vec<GtProjectModuleParse>> for GtpResolve {
         }
 
         let mut paths: HashMap<GtModuleId, HashMap<String, GtModuleId>> = HashMap::new();
+        let mut path_module_ids: HashMap<GtPathModuleId, GtModuleId> = HashMap::new();
         let mut imports: HashMap<GtModuleId, Vec<GtDefinitionId>> = HashMap::new();
         for module in modules_parse {
             let mut module_paths: HashMap<String, GtModuleId> = HashMap::new();
@@ -92,6 +95,8 @@ impl TryFrom<&Vec<GtProjectModuleParse>> for GtpResolve {
                         id
                     };
 
+                path_module_ids.insert(tree_path.id.clone(), module_id.clone());
+
                 if let Some(definitions) = definitions.get(&module_id) {
                     imports
                         .entry(module.1.module.id.clone())
@@ -107,6 +112,7 @@ impl TryFrom<&Vec<GtProjectModuleParse>> for GtpResolve {
             definitions,
             paths,
             imports,
+            path_module_ids,
         })
     }
 }

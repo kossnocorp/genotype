@@ -140,8 +140,22 @@ mod tests {
             parse.resolve.deps,
             @r#"
         [
-          GtPath(GtSpan(31, 35), Unresolved, "book"),
-          GtPath(GtSpan(64, 75), Unresolved, "./misc/user"),
+          GtPath(
+            span: GtSpan(31, 35),
+            id: GtPathModuleId(
+              span: GtSpan(31, 35),
+              module_id: GtModuleId("module"),
+            ),
+            path: "book",
+          ),
+          GtPath(
+            span: GtSpan(64, 75),
+            id: GtPathModuleId(
+              span: GtSpan(64, 75),
+              module_id: GtModuleId("module"),
+            ),
+            path: "./misc/user",
+          ),
         ]
         "#
         );
@@ -162,8 +176,22 @@ mod tests {
             parse.resolve.deps,
             @r#"
         [
-          GtPath(GtSpan(31, 35), Unresolved, "book"),
-          GtPath(GtSpan(64, 85), Unresolved, "./misc/user"),
+          GtPath(
+            span: GtSpan(31, 35),
+            id: GtPathModuleId(
+              span: GtSpan(31, 35),
+              module_id: GtModuleId("module"),
+            ),
+            path: "book",
+          ),
+          GtPath(
+            span: GtSpan(64, 85),
+            id: GtPathModuleId(
+              span: GtSpan(64, 85),
+              module_id: GtModuleId("module"),
+            ),
+            path: "./misc/user",
+          ),
         ]
         "#
         );

@@ -34,7 +34,7 @@ fn parse(
 ) -> GtNodeParseResult<GtImport> {
     match state {
         ParseState::Path(span) => {
-            let (path, _) = GtPath::split_parse(pair)?;
+            let (path, _) = GtPath::split_parse(pair, &context.module_id)?;
             context.resolve.deps.insert(path.clone());
 
             match inner.next() {
@@ -112,7 +112,7 @@ mod tests {
             GtImport::parse(pairs.next().unwrap(), &mut GtContext::new("module".into())).unwrap(),
             GtImport {
                 span: (0, 17).into(),
-                path: GtPath::parse((4, 11).into(), "./hello").unwrap(),
+                path: GtPath::parse((4, 11).into(), &"module".into(), "./hello").unwrap(),
                 reference: GtImportReference::Name(
                     (12, 17).into(),
                     GtIdentifier::new((12, 17).into(), "World".into())
@@ -134,9 +134,9 @@ mod tests {
         assert_eq!(
             parse.resolve.deps,
             IndexSet::<_, std::collections::hash_map::RandomState>::from_iter(vec![
-                GtPath::parse((4, 10).into(), "author").unwrap(),
-                GtPath::parse((29, 36).into(), "../user").unwrap(),
-                GtPath::parse((58, 70).into(), "./misc/order").unwrap()
+                GtPath::parse((4, 10).into(), &"module".into(), "author").unwrap(),
+                GtPath::parse((29, 36).into(), &"module".into(), "../user").unwrap(),
+                GtPath::parse((58, 70).into(), &"module".into(), "./misc/order").unwrap()
             ])
         );
     }
@@ -154,9 +154,9 @@ mod tests {
         assert_eq!(
             parse.resolve.deps,
             IndexSet::<_, std::collections::hash_map::RandomState>::from_iter(vec![
-                GtPath::parse((4, 12).into(), "author").unwrap(),
-                GtPath::parse((31, 46).into(), "../user").unwrap(),
-                GtPath::parse((68, 84).into(), "./misc/order").unwrap(),
+                GtPath::parse((4, 12).into(), &"module".into(), "author").unwrap(),
+                GtPath::parse((31, 46).into(), &"module".into(), "../user").unwrap(),
+                GtPath::parse((68, 84).into(), &"module".into(), "./misc/order").unwrap(),
             ])
         );
     }

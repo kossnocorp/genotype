@@ -118,6 +118,13 @@ impl RsConvertContext {
         }
     }
 
+    pub fn resolve_path_module_id(&self, path: &GtPath) -> Option<GtModuleId> {
+        if let Some(module_id) = self.resolve.path_module_ids.get(&path.id) {
+            return Some(module_id.clone());
+        }
+        None
+    }
+
     pub fn render_derive(
         &self,
         mode: RsContextRenderDeriveTypeMode,

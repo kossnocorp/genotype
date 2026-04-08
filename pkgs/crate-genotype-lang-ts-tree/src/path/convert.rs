@@ -15,7 +15,7 @@ mod tests {
     #[test]
     fn test_convert_base() {
         assert_ron_snapshot!(
-            convert_node(GtPath::parse((0, 0).into(), "./path/to/module").unwrap()),
+            convert_node(GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module").unwrap()),
             @r#"TsPath("./path/to/module")"#
         );
     }
@@ -24,13 +24,13 @@ mod tests {
     fn test_convert_resolve() {
         let mut resolve = TsConvertResolve::new();
         resolve.paths.insert(
-            GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
-            GtPath::parse((0, 0).into(), "./path/to/module/index").unwrap(),
+            GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module").unwrap(),
+            GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module/index").unwrap(),
         );
         let mut context = TsConvertContext::new(resolve, &Default::default());
         assert_ron_snapshot!(
             convert_node_with(
-                GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+                GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module").unwrap(),
                 &mut context,
             ),
             @r#"TsPath("./path/to/module/index")"#

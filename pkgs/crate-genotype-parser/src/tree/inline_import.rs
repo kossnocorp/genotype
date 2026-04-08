@@ -16,7 +16,7 @@ pub struct GtInlineImport {
 impl GtInlineImport {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> Result<Self, GtParseError> {
         let span = pair.as_span().into();
-        let (path, (name_span, name)) = GtPath::split_parse(pair)?;
+        let (path, (name_span, name)) = GtPath::split_parse(pair, &context.module_id)?;
         let (doc, attributes) = context.take_annotation_or_default();
 
         context.resolve.deps.insert(path.clone());
@@ -46,7 +46,14 @@ mod tests {
           doc: None,
           attributes: [],
           name: GtIdentifier(GtSpan(17, 21), "Name"),
-          path: GtPath(GtSpan(0, 16), Unresolved, "./path/to/module"),
+          path: GtPath(
+            span: GtSpan(0, 16),
+            id: GtPathModuleId(
+              span: GtSpan(0, 16),
+              module_id: GtModuleId("module"),
+            ),
+            path: "./path/to/module",
+          ),
         )
         "#
         );
@@ -67,8 +74,22 @@ mod tests {
             parse.resolve.deps,
             @r#"
         [
-          GtPath(GtSpan(31, 35), Unresolved, "book"),
-          GtPath(GtSpan(64, 75), Unresolved, "./misc/user"),
+          GtPath(
+            span: GtSpan(31, 35),
+            id: GtPathModuleId(
+              span: GtSpan(31, 35),
+              module_id: GtModuleId("module"),
+            ),
+            path: "book",
+          ),
+          GtPath(
+            span: GtSpan(64, 75),
+            id: GtPathModuleId(
+              span: GtSpan(64, 75),
+              module_id: GtModuleId("module"),
+            ),
+            path: "./misc/user",
+          ),
         ]
         "#
         );
@@ -89,8 +110,22 @@ mod tests {
             parse.resolve.deps,
             @r#"
         [
-          GtPath(GtSpan(31, 35), Unresolved, "book"),
-          GtPath(GtSpan(64, 85), Unresolved, "./misc/user"),
+          GtPath(
+            span: GtSpan(31, 35),
+            id: GtPathModuleId(
+              span: GtSpan(31, 35),
+              module_id: GtModuleId("module"),
+            ),
+            path: "book",
+          ),
+          GtPath(
+            span: GtSpan(64, 85),
+            id: GtPathModuleId(
+              span: GtSpan(64, 85),
+              module_id: GtModuleId("module"),
+            ),
+            path: "./misc/user",
+          ),
         ]
         "#
         );
@@ -134,7 +169,14 @@ mod tests {
             ),
           ],
           name: GtIdentifier(GtSpan(17, 21), "Name"),
-          path: GtPath(GtSpan(0, 16), Unresolved, "./path/to/module"),
+          path: GtPath(
+            span: GtSpan(0, 16),
+            id: GtPathModuleId(
+              span: GtSpan(0, 16),
+              module_id: GtModuleId("module"),
+            ),
+            path: "./path/to/module",
+          ),
         )
         "#
         );

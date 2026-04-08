@@ -11,16 +11,23 @@ impl RsConvert<RsInlineUse> for GtInlineImport {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test::*;
-    use genotype_test::*;
 
     #[test]
     fn test_convert() {
+        let mut resolve = RsConvertResolve::default();
+        resolve.path_module_ids.insert(
+            GtPathModuleId::new((0, 0).into(), "module".into()),
+            "module/path".into(),
+        );
+        let mut context = Rst::convert_context_with_resolve(resolve);
         assert_ron_snapshot!(
-            convert_node(Gt::inline_import("./path/to/module", "Name")),
+            convert_node_with(
+                Gt::inline_import("./path/to/module", "Name"),
+                &mut context
+            ),
             @r#"
         RsInlineUse(
-          path: RsPath(GtModuleId("path/to/module"), "super::path::to::module"),
+          path: RsPath(GtModuleId("module/path"), "super::path::to::module"),
           name: RsIdentifier("Name"),
         )
         "#

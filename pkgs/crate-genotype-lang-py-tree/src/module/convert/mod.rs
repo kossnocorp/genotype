@@ -50,7 +50,7 @@ mod tests {
     fn test_convert() {
         let mut resolve = PyConvertResolve::default();
         resolve.globs.insert(
-            GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+            GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module").unwrap(),
             "module".into(),
         );
 
@@ -62,12 +62,12 @@ mod tests {
                     imports: vec![
                         GtImport {
                             span: (0, 0).into(),
-                            path: GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+                            path: GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module").unwrap(),
                             reference: GtImportReference::Glob((0, 0).into())
                         },
                         GtImport {
                             span: (0, 0).into(),
-                            path: GtPath::parse((0, 0).into(), "./path/to/module").unwrap(),
+                            path: GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module").unwrap(),
                             reference: GtImportReference::Names(
                                 (0, 0).into(),
                                 vec![
