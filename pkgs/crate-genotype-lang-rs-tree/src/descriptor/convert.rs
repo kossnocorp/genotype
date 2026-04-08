@@ -145,15 +145,13 @@ mod tests {
 
     #[test]
     fn test_convert_descriptor_inline_import() {
-        let mut resolve = RsConvertResolve::default();
-        resolve.path_module_ids.insert(
-            GtPathModuleId::new((0, 0).into(), "module".into()),
-            "module/path".into(),
+        let mut context = Rst::convert_context_with(
+            vec![(Gt::path_module_id((0, 0)), "module/path".into())],
+            vec![],
         );
-        let mut context = Rst::convert_context_with_resolve(resolve);
         assert_ron_snapshot!(
             convert_node_with(
-                Gt::descriptor(Gt::inline_import("./path/to/module", "Name")),
+                Gt::descriptor(Gt::inline_import_anon("./path/to/module", "Name")),
                 &mut context
             ),
             @r#"
@@ -250,8 +248,15 @@ mod tests {
 
     #[test]
     fn test_convert_descriptor_reference() {
+        let mut context = Rst::convert_context_with(
+            vec![],
+            vec![(Gt::reference_id((0, 0)), Gt::definition_id("Name"))],
+        );
         assert_ron_snapshot!(
-            convert_node(Gt::descriptor(Gt::reference("Name"))),
+            convert_node_with(
+                Gt::descriptor(Gt::reference_anon("Name")),
+                &mut context
+            ),
             @r#"
         Reference(RsReference(
           id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
@@ -282,7 +287,8 @@ mod tests {
 
     #[test]
     fn test_convert_descriptor_union() {
-        let mut context = Rst::convert_context_with_parent("Union");
+        let mut context = Rst::convert_context();
+        context.enter_parent(Rst::context_parent("Union"));
         assert_ron_snapshot!(
             convert_node_with(Gt::descriptor(Gt::union(vec![
                 Gt::primitive_boolean().into(),

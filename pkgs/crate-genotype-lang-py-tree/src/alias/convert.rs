@@ -301,8 +301,8 @@ mod tests {
             convert_node(
                 assign!(
                     Gt::alias("Message", Gt::descriptor(Gt::union(vec_into![
-                        Gt::reference("Reply"),
-                        Gt::reference("DM"),
+                        Gt::reference_anon("Reply"),
+                        Gt::reference_anon("DM"),
                     ]))),
                     attributes = vec![attribute_node!(discriminator = "type")]
                 )
@@ -337,7 +337,7 @@ mod tests {
     fn test_convert_legacy_self_ref_alias_array() {
         assert_ron_snapshot!(
             convert_node_with(
-                Gt::alias("SelfRefArray", Gt::array(Gt::reference("SelfRefArray"))),
+                Gt::alias("SelfRefArray", Gt::array(Gt::reference_anon("SelfRefArray"))),
                 &mut Pyt::convert_context_legacy(),
             ),
             @r#"
@@ -368,7 +368,7 @@ mod tests {
                         Gt::literal_null().into(),
                         Gt::tuple(vec![
                             Gt::primitive_string().into(),
-                            Gt::array(Gt::reference("SelfRefTuple")).into(),
+                            Gt::array(Gt::reference_anon("SelfRefTuple")).into(),
                         ])
                         .into(),
                     ]),

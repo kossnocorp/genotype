@@ -66,6 +66,10 @@ mod tests {
             GtPathModuleId::new((0, 0).into(), "module".into()),
             "module/path".into(),
         );
+        resolve.reference_definition_ids.insert(
+            GtReferenceId("module".into(), (0, 0).into()),
+            GtDefinitionId("module".into(), "Author".into()),
+        );
 
         assert_ron_snapshot!(
             RsConvertModule::convert(
@@ -187,7 +191,7 @@ mod tests {
                                                         (0, 0).into(),
                                                         "author".into()
                                                     ),
-                                                    descriptor: Gt::reference("Author").into(),
+                                                    descriptor: Gt::reference_anon("Author").into(),
                                                     required: true,
                                                 }
                                             ]

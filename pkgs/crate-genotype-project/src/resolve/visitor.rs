@@ -8,6 +8,8 @@ pub struct GtpResolveVisitor<'a> {
     /// Module definitions resolve accumulated during the visit. It is then
     /// moved to corresponding module `GtpModuleResolve` struct.
     definitions: IndexMap<GtModuleId, IndexMap<GtDefinitionId, GtProjectModuleDefinitionResolve>>,
+    /// Reference definition resolve accumulated during the visit.
+    reference_definition_ids: IndexMap<GtReferenceId, GtDefinitionId>,
 }
 
 impl<'a> GtpResolveVisitor<'a> {
@@ -17,6 +19,7 @@ impl<'a> GtpResolveVisitor<'a> {
             resolve,
             error: None,
             definitions: Default::default(),
+            reference_definition_ids: Default::default(),
         }
     }
 
@@ -24,11 +27,15 @@ impl<'a> GtpResolveVisitor<'a> {
         self.error.as_ref()
     }
 
-    pub fn drain_definitions(self) -> IndexMap<GtDefinitionId, GtProjectModuleDefinitionResolve> {
+    pub fn drain_definitions(&self) -> IndexMap<GtDefinitionId, GtProjectModuleDefinitionResolve> {
         self.definitions
             .get(&self.module_id)
             .and_then(|references| Some(references.clone()))
             .unwrap_or_default()
+    }
+
+    pub fn get_reference_definition_ids(&self) -> IndexMap<GtReferenceId, GtDefinitionId> {
+        self.reference_definition_ids.clone()
     }
 }
 
@@ -64,56 +71,40 @@ impl GtVisitorMut for GtpResolveVisitor<'_> {
             return;
         }
 
-        match &reference.definition_id {
-            GtReferenceDefinitionId::Unresolved => {
-                if let Some(definitions) = self.resolve.definitions.get(&self.module_id) {
-                    let definition = definitions
-                        .iter()
-                        .find(|definition| definition.1 == reference.identifier.1);
-                    if let Some(local_definition) = definition {
-                        reference.definition_id =
-                            GtReferenceDefinitionId::Resolved(local_definition.clone());
-
-                        let resolve = self
-                            .definitions
-                            .entry(self.module_id.clone())
-                            .or_default()
-                            .entry(local_definition.clone())
-                            .or_default();
-                        resolve.references.insert(reference.id.clone());
-                    }
-                }
-
-                if let Some(imported) = self.resolve.imports.get(&self.module_id) {
-                    let definition = imported
-                        .iter()
-                        .find(|definition| definition.1 == reference.identifier.1);
-                    if let Some(imported_definition) = definition {
-                        reference.definition_id =
-                            GtReferenceDefinitionId::Resolved(imported_definition.clone());
-
-                        let resolve = self
-                            .definitions
-                            .entry(self.module_id.clone())
-                            .or_default()
-                            .entry(imported_definition.clone())
-                            .or_default();
-                        resolve.references.insert(reference.id.clone());
-                    }
-                }
-
-                // [TODO] Make visitor return results, so we can handle unresolved references
+        let resolved_definition_id =
+            if let Some(definitions) = self.resolve.definitions.get(&self.module_id) {
+                definitions
+                    .iter()
+                    .find(|definition| definition.1 == reference.identifier.1)
+                    .cloned()
+            } else {
+                None
             }
+            .or_else(|| {
+                self.resolve
+                    .imports
+                    .get(&self.module_id)
+                    .and_then(|definitions| {
+                        definitions
+                            .iter()
+                            .find(|definition| definition.1 == reference.identifier.1)
+                            .cloned()
+                    })
+            });
 
-            GtReferenceDefinitionId::Resolved(definition_id) => {
-                let resolve = self
-                    .definitions
-                    .entry(self.module_id.clone())
-                    .or_default()
-                    .entry(definition_id.clone())
-                    .or_default();
-                resolve.references.insert(reference.id.clone());
-            }
+        if let Some(definition_id) = resolved_definition_id {
+            self.reference_definition_ids
+                .insert(reference.id.clone(), definition_id.clone());
+
+            let resolve = self
+                .definitions
+                .entry(self.module_id.clone())
+                .or_default()
+                .entry(definition_id)
+                .or_default();
+            resolve.references.insert(reference.id.clone());
         }
+
+        // [TODO] Make visitor return results, so we can handle unresolved references
     }
 }

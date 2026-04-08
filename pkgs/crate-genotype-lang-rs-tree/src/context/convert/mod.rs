@@ -125,6 +125,17 @@ impl RsConvertContext {
         None
     }
 
+    pub fn resolve_reference_definition_id(
+        &self,
+        reference: &GtReference,
+    ) -> Option<GtDefinitionId> {
+        if let Some(definition_id) = self.resolve.reference_definition_ids.get(&reference.id) {
+            return Some(definition_id.clone());
+        }
+
+        None
+    }
+
     pub fn render_derive(
         &self,
         mode: RsContextRenderDeriveTypeMode,

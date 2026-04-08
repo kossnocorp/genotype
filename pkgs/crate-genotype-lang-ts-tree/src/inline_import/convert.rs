@@ -25,7 +25,7 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            convert_node(Gt::inline_import("./path/to/module", "Name")),
+            convert_node(Gt::inline_import_anon("./path/to/module", "Name")),
             @r#"
         TsInlineImport(
           path: TsPath("./path/to/module"),
@@ -40,7 +40,7 @@ mod tests {
         let mut context = TsConvertContext::default();
 
         assert_ron_snapshot!(
-            convert_node_with(Gt::inline_import("./path/to/module", "Name"), &mut context),
+            convert_node_with(Gt::inline_import_anon("./path/to/module", "Name"), &mut context),
             @r#"
         TsInlineImport(
           path: TsPath("./path/to/module"),
@@ -60,7 +60,7 @@ mod tests {
         let mut context = Tst::convert_context_zod();
 
         assert_ron_snapshot!(
-            convert_node_with(Gt::inline_import("./path/to/module", "Name"), &mut context),
+            convert_node_with(Gt::inline_import_anon("./path/to/module", "Name"), &mut context),
             @r#"
         TsInlineImport(
           path: TsPath("./path/to/module"),

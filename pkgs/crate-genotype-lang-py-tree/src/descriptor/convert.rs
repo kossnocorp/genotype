@@ -99,7 +99,7 @@ mod tests {
         let mut context = PyConvertContext::default();
         assert_ron_snapshot!(
             convert_node_with(
-                Gt::descriptor(Gt::inline_import("./path/to/module", "Name")),
+                Gt::descriptor(Gt::inline_import_anon("./path/to/module", "Name")),
                 &mut context
             ),
             @r#"
@@ -203,7 +203,7 @@ mod tests {
     #[test]
     fn test_convert_reference() {
         assert_ron_snapshot!(
-            convert_node(Gt::descriptor(Gt::reference("Name"))),
+            convert_node(Gt::descriptor(Gt::reference_anon("Name"))),
             @r#"
         Reference(PyReference(
           identifier: PyIdentifier("Name"),

@@ -3,11 +3,8 @@ use crate::prelude::internal::*;
 impl RsConvert<RsReference> for GtReference {
     fn convert(&self, context: &mut RsConvertContext) -> Result<RsReference> {
         let identifier = self.identifier.convert(context)?;
-        let definition_id = match &self.definition_id {
-            GtReferenceDefinitionId::Resolved(id) => id.clone(),
-            GtReferenceDefinitionId::Unresolved => {
-                return Err(RsConverterError::UnresolvedReference(self.span.clone()).into());
-            }
+        let Some(definition_id) = context.resolve_reference_definition_id(self) else {
+            return Err(RsConverterError::UnresolvedReference(self.span.clone()).into());
         };
 
         Ok(RsReference {
@@ -21,15 +18,16 @@ impl RsConvert<RsReference> for GtReference {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test::*;
-    use genotype_test::*;
 
     #[test]
     fn test_convert() {
-        let mut context = RsConvertContext::empty("module".into());
+        let mut context = Rst::convert_context_with(
+            vec![],
+            vec![(Gt::reference_id((0, 0)), Gt::definition_id("Name"))],
+        );
         context.push_defined(&"Name".into());
         assert_ron_snapshot!(
-            convert_node(Gt::reference("Name")),
+            convert_node_with(Gt::reference_anon("Name"), &mut context),
             @r#"
         RsReference(
           id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),

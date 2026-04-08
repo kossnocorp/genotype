@@ -714,19 +714,28 @@ mod tests {
 
     #[test]
     fn test_trimmed_variant_names() {
-        let mut context = RsConvertContext::empty("module".into());
+        let mut context = Rst::convert_context_with(
+            vec![],
+            vec![
+                (
+                    Gt::reference_id((0, 1)),
+                    Gt::definition_id("ServerMessagePing"),
+                ),
+                (
+                    Gt::reference_id((0, 2)),
+                    Gt::definition_id("ServerMessagePong"),
+                ),
+            ],
+        );
         context.enter_parent(RsContextParent::Alias("ServerMessage".into()));
 
-        let union = parse_get_named::<GtUnion>(
-            "ServerMessage",
-            r#"
-            ServerMessage: ServerMessagePing | ServerMessagePong
-            ServerMessagePing: { kind: "ping" }
-            ServerMessagePong: { kind: "pong" }
-            "#,
-        );
+        let union = Gt::union(vec_into![
+            Gt::reference("ServerMessagePing", (0, 1)),
+            Gt::reference("ServerMessagePong", (0, 2))
+        ]);
+
         assert_ron_snapshot!(
-            union.convert(&mut context).unwrap(),
+            convert_node_with(union, &mut context),
             @r#"
         RsEnum(
           id: GtDefinitionId(GtModuleId("module"), "ServerMessage"),
@@ -742,7 +751,7 @@ mod tests {
               attributes: [],
               name: RsIdentifier("Ping"),
               descriptor: Some(Descriptor(Reference(RsReference(
-                id: GtReferenceId(GtModuleId("module"), GtSpan(28, 45)),
+                id: GtReferenceId(GtModuleId("module"), GtSpan(0, 1)),
                 identifier: RsIdentifier("ServerMessagePing"),
                 definition_id: GtDefinitionId(GtModuleId("module"), "ServerMessagePing"),
               )))),
@@ -752,7 +761,7 @@ mod tests {
               attributes: [],
               name: RsIdentifier("Pong"),
               descriptor: Some(Descriptor(Reference(RsReference(
-                id: GtReferenceId(GtModuleId("module"), GtSpan(48, 65)),
+                id: GtReferenceId(GtModuleId("module"), GtSpan(0, 2)),
                 identifier: RsIdentifier("ServerMessagePong"),
                 definition_id: GtDefinitionId(GtModuleId("module"), "ServerMessagePong"),
               )))),
@@ -765,18 +774,28 @@ mod tests {
 
     #[test]
     fn test_trimmed_variant_names_conflicts() {
-        let mut context = RsConvertContext::empty("module".into());
-        context.enter_parent(RsContextParent::Alias("ServerMessage".into()));
-
-        let union = parse_get_named::<GtUnion>(
-            "ServerMessage",
-            r#"
-            ServerMessage: ServerMessagePing | ServerMessagePong | Ping
-            ServerMessagePing: { kind: "ping" }
-            ServerMessagePong: { kind: "pong" }
-            Ping: string
-            "#,
+        let mut context = Rst::convert_context_with(
+            vec![],
+            vec![
+                (
+                    Gt::reference_id((0, 1)),
+                    Gt::definition_id("ServerMessagePing"),
+                ),
+                (
+                    Gt::reference_id((0, 2)),
+                    Gt::definition_id("ServerMessagePong"),
+                ),
+                (Gt::reference_id((0, 3)), Gt::definition_id("Ping")),
+            ],
         );
+        context.enter_parent(Rst::context_parent("ServerMessage"));
+
+        let union = Gt::union(vec_into![
+            Gt::reference("ServerMessagePing", (0, 1)),
+            Gt::reference("ServerMessagePong", (0, 2)),
+            Gt::reference("Ping", (0, 3)),
+        ]);
+
         assert_ron_snapshot!(
             union.convert(&mut context).unwrap(),
             @r#"
@@ -794,7 +813,7 @@ mod tests {
               attributes: [],
               name: RsIdentifier("ServerMessagePing"),
               descriptor: Some(Descriptor(Reference(RsReference(
-                id: GtReferenceId(GtModuleId("module"), GtSpan(28, 45)),
+                id: GtReferenceId(GtModuleId("module"), GtSpan(0, 1)),
                 identifier: RsIdentifier("ServerMessagePing"),
                 definition_id: GtDefinitionId(GtModuleId("module"), "ServerMessagePing"),
               )))),
@@ -804,7 +823,7 @@ mod tests {
               attributes: [],
               name: RsIdentifier("Pong"),
               descriptor: Some(Descriptor(Reference(RsReference(
-                id: GtReferenceId(GtModuleId("module"), GtSpan(48, 65)),
+                id: GtReferenceId(GtModuleId("module"), GtSpan(0, 2)),
                 identifier: RsIdentifier("ServerMessagePong"),
                 definition_id: GtDefinitionId(GtModuleId("module"), "ServerMessagePong"),
               )))),
@@ -814,7 +833,7 @@ mod tests {
               attributes: [],
               name: RsIdentifier("Ping"),
               descriptor: Some(Descriptor(Reference(RsReference(
-                id: GtReferenceId(GtModuleId("module"), GtSpan(68, 72)),
+                id: GtReferenceId(GtModuleId("module"), GtSpan(0, 3)),
                 identifier: RsIdentifier("Ping"),
                 definition_id: GtDefinitionId(GtModuleId("module"), "Ping"),
               )))),
@@ -827,13 +846,11 @@ mod tests {
 
     #[test]
     fn test_attr_variant_assignment() {
-        let mut resolve = RsConvertResolve::default();
-        resolve.path_module_ids.insert(
-            GtPathModuleId::new((0, 0).into(), "module".into()),
-            "module/path".into(),
+        let mut context = Rst::convert_context_with(
+            vec![(Gt::path_module_id((0, 1)), "module/path".into())],
+            vec![(Gt::reference_id((0, 2)), Gt::definition_id("Hello"))],
         );
-        let mut context = Rst::convert_context_with_resolve(resolve);
-        context.enter_parent(RsContextParent::Alias("Status".into()));
+        context.enter_parent(Rst::context_parent("Status"));
 
         let union = Gt::union(vec_into![
             assign!(
@@ -845,7 +862,7 @@ mod tests {
                 attributes = vec![attribute_node!(variant = "Array")]
             ),
             assign!(
-                Gt::inline_import("src/module", "Type"),
+                Gt::inline_import("src/module", "Type", (0, 1)),
                 attributes = vec![attribute_node!(variant = "Import")]
             ),
             assign!(
@@ -864,7 +881,7 @@ mod tests {
                 attributes = vec![attribute_node!(variant = "Primitive")]
             ),
             assign!(
-                Gt::reference("Hello"),
+                Gt::reference("Hello", (0, 2)),
                 attributes = vec![attribute_node!(variant = "Reference")]
             ),
             assign!(
@@ -888,6 +905,7 @@ mod tests {
                 attributes = vec![attribute_node!(variant = "Branded")]
             )
         ]);
+
         assert_ron_snapshot!(
             convert_node_with(union, &mut context),
             @r#"
@@ -956,7 +974,7 @@ mod tests {
               attributes: [],
               name: RsIdentifier("Reference"),
               descriptor: Some(Descriptor(Reference(RsReference(
-                id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
+                id: GtReferenceId(GtModuleId("module"), GtSpan(0, 2)),
                 identifier: RsIdentifier("Hello"),
                 definition_id: GtDefinitionId(GtModuleId("module"), "Hello"),
               )))),
@@ -1015,7 +1033,8 @@ mod tests {
 
     #[test]
     fn test_attr_default() {
-        let mut context = Rst::convert_context_with_parent("Status");
+        let mut context = Rst::convert_context();
+        context.enter_parent(Rst::context_parent("Status"));
         let mut config = RsConfigLang::default();
         config.derive.push("Default".into());
         context.assign_config(config);
@@ -1089,7 +1108,8 @@ mod tests {
 
     #[test]
     fn test_attr_default_missing_err() {
-        let mut context = Rst::convert_context_with_parent("Status");
+        let mut context = Rst::convert_context();
+        context.enter_parent(Rst::context_parent("Status"));
         let mut config = RsConfigLang::default();
         config.derive.push("Default".into());
         context.assign_config(config);
@@ -1109,7 +1129,8 @@ mod tests {
 
     #[test]
     fn test_attr_default_multiple_err() {
-        let mut context = Rst::convert_context_with_parent("Status");
+        let mut context = Rst::convert_context();
+        context.enter_parent(Rst::context_parent("Status"));
         let mut config = RsConfigLang::default();
         config.derive.push("Default".into());
         context.assign_config(config);

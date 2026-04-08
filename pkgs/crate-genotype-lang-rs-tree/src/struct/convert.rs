@@ -326,7 +326,10 @@ mod tests {
 
     #[test]
     fn test_convert_object_literal_fields_unresolved() {
-        let mut context = RsConvertContext::empty("module".into());
+        let mut context = Rst::convert_context_with(
+            vec![],
+            vec![(Gt::reference_id((2, 9)), Gt::definition_id("Model"))],
+        );
         assert_ron_snapshot!(
             GtObject {
                 span: (1, 8).into(),
@@ -340,10 +343,6 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         id: GtReferenceId("module".into(), (2, 9).into()),
-                        definition_id: GtReferenceDefinitionId::Resolved(GtDefinitionId(
-                            "module".into(),
-                            "Model".into()
-                        )),
                         identifier: GtIdentifier::new((0, 0).into(), "Model".into())
                     }
                     .into(),
@@ -428,7 +427,12 @@ mod tests {
 
     #[test]
     fn test_convert_object_unresolved() {
-        let mut context = RsConvertContext::empty("module".into());
+        let mut resolve = RsConvertResolve::default();
+        resolve.reference_definition_ids.insert(
+            GtReferenceId("module".into(), (2, 9).into()),
+            GtDefinitionId("module".into(), "Model".into()),
+        );
+        let mut context = Rst::convert_context_with_resolve(resolve);
         assert_ron_snapshot!(
             GtObject {
                 span: (1, 8).into(),
@@ -442,10 +446,6 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         id: GtReferenceId("module".into(), (2, 9).into()),
-                        definition_id: GtReferenceDefinitionId::Resolved(GtDefinitionId(
-                            "module".into(),
-                            "Model".into()
-                        )),
                         identifier: GtIdentifier::new((0, 0).into(), "Model".into())
                     }
                     .into(),

@@ -31,7 +31,7 @@ mod tests {
         let mut context = PyConvertContext::default();
         context.push_defined(&"Name".into());
         assert_ron_snapshot!(
-            convert_node_with(Gt::reference("Name"), &mut context),
+            convert_node_with(Gt::reference_anon("Name"), &mut context),
             @r#"
         PyReference(
           identifier: PyIdentifier("Name"),
@@ -44,7 +44,7 @@ mod tests {
     #[test]
     fn test_convert_reference_forward() {
         assert_ron_snapshot!(
-            convert_node(Gt::reference("Name")),
+            convert_node(Gt::reference_anon("Name")),
             @r#"
         PyReference(
           identifier: PyIdentifier("Name"),
@@ -59,7 +59,7 @@ mod tests {
         let mut context = PyConvertContext::default();
 
         assert_ron_snapshot!(
-            convert_node_with(Gt::inline_import("./path/to/module", "Name"), &mut context),
+            convert_node_with(Gt::inline_import_anon("./path/to/module", "Name"), &mut context),
             @r#"
         PyReference(
           identifier: PyIdentifier("Name"),

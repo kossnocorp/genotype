@@ -105,7 +105,7 @@ mod tests {
                                 Gt::property("book", GtDescriptor::Alias(Box::new(
                                     Gt::alias("Book", Gt::object("Book", vec![
                                         Gt::property("title", Gt::primitive_string()),
-                                        Gt::property("author", Gt::reference("Author")),
+                                        Gt::property("author", Gt::reference_anon("Author")),
                                     ])),
                                 ))),
                             ])),
@@ -240,11 +240,11 @@ mod tests {
                     vec_into![
                         Gt::alias(
                             "User",
-                            Gt::inline_import("./schemas", "UserSchema")
+                            Gt::inline_import_anon("./schemas", "UserSchema")
                         ),
                         Gt::alias(
                             "UserId",
-                            Gt::inline_import("./ids", "Id")
+                            Gt::inline_import_anon("./ids", "Id")
                         ),
                     ]
                 ),
@@ -299,11 +299,11 @@ mod tests {
                     vec_into![
                         Gt::alias(
                             "User",
-                            Gt::inline_import("./schemas", "UserSchema")
+                            Gt::inline_import_anon("./schemas", "UserSchema")
                         ),
                         Gt::alias(
                             "UserId",
-                            Gt::inline_import("./ids", "Id")
+                            Gt::inline_import_anon("./ids", "Id")
                         ),
                     ]
                 ),
@@ -359,12 +359,12 @@ mod tests {
                 // Qwe -> Asd
                 Gt::alias(
                     "Qwe",
-                    Gt::object("Qwe", vec![Gt::property("asd", Gt::reference("Asd"))]),
+                    Gt::object("Qwe", vec![Gt::property("asd", Gt::reference_anon("Asd"))]),
                 ),
                 // Asd -> Zxc
                 Gt::alias(
                     "Asd",
-                    Gt::object("Asd", vec![Gt::property("zxc", Gt::reference("Zxc"))]),
+                    Gt::object("Asd", vec![Gt::property("zxc", Gt::reference_anon("Zxc"))]),
                 ),
                 // Zxc -> <nothing>
                 Gt::alias("Zxc", Gt::primitive_string()),
@@ -447,14 +447,14 @@ mod tests {
                 // Bar -> Foo
                 Gt::alias(
                     "Bar",
-                    Gt::object("Bar", vec![Gt::property("foo", Gt::reference("Foo"))]),
+                    Gt::object("Bar", vec![Gt::property("foo", Gt::reference_anon("Foo"))]),
                 ),
                 // Baz -> Foo
-                Gt::alias("Baz", Gt::reference("Foo")),
+                Gt::alias("Baz", Gt::reference_anon("Foo")),
                 // Foo -> Bar
                 Gt::alias(
                     "Foo",
-                    Gt::object("Foo", vec![Gt::property("bar", Gt::reference("Bar"))]),
+                    Gt::object("Foo", vec![Gt::property("bar", Gt::reference_anon("Bar"))]),
                 ),
             ],
         );
@@ -540,9 +540,9 @@ mod tests {
                 Gt::alias(
                     "JsonAny",
                     Gt::union(vec![
-                        Gt::reference("JsonArray").into(),
-                        Gt::reference("JsonObject").into(),
-                        Gt::reference("JsonProperty").into(),
+                        Gt::reference_anon("JsonArray").into(),
+                        Gt::reference_anon("JsonObject").into(),
+                        Gt::reference_anon("JsonProperty").into(),
                     ]),
                 ),
                 // JsonArray -> JsonAny
@@ -550,7 +550,7 @@ mod tests {
                     "JsonArray",
                     Gt::object(
                         "JsonArray",
-                        vec![Gt::property("descriptor", Gt::reference("JsonAny"))],
+                        vec![Gt::property("descriptor", Gt::reference_anon("JsonAny"))],
                     ),
                 ),
                 // JsonObject -> JsonProperty
@@ -560,7 +560,7 @@ mod tests {
                         "JsonObject",
                         vec![Gt::property(
                             "properties",
-                            Gt::array(Gt::reference("JsonProperty")),
+                            Gt::array(Gt::reference_anon("JsonProperty")),
                         )],
                     ),
                 ),
@@ -569,7 +569,7 @@ mod tests {
                     "JsonProperty",
                     Gt::object(
                         "JsonProperty",
-                        vec![Gt::property("descriptor", Gt::reference("JsonAny"))],
+                        vec![Gt::property("descriptor", Gt::reference_anon("JsonAny"))],
                     ),
                 ),
             ],

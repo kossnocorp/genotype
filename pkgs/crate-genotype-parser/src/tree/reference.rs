@@ -8,7 +8,6 @@ pub struct GtReference {
     #[visit]
     pub attributes: Vec<GtAttribute>,
     pub id: GtReferenceId,
-    pub definition_id: GtReferenceDefinitionId,
     #[visit]
     pub identifier: GtIdentifier,
 }
@@ -26,7 +25,6 @@ impl GtReference {
             doc,
             attributes,
             id: GtReferenceId(context.module_id.clone(), span),
-            definition_id: GtReferenceDefinitionId::Unresolved,
             identifier,
         })
     }
@@ -103,7 +101,6 @@ mod tests {
             ),
           ],
           id: GtReferenceId(GtModuleId("module"), GtSpan(0, 5)),
-          definition_id: Unresolved,
           identifier: GtIdentifier(GtSpan(0, 5), "Hello"),
         )
         "#

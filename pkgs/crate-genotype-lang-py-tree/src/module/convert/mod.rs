@@ -166,7 +166,7 @@ mod tests {
                                                         (0, 0).into(),
                                                         "author".into()
                                                     ),
-                                                    descriptor: Gt::reference("Author").into(),
+                                                    descriptor: Gt::reference_anon("Author").into(),
                                                     required: true,
                                                 }
                                             ]
@@ -333,8 +333,8 @@ mod tests {
                             attributes: vec![],
                             name: GtIdentifier::new((0, 0).into(), "Message".into()),
                             descriptor: Gt::descriptor(Gt::union(vec_into![
-                                Gt::reference("DM"),
-                                Gt::reference("Comment")
+                                Gt::reference_anon("DM"),
+                                Gt::reference_anon("Comment")
                             ]))
                         },
                         GtAlias {

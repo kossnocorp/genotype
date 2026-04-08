@@ -103,9 +103,6 @@ pub use record_key::*;
 pub mod reference;
 pub use reference::*;
 
-pub mod reference_definition_id;
-pub use reference_definition_id::*;
-
 pub mod reference_id;
 pub use reference_id::*;
 

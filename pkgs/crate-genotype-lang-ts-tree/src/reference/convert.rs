@@ -15,7 +15,7 @@ mod tests {
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
-            convert_node(Gt::reference("Name")),
+            convert_node(Gt::reference_anon("Name")),
             @r#"
         TsReference(
           identifier: TsIdentifier("Name"),

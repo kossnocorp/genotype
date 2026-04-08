@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::prelude::internal::*;
 
 pub use genotype_test::*;
@@ -31,10 +33,26 @@ impl Rst {
         RsConvertContext::empty("module".into())
     }
 
-    pub fn convert_context_with_parent(parent_name: &str) -> RsConvertContext {
-        let mut context = Self::convert_context();
-        context.enter_parent(RsContextParent::Alias(parent_name.into()));
-        context
+    pub fn convert_context_with(
+        path_module_ids: Vec<(GtPathModuleId, GtModuleId)>,
+        reference_definition_ids: Vec<(GtReferenceId, GtDefinitionId)>,
+    ) -> RsConvertContext {
+        RsConvertContext::new(
+            "module".into(),
+            Self::convert_resolve(path_module_ids, reference_definition_ids),
+            Default::default(),
+            Default::default(),
+        )
+    }
+
+    pub fn convert_resolve(
+        path_module_ids: Vec<(GtPathModuleId, GtModuleId)>,
+        reference_definition_ids: Vec<(GtReferenceId, GtDefinitionId)>,
+    ) -> RsConvertResolve {
+        let mut resolve = RsConvertResolve::default();
+        resolve.path_module_ids = HashMap::from_iter(path_module_ids.into_iter());
+        resolve.reference_definition_ids = HashMap::from_iter(reference_definition_ids.into_iter());
+        resolve
     }
 
     pub fn convert_context_with_resolve(resolve: RsConvertResolve) -> RsConvertContext {
@@ -44,5 +62,9 @@ impl Rst {
             Default::default(),
             Default::default(),
         )
+    }
+
+    pub fn context_parent(name: &str) -> RsContextParent {
+        RsContextParent::Alias(name.into())
     }
 }

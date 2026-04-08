@@ -41,7 +41,6 @@ mod tests {
                     doc: None,
                     attributes: vec![],
                     id: GtReferenceId("module".into(), (3, 8).into()),
-                    definition_id: GtReferenceDefinitionId::Unresolved,
                     identifier: GtIdentifier::new((3, 8).into(), "Hello".into()),
                 },
             }

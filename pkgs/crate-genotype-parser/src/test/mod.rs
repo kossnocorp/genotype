@@ -221,41 +221,63 @@ impl Gt {
         GtDefinitionId("module".into(), name.into())
     }
 
-    pub fn reference_definition_id(name: &str) -> GtReferenceDefinitionId {
-        GtReferenceDefinitionId::Resolved(Self::definition_id(name))
+    pub fn reference_id<Span>(span: Span) -> GtReferenceId
+    where
+        Span: Into<GtSpan>,
+    {
+        GtReferenceId("module".into(), span.into())
     }
 
-    pub fn reference_id() -> GtReferenceId {
-        GtReferenceId("module".into(), (0, 0).into())
+    pub fn reference_anon(name: &str) -> GtReference {
+        Gt::reference(name, (0, 0))
     }
 
-    pub fn reference(name: &str) -> GtReference {
+    pub fn reference<Span>(name: &str, span: Span) -> GtReference
+    where
+        Span: Into<GtSpan> + Clone,
+    {
         GtReference {
-            span: (0, 0).into(),
+            span: span.clone().into(),
             doc: None,
             attributes: vec![],
-            id: Self::reference_id(),
-            definition_id: Self::reference_definition_id(name),
+            id: Self::reference_id(span),
             identifier: Self::identifier(name),
         }
     }
 
-    pub fn inline_import(path: &str, name: &str) -> GtInlineImport {
+    pub fn inline_import_anon(path: &str, name: &str) -> GtInlineImport {
+        Self::inline_import(path, name, (0, 0))
+    }
+
+    pub fn inline_import<Span>(path: &str, name: &str, span: Span) -> GtInlineImport
+    where
+        Span: Into<GtSpan> + Clone,
+    {
         GtInlineImport {
-            span: (0, 0).into(),
+            span: span.clone().into(),
             doc: None,
             attributes: vec![],
-            path: Self::path(path),
+            path: Self::path(path, span),
             name: Self::identifier(name),
         }
     }
 
-    pub fn path(path: &str) -> GtPath {
-        GtPath::new((0, 0).into(), Self::path_module_id(), path.into())
+    pub fn path_anon(path: &str) -> GtPath {
+        Self::path(path, (0, 0))
     }
 
-    pub fn path_module_id() -> GtPathModuleId {
-        GtPathModuleId::new((0, 0).into(), "module".into())
+    pub fn path<Span>(path: &str, span: Span) -> GtPath
+    where
+        Span: Into<GtSpan> + Clone,
+    {
+        GtPath::new(span.clone().into(), Self::path_module_id(span), path.into())
+    }
+
+    pub fn path_module_id<Span>(span: Span) -> GtPathModuleId
+    where
+        Span: Into<GtSpan>,
+    {
+        GtPathModuleId::new(span.into(), "module".into())
     }
 
     pub fn object(name: &str, properties: Vec<GtProperty>) -> GtObject {
@@ -491,7 +513,7 @@ impl Gt {
     pub fn import(path: &str, reference: GtImportReference) -> GtImport {
         GtImport {
             span: (0, 0).into(),
-            path: Self::path(path),
+            path: Self::path_anon(path),
             reference,
         }
     }

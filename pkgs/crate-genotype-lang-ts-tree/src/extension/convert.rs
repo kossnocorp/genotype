@@ -19,7 +19,7 @@ mod tests {
         assert_ron_snapshot!(
             convert_node(GtExtension {
                 span: (0, 0).into(),
-                reference: Gt::reference("Name"),
+                reference: Gt::reference_anon("Name"),
             }),
             @r#"
         TsExtension(

@@ -48,6 +48,7 @@ impl GtProjectModule {
         }
 
         module_resolve.definitions = visitor.drain_definitions();
+        module_resolve.reference_definition_ids = visitor.get_reference_definition_ids();
 
         Ok(GtProjectModule {
             path: parse.0,

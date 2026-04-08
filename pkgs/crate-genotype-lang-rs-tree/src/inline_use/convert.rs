@@ -14,15 +14,13 @@ mod tests {
 
     #[test]
     fn test_convert() {
-        let mut resolve = RsConvertResolve::default();
-        resolve.path_module_ids.insert(
-            GtPathModuleId::new((0, 0).into(), "module".into()),
-            "module/path".into(),
+        let mut context = Rst::convert_context_with(
+            vec![(Gt::path_module_id((0, 0)), "module/path".into())],
+            vec![],
         );
-        let mut context = Rst::convert_context_with_resolve(resolve);
         assert_ron_snapshot!(
             convert_node_with(
-                Gt::inline_import("./path/to/module", "Name"),
+                Gt::inline_import_anon("./path/to/module", "Name"),
                 &mut context
             ),
             @r#"

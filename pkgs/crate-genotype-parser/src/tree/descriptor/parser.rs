@@ -304,7 +304,6 @@ mod tests {
             ),
           ],
           id: GtReferenceId(GtModuleId("module"), GtSpan(27, 32)),
-          definition_id: Unresolved,
           identifier: GtIdentifier(GtSpan(27, 32), "Hello"),
         ))
         "#

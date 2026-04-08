@@ -102,7 +102,7 @@ mod tests {
     fn test_convert_inline_import() {
         assert_ron_snapshot!(
             convert_node(Gt::descriptor(
-                Gt::inline_import("./path/to/module", "Name")
+                Gt::inline_import_anon("./path/to/module", "Name")
             )),
             @r#"
         InlineImport(TsInlineImport(
@@ -149,7 +149,7 @@ mod tests {
             convert_node(Gt::descriptor(GtObject {
                 extensions: vec![GtExtension {
                     span: (0, 0).into(),
-                    reference: Gt::reference("Good").into()
+                    reference: Gt::reference_anon("Good").into()
                 }],
                 ..Gt::object("Book", vec![
                     Gt::property("title", Gt::primitive_string()),
@@ -189,7 +189,7 @@ mod tests {
     #[test]
     fn test_convert_reference() {
         assert_ron_snapshot!(
-            convert_node(Gt::descriptor(Gt::reference("Name"))),
+            convert_node(Gt::descriptor(Gt::reference_anon("Name"))),
             @r#"
         Reference(TsReference(
           identifier: TsIdentifier("Name"),

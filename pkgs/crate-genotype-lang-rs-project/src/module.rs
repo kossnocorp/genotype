@@ -92,6 +92,13 @@ impl GtlProjectModule<RsConfig> for RsProjectModule {
                 .insert(path.id.clone(), module_path.clone().into());
         });
 
+        convert_resolve.reference_definition_ids = module
+            .resolve
+            .reference_definition_ids
+            .iter()
+            .map(|(reference_id, definition_id)| (reference_id.clone(), definition_id.clone()))
+            .collect();
+
         let definitions = module.resolve.definitions.clone();
         let resolve = RspModuleResolve { definitions };
 

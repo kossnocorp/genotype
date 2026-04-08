@@ -181,6 +181,7 @@ mod tests {
                 paths: {},
                 identifiers: {},
                 definitions: {},
+                reference_definition_ids: {},
               ),
               source_code: NamedSource(
                 name: "author.type",
@@ -244,7 +245,6 @@ mod tests {
                             doc: None,
                             attributes: [],
                             id: GtReferenceId(GtModuleId("book"), GtSpan(56, 62)),
-                            definition_id: Resolved(GtDefinitionId(GtModuleId("author"), "Author")),
                             identifier: GtIdentifier(GtSpan(56, 62), "Author"),
                           )),
                           required: true,
@@ -284,6 +284,9 @@ mod tests {
                     ],
                     deps: [],
                   ),
+                },
+                reference_definition_ids: {
+                  GtReferenceId(GtModuleId("book"), GtSpan(56, 62)): GtDefinitionId(GtModuleId("author"), "Author"),
                 },
               ),
               source_code: NamedSource(
@@ -360,7 +363,6 @@ mod tests {
                               doc: None,
                               attributes: [],
                               id: GtReferenceId(GtModuleId("order"), GtSpan(57, 61)),
-                              definition_id: Resolved(GtDefinitionId(GtModuleId("book"), "Book")),
                               identifier: GtIdentifier(GtSpan(57, 61), "Book"),
                             )),
                           )),
@@ -409,6 +411,9 @@ mod tests {
                     ],
                     deps: [],
                   ),
+                },
+                reference_definition_ids: {
+                  GtReferenceId(GtModuleId("order"), GtSpan(57, 61)): GtDefinitionId(GtModuleId("book"), "Book"),
                 },
               ),
               source_code: NamedSource(
@@ -472,6 +477,7 @@ mod tests {
                 paths: {},
                 identifiers: {},
                 definitions: {},
+                reference_definition_ids: {},
               ),
               source_code: NamedSource(
                 name: "user.type",
@@ -572,6 +578,7 @@ mod tests {
                 paths: {},
                 identifiers: {},
                 definitions: {},
+                reference_definition_ids: {},
               ),
               source_code: NamedSource(
                 name: "author.type",
@@ -635,7 +642,6 @@ mod tests {
                             doc: None,
                             attributes: [],
                             id: GtReferenceId(GtModuleId("book"), GtSpan(56, 62)),
-                            definition_id: Resolved(GtDefinitionId(GtModuleId("author"), "Author")),
                             identifier: GtIdentifier(GtSpan(56, 62), "Author"),
                           )),
                           required: true,
@@ -675,6 +681,9 @@ mod tests {
                     ],
                     deps: [],
                   ),
+                },
+                reference_definition_ids: {
+                  GtReferenceId(GtModuleId("book"), GtSpan(56, 62)): GtDefinitionId(GtModuleId("author"), "Author"),
                 },
               ),
               source_code: NamedSource(
@@ -751,7 +760,6 @@ mod tests {
                               doc: None,
                               attributes: [],
                               id: GtReferenceId(GtModuleId("order"), GtSpan(57, 61)),
-                              definition_id: Resolved(GtDefinitionId(GtModuleId("book"), "Book")),
                               identifier: GtIdentifier(GtSpan(57, 61), "Book"),
                             )),
                           )),
@@ -800,6 +808,9 @@ mod tests {
                     ],
                     deps: [],
                   ),
+                },
+                reference_definition_ids: {
+                  GtReferenceId(GtModuleId("order"), GtSpan(57, 61)): GtDefinitionId(GtModuleId("book"), "Book"),
                 },
               ),
               source_code: NamedSource(
@@ -863,6 +874,7 @@ mod tests {
                 paths: {},
                 identifiers: {},
                 definitions: {},
+                reference_definition_ids: {},
               ),
               source_code: NamedSource(
                 name: "user.type",
@@ -1071,6 +1083,7 @@ mod tests {
                 paths: {},
                 identifiers: {},
                 definitions: {},
+                reference_definition_ids: {},
               ),
               source_code: NamedSource(
                 name: "anonymous.type",

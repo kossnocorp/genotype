@@ -9,6 +9,8 @@ pub struct GtpModuleResolve {
     pub identifiers: IndexMap<GtIdentifier, GtpModuleIdentifierResolve>,
     /// Definitions resolve.
     pub definitions: IndexMap<GtDefinitionId, GtProjectModuleDefinitionResolve>,
+    /// Reference id to definition id resolve.
+    pub reference_definition_ids: IndexMap<GtReferenceId, GtDefinitionId>,
 }
 
 impl GtpModuleResolve {
@@ -133,6 +135,7 @@ impl GtpModuleResolve {
             paths,
             identifiers,
             definitions: Default::default(),
+            reference_definition_ids: Default::default(),
         })
     }
 }
