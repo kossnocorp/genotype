@@ -8,6 +8,8 @@ node_modules/
 .pnpm-store
 # Python
 .venv
+# Cloudflare
+.wrangler/
 # Temp
 /tmp/
 # Secrets

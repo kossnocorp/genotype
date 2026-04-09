@@ -1,5 +1,16 @@
 [tasks.dev]
 run = "pnpm exec astro dev --host 0.0.0.0"
+depends = "gen/types"
 
 [tasks.build]
 run = "pnpm exec astro build"
+depends = "gen/types"
+
+[tasks.deploy]
+run = "pnpm exec wrangler deploy"
+depends = "build"
+
+[tasks."gen/types"]
+run = "pnpm exec wrangler types"
+sources = ["wrangler.toml"]
+outputs = ["worker-configuration.d.ts"]
