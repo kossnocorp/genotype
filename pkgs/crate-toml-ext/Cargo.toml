@@ -3,7 +3,10 @@ name = "toml_ext"
 version = "0.1.0"
 edition = "2024"
 description = "TOML & TOML Edit extensions"
+authors = ["Sasha Koss <koss@nocorp.me>"]
 license = "MIT"
+readme = "README.md"
+repository = "https://github.com/kossnocorp/genotype/tree/main/pkgs/crate-toml-ext"
 
 [dependencies]
 thiserror = "1.0.64"
