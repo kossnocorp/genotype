@@ -1,5 +1,5 @@
-const { join } = require("path");
-const { existsSync } = require("fs");
+const { join } = require("node:path");
+const { existsSync } = require("node:fs");
 
 module.exports.getBinPath = function getBinPath(contextPath = __dirname) {
   const variation = `${process.platform}-${process.arch}`;

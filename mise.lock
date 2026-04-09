@@ -107,6 +107,10 @@ url = "https://github.com/orhun/git-cliff/releases/download/v2.12.0/git-cliff-2.
 checksum = "sha256:f2b8c692d9488c3313d7786e2099976151c10fd8f76580b12d045bb9683a8379"
 url = "https://github.com/orhun/git-cliff/releases/download/v2.12.0/git-cliff-2.12.0-x86_64-pc-windows-msvc.zip"
 
+[[tools.jaq]]
+version = "3.0.0"
+backend = "aqua:01mf02/jaq"
+
 [[tools.node]]
 version = "24.14.1"
 backend = "core:node"

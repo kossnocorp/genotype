@@ -4,11 +4,13 @@ sources = ["./../../examples/02-syntax/*.type"]
 outputs = ["./tests/syntax/*.type"]
 
 [tasks.build]
-run = "pnpm exec tsc"
+run = "./scripts/build.sh"
+
+[tasks."build/package"]
+run = "./scripts/build-package.sh"
 
 [tasks.publish]
-run = "pnpx @vscode/vsce publish"
-depends = "build"
+run = "./scripts/publish.sh"
 
 [tasks.version]
 usage = '''

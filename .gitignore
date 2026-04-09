@@ -4,14 +4,13 @@
 /pkgs/*/examples/*/target/
 # Node.js
 node_modules/
-/tmp/
 .pnpm-store
 # Python
 .venv
 # Cloudflare
 .wrangler/
 # Temp
-/tmp/
+tmp/
 # Secrets
 .env
 .env.*

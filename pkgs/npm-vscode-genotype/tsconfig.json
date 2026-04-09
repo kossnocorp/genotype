@@ -3,9 +3,10 @@
     "module": "CommonJS",
     "target": "ES2024",
     "lib": ["ES2024"],
-    "outDir": "dist",
+    "outDir": "dist/dev",
     "rootDir": "src",
-    "sourceMap": true
+    "sourceMap": true,
+    "skipLibCheck": true
   },
   "include": ["src"],
   "exclude": ["node_modules"]

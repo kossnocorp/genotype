@@ -1,0 +1,16 @@
+{
+  "name": "genotype-tm-grammar",
+  "version": "0.1.0",
+  "description": "Genotype TextMate grammar file",
+  "authors": [
+    "Sasha Koss <koss@nocorp.me>"
+  ],
+  "files": [
+    "genotype.json",
+    "README.md"
+  ],
+  "exports": {
+    ".": "./genotype.json"
+  },
+  "license": "MIT"
+}
