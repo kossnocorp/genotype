@@ -1,5 +1,0 @@
----
-source: lang/py/codegen/src/lib.rs
-expression: "\"Hello\""
----
-Hello

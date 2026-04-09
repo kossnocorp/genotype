@@ -1,4 +1,4 @@
-# `genotype_lsp`
+# `genotype_json_converter`
 
 This is an internal crate of Genotype Programming Language. It is not intended to be used by external users.
 
