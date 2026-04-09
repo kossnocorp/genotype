@@ -127,3 +127,19 @@ depends = [
 
 [tasks."test/system/examples"]
 run = "./scripts/test-examples.sh"
+
+[tasks.publish]
+run = [{task="publish/cargo"}]
+
+[tasks."publish/cargo"]
+run = '''
+cargo release publish \
+  --exclude litty \
+  --exclude litty_macro \
+  --exclude litty_macro_tests \
+  --exclude toml_ext \
+  --exclude genotype_runtime \
+  --exclude genotype_json_types \
+  --exclude genotype_test \
+  --execute
+'''

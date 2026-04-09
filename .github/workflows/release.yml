@@ -1,0 +1,99 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    name: Build Binaries
+    uses: ./.github/workflows/ci-build.yml
+    with:
+      artifact_suffix: ${{ github.ref_name }}
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      attestations: write
+      contents: write
+      id-token: write
+
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v6
+        with:
+          pattern: "*-${{ github.ref_name }}"
+          path: downloaded-artifacts
+
+      - name: Collect Release Assets
+        shell: bash
+        run: |
+          mkdir -p release-assets
+          for artifact_dir in downloaded-artifacts/*; do
+            [ -d "$artifact_dir" ] || continue
+            artifact_name="$(basename "$artifact_dir")"
+            for file in "$artifact_dir"/*; do
+              [ -f "$file" ] || continue
+              cp "$file" "release-assets/$artifact_name"
+            done
+          done
+
+      - name: Attest Release Files
+        id: attest
+        uses: actions/attest@v4
+        with:
+          subject-path: release-assets/*
+
+      - name: Create GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          notes="$(git-cliff --tag "$TAG" --latest --strip all)"
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release edit "$TAG" --notes "$notes"
+          else
+            gh release create "$TAG" --notes "$notes" --verify-tag
+          fi
+
+      - name: Upload Release Files
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release upload "$TAG" \
+            release-assets/* \
+            "${{ steps.attest.outputs.bundle-path }}" \
+            --clobber
+
+  publish-cargo:
+    name: Publish Rust Crates
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v6
+
+      - name: Set Up Dev Env
+        uses: ./.github/actions/setup
+        with:
+          target-key: publish-cargo
+
+      - name: Publish Crates
+        run: mise :publish/cargo
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}

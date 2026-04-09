@@ -2,6 +2,11 @@ name: Build
 on:
   workflow_dispatch:
   workflow_call:
+    inputs:
+      artifact_suffix:
+        description: Suffix appended to uploaded artifact names. Defaults to `github.sha` if not provided.
+        required: false
+        type: string
 
 jobs:
   build:
@@ -86,10 +91,10 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           path: target/${{ matrix.target }}/release/${{ matrix.cli-name }}
-          name: ${{ matrix.cli-name }}-${{ matrix.target }}-${{ github.sha }}
+          name: ${{ matrix.cli-name }}-${{ matrix.target }}-${{ inputs.artifact_suffix || github.sha }}
 
       - name: Upload LSP Binaries
         uses: actions/upload-artifact@v6
         with:
           path: target/${{ matrix.target }}/release/${{ matrix.lsp-name }}
-          name: ${{ matrix.lsp-name }}-${{ matrix.target }}-${{ github.sha }}
+          name: ${{ matrix.lsp-name }}-${{ matrix.target }}-${{ inputs.artifact_suffix || github.sha }}
