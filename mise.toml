@@ -141,6 +141,9 @@ cargo release publish \
   --exclude genotype_runtime \
   --exclude genotype_json_types \
   --exclude genotype_test \
+  --no-tag \
+  --no-push \
+  --no-confirm \
   --execute
 '''
 
@@ -157,5 +160,6 @@ cargo release version {{usage.version}} \
   --exclude genotype_runtime \
   --exclude genotype_json_types \
   --exclude genotype_test \
+  --no-confirm \
   --execute
 '''

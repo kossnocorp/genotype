@@ -36,7 +36,6 @@ runs:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
-          ~/.cargo/bin
           ~/.cargo/binstall
           ~/.cargo/env
         key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
