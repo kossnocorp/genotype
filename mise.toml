@@ -29,6 +29,8 @@ watchexec = "latest"
 opencode = "latest"
 shfmt = "latest"
 gh = "latest"
+git-cliff = "latest"
+fnox = "latest"
 
 [settings]
 lockfile = true

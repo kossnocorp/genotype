@@ -1,0 +1,62 @@
+[changelog]
+body = """
+{%- macro remote_url() -%}
+  https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}
+{%- endmacro -%}
+
+{% macro group_section(label, commits) %}
+    ### {{ label }}
+    {% for commit in commits %}
+        - {% if commit.scope %}*({{ commit.scope }})* {% endif %}\
+            {% if commit.breaking %}[**breaking**] {% endif %}\
+            {{ commit.message | upper_first }}
+            ([{{ commit.id | truncate(length=7, end="") }}]({{ self::remote_url() }}/commit/{{ commit.id }}))\
+    {% endfor %}
+{% endmacro input %}
+
+{% if version %}\
+    ## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else %}\
+    ## [unreleased]
+{% endif %}\
+{% for group, commits in commits | group_by(attribute="group") %}
+    {% set group_label = group | striptags | trim | upper_first %}\
+    {% if group_label != "Chores" %}\
+        {{ self::group_section(label=group_label, commits=commits) }}
+    {% else %}\
+        <details>
+
+        <summary>Show internal changes</summary>
+
+        {{ self::group_section(label=group_label, commits=commits) }}
+
+        </details>
+    {% endif %}\
+{% endfor %}
+
+"""
+trim = true
+render_always = true
+postprocessors = [
+    { pattern = '<REPO>', replace = "https://github.com/kossnocorp/genotype" },
+]
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+commit_preprocessors = [
+    { pattern = '#([0-9]+)', replace = "[#${1}](<REPO>/issues/${1})"},
+]
+commit_parsers = [
+    { message = "^feat\\(.+\\)?!?:", group = "<!-- 0 --> Features" },
+    { message = "^fix\\(.+\\)?!?:", group = "<!-- 1 --> Bug Fixes" },
+    { message = "^doc\\(.+\\)?!?:", group = "<!-- 3 --> Documentation" },
+    { message = "^perf\\(.+\\)?!?:", group = "<!-- 4 --> Performance" },
+    { message = "^chore:", group = "<!-- 5 --> Chores" },
+]
+topo_order_commits = true
+sort_commits = "oldest"
+
+[remote.github]
+owner = "kossnocorp"
+repo = "genotype"
