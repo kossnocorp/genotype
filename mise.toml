@@ -143,3 +143,19 @@ cargo release publish \
   --exclude genotype_test \
   --execute
 '''
+
+[tasks."version/cargo"]
+usage = '''
+arg "<version>" help="Version to apply"
+'''
+run = '''
+cargo release version {{usage.version}} \
+  --exclude litty \
+  --exclude litty_macro \
+  --exclude litty_macro_tests \
+  --exclude toml_ext \
+  --exclude genotype_runtime \
+  --exclude genotype_json_types \
+  --exclude genotype_test \
+  --execute
+'''
