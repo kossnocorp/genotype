@@ -9,6 +9,7 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "Genotype",
+      pagefind: false,
       social: [
         {
           icon: "github",
