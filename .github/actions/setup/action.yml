@@ -81,6 +81,14 @@ runs:
     - name: Install Rust Components
       run: |
           export active_rust_toolchain=$(rustup show active-toolchain | cut -d' ' -f1)
+          # NOTE: Workaround for "error: failed to install component: 'rustfmt-preview-x86_64-unknown-linux-gnu', detected conflict: 'bin/cargo-fmt'"
+          active_rust_bin_dir=$(dirname "$(rustup which rustc --toolchain "${active_rust_toolchain}")")
+
+          rm -f "${active_rust_bin_dir}/cargo-fmt"
+          rm -f "${active_rust_bin_dir}/rustfmt"
+          rm -f ~/.cargo/bin/cargo-fmt
+          rm -f ~/.cargo/bin/rustfmt
+
           rustup component add --toolchain ${active_rust_toolchain} rustfmt clippy
       shell: bash
 
