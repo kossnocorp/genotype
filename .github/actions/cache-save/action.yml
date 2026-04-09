@@ -1,4 +1,5 @@
 name: Save Cache
+description: "Save caches for the development environment."
 
 inputs:
   target-key:
@@ -9,19 +10,51 @@ runs:
   using: "composite"
 
   steps:
+    - name: Lookup mise State (Tasks) Cache
+      id: lookup-mise
+      uses: actions/cache/restore@v5
+      with:
+        path: ~/.local/state/mise
+        key: mise-state-${{ runner.os }}-${{ hashFiles('**/mise.toml') }}-${{ github.sha }}
+        lookup-only: true
+
     - name: Save mise State (Tasks)
+      if: ${{ steps.lookup-mise.outputs.cache-hit != 'true' }}
       uses: actions/cache/save@v5
       with:
         path: ~/.local/state/mise
-        key: mise-state-${{ runner.os }}-${{ github.sha }}
+        key: mise-state-${{ runner.os }}-${{ hashFiles('**/mise.toml') }}-${{ github.sha }}
+
+    - name: Lookup rustup Cache
+      id: lookup-rustup
+      uses: actions/cache/restore@v5
+      with:
+        path: ~/.rustup
+        key: rustup-${{ runner.os }}-${{ hashFiles('**/rust-toolchain.toml') }}
+        lookup-only: true
 
     - name: Save rustup Cache
+      if: ${{ steps.lookup-rustup.outputs.cache-hit != 'true' }}
       uses: actions/cache/save@v5
       with:
         path: ~/.rustup
         key: rustup-${{ runner.os }}-${{ hashFiles('**/rust-toolchain.toml') }}
 
+    - name: Lookup Cargo Cache
+      id: lookup-cargo
+      uses: actions/cache/restore@v5
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          ~/.cargo/bin
+          ~/.cargo/binstall
+          ~/.cargo/env
+        key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+        lookup-only: true
+
     - name: Save Cargo Cache
+      if: ${{ steps.lookup-cargo.outputs.cache-hit != 'true' }}
       uses: actions/cache/save@v5
       with:
         path: |
@@ -30,7 +63,7 @@ runs:
           ~/.cargo/bin
           ~/.cargo/binstall
           ~/.cargo/env
-        key: cargo-${{ runner.os }}
+        key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
 
     - name: Save Target Cache
       uses: ./.github/actions/cache-save/target
@@ -42,15 +75,34 @@ runs:
       run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
       shell: bash
 
+    - name: Lookup pnpm Cache
+      id: lookup-pnpm
+      uses: actions/cache/restore@v5
+      with:
+        path: ${{ steps.pnpm-store.outputs.STORE_PATH }}
+        key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+        lookup-only: true
+
     - name: Save pnpm cache
+      if: ${{ steps.lookup-pnpm.outputs.cache-hit != 'true' }}
       uses: actions/cache/save@v5
       with:
-        path: |
-          ${{ steps.pnpm-store.outputs.STORE_PATH }}
-          node_modules
+        path: ${{ steps.pnpm-store.outputs.STORE_PATH }}
         key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
 
+    - name: Lookup uv Cache
+      id: lookup-uv
+      uses: actions/cache/restore@v5
+      with:
+        path: |
+          ~/.cache/uv
+          ~/.local/share/uv
+          .venv
+        key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+        lookup-only: true
+
     - name: Save uv Cache
+      if: ${{ steps.lookup-uv.outputs.cache-hit != 'true' }}
       uses: actions/cache/save@v5
       with:
         path: |

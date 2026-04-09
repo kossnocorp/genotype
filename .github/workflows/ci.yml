@@ -13,8 +13,6 @@ jobs:
     steps:
       - name: Git Checkout
         uses: actions/checkout@v6
-        with:
-          ref: ${{ inputs.sha || github.sha }}
 
       - name: Set Up Dev Env
         uses: ./.github/actions/setup
@@ -63,5 +61,3 @@ jobs:
     name: Build
     needs: qa
     uses: ./.github/workflows/ci-build.yml
-    with:
-      sha: ${{ github.event.pull_request.head.sha || github.sha }}

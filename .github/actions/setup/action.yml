@@ -1,4 +1,5 @@
 name: Set Up Dev Env
+description: "Set up development environment by installing dependencies and restoring caches."
 
 inputs:
   target-key:
@@ -16,15 +17,18 @@ runs:
       uses: actions/cache/restore@v5
       with:
         path: ~/.local/state/mise
-        key: mise-state-${{ runner.os }}-${{ github.sha }}
-        restore-keys: mise-state-${{ runner.os }}-
+        key: mise-state-${{ runner.os }}-${{ hashFiles('**/mise.toml') }}-${{ github.sha }}
+        restore-keys: |
+          mise-state-${{ runner.os }}-${{ hashFiles('**/mise.toml') }}-
+          mise-state-${{ runner.os }}-
 
     - name: Restore rustup Cache
       uses: actions/cache/restore@v5
       with:
         path: ~/.rustup
         key: rustup-${{ runner.os }}-${{ hashFiles('**/rust-toolchain.toml') }}
-        restore-keys: rustup-${{ runner.os }}-
+        restore-keys: |
+          rustup-${{ runner.os }}-
 
     - name: Restore Cargo Cache
       uses: actions/cache/restore@v5
@@ -35,15 +39,18 @@ runs:
           ~/.cargo/bin
           ~/.cargo/binstall
           ~/.cargo/env
-        key: cargo-${{ runner.os }}
-        restore-keys: cargo-${{ runner.os }}
+        key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          cargo-${{ runner.os }}-
 
     - name: Restore Target Cache
       uses: actions/cache/restore@v5
       with:
         path: target
-        key: target-${{ runner.os }}-${{ inputs.target-key }}
-        restore-keys: target-${{ runner.os }}-
+        key: target-${{ runner.os }}-${{ inputs.target-key }}-${{ github.sha }}
+        restore-keys: |
+          target-${{ runner.os }}-${{ inputs.target-key }}-
+          target-${{ runner.os }}-
 
     - name: Get pnpm Store Path
       id: pnpm-store
@@ -53,11 +60,10 @@ runs:
     - name: Restore pnpm Cache
       uses: actions/cache/restore@v5
       with:
-        path: |
-          ${{ steps.pnpm-store.outputs.STORE_PATH }}
-          node_modules
+        path: ${{ steps.pnpm-store.outputs.STORE_PATH }}
         key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-        restore-keys: pnpm-${{ runner.os }}-
+        restore-keys: |
+          pnpm-${{ runner.os }}-
 
     - name: Restore uv Cache
       uses: actions/cache/restore@v5
@@ -67,7 +73,8 @@ runs:
           ~/.local/share/uv
           .venv
         key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
-        restore-keys: uv-${{ runner.os }}-
+        restore-keys: |
+          uv-${{ runner.os }}-
 
     # NOTE: This is workaround for mise action messing up with rustup state:
     # - https://github.com/jdx/mise-action/issues/184
