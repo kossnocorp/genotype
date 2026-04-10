@@ -1,7 +1,7 @@
 {
   "name": "genotype-website",
-  "type": "module",
   "version": "0.1.0",
+  "type": "module",
   "dependencies": {
     "@astrojs/cloudflare": "^13.1.8",
     "@astrojs/starlight": "^0.38.2",
@@ -13,6 +13,7 @@
     "wrangler": "^4.81.0"
   },
   "devDependencies": {
-    "@types/node": "^22.15.18"
+    "@types/node": "^22.15.18",
+    "genotype-tm-grammar": "workspace:*"
   }
 }
