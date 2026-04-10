@@ -10,8 +10,19 @@ runs:
   using: "composite"
 
   steps:
-    - name: Install mise and Tools
+    - name: Install mise
       uses: jdx/mise-action@v4
+      with:
+        cache: false
+        install: false
+
+    - name: Restore mise Cache
+      uses: actions/cache/restore@v5
+      with:
+        path: ~/.local/share/mise
+        key: mise-${{ runner.os }}-${{ hashFiles('**/mise.toml', '**/mise.lock') }}
+        restore-keys: |
+          mise-${{ runner.os }}-
 
     - name: Restore mise State (Tasks)
       uses: actions/cache/restore@v5
@@ -41,6 +52,14 @@ runs:
         key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: |
           cargo-${{ runner.os }}-
+
+    - name: Install Tools
+      run: |
+        mise trust --yes
+        mise install
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
 
     - name: Restore Target Cache
       uses: actions/cache/restore@v5
@@ -74,23 +93,6 @@ runs:
         key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
         restore-keys: |
           uv-${{ runner.os }}-
-
-    # NOTE: This is workaround for mise action messing up with rustup state:
-    # - https://github.com/jdx/mise-action/issues/184
-    # - https://github.com/jdx/mise-action/issues/215
-    - name: Install Rust Components
-      run: |
-          export active_rust_toolchain=$(rustup show active-toolchain | cut -d' ' -f1)
-          # NOTE: Workaround for "error: failed to install component: 'rustfmt-preview-x86_64-unknown-linux-gnu', detected conflict: 'bin/cargo-fmt'"
-          active_rust_bin_dir=$(dirname "$(rustup which rustc --toolchain "${active_rust_toolchain}")")
-
-          rm -f "${active_rust_bin_dir}/cargo-fmt"
-          rm -f "${active_rust_bin_dir}/rustfmt"
-          rm -f ~/.cargo/bin/cargo-fmt
-          rm -f ~/.cargo/bin/rustfmt
-
-          rustup component add --toolchain ${active_rust_toolchain} rustfmt clippy
-      shell: bash
 
     - name: Run Install
       run: mise :install

@@ -17,7 +17,7 @@ version = "0.9.103"
 backend = "cargo:cargo-nextest"
 
 [[tools."cargo:cargo-release"]]
-version = "0.25.22"
+version = "1.1.2"
 backend = "cargo:cargo-release"
 
 [[tools."cargo:just"]]
@@ -35,6 +35,41 @@ backend = "cargo:toml2json"
 [[tools.fnox]]
 version = "1.17.0"
 backend = "github:jdx/fnox"
+
+[tools.fnox."platforms.linux-arm64"]
+checksum = "sha256:f45d73a6b9f56eeb32ebefe07eb9419cba88d54a75649dc34aa4ae85048a7621"
+url = "https://github.com/jdx/fnox/releases/download/v1.17.0/fnox-aarch64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/jdx/fnox/releases/assets/369870183"
+
+[tools.fnox."platforms.linux-arm64-musl"]
+checksum = "sha256:f45d73a6b9f56eeb32ebefe07eb9419cba88d54a75649dc34aa4ae85048a7621"
+url = "https://github.com/jdx/fnox/releases/download/v1.17.0/fnox-aarch64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/jdx/fnox/releases/assets/369870183"
+
+[tools.fnox."platforms.linux-x64"]
+checksum = "sha256:91e94357c9a4554553f25855c96f32b3bc86cded724a7fd01dbbeb67f3cc8f4e"
+url = "https://github.com/jdx/fnox/releases/download/v1.17.0/fnox-x86_64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/jdx/fnox/releases/assets/369870197"
+
+[tools.fnox."platforms.linux-x64-musl"]
+checksum = "sha256:91e94357c9a4554553f25855c96f32b3bc86cded724a7fd01dbbeb67f3cc8f4e"
+url = "https://github.com/jdx/fnox/releases/download/v1.17.0/fnox-x86_64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/jdx/fnox/releases/assets/369870197"
+
+[tools.fnox."platforms.macos-arm64"]
+checksum = "sha256:623187eb62b15e46a76f1e47789bd626793cc8e40ccc221f023951274a0c8a3f"
+url = "https://github.com/jdx/fnox/releases/download/v1.17.0/fnox-aarch64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/jdx/fnox/releases/assets/369870186"
+
+[tools.fnox."platforms.macos-x64"]
+checksum = "sha256:6747eaa1d9f6f35f31939691d8864ae76ff293f2a5827bc2dfd66099e5cbbb56"
+url = "https://github.com/jdx/fnox/releases/download/v1.17.0/fnox-x86_64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/jdx/fnox/releases/assets/369870182"
+
+[tools.fnox."platforms.windows-x64"]
+checksum = "sha256:eb14fe5095ba6cfeea4376c41457ea9a3f4ef62237f6a441fb7352a6022a344d"
+url = "https://github.com/jdx/fnox/releases/download/v1.17.0/fnox-x86_64-pc-windows-msvc.zip"
+url_api = "https://api.github.com/repos/jdx/fnox/releases/assets/369870185"
 
 [[tools.gh]]
 version = "2.89.0"
@@ -111,6 +146,34 @@ url = "https://github.com/orhun/git-cliff/releases/download/v2.12.0/git-cliff-2.
 version = "3.0.0"
 backend = "aqua:01mf02/jaq"
 
+[tools.jaq."platforms.linux-arm64"]
+checksum = "sha256:774b2446b7bff9f020ec9078a81e5c55853e87944d16fbeed8bae68ed8d42c81"
+url = "https://github.com/01mf02/jaq/releases/download/v3.0.0/jaq-aarch64-unknown-linux-gnu"
+
+[tools.jaq."platforms.linux-arm64-musl"]
+checksum = "sha256:774b2446b7bff9f020ec9078a81e5c55853e87944d16fbeed8bae68ed8d42c81"
+url = "https://github.com/01mf02/jaq/releases/download/v3.0.0/jaq-aarch64-unknown-linux-gnu"
+
+[tools.jaq."platforms.linux-x64"]
+checksum = "sha256:5beeeadd874b0bc9e4fdacff00b4dc5f8fb1430a85b3734e2c7210085dd1be08"
+url = "https://github.com/01mf02/jaq/releases/download/v3.0.0/jaq-x86_64-unknown-linux-musl"
+
+[tools.jaq."platforms.linux-x64-musl"]
+checksum = "sha256:5beeeadd874b0bc9e4fdacff00b4dc5f8fb1430a85b3734e2c7210085dd1be08"
+url = "https://github.com/01mf02/jaq/releases/download/v3.0.0/jaq-x86_64-unknown-linux-musl"
+
+[tools.jaq."platforms.macos-arm64"]
+checksum = "sha256:61f666342a8d9569768ca69acefc28bacabfcfb2cf932d0717e50332f34302c5"
+url = "https://github.com/01mf02/jaq/releases/download/v3.0.0/jaq-aarch64-apple-darwin"
+
+[tools.jaq."platforms.macos-x64"]
+checksum = "sha256:361a9280910c9e4fda95cb1cb72b5f88ec2e2b0c8322cafbdc6c0aa6625e1a7d"
+url = "https://github.com/01mf02/jaq/releases/download/v3.0.0/jaq-x86_64-apple-darwin"
+
+[tools.jaq."platforms.windows-x64"]
+checksum = "sha256:07dfa5f20a9372ce96f26d5fbfdcedc4baad2162b487b3d980f35d0d0dce632f"
+url = "https://github.com/01mf02/jaq/releases/download/v3.0.0/jaq-x86_64-pc-windows-msvc.exe"
+
 [[tools.node]]
 version = "24.14.1"
 backend = "core:node"
@@ -142,38 +205,6 @@ url = "https://nodejs.org/dist/v24.14.1/node-v24.14.1-darwin-x64.tar.gz"
 [tools.node."platforms.windows-x64"]
 checksum = "sha256:6e50ce5498c0cebc20fd39ab3ff5df836ed2f8a31aa093cecad8497cff126d70"
 url = "https://nodejs.org/dist/v24.14.1/node-v24.14.1-win-x64.zip"
-
-[[tools.opencode]]
-version = "1.4.0"
-backend = "aqua:anomalyco/opencode"
-
-[tools.opencode."platforms.linux-arm64"]
-checksum = "sha256:2f5728ed47d8147da9163e4c10a83914131bf849bfc0f17590ab6d58b7d03ba3"
-url = "https://github.com/anomalyco/opencode/releases/download/v1.4.0/opencode-linux-arm64.tar.gz"
-
-[tools.opencode."platforms.linux-arm64-musl"]
-checksum = "sha256:2f5728ed47d8147da9163e4c10a83914131bf849bfc0f17590ab6d58b7d03ba3"
-url = "https://github.com/anomalyco/opencode/releases/download/v1.4.0/opencode-linux-arm64.tar.gz"
-
-[tools.opencode."platforms.linux-x64"]
-checksum = "sha256:5117eb08aa542d49b0149ba837d01c7ebc1d79ba332e8518859edc33c4eff2cf"
-url = "https://github.com/anomalyco/opencode/releases/download/v1.4.0/opencode-linux-x64.tar.gz"
-
-[tools.opencode."platforms.linux-x64-musl"]
-checksum = "sha256:5117eb08aa542d49b0149ba837d01c7ebc1d79ba332e8518859edc33c4eff2cf"
-url = "https://github.com/anomalyco/opencode/releases/download/v1.4.0/opencode-linux-x64.tar.gz"
-
-[tools.opencode."platforms.macos-arm64"]
-checksum = "sha256:be968e559051bb622f0b9fc628216670240b7e7441a11b0eb11f79a6f03239a5"
-url = "https://github.com/anomalyco/opencode/releases/download/v1.4.0/opencode-darwin-arm64.zip"
-
-[tools.opencode."platforms.macos-x64"]
-checksum = "sha256:fb2ab4b4995bcced575f19f90bb08cb657accdb90ebeec9f0cd182f02e1e9e0c"
-url = "https://github.com/anomalyco/opencode/releases/download/v1.4.0/opencode-darwin-x64.zip"
-
-[tools.opencode."platforms.windows-x64"]
-checksum = "sha256:378cb5fd511c90f4bdbb5a69c79d65c241e17d0f825d49b78a2cf6457d3a8e90"
-url = "https://github.com/anomalyco/opencode/releases/download/v1.4.0/opencode-windows-x64.zip"
 
 [[tools.oxfmt]]
 version = "0.40.0"

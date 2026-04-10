@@ -26,7 +26,6 @@ cargo-binstall = "latest"
 "cargo:cargo-insta" = "latest"
 "cargo:just-lsp" = "latest"
 watchexec = "latest"
-opencode = "latest"
 shfmt = "latest"
 gh = "latest"
 git-cliff = "latest"
@@ -41,8 +40,8 @@ idiomatic_version_file_enable_tools = ["rust"] # Use rust-toolchain.toml
 
 [env]
 _.file = "./.env"
-MISE_EXPERIMENTAL = true # Enable monorepo root support
 _.python.venv = { create = true, path = '.venv' }
+MISE_EXPERIMENTAL = true # Enable monorepo root support
 
 [tasks.install]
 depends = ["install/pnpm", "install/uv"]
@@ -58,19 +57,19 @@ run = "cargo build"
 
 [tasks.lint]
 depends = [
-   "lint/rust",
+  "lint/rust",
   # TODO: Add JS/Python linters
 ]
 
 [tasks."lint:fix"]
 depends = [
-   "lint/rust:fix",
+  "lint/rust:fix",
   # TODO: Add JS/Python linters
 ]
 
 [tasks."lint:watch"]
 depends = [
-   "lint/rust:watch",
+  "lint/rust:watch",
   # TODO: Add JS/Python linters
 ]
 
@@ -86,14 +85,14 @@ run = "watchexec -e rs,Cargo.toml,Cargo.lock -rc reset -- cargo clippy --all-tar
 
 [tasks.format]
 depends = [
-   "format/rust",
-   # TODO: Add JS/Python formatters
+  "format/rust",
+  # TODO: Add JS/Python formatters
 ]
 
 [tasks."format:check"]
 depends = [
-   "format/rust:check",
-   # TODO: Add JS/Python formatters
+  "format/rust:check",
+  # TODO: Add JS/Python formatters
 ]
 
 [tasks."format/rust"]
@@ -122,7 +121,7 @@ run = "watchexec -e rs,Cargo.toml,Cargo.lock -rc reset -- cargo nextest run --no
 
 [tasks."test/system"]
 depends = [
-  "test/system/examples"
+  "test/system/examples",
   # TODO: Add more system tests
 ]
 
@@ -130,7 +129,7 @@ depends = [
 run = "./scripts/test-examples.sh"
 
 [tasks.publish]
-run = [{task="publish/cargo"}]
+run = [{ task = "publish/cargo" }]
 
 [tasks."publish/cargo"]
 run = '''
@@ -142,10 +141,29 @@ cargo release publish \
   --exclude genotype_runtime \
   --exclude genotype_json_types \
   --exclude genotype_test \
-  --no-tag \
-  --no-push \
+  --workspace \
+  --all-features \
+  --no-verify \
   --no-confirm \
+  --allow-branch '*' \
   --execute
+'''
+
+[tasks."publish/cargo:dry"]
+run = '''
+cargo release publish \
+  --exclude litty \
+  --exclude litty_macro \
+  --exclude litty_macro_tests \
+  --exclude toml_ext \
+  --exclude genotype_runtime \
+  --exclude genotype_json_types \
+  --exclude genotype_test \
+  --workspace \
+  --all-features \
+  --no-verify \
+  --no-confirm \
+  --allow-branch '*'
 '''
 
 [tasks."version/cargo"]
@@ -154,13 +172,13 @@ arg "<version>" help="Version to apply"
 '''
 run = '''
 cargo release version {{usage.version}} \
+  --workspace \
   --exclude litty \
   --exclude litty_macro \
   --exclude litty_macro_tests \
   --exclude toml_ext \
   --exclude genotype_runtime \
   --exclude genotype_json_types \
-  --exclude genotype_test \
   --no-confirm \
   --execute
 '''

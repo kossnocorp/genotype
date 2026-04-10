@@ -20,4 +20,4 @@ petgraph = "0.8.3"
 [dev-dependencies]
 pretty_assertions = "1.4.1"
 insta = { version = "1.46.3", features = ["ron"] }
-genotype_test = { version = "0.15.0", path = "../crate-genotype-test" }
+genotype_test = { path = "../crate-genotype-test" }

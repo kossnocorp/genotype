@@ -19,4 +19,4 @@ serde = { version = "1.0.210", features = ["derive", "rc"] }
 [dev-dependencies]
 pretty_assertions = "1.4.1"
 insta = { version = "1.46.3", features = ["ron"] }
-genotype_test = { version = "0.15.0", path = "../crate-genotype-test" }
+genotype_test = { path = "../crate-genotype-test" }

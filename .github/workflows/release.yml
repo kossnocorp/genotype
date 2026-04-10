@@ -27,6 +27,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set Up Dev Env
+        uses: ./.github/actions/setup
+        with:
+          target-key: publish-cargo
+
       - name: Download Build Artifacts
         uses: actions/download-artifact@v6
         with:
@@ -59,7 +64,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
         run: |
-          notes="$(git-cliff --tag "$TAG" --latest --strip all)"
+          notes="$(git-cliff --latest --strip all --tag-pattern '^v\d+\.\d+\.\d+')"
           if gh release view "$TAG" > /dev/null 2>&1; then
             gh release edit "$TAG" --notes "$notes"
           else
@@ -87,11 +92,19 @@ jobs:
     steps:
       - name: Git Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
 
       - name: Set Up Dev Env
         uses: ./.github/actions/setup
         with:
           target-key: publish-cargo
+
+      - name: Clean Up Git State
+        shell: bash
+        run: |
+          git add .
+          git stash
 
       - name: Publish Crates
         run: mise :publish/cargo

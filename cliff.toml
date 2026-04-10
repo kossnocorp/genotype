@@ -37,22 +37,18 @@ body = """
 """
 trim = true
 render_always = true
-postprocessors = [
-    { pattern = '<REPO>', replace = "https://github.com/kossnocorp/genotype" },
-]
+postprocessors = [{ pattern = '<REPO>', replace = "https://github.com/kossnocorp/genotype" }]
 
 [git]
 conventional_commits = true
 filter_unconventional = true
-commit_preprocessors = [
-    { pattern = '#([0-9]+)', replace = "[#${1}](<REPO>/issues/${1})"},
-]
+commit_preprocessors = [{ pattern = '#([0-9]+)', replace = "[#${1}](<REPO>/issues/${1})" }]
 commit_parsers = [
-    { message = "^feat(.+)?!?:", group = "<!-- 0 --> Features" },
-    { message = "^fix(.+)?!?:", group = "<!-- 1 --> Bug Fixes" },
-    { message = "^doc(.+)?!?:", group = "<!-- 3 --> Documentation" },
-    { message = "^perf(.+)?!?:", group = "<!-- 4 --> Performance" },
-    { message = "^chore(.+)?!?:", group = "<!-- 5 --> Chores" },
+  { message = "^feat(.+)?!?:", group = "<!-- 0 --> Features" },
+  { message = "^fix(.+)?!?:", group = "<!-- 1 --> Bug Fixes" },
+  { message = "^doc(.+)?!?:", group = "<!-- 3 --> Documentation" },
+  { message = "^perf(.+)?!?:", group = "<!-- 4 --> Performance" },
+  { message = "^chore(.+)?!?:", group = "<!-- 5 --> Chores" },
 ]
 topo_order_commits = true
 sort_commits = "oldest"

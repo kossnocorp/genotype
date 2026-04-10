@@ -19,6 +19,6 @@ unicode-xid = "0.2.6"
 serde = { version = "1.0.210", features = ["derive", "rc"] }
 
 [dev-dependencies]
-genotype_test = { version = "0.15.0", path = "../crate-genotype-test" }
+genotype_test = { path = "../crate-genotype-test" }
 pretty_assertions = "1.4.1"
 insta = { version = "1.46.3", features = ["ron"] }

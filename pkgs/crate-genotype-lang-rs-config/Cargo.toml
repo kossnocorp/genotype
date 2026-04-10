@@ -19,4 +19,4 @@ indoc = "2.0.7"
 pretty_assertions = "1.4.1"
 insta = { version = "1.46.3", features = ["ron"] }
 toml = { version = "0.8.19" }
-genotype_test = { version = "0.15.0", path = "../crate-genotype-test" }
+genotype_test = { path = "../crate-genotype-test" }

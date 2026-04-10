@@ -28,5 +28,5 @@ petgraph = "0.8.3"
 pretty_assertions = "1.4.1"
 insta = { version = "1.46.3", features = ["ron"] }
 genotype_config = { version = "0.15.0", path = "../crate-genotype-config" }
-genotype_test = { version = "0.15.0", path = "../crate-genotype-test" }
+genotype_test = { path = "../crate-genotype-test" }
 toml = { version = "0.8.19", features = ["preserve_order"] }
