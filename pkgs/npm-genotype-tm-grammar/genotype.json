@@ -1,9 +1,8 @@
 {
   "name": "Genotype",
   "scopeName": "source.genotype",
-  "fileTypes": [
-    "type"
-  ],
+  "fileTypes": ["type"],
+  "aliases": ["type", "genotype"],
   "patterns": [
     {
       "include": "#moduleDoc"

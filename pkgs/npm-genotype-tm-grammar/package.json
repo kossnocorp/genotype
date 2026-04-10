@@ -2,6 +2,7 @@
   "name": "genotype-tm-grammar",
   "version": "0.1.0",
   "description": "Genotype TextMate grammar file",
+  "type": "module",
   "authors": [
     "Sasha Koss <koss@nocorp.me>"
   ],
