@@ -35,7 +35,7 @@ jobs:
       - name: Download Build Artifacts
         uses: actions/download-artifact@v6
         with:
-          pattern: "*-${{ github.ref_name }}"
+          pattern: "*-${{ github.ref_name }}-*"
           path: downloaded-artifacts
 
       - name: Collect Release Assets

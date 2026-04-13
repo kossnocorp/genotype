@@ -21,44 +21,32 @@ jobs:
           # x86
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            cli-name: gt
-            lsp-name: gts
 
           # ARM
           # TODO: Enable when GitHub Actions supports ARM on Linux runners: https://github.com/actions/runner-images?tab=readme-ov-file#available-images
           # - os: <TODO>
           #   target: aarch64-unknown-linux-gnu
-          #   cli-name: gt
-          #   lsp-name: gts
 
           # macOS
 
           # x86
           - os: macos-26-intel
             target: x86_64-apple-darwin
-            cli-name: gt
-            lsp-name: gts
 
           # ARM
           - os: macos-26
             target: aarch64-apple-darwin
-            cli-name: gt
-            lsp-name: gts
 
           # Windows
 
           # x86
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-            cli-name: gt.exe
-            lsp-name: gts.exe
 
           # ARM
           # TODO: Enable when GitHub Actions supports ARM on Linux runners: https://github.com/actions/runner-images?tab=readme-ov-file#available-images
           # - os: <TODO>
           #   target: aarch64-pc-windows-msvc
-          #   cli-name: gt.exe
-          #   lsp-name: gts.exe
 
     steps:
       - name: Git Checkout
@@ -82,6 +70,16 @@ jobs:
         # TODO: Move to mise task
         run: cargo build --release --package genotype_lsp --target ${{ matrix.target }}
 
+      - name: Derive Bin Ext
+        id: bin_ext
+        shell: bash
+        run: |
+          ext=""
+          if [[ "${{ matrix.target }}" == *"windows"* ]]; then
+            ext=".exe"
+          fi
+          echo "value=$ext" >> "$GITHUB_OUTPUT"
+
       - name: Save Target Cache
         uses: ./.github/actions/cache-save/target
         with:
@@ -90,11 +88,11 @@ jobs:
       - name: Upload CLI Binaries
         uses: actions/upload-artifact@v6
         with:
-          path: target/${{ matrix.target }}/release/${{ matrix.cli-name }}
-          name: ${{ matrix.cli-name }}-${{ matrix.target }}-${{ inputs.artifact_suffix || github.sha }}
+          path: target/${{ matrix.target }}/release/gt${{ steps.bin_ext.outputs.value }}
+          name: gt-${{ inputs.artifact_suffix || github.sha }}-${{ matrix.target }}${{ steps.bin_ext.outputs.value }}
 
       - name: Upload LSP Binaries
         uses: actions/upload-artifact@v6
         with:
-          path: target/${{ matrix.target }}/release/${{ matrix.lsp-name }}
-          name: ${{ matrix.lsp-name }}-${{ matrix.target }}-${{ inputs.artifact_suffix || github.sha }}
+          path: target/${{ matrix.target }}/release/gts${{ steps.bin_ext.outputs.value }}
+          name: gts-${{ inputs.artifact_suffix || github.sha }}-${{ matrix.target }}${{ steps.bin_ext.outputs.value }}
