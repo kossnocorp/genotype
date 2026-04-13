@@ -6,15 +6,15 @@ on:
       - "v*.*.*"
 
 jobs:
-  build:
-    name: Build Binaries
-    uses: ./.github/workflows/ci-build.yml
+  qa:
+    name: Run QA
+    uses: ./.github/workflows/qa.yml
     with:
-      artifact_suffix: ${{ github.ref_name }}
+      build_artifact_suffix: ${{ github.ref_name }}
 
   release:
     name: Publish GitHub Release
-    needs: build
+    needs: qa
     runs-on: ubuntu-latest
     permissions:
       attestations: write
@@ -84,6 +84,7 @@ jobs:
 
   publish-cargo:
     name: Publish Rust Crates
+    needs: qa
     runs-on: ubuntu-latest
     environment: release
     permissions:
