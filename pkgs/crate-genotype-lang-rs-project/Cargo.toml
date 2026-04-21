@@ -9,7 +9,6 @@ repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
 genotype_path = { version = "0.15.0", path = "../crate-genotype-path" }
-genotype_config = { version = "0.15.0", path = "../crate-genotype-config" }
 genotype_parser = { version = "0.15.0", path = "../crate-genotype-parser" }
 genotype_project = { version = "0.15.0", path = "../crate-genotype-project" }
 genotype_lang_core_config = { version = "0.15.0", path = "../crate-genotype-lang-core-config" }
@@ -27,6 +26,5 @@ petgraph = "0.8.3"
 [dev-dependencies]
 pretty_assertions = "1.4.1"
 insta = { version = "1.46.3", features = ["ron"] }
-genotype_config = { version = "0.15.0", path = "../crate-genotype-config" }
 genotype_test = { path = "../crate-genotype-test" }
 toml = { version = "0.8.19", features = ["preserve_order"] }

@@ -11,7 +11,7 @@ node = "lts"
 pnpm = "latest"
 oxfmt = "latest"
 # Python
-python = "3.13.13"
+python = "3.14.4"
 uv = "latest"
 ty = "latest"
 ruff = "latest"

@@ -1,6 +1,7 @@
 use crate::prelude::internal::*;
 
 /// Module path relative to the src directory.
+/// TODO: Make it relative to the project root (config) path.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct GtModulePath(GtSrcRelativePath);

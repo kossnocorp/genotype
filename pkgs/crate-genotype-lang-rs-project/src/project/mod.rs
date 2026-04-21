@@ -17,7 +17,7 @@ impl<'a> GtlProject<'a> for RsProject<'a> {
 
     fn generate(project: &'a GtProject) -> Result<Self> {
         let config = project.config.pkg_config_rs();
-        let modules = Self::generate_modules(config.target, &project.modules)?;
+        let modules = Self::generate_modules(config.target, &project.modules_legacy)?;
         Ok(Self { modules, config })
     }
 

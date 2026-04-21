@@ -11,16 +11,25 @@ pub use parse::*;
 
 mod resolve;
 pub use resolve::*;
-use serde::Serialize;
 
+mod state;
+pub use state::*;
+
+mod error;
+pub use error::*;
+
+/// Project module.
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GtProjectModule {
+    /// Module path relative to the src directory.
+    /// TODO: Make it relative to the project root (config) path.
     pub path: GtModulePath,
+    /// Module tree node.
     pub module: GtModule,
     /// Project module resolve.
     pub resolve: GtpModuleResolve,
     /// Module source code.
-    /// [TODO] After implementing workspace, find a better place for it.
+    /// TODO: After implementing workspace, find a better place for it.
     #[serde(serialize_with = "genotype_parser::miette_serde::serialize_named_source")]
     // TODO: Use #[deprecated] and remove usage
     pub source_code: NamedSource<String>,

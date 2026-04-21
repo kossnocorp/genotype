@@ -1,6 +1,5 @@
 pub use crate::*;
 pub use clap::{Args, CommandFactory, Parser, Subcommand, ValueEnum};
-pub use genotype_config::*;
 pub use genotype_lang_core_config::*;
 pub use genotype_lang_core_project::*;
 pub use genotype_lang_py_config::*;
