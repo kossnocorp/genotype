@@ -1,5 +1,4 @@
-use genotype_config::GtConfig;
-use genotype_parser::GtModuleParse;
+use crate::prelude::internal::*;
 
 pub enum GtwFilePayload {
     Config(Box<GtConfig>),

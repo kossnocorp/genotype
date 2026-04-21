@@ -12,6 +12,7 @@ genotype_path = { version = "0.15.0", path = "../crate-genotype-path", features 
 genotype_parser = { version = "0.15.0", path = "../crate-genotype-parser" }
 genotype_config = { version = "0.15.0", path = "../crate-genotype-config" }
 genotype_lang_core_config = { version = "0.15.0", path = "../crate-genotype-lang-core-config" }
+genotype_workspace_core = { version = "0.15.0", path = "../crate-genotype-workspace-core" }
 glob = "0.3.1"
 miette = { version = "7.6.0", features = ["fancy", "serde"] }
 num_cpus = "1.16.0"

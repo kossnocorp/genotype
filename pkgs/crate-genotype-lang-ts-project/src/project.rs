@@ -14,7 +14,7 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
     fn generate(project: &'a GtProject) -> Result<Self> {
         let config = project.config.pkg_config_ts();
         let modules = project
-            .modules
+            .modules_legacy
             .iter()
             .map(|module| TsProjectModule::generate(config.target, module))
             .collect::<Result<_, _>>()?;
@@ -78,8 +78,6 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_config::GtConfig;
-    use genotype_test::*;
 
     #[test]
     fn test_convert_base() {

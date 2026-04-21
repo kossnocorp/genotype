@@ -10,7 +10,6 @@ repository = "https://github.com/kossnocorp/genotype"
 [dependencies]
 genotype_parser = { version = "0.15.0", path = "../crate-genotype-parser" }
 genotype_path = { version = "0.15.0", path = "../crate-genotype-path" }
-genotype_config = { version = "0.15.0", path = "../crate-genotype-config" }
 genotype_project = { version = "0.15.0", path = "../crate-genotype-project" }
 genotype_lang_core_tree = { version = "0.15.0", path = "../crate-genotype-lang-core-tree" }
 genotype_lang_core_config = { version = "0.15.0", path = "../crate-genotype-lang-core-config" }

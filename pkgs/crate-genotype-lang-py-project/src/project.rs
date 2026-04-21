@@ -16,7 +16,7 @@ impl<'a> GtlProject<'a> for PyProject<'a> {
     fn generate(project: &'a GtProject) -> Result<Self> {
         let config = project.config.pkg_config_py();
         let modules = project
-            .modules
+            .modules_legacy
             .iter()
             .map(|module| PyProjectModule::generate(config.target, module))
             .collect::<Result<_, _>>()?;

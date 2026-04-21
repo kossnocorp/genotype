@@ -1,5 +1,4 @@
 use crate::prelude::internal::*;
-use thiserror::Error;
 
 #[derive(Error, Diagnostic, Debug, PartialEq, Clone)]
 pub enum GtProjectError {

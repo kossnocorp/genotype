@@ -10,13 +10,27 @@ use std::{
     sync::{Arc, Mutex},
 };
 
+/// Genotype project. Represents configuration with currently loaded modules.
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GtProject<'a> {
-    pub modules: Vec<GtProjectModule>,
+    /// Known project modules mapped by their workspace path.
+    modules: HashMap<GtWorkspaceModuleId, GtProjectModuleState>,
+    /// Parsed project modules. Represents final state produced by legacy loading logic.
+    #[deprecated]
+    pub modules_legacy: Vec<GtProjectModule>,
+    /// Project configuration.
     pub config: &'a GtConfig,
 }
 
 impl<'a> GtProject<'a> {
+    pub fn new(config: &'a GtConfig) -> Self {
+        Self {
+            modules: HashMap::new(),
+            modules_legacy: Vec::new(),
+            config,
+        }
+    }
+
     pub fn load(config: &'a GtConfig) -> Result<Self> {
         let src_path = config.src_path();
         let entries = glob(config.entry_path().as_str())
@@ -77,7 +91,11 @@ impl<'a> GtProject<'a> {
         // set? Using HashSet will require Eq which will consequently break tests.
         modules.sort_by(|a, b| a.path.as_str().cmp(b.path.as_str()));
 
-        Ok(GtProject { modules, config })
+        Ok(GtProject {
+            modules: HashMap::new(),
+            modules_legacy: modules,
+            config,
+        })
     }
 
     fn load_module(
@@ -122,6 +140,19 @@ impl<'a> GtProject<'a> {
             let mut modules = modules.lock().expect("Failed to lock modules");
             modules.push(Err(err));
         }
+    }
+
+    fn resolve_path(&self, path: &RelativePathBuf) -> Result<GtModulePath> {
+        let stripped = path
+            .strip_prefix(self.src_path().relative_path().normalize())
+            .map_err(|_| GtProjectError::Unknown)?;
+
+        Ok(GtModulePath::new(stripped.into()))
+    }
+
+    ///
+    fn src_path(&self) -> GtSrcPath {
+        self.config.src_path()
     }
 }
 
