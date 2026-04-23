@@ -33,13 +33,13 @@ impl GtlCodegen for PyCodegen {
 
         descriptor
             .render(Default::default(), &mut Default::default())
-            .wrap_err("Failed to render descriptor")
+            .wrap_err("failed to render descriptor")
     }
 
     fn render_module(&self) -> Result<String, Report> {
         self.module
             .render(Default::default(), &mut Default::default())
-            .wrap_err("Failed to render module")
+            .wrap_err("failed to render module")
     }
 }
 

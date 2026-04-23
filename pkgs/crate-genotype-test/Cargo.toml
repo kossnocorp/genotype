@@ -9,9 +9,9 @@ repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
 miette = { version = "7.6.0", features = ["fancy", "serde"] }
-genotype_parser = { version = "0.15.0", path = "../crate-genotype-parser", features = ["test"]}
+genotype_parser = { version = "0.15.0", path = "../crate-genotype-parser", features = ["test"] }
 genotype_project = { version = "0.15.0", path = "../crate-genotype-project" }
-genotype_path = { version = "0.15.0", path = "../crate-genotype-path" }
+genotype_project_core = { version = "0.15.0", path = "../crate-genotype-project-core" }
 relative-path = { version = "1.9.3", features = ["serde"] }
 pretty_assertions = "1.4.1"
 insta = { version = "1.46.3", features = ["ron"] }

@@ -1,6 +1,6 @@
 use crate::prelude::internal::*;
 
 pub enum GtwFilePayload {
-    Config(Box<GtConfig>),
+    Config(Box<GtpConfig>),
     Module(Box<GtModuleParse>),
 }

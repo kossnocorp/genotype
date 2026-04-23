@@ -7,7 +7,7 @@ mod modules;
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct RsProject<'a> {
     pub modules: Vec<RsProjectModule>,
-    pub config: GtConfigPkg<'a, RsConfig>,
+    pub config: GtpConfigPkg<'a, RsConfig>,
 }
 
 impl<'a> GtlProject<'a> for RsProject<'a> {
@@ -45,8 +45,8 @@ mod tests {
 
     #[test]
     fn test_convert_base() {
-        let config = GtConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load(&config).unwrap();
+        let config = GtpConfig::from_root("module", "./examples/basic");
+        let project = GtProject::load(config).unwrap();
 
         assert_ron_snapshot!(
           RsProject::generate(&project).unwrap().modules,
@@ -156,8 +156,8 @@ mod tests {
 
     #[test]
     fn test_convert_glob() {
-        let config = GtConfig::from_root("module", "./examples/glob");
-        let project = GtProject::load(&config).unwrap();
+        let config = GtpConfig::from_root("module", "./examples/glob");
+        let project = GtProject::load(config).unwrap();
 
         assert_ron_snapshot!(
           RsProject::generate(&project).unwrap().modules,
@@ -300,8 +300,8 @@ mod tests {
 
     #[test]
     fn test_render() {
-        let config = GtConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load(&config).unwrap();
+        let config = GtpConfig::from_root("module", "./examples/basic");
+        let project = GtProject::load(config).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
 
@@ -398,8 +398,8 @@ mod tests {
 
     #[test]
     fn test_render_nested() {
-        let config = GtConfig::from_root("module", "./examples/nested");
-        let project = GtProject::load(&config).unwrap();
+        let config = GtpConfig::from_root("module", "./examples/nested");
+        let project = GtProject::load(config).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
 
@@ -527,8 +527,8 @@ mod tests {
 
     #[test]
     fn test_render_recursive_box() {
-        let config = GtConfig::load(Path::new("./examples/recursive")).unwrap();
-        let project = GtProject::load(&config).unwrap();
+        let config = GtpConfig::load(Path::new("./examples/recursive")).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
         let node_file = dist
@@ -554,8 +554,8 @@ mod tests {
 
     #[test]
     fn test_render_recursive_box_with_extensions() {
-        let config = GtConfig::load(Path::new("./examples/recursive")).unwrap();
-        let project = GtProject::load(&config).unwrap();
+        let config = GtpConfig::load(Path::new("./examples/recursive")).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
         let tree_file = dist
@@ -602,8 +602,8 @@ mod tests {
 
     #[test]
     fn test_render_extensions() {
-        let config = GtConfig::from_root("module", "./examples/extensions");
-        let project = GtProject::load(&config).unwrap();
+        let config = GtpConfig::from_root("module", "./examples/extensions");
+        let project = GtProject::load(config).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
 
@@ -750,8 +750,8 @@ mod tests {
 
     #[test]
     fn test_render_dependencies() {
-        let config = GtConfig::load(Path::new("./examples/dependencies")).unwrap();
-        let project = GtProject::load(&config).unwrap();
+        let config = GtpConfig::load(Path::new("./examples/dependencies")).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
 
@@ -828,10 +828,10 @@ mod tests {
 
     #[test]
     fn test_render_uses_global_version_by_default() {
-        let mut config = GtConfig::from_root("module", "./examples/basic");
+        let mut config = GtpConfig::from_root("module", "./examples/basic");
         config.version = Some("0.2.0".parse().unwrap());
 
-        let project = GtProject::load(&config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
         let cargo = get_cargo_file(&dist);
@@ -851,7 +851,7 @@ mod tests {
 
     #[test]
     fn test_render_prefers_rs_manifest_version_over_global() {
-        let mut config = GtConfig::from_root("module", "./examples/basic");
+        let mut config = GtpConfig::from_root("module", "./examples/basic");
         config.version = Some("0.2.0".parse().unwrap());
         config.rs.common.manifest = toml::from_str(
             r#"[package]
@@ -860,7 +860,7 @@ version = "0.3.0"
         )
         .unwrap();
 
-        let project = GtProject::load(&config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
         let cargo = get_cargo_file(&dist);

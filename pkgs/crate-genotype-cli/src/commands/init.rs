@@ -3,11 +3,11 @@ use crate::prelude::internal::*;
 #[derive(Args)]
 pub struct GtInitCommand {
     /// Where to initialize the project, by default it will be the current directory.
-    path: Option<GtRootPath>,
+    path: Option<GtpRootDirPath>,
 }
 
 pub fn init_command(args: &GtInitCommand) -> Result<()> {
-    let mut config = GtConfig::default();
+    let mut config = GtpConfig::default();
 
     let name = configure_name(&mut config)?;
 
@@ -18,7 +18,7 @@ pub fn init_command(args: &GtInitCommand) -> Result<()> {
     let root = args
         .path
         .clone()
-        .unwrap_or_else(|| GtRootPath::new(".".into()));
+        .unwrap_or_else(|| GtpRootDirPath::new(".".into()));
 
     create_dir_all(root.as_str()).map_err(|_| GtCliError::FailedCreateDir(root.as_str().into()))?;
 
@@ -54,7 +54,7 @@ const GUIDE_FILES: &[(&str, &str)] = &[
     ),
 ];
 
-fn configure_name(config: &mut GtConfig) -> Result<String> {
+fn configure_name(config: &mut GtpConfig) -> Result<String> {
     let cd_name = std::env::current_dir()
         .map(|path| path.file_name().unwrap().to_string_lossy().to_string())
         .unwrap_or_default();
@@ -71,7 +71,7 @@ fn configure_name(config: &mut GtConfig) -> Result<String> {
     Ok(name)
 }
 
-fn configure_targets(config: &mut GtConfig, name: &str) -> Result<()> {
+fn configure_targets(config: &mut GtpConfig, name: &str) -> Result<()> {
     let targets = MultiSelect::new(
         "Choose the languages you want to target:",
         Target::VARIANTS.to_vec(),
@@ -97,7 +97,7 @@ fn configure_targets(config: &mut GtConfig, name: &str) -> Result<()> {
     Ok(())
 }
 
-fn configure_ts(config: &mut GtConfig, name: &str) -> Result<()> {
+fn configure_ts(config: &mut GtpConfig, name: &str) -> Result<()> {
     let mut ts = TsConfig::default();
 
     let default_name = name.to_kebab_case();
@@ -126,7 +126,7 @@ fn configure_ts(config: &mut GtConfig, name: &str) -> Result<()> {
     Ok(())
 }
 
-fn configure_py(config: &mut GtConfig, name: &str) -> Result<()> {
+fn configure_py(config: &mut GtpConfig, name: &str) -> Result<()> {
     let mut py = PyConfig::default();
 
     let default_name = name.to_kebab_case();
@@ -157,7 +157,7 @@ fn configure_py(config: &mut GtConfig, name: &str) -> Result<()> {
     Ok(())
 }
 
-fn configure_rs(config: &mut GtConfig, name: &str) -> Result<()> {
+fn configure_rs(config: &mut GtpConfig, name: &str) -> Result<()> {
     let mut rs = RsConfig::default();
 
     let default_name = name.to_snake_case();

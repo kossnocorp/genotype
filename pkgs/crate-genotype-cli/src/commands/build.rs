@@ -1,19 +1,29 @@
+use miette::Context;
+
 use crate::prelude::internal::*;
 
 #[derive(Args)]
 pub struct GtBuildCommand {
-    /// What to build
+    /// What to build.
     #[arg(default_value = ".")]
     path: PathBuf,
-
-    /// Path to genotype config file
-    #[arg(long)]
-    config: Option<PathBuf>,
 }
 
 pub fn build_command(args: &GtBuildCommand) -> Result<()> {
-    let config = GtConfig::load_with(&args.path, args.config.as_ref())?;
-    let project = GtProject::load(&config)?;
+    let project_runtime =
+        GtpRuntimeSystem::new(&args.path).wrap_err("failed to create system project runtime")?;
+
+    let mut project = project_runtime
+        .create_project()
+        .wrap_err("failed to create project")?;
+
+    project_runtime
+        .load_all_modules(&mut project)
+        .wrap_err("failed to load all project modules")?;
+
+    // TODO: Move these into project runtime.
+    // let config = GtConfig::load_with(&args.path, args.config.as_ref())?;
+    // let project = GtProject::load(config)?;
 
     let mut langs = vec![];
 

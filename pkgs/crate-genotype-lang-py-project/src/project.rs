@@ -5,7 +5,7 @@ use crate::prelude::internal::*;
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct PyProject<'a> {
     pub modules: Vec<PyProjectModule>,
-    pub config: GtConfigPkg<'a, PyConfig>,
+    pub config: GtpConfigPkg<'a, PyConfig>,
 }
 
 impl<'a> GtlProject<'a> for PyProject<'a> {
@@ -65,11 +65,11 @@ dist"#
             source: "".into(),
         };
 
-        let mut module_paths: HashSet<GtPkgSrcRelativePath> = HashSet::new();
+        let mut module_paths: HashSet<GtpPkgSrcDirRelativePath> = HashSet::new();
 
         for module in self.modules.iter() {
             // [TODo]
-            if let Some(module_path) = module.path.parent() {
+            if let Some(module_path) = module.path.to_parent() {
                 if module_path == ".".into() {
                     continue;
                 }
@@ -81,7 +81,7 @@ dist"#
         let module_inits = module_paths.into_iter().map(|module_path| GtlProjectFile {
             path: self
                 .config
-                .pkg_src_file_path(&module_path.join_path(&"__init__.py".into())),
+                .pkg_src_file_path(&module_path.join_relative_path(&"__init__.py".into())),
             source: "".into(),
         });
 
@@ -122,8 +122,8 @@ mod tests {
 
     #[test]
     fn test_convert_base() {
-        let config = GtConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load(&config).unwrap();
+        let config = GtpConfig::from_root("module", "./examples/basic");
+        let project = GtProject::load(config).unwrap();
 
         assert_ron_snapshot!(
           PyProject::generate(&project).unwrap().modules,
@@ -215,8 +215,8 @@ mod tests {
 
     #[test]
     fn test_convert_glob() {
-        let config = GtConfig::from_root("module", "./examples/glob");
-        let project = GtProject::load(&config).unwrap();
+        let config = GtpConfig::from_root("module", "./examples/glob");
+        let project = GtProject::load(config).unwrap();
 
         assert_ron_snapshot!(
           PyProject::generate(&project).unwrap().modules,
@@ -327,8 +327,8 @@ mod tests {
 
     #[test]
     fn test_render() {
-        let config = GtConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load(&config).unwrap();
+        let config = GtpConfig::from_root("module", "./examples/basic");
+        let project = GtProject::load(config).unwrap();
 
         assert_ron_snapshot!(
           PyProject::generate(&project).unwrap().dist().unwrap(),
@@ -367,8 +367,8 @@ mod tests {
 
     #[test]
     fn test_render_nested() {
-        let config = GtConfig::from_root("module", "./examples/nested");
-        let project = GtProject::load(&config).unwrap();
+        let config = GtpConfig::from_root("module", "./examples/nested");
+        let project = GtProject::load(config).unwrap();
 
         assert_ron_snapshot!(
           PyProject::generate(&project).unwrap().dist().unwrap(),
@@ -411,11 +411,11 @@ mod tests {
 
     #[test]
     fn test_render_dependencies() {
-        let mut config = GtConfig::from_root("module", "./examples/dependencies");
+        let mut config = GtpConfig::from_root("module", "./examples/dependencies");
         config.py.common.dependencies =
             HashMap::from_iter(vec![("genotype_json_types".into(), "genotype_json".into())]);
 
-        let project = GtProject::load(&config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         assert_ron_snapshot!(
           PyProject::generate(&project).unwrap().dist().unwrap(),
@@ -450,8 +450,8 @@ mod tests {
 
     #[test]
     fn test_render_cyclic_lists() {
-        let config = GtConfig::from_root("module", "./examples/cyclic-lists");
-        let project = GtProject::load(&config).unwrap();
+        let config = GtpConfig::from_root("module", "./examples/cyclic-lists");
+        let project = GtProject::load(config).unwrap();
 
         let dist = PyProject::generate(&project).unwrap().dist().unwrap();
 
@@ -541,9 +541,9 @@ mod tests {
 
     #[test]
     fn test_render_uses_global_version_by_default() {
-        let mut config = GtConfig::from_root("module", "./examples/basic");
+        let mut config = GtpConfig::from_root("module", "./examples/basic");
         config.version = Some("0.2.0".parse().unwrap());
-        let project = GtProject::load(&config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         let dist = PyProject::generate(&project).unwrap().dist().unwrap();
         let pyproject = get_project_file(&dist);
@@ -568,7 +568,7 @@ mod tests {
 
     #[test]
     fn test_render_prefers_py_manifest_version_over_global() {
-        let mut config = GtConfig::from_root("module", "./examples/basic");
+        let mut config = GtpConfig::from_root("module", "./examples/basic");
         config.version = Some("0.2.0".parse().unwrap());
         config.py.common.manifest = toml::from_str(
             r#"[tool.poetry]
@@ -577,7 +577,7 @@ version = "0.3.0"
         )
         .unwrap();
 
-        let project = GtProject::load(&config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         let dist = PyProject::generate(&project).unwrap().dist().unwrap();
         let pyproject = get_project_file(&dist);
@@ -602,7 +602,7 @@ version = "0.3.0"
 
     #[test]
     fn test_render_uv_manifest() {
-        let mut config = GtConfig::from_root("module", "./examples/basic");
+        let mut config = GtpConfig::from_root("module", "./examples/basic");
         config.py.lang.manager = genotype_lang_py_config::PyPackageManager::Uv;
         config.version = Some("0.2.0".parse().unwrap());
         config.py.common.manifest = toml::from_str(
@@ -612,7 +612,7 @@ name = "module"
         )
         .unwrap();
 
-        let project = GtProject::load(&config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         let dist = PyProject::generate(&project).unwrap().dist().unwrap();
         let pyproject = get_project_file(&dist);

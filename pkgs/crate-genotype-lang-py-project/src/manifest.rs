@@ -9,7 +9,7 @@ impl<'a> GtlProjectManifest<'a> for PyProject<'a> {
     type Dependency = PyProjectManifestDependency;
     type LangConfig = PyConfig;
 
-    fn config(&'a self) -> &'a GtConfigPkg<'a, Self::LangConfig> {
+    fn config(&'a self) -> &'a GtpConfigPkg<'a, Self::LangConfig> {
         &self.config
     }
 

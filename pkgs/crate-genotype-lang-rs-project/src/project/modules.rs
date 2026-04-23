@@ -24,7 +24,7 @@ impl RsProject<'_> {
 
     pub fn generate_modules(
         config: &RsConfig,
-        modules: &[GtProjectModule],
+        modules: &[GtpModule],
     ) -> Result<Vec<RsProjectModule>> {
         let mut project_modules = modules
             .iter()

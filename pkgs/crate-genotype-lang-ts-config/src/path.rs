@@ -2,12 +2,12 @@ use crate::prelude::internal::*;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(transparent)]
-pub struct TsPkgPath(GtDistRelativePath);
+pub struct TsPkgPath(GtpDistDirRelativePath);
 
 impl GtlConfigPkgPathSetting for TsPkgPath {
     const DEFAULT: &'static str = "ts";
 
-    fn path(&self) -> &GtDistRelativePath {
+    fn path(&self) -> &GtpDistDirRelativePath {
         &self.0
     }
 }

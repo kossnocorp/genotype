@@ -97,9 +97,9 @@ dependencies = [
 
 [[package]]
 name = "atomic"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8d818003e740b63afc82337e3160717f4f63078720a810b7b903e70a5d1d2994"
+checksum = "a89cbf775b137e9b968e67227ef7f775587cde3fd31b0d8599dbd0f598a48340"
 dependencies = [
  "bytemuck",
 ]
@@ -160,9 +160,9 @@ dependencies = [
 
 [[package]]
 name = "bytemuck"
-version = "1.19.0"
+version = "1.25.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8334215b81e418a0a7bdb8ef0849474f40bb10c8b71f1c4ed315cff49f32494d"
+checksum = "c8efb64bd706a16a1bdde310ae86b351e4d21550d98d056f22f8a7f7a2183fec"
 
 [[package]]
 name = "byteorder"
@@ -559,8 +559,9 @@ dependencies = [
  "genotype_lang_rs_project",
  "genotype_lang_ts_config",
  "genotype_lang_ts_project",
- "genotype_path",
  "genotype_project",
+ "genotype_project_core",
+ "genotype_workspace",
  "heck",
  "inquire",
  "insta",
@@ -569,37 +570,12 @@ dependencies = [
  "owo-colors",
  "pretty_assertions",
  "regex",
- "semver",
- "serde",
- "thiserror 1.0.64",
- "toml 0.8.22",
- "trybuild",
-]
-
-[[package]]
-name = "genotype_config"
-version = "0.15.0"
-dependencies = [
- "clap",
- "delegate",
- "figment",
- "genotype_lang_core_config",
- "genotype_lang_py_config",
- "genotype_lang_rs_config",
- "genotype_lang_ts_config",
- "genotype_path",
- "genotype_test",
- "heck",
- "insta",
- "miette",
- "pretty_assertions",
  "relative-path",
  "semver",
  "serde",
  "thiserror 1.0.64",
  "toml 0.8.22",
- "toml_edit",
- "toml_ext",
+ "trybuild",
 ]
 
 [[package]]
@@ -631,7 +607,7 @@ name = "genotype_lang_core_config"
 version = "0.15.0"
 dependencies = [
  "delegate",
- "genotype_path",
+ "genotype_project_core",
  "insta",
  "pretty_assertions",
  "relative-path",
@@ -646,8 +622,8 @@ version = "0.15.0"
 dependencies = [
  "genotype_lang_core_config",
  "genotype_lang_core_tree",
- "genotype_path",
  "genotype_project",
+ "genotype_project_core",
  "indexmap",
  "insta",
  "miette",
@@ -676,7 +652,7 @@ name = "genotype_lang_py_config"
 version = "0.15.0"
 dependencies = [
  "genotype_lang_core_config",
- "genotype_path",
+ "genotype_project_core",
  "insta",
  "pretty_assertions",
  "relative-path",
@@ -693,8 +669,8 @@ dependencies = [
  "genotype_lang_py_config",
  "genotype_lang_py_tree",
  "genotype_parser",
- "genotype_path",
  "genotype_project",
+ "genotype_project_core",
  "genotype_test",
  "indexmap",
  "insta",
@@ -728,7 +704,7 @@ name = "genotype_lang_rs_config"
 version = "0.15.0"
 dependencies = [
  "genotype_lang_core_config",
- "genotype_path",
+ "genotype_project_core",
  "genotype_test",
  "indoc",
  "insta",
@@ -749,8 +725,8 @@ dependencies = [
  "genotype_lang_rs_config",
  "genotype_lang_rs_tree",
  "genotype_parser",
- "genotype_path",
  "genotype_project",
+ "genotype_project_core",
  "genotype_test",
  "indexmap",
  "insta",
@@ -786,7 +762,7 @@ name = "genotype_lang_ts_config"
 version = "0.15.0"
 dependencies = [
  "genotype_lang_core_config",
- "genotype_path",
+ "genotype_project_core",
  "insta",
  "pretty_assertions",
  "relative-path",
@@ -797,14 +773,13 @@ dependencies = [
 name = "genotype_lang_ts_project"
 version = "0.15.0"
 dependencies = [
- "genotype_lang_core_config",
  "genotype_lang_core_project",
  "genotype_lang_core_tree",
  "genotype_lang_ts_config",
  "genotype_lang_ts_tree",
  "genotype_parser",
- "genotype_path",
  "genotype_project",
+ "genotype_project_core",
  "genotype_test",
  "insta",
  "miette",
@@ -864,25 +839,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "genotype_path"
-version = "0.15.0"
-dependencies = [
- "genotype_parser",
- "insta",
- "pretty_assertions",
- "relative-path",
- "serde",
-]
-
-[[package]]
 name = "genotype_project"
 version = "0.15.0"
 dependencies = [
  "delegate",
- "genotype_config",
+ "figment",
  "genotype_lang_core_config",
+ "genotype_lang_py_config",
+ "genotype_lang_rs_config",
+ "genotype_lang_ts_config",
  "genotype_parser",
- "genotype_path",
+ "genotype_project_core",
+ "genotype_test",
  "genotype_workspace_core",
  "glob",
  "indexmap",
@@ -892,8 +860,24 @@ dependencies = [
  "pretty_assertions",
  "rayon",
  "relative-path",
+ "semver",
  "serde",
  "thiserror 1.0.64",
+ "toml 0.8.22",
+ "toml_edit",
+ "toml_ext",
+]
+
+[[package]]
+name = "genotype_project_core"
+version = "0.15.0"
+dependencies = [
+ "genotype_parser",
+ "insta",
+ "miette",
+ "pretty_assertions",
+ "relative-path",
+ "serde",
 ]
 
 [[package]]
@@ -911,8 +895,8 @@ name = "genotype_test"
 version = "0.15.0"
 dependencies = [
  "genotype_parser",
- "genotype_path",
  "genotype_project",
+ "genotype_project_core",
  "insta",
  "miette",
  "pretty_assertions",

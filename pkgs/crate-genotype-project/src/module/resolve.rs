@@ -4,19 +4,19 @@ use crate::prelude::internal::*;
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GtpModuleResolve {
     /// Paths resolve.
-    pub paths: IndexMap<GtPath, GtModulePath>,
+    pub paths: IndexMap<GtPath, GtpModulePath>,
     /// Identifiers resolve.
     pub identifiers: IndexMap<GtIdentifier, GtpModuleIdentifierResolve>,
     /// Definitions resolve.
-    pub definitions: IndexMap<GtDefinitionId, GtProjectModuleDefinitionResolve>,
+    pub definitions: IndexMap<GtDefinitionId, GtpModuleDefinitionResolve>,
     /// Reference id to definition id resolve.
     pub reference_definition_ids: IndexMap<GtReferenceId, GtDefinitionId>,
 }
 
 impl GtpModuleResolve {
-    pub fn try_new(modules: &[GtProjectModuleParse], parse: &GtProjectModuleParse) -> Result<Self> {
+    pub fn try_new(modules: &[GtpModuleParse], parse: &GtpModuleParse) -> Result<Self> {
         // Resolve module dependencies by mapping local paths to project module paths
-        let mut paths: IndexMap<GtPath, GtModulePath> = IndexMap::new();
+        let mut paths: IndexMap<GtPath, GtpModulePath> = IndexMap::new();
         for local_path in parse.1.resolve.deps.iter() {
             // Continue if the dependency is already resolved or it is a package path
             if paths.contains_key(local_path) || local_path.kind() == GtPathKind::Package {
@@ -115,7 +115,7 @@ impl GtpModuleResolve {
                     });
                     import.is_some()
                 })
-                .ok_or_else(|| GtProjectError::UndefinedType {
+                .ok_or_else(|| GtpError::UndefinedType {
                     span: reference.as_span(),
                     identifier: reference.as_string(),
                 })?;

@@ -1,7 +1,7 @@
 use genotype_parser::visitor::{GtVisitor, Traverse};
 use genotype_parser::*;
-use genotype_path::*;
-use genotype_project::{GtProjectModule, GtProjectModuleParse, GtpResolve};
+use genotype_project::{GtpModule, GtpModuleParse, GtpResolve};
+use genotype_project_core::*;
 use miette::NamedSource;
 use relative_path::RelativePathBuf;
 use std::fmt::Debug;
@@ -13,18 +13,18 @@ pub fn parse_module(source_code: &str) -> GtModule {
 
     // TODO: This flow replicates what GtProject::load does. Find a better way
     // to share this code or simplify each step into functions.
-    let module_path = GtModulePath::new(
+    let module_path = GtpModulePath::new(
         RelativePathBuf::from_path("src/module.type").expect("must be correct path"),
     );
     let source_code = NamedSource::new("src/module.type", source_code.into());
     let module_parse = GtModule::parse(id, source_code).expect("source code must be correct");
-    let project_parse = GtProjectModuleParse(module_path, module_parse);
+    let project_parse = GtpModuleParse(module_path, module_parse);
     let modules_parse = vec![project_parse];
 
     let resolve: GtpResolve = (&modules_parse).try_into().expect("must resolve");
     let modules = modules_parse
         .iter()
-        .map(|parse| GtProjectModule::try_new(&resolve, &modules_parse, parse.clone()))
+        .map(|parse| GtpModule::try_new(&resolve, &modules_parse, parse.clone()))
         .collect::<Result<Vec<_>, _>>()
         .unwrap();
 

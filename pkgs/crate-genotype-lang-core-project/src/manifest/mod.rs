@@ -12,7 +12,7 @@ pub trait GtlProjectManifest<'a> {
     type Dependency: GtlProjectManifestDependency;
     type LangConfig: GtlConfig;
 
-    fn config(&'a self) -> &'a GtConfigPkg<'a, Self::LangConfig>;
+    fn config(&'a self) -> &'a GtpConfigPkg<'a, Self::LangConfig>;
 
     fn base_manifest(&self) -> String {
         "".into()

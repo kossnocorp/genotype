@@ -2,13 +2,13 @@ use crate::prelude::internal::*;
 
 impl RsProject<'_> {
     pub fn indices_source(&self) -> Vec<GtlProjectFile> {
-        let mut crate_paths: IndexMap<GtPkgSrcRelativePath, IndexSet<String>> = IndexMap::new();
+        let mut crate_paths: IndexMap<GtpPkgSrcDirRelativePath, IndexSet<String>> = IndexMap::new();
 
         for module in self.modules.iter() {
             let mut module_path = module.path.clone();
             loop {
                 let name = module_path.module_name();
-                let parent_path = module_path.parent().unwrap_or_else(|| "".into());
+                let parent_path = module_path.to_parent().unwrap_or_else(|| "".into());
 
                 crate_paths
                     .entry(parent_path.clone())
@@ -37,7 +37,7 @@ impl RsProject<'_> {
                 };
                 let path = self
                     .config
-                    .pkg_src_file_path(&module_path.join_path(&file_name.into()));
+                    .pkg_src_file_path(&module_path.join_relative_path(&file_name.into()));
 
                 let mut code = modules
                     .iter()
@@ -57,7 +57,7 @@ pub use {module}::*;"#
     }
 }
 
-trait Module: GtRelativePath {
+trait Module: GtpRelativePath {
     fn module_name(&self) -> String
     where
         Self: Sized,
@@ -70,4 +70,4 @@ trait Module: GtRelativePath {
     }
 }
 
-impl Module for GtPkgSrcRelativePath {}
+impl Module for GtpPkgSrcDirRelativePath {}

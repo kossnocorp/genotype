@@ -2,7 +2,7 @@ use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct TsProjectModule {
-    pub path: GtPkgSrcRelativePath,
+    pub path: GtpPkgSrcDirRelativePath,
     pub module: TsModule,
     pub mode: TsMode,
 }
@@ -10,7 +10,7 @@ pub struct TsProjectModule {
 impl GtlProjectModule<TsConfig> for TsProjectModule {
     type Dependency = TsDependencyIdent;
 
-    fn generate(config: &TsConfig, module: &GtProjectModule) -> Result<Self> {
+    fn generate(config: &TsConfig, module: &GtpModule) -> Result<Self> {
         let path = module.path.to_pkg_src_relative_path("ts");
 
         let mut resolve = TsConvertResolve::new();

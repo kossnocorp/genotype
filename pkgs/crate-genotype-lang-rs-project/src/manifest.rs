@@ -8,7 +8,7 @@ impl<'a> GtlProjectManifest<'a> for RsProject<'a> {
     type Dependency = RsProjectManifestDependency;
     type LangConfig = RsConfig;
 
-    fn config(&'a self) -> &'a GtConfigPkg<'a, Self::LangConfig> {
+    fn config(&'a self) -> &'a GtpConfigPkg<'a, Self::LangConfig> {
         &self.config
     }
 

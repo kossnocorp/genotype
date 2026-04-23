@@ -1,29 +1,19 @@
 use crate::prelude::internal::*;
 
-#[derive(Error, Diagnostic, Debug, PartialEq, Clone)]
-pub enum GtProjectError {
-    #[error("{0} is not found")]
-    #[diagnostic(code(GTP101))]
-    Canonicalize(String),
-
+#[derive(Error, Debug, Diagnostic, Clone)]
+pub enum GtpError {
     #[error("no entries found for pattern \"{0}\"")]
-    #[diagnostic(code(GTP102))]
+    #[diagnostic(code(GTP103))]
+    #[deprecated(note = "use `miette!` instead")]
     NoEntries(String),
 
     #[error("failed to read `{0}`")]
-    #[diagnostic(code(GTP103))]
+    #[diagnostic(code(GTP104))]
+    #[deprecated(note = "use `miette!` instead")]
     NotFound(String),
 
-    #[error("failed to resolve `{0}`")]
-    #[diagnostic(code(GTP104))]
-    CannotResolve(String),
-
-    #[error("YO")]
-    #[diagnostic(code(YO))]
-    YO,
-
     #[error("undefined type `{identifier}`")]
-    #[diagnostic(code(GTP201))]
+    #[diagnostic(code(GTP301))]
     UndefinedType {
         #[label("referenced here")]
         span: GtSpan,

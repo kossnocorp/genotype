@@ -24,10 +24,10 @@ impl GtpResolve {
     }
 }
 
-impl TryFrom<&Vec<GtProjectModuleParse>> for GtpResolve {
+impl TryFrom<&Vec<GtpModuleParse>> for GtpResolve {
     type Error = miette::Error;
 
-    fn try_from(modules_parse: &Vec<GtProjectModuleParse>) -> Result<GtpResolve> {
+    fn try_from(modules_parse: &Vec<GtpModuleParse>) -> Result<GtpResolve> {
         let mut definitions: HashMap<GtModuleId, Vec<GtDefinitionId>> = HashMap::new();
         for module in modules_parse {
             let module_definitions = module

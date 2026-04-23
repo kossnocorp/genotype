@@ -5,9 +5,9 @@ use crate::prelude::internal::*;
 pub trait GtlConfigPkgPathSetting: Default {
     const DEFAULT: &'static str;
 
-    fn path(&self) -> &GtDistRelativePath;
+    fn path(&self) -> &GtpDistDirRelativePath;
 
-    fn default_relative_path() -> GtDistRelativePath {
-        GtDistRelativePath::new(Self::DEFAULT.into())
+    fn default_relative_path() -> GtpDistDirRelativePath {
+        GtpDistDirRelativePath::new(Self::DEFAULT.into())
     }
 }

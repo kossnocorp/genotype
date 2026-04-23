@@ -23,7 +23,7 @@ pub trait GtlConfig: GtlConfigHealth + Default {
     }
 
     /// Returns the target package directory path relative to the dist directory, i.e. "rs".
-    fn dist_relative_pkg_path(&self) -> &GtDistRelativePath {
+    fn dist_relative_pkg_path(&self) -> &GtpDistDirRelativePath {
         self.common().out.path()
     }
 

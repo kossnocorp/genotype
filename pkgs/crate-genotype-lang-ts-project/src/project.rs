@@ -3,7 +3,7 @@ use crate::prelude::internal::*;
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct TsProject<'a> {
     pub modules: Vec<TsProjectModule>,
-    pub config: GtConfigPkg<'a, TsConfig>,
+    pub config: GtpConfigPkg<'a, TsConfig>,
 }
 
 impl<'a> GtlProject<'a> for TsProject<'a> {
@@ -81,8 +81,8 @@ mod tests {
 
     #[test]
     fn test_convert_base() {
-        let config = GtConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load(&config).unwrap();
+        let config = GtpConfig::from_root("module", "./examples/basic");
+        let project = GtProject::load(config).unwrap();
 
         assert_ron_snapshot!(
           TsProject::generate(&project).unwrap().modules,
@@ -157,8 +157,8 @@ mod tests {
 
     #[test]
     fn test_convert_glob() {
-        let config = GtConfig::from_root("module", "./examples/glob");
-        let project = GtProject::load(&config).unwrap();
+        let config = GtpConfig::from_root("module", "./examples/glob");
+        let project = GtProject::load(config).unwrap();
 
         assert_ron_snapshot!(
           TsProject::generate(&project).unwrap().modules,
@@ -248,8 +248,8 @@ mod tests {
 
     #[test]
     fn test_render() {
-        let config = GtConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load(&config).unwrap();
+        let config = GtpConfig::from_root("module", "./examples/basic");
+        let project = GtProject::load(config).unwrap();
 
         assert_ron_snapshot!(
           TsProject::generate(&project).unwrap().dist().unwrap(),
@@ -284,12 +284,12 @@ mod tests {
 
     #[test]
     fn test_render_dependencies() {
-        let mut config = GtConfig::from_root("module", "./examples/dependencies");
+        let mut config = GtpConfig::from_root("module", "./examples/dependencies");
         config.ts.common.dependencies = HashMap::from_iter(vec![(
             "genotype_json_types".into(),
             "@genotype/json".into(),
         )]);
-        let project = GtProject::load(&config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         assert_ron_snapshot!(
           TsProject::generate(&project).unwrap().dist().unwrap(),
@@ -320,10 +320,10 @@ mod tests {
 
     #[test]
     fn test_render_uses_global_version_by_default() {
-        let mut config = GtConfig::from_root("module", "./examples/basic");
+        let mut config = GtpConfig::from_root("module", "./examples/basic");
         config.version = Some("0.2.0".parse().unwrap());
 
-        let project = GtProject::load(&config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         let dist = TsProject::generate(&project).unwrap().dist().unwrap();
         let package_file = get_package_file(&dist);
@@ -344,7 +344,7 @@ mod tests {
 
     #[test]
     fn test_render_prefers_ts_manifest_version_over_global() {
-        let mut config = GtConfig::from_root("module", "./examples/basic");
+        let mut config = GtpConfig::from_root("module", "./examples/basic");
         config.version = Some("0.2.0".parse().unwrap());
         config
             .ts
@@ -352,7 +352,7 @@ mod tests {
             .manifest
             .insert("version".into(), "0.3.0".into());
 
-        let project = GtProject::load(&config).unwrap();
+        let project = GtProject::load(config).unwrap();
 
         let dist = TsProject::generate(&project).unwrap().dist().unwrap();
         let package_file = get_package_file(&dist);
@@ -373,10 +373,10 @@ mod tests {
 
     #[test]
     fn test_render_zod_mode() {
-        let mut config = GtConfig::from_root("module", "./examples/basic");
+        let mut config = GtpConfig::from_root("module", "./examples/basic");
         config.ts.lang.mode = TsMode::Zod;
 
-        let project = GtProject::load(&config).unwrap();
+        let project = GtProject::load(config).unwrap();
         let dist = TsProject::generate(&project).unwrap().dist().unwrap();
 
         let package_file = get_package_file(&dist);
@@ -412,10 +412,10 @@ mod tests {
 
     #[test]
     fn test_render_prefer_alias() {
-        let mut config = GtConfig::from_root("module", "./examples/basic");
+        let mut config = GtpConfig::from_root("module", "./examples/basic");
         config.ts.lang.prefer = TsPrefer::Alias;
 
-        let project = GtProject::load(&config).unwrap();
+        let project = GtProject::load(config).unwrap();
         let dist = TsProject::generate(&project).unwrap().dist().unwrap();
 
         let author_file = get_dist_file(&dist, "src/author.ts");

@@ -29,7 +29,7 @@ pub struct GtVersionSetCommand {
     pub rs: Option<Version>,
     /// Where to apply the update
     #[arg(default_value = ".")]
-    pub path: GtRootPath,
+    pub path: GtpRootDirPath,
 }
 
 #[derive(Args)]
@@ -39,7 +39,7 @@ pub struct GtVersionBumpCommand {
     pub part: GtVersionBumpPart,
     /// Where to apply the update
     #[arg(default_value = ".")]
-    pub path: GtRootPath,
+    pub path: GtpRootDirPath,
 }
 
 #[derive(Debug, Clone, Copy, ValueEnum)]
@@ -55,22 +55,33 @@ pub fn version_command(args: &GtVersionCommand) -> Result<()> {
         GtVersionSubcommand::Bump(args) => args.path.as_str().into(),
     };
 
-    let mut config = GtConfig::load(&path)?;
+    let project_runtime =
+        GtpRuntimeSystem::new(&path).wrap_err("failed to create system project runtime")?;
+
+    let mut project = project_runtime
+        .create_project()
+        .wrap_err("failed to create project")?;
 
     match &args.command {
-        GtVersionSubcommand::Set(args) => config.set_manifest_version(GtConfigSetVersionProps {
-            version: args.version.clone(),
-            ts: args.ts.clone(),
-            py: args.py.clone(),
-            rs: args.rs.clone(),
-        })?,
+        GtVersionSubcommand::Set(args) => {
+            project
+                .config
+                .set_manifest_version(GtpConfigSetVersionProps {
+                    version: args.version.clone(),
+                    ts: args.ts.clone(),
+                    py: args.py.clone(),
+                    rs: args.rs.clone(),
+                })?
+        }
 
-        GtVersionSubcommand::Bump(args) => config.bump_manifest_version(match args.part {
-            GtVersionBumpPart::Major => GtConfigVersionPart::Major,
-            GtVersionBumpPart::Minor => GtConfigVersionPart::Minor,
-            GtVersionBumpPart::Patch => GtConfigVersionPart::Patch,
-        })?,
+        GtVersionSubcommand::Bump(args) => {
+            project.config.bump_manifest_version(match args.part {
+                GtVersionBumpPart::Major => GtpConfigVersionPart::Major,
+                GtVersionBumpPart::Minor => GtpConfigVersionPart::Minor,
+                GtVersionBumpPart::Patch => GtpConfigVersionPart::Patch,
+            })?
+        }
     }
 
-    config.save(&path)
+    project.config.save(&path)
 }

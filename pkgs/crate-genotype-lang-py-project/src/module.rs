@@ -3,14 +3,14 @@ use crate::prelude::internal::*;
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct PyProjectModule {
     pub name: String,
-    pub path: GtPkgSrcRelativePath,
+    pub path: GtpPkgSrcDirRelativePath,
     pub module: PyModule,
 }
 
 impl GtlProjectModule<PyConfig> for PyProjectModule {
     type Dependency = PyDependencyIdent;
 
-    fn generate(config: &PyConfig, module: &GtProjectModule) -> Result<Self> {
+    fn generate(config: &PyConfig, module: &GtpModule) -> Result<Self> {
         let path = module.path.to_pkg_src_relative_path("py");
         let name = py_parse_module_path(path.with_extension("").as_str().into());
 

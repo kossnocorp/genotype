@@ -8,7 +8,7 @@ impl<'a> GtlProjectManifest<'a> for TsProject<'a> {
     type Dependency = TsProjectManifestDependency;
     type LangConfig = TsConfig;
 
-    fn config(&'a self) -> &'a GtConfigPkg<'a, Self::LangConfig> {
+    fn config(&'a self) -> &'a GtpConfigPkg<'a, Self::LangConfig> {
         &self.config
     }
 

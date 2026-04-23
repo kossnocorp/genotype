@@ -4,10 +4,10 @@ use genotype_parser::visitor::GtVisitor;
 pub struct GtpResolveVisitor<'a> {
     module_id: GtModuleId,
     resolve: &'a GtpResolve,
-    error: Option<GtProjectError>,
+    error: Option<GtpError>,
     /// Module definitions resolve accumulated during the visit. It is then
     /// moved to corresponding module `GtpModuleResolve` struct.
-    definitions: IndexMap<GtModuleId, IndexMap<GtDefinitionId, GtProjectModuleDefinitionResolve>>,
+    definitions: IndexMap<GtModuleId, IndexMap<GtDefinitionId, GtpModuleDefinitionResolve>>,
     /// Reference definition resolve accumulated during the visit.
     reference_definition_ids: IndexMap<GtReferenceId, GtDefinitionId>,
 }
@@ -23,11 +23,11 @@ impl<'a> GtpResolveVisitor<'a> {
         }
     }
 
-    pub fn error(&self) -> Option<&GtProjectError> {
+    pub fn error(&self) -> Option<&GtpError> {
         self.error.as_ref()
     }
 
-    pub fn drain_definitions(&self) -> IndexMap<GtDefinitionId, GtProjectModuleDefinitionResolve> {
+    pub fn drain_definitions(&self) -> IndexMap<GtDefinitionId, GtpModuleDefinitionResolve> {
         self.definitions
             .get(&self.module_id)
             .cloned()
@@ -57,7 +57,7 @@ impl GtVisitor for GtpResolveVisitor<'_> {
             .iter()
             .any(|definition| definition.1.as_ref() == import.name.as_str());
         if !is_defined {
-            self.error = Some(GtProjectError::UndefinedType {
+            self.error = Some(GtpError::UndefinedType {
                 span: import.name.as_span(),
                 identifier: import.name.as_string(),
             });

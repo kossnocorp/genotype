@@ -32,7 +32,7 @@ pub struct TsConfigLangTsconfig {
 }
 
 impl TsConfigLang {
-    pub fn format_module_path(&self, path: &GtPkgSrcRelativePath) -> String {
+    pub fn format_module_path(&self, path: &GtpPkgSrcDirRelativePath) -> String {
         let mut path = path.as_str().to_string();
         if !self.tsconfig.allow_importing_ts_extensions && path.ends_with(".ts") {
             let len = path.len();

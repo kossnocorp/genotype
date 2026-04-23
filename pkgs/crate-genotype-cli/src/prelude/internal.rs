@@ -8,8 +8,8 @@ pub use genotype_lang_rs_config::*;
 pub use genotype_lang_rs_project::*;
 pub use genotype_lang_ts_config::*;
 pub use genotype_lang_ts_project::*;
-pub use genotype_path::*;
 pub use genotype_project::*;
+pub use genotype_project_core::*;
 pub use heck::{ToKebabCase, ToSnakeCase};
 pub use inquire::{
     MultiSelect, Text, list_option::ListOption, min_length, required, validator::Validation,

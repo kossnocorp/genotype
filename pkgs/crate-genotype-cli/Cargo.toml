@@ -12,8 +12,9 @@ name = "gt"
 path = "src/main.rs"
 
 [dependencies]
-genotype_path = { version = "0.15.0", path = "../crate-genotype-path" }
+genotype_project_core = { version = "0.15.0", path = "../crate-genotype-project-core" }
 genotype_project = { version = "0.15.0", path = "../crate-genotype-project" }
+genotype_workspace = { version = "0.15.0", path = "../crate-genotype-workspace" }
 genotype_lang_core_project = { version = "0.15.0", path = "../crate-genotype-lang-core-project" }
 genotype_lang_core_config = { version = "0.15.0", path = "../crate-genotype-lang-core-config" }
 genotype_lang_ts_project = { version = "0.15.0", path = "../crate-genotype-lang-ts-project" }
@@ -23,6 +24,7 @@ genotype_lang_py_tree = { version = "0.15.0", path = "../crate-genotype-lang-py-
 genotype_lang_py_config = { version = "0.15.0", path = "../crate-genotype-lang-py-config" }
 genotype_lang_rs_project = { version = "0.15.0", path = "../crate-genotype-lang-rs-project" }
 genotype_lang_rs_config = { version = "0.15.0", path = "../crate-genotype-lang-rs-config" }
+relative-path = { version = "1.9.3", features = ["serde"] }
 clap = { version = "4.5.19", features = ["derive"] }
 miette = { version = "7.6.0", features = ["fancy", "serde"] }
 thiserror = "1.0.64"

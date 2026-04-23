@@ -20,10 +20,10 @@ pub use error::*;
 
 /// Project module.
 #[derive(Debug, PartialEq, Clone, Serialize)]
-pub struct GtProjectModule {
+pub struct GtpModule {
     /// Module path relative to the src directory.
     /// TODO: Make it relative to the project root (config) path.
-    pub path: GtModulePath,
+    pub path: GtpModulePath,
     /// Module tree node.
     pub module: GtModule,
     /// Project module resolve.
@@ -35,11 +35,11 @@ pub struct GtProjectModule {
     pub source_code: NamedSource<String>,
 }
 
-impl GtProjectModule {
+impl GtpModule {
     pub fn try_new(
         project_resolve: &GtpResolve,
-        modules: &[GtProjectModuleParse],
-        parse: GtProjectModuleParse,
+        modules: &[GtpModuleParse],
+        parse: GtpModuleParse,
     ) -> Result<Self> {
         let mut module_resolve = GtpModuleResolve::try_new(modules, &parse)
             .map_err(|err| err.with_source_code(parse.1.source_code.clone()))?;
@@ -59,7 +59,7 @@ impl GtProjectModule {
         module_resolve.definitions = visitor.drain_definitions();
         module_resolve.reference_definition_ids = visitor.get_reference_definition_ids();
 
-        Ok(GtProjectModule {
+        Ok(GtpModule {
             path: parse.0,
             module: parse.1.module,
             resolve: module_resolve,
