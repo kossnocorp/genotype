@@ -1,25 +1,34 @@
-//! Module-related paths. It is the forth level of paths, relative to [GtpSrcDirPath].
+//! Module-related paths. It is the fourth level of paths, relative to [GtpSrcDirPath].
 //!
 //! Module path is the path to Genotype source file. It represents the module id in a project.
 //!
 //! Types:
 //!
-//! - [GtpModulePath]: Module path relative to the src directory. It encloses [GtpSrcDirRelativePath].
+//! - [GtpModulePath]: Module path relative to [GtpCwdPath].
+//! - [GtpSrcDirRelativeModulePath]: Module path relative to [GtpSrcDirPath].
 
 use crate::prelude::internal::*;
 
-// region: Types
+// region: Cwd-relative module path
 
-// region: Module path
+gtp_cwd_relative_path_wrapper_newtype!(
+    /// Module path relative to cwd.
+    pub struct GtpModulePath(GtpCwdRelativePath);
+);
 
-/// Module path relative to the src directory.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct GtpModulePath(GtpSrcDirRelativePath);
+// endregion
 
-impl GtpModulePath {
+// region: Src dir-relative module path
+
+gtp_relative_path_wrapper_newtype!(
+    /// Module path relative to the src directory.
+    pub struct GtpSrcDirRelativeModulePath(GtpSrcDirRelativePath);
+    parent: GtpSrcDirPath;
+);
+
+impl GtpSrcDirRelativeModulePath {
     #[cfg(feature = "parser")]
-    pub fn resolve(&self, path: &GtPath) -> GtpModulePath {
+    pub fn resolve(&self, path: &GtPath) -> GtpSrcDirRelativeModulePath {
         let parent_path = if let Some(parent) = self.0.relative_path().parent() {
             parent
         } else {
@@ -32,59 +41,25 @@ impl GtpModulePath {
         )
     }
 
-    pub fn as_src_relative_path(self) -> GtpSrcDirRelativePath {
-        self.0
-    }
-
     /// Transforms the src relative path into a package source relative path. It helps targets
     /// generating the correct path for the package source.
-    pub fn to_pkg_src_relative_path(&self, ext: &'static str) -> GtpPkgSrcDirRelativePath {
+    pub fn to_pkg_src_relative_file_path(&self, ext: &'static str) -> GtpPkgSrcDirRelativePath {
         GtpPkgSrcDirRelativePath::new(self.relative_path().with_extension(ext))
     }
 }
 
-impl GtpRelativePath for GtpModulePath {
-    fn new(path: RelativePathBuf) -> Self {
-        Self(GtpSrcDirRelativePath::new(path))
-    }
-
-    fn relative_path(&self) -> &RelativePathBuf {
-        self.0.relative_path()
-    }
-}
-
-impl GtpSrcPathWrapper for GtpModulePath {
-    fn src_path(&self) -> &GtpSrcDirRelativePath {
-        &self.0
-    }
-}
-
-impl From<GtpModulePath> for GtpSrcDirRelativePath {
-    fn from(path: GtpModulePath) -> Self {
-        path.0
-    }
-}
-
-// impl From<&str> for GtpModulePath {
-//     fn from(path: &str) -> Self {
-//         Self::new(path.into())
-//     }
-// }
-
 #[cfg(feature = "parser")]
-impl From<&GtpModulePath> for GtModuleId {
-    fn from(path: &GtpModulePath) -> Self {
+impl From<&GtpSrcDirRelativeModulePath> for GtModuleId {
+    fn from(path: &GtpSrcDirRelativeModulePath) -> Self {
         path.relative_path().with_extension("").as_str().into()
     }
 }
 
 #[cfg(feature = "parser")]
-impl From<GtpModulePath> for GtModuleId {
-    fn from(path: GtpModulePath) -> Self {
+impl From<GtpSrcDirRelativeModulePath> for GtModuleId {
+    fn from(path: GtpSrcDirRelativeModulePath) -> Self {
         (&path).into()
     }
 }
-
-// endregion
 
 // endregion

@@ -1,5 +1,10 @@
 use crate::prelude::internal::*;
 
+pub struct GtpConfigLoaded {
+    pub config: GtpConfig,
+    pub path: GtpCwdRelativePath,
+}
+
 impl GtpConfig {
     #[deprecated(note = "delegate fs ops to project source")]
     pub fn load(path: &Path) -> Result<Self> {

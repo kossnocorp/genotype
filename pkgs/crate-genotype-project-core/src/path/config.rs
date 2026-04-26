@@ -4,9 +4,6 @@
 //! the config-related paths:
 //!
 //! - [super::root]
-//! Traits:
-//!
-//! - [GtpConfigDirRelativePathWrapper]: Trait for paths that wraps [GtpConfigDirRelativePath] and can be converted to it.
 //!
 //! Types:
 //!
@@ -16,38 +13,19 @@
 
 use crate::prelude::internal::*;
 
-// region: Traits
-
-// region: Config dir-relative path wrapper path trait
-
-pub trait GtpConfigDirRelativePathWrapper: GtpRelativePath {}
-
-// endregion
-
-// endregion
-
-// region: Types
-
 // region: Config file path
 
-/// Config path relative to the working directory.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct GtpConfigFilePath(GtpCwdRelativePath);
+gtp_cwd_relative_path_wrapper_newtype!(
+    /// Config path relative to the working directory.
+    pub struct GtpConfigFilePath(GtpCwdRelativePath);
+);
 
-impl GtpRelativePath for GtpConfigFilePath {
-    fn new(path: RelativePathBuf) -> Self {
-        Self(GtpCwdRelativePath::new(path))
-    }
-
-    fn relative_path(&self) -> &RelativePathBuf {
-        self.0.relative_path()
-    }
-}
-
-impl From<GtpCwdRelativePath> for GtpConfigFilePath {
-    fn from(path: GtpCwdRelativePath) -> Self {
-        Self(path)
+impl GtpConfigFilePath {
+    pub fn to_config_dir_path(&self) -> GtpConfigDirPath {
+        self.0.to_parent().map_or_else(
+            || GtpConfigDirPath::new(".".into()),
+            GtpConfigDirPath::from_cwd_relative_path,
+        )
     }
 }
 
@@ -55,54 +33,19 @@ impl From<GtpCwdRelativePath> for GtpConfigFilePath {
 
 // region: Config dir path
 
-/// Config directory path relative to the working directory.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct GtpConfigDirPath(GtpCwdRelativePath);
-
-impl GtpRelativePath for GtpConfigDirPath {
-    fn new(path: RelativePathBuf) -> Self {
-        Self(GtpCwdRelativePath::new(path))
-    }
-
-    fn relative_path(&self) -> &RelativePathBuf {
-        self.0.relative_path()
-    }
-}
-
-impl GtpCwdRelativeDirPathWrapper<GtpConfigDirRelativePath> for GtpConfigDirPath {}
-
-impl From<GtpCwdRelativePath> for GtpConfigDirPath {
-    fn from(path: GtpCwdRelativePath) -> Self {
-        Self(path)
-    }
-}
+gtp_cwd_relative_dir_path_wrapper_newtype!(
+    /// Config directory path relative to cwd.
+    pub struct GtpConfigDirPath(GtpCwdRelativePath);
+);
 
 // endregion
 
 // region: Config dir-relative path
 
-/// Path relative to the project config directory.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct GtpConfigDirRelativePath(RelativePathBuf);
-
-impl GtpRelativePath for GtpConfigDirRelativePath {
-    fn new(path: RelativePathBuf) -> Self {
-        Self(path.normalize())
-    }
-
-    fn relative_path(&self) -> &RelativePathBuf {
-        &self.0
-    }
-}
-
-// impl From<&str> for GtpConfigDirRelativePath {
-//     fn from(path: &str) -> Self {
-//         Self::new(path.into())
-//     }
-// }
-
-// endregion
+gtp_relative_path_newtype!(
+    /// Path relative to the project config directory.
+    pub struct GtpConfigDirRelativePath;
+    parent: GtpConfigDirPath;
+);
 
 // endregion

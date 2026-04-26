@@ -6,7 +6,7 @@ impl RsProject<'_> {
             path: self
                 .config
                 .pkg_path()
-                .join_as_cwd_relative_path(&".gitignore".into()),
+                .join_str_as_cwd_relative_path(".gitignore"),
             source: r#"target"#.into(),
         }
     }

@@ -10,10 +10,10 @@ pub(crate) mod internal {
     pub use genotype_workspace_core::prelude::*;
     pub use indexmap::IndexMap;
     pub use miette::{
-        Diagnostic, IntoDiagnostic, LabeledSpan, NamedSource, Result, bail, diagnostic, ensure,
-        miette,
+        Context, Diagnostic, IntoDiagnostic, LabeledSpan, NamedSource, Result, bail, diagnostic,
+        ensure, miette,
     };
-    pub use relative_path::{RelativePath, RelativePathBuf};
+    pub use relative_path::{PathExt, RelativePath, RelativePathBuf};
     pub use semver::Version;
     pub use serde::{Deserialize, Serialize, Serializer};
     pub use std::collections::HashMap;

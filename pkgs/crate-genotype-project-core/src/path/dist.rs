@@ -5,79 +5,45 @@
 //!
 //! - [super::pkg]
 //!
-//! Traits:
-//!
-//! - [GtpDistPathWrapper]: Trait for paths that wraps [GtpDistDirRelativePath] and can be converted to it.
-//!
 //! Types:
 //!
-//! - [GtpDistDirPath]: Dist dir path relative to the cwd path. It encloses [GtpDistDirRelativePath].
-//! - [GtpDistDirRelativePath]: Path relative to the dist directory. It encloses [RelativePathBuf].
+//! - [GtpDistDirPath]: Dist dir path relative to [GtpCwdPath].
+//! - [GtpRootDirRelativeDistDirPath]: Dist dir path relative to [GtpRootDirPath].
+//! - [GtpDistDirRelativePath]: Path relative to [GtpDistDirPath].
 
 use crate::prelude::internal::*;
 
-// region: Traits
+// region: Dist dir path
 
-// region: Dist dir wrapper path trait
-
-pub trait GtpDistPathWrapper: GtpRelativePath {
-    fn dist_path(&self) -> &GtpDistDirRelativePath;
-}
+gtp_cwd_relative_dir_path_wrapper_newtype!(
+    /// Dist dir path relative to cwd path.
+    pub struct GtpDistDirPath(GtpCwdRelativePath);
+);
 
 // endregion
 
-// region: Types
+// region: Root dir-relative dist dir path
 
-// region: Dist dir path
+gtp_relative_path_wrapper_newtype!(
+    /// Dist dir path relative to the root dir.
+    pub struct GtpRootDirRelativeDistDirPath(GtpRootDirRelativePath);
+    parent: GtpRootDirPath;
+);
 
-/// Dist dir path relative to the root dir.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct GtpDistDirPath(GtpRootDirRelativePath);
-
-impl GtpRelativePath for GtpDistDirPath {
-    fn new(path: RelativePathBuf) -> Self {
-        Self(GtpRootDirRelativePath::new(path))
-    }
-
-    fn relative_path(&self) -> &RelativePathBuf {
-        self.0.relative_path()
+impl Default for GtpRootDirRelativeDistDirPath {
+    fn default() -> Self {
+        Self::new("dist".into())
     }
 }
-
-impl GtpCwdRelativeDirPathWrapper<GtpDistDirRelativePath> for GtpDistDirPath {}
-
-// impl From<GtpRootPath> for GtpDistDirPath {
-//     fn from(path: GtpRootPath) -> Self {
-//         Self(GtpCwdPath::from(path))
-//     }
-// }
 
 // endregion
 
 // region: Dist dir-relative path
 
-/// Path relative to [GtpDistDirPath].
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct GtpDistDirRelativePath(RelativePathBuf);
-
-impl GtpRelativePath for GtpDistDirRelativePath {
-    fn new(path: RelativePathBuf) -> Self {
-        Self(path.normalize())
-    }
-
-    fn relative_path(&self) -> &RelativePathBuf {
-        &self.0
-    }
-}
-
-// impl From<&str> for GtpDistDirRelativePath {
-//     fn from(path: &str) -> Self {
-//         Self::new(path.into())
-//     }
-// }
-
-// endregion
+gtp_relative_path_newtype!(
+    /// Path relative to the dist directory.
+    pub struct GtpDistDirRelativePath;
+    parent: GtpDistDirPath;
+);
 
 // endregion

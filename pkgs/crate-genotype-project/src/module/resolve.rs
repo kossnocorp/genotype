@@ -4,7 +4,7 @@ use crate::prelude::internal::*;
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GtpModuleResolve {
     /// Paths resolve.
-    pub paths: IndexMap<GtPath, GtpModulePath>,
+    pub paths: IndexMap<GtPath, GtpSrcDirRelativeModulePath>,
     /// Identifiers resolve.
     pub identifiers: IndexMap<GtIdentifier, GtpModuleIdentifierResolve>,
     /// Definitions resolve.
@@ -16,7 +16,7 @@ pub struct GtpModuleResolve {
 impl GtpModuleResolve {
     pub fn try_new(modules: &[GtpModuleParse], parse: &GtpModuleParse) -> Result<Self> {
         // Resolve module dependencies by mapping local paths to project module paths
-        let mut paths: IndexMap<GtPath, GtpModulePath> = IndexMap::new();
+        let mut paths: IndexMap<GtPath, GtpSrcDirRelativeModulePath> = IndexMap::new();
         for local_path in parse.1.resolve.deps.iter() {
             // Continue if the dependency is already resolved or it is a package path
             if paths.contains_key(local_path) || local_path.kind() == GtPathKind::Package {

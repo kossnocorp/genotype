@@ -13,11 +13,13 @@ use std::{
 mod paths;
 pub use paths::*;
 
+mod pkg;
+
 /// Genotype project. Represents configuration with currently loaded modules.
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GtProject {
     /// Known project modules mapped by their workspace path.
-    modules: HashMap<GtpModulePath, GtpModuleState>,
+    modules: HashMap<GtpSrcDirRelativeModulePath, GtpModuleState>,
     /// Parsed project modules. Represents final state produced by legacy loading logic.
     #[deprecated]
     pub modules_legacy: Vec<GtpModule>,
@@ -28,8 +30,8 @@ pub struct GtProject {
 }
 
 impl GtProject {
-    pub fn try_new(config: GtpConfig) -> Result<Self> {
-        let paths = GtpPaths::try_new(&config)
+    pub fn try_new(config_file_path: GtpConfigFilePath, config: GtpConfig) -> Result<Self> {
+        let paths = GtpPaths::try_new(config_file_path, &config)
             .wrap_err("failed to initialize project paths from config")?;
 
         Ok(Self {
@@ -40,12 +42,12 @@ impl GtProject {
         })
     }
 
-    pub fn load(config: GtpConfig) -> Result<Self> {
-        let paths = GtpPaths::try_new(&config)
+    pub fn load(config_file_path: GtpConfigFilePath, config: GtpConfig) -> Result<Self> {
+        let paths = GtpPaths::try_new(config_file_path, &config)
             .wrap_err("failed to initialize project paths from config")?;
 
-        let src_path = config.src_path();
-        let entries = glob(config.entry_path().as_str())
+        // let entries = glob(config.entry_path().as_str())
+        let entries = glob(".")
             .map_err(|_| GtpError::Unknown)?
             .collect::<Result<Vec<_>, _>>()
             .map_err(|_| GtpError::Unknown)?
@@ -56,14 +58,15 @@ impl GtProject {
                     .and_then(|path| {
                         path.strip_prefix(paths.src.relative_path().normalize())
                             .map_err(|_| GtpError::Unknown)
-                            .map(|path| GtpModulePath::new(path.into()))
+                            .map(|path| GtpSrcDirRelativeModulePath::new(path.into()))
                     })
             })
             .collect::<Result<Vec<_>, _>>()
             .map_err(|_| GtpError::Unknown)?;
 
         if entries.is_empty() {
-            return Err(GtpError::NoEntries(config.entry_path().as_str().into()).into());
+            // return Err(GtpError::NoEntries(config.entry_path().as_str().into()).into());
+            return Err(GtpError::NoEntries(".".into()).into());
         }
 
         let processed_paths = Arc::new(Mutex::new(HashSet::new()));
@@ -73,12 +76,13 @@ impl GtProject {
             let config = Arc::new(config.clone());
 
             for entry in entries {
+                let src_dir_path = Arc::new(paths.src.clone());
                 let config = Arc::clone(&config);
                 let processed_paths = Arc::clone(&processed_paths);
                 let modules = Arc::clone(&modules);
 
                 scope.spawn(|scope| {
-                    Self::load_module(config, entry, scope, processed_paths, modules)
+                    Self::load_module(src_dir_path, config, entry, scope, processed_paths, modules)
                 });
             }
         });
@@ -111,10 +115,11 @@ impl GtProject {
     }
 
     fn load_module(
+        src_dir_path: Arc<GtpSrcDirPath>,
         config: Arc<GtpConfig>,
-        module_path: GtpModulePath,
+        module_path: GtpSrcDirRelativeModulePath,
         scope: &Scope<'_>,
-        processed_paths: Arc<Mutex<HashSet<GtpModulePath>>>,
+        processed_paths: Arc<Mutex<HashSet<GtpSrcDirRelativeModulePath>>>,
         modules: Arc<Mutex<Vec<Result<GtpModuleParse>>>>,
     ) {
         // Check if the module is already processed to avoid infinite recursion.
@@ -126,26 +131,35 @@ impl GtProject {
             processed.insert(module_path.clone());
         }
 
-        let result = GtpModuleParse::try_new(&config, module_path).and_then(|parse| {
-            parse.deps().map(|deps| {
-                // Iterate each module dependency and load it in a thread.
-                for dep in deps {
-                    let config = Arc::clone(&config);
-                    let processed_paths = Arc::clone(&processed_paths);
-                    let modules = Arc::clone(&modules);
+        let result =
+            GtpModuleParse::try_new(&src_dir_path, &config, module_path).and_then(|parse| {
+                parse.deps().map(|deps| {
+                    // Iterate each module dependency and load it in a thread.
+                    for dep in deps {
+                        let src_dir_path = Arc::clone(&src_dir_path);
+                        let config = Arc::clone(&config);
+                        let processed_paths = Arc::clone(&processed_paths);
+                        let modules = Arc::clone(&modules);
 
-                    scope.spawn(|scope| {
-                        Self::load_module(config, dep, scope, processed_paths, modules);
-                    });
-                }
+                        scope.spawn(|scope| {
+                            Self::load_module(
+                                src_dir_path,
+                                config,
+                                dep,
+                                scope,
+                                processed_paths,
+                                modules,
+                            );
+                        });
+                    }
 
-                // Push the module parse result to the modules vector.
-                {
-                    let mut modules = modules.lock().expect("Failed to lock modules");
-                    modules.push(Ok(parse));
-                }
-            })
-        });
+                    // Push the module parse result to the modules vector.
+                    {
+                        let mut modules = modules.lock().expect("Failed to lock modules");
+                        modules.push(Ok(parse));
+                    }
+                })
+            });
 
         // If parsing failed, push the error to the modules vector.
         if let Err(err) = result {
@@ -163,7 +177,7 @@ mod tests {
     #[test]
     fn test_glob() {
         let config = basic_config();
-        let project = GtProject::load(config);
+        let project = GtProject::load("genotype.toml".into(), config);
         assert_ron_snapshot!(project.unwrap(), @r#"
         GtProject(
           modules: [
@@ -560,7 +574,7 @@ mod tests {
     #[test]
     fn test_entry() {
         let config = GtpConfig::from_entry("module", "./examples/basic", "order.type");
-        let project = GtProject::load(config);
+        let project = GtProject::load("genotype.toml".into(), config);
         assert_ron_snapshot!(project.unwrap(), @r#"
         GtProject(
           modules: [
@@ -956,9 +970,8 @@ mod tests {
 
     #[test]
     fn test_process_anonymous() {
-        let _module_path: GtpModulePath = "anonymous.type".into();
         let config = GtpConfig::from_entry("module", "./examples/process", "anonymous.type");
-        let project = GtProject::load(config);
+        let project = GtProject::load("genotype.toml".into(), config);
         assert_ron_snapshot!(
             project.unwrap(),
             @r#"
@@ -1171,7 +1184,7 @@ mod tests {
             "./examples/errors/undefined-inline",
             "collection.type",
         );
-        let error = GtProject::load(config).unwrap_err();
+        let error = GtProject::load("genotype.toml".into(), config).unwrap_err();
         assert_debug_snapshot!(
           error,
           @r#"

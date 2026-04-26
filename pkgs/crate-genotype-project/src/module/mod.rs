@@ -23,7 +23,7 @@ pub use error::*;
 pub struct GtpModule {
     /// Module path relative to the src directory.
     /// TODO: Make it relative to the project root (config) path.
-    pub path: GtpModulePath,
+    pub path: GtpSrcDirRelativeModulePath,
     /// Module tree node.
     pub module: GtModule,
     /// Project module resolve.

@@ -1,6 +1,6 @@
 use crate::prelude::internal::*;
 
-impl<Lang: GtlConfig> GtpConfigPkg<'_, Lang> {
+impl<Lang: GtlConfig> GtpPkgConfig<'_, Lang> {
     /// Returns owned package directory path, i.e. "dist/rs".
     pub fn pkg_path(&self) -> GtpPkgDirPath {
         self.dist
@@ -16,19 +16,20 @@ impl<Lang: GtlConfig> GtpConfigPkg<'_, Lang> {
     /// Returns owned package source path, i.e. "dist/rs/src".
     pub fn pkg_src_path(&self) -> GtpPkgSrcDirPath {
         self.pkg_path()
-            .join_as_cwd_relative_path(&self.target.src_dir_name().into())
+            .join_as_cwd_relative_path(&self.target.src_dir_name())
             .into()
     }
 
     /// Returns owned package src file path, i.e. "dist/rs/src/lib.rs".
     pub fn pkg_src_file_path(&self, path: &GtpPkgSrcDirRelativePath) -> GtpCwdRelativePath {
-        self.pkg_src_path().join(path)
+        self.pkg_src_path().join_as_cwd_relative_path(path)
     }
 
     /// Returns owned package relative source path, i.e. "src".
     pub fn pkg_relative_src_path(&self) -> GtpPkgDirRelativePath {
         self.target.src_dir_name().into()
     }
+
     /// Returns owned package source relative file path, i.e. "src/lib.rs".
     pub fn pkg_relative_src_file_path(&self, path: &RelativePathBuf) -> GtpPkgDirRelativePath {
         self.pkg_relative_src_path().join_relative_path(path)

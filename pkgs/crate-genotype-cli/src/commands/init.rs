@@ -3,7 +3,8 @@ use crate::prelude::internal::*;
 #[derive(Args)]
 pub struct GtInitCommand {
     /// Where to initialize the project, by default it will be the current directory.
-    path: Option<GtpRootDirPath>,
+    #[arg(default_value = ".")]
+    path: GtpCwdRelativeOrAbsoluteStringPath,
 }
 
 pub fn init_command(args: &GtInitCommand) -> Result<()> {
@@ -15,28 +16,32 @@ pub fn init_command(args: &GtInitCommand) -> Result<()> {
 
     configure_targets(&mut config, &name)?;
 
-    let root = args
-        .path
-        .clone()
-        .unwrap_or_else(|| GtpRootDirPath::new(".".into()));
+    let base_path: GtpCwdRelativePath = (&args.path).try_into()?;
 
-    create_dir_all(root.as_str()).map_err(|_| GtCliError::FailedCreateDir(root.as_str().into()))?;
+    // let root = args
+    //     .path
+    //     .clone()
+    //     .unwrap_or_else(|| GtpConfigDirRelativeRootDirPath::new(".".into()));
 
-    config.save(Path::new(&root.as_str()))?;
+    create_dir_all(base_path.as_str())
+        .map_err(|_| GtCliError::FailedCreateDir(base_path.as_str().into()))?;
 
-    let src = root.join(&config.src);
+    config.save(&args.path)?;
 
-    create_dir_all(src.as_str()).map_err(|_| GtCliError::FailedCreateDir(src.as_str().into()))?;
+    let src_path = base_path.join_relative_path(&config.src.relative_path());
+
+    create_dir_all(src_path.as_str())
+        .map_err(|_| GtCliError::FailedCreateDir(src_path.as_str().into()))?;
 
     for (file, content) in GUIDE_FILES {
-        write(src.join_path(&file.into()).as_str(), content)
-            .map_err(|_| GtCliError::FailedWrite(src.join_path(&file.into()).as_str().into()))?;
+        write(src_path.join_str(&file).as_str(), content)
+            .map_err(|_| GtCliError::FailedWrite(src_path.join_str(&file).as_str().into()))?;
     }
 
     println!(
         "{generated} project at {path:?}, run `{command}` to build the project",
         generated = "Generated".green().bold(),
-        path = root.as_str(),
+        path = base_path.as_str(),
         command = "gt build".yellow().bold()
     );
 

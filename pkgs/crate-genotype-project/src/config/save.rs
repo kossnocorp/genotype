@@ -1,7 +1,9 @@
 use crate::prelude::internal::*;
 
 impl GtpConfig {
-    pub fn save(&self, path: &Path) -> Result<()> {
+    pub fn save(&self, path: &GtpCwdRelativeOrAbsoluteStringPath) -> Result<()> {
+        let path: GtpCwdRelativePath = path.try_into()?;
+        let path = path.to_path_buf();
         let file = if path.is_dir() {
             unimplemented!()
             // match Self::find(path) {

@@ -11,7 +11,7 @@ impl GtlProjectModule<TsConfig> for TsProjectModule {
     type Dependency = TsDependencyIdent;
 
     fn generate(config: &TsConfig, module: &GtpModule) -> Result<Self> {
-        let path = module.path.to_pkg_src_relative_path("ts");
+        let path = module.path.to_pkg_src_relative_file_path("ts");
 
         let mut resolve = TsConvertResolve::new();
         let mut prefixes: HashMap<String, u8> = HashMap::new();

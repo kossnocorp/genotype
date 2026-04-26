@@ -7,53 +7,18 @@
 //!
 //! - [super::config]
 //!
-//! Traits:
-//!
-//! - [GtpCwdRelativePathWrapper]: Trait for paths that wraps [GtpCwdRelativePath] and can be converted to it.
-//! - [GtpCwdRelativeDirPathWrapper]: Similar to [GtpCwdRelativePathWrapper], but for dir-guaranteed paths.
-//!
 //! Types:
 //!
 //! - [GtpCwdPath]: Absolute canonical cwd path. It encloses absolute [PathBuf].
 //! - [GtpCwdRelativePath]: Path relative to [GtpCwdPath]. It encloses [RelativePathBuf].
+//!
+//! Traits:
+//!
+//! - [GtpCwdRelativePathWrapper]: Trait for paths that wraps [GtpCwdRelativePath] and can be converted to it.
+//! - [GtpDirPath]: Similar to [GtpCwdRelativePathWrapper], but for cwd-relative directory paths.
+//! - [GtpParentRelativePath]: Trait for paths that are relative to a cwd-relative parent directory.
 
 use crate::prelude::internal::*;
-
-// region: Traits
-
-// region: Cwd-relative path wrapper trait
-
-pub trait GtpCwdRelativePathWrapper: GtpRelativePath {
-    fn to_module_path(&self, src_dir_path: &GtpSrcDirPath) -> Result<GtpModulePath> {
-        let rel_path = self
-            .relative_path()
-            .strip_prefix(src_dir_path.relative_path())
-            .map_err(|_| {
-                miette!(
-                    "path '{}' is not under src directory '{}'",
-                    self.display(),
-                    src_dir_path.display()
-                )
-            })?;
-        Ok(GtpModulePath::new(rel_path.to_owned()))
-    }
-}
-
-// endregion
-
-// region: Cwd-relative dir path wrapper trait
-
-pub trait GtpCwdRelativeDirPathWrapper<ChildPath: GtpRelativePath>: GtpRelativePath {
-    fn join_as_cwd_relative_path(&self, path: &ChildPath) -> GtpCwdRelativePath {
-        GtpCwdRelativePath::new(self.relative_path().join_normalized(path.relative_path()))
-    }
-}
-
-// endregion
-
-// endregion
-
-// region: Types
 
 // region: Absolute cwd path
 
@@ -80,29 +45,53 @@ impl GtpCwdPath {
 
 // region: Cwd-relative path
 
-/// Path relative to [GtpCwdPath].
+gtp_relative_path_newtype!(
+    /// Path relative to cwd.
+    pub struct GtpCwdRelativePath;
+);
+
+// endregion
+
+// region: Cwd-relative str-wrapper path
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct GtpCwdRelativePath(RelativePathBuf);
+pub struct GtpCwdRelativeOrAbsoluteStringPath(String);
 
-impl GtpRelativePath for GtpCwdRelativePath {
-    fn new(path: RelativePathBuf) -> Self {
-        Self(path.normalize())
-    }
-
-    fn relative_path(&self) -> &RelativePathBuf {
-        &self.0
+impl From<&str> for GtpCwdRelativeOrAbsoluteStringPath {
+    fn from(path: &str) -> Self {
+        Self(path.to_string())
     }
 }
 
-impl GtpCwdRelativePathWrapper for GtpCwdRelativePath {}
+impl TryInto<GtpCwdRelativePath> for &GtpCwdRelativeOrAbsoluteStringPath {
+    type Error = miette::Report;
 
-// impl From<&str> for GtpCwdRelativePath {
-//     fn from(path: &str) -> Self {
-//         Self::new(path.into())
-//     }
-// }
+    fn try_into(self) -> Result<GtpCwdRelativePath> {
+        let cwd_path = GtpCwdPath::try_new()?;
+        let path = PathBuf::from(&self.0);
+        let rel_path = if path.is_absolute() {
+            path.relative_to(&cwd_path.as_path())
+                .map_err(|e| miette!(e)).wrap_err_with(||format!("failed to resolve base path from '{}' relative to current working directory '{}'", path.display(), cwd_path.as_path().display()))?
+        } else {
+            RelativePathBuf::from_path(&path)
+                .map_err(|e| miette!(e))
+                .wrap_err_with(|| {
+                    format!(
+                        "failed to convert base path '{}' to relative path",
+                        path.display()
+                    )
+                })?
+        };
+        Ok(GtpCwdRelativePath::new(rel_path))
+    }
+}
 
-// endregion
+impl TryInto<GtpCwdRelativePath> for GtpCwdRelativeOrAbsoluteStringPath {
+    type Error = miette::Report;
+
+    fn try_into(self) -> Result<GtpCwdRelativePath> {
+        (&self).try_into()
+    }
+}
 
 // endregion

@@ -6,7 +6,7 @@ use crate::prelude::internal::*;
 pub struct GtBuildCommand {
     /// What to build.
     #[arg(default_value = ".")]
-    path: PathBuf,
+    path: GtpCwdRelativeOrAbsoluteStringPath,
 }
 
 pub fn build_command(args: &GtBuildCommand) -> Result<()> {
@@ -23,7 +23,7 @@ pub fn build_command(args: &GtBuildCommand) -> Result<()> {
 
     // TODO: Move these into project runtime.
     // let config = GtConfig::load_with(&args.path, args.config.as_ref())?;
-    // let project = GtProject::load(config)?;
+    // let project = GtProject::load("genotype.toml".into(), config)?;
 
     let mut langs = vec![];
 
@@ -50,7 +50,7 @@ pub fn build_command(args: &GtBuildCommand) -> Result<()> {
     println!(
         "{} project to {:?}",
         "Generated".green().bold(),
-        project.config.dist_path()
+        project.config.dist
     );
 
     Ok(())

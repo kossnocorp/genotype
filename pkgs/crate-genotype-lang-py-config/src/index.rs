@@ -17,8 +17,8 @@ impl GtlConfig for PyConfig {
         &self.common
     }
 
-    fn src_dir_name(&self) -> &str {
-        self.module.as_str()
+    fn src_dir_name(&self) -> GtpPkgDirRelativePath {
+        self.module.as_str().into()
     }
 }
 

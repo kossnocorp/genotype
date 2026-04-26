@@ -3,7 +3,7 @@ use crate::prelude::internal::*;
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct TsProject<'a> {
     pub modules: Vec<TsProjectModule>,
-    pub config: GtpConfigPkg<'a, TsConfig>,
+    pub config: GtpPkgConfig<'a, TsConfig>,
 }
 
 impl<'a> GtlProject<'a> for TsProject<'a> {
@@ -12,7 +12,7 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
     type LangConfig = TsConfig;
 
     fn generate(project: &'a GtProject) -> Result<Self> {
-        let config = project.config.pkg_config_ts();
+        let config = project.pkg_config_ts();
         let modules = project
             .modules_legacy
             .iter()
@@ -82,7 +82,7 @@ mod tests {
     #[test]
     fn test_convert_base() {
         let config = GtpConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         assert_ron_snapshot!(
           TsProject::generate(&project).unwrap().modules,
@@ -158,7 +158,7 @@ mod tests {
     #[test]
     fn test_convert_glob() {
         let config = GtpConfig::from_root("module", "./examples/glob");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         assert_ron_snapshot!(
           TsProject::generate(&project).unwrap().modules,
@@ -249,7 +249,7 @@ mod tests {
     #[test]
     fn test_render() {
         let config = GtpConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         assert_ron_snapshot!(
           TsProject::generate(&project).unwrap().dist().unwrap(),
@@ -289,7 +289,7 @@ mod tests {
             "genotype_json_types".into(),
             "@genotype/json".into(),
         )]);
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         assert_ron_snapshot!(
           TsProject::generate(&project).unwrap().dist().unwrap(),
@@ -323,7 +323,7 @@ mod tests {
         let mut config = GtpConfig::from_root("module", "./examples/basic");
         config.version = Some("0.2.0".parse().unwrap());
 
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         let dist = TsProject::generate(&project).unwrap().dist().unwrap();
         let package_file = get_package_file(&dist);
@@ -352,7 +352,7 @@ mod tests {
             .manifest
             .insert("version".into(), "0.3.0".into());
 
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         let dist = TsProject::generate(&project).unwrap().dist().unwrap();
         let package_file = get_package_file(&dist);
@@ -376,7 +376,7 @@ mod tests {
         let mut config = GtpConfig::from_root("module", "./examples/basic");
         config.ts.lang.mode = TsMode::Zod;
 
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
         let dist = TsProject::generate(&project).unwrap().dist().unwrap();
 
         let package_file = get_package_file(&dist);
@@ -415,7 +415,7 @@ mod tests {
         let mut config = GtpConfig::from_root("module", "./examples/basic");
         config.ts.lang.prefer = TsPrefer::Alias;
 
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
         let dist = TsProject::generate(&project).unwrap().dist().unwrap();
 
         let author_file = get_dist_file(&dist, "src/author.ts");

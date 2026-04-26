@@ -11,7 +11,7 @@ impl GtlProjectModule<PyConfig> for PyProjectModule {
     type Dependency = PyDependencyIdent;
 
     fn generate(config: &PyConfig, module: &GtpModule) -> Result<Self> {
-        let path = module.path.to_pkg_src_relative_path("py");
+        let path = module.path.to_pkg_src_relative_file_path("py");
         let name = py_parse_module_path(path.with_extension("").as_str().into());
 
         let mut resolve = PyConvertResolve::default();

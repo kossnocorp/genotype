@@ -1,8 +1,5 @@
 use crate::prelude::internal::*;
 
-mod pkg;
-pub use pkg::*;
-
 mod error;
 pub use error::*;
 
@@ -22,25 +19,21 @@ pub use manifest::*;
 
 pub const GTCONFIG_FILE: &str = "genotype.toml";
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
 pub struct GtpConfig {
     /// Project name.
     pub name: Option<String>,
     /// Global package version used as default for enabled language manifests.
     pub version: Option<Version>,
     /// Project root directory relative to the cwd. It defaults to ".".
-    #[serde(default = "GtpConfig::default_root")]
-    pub root: RelativePathBuf,
+    pub root: GtpConfigDirRelativeRootDirPath,
     /// Dist directory relative to the root directory. It defaults to "dist".
-    #[serde(default = "GtpConfig::default_dist")]
     #[serde(alias = "out")]
-    pub dist: RelativePathBuf,
+    pub dist: GtpRootDirRelativeDistDirPath,
     /// Source directory relative to the root directory. It defaults to "src".
-    #[serde(default = "GtpConfig::default_src")]
-    pub src: RelativePathBuf,
+    pub src: GtpRootDirRelativeSrcDirPath,
     /// Project entry pattern. It defaults to `**/*.type` relative to [GtpConfig::src].
-    #[serde(default = "GtpConfig::default_entry")]
-    pub entry: RelativePathBuf,
+    pub entry: GtpSrcDirRelativeEntryPattern,
     /// TypeScript config.
     #[serde(default, alias = "typescript")]
     pub ts: TsConfig,
@@ -92,39 +85,6 @@ impl GtpConfig {
             src: ".".into(),
             source_toml_str: String::new(),
             ..GtpConfig::default()
-        }
-    }
-
-    pub fn default_root() -> RelativePathBuf {
-        ".".into()
-    }
-
-    pub fn default_dist() -> RelativePathBuf {
-        "dist".into()
-    }
-
-    pub fn default_src() -> RelativePathBuf {
-        "src".into()
-    }
-
-    pub fn default_entry() -> RelativePathBuf {
-        "**/*.type".into()
-    }
-}
-
-impl Default for GtpConfig {
-    fn default() -> Self {
-        GtpConfig {
-            name: None,
-            version: None,
-            root: GtpConfig::default_root(),
-            dist: GtpConfig::default_dist(),
-            src: GtpConfig::default_src(),
-            entry: GtpConfig::default_entry(),
-            ts: TsConfig::default(),
-            py: PyConfig::default(),
-            rs: RsConfig::default(),
-            source_toml_str: String::new(),
         }
     }
 }

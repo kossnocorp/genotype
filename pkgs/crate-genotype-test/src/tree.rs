@@ -13,7 +13,7 @@ pub fn parse_module(source_code: &str) -> GtModule {
 
     // TODO: This flow replicates what GtProject::load does. Find a better way
     // to share this code or simplify each step into functions.
-    let module_path = GtpModulePath::new(
+    let module_path = GtpSrcDirRelativeModulePath::new(
         RelativePathBuf::from_path("src/module.type").expect("must be correct path"),
     );
     let source_code = NamedSource::new("src/module.type", source_code.into());

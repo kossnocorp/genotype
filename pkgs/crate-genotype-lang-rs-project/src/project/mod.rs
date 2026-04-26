@@ -7,7 +7,7 @@ mod modules;
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct RsProject<'a> {
     pub modules: Vec<RsProjectModule>,
-    pub config: GtpConfigPkg<'a, RsConfig>,
+    pub config: GtpPkgConfig<'a, RsConfig>,
 }
 
 impl<'a> GtlProject<'a> for RsProject<'a> {
@@ -16,7 +16,7 @@ impl<'a> GtlProject<'a> for RsProject<'a> {
     type LangConfig = RsConfig;
 
     fn generate(project: &'a GtProject) -> Result<Self> {
-        let config = project.config.pkg_config_rs();
+        let config = project.pkg_config_rs();
         let modules = Self::generate_modules(config.target, &project.modules_legacy)?;
         Ok(Self { modules, config })
     }
@@ -46,7 +46,7 @@ mod tests {
     #[test]
     fn test_convert_base() {
         let config = GtpConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         assert_ron_snapshot!(
           RsProject::generate(&project).unwrap().modules,
@@ -157,7 +157,7 @@ mod tests {
     #[test]
     fn test_convert_glob() {
         let config = GtpConfig::from_root("module", "./examples/glob");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         assert_ron_snapshot!(
           RsProject::generate(&project).unwrap().modules,
@@ -301,7 +301,7 @@ mod tests {
     #[test]
     fn test_render() {
         let config = GtpConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
 
@@ -399,7 +399,7 @@ mod tests {
     #[test]
     fn test_render_nested() {
         let config = GtpConfig::from_root("module", "./examples/nested");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
 
@@ -528,7 +528,7 @@ mod tests {
     #[test]
     fn test_render_recursive_box() {
         let config = GtpConfig::load(Path::new("./examples/recursive")).unwrap();
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
         let node_file = dist
@@ -555,7 +555,7 @@ mod tests {
     #[test]
     fn test_render_recursive_box_with_extensions() {
         let config = GtpConfig::load(Path::new("./examples/recursive")).unwrap();
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
         let tree_file = dist
@@ -603,7 +603,7 @@ mod tests {
     #[test]
     fn test_render_extensions() {
         let config = GtpConfig::from_root("module", "./examples/extensions");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
 
@@ -751,7 +751,7 @@ mod tests {
     #[test]
     fn test_render_dependencies() {
         let config = GtpConfig::load(Path::new("./examples/dependencies")).unwrap();
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
 
@@ -831,7 +831,7 @@ mod tests {
         let mut config = GtpConfig::from_root("module", "./examples/basic");
         config.version = Some("0.2.0".parse().unwrap());
 
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
         let cargo = get_cargo_file(&dist);
@@ -860,7 +860,7 @@ version = "0.3.0"
         )
         .unwrap();
 
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
         let cargo = get_cargo_file(&dist);

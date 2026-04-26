@@ -1,7 +1,5 @@
 use crate::prelude::internal::*;
 use glob::glob;
-use miette::Context;
-use relative_path::PathExt;
 
 /// File system project source. It provides file system interop for the project loader.
 /// It is the default project source used by the system project runtime.
@@ -13,32 +11,17 @@ pub trait GtpSourceFs {
     fn resolve_path_buf(&self, path: &GtpCwdRelativePath) -> PathBuf {
         path.to_path_buf()
     }
-
-    /// Resolves a path to the base path.
-    fn resolve_relative_path(&self, path: &PathBuf) -> Result<GtpCwdRelativePath> {
-        let path = path
-            .relative_to(self.base_path().to_path_buf())
-            .map_err(|e| miette!(e))
-            .wrap_err_with(|| {
-                format!(
-                    "failed to resolve relative path from '{}' to '{}'",
-                    path.display(),
-                    self.base_path().display()
-                )
-            })?;
-        Ok(GtpCwdRelativePath::new(path))
-    }
 }
 
 impl<Type: GtpSourceFs + ?Sized> GtpSource for Type {
     /// Globs files from the given path using the file system.
-    fn glob(&self, path: &GtpCwdRelativePath) -> Result<Vec<GtpCwdRelativePath>> {
+    fn glob(&self, path: &GtpCwdRelativePath) -> Result<Vec<GtpModulePath>> {
         let path_buf = path.to_path_buf();
         let path_str = path_buf
             .to_str()
             .ok_or_else(|| miette!("failed to convert path '{}' to string", path_buf.display()))?;
 
-        let file_paths = glob(path_str)
+        let module_paths = glob(path_str)
             .map_err(|err| {
                 miette!(
                     labels = vec![LabeledSpan::at_offset(err.pos, "here")],
@@ -50,11 +33,16 @@ impl<Type: GtpSourceFs + ?Sized> GtpSource for Type {
                 file_result
                     .map_err(|e| miette!(e))
                     .wrap_err("failed to read file path from glob pattern")
-                    .and_then(|file_path| self.resolve_relative_path(&file_path))
+                    .and_then(|file_path| {
+                        RelativePathBuf::from_path(file_path)
+                            .map_err(|e| miette!(e))
+                            .wrap_err("failed to convert file path from glob into relative path")
+                    })
+                    .map(|file_path| GtpModulePath::from_cwd_relative_path(file_path.into()))
             })
             .collect::<Result<Vec<_>, _>>()?;
 
-        Ok(file_paths)
+        Ok(module_paths)
     }
 
     /// Reads a file from the given path using the file system.

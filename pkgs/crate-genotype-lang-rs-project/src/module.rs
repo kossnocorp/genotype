@@ -11,7 +11,7 @@ impl GtlProjectModule<RsConfig> for RsProjectModule {
     type Dependency = RsDependencyIdent;
 
     fn generate(config: &RsConfig, module: &GtpModule) -> Result<Self> {
-        let path = module.path.to_pkg_src_relative_path("rs");
+        let path = module.path.to_pkg_src_relative_file_path("rs");
 
         let mut convert_resolve = RsConvertResolve::default();
         let mut prefixes: HashMap<String, u8> = HashMap::new();

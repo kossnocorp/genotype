@@ -8,27 +8,18 @@ pub trait GtpLoaderParallel {}
 impl<Type: GtpLoaderParallel + GtpSource + ?Sized> GtpLoader for Type {
     /// Loads all project modules in parallel.
     fn load_all_modules(&self, project: &mut GtProject) -> Result<()> {
-        println!(
-            ">>>>>>>>>>>> project.entry_path(): {}",
-            project.entry_path().display()
-        );
-        println!(
-            ">>>>>>>>>>>> project.root_path(): {}",
-            project.root_path().display()
-        );
-        let entry_path = project.entry_path().to_cwd_path(project.root_path());
-        println!(">>>>>>>>>>>> Entry path: {}", entry_path.display());
-        let src_path = project.src_path();
+        println!(">>>>>>>>>>>> project.paths: {:?}", project.paths);
+
         let module_paths = self
-            .glob(&entry_path)?
+            .glob(project.paths.entry.as_ref())?
             .into_iter()
-            .map(|path| path.to_module_path(&src_path))
-            .collect::<Vec<_>>();
+            .map(|path| path.into())
+            .collect::<Vec<GtpModulePath>>();
 
         ensure!(
             module_paths.len() > 0,
             "no module files found for entry pattern '{}'",
-            entry_path.display()
+            project.paths.entry.display()
         );
 
         // let (tx, rx) = mpsc::channel();

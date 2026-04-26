@@ -6,7 +6,7 @@ pub use fs::*;
 /// Project source trait. It abstracts the file system operations for the project loader.
 pub trait GtpSource {
     /// Globs files from the given path.
-    fn glob(&self, path: &GtpCwdRelativePath) -> Result<Vec<GtpCwdRelativePath>>;
+    fn glob(&self, path: &GtpCwdRelativePath) -> Result<Vec<GtpModulePath>>;
 
     /// Reads a file from the given path.
     fn read_file(&self, path: &GtpCwdRelativePath) -> Result<String>;

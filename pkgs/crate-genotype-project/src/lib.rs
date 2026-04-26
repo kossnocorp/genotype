@@ -22,4 +22,7 @@ pub use runtime::*;
 mod config;
 pub use config::*;
 
+mod pkg;
+pub use pkg::*;
+
 pub mod prelude;

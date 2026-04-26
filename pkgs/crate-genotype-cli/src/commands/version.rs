@@ -6,6 +6,15 @@ pub struct GtVersionCommand {
     pub command: GtVersionSubcommand,
 }
 
+impl GtVersionCommand {
+    pub fn path(&self) -> &GtpCwdRelativeOrAbsoluteStringPath {
+        match &self.command {
+            GtVersionSubcommand::Set(args) => &args.path,
+            GtVersionSubcommand::Bump(args) => &args.path,
+        }
+    }
+}
+
 #[derive(Subcommand)]
 pub enum GtVersionSubcommand {
     /// Set the project package version
@@ -29,7 +38,7 @@ pub struct GtVersionSetCommand {
     pub rs: Option<Version>,
     /// Where to apply the update
     #[arg(default_value = ".")]
-    pub path: GtpRootDirPath,
+    pub path: GtpCwdRelativeOrAbsoluteStringPath,
 }
 
 #[derive(Args)]
@@ -39,7 +48,7 @@ pub struct GtVersionBumpCommand {
     pub part: GtVersionBumpPart,
     /// Where to apply the update
     #[arg(default_value = ".")]
-    pub path: GtpRootDirPath,
+    pub path: GtpCwdRelativeOrAbsoluteStringPath,
 }
 
 #[derive(Debug, Clone, Copy, ValueEnum)]
@@ -50,11 +59,7 @@ pub enum GtVersionBumpPart {
 }
 
 pub fn version_command(args: &GtVersionCommand) -> Result<()> {
-    let path: PathBuf = match &args.command {
-        GtVersionSubcommand::Set(args) => args.path.as_str().into(),
-        GtVersionSubcommand::Bump(args) => args.path.as_str().into(),
-    };
-
+    let path = args.path();
     let project_runtime =
         GtpRuntimeSystem::new(&path).wrap_err("failed to create system project runtime")?;
 

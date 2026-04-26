@@ -5,7 +5,7 @@ use crate::prelude::internal::*;
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct PyProject<'a> {
     pub modules: Vec<PyProjectModule>,
-    pub config: GtpConfigPkg<'a, PyConfig>,
+    pub config: GtpPkgConfig<'a, PyConfig>,
 }
 
 impl<'a> GtlProject<'a> for PyProject<'a> {
@@ -14,7 +14,7 @@ impl<'a> GtlProject<'a> for PyProject<'a> {
     type LangConfig = PyConfig;
 
     fn generate(project: &'a GtProject) -> Result<Self> {
-        let config = project.config.pkg_config_py();
+        let config = project.pkg_config_py();
         let modules = project
             .modules_legacy
             .iter()
@@ -123,7 +123,7 @@ mod tests {
     #[test]
     fn test_convert_base() {
         let config = GtpConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         assert_ron_snapshot!(
           PyProject::generate(&project).unwrap().modules,
@@ -216,7 +216,7 @@ mod tests {
     #[test]
     fn test_convert_glob() {
         let config = GtpConfig::from_root("module", "./examples/glob");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         assert_ron_snapshot!(
           PyProject::generate(&project).unwrap().modules,
@@ -328,7 +328,7 @@ mod tests {
     #[test]
     fn test_render() {
         let config = GtpConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         assert_ron_snapshot!(
           PyProject::generate(&project).unwrap().dist().unwrap(),
@@ -368,7 +368,7 @@ mod tests {
     #[test]
     fn test_render_nested() {
         let config = GtpConfig::from_root("module", "./examples/nested");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         assert_ron_snapshot!(
           PyProject::generate(&project).unwrap().dist().unwrap(),
@@ -415,7 +415,7 @@ mod tests {
         config.py.common.dependencies =
             HashMap::from_iter(vec![("genotype_json_types".into(), "genotype_json".into())]);
 
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         assert_ron_snapshot!(
           PyProject::generate(&project).unwrap().dist().unwrap(),
@@ -451,7 +451,7 @@ mod tests {
     #[test]
     fn test_render_cyclic_lists() {
         let config = GtpConfig::from_root("module", "./examples/cyclic-lists");
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         let dist = PyProject::generate(&project).unwrap().dist().unwrap();
 
@@ -543,7 +543,7 @@ mod tests {
     fn test_render_uses_global_version_by_default() {
         let mut config = GtpConfig::from_root("module", "./examples/basic");
         config.version = Some("0.2.0".parse().unwrap());
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         let dist = PyProject::generate(&project).unwrap().dist().unwrap();
         let pyproject = get_project_file(&dist);
@@ -577,7 +577,7 @@ version = "0.3.0"
         )
         .unwrap();
 
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         let dist = PyProject::generate(&project).unwrap().dist().unwrap();
         let pyproject = get_project_file(&dist);
@@ -612,7 +612,7 @@ name = "module"
         )
         .unwrap();
 
-        let project = GtProject::load(config).unwrap();
+        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         let dist = PyProject::generate(&project).unwrap().dist().unwrap();
         let pyproject = get_project_file(&dist);
