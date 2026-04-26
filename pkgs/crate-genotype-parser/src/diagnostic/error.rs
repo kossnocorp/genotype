@@ -1,6 +1,6 @@
 use crate::prelude::internal::*;
 
-#[derive(Error, Diagnostic, Debug, PartialEq)]
+#[derive(Error, Diagnostic, Debug, PartialEq, Clone)]
 pub enum GtParseError {
     #[error("Failed to parse {1} node")]
     #[diagnostic(code("GTP001"))]

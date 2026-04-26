@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
 /// Genotype node identifier. Used for error reporting and diagnostics.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum GtNode {
     Any,
     Alias,

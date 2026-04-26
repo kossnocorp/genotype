@@ -19,7 +19,7 @@ mod pkg;
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GtProject {
     /// Known project modules mapped by their workspace path.
-    modules: HashMap<GtpSrcDirRelativeModulePath, GtpModuleState>,
+    modules: HashMap<GtpModulePath, GtpModuleState>,
     /// Parsed project modules. Represents final state produced by legacy loading logic.
     #[deprecated]
     pub modules_legacy: Vec<GtpModule>,
@@ -40,6 +40,24 @@ impl GtProject {
             config,
             paths,
         })
+    }
+
+    pub fn init_module(&mut self, path: &GtpModulePath) -> bool {
+        match self.has_module(path) {
+            true => false,
+            false => {
+                self.modules.insert(path.clone(), GtpModuleState::Loading);
+                true
+            }
+        }
+    }
+
+    pub fn has_module(&self, path: &GtpModulePath) -> bool {
+        self.modules.contains_key(path)
+    }
+
+    pub fn set_module(&mut self, path: &GtpModulePath, module_state: GtpModuleState) {
+        self.modules.insert(path.clone(), module_state);
     }
 
     pub fn load(config_file_path: GtpConfigFilePath, config: GtpConfig) -> Result<Self> {

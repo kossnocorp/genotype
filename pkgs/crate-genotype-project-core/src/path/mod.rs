@@ -117,6 +117,12 @@ macro_rules! gtp_relative_path_wrapper_newtype {
                 Self::new(path.into())
             }
         }
+
+        impl Display for $name {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                write!(f, "{}", self.as_str())
+            }
+        }
     };
 
     ($(#[$meta:meta])* $vis:vis struct $name:ident($inner:ty); marker: $marker:path;) => {
