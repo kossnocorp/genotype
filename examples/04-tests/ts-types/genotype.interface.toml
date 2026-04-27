@@ -1,5 +1,5 @@
 name = "genotype-test-ts-types"
-out = "dist/ts-interface"
+dist = "dist/ts-interface"
 
 [ts]
 enabled = true

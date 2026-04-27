@@ -1,5 +1,5 @@
 name = "genotype-test-py-schema-field"
-out = "dist/py-legacy"
+dist = "dist/py-legacy"
 
 [py]
 enabled = true

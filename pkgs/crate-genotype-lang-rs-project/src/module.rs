@@ -1,23 +1,97 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
-pub struct RsProjectModule {
+pub struct RsProjectModuleGenerated {
     pub path: GtpPkgSrcDirRelativePath,
     pub module: RsModule,
     pub resolve: RspModuleResolve,
 }
 
+#[derive(Debug, PartialEq, Clone, Serialize)]
+pub enum RsProjectModule {
+    Generated(RsProjectModuleGenerated),
+    Error(RsProjectModuleError),
+}
+
+#[derive(Error, Debug, PartialEq, Clone, Serialize)]
+pub enum RsProjectModuleError {
+    #[error("Can't generate module `{path}` because it is still in initialized state")]
+    Initialized { path: GtpModulePath },
+
+    #[error(
+        "Can't generate module `{path}` because it is still in parsed state with id `{module_id:?}`"
+    )]
+    Parsed {
+        path: GtpModulePath,
+        module_id: GtModuleId,
+    },
+
+    #[error("Project module `{path}` error: {message}")]
+    ProjectModuleError {
+        path: GtpModulePath,
+        message: String,
+    },
+
+    #[error("Failed generating module `{path}`: {message}")]
+    Generate {
+        path: GtpModulePath,
+        message: String,
+    },
+}
+
 impl GtlProjectModule<RsConfig> for RsProjectModule {
     type Dependency = RsDependencyIdent;
 
-    fn generate(config: &RsConfig, module: &GtpModule) -> Result<Self> {
-        let path = module.path.to_pkg_src_relative_file_path("rs");
+    fn generate(
+        src_path: &GtpSrcDirPath,
+        config: &RsConfig,
+        module_path: &GtpModulePath,
+        module: &GtpModule,
+    ) -> Self {
+        let resolved = match module {
+            GtpModule::Resolved(module) => module,
+            GtpModule::Initialized => {
+                return Self::Error(RsProjectModuleError::Initialized {
+                    path: module_path.clone(),
+                });
+            }
+            GtpModule::Parsed(module) => {
+                return Self::Error(RsProjectModuleError::Parsed {
+                    path: module_path.clone(),
+                    module_id: module.module_parse.module.id.clone(),
+                });
+            }
+            GtpModule::Error(error) => {
+                return Self::Error(RsProjectModuleError::ProjectModuleError {
+                    path: module_path.clone(),
+                    message: error.to_string(),
+                });
+            }
+        };
+
+        let path = module_path
+            .to_module_id(src_path)
+            .map(|module_id| {
+                GtpPkgSrcDirRelativePath::from_str(&format!("{}.rs", module_id.0.as_ref()))
+            })
+            .unwrap_or_else(|_| {
+                resolved
+                    .project_module_parse
+                    .path
+                    .cwd_relative_path()
+                    .relative_path()
+                    .strip_prefix("src")
+                    .map(|relative| GtpPkgSrcDirRelativePath::new(relative.with_extension("rs")))
+                    .unwrap_or_else(|_| GtpPkgSrcDirRelativePath::from_str("unknown.rs"))
+            });
 
         let mut convert_resolve = RsConvertResolve::default();
-        let mut prefixes: HashMap<String, u8> = HashMap::new();
+        let mut prefixes: IndexMap<String, u8> = IndexMap::new();
+        let parse = &resolved.project_module_parse.module_parse;
+        let module_resolve = &resolved.resolve;
 
         // [TODO] I'm pretty sure I can extract it and share with TypeScript and Python too
-        for import in module.module.imports.iter() {
+        for import in parse.module.imports.iter() {
             if import.path.kind() == GtPathKind::Package {
                 convert_resolve.path_module_ids.insert(
                     import.path.id.clone(),
@@ -27,12 +101,13 @@ impl GtlProjectModule<RsConfig> for RsProjectModule {
 
             match &import.reference {
                 GtImportReference::Glob(_) => {
-                    let references = module
-                        .resolve
+                    let references = module_resolve
                         .identifiers
                         .iter()
                         .filter(|(_, resolve)| {
-                            if let GtpModuleIdentifierSource::External(path) = &resolve.source {
+                            if let GtpModuleResolveIdentifierSource::External(path) =
+                                &resolve.source
+                            {
                                 return import.path == *path;
                             }
                             false
@@ -86,27 +161,34 @@ impl GtlProjectModule<RsConfig> for RsProjectModule {
             }
         }
 
-        module.resolve.paths.iter().for_each(|(path, module_path)| {
+        module_resolve.paths.iter().for_each(|(path, module_path)| {
             convert_resolve
                 .path_module_ids
                 .insert(path.id.clone(), module_path.clone().into());
         });
 
-        convert_resolve.reference_definition_ids = module
-            .resolve
+        convert_resolve.reference_definition_ids = module_resolve
             .reference_definition_ids
             .iter()
             .map(|(reference_id, definition_id)| (reference_id.clone(), definition_id.clone()))
             .collect();
 
-        let definitions = module.resolve.definitions.clone();
+        let definitions = module_resolve.definitions.clone();
         let resolve = RspModuleResolve { definitions };
 
-        let module = RsConvertModule::convert(&module.module, &convert_resolve, config)
-            .map_err(|err| err.with_source_code(module.source_code.clone()))?
-            .0;
+        let module = match RsConvertModule::convert(&parse.module, &convert_resolve, config)
+            .map_err(|err| err.with_source_code(resolved.project_module_parse.source_code.clone()))
+        {
+            Ok(module) => module.0,
+            Err(err) => {
+                return Self::Error(RsProjectModuleError::Generate {
+                    path: module_path.clone(),
+                    message: err.to_string(),
+                });
+            }
+        };
 
-        Ok(Self {
+        Self::Generated(RsProjectModuleGenerated {
             path,
             module,
             resolve,
@@ -114,16 +196,28 @@ impl GtlProjectModule<RsConfig> for RsProjectModule {
     }
 
     fn dependencies(&self) -> Vec<Self::Dependency> {
-        self.module
-            .imports
-            .iter()
-            .map(|import| import.dependency.clone())
-            .collect()
+        match self {
+            Self::Generated(module) => module
+                .module
+                .imports
+                .iter()
+                .map(|import| import.dependency.clone())
+                .collect(),
+            Self::Error(_) => vec![],
+        }
     }
 }
 
 impl Hash for RsProjectModule {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        self.path.hash(state);
+        match self {
+            Self::Generated(module) => module.path.hash(state),
+            Self::Error(error) => match error {
+                RsProjectModuleError::Initialized { path }
+                | RsProjectModuleError::Parsed { path, .. }
+                | RsProjectModuleError::ProjectModuleError { path, .. }
+                | RsProjectModuleError::Generate { path, .. } => path.hash(state),
+            },
+        }
     }
 }

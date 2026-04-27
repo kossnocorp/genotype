@@ -34,16 +34,12 @@ impl GtReference {
 mod tests {
     use crate::test::*;
     use crate::*;
-    use insta::assert_ron_snapshot;
-    use miette::NamedSource;
 
     #[test]
     fn test_parse_references() {
         let parse = GtModule::parse(
             "module".into(),
-            NamedSource::new(
-                "module.type",
-                r#"use user/User
+            &r#"use user/User
 
             Author: {
               name: Name,
@@ -51,8 +47,7 @@ mod tests {
             }
 
             Name: string"#
-                    .into(),
-            ),
+                .to_owned(),
         )
         .unwrap();
         assert_ron_snapshot!(

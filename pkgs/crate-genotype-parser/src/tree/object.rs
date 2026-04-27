@@ -127,15 +127,12 @@ mod tests {
 
     #[test]
     fn test_parse_deps_base() {
-        let source_code = NamedSource::new(
-            "module.type",
-            r#"Order: {
+        let source_code = r#"Order: {
                 book: book/Book,
                 user: ./misc/user/User
             }"#
-            .into(),
-        );
-        let parse = GtModule::parse("module".into(), source_code).unwrap();
+        .to_owned();
+        let parse = GtModule::parse("module".into(), &source_code).unwrap();
         assert_ron_snapshot!(
             parse.resolve.deps,
             @r#"
@@ -163,15 +160,12 @@ mod tests {
 
     #[test]
     fn test_parse_deps_normalize() {
-        let source_code = NamedSource::new(
-            "module.type",
-            r#"Order: {
+        let source_code = r#"Order: {
                 book: book/Book,
                 user: ./misc/../misc/./user/User
             }"#
-            .into(),
-        );
-        let parse = GtModule::parse("module".into(), source_code).unwrap();
+        .to_owned();
+        let parse = GtModule::parse("module".into(), &source_code).unwrap();
         assert_ron_snapshot!(
             parse.resolve.deps,
             @r#"

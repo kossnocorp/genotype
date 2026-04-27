@@ -8,50 +8,23 @@ pub struct GtModuleParse {
     /// Module resolve. It contains module meta information used to build
     /// the dependency graph.
     pub resolve: GtModuleResolve,
-    /// Module source code.
-    /// [TODO] After implementing workspace, find a better place for it.
-    #[serde(serialize_with = "crate::miette_serde::serialize_named_source")]
-    // TODO: Use #[deprecated] and remove usage
-    pub source_code: NamedSource<String>,
 }
 
 impl GtModule {
-    pub fn parse(id: GtModuleId, source_code: NamedSource<String>) -> Result<GtModuleParse> {
-        match parse_gt_code(source_code.inner()) {
-            Ok(mut pairs) => match pairs.next() {
-                Some(pair) => match Self::parse_pairs(id.clone(), pair) {
-                    Ok(result) => Ok(GtModuleParse {
-                        resolve: result.resolve,
-                        module: GtModule {
-                            id,
-                            doc: result.doc,
-                            imports: result.imports,
-                            aliases: result.aliases,
-                        },
-                        source_code,
-                    }),
-
-                    Err(error) => Err(error.with_source_code(source_code)),
-                },
-
-                None => {
-                    let span = (0, source_code.inner().len()).into();
-                    Err(GtModuleParseError::from_node_error(
-                        source_code,
-                        GtParseError::Internal(span, GtNode::Module),
-                    )
-                    .into())
-                }
-            },
-
-            Err(error) => Err(GtModuleParseError::from_pest_error(source_code, error).into()),
-        }
+    /// Parse module from source code. It returns [GtModuleParse], wrapping the tree with
+    /// the resolve data.
+    pub fn parse(module_id: GtModuleId, source_code: &str) -> Result<GtModuleParse, GtParseError> {
+        parse_gt_code(source_code)
+            .map_err(|error| GtParseError::Syntax(error.into()))
+            .and_then(|mut pairs| pairs.next().ok_or(GtParseError::InvalidGrammar))
+            .and_then(|pair| Self::parse_root_token_pair(module_id.clone(), pair))
     }
 
-    fn parse_pairs(
+    /// Parses root token pair into [GtModuleParse].
+    fn parse_root_token_pair(
         module_id: GtModuleId,
         module_pair: Pair<'_, Rule>,
-    ) -> Result<ModuleParseResult> {
+    ) -> Result<GtModuleParse, GtParseError> {
         let mut doc: Option<GtDoc> = None;
         let mut imports = vec![];
         let mut aliases = vec![];
@@ -85,34 +58,25 @@ impl GtModule {
                         pair.as_span().into(),
                         GtNode::Module,
                         rule,
-                    )
-                    .into());
+                    ));
                 }
             }
         }
 
-        Ok(ModuleParseResult {
-            doc,
-            imports,
-            aliases,
+        Ok(GtModuleParse {
+            module: GtModule {
+                id: context.module_id.clone(),
+                doc,
+                imports,
+                aliases,
+            },
             resolve: context.resolve,
         })
     }
 }
 
-struct ModuleParseResult {
-    doc: Option<GtDoc>,
-    imports: Vec<GtImport>,
-    aliases: Vec<GtAlias>,
-    resolve: GtModuleResolve,
-}
-
 #[cfg(test)]
 mod tests {
-    use insta::assert_ron_snapshot;
-    use miette::NamedSource;
-    use std::fs;
-
     use super::*;
 
     #[test]
@@ -176,11 +140,6 @@ mod tests {
             references: [
               GtIdentifier(GtSpan(22, 25), "Age"),
             ],
-          ),
-          source_code: NamedSource(
-            name: "../../examples/02-syntax/01-alias.type",
-            source: "Age: int\n\nAnotherAge: Age\n\nsnake_case: int",
-            language: None,
           ),
         )
         "#);
@@ -258,11 +217,6 @@ mod tests {
               GtIdentifier(GtSpan(40, 47), "Boolean"),
             ],
             references: [],
-          ),
-          source_code: NamedSource(
-            name: "../../examples/02-syntax/02-primitives.type",
-            source: "String: string\n\nInt: int\n\nFloat: float\n\nBoolean: boolean",
-            language: None,
           ),
         )
         "#);
@@ -506,11 +460,6 @@ mod tests {
             ],
             references: [],
           ),
-          source_code: NamedSource(
-            name: "../../examples/02-syntax/03-objects.type",
-            source: "Hello: {\n  name: string\n}\n\nHello: {\n  name: string,\n  age: int,\n  flag: boolean,\n}\n\nEmpty: {}\n\nEmpty: {\n\n}\n\nHello: { name: string }\n\nHello: { name: string, age: int }\n\nPascalCase: {\n  snake_case: int,\n}",
-            language: None,
-          ),
         )
         "#);
     }
@@ -603,11 +552,6 @@ mod tests {
             ],
             references: [],
           ),
-          source_code: NamedSource(
-            name: "../../examples/02-syntax/04-comments.type",
-            source: "//! Module comment...\n//! ...multiline\n\n// Basic comment\n\n/// Alias comment\nHello: /* Inline comment */ string\n\n/// Multiline...\n/// ...alias comment\nHello: {\n  /// Property comment\n  name: string,\n  /// Multiline...\n  /// ...property comment\n  age: int,\n}\n\nHello: string // Trailing comment",
-            language: None,
-          ),
         )
         "#);
     }
@@ -671,11 +615,6 @@ mod tests {
               GtIdentifier(GtSpan(0, 5), "Hello"),
             ],
             references: [],
-          ),
-          source_code: NamedSource(
-            name: "../../examples/02-syntax/05-optional.type",
-            source: "Hello: {\n  name: string,\n  age?: int\n}",
-            language: None,
           ),
         )
         "#);
@@ -826,11 +765,6 @@ mod tests {
             ],
             references: [],
           ),
-          source_code: NamedSource(
-            name: "../../examples/02-syntax/06-nested.type",
-            source: "Hello: {\n  name: {\n    first: string,\n    last: string,\n  }\n}\n\nHello: {\n  name: Named: {\n    first: string,\n    last: string,\n  }\n}",
-            language: None,
-          ),
         )
         "#);
     }
@@ -899,11 +833,6 @@ mod tests {
               GtIdentifier(GtSpan(0, 4), "Book"),
             ],
             references: [],
-          ),
-          source_code: NamedSource(
-            name: "../../examples/02-syntax/07-arrays.type",
-            source: "Book: {\n  title: string,\n  tags: [string],\n}",
-            language: None,
           ),
         )
         "#);
@@ -1047,11 +976,6 @@ mod tests {
               GtIdentifier(GtSpan(103, 108), "Empty"),
             ],
             references: [],
-          ),
-          source_code: NamedSource(
-            name: "../../examples/02-syntax/08-tuples.type",
-            source: "User: {\n  name: (string, string),\n  address: (int, string, string),\n}\n\nAddress: (int, string, string)\n\nEmpty: ()",
-            language: None,
           ),
         )
         "#);
@@ -1280,11 +1204,6 @@ mod tests {
               GtIdentifier(GtSpan(149, 154), "Genre"),
             ],
           ),
-          source_code: NamedSource(
-            name: "../../examples/02-syntax/09-modules.type",
-            source: "use author/*\nuse ../../author/{Author, Genre, Something as Else}\nuse author/Author\n\nBook: {\n  title: string,\n  author: ../../author/Author,\n  genre: Genre,\n}\n\nAuthor: ../../author/Author\n\nAuthors: [../../author/Author]",
-            language: None,
-          ),
         )
         "#);
     }
@@ -1433,11 +1352,6 @@ mod tests {
               GtIdentifier(GtSpan(57, 61), "Base"),
               GtIdentifier(GtSpan(93, 97), "Base"),
             ],
-          ),
-          source_code: NamedSource(
-            name: "../../examples/02-syntax/10-extensions.type",
-            source: "Base: {\n  name: string,\n  age: int,\n}\n\nProcessor: {\n  ...Base,\n  cores: int,\n}\n\nUser: {\n  ...Base,\n  email: string,\n}",
-            language: None,
           ),
         )
         "#);
@@ -1739,11 +1653,6 @@ mod tests {
               GtIdentifier(GtSpan(156, 167), "CommentBase"),
             ],
           ),
-          source_code: NamedSource(
-            name: "../../examples/02-syntax/11-literals.type",
-            source: "CommentBase: {\n  v: 2,\n  text: string,\n}\n\nUserComment: {\n  ...CommentBase,\n  type: \"user\",\n  userId: string,\n  published: boolean,\n}\n\nSystemComment: {\n  ...CommentBase,\n  type: \"system\",\n  published: true,\n}\n\nFalse: false\n\nFloat: 1.000_123\n\nNumber: 1_234_567\n\nString: \"Hello, \\\"world\\\"! \\\\\"\n\nNegativeInt: -1\n\nNegativeFloat: -1.0\n\nLargeFloat: 1e6\n\nSmallFloat: 3.5e-4\n",
-            language: None,
-          ),
         )
         "#);
     }
@@ -1937,11 +1846,6 @@ mod tests {
               GtIdentifier(GtSpan(166, 181), "ObjectUnionUser"),
               GtIdentifier(GtSpan(186, 204), "ObjectUnionAccount"),
             ],
-          ),
-          source_code: NamedSource(
-            name: "../../examples/02-syntax/12-unions.type",
-            source: "Hello: \"Sasha\" | \"world\"\n\nMultiline:\n  | \"Hello\"\n  | string\n\nWithComments:\n  // This is a comment\n  | \"Hello\"\n  // This is a comment too\n  | string\n\nObjectUnion:\n  | ObjectUnionUser\n  | ObjectUnionAccount\n\nObjectUnionUser: {\n  kind: \"user\",\n}\n\nObjectUnionAccount: {\n  kind: \"account\",\n}",
-            language: None,
           ),
         )
         "#);
@@ -2382,11 +2286,6 @@ mod tests {
               GtIdentifier(GtSpan(503, 516), "ErrorResponse"),
             ],
           ),
-          source_code: NamedSource(
-            name: "../../examples/02-syntax/13-attributes.type",
-            source: "Message: Reply | DM\n\nReply: {\n  #[tag]\n  type: \"reply\",\n  message: string,\n}\n\nDM: {\n  #[tag]\n  type: \"dm\",\n  message: string,\n}\n\n#[hello = \"world\"]\nAssignment: 123\n\n#[hello(\"cruel\", \"world\")]\nArguments: true\n\n#[hello(which = \"cruel\", what = \"world\")]\nProperties: true\n\nResponse: #[name = Success] SuccessResponse | #[name = Error] ErrorResponse\n\nResponse:\n  | #[name = Success]\n  SuccessResponse\n  | #[name = Error]\n  ErrorResponse\n\nResponse:\n  #[name = Success]\n  SuccessResponse |\n  #[name = Error]\n  ErrorResponse |",
-            language: None,
-          ),
         )
         "#);
     }
@@ -2448,11 +2347,6 @@ mod tests {
             ],
             references: [],
           ),
-          source_code: NamedSource(
-            name: "../../examples/02-syntax/14-records.type",
-            source: "Dict: { []: string }\n\nMap: { [int]: string }",
-            language: None,
-          ),
         )
         "#);
     }
@@ -2486,11 +2380,6 @@ mod tests {
               GtIdentifier(GtSpan(0, 8), "Anything"),
             ],
             references: [],
-          ),
-          source_code: NamedSource(
-            name: "../../examples/02-syntax/15-any.type",
-            source: "Anything: any",
-            language: None,
           ),
         )
         "#);
@@ -2596,11 +2485,6 @@ mod tests {
               GtIdentifier(GtSpan(45, 48), "Yes"),
             ],
             references: [],
-          ),
-          source_code: NamedSource(
-            name: "../../examples/02-syntax/16-branded.type",
-            source: "OrgId: @int\n\nUserId: @string\n\nConst: @float\n\nYes: @boolean",
-            language: None,
           ),
         )
         "#);
@@ -3099,11 +2983,6 @@ mod tests {
             ],
             references: [],
           ),
-          source_code: NamedSource(
-            name: "../../examples/02-syntax/17-number_sizes.type",
-            source: "Int8: i8\nInt16: i16\nInt32: i32\nInt64: i64\nInt128: i128\nIntSize: isize\nIntU8: u8\nIntU16: u16\nIntU32: u32\nIntU64: u64\nIntU128: u128\nIntUSize: usize\nFloat32: f32\nFloat64: f64\n\nInt8Record: { [i8]: string }\nInt16Record: { [i16]: string }\nInt32Record: { [i32]: string }\nInt64Record: { [i64]: string }\nInt128Record: { [i128]: string }\nIntSizeRecord: { [isize]: string }\nIntU8Record: { [u8]: string }\nIntU16Record: { [u16]: string }\nIntU32Record: { [u32]: string }\nIntU64Record: { [u64]: string }\nIntU128Record: { [u128]: string }\nIntUSizeRecord: { [usize]: string }\nFloat32Record: { [f32]: string }\nFloat64Record: { [f64]: string }\n",
-            language: None,
-          ),
         )
         "#);
     }
@@ -3159,18 +3038,12 @@ mod tests {
             ],
             references: [],
           ),
-          source_code: NamedSource(
-            name: "../../examples/02-syntax/18-number.type",
-            source: "Hello: number\n\nWorld: { [number]: string }",
-            language: None,
-          ),
         )
         "#);
     }
 
     fn parse_module(path: &str) -> GtModuleParse {
-        let content = fs::read_to_string(path).expect("cannot read file");
-        let source_code = NamedSource::new(path, content);
-        GtModule::parse("module".into(), source_code).unwrap()
+        let source_code = fs::read_to_string(path).expect("cannot read file");
+        GtModule::parse("module".into(), &source_code).unwrap()
     }
 }

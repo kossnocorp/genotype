@@ -6,11 +6,7 @@ pub use error::*;
 mod lang;
 pub use lang::*;
 
-mod load;
-
 mod save;
-
-mod paths;
 
 mod toml_str;
 
@@ -26,13 +22,16 @@ pub struct GtpConfig {
     /// Global package version used as default for enabled language manifests.
     pub version: Option<Version>,
     /// Project root directory relative to the cwd. It defaults to ".".
+    #[serde(default)]
     pub root: GtpConfigDirRelativeRootDirPath,
     /// Dist directory relative to the root directory. It defaults to "dist".
-    #[serde(alias = "out")]
+    #[serde(default)]
     pub dist: GtpRootDirRelativeDistDirPath,
     /// Source directory relative to the root directory. It defaults to "src".
+    #[serde(default)]
     pub src: GtpRootDirRelativeSrcDirPath,
     /// Project entry pattern. It defaults to `**/*.type` relative to [GtpConfig::src].
+    #[serde(default)]
     pub entry: GtpSrcDirRelativeEntryPattern,
     /// TypeScript config.
     #[serde(default, alias = "typescript")]

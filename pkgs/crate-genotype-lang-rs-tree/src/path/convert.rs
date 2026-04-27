@@ -22,8 +22,6 @@ impl RsConvert<RsPath> for GtPath {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use insta::assert_ron_snapshot;
-    use std::collections::HashMap;
 
     #[test]
     fn test_convert_base() {
@@ -36,7 +34,7 @@ mod tests {
             .convert(&mut RsConvertContext::new(
                 "module".into(),
                 RsConvertResolve {
-                    path_module_ids: HashMap::from([(
+                    path_module_ids: IndexMap::from([(
                         GtPathModuleId::new((0, 0).into(), "module".into()),
                         "module/path".into(),
                     )]),
@@ -61,7 +59,7 @@ mod tests {
             .convert(&mut RsConvertContext::new(
                 "module".into(),
                 RsConvertResolve {
-                    path_module_ids: HashMap::from([(
+                    path_module_ids: IndexMap::from([(
                         GtPathModuleId::new((0, 0).into(), "module".into()),
                         "module/path".into(),
                     )]),
@@ -86,7 +84,7 @@ mod tests {
             .convert(&mut RsConvertContext::new(
                 "module".into(),
                 RsConvertResolve {
-                    path_module_ids: HashMap::from([(
+                    path_module_ids: IndexMap::from([(
                         GtPathModuleId::new((0, 0).into(), "module".into()),
                         "module/path".into(),
                     )]),

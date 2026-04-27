@@ -10,12 +10,13 @@ repository = "https://github.com/kossnocorp/genotype"
 [dependencies]
 genotype_parser = { version = "0.15.0", path = "../crate-genotype-parser", optional = true }
 relative-path = { version = "1.9.3", features = ["serde"] }
-serde = { version = "1.0.219", features = ["derive"] }
-miette = { version = "7.6.0", features = ["fancy", "serde"] }
+serde = { version = "1.0.228", features = ["derive"] }
+miette = { version = "7.6.0", features = ["serde"] }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
 insta = { version = "1.46.3", features = ["ron"] }
+genotype_test = { version = "0.15.0", path = "../crate-genotype-test" }
 
 [features]
 default = []

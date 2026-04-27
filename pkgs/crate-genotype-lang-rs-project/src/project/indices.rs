@@ -5,6 +5,10 @@ impl RsProject<'_> {
         let mut crate_paths: IndexMap<GtpPkgSrcDirRelativePath, IndexSet<String>> = IndexMap::new();
 
         for module in self.modules.iter() {
+            let RsProjectModule::Generated(module) = module else {
+                continue;
+            };
+
             let mut module_path = module.path.clone();
             loop {
                 let name = module_path.module_name();

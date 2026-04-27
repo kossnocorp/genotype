@@ -8,12 +8,12 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-miette = { version = "7.6.0", features = ["fancy", "serde"] }
+miette = { version = "7.6.0", features = ["serde"] }
 pest = { version = "2.8.6", features = ["miette-error"] }
 pest_derive = "2.8.6"
 thiserror = "1.0.64"
 heck = "0.5.0"
-serde = { version = "1.0.219", features = ["derive", "rc"] }
+serde = { version = "1.0.228", features = ["derive", "rc"] }
 indexmap = { version = "2.11.0", features = ["serde"] }
 genotype_visitor_macro = { version = "0.15.0", path = "../crate-genotype-visitor-macro" }
 

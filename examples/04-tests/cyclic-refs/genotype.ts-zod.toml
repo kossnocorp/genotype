@@ -1,5 +1,5 @@
 name = "genotype-test-cyclic-refs"
-out = "dist/ts-zod"
+dist = "dist/ts-zod"
 
 [ts]
 enabled = true

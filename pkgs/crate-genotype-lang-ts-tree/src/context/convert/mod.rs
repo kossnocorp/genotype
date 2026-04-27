@@ -1,8 +1,9 @@
 use crate::prelude::internal::*;
-use std::collections::HashMap;
 
 mod doc;
+
 pub mod hoisting;
+
 mod resolve;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -12,7 +13,7 @@ pub struct TsConvertContext {
     imports: Vec<TsImport>,
     hoisted: Vec<TsDefinition>,
     doc: Option<TsDoc>,
-    dependencies_config: HashMap<String, String>,
+    dependencies_config: IndexMap<String, String>,
 }
 
 impl TsConvertContext {

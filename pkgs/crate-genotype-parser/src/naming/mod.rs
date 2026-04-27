@@ -2,7 +2,7 @@ use crate::prelude::internal::*;
 
 #[derive(Default, Debug, PartialEq, Clone)]
 pub struct GtNamingContext {
-    claimed: HashSet<String>,
+    claimed: IndexSet<String>,
     stack: Vec<GtNamingContextName>,
 }
 

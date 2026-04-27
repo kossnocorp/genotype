@@ -1,5 +1,5 @@
 name = "genotype-test-py-managers"
-out = "dist/py-legacy-uv"
+dist = "dist/py-legacy-uv"
 
 [py]
 enabled = true

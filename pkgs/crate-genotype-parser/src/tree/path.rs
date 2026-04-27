@@ -146,11 +146,7 @@ impl TryFrom<Pair<'_, Rule>> for GtPath {
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
-    use insta::assert_ron_snapshot;
-    use miette::NamedSource;
-    use pest::Parser;
-    use pretty_assertions::assert_eq;
+    use super::*;
 
     #[test]
     fn test_parse() {
@@ -224,9 +220,7 @@ mod tests {
 
     #[test]
     fn test_normalize_source() {
-        let source_code = NamedSource::new(
-            "module.type",
-            r#"use author/./*
+        let source_code = r#"use author/./*
             use ../user/../user/User
             use ./././misc/order/{Order, SomethingElse}
 
@@ -234,9 +228,8 @@ mod tests {
                 book: book/Book,
                 user: ./misc/../misc/./user/User
             }"#
-            .into(),
-        );
-        let parse = GtModule::parse("module".into(), source_code.clone()).unwrap();
+        .to_owned();
+        let parse = GtModule::parse("module".into(), &source_code).unwrap();
         assert_ron_snapshot!(
             parse.module,
             @r#"

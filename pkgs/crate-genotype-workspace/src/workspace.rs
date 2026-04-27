@@ -1,9 +1,6 @@
-use std::{
-    collections::HashSet,
-    sync::{Arc, Mutex},
-};
+use std::sync::{Arc, Mutex};
 
-use indexmap::IndexMap;
+use indexmap::{IndexMap, IndexSet};
 use miette::Result;
 
 use crate::{
@@ -35,7 +32,7 @@ impl GtWorkspace {
     pub fn load_file(
         &self,
         path_str: &String,
-        processing: Arc<Mutex<HashSet<GtwPath>>>,
+        processing: Arc<Mutex<IndexSet<GtwPath>>>,
     ) -> Result<()> {
         let path = GtwPath::try_new(path_str, Some(&self.path))?;
 

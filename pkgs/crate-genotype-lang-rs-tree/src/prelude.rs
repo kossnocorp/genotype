@@ -7,6 +7,7 @@ pub(crate) mod internal {
     pub use genotype_lang_rs_config::*;
     pub use genotype_parser::visitor::*;
     pub use genotype_parser::*;
+    pub use indexmap::{IndexMap, IndexSet};
     pub use miette::Result;
     pub use serde::Serialize;
     pub use std::sync::Arc;

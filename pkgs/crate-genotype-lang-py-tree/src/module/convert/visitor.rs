@@ -1,9 +1,8 @@
 use crate::prelude::internal::*;
-use std::collections::HashSet;
 
 pub struct PyModuleVisitor {
-    definitions: HashSet<PyIdentifier>,
-    scope: HashSet<PyIdentifier>,
+    definitions: IndexSet<PyIdentifier>,
+    scope: IndexSet<PyIdentifier>,
     current_alias: Option<PyIdentifier>,
     legacy: bool,
 }
@@ -14,7 +13,7 @@ impl PyModuleVisitor {
             .definitions
             .iter()
             .map(|definition| definition.name().clone())
-            .collect::<HashSet<PyIdentifier>>();
+            .collect::<IndexSet<PyIdentifier>>();
 
         Self {
             definitions,

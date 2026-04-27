@@ -16,10 +16,12 @@ impl<'a> GtlProject<'a> for PyProject<'a> {
     fn generate(project: &'a GtProject) -> Result<Self> {
         let config = project.pkg_config_py();
         let modules = project
-            .modules_legacy
+            .modules
             .iter()
-            .map(|module| PyProjectModule::generate(config.target, module))
-            .collect::<Result<_, _>>()?;
+            .map(|(module_path, module)| {
+                PyProjectModule::generate(&project.paths.src, config.target, module_path, module)
+            })
+            .collect::<Vec<_>>();
 
         Ok(Self { modules, config })
     }
@@ -37,6 +39,11 @@ dist"#
         let mut imports = vec![];
         let mut exports = vec![];
         for module in self.modules.iter() {
+            let module = match module {
+                PyProjectModule::Generated(module) => module,
+                PyProjectModule::Error(_) => continue,
+            };
+
             let mut definitions = vec![];
             for definition in module.module.definitions.iter() {
                 let name = definition.name();
@@ -65,9 +72,14 @@ dist"#
             source: "".into(),
         };
 
-        let mut module_paths: HashSet<GtpPkgSrcDirRelativePath> = HashSet::new();
+        let mut module_paths: IndexSet<GtpPkgSrcDirRelativePath> = IndexSet::new();
 
         for module in self.modules.iter() {
+            let module = match module {
+                PyProjectModule::Generated(module) => module,
+                PyProjectModule::Error(_) => continue,
+            };
+
             // [TODo]
             if let Some(module_path) = module.path.to_parent() {
                 if module_path == ".".into() {
@@ -92,6 +104,10 @@ dist"#
         let project_modules = self
             .modules
             .iter()
+            .filter_map(|module| match module {
+                PyProjectModule::Generated(module) => Some(module),
+                PyProjectModule::Error(_) => None,
+            })
             .map(|module| {
                 module
                     .module
@@ -122,14 +138,14 @@ mod tests {
 
     #[test]
     fn test_convert_base() {
-        let config = GtpConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load("genotype.toml".into(), config).unwrap();
+        let project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
 
         assert_ron_snapshot!(
           PyProject::generate(&project).unwrap().modules,
           @r#"
         [
-          PyProjectModule(
+          Generated(PyProjectModuleGenerated(
             name: "author",
             path: "author.py",
             module: PyModule(
@@ -159,8 +175,8 @@ mod tests {
                 )),
               ],
             ),
-          ),
-          PyProjectModule(
+          )),
+          Generated(PyProjectModuleGenerated(
             name: "book",
             path: "book.py",
             module: PyModule(
@@ -207,7 +223,7 @@ mod tests {
                 )),
               ],
             ),
-          ),
+          )),
         ]
         "#
         );
@@ -215,14 +231,14 @@ mod tests {
 
     #[test]
     fn test_convert_glob() {
-        let config = GtpConfig::from_root("module", "./examples/glob");
-        let project = GtProject::load("genotype.toml".into(), config).unwrap();
+        let project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/glob".into(), None).unwrap();
 
         assert_ron_snapshot!(
           PyProject::generate(&project).unwrap().modules,
           @r#"
         [
-          PyProjectModule(
+          Generated(PyProjectModuleGenerated(
             name: "author",
             path: "author.py",
             module: PyModule(
@@ -263,8 +279,8 @@ mod tests {
                 )),
               ],
             ),
-          ),
-          PyProjectModule(
+          )),
+          Generated(PyProjectModuleGenerated(
             name: "book",
             path: "book.py",
             module: PyModule(
@@ -319,7 +335,7 @@ mod tests {
                 )),
               ],
             ),
-          ),
+          )),
         ]
         "#
         );
@@ -327,8 +343,8 @@ mod tests {
 
     #[test]
     fn test_render() {
-        let config = GtpConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load("genotype.toml".into(), config).unwrap();
+        let project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
 
         assert_ron_snapshot!(
           PyProject::generate(&project).unwrap().dist().unwrap(),
@@ -367,8 +383,8 @@ mod tests {
 
     #[test]
     fn test_render_nested() {
-        let config = GtpConfig::from_root("module", "./examples/nested");
-        let project = GtProject::load("genotype.toml".into(), config).unwrap();
+        let project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/nested".into(), None).unwrap();
 
         assert_ron_snapshot!(
           PyProject::generate(&project).unwrap().dist().unwrap(),
@@ -411,11 +427,11 @@ mod tests {
 
     #[test]
     fn test_render_dependencies() {
-        let mut config = GtpConfig::from_root("module", "./examples/dependencies");
-        config.py.common.dependencies =
-            HashMap::from_iter(vec![("genotype_json_types".into(), "genotype_json".into())]);
-
-        let project = GtProject::load("genotype.toml".into(), config).unwrap();
+        let mut project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/dependencies".into(), None)
+                .unwrap();
+        project.config.py.common.dependencies =
+            IndexMap::from_iter(vec![("genotype_json_types".into(), "genotype_json".into())]);
 
         assert_ron_snapshot!(
           PyProject::generate(&project).unwrap().dist().unwrap(),
@@ -450,8 +466,9 @@ mod tests {
 
     #[test]
     fn test_render_cyclic_lists() {
-        let config = GtpConfig::from_root("module", "./examples/cyclic-lists");
-        let project = GtProject::load("genotype.toml".into(), config).unwrap();
+        let project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/cyclic-lists".into(), None)
+                .unwrap();
 
         let dist = PyProject::generate(&project).unwrap().dist().unwrap();
 
@@ -541,9 +558,9 @@ mod tests {
 
     #[test]
     fn test_render_uses_global_version_by_default() {
-        let mut config = GtpConfig::from_root("module", "./examples/basic");
-        config.version = Some("0.2.0".parse().unwrap());
-        let project = GtProject::load("genotype.toml".into(), config).unwrap();
+        let mut project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        project.config.version = Some("0.2.0".parse().unwrap());
 
         let dist = PyProject::generate(&project).unwrap().dist().unwrap();
         let pyproject = get_project_file(&dist);
@@ -568,16 +585,15 @@ mod tests {
 
     #[test]
     fn test_render_prefers_py_manifest_version_over_global() {
-        let mut config = GtpConfig::from_root("module", "./examples/basic");
-        config.version = Some("0.2.0".parse().unwrap());
-        config.py.common.manifest = toml::from_str(
+        let mut project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        project.config.version = Some("0.2.0".parse().unwrap());
+        project.config.py.common.manifest = toml::from_str(
             r#"[tool.poetry]
 version = "0.3.0"
 "#,
         )
         .unwrap();
-
-        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         let dist = PyProject::generate(&project).unwrap().dist().unwrap();
         let pyproject = get_project_file(&dist);
@@ -602,17 +618,16 @@ version = "0.3.0"
 
     #[test]
     fn test_render_uv_manifest() {
-        let mut config = GtpConfig::from_root("module", "./examples/basic");
-        config.py.lang.manager = genotype_lang_py_config::PyPackageManager::Uv;
-        config.version = Some("0.2.0".parse().unwrap());
-        config.py.common.manifest = toml::from_str(
+        let mut project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        project.config.py.lang.manager = genotype_lang_py_config::PyPackageManager::Uv;
+        project.config.version = Some("0.2.0".parse().unwrap());
+        project.config.py.common.manifest = toml::from_str(
             r#"[project]
 name = "module"
 "#,
         )
         .unwrap();
-
-        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         let dist = PyProject::generate(&project).unwrap().dist().unwrap();
         let pyproject = get_project_file(&dist);

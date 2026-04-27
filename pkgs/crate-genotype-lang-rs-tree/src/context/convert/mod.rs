@@ -1,5 +1,4 @@
 use crate::prelude::internal::*;
-use std::collections::HashMap;
 
 mod attributing;
 
@@ -8,6 +7,7 @@ mod hoisting;
 mod ids;
 
 mod naming;
+use genotype_project::IndexMap;
 pub use naming::*;
 
 mod config;
@@ -27,7 +27,7 @@ pub struct RsConvertContext {
     module_id: GtModuleId,
     definition_id: Option<GtDefinitionId>,
     field_attributes: Vec<RsAttribute>,
-    dependencies_config: HashMap<String, String>,
+    dependencies_config: IndexMap<String, String>,
 }
 
 #[derive(PartialEq)]
@@ -56,7 +56,7 @@ impl RsConvertContext {
         module_id: GtModuleId,
         resolve: RsConvertResolve,
         config: RsConfigLang,
-        dependencies_config: HashMap<String, String>,
+        dependencies_config: IndexMap<String, String>,
     ) -> Self {
         Self {
             module_id,

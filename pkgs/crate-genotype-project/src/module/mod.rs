@@ -1,10 +1,6 @@
 use crate::prelude::internal::*;
 
-mod definition;
-pub use definition::*;
-
-mod identifier;
-pub use identifier::*;
+// region: Modules
 
 mod parse;
 pub use parse::*;
@@ -12,58 +8,43 @@ pub use parse::*;
 mod resolve;
 pub use resolve::*;
 
-mod state;
-pub use state::*;
-
 mod error;
 pub use error::*;
 
-/// Project module.
+// endregion
+
+// region: Module
+
 #[derive(Debug, PartialEq, Clone, Serialize)]
-pub struct GtpModule {
-    /// Module path relative to the src directory.
-    /// TODO: Make it relative to the project root (config) path.
-    pub path: GtpSrcDirRelativeModulePath,
-    /// Module tree node.
-    pub module: GtModule,
-    /// Project module resolve.
-    pub resolve: GtpModuleResolve,
-    /// Module source code.
-    /// TODO: After implementing workspace, find a better place for it.
-    #[serde(serialize_with = "genotype_parser::miette_serde::serialize_named_source")]
-    // TODO: Use #[deprecated] and remove usage
-    pub source_code: NamedSource<String>,
+pub enum GtpModule {
+    /// Module is currently being loaded.
+    Initialized,
+
+    /// Module failed to load.
+    Error(GtpModuleError),
+
+    /// Module has been parsed successfully.
+    Parsed(GtpModuleParse),
+
+    /// Module has been resolved successfully.
+    Resolved(GtpModuleResolved),
 }
 
 impl GtpModule {
-    pub fn try_new(
-        project_resolve: &GtpResolve,
-        modules: &[GtpModuleParse],
-        parse: GtpModuleParse,
-    ) -> Result<Self> {
-        let mut module_resolve = GtpModuleResolve::try_new(modules, &parse)
-            .map_err(|err| err.with_source_code(parse.1.source_code.clone()))?;
+    /// Resolves the module parse.
+    pub fn module_parse(&self) -> Option<&GtModuleParse> {
+        self.project_module_parse().map(|parse| &parse.module_parse)
+    }
 
-        // Combine these two ^v
-
-        let mut visitor = GtpResolveVisitor::new(parse.1.module.id.clone(), project_resolve);
-        let parse = parse;
-        parse.1.module.traverse(&mut visitor);
-
-        if let Some(error) = visitor.error() {
-            return Err(
-                miette::Report::new(error.clone()).with_source_code(parse.1.source_code.clone())
-            );
+    /// Resolves the project module parse.
+    pub fn project_module_parse(&self) -> Option<&GtpModuleParse> {
+        match self {
+            GtpModule::Parsed(state) => Some(&state),
+            GtpModule::Resolved(state) => Some(&state.project_module_parse),
+            GtpModule::Error(_) => None,
+            GtpModule::Initialized => None,
         }
-
-        module_resolve.definitions = visitor.drain_definitions();
-        module_resolve.reference_definition_ids = visitor.get_reference_definition_ids();
-
-        Ok(GtpModule {
-            path: parse.0,
-            module: parse.1.module,
-            resolve: module_resolve,
-            source_code: parse.1.source_code.clone(),
-        })
     }
 }
+
+// endregion

@@ -16,8 +16,8 @@ genotype_lang_core_project = { version = "0.15.0", path = "../crate-genotype-lan
 genotype_lang_ts_tree = { version = "0.15.0", path = "../crate-genotype-lang-ts-tree" }
 genotype_lang_ts_config = { version = "0.15.0", path = "../crate-genotype-lang-ts-config" }
 toml_edit = { version = "0.22.26", features = ["serde"] }
-serde = { version = "1.0.210", features = ["derive"] }
-miette = { version = "7.6.0", features = ["fancy", "serde"] }
+serde = { version = "1.0.228", features = ["derive"] }
+miette = { version = "7.6.0", features = ["serde"] }
 thiserror = "1.0.64"
 semver = { version = "1.0.27", features = ["serde"] }
 

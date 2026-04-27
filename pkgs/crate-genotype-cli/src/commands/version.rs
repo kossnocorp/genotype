@@ -64,7 +64,7 @@ pub fn version_command(args: &GtVersionCommand) -> Result<()> {
         GtpRuntimeSystem::new(&path).wrap_err("failed to create system project runtime")?;
 
     let mut project = project_runtime
-        .create_project()
+        .create_project(None)
         .wrap_err("failed to create project")?;
 
     match &args.command {

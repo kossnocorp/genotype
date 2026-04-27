@@ -36,7 +36,7 @@ macro_rules! gtp_relative_path_newtype {
 
     ($(#[$meta:meta])* $vis:vis struct $name:ident;) => {
         $(#[$meta])*
-        #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+        #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
         #[serde(transparent)]
         $vis struct $name(RelativePathBuf);
 
@@ -59,6 +59,12 @@ macro_rules! gtp_relative_path_newtype {
         impl From<&str> for $name {
             fn from(path: &str) -> Self {
                 Self::new(path.into())
+            }
+        }
+
+        impl Display for $name {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                self.relative_path().fmt(f)
             }
         }
     };
@@ -90,7 +96,7 @@ macro_rules! gtp_relative_path_wrapper_newtype {
 
     ($(#[$meta:meta])* $vis:vis struct $name:ident($inner:ty);) => {
         $(#[$meta])*
-        #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+        #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
         #[serde(transparent)]
         $vis struct $name($inner);
 

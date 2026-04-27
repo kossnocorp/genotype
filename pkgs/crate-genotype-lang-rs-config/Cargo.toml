@@ -10,7 +10,7 @@ repository = "https://github.com/kossnocorp/genotype"
 [dependencies]
 genotype_project_core = { version = "0.15.0", path = "../crate-genotype-project-core" }
 genotype_lang_core_config = { version = "0.15.0", path = "../crate-genotype-lang-core-config" }
-serde = { version = "1.0.210", features = ["derive"] }
+serde = { version = "1.0.228", features = ["derive"] }
 relative-path = { version = "1.9.3", features = ["serde"] }
 toml_ext = { version = "0.1.0", path = "../crate-toml-ext" }
 indoc = "2.0.7"

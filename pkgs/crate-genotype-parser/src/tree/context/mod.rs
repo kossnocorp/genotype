@@ -15,7 +15,7 @@ pub struct GtContext {
     /// A set of taken definition names. It allows to generate unique synthetic
     /// names.
     // [TODO] Use `GtNamingContext` instead of `claimed_names` in the future.
-    pub claimed_names: HashSet<String>,
+    pub claimed_names: IndexSet<String>,
     pub annotation: Option<GtContextAnnotation>,
 }
 
@@ -37,7 +37,7 @@ impl GtContext {
             module_id,
             resolve: GtModuleResolve::new(),
             parents: vec![],
-            claimed_names: HashSet::new(),
+            claimed_names: IndexSet::new(),
             annotation: None,
         }
     }
