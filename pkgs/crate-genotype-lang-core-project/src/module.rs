@@ -3,7 +3,12 @@ use crate::prelude::internal::*;
 pub trait GtlProjectModule<LangConfig: GtlConfig> {
     type Dependency: GtlDependencyIdent;
 
-    fn generate(config: &LangConfig, module: &GtpModule) -> Result<Self>
+    fn generate(
+        src_path: &GtpSrcDirPath,
+        config: &LangConfig,
+        module_path: &GtpModulePath,
+        module: &GtpModule,
+    ) -> Self
     where
         Self: Sized;
 

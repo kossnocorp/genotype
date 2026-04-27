@@ -1,6 +1,6 @@
 use crate::GtlConfigPkgPathSetting;
+use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use toml::Table;
 
 #[derive(Default, Debug, Serialize, Deserialize, PartialEq, Clone)]
@@ -9,12 +9,12 @@ pub struct GtlConfigCommon<Dist: GtlConfigPkgPathSetting> {
     #[serde(default)]
     pub enabled: bool,
     /// Output directory.
-    #[serde(default, alias = "out")]
+    #[serde(default)]
     pub dist: Dist,
     /// Manifest configuration.
     #[serde(default)]
     pub manifest: Table,
     /// Manually mapped dependencies.
     #[serde(default)]
-    pub dependencies: HashMap<String, String>,
+    pub dependencies: IndexMap<String, String>,
 }

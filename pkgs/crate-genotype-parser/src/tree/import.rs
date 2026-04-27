@@ -98,12 +98,7 @@ enum ParseState {
 
 #[cfg(test)]
 mod tests {
-    use indexmap::IndexSet;
-    use miette::NamedSource;
-    use pest::Parser;
-    use pretty_assertions::assert_eq;
-
-    use crate::*;
+    use super::*;
 
     #[test]
     fn test_parse() {
@@ -123,14 +118,11 @@ mod tests {
 
     #[test]
     fn test_parse_deps_base() {
-        let source_code = NamedSource::new(
-            "module.type",
-            r#"use author/*
+        let source_code = r#"use author/*
             use ../user/User
             use ./misc/order/{Order, SomethingElse}"#
-                .into(),
-        );
-        let parse = GtModule::parse("module".into(), source_code).unwrap();
+            .to_owned();
+        let parse = GtModule::parse("module".into(), &source_code).unwrap();
         assert_eq!(
             parse.resolve.deps,
             IndexSet::<_, std::collections::hash_map::RandomState>::from_iter(vec![
@@ -143,14 +135,11 @@ mod tests {
 
     #[test]
     fn test_parse_deps_normalize() {
-        let source_code = NamedSource::new(
-            "module.type",
-            r#"use author/./*
+        let source_code = r#"use author/./*
             use ../user/../user/User
             use ./././misc/order/{Order, SomethingElse}"#
-                .into(),
-        );
-        let parse = GtModule::parse("module".into(), source_code).unwrap();
+            .to_owned();
+        let parse = GtModule::parse("module".into(), &source_code).unwrap();
         assert_eq!(
             parse.resolve.deps,
             IndexSet::<_, std::collections::hash_map::RandomState>::from_iter(vec![

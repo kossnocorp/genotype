@@ -7,8 +7,10 @@ pub(crate) mod internal {
     pub use genotype_lang_ts_config::*;
     pub use genotype_parser::*;
     pub use genotype_project_core::*;
+    #[cfg(test)]
+    pub use genotype_test::*;
     pub use genotype_workspace_core::prelude::*;
-    pub use indexmap::IndexMap;
+    pub use indexmap::{IndexMap, IndexSet};
     pub use miette::{
         Context, Diagnostic, IntoDiagnostic, LabeledSpan, NamedSource, Report, Result, bail,
         diagnostic, ensure, miette,
@@ -16,7 +18,6 @@ pub(crate) mod internal {
     pub use relative_path::{PathExt, RelativePath, RelativePathBuf};
     pub use semver::Version;
     pub use serde::{Deserialize, Serialize, Serializer};
-    pub use std::collections::HashMap;
     pub use std::env;
     pub use std::fs;
     pub use std::io;

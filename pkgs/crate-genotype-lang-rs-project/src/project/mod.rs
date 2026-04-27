@@ -17,7 +17,7 @@ impl<'a> GtlProject<'a> for RsProject<'a> {
 
     fn generate(project: &'a GtProject) -> Result<Self> {
         let config = project.pkg_config_rs();
-        let modules = Self::generate_modules(config.target, &project.modules_legacy)?;
+        let modules = Self::generate_modules(&project.paths.src, config.target, &project.modules)?;
         Ok(Self { modules, config })
     }
 
@@ -38,21 +38,18 @@ impl<'a> GtlProject<'a> for RsProject<'a> {
 
 #[cfg(test)]
 mod tests {
-    use std::path::Path;
-
     use super::*;
-    use genotype_test::*;
 
     #[test]
     fn test_convert_base() {
-        let config = GtpConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load("genotype.toml".into(), config).unwrap();
+        let project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
 
         assert_ron_snapshot!(
           RsProject::generate(&project).unwrap().modules,
           @r#"
         [
-          RsProjectModule(
+          Generated(RsProjectModuleGenerated(
             path: "author.rs",
             module: RsModule(
               id: GtModuleId("author"),
@@ -88,8 +85,8 @@ mod tests {
             resolve: RspModuleResolve(
               definitions: {},
             ),
-          ),
-          RsProjectModule(
+          )),
+          Generated(RsProjectModuleGenerated(
             path: "book.rs",
             module: RsModule(
               id: GtModuleId("book"),
@@ -140,7 +137,7 @@ mod tests {
             ),
             resolve: RspModuleResolve(
               definitions: {
-                GtDefinitionId(GtModuleId("author"), "Author"): GtProjectModuleDefinitionResolve(
+                GtDefinitionId(GtModuleId("author"), "Author"): GtpModuleResolveDefinition(
                   references: [
                     GtReferenceId(GtModuleId("book"), GtSpan(56, 62)),
                   ],
@@ -148,7 +145,7 @@ mod tests {
                 ),
               },
             ),
-          ),
+          )),
         ]
         "#
         );
@@ -156,14 +153,14 @@ mod tests {
 
     #[test]
     fn test_convert_glob() {
-        let config = GtpConfig::from_root("module", "./examples/glob");
-        let project = GtProject::load("genotype.toml".into(), config).unwrap();
+        let project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/glob".into(), None).unwrap();
 
         assert_ron_snapshot!(
           RsProject::generate(&project).unwrap().modules,
           @r#"
         [
-          RsProjectModule(
+          Generated(RsProjectModuleGenerated(
             path: "author.rs",
             module: RsModule(
               id: GtModuleId("author"),
@@ -208,7 +205,7 @@ mod tests {
             ),
             resolve: RspModuleResolve(
               definitions: {
-                GtDefinitionId(GtModuleId("author"), "AuthorName"): GtProjectModuleDefinitionResolve(
+                GtDefinitionId(GtModuleId("author"), "AuthorName"): GtpModuleResolveDefinition(
                   references: [
                     GtReferenceId(GtModuleId("author"), GtSpan(18, 28)),
                   ],
@@ -216,8 +213,8 @@ mod tests {
                 ),
               },
             ),
-          ),
-          RsProjectModule(
+          )),
+          Generated(RsProjectModuleGenerated(
             path: "book.rs",
             module: RsModule(
               id: GtModuleId("book"),
@@ -278,13 +275,13 @@ mod tests {
             ),
             resolve: RspModuleResolve(
               definitions: {
-                GtDefinitionId(GtModuleId("author"), "Author"): GtProjectModuleDefinitionResolve(
+                GtDefinitionId(GtModuleId("author"), "Author"): GtpModuleResolveDefinition(
                   references: [
                     GtReferenceId(GtModuleId("book"), GtSpan(51, 57)),
                   ],
                   deps: [],
                 ),
-                GtDefinitionId(GtModuleId("author"), "AuthorName"): GtProjectModuleDefinitionResolve(
+                GtDefinitionId(GtModuleId("author"), "AuthorName"): GtpModuleResolveDefinition(
                   references: [
                     GtReferenceId(GtModuleId("book"), GtSpan(73, 83)),
                   ],
@@ -292,7 +289,7 @@ mod tests {
                 ),
               },
             ),
-          ),
+          )),
         ]
         "#
         );
@@ -300,8 +297,8 @@ mod tests {
 
     #[test]
     fn test_render() {
-        let config = GtpConfig::from_root("module", "./examples/basic");
-        let project = GtProject::load("genotype.toml".into(), config).unwrap();
+        let project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
 
@@ -310,7 +307,7 @@ mod tests {
         assert_debug_snapshot!(
           dist.files[0].path,
           @r#"
-        GtCwdRelativePath(
+        GtpCwdRelativePath(
             "examples/basic/dist/rs/.gitignore",
         )
         "#
@@ -323,7 +320,7 @@ mod tests {
         assert_debug_snapshot!(
           dist.files[1].path,
           @r#"
-        GtCwdRelativePath(
+        GtpCwdRelativePath(
             "examples/basic/dist/rs/Cargo.toml",
         )
         "#
@@ -342,7 +339,7 @@ mod tests {
         assert_debug_snapshot!(
           dist.files[2].path,
           @r#"
-        GtCwdRelativePath(
+        GtpCwdRelativePath(
             "examples/basic/dist/rs/src/lib.rs",
         )
         "#
@@ -360,7 +357,7 @@ mod tests {
         assert_debug_snapshot!(
           dist.files[3].path,
           @r#"
-        GtCwdRelativePath(
+        GtpCwdRelativePath(
             "examples/basic/dist/rs/src/author.rs",
         )
         "#
@@ -398,8 +395,8 @@ mod tests {
 
     #[test]
     fn test_render_nested() {
-        let config = GtpConfig::from_root("module", "./examples/nested");
-        let project = GtProject::load("genotype.toml".into(), config).unwrap();
+        let project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/nested".into(), None).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
 
@@ -408,7 +405,7 @@ mod tests {
         assert_debug_snapshot!(
           dist.files[0].path,
           @r#"
-        GtCwdRelativePath(
+        GtpCwdRelativePath(
             "examples/nested/dist/rs/.gitignore",
         )
         "#
@@ -421,7 +418,7 @@ mod tests {
         assert_debug_snapshot!(
           dist.files[1].path,
           @r#"
-        GtCwdRelativePath(
+        GtpCwdRelativePath(
             "examples/nested/dist/rs/Cargo.toml",
         )
         "#
@@ -440,7 +437,7 @@ mod tests {
         assert_debug_snapshot!(
           dist.files[2].path,
           @r#"
-        GtCwdRelativePath(
+        GtpCwdRelativePath(
             "examples/nested/dist/rs/src/lib.rs",
         )
         "#
@@ -458,7 +455,7 @@ mod tests {
         assert_debug_snapshot!(
           dist.files[3].path,
           @r#"
-        GtCwdRelativePath(
+        GtpCwdRelativePath(
             "examples/nested/dist/rs/src/shop/goods/mod.rs",
         )
         "#
@@ -474,7 +471,7 @@ mod tests {
         assert_debug_snapshot!(
           dist.files[4].path,
           @r#"
-        GtCwdRelativePath(
+        GtpCwdRelativePath(
             "examples/nested/dist/rs/src/shop/mod.rs",
         )
         "#
@@ -490,7 +487,7 @@ mod tests {
         assert_debug_snapshot!(
           dist.files[5].path,
           @r#"
-        GtCwdRelativePath(
+        GtpCwdRelativePath(
             "examples/nested/dist/rs/src/inventory.rs",
         )
         "#
@@ -527,8 +524,9 @@ mod tests {
 
     #[test]
     fn test_render_recursive_box() {
-        let config = GtpConfig::load(Path::new("./examples/recursive")).unwrap();
-        let project = GtProject::load("genotype.toml".into(), config).unwrap();
+        let project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/recursive".into(), None)
+                .unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
         let node_file = dist
@@ -554,8 +552,9 @@ mod tests {
 
     #[test]
     fn test_render_recursive_box_with_extensions() {
-        let config = GtpConfig::load(Path::new("./examples/recursive")).unwrap();
-        let project = GtProject::load("genotype.toml".into(), config).unwrap();
+        let project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/recursive".into(), None)
+                .unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
         let tree_file = dist
@@ -602,8 +601,9 @@ mod tests {
 
     #[test]
     fn test_render_extensions() {
-        let config = GtpConfig::from_root("module", "./examples/extensions");
-        let project = GtProject::load("genotype.toml".into(), config).unwrap();
+        let project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/extensions".into(), None)
+                .unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
 
@@ -612,7 +612,7 @@ mod tests {
         assert_debug_snapshot!(
           dist.files[0].path,
           @r#"
-        GtCwdRelativePath(
+        GtpCwdRelativePath(
             "examples/extensions/dist/rs/.gitignore",
         )
         "#
@@ -625,7 +625,7 @@ mod tests {
         assert_debug_snapshot!(
           dist.files[1].path,
           @r#"
-        GtCwdRelativePath(
+        GtpCwdRelativePath(
             "examples/extensions/dist/rs/Cargo.toml",
         )
         "#
@@ -645,7 +645,7 @@ mod tests {
         assert_debug_snapshot!(
           dist.files[2].path,
           @r#"
-        GtCwdRelativePath(
+        GtpCwdRelativePath(
             "examples/extensions/dist/rs/src/lib.rs",
         )
         "#
@@ -665,7 +665,7 @@ mod tests {
         assert_debug_snapshot!(
           dist.files[3].path,
           @r#"
-        GtCwdRelativePath(
+        GtpCwdRelativePath(
             "examples/extensions/dist/rs/src/admin.rs",
         )
         "#
@@ -702,7 +702,7 @@ mod tests {
         assert_debug_snapshot!(
           dist.files[4].path,
           @r#"
-        GtCwdRelativePath(
+        GtpCwdRelativePath(
             "examples/extensions/dist/rs/src/named.rs",
         )
         "#
@@ -750,8 +750,9 @@ mod tests {
 
     #[test]
     fn test_render_dependencies() {
-        let config = GtpConfig::load(Path::new("./examples/dependencies")).unwrap();
-        let project = GtProject::load("genotype.toml".into(), config).unwrap();
+        let project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/dependencies".into(), None)
+                .unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
 
@@ -760,7 +761,7 @@ mod tests {
         assert_debug_snapshot!(
           dist.files[0].path,
           @r#"
-        GtCwdRelativePath(
+        GtpCwdRelativePath(
             "examples/dependencies/dist/rs/.gitignore",
         )
         "#
@@ -773,7 +774,7 @@ mod tests {
         assert_debug_snapshot!(
           dist.files[1].path,
           @r#"
-        GtCwdRelativePath(
+        GtpCwdRelativePath(
             "examples/dependencies/dist/rs/Cargo.toml",
         )
         "#
@@ -794,7 +795,7 @@ mod tests {
         assert_debug_snapshot!(
           dist.files[2].path,
           @r#"
-        GtCwdRelativePath(
+        GtpCwdRelativePath(
             "examples/dependencies/dist/rs/src/lib.rs",
         )
         "#
@@ -828,10 +829,9 @@ mod tests {
 
     #[test]
     fn test_render_uses_global_version_by_default() {
-        let mut config = GtpConfig::from_root("module", "./examples/basic");
-        config.version = Some("0.2.0".parse().unwrap());
-
-        let project = GtProject::load("genotype.toml".into(), config).unwrap();
+        let mut project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        project.config.version = Some("0.2.0".parse().unwrap());
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
         let cargo = get_cargo_file(&dist);
@@ -851,16 +851,15 @@ mod tests {
 
     #[test]
     fn test_render_prefers_rs_manifest_version_over_global() {
-        let mut config = GtpConfig::from_root("module", "./examples/basic");
-        config.version = Some("0.2.0".parse().unwrap());
-        config.rs.common.manifest = toml::from_str(
+        let mut project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        project.config.version = Some("0.2.0".parse().unwrap());
+        project.config.rs.common.manifest = toml::from_str(
             r#"[package]
 version = "0.3.0"
 "#,
         )
         .unwrap();
-
-        let project = GtProject::load("genotype.toml".into(), config).unwrap();
 
         let dist = RsProject::generate(&project).unwrap().dist().unwrap();
         let cargo = get_cargo_file(&dist);

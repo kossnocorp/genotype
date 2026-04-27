@@ -1,5 +1,5 @@
 name = "genotype-test-cyclic-refs"
-out = "dist/py-latest"
+dist = "dist/py-latest"
 
 [py]
 enabled = true

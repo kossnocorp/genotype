@@ -2,6 +2,8 @@ pub(crate) mod internal {
     pub use crate::*;
     #[cfg(feature = "parser")]
     pub use genotype_parser::*;
+    #[cfg(test)]
+    pub use genotype_test::*;
     pub use miette::{Result, WrapErr, miette};
     pub use relative_path::{PathExt, RelativePathBuf};
     pub use serde::{Deserialize, Serialize};

@@ -1,7 +1,6 @@
 use crate::prelude::internal::*;
 use petgraph::algo::tarjan_scc;
 use petgraph::graph::{Graph, NodeIndex};
-use std::collections::{HashMap, HashSet};
 
 impl PyConvertModule {
     pub fn sort_definitions(unordered_definitions: Vec<PyDefinition>) -> Vec<PyDefinition> {
@@ -10,9 +9,9 @@ impl PyConvertModule {
         let definition_identifiers = unordered_definitions
             .iter()
             .map(|definition| definition.name().clone())
-            .collect::<HashSet<PyIdentifier>>();
+            .collect::<IndexSet<PyIdentifier>>();
 
-        let mut available = HashSet::new();
+        let mut available = IndexSet::new();
 
         let mut definitions = vec![];
 
@@ -23,7 +22,7 @@ impl PyConvertModule {
 
             let next_index = unordered_definitions.iter().position(|definition| {
                 definition.references().iter().all(|reference| {
-                    !definition_identifiers.contains(reference) || available.contains(*reference)
+                    !definition_identifiers.contains(*reference) || available.contains(*reference)
                 })
             });
 
@@ -59,7 +58,7 @@ impl PyConvertModule {
             .iter()
             .enumerate()
             .map(|(index, definition)| (definition.name().clone(), index))
-            .collect::<HashMap<PyIdentifier, usize>>();
+            .collect::<IndexMap<PyIdentifier, usize>>();
 
         for (definition_index, definition) in unordered_definitions.iter().enumerate() {
             for reference in definition.references() {
@@ -84,7 +83,7 @@ impl PyConvertModule {
                 continue;
             }
 
-            let component_set = component.iter().copied().collect::<HashSet<_>>();
+            let component_set = component.iter().copied().collect::<IndexSet<_>>();
             let mut component_indices = component
                 .iter()
                 .map(|node| graph[*node])
@@ -116,11 +115,11 @@ impl PyConvertModule {
         let mut indexed_definitions = unordered_definitions
             .into_iter()
             .enumerate()
-            .collect::<HashMap<usize, PyDefinition>>();
+            .collect::<IndexMap<usize, PyDefinition>>();
 
         ordered_indices
             .into_iter()
-            .filter_map(|index| indexed_definitions.remove(&index))
+            .filter_map(|index| indexed_definitions.shift_remove(&index))
             .collect()
     }
 }

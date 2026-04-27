@@ -18,13 +18,13 @@ genotype_lang_py_config = { version = "0.15.0", path = "../crate-genotype-lang-p
 genotype_lang_ts_config = { version = "0.15.0", path = "../crate-genotype-lang-ts-config" }
 genotype_lang_rs_config = { version = "0.15.0", path = "../crate-genotype-lang-rs-config" }
 glob = "0.3.1"
-miette = { version = "7.6.0", features = ["fancy", "serde"] }
+miette = { version = "7.6.0", features = ["serde"] }
 num_cpus = "1.16.0"
 rayon = "1.10.0"
 thiserror = "1.0.64"
 delegate = "0.13.3"
 relative-path = { version = "1.9.3", features = ["serde"] }
-serde = { version = "1.0.210", features = ["derive"] }
+serde = { version = "1.0.228", features = ["derive"] }
 indexmap = { version = "2.6.0", features = ["serde"] }
 figment = { version = "0.10.19", features = ["toml", "env"] }
 semver = { version = "1.0.27", features = ["serde"] }

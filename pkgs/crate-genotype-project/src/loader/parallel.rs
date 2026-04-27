@@ -1,98 +1,93 @@
 use crate::prelude::internal::*;
+
 use rayon::Scope;
 use std::sync::Arc;
 use std::sync::Mutex;
 
 /// Parallel project loader trait. It implements the project loader trait with parallel loading
 /// capabilities. It is used by the system project runtime.
-pub trait GtpLoaderParallel: GtpLoader {
+pub trait GtpLoaderParallel: GtpLoader<Arc<Mutex<GtProject>>> {
+    /// Loads a module in a thread scope.
     fn load_module_in_scope<'a>(
         &'a self,
         scope: &Scope<'a>,
-        project: Arc<Mutex<&'a mut GtProject>>,
+        project: Arc<Mutex<GtProject>>,
         path: GtpModulePath,
     ) where
         Self: Sync + Send,
     {
-        let project = Arc::clone(&project);
         scope.spawn(move |scope| {
-            {
-                let mut project = project.lock().expect("Failed to lock project mutex");
-                if !project.init_module(&path) {
-                    return;
-                }
-            }
+            let dep_paths_result = self.load_project_module(&project, path);
 
-            let module_source = self.read_file(path.cwd_relative_path());
-
-            match module_source {
-                Ok(source) => {
-                    let source_code = NamedSource::new(path.as_str(), source.clone());
-                    let parse = GtModule::parse(path.into(), source_code);
-
-                    match parse {
-                        Ok(parse) => {
-                            todo!()
-                        }
-
-                        Err(error) => {
-                            let mut project = project.lock().expect("Failed to lock project mutex");
-                            project.set_module(
-                                &path,
-                                GtpModuleState::Error(GtpModuleError::Read(
-                                    path.clone(),
-                                    error.to_string(),
-                                )),
-                            );
-                        }
+            match dep_paths_result {
+                Ok(Some(dep_paths)) => {
+                    for dep_path in dep_paths {
+                        let project = Arc::clone(&project);
+                        self.load_module_in_scope(scope, project, dep_path);
                     }
                 }
 
-                Err(error) => {
-                    let mut project = project.lock().expect("Failed to lock project mutex");
-                    project.set_module(
-                        &path,
-                        GtpModuleState::Error(GtpModuleError::Read(
-                            path.clone(),
-                            error.to_string(),
-                        )),
-                    );
+                // No dependencies to load.
+                Ok(None) => {}
+
+                // Got unrecoverable error during module loading.
+                Err(err) => {
+                    panic!("failed to load module: {err}")
                 }
             }
         });
     }
 }
 
-impl<Type: GtpLoaderParallel + GtpSource + Sync + Send + ?Sized> GtpLoader for Type {
-    /// Loads all project modules in parallel.
-    fn load_all_modules(&self, project: &mut GtProject) -> Result<()> {
-        println!(">>>>>>>>>>>> project.paths: {:?}", project.paths);
-
-        let entry_module_paths = self
-            .glob(project.paths.entry.as_ref())?
-            .into_iter()
-            .map(|path| path.into())
-            .collect::<Vec<GtpModulePath>>();
-
-        ensure!(
-            entry_module_paths.len() > 0,
-            "no module files found for entry pattern '{}'",
-            project.paths.entry.display()
-        );
-
+impl<Type: GtpLoaderParallel + GtpSource + Sync + Send + ?Sized> GtpLoader<Arc<Mutex<GtProject>>>
+    for Type
+{
+    /// Loads module entries in parallel.
+    fn load_module_entries(
+        &self,
+        project: GtProject,
+        module_entries: Vec<GtpModulePath>,
+    ) -> Result<GtProject> {
         let project = Arc::new(Mutex::new(project));
-
         rayon::scope(|scope| {
             let project = Arc::clone(&project);
-
-            for entry_module_path in entry_module_paths {
+            for entry_module_path in module_entries {
                 let project = Arc::clone(&project);
                 scope.spawn(move |scope| {
-                    self.load_module_in_scope(scope, project, entry_module_path);
+                    self.load_module_in_scope(scope, project, entry_module_path)
                 });
             }
         });
 
+        Arc::try_unwrap(project)
+            .map_err(|_| miette!("failed to unwrap project Arc"))?
+            .into_inner()
+            .map_err(|_| miette!("failed to lock project mutex"))
+    }
+
+    /// Initializes the module.
+    fn init_project_module<'a>(
+        &'a self,
+        project: &Arc<Mutex<GtProject>>,
+        path: &GtpModulePath,
+    ) -> Result<Option<GtModuleId>> {
+        let mut project = project
+            .lock()
+            .map_err(|_| miette!("failed to lock project mutex"))?;
+        project.init_module(&path)
+    }
+
+    /// Sets the module state.
+    fn set_project_module(
+        &self,
+        project: &Arc<Mutex<GtProject>>,
+        path: &GtpModulePath,
+        state: GtpModule,
+    ) -> Result<()> {
+        let mut project = project
+            .lock()
+            .map_err(|_| miette!("failed to lock project mutex"))?;
+        project.set_module(path, state);
         Ok(())
     }
 }

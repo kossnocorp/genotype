@@ -7,7 +7,7 @@ mod references;
 pub struct PyConvertContext {
     resolve: PyConvertResolve,
     config: PyConfig,
-    // dependencies_config: HashMap<String, String>,
+    // dependencies_config: IndexMap<String, String>,
     imports: Vec<PyImport>,
     definitions: Vec<PyDefinition>,
     defined: Vec<PyIdentifier>,

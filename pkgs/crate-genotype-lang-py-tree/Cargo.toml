@@ -11,10 +11,10 @@ repository = "https://github.com/kossnocorp/genotype"
 genotype_lang_core_tree = { version = "0.15.0", path = "../crate-genotype-lang-core-tree" }
 genotype_lang_py_config = { version = "0.15.0", path = "../crate-genotype-lang-py-config" }
 genotype_parser = { version = "0.15.0", path = "../crate-genotype-parser" }
-miette = { version = "7.6.0", features = ["fancy", "serde"] }
+miette = { version = "7.6.0", features = ["serde"] }
 indexmap = { version = "2.6.0", features = ["serde"] }
 heck = "0.5.0"
-serde = { version = "1.0.210", features = ["derive", "rc"] }
+serde = { version = "1.0.228", features = ["derive", "rc"] }
 petgraph = "0.8.3"
 
 [dev-dependencies]

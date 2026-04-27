@@ -130,12 +130,7 @@ enum ParseState {
 
 #[cfg(test)]
 mod tests {
-    use crate::test::*;
-    use crate::*;
-    use insta::assert_ron_snapshot;
-    use miette::NamedSource;
-    use pest::Parser;
-    use pretty_assertions::assert_eq;
+    use super::*;
 
     #[test]
     fn test_parse() {
@@ -178,8 +173,8 @@ mod tests {
 
     #[test]
     fn test_parse_exports() {
-        let source_code = NamedSource::new("module.type", "Hello: string".into());
-        let parse = GtModule::parse("module".into(), source_code).unwrap();
+        let source_code = "Hello: string".to_owned();
+        let parse = GtModule::parse("module".into(), &source_code).unwrap();
         assert_ron_snapshot!(
             parse.resolve.exports,
             @r#"

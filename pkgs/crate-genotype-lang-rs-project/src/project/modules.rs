@@ -10,6 +10,10 @@ impl RsProject<'_> {
         };
         self.modules
             .iter()
+            .filter_map(|module| match module {
+                RsProjectModule::Generated(module) => Some(module),
+                RsProjectModule::Error(_) => None,
+            })
             .map(
                 |module| match module.module.render(Default::default(), &mut context) {
                     Ok(code) => Ok(GtlProjectFile {
@@ -23,13 +27,18 @@ impl RsProject<'_> {
     }
 
     pub fn generate_modules(
+        src_path: &GtpSrcDirPath,
         config: &RsConfig,
-        modules: &[GtpModule],
+        modules: &IndexMap<GtpModulePath, GtpModule>,
     ) -> Result<Vec<RsProjectModule>> {
-        let mut project_modules = modules
-            .iter()
-            .map(|module| RsProjectModule::generate(config, module))
-            .collect::<Result<Vec<RsProjectModule>, _>>()?;
+        let mut module_errors: Vec<RsProjectModule> = vec![];
+        let mut project_modules: Vec<RsProjectModuleGenerated> = vec![];
+        for (module_path, module) in modules {
+            match RsProjectModule::generate(&src_path, config, module_path, module) {
+                RsProjectModule::Generated(module) => project_modules.push(module),
+                error @ RsProjectModule::Error(_) => module_errors.push(error),
+            }
+        }
 
         // Now when we generated modules, we need to go through all structs and resolve the fields.
         // Whenever extension is found, we have to copy the fields from the referenced struct as
@@ -201,7 +210,7 @@ impl RsProject<'_> {
                             .definitions
                             .entry(extension_reference.definition_id)
                             .and_modify(|resolve| {
-                                resolve.references.remove(&extension_reference.id);
+                                resolve.references.shift_remove(&extension_reference.id);
                             });
                     }
 
@@ -345,10 +354,16 @@ impl RsProject<'_> {
 
         Self::box_recursive_type_references(&mut project_modules);
 
-        Ok(project_modules)
+        let mut modules = project_modules
+            .into_iter()
+            .map(RsProjectModule::Generated)
+            .collect::<Vec<_>>();
+        modules.extend(module_errors);
+
+        Ok(modules)
     }
 
-    fn box_recursive_type_references(project_modules: &mut [RsProjectModule]) {
+    fn box_recursive_type_references(project_modules: &mut [RsProjectModuleGenerated]) {
         let mut graph: Graph<GtDefinitionId, (), petgraph::Directed> = Graph::new();
         let mut graph_nodes: IndexMap<GtDefinitionId, NodeIndex> = Default::default();
 

@@ -1,17 +1,7 @@
 use crate::prelude::internal::*;
 
-#[derive(Error, Debug, Diagnostic, Clone)]
+#[derive(Error, Debug, Diagnostic, PartialEq, Clone, Serialize)]
 pub enum GtpError {
-    #[error("no entries found for pattern \"{0}\"")]
-    #[diagnostic(code(GTP103))]
-    #[deprecated(note = "use `miette!` instead")]
-    NoEntries(String),
-
-    #[error("failed to read `{0}`")]
-    #[diagnostic(code(GTP104))]
-    #[deprecated(note = "use `miette!` instead")]
-    NotFound(String),
-
     #[error("undefined type `{identifier}`")]
     #[diagnostic(code(GTP301))]
     UndefinedType {

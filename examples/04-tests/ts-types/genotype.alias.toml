@@ -1,5 +1,5 @@
 name = "genotype-test-ts-types"
-out = "dist/ts-alias"
+dist = "dist/ts-alias"
 
 [ts]
 enabled = true

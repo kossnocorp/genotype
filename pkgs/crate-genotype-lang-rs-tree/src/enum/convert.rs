@@ -1,5 +1,4 @@
 use crate::prelude::internal::*;
-use std::collections::HashSet;
 
 impl RsConvert<RsEnum> for GtUnion {
     fn convert(&self, context: &mut RsConvertContext) -> Result<RsEnum> {
@@ -13,7 +12,7 @@ impl RsConvert<RsEnum> for GtUnion {
         context.drop_definition_id();
         context.enter_parent(RsContextParent::Definition(name.clone()));
 
-        let mut variant_names: HashSet<RsIdentifier> = HashSet::new();
+        let mut variant_names: IndexSet<RsIdentifier> = IndexSet::new();
 
         let mut literals_count = 0;
         let mut variants = self
@@ -71,7 +70,7 @@ impl RsConvert<RsEnum> for GtUnion {
 
 fn convert_variant(
     descriptor: &GtDescriptor,
-    variant_names: &mut HashSet<RsIdentifier>,
+    variant_names: &mut IndexSet<RsIdentifier>,
     literals_count: &mut usize,
     context: &mut RsConvertContext,
 ) -> Result<RsEnumVariant> {
@@ -113,7 +112,7 @@ fn convert_variant(
 fn trim_variant_names(
     enum_name: &RsIdentifier,
     variants: &mut [RsEnumVariant],
-    variant_names: &mut HashSet<RsIdentifier>,
+    variant_names: &mut IndexSet<RsIdentifier>,
 ) {
     for variant in variants.iter_mut() {
         if variant.name.0.starts_with(enum_name.0.as_ref())
@@ -121,7 +120,7 @@ fn trim_variant_names(
         {
             let trimmed_name = RsIdentifier(trimmed_name.into());
             if !variant_names.contains(&trimmed_name) {
-                variant_names.remove(&variant.name);
+                variant_names.shift_remove(&variant.name);
                 variant_names.insert(trimmed_name.clone());
                 variant.name = trimmed_name;
             }
@@ -131,7 +130,7 @@ fn trim_variant_names(
 
 fn ensure_unique_variant_name(
     variant_name: RsIdentifier,
-    variant_names: &mut HashSet<RsIdentifier>,
+    variant_names: &mut IndexSet<RsIdentifier>,
 ) -> RsIdentifier {
     let name = if !variant_names.contains(&variant_name) {
         variant_name
@@ -144,7 +143,7 @@ fn ensure_unique_variant_name(
     name
 }
 
-fn enumerated_name(name: &RsIdentifier, variant_names: &HashSet<RsIdentifier>) -> RsIdentifier {
+fn enumerated_name(name: &RsIdentifier, variant_names: &IndexSet<RsIdentifier>) -> RsIdentifier {
     let mut index = 2;
     loop {
         let enumerated_name = format!("{}{}", name.0, index).into();
@@ -211,12 +210,7 @@ mod tests {
         let mut context = RsConvertContext::empty("module".into());
         context.enter_parent(RsContextParent::Alias("Union".into()));
 
-        let union = parse_get_named::<GtUnion>(
-            "Union",
-            r#"
-            Union: boolean | string
-            "#,
-        );
+        let union = Gt::union(vec_into![Gt::primitive_boolean(), Gt::primitive_string()]);
 
         assert_ron_snapshot!(
             union
@@ -276,12 +270,7 @@ mod tests {
         context.enter_parent(RsContextParent::Alias("Union".into()));
         context.provide_doc(Some("Hello, world!".into()));
 
-        let union = parse_get_named::<GtUnion>(
-            "Union",
-            r#"
-            Union: boolean | string
-            "#,
-        );
+        let union = Gt::union(vec_into![Gt::primitive_boolean(), Gt::primitive_string()]);
 
         assert_ron_snapshot!(
             union
@@ -320,12 +309,11 @@ mod tests {
         let mut context = RsConvertContext::empty("module".into());
         context.enter_parent(RsContextParent::Alias("AnimalKind".into()));
 
-        let union = parse_get_named::<GtUnion>(
-            "AnimalKind",
-            r#"
-            AnimalKind: "dog" | "cat" | "bird"
-            "#,
-        );
+        let union = Gt::union(vec_into![
+            Gt::literal_string("dog"),
+            Gt::literal_string("cat"),
+            Gt::literal_string("bird"),
+        ]);
         assert_ron_snapshot!(
             union.convert(&mut context).unwrap(),
             @r#"
@@ -393,12 +381,13 @@ mod tests {
         let mut context = RsConvertContext::empty("module".into());
         context.enter_parent(RsContextParent::Alias("Union".into()));
 
-        let union = parse_get_named::<GtUnion>(
-            "Union",
-            r#"
-            Union: () | string | () | string | ()
-            "#,
-        );
+        let union = Gt::union(vec_into![
+            Gt::tuple(vec![]),
+            Gt::primitive_string(),
+            Gt::tuple(vec![]),
+            Gt::primitive_string(),
+            Gt::tuple(vec![]),
+        ]);
         assert_ron_snapshot!(
             union
             .convert(&mut context)
@@ -460,12 +449,13 @@ mod tests {
         let mut context = RsConvertContext::empty("module".into());
         context.enter_parent(RsContextParent::Alias("Union".into()));
 
-        let union = parse_get_named::<GtUnion>(
-            "Union",
-            r#"
-            Union: i32 | i64 | isize | f32 | f64
-            "#,
-        );
+        let union = Gt::union(vec_into![
+            Gt::primitive_i32(),
+            Gt::primitive_i64(),
+            Gt::primitive_isize(),
+            Gt::primitive_f32(),
+            Gt::primitive_f64(),
+        ]);
         assert_ron_snapshot!(
             union
             .convert(&mut context)
@@ -521,12 +511,11 @@ mod tests {
         let mut context = RsConvertContext::empty("module".into());
         context.enter_parent(RsContextParent::Alias("Union".into()));
 
-        let union = parse_get_named::<GtUnion>(
-            "Union",
-            r#"
-            Union: null | "Hello" | true
-            "#,
-        );
+        let union = Gt::union(vec_into![
+            Gt::literal_null(),
+            Gt::literal_string("Hello"),
+            Gt::literal_boolean(true),
+        ]);
         assert_ron_snapshot!(
             union
             .convert(&mut context)
@@ -576,12 +565,7 @@ mod tests {
         let mut context = RsConvertContext::empty("module".into());
         context.enter_parent(RsContextParent::Alias("Version".into()));
 
-        let union = parse_get_named::<GtUnion>(
-            "Version",
-            r#"
-            Version: 0 | 1
-            "#,
-        );
+        let union = Gt::union(vec_into![Gt::literal_integer(0), Gt::literal_integer(1)]);
         assert_ron_snapshot!(
             union
             .convert(&mut context)
@@ -623,12 +607,7 @@ mod tests {
         let mut context = RsConvertContext::empty("module".into());
         context.enter_parent(RsContextParent::Alias("Version".into()));
 
-        let union = parse_get_named::<GtUnion>(
-            "Version",
-            r#"
-            Version: 1.2 | 3.4
-            "#,
-        );
+        let union = Gt::union(vec_into![Gt::literal_float(1.2), Gt::literal_float(3.4)]);
         assert_ron_snapshot!(
             union
             .convert(&mut context)
@@ -670,12 +649,7 @@ mod tests {
         let mut context = RsConvertContext::empty("module".into());
         context.enter_parent(RsContextParent::Alias("Version".into()));
 
-        let union = parse_get_named::<GtUnion>(
-            "Version",
-            r#"
-            Version: "0" | "1"
-            "#,
-        );
+        let union = Gt::union(vec_into![Gt::literal_string("0"), Gt::literal_string("1")]);
         assert_ron_snapshot!(
             union
             .convert(&mut context)

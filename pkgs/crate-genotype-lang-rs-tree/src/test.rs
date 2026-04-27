@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use crate::prelude::internal::*;
 
 pub use genotype_test::*;
@@ -50,8 +48,8 @@ impl Rst {
         reference_definition_ids: Vec<(GtReferenceId, GtDefinitionId)>,
     ) -> RsConvertResolve {
         RsConvertResolve {
-            path_module_ids: HashMap::from_iter(path_module_ids),
-            reference_definition_ids: HashMap::from_iter(reference_definition_ids),
+            path_module_ids: IndexMap::from_iter(path_module_ids),
+            reference_definition_ids: IndexMap::from_iter(reference_definition_ids),
             ..Default::default()
         }
     }

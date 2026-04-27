@@ -1,32 +1,92 @@
 use crate::prelude::internal::*;
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
-pub struct PyProjectModule {
+pub struct PyProjectModuleGenerated {
     pub name: String,
     pub path: GtpPkgSrcDirRelativePath,
     pub module: PyModule,
 }
 
+#[derive(Debug, PartialEq, Clone, Serialize)]
+pub enum PyProjectModule {
+    Generated(PyProjectModuleGenerated),
+    Error(PyProjectModuleError),
+}
+
+#[derive(Error, Debug, PartialEq, Clone, Serialize)]
+pub enum PyProjectModuleError {
+    #[error("Can't generate module `{path}` because it is still in initialized state")]
+    Initialized { path: GtpModulePath },
+
+    #[error(
+        "Can't generate module `{path}` because it is still in parsed state with id `{module_id:?}`"
+    )]
+    Parsed {
+        path: GtpModulePath,
+        module_id: GtModuleId,
+    },
+
+    #[error("Project module `{path}` error: {message}")]
+    ProjectModuleError {
+        path: GtpModulePath,
+        message: String,
+    },
+}
+
 impl GtlProjectModule<PyConfig> for PyProjectModule {
     type Dependency = PyDependencyIdent;
 
-    fn generate(config: &PyConfig, module: &GtpModule) -> Result<Self> {
-        let path = module.path.to_pkg_src_relative_file_path("py");
+    fn generate(
+        src_path: &GtpSrcDirPath,
+        config: &PyConfig,
+        module_path: &GtpModulePath,
+        module: &GtpModule,
+    ) -> Self {
+        let resolved = match module {
+            GtpModule::Resolved(module) => module,
+            GtpModule::Initialized => {
+                return Self::Error(PyProjectModuleError::Initialized {
+                    path: module_path.clone(),
+                });
+            }
+            GtpModule::Parsed(module) => {
+                return Self::Error(PyProjectModuleError::Parsed {
+                    path: module_path.clone(),
+                    module_id: module.module_parse.module.id.clone(),
+                });
+            }
+            GtpModule::Error(error) => {
+                return Self::Error(PyProjectModuleError::ProjectModuleError {
+                    path: module_path.clone(),
+                    message: error.to_string(),
+                });
+            }
+        };
+
+        let path = module_path
+            .to_module_id(&src_path)
+            .map(|module_id| {
+                GtpPkgSrcDirRelativePath::from_str(&format!("{}.py", module_id.0.as_ref()))
+            })
+            .unwrap_or_else(|_| GtpPkgSrcDirRelativePath::from_str("unknown.py"));
         let name = py_parse_module_path(path.with_extension("").as_str().into());
 
         let mut resolve = PyConvertResolve::default();
-        let mut prefixes: HashMap<String, u8> = HashMap::new();
+        let mut prefixes: IndexMap<String, u8> = IndexMap::new();
+        let parse = &resolved.project_module_parse.module_parse;
+        let module_resolve = &resolved.resolve;
 
         // [TODO] I'm pretty sure I can extract it and share with TypeScript
-        for import in module.module.imports.iter() {
+        for import in parse.module.imports.iter() {
             match &import.reference {
                 GtImportReference::Glob(_) => {
-                    let references = module
-                        .resolve
+                    let references = module_resolve
                         .identifiers
                         .iter()
                         .filter(|(_, resolve)| {
-                            if let GtpModuleIdentifierSource::External(path) = &resolve.source {
+                            if let GtpModuleResolveIdentifierSource::External(path) =
+                                &resolve.source
+                            {
                                 return import.path == *path;
                             }
                             false
@@ -76,22 +136,33 @@ impl GtlProjectModule<PyConfig> for PyProjectModule {
             }
         }
 
-        let module = PyConvertModule::convert(&module.module, &resolve, config).0;
+        let module = PyConvertModule::convert(&parse.module, &resolve, config).0;
 
-        Ok(Self { name, path, module })
+        Self::Generated(PyProjectModuleGenerated { name, path, module })
     }
 
     fn dependencies(&self) -> Vec<Self::Dependency> {
-        self.module
-            .imports
-            .iter()
-            .map(|import| import.dependency.clone())
-            .collect()
+        match self {
+            Self::Generated(module) => module
+                .module
+                .imports
+                .iter()
+                .map(|import| import.dependency.clone())
+                .collect(),
+            Self::Error(_) => vec![],
+        }
     }
 }
 
 impl Hash for PyProjectModule {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        self.path.hash(state);
+        match self {
+            Self::Generated(module) => module.path.hash(state),
+            Self::Error(error) => match error {
+                PyProjectModuleError::Initialized { path }
+                | PyProjectModuleError::Parsed { path, .. }
+                | PyProjectModuleError::ProjectModuleError { path, .. } => path.hash(state),
+            },
+        }
     }
 }

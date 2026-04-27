@@ -12,7 +12,7 @@ pub trait GtlConfig: GtlConfigHealth + Default {
     type PkgPath: GtlConfigPkgPathSetting;
 
     /// Returns the common language configuration. The target language configuration overrides
-    /// the method to provide acess to the config struct.
+    /// the method to provide access to the config struct.
     fn common(&self) -> &GtlConfigCommon<Self::PkgPath>;
 
     /// Target-specific source directory name. For instance, TypeScript and Rust packages will not

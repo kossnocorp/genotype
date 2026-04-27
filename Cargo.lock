@@ -608,6 +608,7 @@ version = "0.15.0"
 dependencies = [
  "delegate",
  "genotype_project_core",
+ "indexmap",
  "insta",
  "pretty_assertions",
  "relative-path",
@@ -749,6 +750,7 @@ dependencies = [
  "genotype_project",
  "genotype_test",
  "heck",
+ "indexmap",
  "insta",
  "miette",
  "pretty_assertions",
@@ -799,6 +801,7 @@ dependencies = [
  "genotype_parser",
  "genotype_test",
  "heck",
+ "indexmap",
  "insta",
  "miette",
  "pretty_assertions",
@@ -873,6 +876,7 @@ name = "genotype_project_core"
 version = "0.15.0"
 dependencies = [
  "genotype_parser",
+ "genotype_test",
  "insta",
  "miette",
  "pretty_assertions",
@@ -1189,6 +1193,8 @@ checksum = "e82db8c87c7f1ccecb34ce0c24399b8a73081427f3c7c50a5d597925356115e4"
 dependencies = [
  "console",
  "once_cell",
+ "pest",
+ "pest_derive",
  "ron",
  "serde",
  "similar",

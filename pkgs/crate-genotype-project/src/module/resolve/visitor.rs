@@ -1,20 +1,20 @@
 use crate::prelude::internal::*;
 use genotype_parser::visitor::GtVisitor;
 
-pub struct GtpResolveVisitor<'a> {
+pub struct GtpModuleResolveVisitor<'a> {
     module_id: GtModuleId,
     resolve: &'a GtpResolve,
     error: Option<GtpError>,
     /// Module definitions resolve accumulated during the visit. It is then
     /// moved to corresponding module `GtpModuleResolve` struct.
-    definitions: IndexMap<GtModuleId, IndexMap<GtDefinitionId, GtpModuleDefinitionResolve>>,
+    definitions: IndexMap<GtModuleId, IndexMap<GtDefinitionId, GtpModuleResolveDefinition>>,
     /// Reference definition resolve accumulated during the visit.
     reference_definition_ids: IndexMap<GtReferenceId, GtDefinitionId>,
 }
 
-impl<'a> GtpResolveVisitor<'a> {
-    pub fn new(module_id: GtModuleId, resolve: &'a GtpResolve) -> GtpResolveVisitor<'a> {
-        GtpResolveVisitor {
+impl<'a> GtpModuleResolveVisitor<'a> {
+    pub fn new(module_id: GtModuleId, resolve: &'a GtpResolve) -> GtpModuleResolveVisitor<'a> {
+        GtpModuleResolveVisitor {
             module_id,
             resolve,
             error: None,
@@ -27,7 +27,7 @@ impl<'a> GtpResolveVisitor<'a> {
         self.error.as_ref()
     }
 
-    pub fn drain_definitions(&self) -> IndexMap<GtDefinitionId, GtpModuleDefinitionResolve> {
+    pub fn drain_definitions(&self) -> IndexMap<GtDefinitionId, GtpModuleResolveDefinition> {
         self.definitions
             .get(&self.module_id)
             .cloned()
@@ -39,17 +39,30 @@ impl<'a> GtpResolveVisitor<'a> {
     }
 }
 
-impl GtVisitor for GtpResolveVisitor<'_> {
+impl GtVisitor for GtpModuleResolveVisitor<'_> {
     fn visit_inline_import(&mut self, import: &GtInlineImport) {
         if self.error.is_some() {
             return;
         }
 
         let Some(module_id) = self.resolve.path_module_ids.get(&import.path.id) else {
+            self.error = Some(GtpError::UndefinedType {
+                span: import.name.as_span(),
+                identifier: import.name.as_string(),
+            });
             return;
         };
 
-        let Some(definitions) = self.resolve.definitions.get(module_id) else {
+        let Some(definitions) = self
+            .resolve
+            .modules
+            .get(module_id)
+            .map(|module| &module.definitions)
+        else {
+            self.error = Some(GtpError::UndefinedType {
+                span: import.name.as_span(),
+                identifier: import.name.as_string(),
+            });
             return;
         };
 
@@ -69,26 +82,31 @@ impl GtVisitor for GtpResolveVisitor<'_> {
             return;
         }
 
-        let resolved_definition_id =
-            if let Some(definitions) = self.resolve.definitions.get(&self.module_id) {
-                definitions
-                    .iter()
-                    .find(|definition| definition.1 == reference.identifier.1)
-                    .cloned()
-            } else {
-                None
-            }
-            .or_else(|| {
-                self.resolve
-                    .imports
-                    .get(&self.module_id)
-                    .and_then(|definitions| {
-                        definitions
-                            .iter()
-                            .find(|definition| definition.1 == reference.identifier.1)
-                            .cloned()
-                    })
-            });
+        let resolved_definition_id = if let Some(definitions) = self
+            .resolve
+            .modules
+            .get(&self.module_id)
+            .map(|module| &module.definitions)
+        {
+            definitions
+                .iter()
+                .find(|definition| definition.1 == reference.identifier.1)
+                .cloned()
+        } else {
+            None
+        }
+        .or_else(|| {
+            self.resolve
+                .modules
+                .get(&self.module_id)
+                .map(|module| &module.imports)
+                .and_then(|definitions| {
+                    definitions
+                        .iter()
+                        .find(|definition| definition.1 == reference.identifier.1)
+                        .cloned()
+                })
+        });
 
         if let Some(definition_id) = resolved_definition_id {
             self.reference_definition_ids

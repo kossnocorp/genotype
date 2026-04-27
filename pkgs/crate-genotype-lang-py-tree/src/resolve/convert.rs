@@ -1,10 +1,9 @@
 use crate::prelude::internal::*;
-use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, PartialEq, Clone, Default)]
 pub struct PyConvertResolve {
-    pub paths: HashMap<GtPath, GtPath>,
-    pub globs: HashMap<GtPath, String>,
-    pub identifiers: HashMap<GtIdentifier, GtIdentifier>,
-    pub imported: HashSet<GtIdentifier>,
+    pub paths: IndexMap<GtPath, GtPath>,
+    pub globs: IndexMap<GtPath, String>,
+    pub identifiers: IndexMap<GtIdentifier, GtIdentifier>,
+    pub imported: IndexSet<GtIdentifier>,
 }

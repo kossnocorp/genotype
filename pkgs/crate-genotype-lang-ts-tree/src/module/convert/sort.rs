@@ -2,18 +2,18 @@ use crate::prelude::internal::*;
 
 impl TsConvertModule {
     pub fn sort_definitions(definitions: Vec<TsDefinition>) -> Vec<TsDefinition> {
-        let def_names: HashSet<_> = definitions.iter().map(|def| def.name()).collect();
+        let def_names: IndexSet<_> = definitions.iter().map(|def| def.name()).collect();
         let defs_order = definitions
             .iter()
             .enumerate()
             .map(|(index, def)| (def.name(), index))
-            .collect::<HashMap<_, _>>();
+            .collect::<IndexMap<_, _>>();
         let defs_by_name = definitions
             .iter()
             .map(|def| (def.name(), def.clone()))
-            .collect::<HashMap<_, _>>();
+            .collect::<IndexMap<_, _>>();
 
-        let mut def_deps_by_name = HashMap::new();
+        let mut def_deps_by_name = IndexMap::new();
         for def in &definitions {
             let name = def.name();
             let deps_scan = def.scan_dependencies();
@@ -24,7 +24,7 @@ impl TsConvertModule {
 
         let comps = Self::strongly_connected_components(&def_deps_by_name, &defs_order);
 
-        let mut comp_idx = HashMap::new();
+        let mut comp_idx = IndexMap::new();
         for (index, comp) in comps.iter().enumerate() {
             for ident in comp {
                 comp_idx.insert(ident.clone(), index);
@@ -32,7 +32,7 @@ impl TsConvertModule {
         }
 
         let mut incoming_count = vec![0usize; comps.len()];
-        let mut outgoing = vec![HashSet::<usize>::new(); comps.len()];
+        let mut outgoing = vec![IndexSet::<usize>::new(); comps.len()];
 
         for (def_name, deps) in &def_deps_by_name {
             let &name_component = comp_idx.get(def_name).unwrap();
@@ -61,7 +61,7 @@ impl TsConvertModule {
         });
 
         let mut sorted_defs = vec![];
-        let mut queued_comp_idxs = HashSet::new();
+        let mut queued_comp_idxs = IndexSet::new();
 
         while let Some(comp_idx) = ready_comps.first().cloned() {
             ready_comps.remove(0);
@@ -112,9 +112,9 @@ impl TsConvertModule {
 
     fn sort_component_definitions(
         component: &[TsIdentifier],
-        dependencies_by_name: &HashMap<TsIdentifier, HashSet<TsIdentifier>>,
-        defs_by_name: &HashMap<TsIdentifier, TsDefinition>,
-        order: &HashMap<TsIdentifier, usize>,
+        dependencies_by_name: &IndexMap<TsIdentifier, IndexSet<TsIdentifier>>,
+        defs_by_name: &IndexMap<TsIdentifier, TsDefinition>,
+        order: &IndexMap<TsIdentifier, usize>,
     ) -> Vec<TsDefinition> {
         if component.len() <= 1 {
             return component
@@ -123,7 +123,7 @@ impl TsConvertModule {
                 .collect();
         }
 
-        let comp_set = component.iter().cloned().collect::<HashSet<_>>();
+        let comp_set = component.iter().cloned().collect::<IndexSet<_>>();
         let mut sorted_idents = component.to_vec();
 
         sorted_idents.sort_by(|left, right| {
@@ -155,14 +155,14 @@ impl TsConvertModule {
     }
 
     fn strongly_connected_components(
-        deps_by_name: &HashMap<TsIdentifier, HashSet<TsIdentifier>>,
-        order: &HashMap<TsIdentifier, usize>,
+        deps_by_name: &IndexMap<TsIdentifier, IndexSet<TsIdentifier>>,
+        order: &IndexMap<TsIdentifier, usize>,
     ) -> Vec<Vec<TsIdentifier>> {
         let mut idx = 0usize;
         let mut stack: Vec<TsIdentifier> = vec![];
-        let mut on_stack: HashSet<TsIdentifier> = HashSet::new();
-        let mut idxs: HashMap<TsIdentifier, usize> = HashMap::new();
-        let mut low_links: HashMap<TsIdentifier, usize> = HashMap::new();
+        let mut on_stack: IndexSet<TsIdentifier> = IndexSet::new();
+        let mut idxs: IndexMap<TsIdentifier, usize> = IndexMap::new();
+        let mut low_links: IndexMap<TsIdentifier, usize> = IndexMap::new();
         let mut comps: Vec<Vec<TsIdentifier>> = vec![];
 
         // TODO: Get rid of this mess here!
@@ -171,10 +171,10 @@ impl TsConvertModule {
             node: TsIdentifier,
             idx: &mut usize,
             stack: &mut Vec<TsIdentifier>,
-            on_stack: &mut HashSet<TsIdentifier>,
-            idxs: &mut HashMap<TsIdentifier, usize>,
-            low_links: &mut HashMap<TsIdentifier, usize>,
-            deps_by_name: &HashMap<TsIdentifier, HashSet<TsIdentifier>>,
+            on_stack: &mut IndexSet<TsIdentifier>,
+            idxs: &mut IndexMap<TsIdentifier, usize>,
+            low_links: &mut IndexMap<TsIdentifier, usize>,
+            deps_by_name: &IndexMap<TsIdentifier, IndexSet<TsIdentifier>>,
             comps: &mut Vec<Vec<TsIdentifier>>,
         ) {
             idxs.insert(node.clone(), *idx);
@@ -215,7 +215,7 @@ impl TsConvertModule {
                         break;
                     };
 
-                    on_stack.remove(&component_node);
+                    on_stack.shift_remove(&component_node);
                     comp.push(component_node.clone());
 
                     if component_node == node {

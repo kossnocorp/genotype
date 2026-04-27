@@ -1,9 +1,8 @@
 use crate::prelude::internal::*;
-use std::collections::HashSet;
 
 pub struct TsModuleConvertVisitor {
-    definitions: HashSet<TsIdentifier>,
-    scope: HashSet<TsIdentifier>,
+    definitions: IndexSet<TsIdentifier>,
+    scope: IndexSet<TsIdentifier>,
     current_definition: Option<TsIdentifier>,
 }
 
@@ -13,7 +12,7 @@ impl TsModuleConvertVisitor {
             .definitions
             .iter()
             .map(|definition| definition.name())
-            .collect::<HashSet<TsIdentifier>>();
+            .collect::<IndexSet<TsIdentifier>>();
 
         Self {
             definitions,

@@ -12,11 +12,12 @@ genotype_project = { version = "0.15.0", path = "../crate-genotype-project" }
 genotype_lang_core_tree = { version = "0.15.0", path = "../crate-genotype-lang-core-tree" }
 genotype_lang_rs_config = { version = "0.15.0", path = "../crate-genotype-lang-rs-config" }
 genotype_parser = { version = "0.15.0", path = "../crate-genotype-parser" }
-miette = { version = "7.6.0", features = ["fancy", "serde"] }
+miette = { version = "7.6.0", features = ["serde"] }
 thiserror = "1.0.64"
 heck = "0.5.0"
 unicode-xid = "0.2.6"
-serde = { version = "1.0.210", features = ["derive", "rc"] }
+serde = { version = "1.0.228", features = ["derive", "rc"] }
+indexmap = { version = "2.6.0", features = ["serde"] }
 
 [dev-dependencies]
 genotype_test = { path = "../crate-genotype-test" }

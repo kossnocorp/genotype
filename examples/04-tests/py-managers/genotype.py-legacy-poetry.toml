@@ -1,5 +1,5 @@
 name = "genotype-test-py-managers"
-out = "dist/py-legacy-poetry"
+dist = "dist/py-legacy-poetry"
 
 [py]
 enabled = true

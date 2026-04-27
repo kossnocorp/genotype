@@ -31,7 +31,7 @@ impl Default for GtpConfigSetVersionProps {
     }
 }
 
-type VersionUpdates = HashMap<GtpConfigVersionTarget, Version>;
+type VersionUpdates = IndexMap<GtpConfigVersionTarget, Version>;
 
 const TS_MANIFEST_VERSION_PATH: &str = "version";
 const PY_MANIFEST_VERSION_PATH_POETRY: &str = "tool.poetry.version";
@@ -47,7 +47,7 @@ impl GtpConfig {
             rs,
         } = props;
 
-        let mut updates: VersionUpdates = HashMap::new();
+        let mut updates: VersionUpdates = IndexMap::new();
 
         if let Some(cur_global_version) = &self.version {
             ensure_can_set_version(cur_global_version, &version)?;
@@ -89,7 +89,7 @@ impl GtpConfig {
     }
 
     pub fn bump_manifest_version(&mut self, part: GtpConfigVersionPart) -> Result<()> {
-        let mut updates: VersionUpdates = HashMap::new();
+        let mut updates: VersionUpdates = IndexMap::new();
 
         if let Some(cur_global_version) = &self.version {
             let next_version = bump_version(cur_global_version, part);

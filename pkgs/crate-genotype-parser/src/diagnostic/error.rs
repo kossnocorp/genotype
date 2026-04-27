@@ -1,29 +1,124 @@
 use crate::prelude::internal::*;
 
-#[derive(Error, Diagnostic, Debug, PartialEq, Clone)]
+#[derive(Error, Diagnostic, Debug, PartialEq, Clone, Serialize)]
 pub enum GtParseError {
+    /// Pest syntax error.
+    #[error("Syntax error")]
+    #[diagnostic(code("GT001"))]
+    Syntax(GtPestError),
+
+    /// Pest succeeded but the result didn't match the expected structure.
+    #[error("Invalid grammar")]
+    #[diagnostic(code("GT002"))]
+    InvalidGrammar,
+
     #[error("Failed to parse {1} node")]
-    #[diagnostic(code("GTP001"))]
+    #[diagnostic(code("GT002"))]
     Internal(#[label("internal error")] GtSpan, GtNode),
 
     #[error("Failed to parse {1} node")]
-    #[diagnostic(code("GTP002"))]
+    #[diagnostic(code("GT003"))]
     InternalMessage(#[label("{2}")] GtSpan, GtNode, &'static str),
 
     #[error("Encountered unexpected rule '{2:?}' while parsing '{1}' node")]
-    #[diagnostic(code("GTP003"))]
-    UnexpectedRule(#[label("unexpected rule")] GtSpan, GtNode, Rule),
+    #[diagnostic(code("GT004"))]
+    UnexpectedRule(
+        #[label("unexpected rule")] GtSpan,
+        GtNode,
+        #[serde(serialize_with = "serialize_rule")] Rule,
+    ),
 
     #[error("Failed to parse {1} node")]
-    #[diagnostic(code("GTP004"))]
+    #[diagnostic(code("GT005"))]
     UnexpectedEnd(#[label("unexpected end")] GtSpan, GtNode),
 
     #[error("Failed to parse {1} node")]
-    #[diagnostic(code("GTP005"))]
+    #[diagnostic(code("GT006"))]
     UnknownValue(#[label("unknown value")] GtSpan, GtNode),
 
     #[error("Failed to extract expected type from descriptor")]
+    #[diagnostic(code("GT007"))]
     UnmatchedDescriptor(#[label("incorrect type descriptor")] GtSpan, GtNode),
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct GtPestError(pub pest::error::Error<Rule>);
+
+impl From<pest::error::Error<Rule>> for GtPestError {
+    fn from(error: pest::error::Error<Rule>) -> Self {
+        Self(error)
+    }
+}
+
+impl serde::Serialize for GtPestError {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        PestErrorSnapshot::from(&self.0).serialize(serializer)
+    }
+}
+
+fn serialize_rule<S>(rule: &Rule, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    serializer.serialize_str(&format!("{rule:?}"))
+}
+
+#[derive(Debug, Serialize)]
+struct PestErrorSnapshot {
+    message: String,
+    span_start: usize,
+    span_end: usize,
+    line_start: usize,
+    column_start: usize,
+    line_end: usize,
+    column_end: usize,
+    positives: Option<Vec<String>>,
+    negatives: Option<Vec<String>>,
+    custom_message: Option<String>,
+}
+
+impl From<&pest::error::Error<Rule>> for PestErrorSnapshot {
+    fn from(error: &pest::error::Error<Rule>) -> Self {
+        use pest::error::{ErrorVariant, InputLocation, LineColLocation};
+
+        let (span_start, span_end) = match error.location {
+            InputLocation::Pos(start) => (start, start),
+            InputLocation::Span((start, end)) => (start, end),
+        };
+
+        let (line_start, line_end) = match error.line_col {
+            LineColLocation::Pos(line_col) => (line_col, line_col),
+            LineColLocation::Span(start, end) => (start, end),
+        };
+
+        let (positives, negatives, custom_message) = match &error.variant {
+            ErrorVariant::ParsingError {
+                positives,
+                negatives,
+            } => (
+                Some(positives.iter().map(|rule| format!("{rule:?}")).collect()),
+                Some(negatives.iter().map(|rule| format!("{rule:?}")).collect()),
+                None,
+            ),
+            ErrorVariant::CustomError { message } => (None, None, Some(message.clone())),
+        };
+
+        Self {
+            message: error.variant.message().to_string(),
+            span_start,
+            span_end,
+            line_start: line_start.0,
+            column_start: line_start.1,
+            line_end: line_end.0,
+            column_end: line_end.1,
+            positives,
+            negatives,
+            custom_message,
+        }
+    }
 }
 
 impl GtParseError {
@@ -35,6 +130,7 @@ impl GtParseError {
             Self::UnexpectedEnd(span, _) => *span,
             Self::UnknownValue(span, _) => *span,
             Self::UnmatchedDescriptor(span, _) => *span,
+            _ => todo!("Get rid of GtModuleParseError"),
         }
     }
 
@@ -63,6 +159,7 @@ impl GtParseError {
                     node.name()
                 )
             }
+            _ => todo!("Get rid of GtModuleParseError"),
         }
     }
 }

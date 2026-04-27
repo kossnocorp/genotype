@@ -1,7 +1,8 @@
 use pest::{Parser, iterators::Pairs};
 use pest_derive::Parser;
+use serde::Serialize;
 
-#[derive(Parser)]
+#[derive(Parser, Serialize)]
 #[grammar = "parser/grammar.pest"]
 pub struct GenotypeParser;
 

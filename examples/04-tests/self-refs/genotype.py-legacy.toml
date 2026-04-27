@@ -1,5 +1,5 @@
 name = "genotype-test-self-refs"
-out = "dist/py-legacy"
+dist = "dist/py-legacy"
 
 [py]
 enabled = true

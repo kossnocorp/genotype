@@ -8,6 +8,8 @@ pub use insta::{assert_debug_snapshot, assert_ron_snapshot, assert_snapshot};
 pub use pretty_assertions::{
     assert_eq as assert_equal, assert_ne as assert_not_equal, assert_str_eq as assert_str_equal,
 };
+#[cfg(test)]
+pub use std::fs;
 
 mod parser;
 pub use parser::*;

@@ -29,7 +29,7 @@ impl TsDefinition {
 }
 
 pub struct TsDefinitionDependenciesScanVisitor {
-    pub dependencies: HashSet<TsIdentifier>,
+    pub dependencies: IndexSet<TsIdentifier>,
 }
 
 impl Default for TsDefinitionDependenciesScanVisitor {
@@ -41,7 +41,7 @@ impl Default for TsDefinitionDependenciesScanVisitor {
 impl TsDefinitionDependenciesScanVisitor {
     pub fn new() -> TsDefinitionDependenciesScanVisitor {
         TsDefinitionDependenciesScanVisitor {
-            dependencies: HashSet::new(),
+            dependencies: IndexSet::new(),
         }
     }
 }

@@ -222,12 +222,12 @@ mod tests {
         let mut context = RsConvertContext::empty("module".into());
         context.enter_parent(RsContextParent::Alias("AnimalKind".into()));
 
-        let union = parse_get_named::<GtUnion>(
-            "Misc",
-            r#"
-            Misc: "hello" | 123 | true | null
-            "#,
-        );
+        let union = Gt::union(vec_into![
+            Gt::literal_string("hello"),
+            Gt::literal_integer(123),
+            Gt::literal_boolean(true),
+            Gt::literal_null(),
+        ]);
         let union = union.convert(&mut context).unwrap();
 
         assert_snapshot!(
