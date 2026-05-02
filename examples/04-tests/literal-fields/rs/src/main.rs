@@ -1,4 +1,4 @@
-use genotype_test_literal_fields::{Response, ResponseFailure, ResponseSuccess};
+use genotype_test_literal_fields_types::{Response, ResponseFailure, ResponseSuccess};
 
 fn main() {}
 

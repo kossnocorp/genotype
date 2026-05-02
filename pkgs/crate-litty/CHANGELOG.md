@@ -8,7 +8,11 @@ This change log follows the format documented in [Keep a CHANGELOG].
 [semantic versioning]: http://semver.org/
 [keep a changelog]: http://keepachangelog.com/
 
-## Unreleased
+## v0.4.0 - 2026-05-03
+
+### Fixed
+
+- Fixed lifetime issues in generated code.
 
 ### Changed
 

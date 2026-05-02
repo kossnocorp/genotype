@@ -182,3 +182,26 @@ cargo release version {{usage.version}} \
   --no-confirm \
   --execute
 '''
+
+[tasks."publish/cargo/litty"]
+run = '''
+cargo release publish \
+  --package litty \
+  --package litty_macro \
+  --all-features \
+  --no-verify \
+  --no-confirm \
+  --allow-branch '*' \
+  --execute
+'''
+
+[tasks."publish/cargo/litty:dry"]
+run = '''
+cargo release publish \
+  --package litty \
+  --package litty_macro \
+  --all-features \
+  --no-verify \
+  --no-confirm \
+  --allow-branch '*'
+'''

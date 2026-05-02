@@ -642,7 +642,7 @@ mod tests {
         edition = "2024"
 
         [dependencies]
-        litty = "0.3"
+        litty = "0.4"
         serde = { version = "1", features = ["derive"] }
         "#
         );
@@ -678,7 +678,7 @@ mod tests {
         assert_snapshot!(
           dist.files[3].source,
           @r#"
-        use litty::literal;
+        use litty::{literal, Literals};
         use serde::{Deserialize, Serialize};
         use crate::named::Name;
 
@@ -692,7 +692,6 @@ mod tests {
         }
 
         #[derive(Debug, Clone, PartialEq, Literals)]
-        #[serde(untagged)]
         pub enum AdminRole {
             #[literal("superadmin")]
             Superadmin,

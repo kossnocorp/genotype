@@ -1,5 +1,5 @@
 use proc_macro::TokenStream;
-use quote::quote;
+use quote::{ToTokens, quote};
 use syn::parse::Parser;
 use syn::{
     Data, DeriveInput, Error, Fields, Ident, Lit, Meta, MetaList, MetaNameValue, Token,
@@ -41,9 +41,10 @@ enum LiteralsMode {
 
 struct LiteralField {
     ident: Ident,
-    ty: proc_macro2::TokenStream,
+    serialize_ty: proc_macro2::TokenStream,
+    deserialize_ty: proc_macro2::TokenStream,
     value: proc_macro2::TokenStream,
-    lit: Lit,
+    expected_display: String,
 }
 
 fn expand_literals(
@@ -117,7 +118,12 @@ fn expand_literals(
     );
 
     let literal_field_names: Vec<_> = literal_fields.iter().map(|field| &field.ident).collect();
-    let literal_field_types: Vec<_> = literal_fields.iter().map(|field| &field.ty).collect();
+    let literal_field_serialize_types: Vec<_> =
+        literal_fields.iter().map(|field| &field.serialize_ty).collect();
+    let literal_field_deserialize_types: Vec<_> = literal_fields
+        .iter()
+        .map(|field| &field.deserialize_ty)
+        .collect();
     let literal_field_values: Vec<_> = literal_fields.iter().map(|field| &field.value).collect();
 
     let serialize_fields = fields.iter().map(|field| {
@@ -145,9 +151,11 @@ fn expand_literals(
     });
 
     let mut helper_generics = input.generics.clone();
-    helper_generics
-        .params
-        .insert(0, syn::parse_quote!('__litty));
+    if !fields.is_empty() {
+        helper_generics
+            .params
+            .insert(0, syn::parse_quote!('__litty));
+    }
     let (helper_impl_generics, _helper_ty_generics, helper_where_clause) =
         helper_generics.split_for_impl();
 
@@ -161,11 +169,11 @@ fn expand_literals(
     let literal_checks = literal_fields.iter().map(|field| {
         let ident = &field.ident;
         let value = &field.value;
-        let expected = &field.lit;
+        let expected = &field.expected_display;
         quote! {
             if helper.#ident != #value {
                 return Err(serde::de::Error::custom(format!(
-                    "expected {} = {:?}, got {:?}",
+                    "expected {} = {}, got {:?}",
                     stringify!(#ident),
                     #expected,
                     helper.#ident
@@ -178,7 +186,7 @@ fn expand_literals(
         #[derive(serde::Serialize)]
         struct #serialize_ident #helper_impl_generics #helper_where_clause {
             #(#serialize_fields,)*
-            #(#literal_field_names: #literal_field_types,)*
+            #(#literal_field_names: #literal_field_serialize_types,)*
         }
 
         impl #impl_generics serde::Serialize for #struct_ident #ty_generics #serialize_where_clause {
@@ -199,7 +207,7 @@ fn expand_literals(
         #[derive(serde::Deserialize)]
         struct #deserialize_ident #impl_generics #where_clause {
             #(#deserialize_fields,)*
-            #(#literal_field_names: #literal_field_types,)*
+            #(#literal_field_names: #literal_field_deserialize_types,)*
         }
 
         impl #deserialize_impl_generics serde::Deserialize<'__de> for #struct_ident #ty_generics #deserialize_where_clause {
@@ -540,23 +548,15 @@ fn parse_literal_fields(attrs: &[syn::Attribute]) -> Result<Vec<LiteralField>, E
                     ));
                 }
             };
-            let lit = match item.value {
-                syn::Expr::Lit(expr_lit) => expr_lit.lit,
-                _ => {
-                    return Err(Error::new_spanned(
-                        item.value,
-                        "Literal field value must be a literal",
-                    ));
-                }
-            };
-
-            let (ty, value) = literal_type_and_value(&lit)?;
+            let (serialize_ty, deserialize_ty, value, expected_display) =
+                literal_type_and_value(&item.value)?;
 
             literal_fields.push(LiteralField {
                 ident,
-                ty,
+                serialize_ty,
+                deserialize_ty,
                 value,
-                lit,
+                expected_display,
             });
         }
     }
@@ -565,28 +565,69 @@ fn parse_literal_fields(attrs: &[syn::Attribute]) -> Result<Vec<LiteralField>, E
 }
 
 fn literal_type_and_value(
-    lit: &Lit,
-) -> Result<(proc_macro2::TokenStream, proc_macro2::TokenStream), Error> {
-    match lit {
-        Lit::Str(lit_str) => Ok((quote! { &'static str }, quote! { #lit_str })),
-        Lit::Bool(lit_bool) => Ok((quote! { bool }, quote! { #lit_bool })),
+    value: &syn::Expr,
+) -> Result<(
+    proc_macro2::TokenStream,
+    proc_macro2::TokenStream,
+    proc_macro2::TokenStream,
+    String,
+), Error> {
+    match value {
+        syn::Expr::Path(expr_path)
+            if expr_path.path.segments.len() == 1
+                && expr_path
+                    .path
+                    .segments
+                    .first()
+                    .is_some_and(|segment| segment.ident == "null") =>
+        {
+            Ok((quote! { () }, quote! { () }, quote! { () }, "null".into()))
+        }
+        syn::Expr::Lit(expr_lit) => match &expr_lit.lit {
+        Lit::Str(lit_str) => Ok((
+            quote! { &'static str },
+            quote! { String },
+            quote! { #lit_str },
+            lit_str.to_token_stream().to_string(),
+        )),
+        Lit::Bool(lit_bool) => Ok((
+            quote! { bool },
+            quote! { bool },
+            quote! { #lit_bool },
+            lit_bool.to_token_stream().to_string(),
+        )),
         Lit::Int(lit_int) => {
             let value = lit_int
                 .base10_digits()
                 .parse::<i64>()
                 .map_err(|_| Error::new_spanned(lit_int, "Invalid i64 literal"))?;
-            Ok((quote! { i64 }, quote! { #value }))
+            Ok((
+                quote! { i64 },
+                quote! { i64 },
+                quote! { #value },
+                lit_int.to_token_stream().to_string(),
+            ))
         }
         Lit::Float(lit_float) => {
             let value = lit_float
                 .base10_digits()
                 .parse::<f64>()
                 .map_err(|_| Error::new_spanned(lit_float, "Invalid f64 literal"))?;
-            Ok((quote! { f64 }, quote! { #value }))
+            Ok((
+                quote! { f64 },
+                quote! { f64 },
+                quote! { #value },
+                lit_float.to_token_stream().to_string(),
+            ))
         }
         _ => Err(Error::new_spanned(
-            lit,
-            "Literals only supports string, bool, int, or float literals",
+            &expr_lit.lit,
+            "Literals only supports null, string, bool, int, or float literals",
+        )),
+        },
+        _ => Err(Error::new_spanned(
+            value,
+            "Literal field value must be a literal",
         )),
     }
 }

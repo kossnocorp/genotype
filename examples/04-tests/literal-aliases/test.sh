@@ -144,9 +144,7 @@ else
 	echo "--- Output ------------------------------------------"
 	echo "$output"
 	echo "-----------------------------------------------------"
-	# TODO: Fix Rust and enable:
-	# exit 1
-	exit 0
+	exit 1
 fi
 
 #endregion

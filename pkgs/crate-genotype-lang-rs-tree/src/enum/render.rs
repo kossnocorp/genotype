@@ -239,7 +239,6 @@ mod tests {
             .unwrap(),
             @r#"
         #[derive(Debug, Clone, PartialEq, Literals)]
-        #[serde(untagged)]
         pub enum AnimalKind {
             #[literal("hello")]
             Hello,
@@ -275,7 +274,6 @@ mod tests {
             .unwrap(),
             @r#"
         #[derive(Debug, Clone, PartialEq, Literals)]
-        #[serde(untagged)]
         pub enum AnimalKind {
             #[literal("hello")]
             Hello,

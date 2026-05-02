@@ -37,31 +37,38 @@ impl RsConvert<RsEnum> for GtUnion {
             }
         }
 
+        let has_literals = literals_count > 0;
+
+        let mut attributes = vec![{
+            // Use Litty derives instead of Serde if there are literal variants. It is
+            // a drop-in replacement and behaves the same for regular variants, but also
+            // adds support for literal variants.
+            let serde_mode = if has_literals {
+                RsContextRenderDeriveSerdeMode::Litty
+            } else {
+                RsContextRenderDeriveSerdeMode::Serde
+            };
+            context
+                .render_derive(RsContextRenderDeriveTypeMode::UnionEnum, serde_mode)
+                .into()
+        }];
+        if !has_literals {
+            attributes.push(r#"serde(untagged)"#.into());
+        }
+
         let r#enum = RsEnum {
             id,
             doc,
             name,
-            attributes: vec![
-                {
-                    // Use Litty derives instead of Serde if there are literal variants. It is
-                    // a drop-in replacement and behaves the same for regular variants, but also
-                    // adds support for literal variants.
-                    let serde_mode = if literals_count > 0 {
-                        RsContextRenderDeriveSerdeMode::Litty
-                    } else {
-                        RsContextRenderDeriveSerdeMode::Serde
-                    };
-                    context
-                        .render_derive(RsContextRenderDeriveTypeMode::UnionEnum, serde_mode)
-                        .into()
-                },
-                r#"serde(untagged)"#.into(),
-            ],
+            attributes,
             variants,
         };
 
         context.push_import(RsUse::new(RsDependencyIdent::Serde, "Deserialize".into()));
         context.push_import(RsUse::new(RsDependencyIdent::Serde, "Serialize".into()));
+        if has_literals {
+            context.push_import(RsUse::new(RsDependencyIdent::Litty, "Literals".into()));
+        }
 
         context.exit_parent();
         Ok(r#enum)
@@ -322,7 +329,6 @@ mod tests {
           doc: None,
           attributes: [
             RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
-            RsAttribute("serde(untagged)"),
           ],
           name: RsIdentifier("AnimalKind"),
           variants: [
@@ -363,6 +369,7 @@ mod tests {
             dependency: Litty,
             reference: Named([
               Name(RsIdentifier("literal")),
+              Name(RsIdentifier("Literals")),
             ]),
           ),
           RsUse(
@@ -526,7 +533,6 @@ mod tests {
           doc: None,
           attributes: [
             RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
-            RsAttribute("serde(untagged)"),
           ],
           name: RsIdentifier("Union"),
           variants: [
@@ -576,7 +582,6 @@ mod tests {
           doc: None,
           attributes: [
             RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
-            RsAttribute("serde(untagged)"),
           ],
           name: RsIdentifier("Version"),
           variants: [
@@ -618,7 +623,6 @@ mod tests {
           doc: None,
           attributes: [
             RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
-            RsAttribute("serde(untagged)"),
           ],
           name: RsIdentifier("Version"),
           variants: [
@@ -660,7 +664,6 @@ mod tests {
           doc: None,
           attributes: [
             RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
-            RsAttribute("serde(untagged)"),
           ],
           name: RsIdentifier("Version"),
           variants: [
@@ -888,7 +891,6 @@ mod tests {
           doc: None,
           attributes: [
             RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
-            RsAttribute("serde(untagged)"),
           ],
           name: RsIdentifier("Status"),
           variants: [

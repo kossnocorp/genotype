@@ -258,6 +258,30 @@ fn test_deserialize_literals() {
 }
 
 #[test]
+fn test_literal_fields_with_null() {
+    #[derive(Debug, PartialEq, Literals)]
+    #[literals(kind = "demo", enabled = true, code = 200, empty = null)]
+    struct LiteralBag {
+        value: String,
+    }
+
+    let value = LiteralBag {
+        value: "hello".to_string(),
+    };
+
+    assert_eq!(
+        serde_json::to_string(&value).unwrap(),
+        r#"{"value":"hello","kind":"demo","enabled":true,"code":200,"empty":null}"#
+    );
+
+    let parsed: LiteralBag = serde_json::from_str(
+        r#"{"value":"hello","kind":"demo","enabled":true,"code":200,"empty":null}"#,
+    )
+    .unwrap();
+    assert_eq!(parsed, value);
+}
+
+#[test]
 fn test_serialize_literal_struct_attribute() {
     #[serialize_literal("hello")]
     struct Hello;

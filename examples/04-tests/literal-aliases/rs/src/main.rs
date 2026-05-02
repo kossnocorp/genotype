@@ -1,4 +1,4 @@
-use genotype_test_literal_aliases_types::{Status, StatusCode};
+use genotype_test_literal_aliases_types::{Status, StatusCode, StatusLit};
 
 fn main() {}
 
@@ -9,7 +9,7 @@ mod tests {
 
     #[test]
     fn runtime_status_roundtrip() {
-        let parsed: Status = from_value(json!("success")).expect("deserialize status");
+        let parsed: StatusLit = from_value(json!("success")).expect("deserialize status");
         let value = to_value(&parsed).expect("serialize status");
         assert_eq!(value, json!("success"));
     }
@@ -19,5 +19,13 @@ mod tests {
         let parsed: StatusCode = from_value(json!(200)).expect("deserialize code");
         let value = to_value(&parsed).expect("serialize code");
         assert_eq!(value, json!(200));
+    }
+
+    #[test]
+    fn runtime_struct_roundtrip() {
+        let parsed: Status = from_value(json!({"status": "success", "code": 200}))
+            .expect("deserialize struct");
+        let value = to_value(&parsed).expect("serialize struct");
+        assert_eq!(value, json!({"status": "success", "code": 200}));
     }
 }

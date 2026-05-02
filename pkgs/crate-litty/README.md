@@ -10,7 +10,7 @@ Add `litty` to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-litty = "0.3"
+litty = "0.3.1"
 ```
 
 Or install using `cargo add`:
@@ -43,9 +43,9 @@ It directly maps to a TypeScript type like this:
 
 ```ts
 interface SuccessResponseV1 {
-    v: 1;
-    status: "ok";
-    message: string;
+  v: 1;
+  status: "ok";
+  message: string;
 }
 ```
 
@@ -53,9 +53,9 @@ The struct will serialize to JSON like this:
 
 ```json
 {
-    "v": 1,
-    "status": "ok",
-    "message": "Hello, world!"
+  "v": 1,
+  "status": "ok",
+  "message": "Hello, world!"
 }
 ```
 

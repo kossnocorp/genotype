@@ -21,32 +21,6 @@ impl RsDependencyIdent {
             Self::Std(path) => format!("std::{path}"),
         }
     }
-
-    pub fn external(&self) -> Option<RsDependencyExternal> {
-        match self {
-            Self::Runtime => Some(RsDependencyExternal {
-                name: "genotype_runtime".into(),
-                version: "0.4".into(),
-                features: vec![],
-            }),
-            Self::Litty => Some(RsDependencyExternal {
-                name: "litty".into(),
-                version: "0.3".into(),
-                features: vec![],
-            }),
-            Self::Serde => Some(RsDependencyExternal {
-                name: "serde".into(),
-                version: "1".into(),
-                features: vec!["derive".into()],
-            }),
-            Self::OrderedFloat => Some(RsDependencyExternal {
-                name: "ordered-float".into(),
-                version: "5".into(),
-                features: vec!["serde".into()],
-            }),
-            _ => None,
-        }
-    }
 }
 
 pub struct RsDependencyExternal {
