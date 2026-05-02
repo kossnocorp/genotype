@@ -1,8 +1,8 @@
 import cloudflare from "@astrojs/cloudflare";
 import starlight from "@astrojs/starlight";
+import genotypeGrammar from "@genotype-lang/tm-grammar" with { type: "json" };
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
-import genotypeGrammar from "genotype-tm-grammar" with { type: "json" };
 
 export default defineConfig({
   integrations: [
