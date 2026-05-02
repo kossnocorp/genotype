@@ -24,8 +24,15 @@ impl GtpRuntimeSystem {
         let project_runtime =
             GtpRuntimeSystem::new(&path).wrap_err("failed to create system project runtime")?;
 
+        let config_path = config_path
+            .map(|path| {
+                path.try_into()
+                    .wrap_err_with(|| format!("failed to normalize config path '{path}'"))
+            })
+            .transpose()?;
+
         let project = project_runtime
-            .create_project(config_path)
+            .create_project(config_path.as_ref())
             .wrap_err("failed to create project")?;
 
         let project = project_runtime

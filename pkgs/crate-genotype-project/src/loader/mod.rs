@@ -5,6 +5,9 @@ use crate::prelude::internal::*;
 mod parallel;
 pub use parallel::*;
 
+mod serial;
+pub use serial::*;
+
 // endregion
 
 // region Loader trait
@@ -13,10 +16,7 @@ pub use parallel::*;
 /// source trait to provide file system interop.
 pub trait GtpLoader<ProjectRef>: GtpSource {
     /// Creates a new project.
-    fn create_project(
-        &self,
-        config_path: Option<&GtpCwdRelativeOrAbsoluteStringPath>,
-    ) -> Result<GtProject> {
+    fn create_project(&self, config_path: Option<&GtpCwdRelativePath>) -> Result<GtProject> {
         let config_file_path = self.find_config_path(config_path)?;
         let config = self.load_config(&config_file_path)?;
         let project = GtProject::try_new(config_file_path, config)?;
@@ -33,15 +33,12 @@ pub trait GtpLoader<ProjectRef>: GtpSource {
     /// Finds project config path in current environment.
     fn find_config_path(
         &self,
-        config_path: Option<&GtpCwdRelativeOrAbsoluteStringPath>,
+        config_path: Option<&GtpCwdRelativePath>,
     ) -> Result<GtpConfigFilePath> {
         match config_path {
             Some(config_path) => {
-                let config_path = config_path
-                    .try_into()
-                    .wrap_err_with(|| format!("failed to normalize base path '{config_path}'"))?;
                 if self.is_file(&config_path) {
-                    Ok(config_path.into())
+                    Ok(config_path.clone().into())
                 } else {
                     Err(miette!("config file '{config_path}' does not exist"))
                 }
