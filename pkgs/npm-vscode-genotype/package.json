@@ -27,11 +27,11 @@
     "vscode-languageclient": "^9.0.1"
   },
   "devDependencies": {
+    "@genotype-lang/tm-grammar": "workspace:*",
     "@types/node": "^24.12.2",
     "@types/vscode": "^1.115.0",
     "@vscode/vsce": "^3.7.1",
     "genotype-lsp": "workspace:*",
-    "genotype-tm-grammar": "workspace:*",
     "ovsx": "^0.10.10",
     "tslib": "^2.8.1",
     "typescript": "^6.0.2",
@@ -67,7 +67,7 @@
       {
         "language": "genotype",
         "scopeName": "source.genotype",
-        "path": "./node_modules/genotype-tm-grammar/genotype.json"
+        "path": "./node_modules/@genotype-lang/tm-grammar/genotype.json"
       }
     ]
   },

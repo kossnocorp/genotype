@@ -41,7 +41,7 @@ if ! output=$(rsync -av \
 	exit 1
 fi
 
-SRC_SYNTAX_PATH="$PKG_DIR/node_modules/genotype-tm-grammar/genotype.json"
+SRC_SYNTAX_PATH="$PKG_DIR/node_modules/@genotype-lang/tm-grammar/genotype.json"
 DIST_SYNTAX_PATH="$DIST_DIR/syntaxes/genotype.tmLanguage.json"
 mkdir -p "$(dirname "$DIST_SYNTAX_PATH")"
 if ! output=$(cp "$SRC_SYNTAX_PATH" "$DIST_SYNTAX_PATH" 2>&1); then
