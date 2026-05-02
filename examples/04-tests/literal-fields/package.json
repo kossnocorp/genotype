@@ -1,10 +1,10 @@
 {
-  "name": "genotype-test-literals",
+  "name": "genotype-test-literal-fields",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@types/node": "^25.5.2",
-    "genotype-test-literals-ts": "file:./dist/ts/ts/",
+    "genotype-test-literal-fields-types": "file:./dist/ts/",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2"
   }

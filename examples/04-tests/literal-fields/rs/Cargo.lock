@@ -3,15 +3,15 @@
 version = 4
 
 [[package]]
-name = "genotype-test-literals-rs"
+name = "genotype-test-literal-fields"
 version = "0.1.0"
 dependencies = [
- "genotype_test_literals",
+ "genotype_test_literal_fields_types",
  "serde_json",
 ]
 
 [[package]]
-name = "genotype_test_literals"
+name = "genotype_test_literal_fields_types"
 version = "0.1.0"
 dependencies = [
  "litty",
@@ -26,9 +26,9 @@ checksum = "8f42a60cbdf9a97f5d2305f08a87dc4e09308d1276d28c869c684d7777685682"
 
 [[package]]
 name = "litty"
-version = "0.2.0"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f1adaf3c9f44eaf4e8f51d824720465599b9804fe9eeabc2cb9f30dda9d021a1"
+checksum = "8a55b69c74f3a23cb2a0221fc208aa854414a0f9b555466441531e23ddc08456"
 dependencies = [
  "litty_macro",
  "serde",
@@ -36,9 +36,9 @@ dependencies = [
 
 [[package]]
 name = "litty_macro"
-version = "0.2.0"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "43ca1bfd11968d73426a57a148cbea4d5e8f54c2275a0eb8aa14a19a3e5f1894"
+checksum = "5357bf4a64aa937f1cb7cf8df607db9bec804aaa6c1485f3b8d2b87a449697ea"
 dependencies = [
  "proc-macro2",
  "quote",

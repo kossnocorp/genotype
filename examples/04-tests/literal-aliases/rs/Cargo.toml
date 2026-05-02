@@ -1,0 +1,10 @@
+[package]
+name = "genotype-test-literal-aliases"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+genotype_test_literal_aliases_types = { path = "../dist/rs" }
+serde_json = "1"
+
+[workspace]

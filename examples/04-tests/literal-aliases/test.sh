@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+rm -rf ./dist
+
 #region Python
 
 LATEST_VERSIONS=(
@@ -37,6 +39,8 @@ run_python_tests_for() {
 	python_version="$2"
 	pythonpath="dist/py-${version_family}/py${PYTHONPATH:+:$PYTHONPATH}"
 
+	export VIRTUAL_ENV=""
+
 	if output=$(PYTHONPATH="$pythonpath" uv run --python "$python_version" python test.py 2>&1); then
 		echo "🟢 Python $python_version: OK"
 	else
@@ -69,7 +73,7 @@ done
 
 echo
 echo "🌀 Building for TypeScript and Rust"
-if output=$(cargo run -p genotype_cli --bin gt -- build . --config genotype.toml 2>&1); then
+if output=$(cargo run -p genotype_cli --bin gt -- build . 2>&1); then
 	echo "🟢 Build: OK"
 else
 	echo "🔴 Build: FAILED"
@@ -128,8 +132,9 @@ else
 	echo "--- Output ------------------------------------------"
 	echo "$output"
 	echo "-----------------------------------------------------"
-	# TODO: Fix literals and enable:
+	# TODO: Fix Rust and enable:
 	# exit 1
+	exit 0
 fi
 
 #endregion

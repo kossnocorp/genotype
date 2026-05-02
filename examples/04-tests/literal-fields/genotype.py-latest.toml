@@ -1,4 +1,4 @@
-name = "genotype-test-literals"
+name = "genotype-test-literal-fields"
 dist = "dist/py-latest"
 
 [py]

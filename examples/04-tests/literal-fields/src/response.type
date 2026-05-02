@@ -1,0 +1,20 @@
+ResponseSuccess: {
+  status: "success",
+  value: string,
+}
+
+ResponseFailure: {
+  status: "failure",
+  error: string,
+}
+
+Response:
+  | ResponseSuccess
+  | ResponseFailure
+
+LiteralBag: {
+  kind: "demo",
+  enabled: true,
+  code: 200,
+  empty: null,
+}

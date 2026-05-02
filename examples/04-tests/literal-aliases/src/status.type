@@ -1,0 +1,8 @@
+StatusLit: "success" | "failure"
+
+StatusCode: 200 | 500
+
+Status: {
+  status: StatusLit,
+  code: StatusCode
+}

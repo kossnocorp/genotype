@@ -3,7 +3,7 @@
 set -euo pipefail
 
 echo "🌀 Building TypeScript Zod schemas"
-if output=$(cargo run -p genotype_cli --bin gt -- build . --config genotype.toml 2>&1); then
+if output=$(cargo run -p genotype_cli --bin gt -- build . 2>&1); then
 	echo "🟢 Build: OK"
 else
 	echo "🔴 Build: FAILED"

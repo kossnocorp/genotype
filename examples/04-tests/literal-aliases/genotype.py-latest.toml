@@ -1,0 +1,10 @@
+name = "genotype-test-literal-aliases"
+dist = "dist/py-latest"
+
+[py]
+enabled = true
+version = "latest"
+
+[py.manifest]
+name = "module"
+version = "0.1.0"

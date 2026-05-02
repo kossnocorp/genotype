@@ -1,17 +1,17 @@
-name = "genotype-test-literals"
+name = "genotype-test-literal-aliases-types"
 dist = "dist"
 
 [ts]
 enabled = true
 
 [ts.manifest]
-name = "genotype-test-literals-ts"
+name = "genotype-test-literal-aliases-types"
 version = "0.1.0"
 
 [rs]
 enabled = true
 
 [rs.manifest.package]
-name = "genotype_test_literals"
+name = "genotype_test_literal_aliases_types"
 version = "0.1.0"
 edition = "2024"
