@@ -39,7 +39,7 @@ pub fn build_command(args: &GtBuildCommand) -> Result<()> {
     write_dist(&langs).map_err(|_| GtCliError::Write)?;
 
     println!(
-        "{} project to {:?}",
+        "{} project to {}",
         "Generated".green().bold(),
         project.config.dist
     );
