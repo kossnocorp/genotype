@@ -29,7 +29,9 @@ pub fn build_command(args: &GtBuildCommand) -> Result<()> {
     }
 
     if project.config.rust_enabled() {
-        print_notices(&project.config.rs.health_check());
+        if project.pkg_config_rs().package_enabled() {
+            print_notices(&project.config.rs.health_check());
+        }
         let rs = RsProject::generate(&project)?.dist()?;
         langs.push(rs);
     }
