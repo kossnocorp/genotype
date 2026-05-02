@@ -3,6 +3,7 @@
 # TypeScript
 pnpm-lock.yaml
 # Rust
+Cargo.lock
 */rs/target/
 # Python
 .venv/

@@ -123,6 +123,18 @@ fi
 #region Rust
 
 echo
+echo "🌀 Patching Rust output"
+
+toml_path="./dist/rs/Cargo.toml"
+tmp_path="$toml_path.tmp"
+
+cat "$toml_path" |
+	jaq --from toml --to toml \
+		'.dependencies.litty = { path: "../../../../../pkgs/crate-litty/" }' \
+		>"$tmp_path"
+mv "$tmp_path" "$toml_path"
+
+echo
 echo "🌀 Running Rust tests"
 
 if output=$(cargo test --manifest-path ./rs/Cargo.toml 2>&1); then
