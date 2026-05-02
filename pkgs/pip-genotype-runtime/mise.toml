@@ -1,0 +1,19 @@
+[tasks.install]
+description = "Install the package dependencies"
+run = "uv sync --extra dev"
+
+[tasks.test]
+description = "Run the test suite"
+run = "uv run pytest"
+
+[tasks."test:watch"]
+description = "Run the test suite in watch mode"
+run = "uv run ptw --clear"
+
+[tasks.build]
+description = "Build the package"
+run = "uv build"
+
+[tasks.publish]
+description = "Publish the package"
+run = "uv publish"
