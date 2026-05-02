@@ -1,0 +1,22 @@
+RuntimeStatus: "success" | "failure"
+
+RuntimeResponseSuccess: {
+  status: "success",
+  value: string,
+}
+
+RuntimeResponseFailure: {
+  status: "failure",
+  error: string,
+}
+
+RuntimeResponse:
+  | RuntimeResponseSuccess
+  | RuntimeResponseFailure
+
+LiteralBag: {
+  kind: "demo",
+  enabled: true,
+  code: 200,
+  empty: null,
+}

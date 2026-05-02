@@ -1,0 +1,17 @@
+name = "genotype-test-literals"
+dist = "dist"
+
+[ts]
+enabled = true
+
+[ts.manifest]
+name = "genotype-test-literals-ts"
+version = "0.1.0"
+
+[rs]
+enabled = true
+
+[rs.manifest.package]
+name = "genotype_test_literals"
+version = "0.1.0"
+edition = "2024"
