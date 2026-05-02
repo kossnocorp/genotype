@@ -32,4 +32,9 @@ pub trait GtlConfig: GtlConfigHealth + Default {
     fn manifest(&self) -> &Table {
         &self.common().manifest
     }
+
+    /// Returns the target package generation mode override.
+    fn package(&self) -> Option<bool> {
+        self.common().package
+    }
 }

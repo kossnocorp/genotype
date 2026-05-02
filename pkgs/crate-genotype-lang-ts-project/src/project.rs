@@ -26,11 +26,6 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
     }
 
     fn dist(&self) -> Result<GtlProjectDist> {
-        let gitignore = GtlProjectFile {
-            path: self.config.pkg_file_path(&".gitignore".into()),
-            source: r#"node_modules"#.into(),
-        };
-
         let exports = self
             .modules
             .iter()
@@ -51,8 +46,6 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
             path: self.config.pkg_src_file_path(&"index.ts".into()),
             source: exports.join(""),
         };
-
-        let package_json = self.generate_manifest(&self.dependencies())?;
 
         let project_modules = self
             .modules
@@ -75,7 +68,18 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
             })
             .collect::<Vec<_>>();
 
-        let mut modules = vec![gitignore, package_json, barrel];
+        let mut modules = vec![barrel];
+
+        if self.config.package_enabled() {
+            let gitignore = GtlProjectFile {
+                path: self.config.pkg_file_path(&".gitignore".into()),
+                source: r#"node_modules"#.into(),
+            };
+            let package_json = self.generate_manifest(&self.dependencies())?;
+            modules.insert(0, package_json);
+            modules.insert(0, gitignore);
+        }
+
         modules.extend(project_modules);
 
         Ok(GtlProjectDist { files: modules })
@@ -449,6 +453,47 @@ mod tests {
           title: string;
           author: Author;
         };
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_without_package_global() {
+        let mut project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        project.config.package = false;
+
+        let dist = TsProject::generate(&project).unwrap().dist().unwrap();
+
+        assert_ron_snapshot!(
+          dist.files.iter().map(|file| file.path.as_str()).collect::<Vec<_>>(),
+          @r#"
+        [
+          "examples/basic/dist/index.ts",
+          "examples/basic/dist/author.ts",
+          "examples/basic/dist/book.ts",
+        ]
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_without_package_target() {
+        let mut project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        project.config.package = true;
+        project.config.ts.common.package = Some(false);
+
+        let dist = TsProject::generate(&project).unwrap().dist().unwrap();
+
+        assert_ron_snapshot!(
+          dist.files.iter().map(|file| file.path.as_str()).collect::<Vec<_>>(),
+          @r#"
+        [
+          "examples/basic/dist/index.ts",
+          "examples/basic/dist/author.ts",
+          "examples/basic/dist/book.ts",
+        ]
         "#
         );
     }

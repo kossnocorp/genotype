@@ -27,15 +27,6 @@ impl<'a> GtlProject<'a> for PyProject<'a> {
     }
 
     fn dist(&self) -> Result<GtlProjectDist> {
-        let gitignore = GtlProjectFile {
-            path: self.config.pkg_file_path(&".gitignore".into()),
-            source: r#"__pycache__
-dist"#
-                .into(),
-        };
-
-        let pyproject = self.generate_manifest(&self.dependencies())?;
-
         let mut imports = vec![];
         let mut exports = vec![];
         for module in self.modules.iter() {
@@ -119,7 +110,21 @@ dist"#
             })
             .collect::<Result<Vec<_>>>()?;
 
-        let mut modules = vec![gitignore, pyproject, py_typed, init];
+        let mut modules = vec![py_typed, init];
+
+        if self.config.package_enabled() {
+            let gitignore = GtlProjectFile {
+                path: self.config.pkg_file_path(&".gitignore".into()),
+                source: r#"__pycache__
+dist"#
+                    .into(),
+            };
+
+            let pyproject = self.generate_manifest(&self.dependencies())?;
+            modules.insert(0, pyproject);
+            modules.insert(0, gitignore);
+        }
+
         modules.extend(module_inits);
         modules.extend(project_modules);
 
@@ -647,6 +652,49 @@ name = "module"
 
         [tool.hatch.build.targets.wheel]
         packages = ["module"]
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_without_package_global() {
+        let mut project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        project.config.package = false;
+
+        let dist = PyProject::generate(&project).unwrap().dist().unwrap();
+
+        assert_ron_snapshot!(
+          dist.files.iter().map(|file| file.path.as_str()).collect::<Vec<_>>(),
+          @r#"
+        [
+          "examples/basic/dist/py.typed",
+          "examples/basic/dist/__init__.py",
+          "examples/basic/dist/author.py",
+          "examples/basic/dist/book.py",
+        ]
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_without_package_target() {
+        let mut project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        project.config.package = true;
+        project.config.py.common.package = Some(false);
+
+        let dist = PyProject::generate(&project).unwrap().dist().unwrap();
+
+        assert_ron_snapshot!(
+          dist.files.iter().map(|file| file.path.as_str()).collect::<Vec<_>>(),
+          @r#"
+        [
+          "examples/basic/dist/py.typed",
+          "examples/basic/dist/__init__.py",
+          "examples/basic/dist/author.py",
+          "examples/basic/dist/book.py",
+        ]
         "#
         );
     }

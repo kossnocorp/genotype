@@ -15,12 +15,19 @@ pub use manifest::*;
 
 pub const GTCONFIG_FILE: &str = "genotype.toml";
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+const fn default_package() -> bool {
+    true
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct GtpConfig {
     /// Project name.
     pub name: Option<String>,
     /// Global package version used as default for enabled language manifests.
     pub version: Option<Version>,
+    /// Whether to generate package structure and metadata by default for all targets.
+    #[serde(default = "default_package")]
+    pub package: bool,
     /// Project root directory relative to the cwd. It defaults to ".".
     #[serde(default)]
     pub root: GtpConfigDirRelativeRootDirPath,
@@ -44,6 +51,24 @@ pub struct GtpConfig {
     pub rs: RsConfig,
     #[serde(skip)]
     source_toml_str: String,
+}
+
+impl Default for GtpConfig {
+    fn default() -> Self {
+        Self {
+            name: None,
+            version: None,
+            package: true,
+            root: Default::default(),
+            dist: Default::default(),
+            src: Default::default(),
+            entry: Default::default(),
+            ts: Default::default(),
+            py: Default::default(),
+            rs: Default::default(),
+            source_toml_str: String::new(),
+        }
+    }
 }
 
 impl GtpConfig {
@@ -130,5 +155,29 @@ enabled = true
 
         assert!(config.python_enabled());
         assert!(config.rust_enabled());
+    }
+
+    #[test]
+    fn test_package_global() {
+        let config = toml::from_str::<GtpConfig>("name = \"demo\"\n").unwrap();
+        assert!(config.package);
+    }
+
+    #[test]
+    fn test_parse_target() {
+        let config = toml::from_str::<GtpConfig>(
+            r#"package = false
+
+[ts]
+enabled = true
+package = true
+tsconfig = { allowImportingTsExtensions = false }
+"#,
+        )
+        .unwrap();
+
+        assert!(!config.package);
+        assert_eq!(config.ts.common.package, Some(true));
+        assert_eq!(config.py.common.package, None);
     }
 }

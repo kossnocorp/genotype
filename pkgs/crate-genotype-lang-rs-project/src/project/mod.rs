@@ -22,9 +22,14 @@ impl<'a> GtlProject<'a> for RsProject<'a> {
     }
 
     fn dist(&self) -> Result<GtlProjectDist> {
-        let cargo = self.generate_manifest(&self.dependencies())?;
+        let mut files = vec![];
 
-        let mut files = vec![self.gitignore_source(), cargo];
+        if self.config.package_enabled() {
+            let cargo = self.generate_manifest(&self.dependencies())?;
+            files.push(self.gitignore_source());
+            files.push(cargo);
+        }
+
         files.extend(self.indices_source());
         files.extend(self.modules_source()?);
 
@@ -875,6 +880,45 @@ version = "0.3.0"
         serde = { version = "1", features = ["derive"] }
         "#
         );
+    }
+
+    #[test]
+    fn test_render_without_package_global() {
+        let mut project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        project.config.package = false;
+
+        let dist = RsProject::generate(&project).unwrap().dist().unwrap();
+
+        assert_ron_snapshot!(
+          dist.files.iter().map(|file| file.path.as_str()).collect::<Vec<_>>(),
+          @r#"
+        [
+          "examples/basic/dist/lib.rs",
+          "examples/basic/dist/author.rs",
+          "examples/basic/dist/book.rs",
+        ]
+        "#);
+    }
+
+    #[test]
+    fn test_render_without_package_target() {
+        let mut project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        project.config.package = true;
+        project.config.rs.common.package = Some(false);
+
+        let dist = RsProject::generate(&project).unwrap().dist().unwrap();
+
+        assert_ron_snapshot!(
+          dist.files.iter().map(|file| file.path.as_str()).collect::<Vec<_>>(),
+          @r#"
+        [
+          "examples/basic/dist/lib.rs",
+          "examples/basic/dist/author.rs",
+          "examples/basic/dist/book.rs",
+        ]
+        "#);
     }
 
     fn get_cargo_file(dist: &GtlProjectDist) -> &GtlProjectFile {

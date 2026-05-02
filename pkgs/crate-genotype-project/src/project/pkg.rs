@@ -6,6 +6,7 @@ impl<'a> GtProject {
             &self.paths.dist,
             &self.config.py,
             self.config.version.as_ref(),
+            self.config.package,
         )
     }
 
@@ -14,6 +15,7 @@ impl<'a> GtProject {
             &self.paths.dist,
             &self.config.rs,
             self.config.version.as_ref(),
+            self.config.package,
         )
     }
 
@@ -22,6 +24,7 @@ impl<'a> GtProject {
             &self.paths.dist,
             &self.config.ts,
             self.config.version.as_ref(),
+            self.config.package,
         )
     }
 }

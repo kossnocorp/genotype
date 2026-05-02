@@ -11,6 +11,8 @@ pub struct GtlConfigCommon<Dist: GtlConfigPkgPathSetting> {
     /// Output directory.
     #[serde(default)]
     pub dist: Dist,
+    /// Whether to generate target package files and package directory layout.
+    pub package: Option<bool>,
     /// Manifest configuration.
     #[serde(default)]
     pub manifest: Table,
