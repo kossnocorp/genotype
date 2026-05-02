@@ -642,7 +642,7 @@ mod tests {
         edition = "2024"
 
         [dependencies]
-        litty = "0.2"
+        litty = "0.3"
         serde = { version = "1", features = ["derive"] }
         "#
         );

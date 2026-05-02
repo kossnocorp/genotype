@@ -51,7 +51,7 @@ impl GtlProjectManifestDependency for RsProjectManifestDependency {
     fn as_kv(ident: &Self::DependencyIdent) -> Option<(String, Value)> {
         match ident {
             Self::DependencyIdent::Runtime => Some(("genotype_runtime".into(), "0.4".into())),
-            Self::DependencyIdent::Litty => Some(("litty".into(), "0.2".into())),
+            Self::DependencyIdent::Litty => Some(("litty".into(), "0.3".into())),
             Self::DependencyIdent::Serde => {
                 Some(("serde".into(), Self::dependency_value("1", vec!["derive"])))
             }
