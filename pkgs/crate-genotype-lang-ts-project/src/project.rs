@@ -469,9 +469,9 @@ mod tests {
           dist.files.iter().map(|file| file.path.as_str()).collect::<Vec<_>>(),
           @r#"
         [
-          "examples/basic/dist/index.ts",
-          "examples/basic/dist/author.ts",
-          "examples/basic/dist/book.ts",
+          "examples/basic/dist/ts/index.ts",
+          "examples/basic/dist/ts/author.ts",
+          "examples/basic/dist/ts/book.ts",
         ]
         "#
         );
@@ -490,9 +490,9 @@ mod tests {
           dist.files.iter().map(|file| file.path.as_str()).collect::<Vec<_>>(),
           @r#"
         [
-          "examples/basic/dist/index.ts",
-          "examples/basic/dist/author.ts",
-          "examples/basic/dist/book.ts",
+          "examples/basic/dist/ts/index.ts",
+          "examples/basic/dist/ts/author.ts",
+          "examples/basic/dist/ts/book.ts",
         ]
         "#
         );

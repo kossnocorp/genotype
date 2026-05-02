@@ -1,0 +1,10 @@
+{
+  "include": ["src/test.ts"],
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2022"
+  }
+}

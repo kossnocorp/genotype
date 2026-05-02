@@ -894,9 +894,9 @@ version = "0.3.0"
           dist.files.iter().map(|file| file.path.as_str()).collect::<Vec<_>>(),
           @r#"
         [
-          "examples/basic/dist/lib.rs",
-          "examples/basic/dist/author.rs",
-          "examples/basic/dist/book.rs",
+          "examples/basic/dist/rs/mod.rs",
+          "examples/basic/dist/rs/author.rs",
+          "examples/basic/dist/rs/book.rs",
         ]
         "#);
     }
@@ -914,9 +914,9 @@ version = "0.3.0"
           dist.files.iter().map(|file| file.path.as_str()).collect::<Vec<_>>(),
           @r#"
         [
-          "examples/basic/dist/lib.rs",
-          "examples/basic/dist/author.rs",
-          "examples/basic/dist/book.rs",
+          "examples/basic/dist/rs/mod.rs",
+          "examples/basic/dist/rs/author.rs",
+          "examples/basic/dist/rs/book.rs",
         ]
         "#);
     }

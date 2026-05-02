@@ -3,13 +3,9 @@ use crate::prelude::internal::*;
 impl<Lang: GtlConfig> GtpPkgConfig<'_, Lang> {
     /// Returns owned package directory path, i.e. "dist/rs".
     pub fn pkg_path(&self) -> GtpPkgDirPath {
-        if self.package_enabled() {
-            self.dist
-                .join_as_cwd_relative_path(self.target.dist_relative_pkg_path())
-                .into()
-        } else {
-            GtpPkgDirPath::from_cwd_relative_path(self.dist.cwd_relative_path().clone())
-        }
+        self.dist
+            .join_as_cwd_relative_path(self.target.dist_relative_pkg_path())
+            .into()
     }
 
     /// Returns owned package file path, i.e. "dist/rs/.gitignore".

@@ -1,5 +1,9 @@
-dist/
+# Shared
+*/dist/
+# TypeScript
+pnpm-lock.yaml
+# Python
 .venv/
 uv.lock
 *.egg-info/
-pnpm-lock.yaml
+*.pyc

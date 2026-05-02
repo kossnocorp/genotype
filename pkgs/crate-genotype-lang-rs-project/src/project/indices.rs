@@ -32,10 +32,12 @@ impl RsProject<'_> {
         crate_paths
             .into_iter()
             .map(|(module_path, modules)| {
-                // [TODO] Root path
-                // let file_name = "mod.rs";
                 let file_name = if module_path == "".into() {
-                    "lib.rs"
+                    if self.config.package_enabled() {
+                        "lib.rs"
+                    } else {
+                        "mod.rs"
+                    }
                 } else {
                     "mod.rs"
                 };

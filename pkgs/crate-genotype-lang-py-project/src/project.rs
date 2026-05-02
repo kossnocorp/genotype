@@ -668,10 +668,10 @@ name = "module"
           dist.files.iter().map(|file| file.path.as_str()).collect::<Vec<_>>(),
           @r#"
         [
-          "examples/basic/dist/py.typed",
-          "examples/basic/dist/__init__.py",
-          "examples/basic/dist/author.py",
-          "examples/basic/dist/book.py",
+          "examples/basic/dist/py/py.typed",
+          "examples/basic/dist/py/__init__.py",
+          "examples/basic/dist/py/author.py",
+          "examples/basic/dist/py/book.py",
         ]
         "#
         );
@@ -690,10 +690,10 @@ name = "module"
           dist.files.iter().map(|file| file.path.as_str()).collect::<Vec<_>>(),
           @r#"
         [
-          "examples/basic/dist/py.typed",
-          "examples/basic/dist/__init__.py",
-          "examples/basic/dist/author.py",
-          "examples/basic/dist/book.py",
+          "examples/basic/dist/py/py.typed",
+          "examples/basic/dist/py/__init__.py",
+          "examples/basic/dist/py/author.py",
+          "examples/basic/dist/py/book.py",
         ]
         "#
         );

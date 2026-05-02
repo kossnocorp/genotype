@@ -1,0 +1,15 @@
+package = false
+src = "./types/"
+dist = "."
+
+[ts]
+enabled = true
+dist = "./ts/src/types/"
+
+[rs]
+enabled = true
+dist = "./rs/src/types/"
+
+[py]
+enabled = true
+dist = "./py/module/types/"
