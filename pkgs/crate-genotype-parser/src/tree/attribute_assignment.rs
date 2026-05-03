@@ -20,6 +20,7 @@ impl GtAttributeAssignment {
         let pair = inner.next().ok_or(GtParseError::UnexpectedEnd(
             span,
             GtNode::AttributeAssignment,
+            "attribute assignment inner",
         ))?;
 
         Ok(GtAttributeAssignment {

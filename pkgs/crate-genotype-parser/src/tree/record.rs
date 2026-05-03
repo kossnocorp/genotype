@@ -1,6 +1,6 @@
 use crate::prelude::internal::*;
 
-#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
 pub struct GtRecord {
     pub span: GtSpan,
     #[visit]
@@ -19,9 +19,11 @@ impl GtRecord {
         let annotation = context.take_annotation_or_default();
 
         let mut inner = pair.into_inner();
-        let pair = inner
-            .next()
-            .ok_or(GtParseError::UnexpectedEnd(span, GtNode::Record))?;
+        let pair = inner.next().ok_or(GtParseError::UnexpectedEnd(
+            span,
+            GtNode::Record,
+            "record inner",
+        ))?;
 
         let record = parse(inner, pair, context, ParseState::Key(span, annotation))?;
 
@@ -47,7 +49,11 @@ fn parse(
                     ParseState::Descriptor(span, annotation, key),
                 ),
 
-                None => Err(GtParseError::UnexpectedEnd(span, GtNode::Record)),
+                None => Err(GtParseError::UnexpectedEnd(
+                    span,
+                    GtNode::Record,
+                    "continuation after record key",
+                )),
             }
         }
 

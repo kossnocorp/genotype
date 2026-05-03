@@ -1,6 +1,6 @@
 use crate::prelude::internal::*;
 
-#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
 pub struct GtExtension {
     pub span: GtSpan,
     #[visit]
@@ -24,9 +24,7 @@ impl GtExtension {
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
-    use pest::Parser;
-    use pretty_assertions::assert_eq;
+    use super::*;
 
     #[test]
     fn test_parse() {
@@ -42,6 +40,7 @@ mod tests {
                     attributes: vec![],
                     id: GtReferenceId("module".into(), (3, 8).into()),
                     identifier: GtIdentifier::new((3, 8).into(), "Hello".into()),
+                    arguments: vec![],
                 },
             }
         );
@@ -54,6 +53,36 @@ mod tests {
         assert_eq!(
             GtExtension::parse(pairs.next().unwrap(), &mut context).unwrap_err(),
             GtParseError::Internal((0, 5).into(), GtNode::Extension)
+        );
+    }
+
+    #[test]
+    fn test_arguments() {
+        assert_ron_snapshot!(
+            parse_node!(GtExtension, to_parse_args(Rule::extension_property, "...Message<string>")),
+            @r#"
+        GtExtension(
+          span: GtSpan(0, 18),
+          reference: GtReference(
+            span: GtSpan(3, 18),
+            doc: None,
+            attributes: [],
+            id: GtReferenceId(GtModuleId("module"), GtSpan(3, 18)),
+            identifier: GtIdentifier(GtSpan(3, 10), "Message"),
+            arguments: [
+              GtGenericArgument(
+                span: GtSpan(10, 18),
+                descriptor: Primitive(GtPrimitive(
+                  span: GtSpan(11, 17),
+                  kind: String,
+                  doc: None,
+                  attributes: [],
+                )),
+              ),
+            ],
+          ),
+        )
+        "#
         );
     }
 }

@@ -87,6 +87,7 @@ mod tests {
                         doc: None,
                         attributes: [],
                         name: GtIdentifier(GtSpan(0, 6), "Author"),
+                        generics: [],
                         descriptor: Object(GtObject(
                           span: GtSpan(8, 27),
                           doc: None,
@@ -157,6 +158,7 @@ mod tests {
                         doc: None,
                         attributes: [],
                         name: GtIdentifier(GtSpan(21, 25), "Book"),
+                        generics: [],
                         descriptor: Object(GtObject(
                           span: GtSpan(27, 65),
                           doc: None,
@@ -188,6 +190,7 @@ mod tests {
                                 attributes: [],
                                 id: GtReferenceId(GtModuleId("book"), GtSpan(56, 62)),
                                 identifier: GtIdentifier(GtSpan(56, 62), "Author"),
+                                arguments: [],
                               )),
                               required: true,
                             ),
@@ -281,6 +284,7 @@ mod tests {
                         doc: None,
                         attributes: [],
                         name: GtIdentifier(GtSpan(17, 22), "Order"),
+                        generics: [],
                         descriptor: Object(GtObject(
                           span: GtSpan(24, 65),
                           doc: None,
@@ -298,10 +302,11 @@ mod tests {
                                 doc: None,
                                 attributes: [],
                                 name: GtIdentifier(GtSpan(41, 45), "User"),
+                                arguments: [],
                                 path: GtPath(
-                                  span: GtSpan(34, 40),
+                                  span: GtSpan(34, 41),
                                   id: GtPathModuleId(
-                                    span: GtSpan(34, 40),
+                                    span: GtSpan(34, 41),
                                     module_id: GtModuleId("order"),
                                   ),
                                   path: "./user",
@@ -324,6 +329,7 @@ mod tests {
                                   attributes: [],
                                   id: GtReferenceId(GtModuleId("order"), GtSpan(57, 61)),
                                   identifier: GtIdentifier(GtSpan(57, 61), "Book"),
+                                  arguments: [],
                                 )),
                               )),
                               required: true,
@@ -344,9 +350,9 @@ mod tests {
                         path: "./book",
                       ),
                       GtPath(
-                        span: GtSpan(34, 40),
+                        span: GtSpan(34, 41),
                         id: GtPathModuleId(
-                          span: GtSpan(34, 40),
+                          span: GtSpan(34, 41),
                           module_id: GtModuleId("order"),
                         ),
                         path: "./user",
@@ -372,9 +378,9 @@ mod tests {
                     path: "./book",
                   ): "book.type",
                   GtPath(
-                    span: GtSpan(34, 40),
+                    span: GtSpan(34, 41),
                     id: GtPathModuleId(
-                      span: GtSpan(34, 40),
+                      span: GtSpan(34, 41),
                       module_id: GtModuleId("order"),
                     ),
                     path: "./user",
@@ -421,6 +427,7 @@ mod tests {
                         doc: None,
                         attributes: [],
                         name: GtIdentifier(GtSpan(0, 4), "User"),
+                        generics: [],
                         descriptor: Object(GtObject(
                           span: GtSpan(6, 42),
                           doc: None,
@@ -555,6 +562,7 @@ mod tests {
                         doc: None,
                         attributes: [],
                         name: GtIdentifier(GtSpan(0, 5), "Order"),
+                        generics: [],
                         descriptor: Object(GtObject(
                           span: GtSpan(7, 91),
                           doc: None,
@@ -634,6 +642,7 @@ mod tests {
                         doc: None,
                         attributes: [],
                         name: GtIdentifier(GtSpan(93, 98), "Email"),
+                        generics: [],
                         descriptor: Union(GtUnion(
                           span: GtSpan(100, 145),
                           doc: None,
@@ -793,6 +802,7 @@ mod tests {
                         doc: None,
                         attributes: [],
                         name: GtIdentifier(GtSpan(0, 15), "PackageSettings"),
+                        generics: [],
                         descriptor: Object(GtObject(
                           span: GtSpan(17, 37),
                           doc: None,

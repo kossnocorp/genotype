@@ -1,6 +1,6 @@
 use crate::prelude::internal::*;
 
-#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
 pub struct GtBranded {
     pub span: GtSpan,
     #[visit]

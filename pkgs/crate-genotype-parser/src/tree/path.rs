@@ -85,6 +85,7 @@ impl GtPath {
                 id: GtPathModuleId::new(span, module_id.clone()),
                 path: path.into(),
             }),
+
             Err(_) => Err(GtParseError::Internal(span, GtNode::Path)),
         }
     }
@@ -135,15 +136,6 @@ impl GtPath {
     }
 }
 
-impl TryFrom<Pair<'_, Rule>> for GtPath {
-    type Error = GtParseError;
-
-    fn try_from(pair: Pair<'_, Rule>) -> Result<Self, Self::Error> {
-        let module_id: GtModuleId = "module".into();
-        GtPath::parse(pair.as_span().into(), &module_id, pair.as_str())
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -182,6 +174,12 @@ mod tests {
         );
         assert_eq!(
             GtPath::parse((0, 0).into(), &"module".into(), "./path/./to/./module")
+                .unwrap()
+                .source_str(),
+            "./path/to/module"
+        );
+        assert_eq!(
+            GtPath::parse((0, 0).into(), &"module".into(), "./path/./to/./module/")
                 .unwrap()
                 .source_str(),
             "./path/to/module"
@@ -284,6 +282,7 @@ mod tests {
               doc: None,
               attributes: [],
               name: GtIdentifier(GtSpan(121, 126), "Order"),
+              generics: [],
               descriptor: Object(GtObject(
                 span: GtSpan(128, 225),
                 doc: None,
@@ -301,10 +300,11 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GtIdentifier(GtSpan(157, 161), "Book"),
+                      arguments: [],
                       path: GtPath(
-                        span: GtSpan(152, 156),
+                        span: GtSpan(152, 157),
                         id: GtPathModuleId(
-                          span: GtSpan(152, 156),
+                          span: GtSpan(152, 157),
                           module_id: GtModuleId("module"),
                         ),
                         path: "book",
@@ -322,10 +322,11 @@ mod tests {
                       doc: None,
                       attributes: [],
                       name: GtIdentifier(GtSpan(207, 211), "User"),
+                      arguments: [],
                       path: GtPath(
-                        span: GtSpan(185, 206),
+                        span: GtSpan(185, 207),
                         id: GtPathModuleId(
-                          span: GtSpan(185, 206),
+                          span: GtSpan(185, 207),
                           module_id: GtModuleId("module"),
                         ),
                         path: "./misc/user",
@@ -340,5 +341,14 @@ mod tests {
         )
         "#
         );
+    }
+
+    impl TryFrom<Pair<'_, Rule>> for GtPath {
+        type Error = GtParseError;
+
+        fn try_from(pair: Pair<'_, Rule>) -> Result<Self, Self::Error> {
+            let module_id: GtModuleId = "module".into();
+            GtPath::parse(pair.as_span().into(), &module_id, pair.as_str())
+        }
     }
 }

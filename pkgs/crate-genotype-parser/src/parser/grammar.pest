@@ -1,10 +1,14 @@
 module = { SOI ~ (module_doc)* ~ (import | alias)* ~ EOI }
 
-alias = { annotation* ~ name ~ ":" ~ descriptors }
+// Base
 
 name = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
 
-annotation = _{ attribute | line_doc }
+reference = ${ name ~ ((WHITESPACE | COMMENT)* ~ generic_arguments)? }
+
+// Aliases
+
+alias = { annotation* ~ name ~ generic_parameters? ~ ":" ~ descriptors }
 
 // Descriptors
 
@@ -17,11 +21,9 @@ descriptors = @{
 
 descriptor = !{ annotation* ~ descriptor_inner }
 
-// descriptor_attribute = @{ attribute }
-
 // NOTE: Order matters! Prefer structural containers before inline imports
 // to avoid ambiguity when parsing nested descriptors (e.g. arrays).
-descriptor_inner = _{ literal | primitive | branded | any | object | array | tuple | record | inline_import | alias | name }
+descriptor_inner = _{ literal | primitive | branded | any | object | array | tuple | record | inline_import | alias | reference }
 
 primitive = { primitive_index | "boolean" }
 
@@ -75,11 +77,24 @@ properties = ${
 
 property = !{ extension_property | optional_property | required_property }
 
-extension_property = { "..." ~ name }
+extension_property = ${ "..." ~ reference }
 
 required_property = { annotation* ~ name ~ ":" ~ descriptors }
 
 optional_property = { annotation* ~ name ~ "?:" ~ descriptors }
+
+// Generics
+
+generic_parameters = { "<" ~ name ~ ("," ~ name)* ~ ">" }
+
+generic_arguments = @{
+    "<" ~
+    (WHITESPACE | COMMENT)*
+    ~ descriptors
+    ~ ((WHITESPACE | COMMENT)* ~ "," ~ (WHITESPACE | COMMENT)* ~ descriptors )*
+    ~ (WHITESPACE | COMMENT)*
+    ~ ">"
+}
 
 // Attributes
 
@@ -96,6 +111,10 @@ attribute_properties = { "(" ~ attribute_property ~ ("," ~ attribute_property)* 
 attribute_property = { name ~ "=" ~ attribute_value }
 
 attribute_value = !{ literal | name }
+
+// Annotations
+
+annotation = _{ attribute | line_doc }
 
 // Arrays
 
@@ -123,7 +142,7 @@ import_name = { name ~ ("as" ~ name)? }
 
 import_glob = ${ "*" }
 
-inline_import = @{ path ~ name }
+inline_import = @{ path ~ reference }
 
 path = @{ path_segment+ }
 

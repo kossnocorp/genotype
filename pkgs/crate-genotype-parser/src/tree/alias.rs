@@ -1,6 +1,6 @@
 use crate::prelude::internal::*;
 
-#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
 pub struct GtAlias {
     pub id: GtDefinitionId,
     pub span: GtSpan,
@@ -10,6 +10,8 @@ pub struct GtAlias {
     pub attributes: Vec<GtAttribute>,
     #[visit]
     pub name: GtIdentifier,
+    #[visit]
+    pub generics: Vec<GtGenericParameter>,
     #[visit]
     pub descriptor: GtDescriptor,
 }
@@ -22,7 +24,8 @@ impl GtAlias {
 
         let pair = inner
             .next()
-            .ok_or(GtParseError::Internal(span, GtNode::Alias))?;
+            .ok_or_else(|| GtParseError::UnexpectedEnd(span, GtNode::Alias, "alias inner"))?;
+
         let alias = parse(
             inner,
             pair,
@@ -63,7 +66,12 @@ fn parse(
                         context,
                         ParseState::Annotation(span, (doc_acc, attributes)),
                     ),
-                    None => Err(GtParseError::Internal(span, GtNode::Alias)),
+
+                    None => Err(GtParseError::UnexpectedEnd(
+                        span,
+                        GtNode::Alias,
+                        "continuation after doc",
+                    )),
                 }
             }
 
@@ -78,7 +86,12 @@ fn parse(
                         context,
                         ParseState::Annotation(span, (doc_acc, attributes)),
                     ),
-                    None => Err(GtParseError::Internal(span, GtNode::Alias)),
+
+                    None => Err(GtParseError::UnexpectedEnd(
+                        span,
+                        GtNode::Alias,
+                        "continuation after attribute",
+                    )),
                 }
             }
 
@@ -97,17 +110,53 @@ fn parse(
             context.enter_parent(GtContextParent::Alias(name.clone()));
 
             match inner.next() {
+                Some(pair) => match pair.as_rule() {
+                    Rule::generic_parameters => parse(
+                        inner,
+                        pair,
+                        context,
+                        ParseState::Generics(span, annotation, name),
+                    ),
+
+                    Rule::descriptors => parse(
+                        inner,
+                        pair,
+                        context,
+                        ParseState::Descriptors(span, annotation, name, vec![]),
+                    ),
+
+                    rule => Err(GtParseError::UnexpectedRule(span, GtNode::Alias, rule)),
+                },
+
+                None => Err(GtParseError::UnexpectedEnd(
+                    span,
+                    GtNode::Alias,
+                    "continuation after identifier",
+                )),
+            }
+        }
+
+        ParseState::Generics(span, annotation, name) => {
+            println!("Parsing generics for alias '{:?}'", &name);
+            let generics = parse_generics(pair, context)?;
+
+            match inner.next() {
                 Some(pair) => parse(
                     inner,
                     pair,
                     context,
-                    ParseState::Descriptor(span, annotation, name),
+                    ParseState::Descriptors(span, annotation, name, generics),
                 ),
-                None => Err(GtParseError::Internal(span, GtNode::Alias)),
+
+                None => Err(GtParseError::UnexpectedEnd(
+                    span,
+                    GtNode::Alias,
+                    "continuation after generics",
+                )),
             }
         }
 
-        ParseState::Descriptor(span, (doc, attributes), name) => {
+        ParseState::Descriptors(span, (doc, attributes), name, generics) => {
             let id = context.module_id.definition_id(&name);
             let descriptor = GtDescriptor::parse(pair, context)?;
             Ok(GtAlias {
@@ -116,16 +165,45 @@ fn parse(
                 doc,
                 attributes,
                 name,
+                generics,
                 descriptor,
             })
         }
     }
 }
 
+fn parse_generics(
+    pair: Pair<'_, Rule>,
+    context: &mut GtContext,
+) -> GtNodeParseResult<Vec<GtGenericParameter>> {
+    let mut inner = pair.into_inner();
+
+    let mut generics = vec![];
+
+    while let Some(generics_pair) = inner.next() {
+        println!(
+            "????? Parsing generic parameter: {:?}",
+            generics_pair.as_str()
+        );
+        generics.push(GtGenericParameter::parse(generics_pair, context)?);
+        // for pair in generics_pair.into_inner() {
+        //     generics.push(GtGenericParameter::parse(pair, context)?);
+        // }
+    }
+
+    Ok(generics)
+}
+
 enum ParseState {
     Annotation(GtSpan, GtContextAnnotation),
     Name(GtSpan, GtContextAnnotation),
-    Descriptor(GtSpan, GtContextAnnotation, GtIdentifier),
+    Generics(GtSpan, GtContextAnnotation, GtIdentifier),
+    Descriptors(
+        GtSpan,
+        GtContextAnnotation,
+        GtIdentifier,
+        Vec<GtGenericParameter>,
+    ),
 }
 
 #[cfg(test)]
@@ -144,6 +222,7 @@ mod tests {
           doc: None,
           attributes: [],
           name: GtIdentifier(GtSpan(0, 5), "Hello"),
+          generics: [],
           descriptor: Object(GtObject(
             span: GtSpan(7, 24),
             doc: None,
@@ -241,6 +320,7 @@ mod tests {
             ),
           ],
           name: GtIdentifier(GtSpan(0, 5), "Hello"),
+          generics: [],
           descriptor: Primitive(GtPrimitive(
             span: GtSpan(7, 13),
             kind: String,
@@ -317,11 +397,47 @@ mod tests {
             ),
           ],
           name: GtIdentifier(GtSpan(35, 40), "Hello"),
+          generics: [],
           descriptor: Primitive(GtPrimitive(
             span: GtSpan(42, 48),
             kind: String,
             doc: None,
             attributes: [],
+          )),
+        )
+        "#
+        );
+    }
+
+    #[test]
+    fn test_generics() {
+        assert_ron_snapshot!(
+            parse_node!(GtAlias, to_parse_args(Rule::alias, "List<T>: [T]")),
+            @r#"
+        GtAlias(
+          id: GtDefinitionId(GtModuleId("module"), "List"),
+          span: GtSpan(0, 12),
+          doc: None,
+          attributes: [],
+          name: GtIdentifier(GtSpan(0, 4), "List"),
+          generics: [
+            GtGenericParameter(
+              span: GtSpan(5, 6),
+              identifier: GtIdentifier(GtSpan(5, 6), "T"),
+            ),
+          ],
+          descriptor: Array(GtArray(
+            span: GtSpan(9, 12),
+            doc: None,
+            attributes: [],
+            descriptor: Reference(GtReference(
+              span: GtSpan(10, 11),
+              doc: None,
+              attributes: [],
+              id: GtReferenceId(GtModuleId("module"), GtSpan(10, 11)),
+              identifier: GtIdentifier(GtSpan(10, 11), "T"),
+              arguments: [],
+            )),
           )),
         )
         "#

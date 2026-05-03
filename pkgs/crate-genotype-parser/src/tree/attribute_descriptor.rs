@@ -33,6 +33,7 @@ impl GtAttributeDescriptor {
         let pair = inner.next().ok_or(GtParseError::UnexpectedEnd(
             span,
             GtNode::AttributeDescriptor,
+            "attribute descriptor inner",
         ))?;
 
         match pair.as_rule() {

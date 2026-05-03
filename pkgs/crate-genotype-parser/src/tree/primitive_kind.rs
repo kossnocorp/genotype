@@ -1,6 +1,6 @@
 use crate::prelude::internal::*;
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize)]
 pub enum GtPrimitiveKind {
     Boolean,
     String,

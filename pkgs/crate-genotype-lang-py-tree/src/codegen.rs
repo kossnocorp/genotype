@@ -112,6 +112,7 @@ mod tests {
             doc: None,
             attributes: vec![],
             name: GtIdentifier::new(Default::default(), "Hello".into()),
+            generics: vec![],
             descriptor: Gt::primitive_string().into(),
         }));
         let result = codegen.inject_descriptor(alias).unwrap();
@@ -140,6 +141,7 @@ mod tests {
             doc: None,
             attributes: vec![],
             name: GtIdentifier::new(Default::default(), "Hello".into()),
+            generics: vec![],
             descriptor: Gt::literal_string("hello").into(),
         }));
         let result = codegen.inject_descriptor(alias).unwrap();

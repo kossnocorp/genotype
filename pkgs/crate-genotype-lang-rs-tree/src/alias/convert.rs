@@ -62,6 +62,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GtIdentifier::new((0, 0).into(), "Name".into()),
+                generics: vec![],
                 descriptor: Gt::primitive_boolean().into(),
             }
             .convert(&mut RsConvertContext::empty("module".into()))
@@ -86,6 +87,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GtIdentifier::new((0, 0).into(), "Book".into()),
+                generics: vec![],
                 descriptor: GtDescriptor::Object(GtObject {
                     span: (0, 0).into(),
                     doc: None,
@@ -150,6 +152,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GtIdentifier::new((0, 0).into(), "BookId".into()),
+                generics: vec![],
                 descriptor: Gt::descriptor(
                     Gt::branded("BookId", Gt::primitive_i32())
                 )
@@ -182,6 +185,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GtIdentifier::new((0, 0).into(), "Book".into()),
+                generics: vec![],
                 descriptor: Gt::descriptor(Gt::union(vec_into![
                     Gt::object(
                         "BookObj",
@@ -257,6 +261,7 @@ mod tests {
                 doc: Some(GtDoc::new((0, 0).into(), "Hello, world!".into())),
                 attributes: vec![],
                 name: GtIdentifier::new((0, 0).into(), "Name".into()),
+                generics: vec![],
                 descriptor: Gt::primitive_boolean().into(),
             }
             .convert(&mut RsConvertContext::empty("module".into()))

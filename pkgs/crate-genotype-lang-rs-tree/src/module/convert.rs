@@ -116,6 +116,7 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GtIdentifier::new((0, 0).into(), "User".into()),
+                            generics: vec![],
                             descriptor: GtDescriptor::Object(GtObject {
                                 span: (0, 0).into(),
                                 doc: None,
@@ -148,6 +149,7 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GtIdentifier::new((0, 0).into(), "Order".into()),
+                            generics: vec![],
                             descriptor: GtDescriptor::Object(GtObject {
                                 span: (0, 0).into(),
                                 doc: None,
@@ -165,6 +167,7 @@ mod tests {
                                         doc: None,
                                         attributes: vec![],
                                         name: GtIdentifier::new((0, 0).into(), "Book".into()),
+                                        generics: vec![],
                                         descriptor: GtDescriptor::Object(GtObject {
                                             span: (0, 0).into(),
                                             doc: None,
@@ -207,6 +210,7 @@ mod tests {
                             doc: None,
                             attributes: vec![],
                             name: GtIdentifier::new((0, 0).into(), "Name".into()),
+                            generics: vec![],
                             descriptor: Gt::primitive_string().into(),
                         },
                     ],

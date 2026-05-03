@@ -1,0 +1,30 @@
+Response<Payload>:
+  | ResponseSuccess<Payload>
+  | ResponseFailure
+
+ResponseSuccess<Payload>: {
+  status: "success",
+  value: Payload,
+}
+
+ResponseFailure: {
+  status: "failure",
+  error: string,
+}
+
+ResponseReadFile: Response<string>
+
+ResponseGlob: Response<[string]>
+
+ResponseIsFile: Response<boolean>
+
+ResponseFindFile: Response<string | null>
+
+InlineImportGeneric: ./runtime/Response<string>
+
+Pair<Left, Right>: {
+  left: Left,
+  right: Right,
+}
+
+StringNumberPair: Pair<string, number>

@@ -28,9 +28,13 @@ pub enum GtParseError {
         #[serde(serialize_with = "serialize_rule")] Rule,
     ),
 
-    #[error("Failed to parse {1} node")]
+    #[error("failed to parse {1} node")]
     #[diagnostic(code("GT005"))]
-    UnexpectedEnd(#[label("unexpected end")] GtSpan, GtNode),
+    UnexpectedEnd(
+        #[label("unexpected end; expected {2}")] GtSpan,
+        GtNode,
+        &'static str,
+    ),
 
     #[error("Failed to parse {1} node")]
     #[diagnostic(code("GT006"))]
@@ -127,7 +131,7 @@ impl GtParseError {
             Self::Internal(span, _) => *span,
             Self::InternalMessage(span, _, _) => *span,
             Self::UnexpectedRule(span, _, _) => *span,
-            Self::UnexpectedEnd(span, _) => *span,
+            Self::UnexpectedEnd(span, _, _) => *span,
             Self::UnknownValue(span, _) => *span,
             Self::UnmatchedDescriptor(span, _) => *span,
             _ => todo!("Get rid of GtModuleParseError"),
@@ -147,8 +151,8 @@ impl GtParseError {
                     rule
                 )
             }
-            Self::UnexpectedEnd(_, node) => {
-                format!("failed to parse {:?} node: unexpected end", node.name())
+            Self::UnexpectedEnd(_, node, message) => {
+                format!("failed to parse {:?} node: {}", node.name(), message)
             }
             Self::UnknownValue(_, node) => {
                 format!("failed to parse {:?} node: unknown value", node.name())

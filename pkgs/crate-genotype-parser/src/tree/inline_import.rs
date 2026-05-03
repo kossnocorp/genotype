@@ -1,6 +1,6 @@
 use crate::prelude::internal::*;
 
-#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
 pub struct GtInlineImport {
     pub span: GtSpan,
     #[visit]
@@ -10,14 +10,29 @@ pub struct GtInlineImport {
     #[visit]
     pub name: GtIdentifier,
     #[visit]
+    pub arguments: Vec<GtGenericArgument>,
+    #[visit]
     pub path: GtPath,
 }
 
 impl GtInlineImport {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> Result<Self, GtParseError> {
-        let span = pair.as_span().into();
-        let (path, (name_span, name)) = GtPath::split_parse(pair, &context.module_id)?;
+        let span: GtSpan = pair.as_span().into();
         let (doc, attributes) = context.take_annotation_or_default();
+
+        let mut inner = pair.into_inner();
+
+        let pair = inner.next().ok_or_else(|| {
+            GtParseError::UnexpectedEnd(span, GtNode::InlineImport, "inline import inner")
+        })?;
+
+        let path_span = (span.0, span.0).into();
+        let (path, name, arguments) = Self::parse_path_with_name_and_arguments(
+            inner,
+            pair,
+            context,
+            ParseState::Path(path_span, String::new()),
+        )?;
 
         context.resolve.deps.insert(path.clone());
 
@@ -26,9 +41,66 @@ impl GtInlineImport {
             doc,
             attributes,
             path,
-            name: GtIdentifier::new(name_span, name.into()),
+            name,
+            arguments,
         })
     }
+
+    fn parse_path_with_name_and_arguments(
+        mut inner: Pairs<'_, Rule>,
+        pair: Pair<'_, Rule>,
+        context: &mut GtContext,
+        state: ParseState,
+    ) -> Result<(GtPath, GtIdentifier, Vec<GtGenericArgument>), GtParseError> {
+        match state {
+            ParseState::Path(path_span, path_str) => match pair.as_rule() {
+                Rule::path_segment => {
+                    let span = (path_span.0, pair.as_span().end()).into();
+                    let path_str = path_str + pair.as_str();
+
+                    match inner.next() {
+                        Some(pair) => Self::parse_path_with_name_and_arguments(
+                            inner,
+                            pair,
+                            context,
+                            ParseState::Path(span, path_str),
+                        ),
+
+                        None => Err(GtParseError::UnexpectedEnd(
+                            pair.as_span().into(),
+                            GtNode::InlineImport,
+                            "continuation after path",
+                        )),
+                    }
+                }
+
+                Rule::reference => {
+                    let path = GtPath::parse(path_span, &context.module_id, &path_str)?;
+                    Self::parse_path_with_name_and_arguments(
+                        inner,
+                        pair,
+                        context,
+                        ParseState::Reference(path),
+                    )
+                }
+
+                _ => Err(GtParseError::Internal(
+                    pair.as_span().into(),
+                    GtNode::InlineImport,
+                )),
+            },
+
+            ParseState::Reference(path) => {
+                let (name, arguments) = GtReference::parse_name_with_arguments(pair, context)?;
+                Ok((path, name, arguments))
+            }
+        }
+    }
+}
+
+enum ParseState {
+    Path(GtSpan, String),
+    Reference(GtPath),
 }
 
 #[cfg(test)]
@@ -46,10 +118,11 @@ mod tests {
           doc: None,
           attributes: [],
           name: GtIdentifier(GtSpan(17, 21), "Name"),
+          arguments: [],
           path: GtPath(
-            span: GtSpan(0, 16),
+            span: GtSpan(0, 17),
             id: GtPathModuleId(
-              span: GtSpan(0, 16),
+              span: GtSpan(0, 17),
               module_id: GtModuleId("module"),
             ),
             path: "./path/to/module",
@@ -72,17 +145,17 @@ mod tests {
             @r#"
         [
           GtPath(
-            span: GtSpan(31, 35),
+            span: GtSpan(31, 36),
             id: GtPathModuleId(
-              span: GtSpan(31, 35),
+              span: GtSpan(31, 36),
               module_id: GtModuleId("module"),
             ),
             path: "book",
           ),
           GtPath(
-            span: GtSpan(64, 75),
+            span: GtSpan(64, 76),
             id: GtPathModuleId(
-              span: GtSpan(64, 75),
+              span: GtSpan(64, 76),
               module_id: GtModuleId("module"),
             ),
             path: "./misc/user",
@@ -105,17 +178,17 @@ mod tests {
             @r#"
         [
           GtPath(
-            span: GtSpan(31, 35),
+            span: GtSpan(31, 36),
             id: GtPathModuleId(
-              span: GtSpan(31, 35),
+              span: GtSpan(31, 36),
               module_id: GtModuleId("module"),
             ),
             path: "book",
           ),
           GtPath(
-            span: GtSpan(64, 85),
+            span: GtSpan(64, 86),
             id: GtPathModuleId(
-              span: GtSpan(64, 85),
+              span: GtSpan(64, 86),
               module_id: GtModuleId("module"),
             ),
             path: "./misc/user",
@@ -163,10 +236,45 @@ mod tests {
             ),
           ],
           name: GtIdentifier(GtSpan(17, 21), "Name"),
+          arguments: [],
           path: GtPath(
-            span: GtSpan(0, 16),
+            span: GtSpan(0, 17),
             id: GtPathModuleId(
-              span: GtSpan(0, 16),
+              span: GtSpan(0, 17),
+              module_id: GtModuleId("module"),
+            ),
+            path: "./path/to/module",
+          ),
+        )
+        "#
+        );
+    }
+
+    #[test]
+    fn test_arguments() {
+        assert_ron_snapshot!(
+            parse_node!(GtInlineImport, to_parse_args(Rule::inline_import, "./path/to/module/Message<string>")),
+            @r#"
+        GtInlineImport(
+          span: GtSpan(0, 32),
+          doc: None,
+          attributes: [],
+          name: GtIdentifier(GtSpan(17, 24), "Message"),
+          arguments: [
+            GtGenericArgument(
+              span: GtSpan(24, 32),
+              descriptor: Primitive(GtPrimitive(
+                span: GtSpan(25, 31),
+                kind: String,
+                doc: None,
+                attributes: [],
+              )),
+            ),
+          ],
+          path: GtPath(
+            span: GtSpan(0, 17),
+            id: GtPathModuleId(
+              span: GtSpan(0, 17),
               module_id: GtModuleId("module"),
             ),
             path: "./path/to/module",

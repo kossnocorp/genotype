@@ -86,6 +86,8 @@ where
         GtDescriptor,
         GtDoc,
         GtExtension,
+        GtGenericParameter,
+        GtGenericArgument,
         GtIdentifier,
         GtImport,
         GtImportName,

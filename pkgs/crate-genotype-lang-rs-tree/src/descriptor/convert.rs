@@ -101,6 +101,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: GtIdentifier::new((0, 0).into(), "Name".into()),
+                generics: vec![],
                 descriptor: Gt::primitive_boolean().into(),
             }))
             .convert(&mut context)

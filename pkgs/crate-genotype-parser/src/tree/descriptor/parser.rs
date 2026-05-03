@@ -15,9 +15,11 @@ impl GtDescriptor {
 
         for pair in inner {
             let mut descriptor_inner = pair.into_inner();
-            let next_pair = descriptor_inner
-                .next()
-                .ok_or(GtParseError::UnexpectedEnd(span, GtNode::Descriptor))?;
+            let next_pair = descriptor_inner.next().ok_or(GtParseError::UnexpectedEnd(
+                span,
+                GtNode::Descriptor,
+                "descriptor inner",
+            ))?;
 
             let descriptor = parse(
                 descriptor_inner,
@@ -112,7 +114,7 @@ fn parse(
             let descriptor = match pair.as_rule() {
                 Rule::primitive => GtDescriptor::Primitive(GtPrimitive::parse(pair, context)?),
 
-                Rule::name => GtDescriptor::Reference(GtReference::parse(pair, context)?),
+                Rule::reference => GtDescriptor::Reference(GtReference::parse(pair, context)?),
 
                 Rule::object => GtDescriptor::Object(GtObject::parse(pair, context)?),
 
@@ -137,6 +139,7 @@ fn parse(
                 Rule::branded => GtDescriptor::Branded(GtBranded::parse(pair, context)?),
 
                 rule => {
+                    println!("------ Unexpected rule: {:?}", pair);
                     return Err(GtParseError::UnexpectedRule(span, GtNode::Descriptor, rule));
                 }
             };
@@ -301,6 +304,7 @@ mod tests {
           ],
           id: GtReferenceId(GtModuleId("module"), GtSpan(27, 32)),
           identifier: GtIdentifier(GtSpan(27, 32), "Hello"),
+          arguments: [],
         ))
         "#
         );
@@ -475,10 +479,11 @@ mod tests {
             ),
           ],
           name: GtIdentifier(GtSpan(47, 51), "Name"),
+          arguments: [],
           path: GtPath(
-            span: GtSpan(30, 46),
+            span: GtSpan(30, 47),
             id: GtPathModuleId(
-              span: GtSpan(30, 46),
+              span: GtSpan(30, 47),
               module_id: GtModuleId("module"),
             ),
             path: "./path/to/module",
@@ -625,6 +630,7 @@ mod tests {
             ),
           ],
           name: GtIdentifier(GtSpan(53, 58), "Hello"),
+          generics: [],
           descriptor: Primitive(GtPrimitive(
             span: GtSpan(60, 66),
             kind: String,

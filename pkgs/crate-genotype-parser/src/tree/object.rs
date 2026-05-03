@@ -1,6 +1,6 @@
 use crate::prelude::internal::*;
 
-#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
 pub struct GtObject {
     pub span: GtSpan,
     #[visit]
@@ -41,10 +41,11 @@ impl GtObject {
         if let Some(properties_pair) = pair.into_inner().next() {
             for pair in properties_pair.into_inner() {
                 // Extract property rule
-                let property_pair = pair
-                    .into_inner()
-                    .next()
-                    .ok_or(GtParseError::UnexpectedEnd(span, GtNode::Object))?;
+                let property_pair = pair.into_inner().next().ok_or(GtParseError::UnexpectedEnd(
+                    span,
+                    GtNode::Object,
+                    "property inner",
+                ))?;
 
                 match property_pair.as_rule() {
                     Rule::required_property | Rule::optional_property => {
@@ -138,17 +139,17 @@ mod tests {
             @r#"
         [
           GtPath(
-            span: GtSpan(31, 35),
+            span: GtSpan(31, 36),
             id: GtPathModuleId(
-              span: GtSpan(31, 35),
+              span: GtSpan(31, 36),
               module_id: GtModuleId("module"),
             ),
             path: "book",
           ),
           GtPath(
-            span: GtSpan(64, 75),
+            span: GtSpan(64, 76),
             id: GtPathModuleId(
-              span: GtSpan(64, 75),
+              span: GtSpan(64, 76),
               module_id: GtModuleId("module"),
             ),
             path: "./misc/user",
@@ -171,17 +172,17 @@ mod tests {
             @r#"
         [
           GtPath(
-            span: GtSpan(31, 35),
+            span: GtSpan(31, 36),
             id: GtPathModuleId(
-              span: GtSpan(31, 35),
+              span: GtSpan(31, 36),
               module_id: GtModuleId("module"),
             ),
             path: "book",
           ),
           GtPath(
-            span: GtSpan(64, 85),
+            span: GtSpan(64, 86),
             id: GtPathModuleId(
-              span: GtSpan(64, 85),
+              span: GtSpan(64, 86),
               module_id: GtModuleId("module"),
             ),
             path: "./misc/user",

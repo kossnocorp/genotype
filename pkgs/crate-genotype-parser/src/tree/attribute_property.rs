@@ -19,9 +19,11 @@ impl GtAttributeProperty {
         let span: GtSpan = pair.as_span().into();
 
         let mut inner = pair.into_inner();
-        let pair = inner
-            .next()
-            .ok_or(GtParseError::UnexpectedEnd(span, GtNode::AttributeProperty))?;
+        let pair = inner.next().ok_or(GtParseError::UnexpectedEnd(
+            span,
+            GtNode::AttributeProperty,
+            "attribute property inner",
+        ))?;
 
         let property = parse(inner, pair, ParseState::Name(span), context)?;
 
@@ -42,7 +44,11 @@ fn parse(
             match inner.next() {
                 Some(pair) => parse(inner, pair, ParseState::Value(span, key), context),
 
-                None => Err(GtParseError::UnexpectedEnd(span, GtNode::AttributeProperty)),
+                None => Err(GtParseError::UnexpectedEnd(
+                    span,
+                    GtNode::AttributeProperty,
+                    "continuation after identifier",
+                )),
             }
         }
 

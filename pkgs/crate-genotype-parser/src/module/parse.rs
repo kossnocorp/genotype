@@ -94,6 +94,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(0, 3), "Age"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(5, 8),
                   kind: Int64,
@@ -107,12 +108,14 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(10, 20), "AnotherAge"),
+                generics: [],
                 descriptor: Reference(GtReference(
                   span: GtSpan(22, 25),
                   doc: None,
                   attributes: [],
                   id: GtReferenceId(GtModuleId("module"), GtSpan(22, 25)),
                   identifier: GtIdentifier(GtSpan(22, 25), "Age"),
+                  arguments: [],
                 )),
               ),
               GtAlias(
@@ -121,6 +124,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(27, 37), "snake_case"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(39, 42),
                   kind: Int64,
@@ -160,6 +164,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(0, 6), "String"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(8, 14),
                   kind: String,
@@ -173,6 +178,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(16, 19), "Int"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(21, 24),
                   kind: Int64,
@@ -186,6 +192,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(26, 31), "Float"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(33, 38),
                   kind: Float64,
@@ -199,6 +206,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(40, 47), "Boolean"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(49, 56),
                   kind: Boolean,
@@ -237,6 +245,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(0, 5), "Hello"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(7, 25),
                   doc: None,
@@ -266,6 +275,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(27, 32), "Hello"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(34, 82),
                   doc: None,
@@ -321,6 +331,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(84, 89), "Empty"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(91, 93),
                   doc: None,
@@ -336,6 +347,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(95, 100), "Empty"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(102, 106),
                   doc: None,
@@ -351,6 +363,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(108, 113), "Hello"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(115, 131),
                   doc: None,
@@ -380,6 +393,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(133, 138), "Hello"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(140, 166),
                   doc: None,
@@ -422,6 +436,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(168, 178), "PascalCase"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(180, 202),
                   doc: None,
@@ -479,6 +494,7 @@ mod tests {
                 doc: Some(GtDoc(GtSpan(62, 75), "Alias comment")),
                 attributes: [],
                 name: GtIdentifier(GtSpan(76, 81), "Hello"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(104, 110),
                   kind: String,
@@ -492,6 +508,7 @@ mod tests {
                 doc: Some(GtDoc(GtSpan(116, 149), "Multiline...\n...alias comment")),
                 attributes: [],
                 name: GtIdentifier(GtSpan(150, 155), "Hello"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(157, 256),
                   doc: None,
@@ -534,6 +551,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(258, 263), "Hello"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(265, 271),
                   kind: String,
@@ -571,6 +589,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(0, 5), "Hello"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(7, 38),
                   doc: None,
@@ -635,6 +654,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(0, 5), "Hello"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(7, 61),
                   doc: None,
@@ -695,6 +715,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(63, 68), "Hello"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(70, 131),
                   doc: None,
@@ -713,6 +734,7 @@ mod tests {
                         doc: None,
                         attributes: [],
                         name: GtIdentifier(GtSpan(80, 85), "Named"),
+                        generics: [],
                         descriptor: Object(GtObject(
                           span: GtSpan(87, 129),
                           doc: None,
@@ -784,6 +806,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(0, 4), "Book"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(6, 44),
                   doc: None,
@@ -853,6 +876,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(0, 4), "User"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(6, 69),
                   doc: None,
@@ -927,6 +951,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(71, 78), "Address"),
+                generics: [],
                 descriptor: Tuple(GtTuple(
                   span: GtSpan(80, 101),
                   doc: None,
@@ -959,6 +984,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(103, 108), "Empty"),
+                generics: [],
                 descriptor: Tuple(GtTuple(
                   span: GtSpan(110, 112),
                   doc: None,
@@ -1037,6 +1063,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(84, 88), "Book"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(90, 157),
                   doc: None,
@@ -1067,10 +1094,11 @@ mod tests {
                         doc: None,
                         attributes: [],
                         name: GtIdentifier(GtSpan(132, 138), "Author"),
+                        arguments: [],
                         path: GtPath(
-                          span: GtSpan(119, 131),
+                          span: GtSpan(119, 132),
                           id: GtPathModuleId(
-                            span: GtSpan(119, 131),
+                            span: GtSpan(119, 132),
                             module_id: GtModuleId("module"),
                           ),
                           path: "../../author",
@@ -1089,6 +1117,7 @@ mod tests {
                         attributes: [],
                         id: GtReferenceId(GtModuleId("module"), GtSpan(149, 154)),
                         identifier: GtIdentifier(GtSpan(149, 154), "Genre"),
+                        arguments: [],
                       )),
                       required: true,
                     ),
@@ -1101,15 +1130,17 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(159, 165), "Author"),
+                generics: [],
                 descriptor: InlineImport(GtInlineImport(
                   span: GtSpan(167, 186),
                   doc: None,
                   attributes: [],
                   name: GtIdentifier(GtSpan(180, 186), "Author"),
+                  arguments: [],
                   path: GtPath(
-                    span: GtSpan(167, 179),
+                    span: GtSpan(167, 180),
                     id: GtPathModuleId(
-                      span: GtSpan(167, 179),
+                      span: GtSpan(167, 180),
                       module_id: GtModuleId("module"),
                     ),
                     path: "../../author",
@@ -1122,6 +1153,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(188, 195), "Authors"),
+                generics: [],
                 descriptor: Array(GtArray(
                   span: GtSpan(197, 218),
                   doc: None,
@@ -1131,10 +1163,11 @@ mod tests {
                     doc: None,
                     attributes: [],
                     name: GtIdentifier(GtSpan(211, 217), "Author"),
+                    arguments: [],
                     path: GtPath(
-                      span: GtSpan(198, 210),
+                      span: GtSpan(198, 211),
                       id: GtPathModuleId(
-                        span: GtSpan(198, 210),
+                        span: GtSpan(198, 211),
                         module_id: GtModuleId("module"),
                       ),
                       path: "../../author",
@@ -1171,25 +1204,25 @@ mod tests {
                 path: "author",
               ),
               GtPath(
-                span: GtSpan(119, 131),
+                span: GtSpan(119, 132),
                 id: GtPathModuleId(
-                  span: GtSpan(119, 131),
+                  span: GtSpan(119, 132),
                   module_id: GtModuleId("module"),
                 ),
                 path: "../../author",
               ),
               GtPath(
-                span: GtSpan(167, 179),
+                span: GtSpan(167, 180),
                 id: GtPathModuleId(
-                  span: GtSpan(167, 179),
+                  span: GtSpan(167, 180),
                   module_id: GtModuleId("module"),
                 ),
                 path: "../../author",
               ),
               GtPath(
-                span: GtSpan(198, 210),
+                span: GtSpan(198, 211),
                 id: GtPathModuleId(
-                  span: GtSpan(198, 210),
+                  span: GtSpan(198, 211),
                   module_id: GtModuleId("module"),
                 ),
                 path: "../../author",
@@ -1223,6 +1256,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(0, 4), "Base"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(6, 37),
                   doc: None,
@@ -1265,6 +1299,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(39, 48), "Processor"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(50, 78),
                   doc: None,
@@ -1279,6 +1314,7 @@ mod tests {
                         attributes: [],
                         id: GtReferenceId(GtModuleId("module"), GtSpan(57, 61)),
                         identifier: GtIdentifier(GtSpan(57, 61), "Base"),
+                        arguments: [],
                       ),
                     ),
                   ],
@@ -1305,6 +1341,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(80, 84), "User"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(86, 117),
                   doc: None,
@@ -1319,6 +1356,7 @@ mod tests {
                         attributes: [],
                         id: GtReferenceId(GtModuleId("module"), GtSpan(93, 97)),
                         identifier: GtIdentifier(GtSpan(93, 97), "Base"),
+                        arguments: [],
                       ),
                     ),
                   ],
@@ -1372,6 +1410,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(0, 11), "CommentBase"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(13, 40),
                   doc: None,
@@ -1414,6 +1453,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(42, 53), "UserComment"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(55, 132),
                   doc: None,
@@ -1428,6 +1468,7 @@ mod tests {
                         attributes: [],
                         id: GtReferenceId(GtModuleId("module"), GtSpan(62, 73)),
                         identifier: GtIdentifier(GtSpan(62, 73), "CommentBase"),
+                        arguments: [],
                       ),
                     ),
                   ],
@@ -1480,6 +1521,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(134, 147), "SystemComment"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(149, 207),
                   doc: None,
@@ -1494,6 +1536,7 @@ mod tests {
                         attributes: [],
                         id: GtReferenceId(GtModuleId("module"), GtSpan(156, 167)),
                         identifier: GtIdentifier(GtSpan(156, 167), "CommentBase"),
+                        arguments: [],
                       ),
                     ),
                   ],
@@ -1533,6 +1576,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(209, 214), "False"),
+                generics: [],
                 descriptor: Literal(GtLiteral(
                   span: GtSpan(216, 221),
                   doc: None,
@@ -1546,6 +1590,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(223, 228), "Float"),
+                generics: [],
                 descriptor: Literal(GtLiteral(
                   span: GtSpan(230, 239),
                   doc: None,
@@ -1559,6 +1604,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(241, 247), "Number"),
+                generics: [],
                 descriptor: Literal(GtLiteral(
                   span: GtSpan(249, 258),
                   doc: None,
@@ -1572,6 +1618,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(260, 266), "String"),
+                generics: [],
                 descriptor: Literal(GtLiteral(
                   span: GtSpan(268, 290),
                   doc: None,
@@ -1585,6 +1632,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(292, 303), "NegativeInt"),
+                generics: [],
                 descriptor: Literal(GtLiteral(
                   span: GtSpan(305, 307),
                   doc: None,
@@ -1598,6 +1646,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(309, 322), "NegativeFloat"),
+                generics: [],
                 descriptor: Literal(GtLiteral(
                   span: GtSpan(324, 328),
                   doc: None,
@@ -1611,6 +1660,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(330, 340), "LargeFloat"),
+                generics: [],
                 descriptor: Literal(GtLiteral(
                   span: GtSpan(342, 345),
                   doc: None,
@@ -1624,6 +1674,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(347, 357), "SmallFloat"),
+                generics: [],
                 descriptor: Literal(GtLiteral(
                   span: GtSpan(359, 365),
                   doc: None,
@@ -1672,6 +1723,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(0, 5), "Hello"),
+                generics: [],
                 descriptor: Union(GtUnion(
                   span: GtSpan(7, 24),
                   doc: None,
@@ -1698,6 +1750,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(26, 35), "Multiline"),
+                generics: [],
                 descriptor: Union(GtUnion(
                   span: GtSpan(39, 59),
                   doc: None,
@@ -1724,6 +1777,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(61, 73), "WithComments"),
+                generics: [],
                 descriptor: Union(GtUnion(
                   span: GtSpan(100, 147),
                   doc: None,
@@ -1750,6 +1804,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(149, 160), "ObjectUnion"),
+                generics: [],
                 descriptor: Union(GtUnion(
                   span: GtSpan(164, 204),
                   doc: None,
@@ -1761,6 +1816,7 @@ mod tests {
                       attributes: [],
                       id: GtReferenceId(GtModuleId("module"), GtSpan(166, 181)),
                       identifier: GtIdentifier(GtSpan(166, 181), "ObjectUnionUser"),
+                      arguments: [],
                     )),
                     Reference(GtReference(
                       span: GtSpan(186, 204),
@@ -1768,6 +1824,7 @@ mod tests {
                       attributes: [],
                       id: GtReferenceId(GtModuleId("module"), GtSpan(186, 204)),
                       identifier: GtIdentifier(GtSpan(186, 204), "ObjectUnionAccount"),
+                      arguments: [],
                     )),
                   ],
                 )),
@@ -1778,6 +1835,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(206, 221), "ObjectUnionUser"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(223, 242),
                   doc: None,
@@ -1807,6 +1865,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(244, 262), "ObjectUnionAccount"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(264, 286),
                   doc: None,
@@ -1866,6 +1925,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(0, 7), "Message"),
+                generics: [],
                 descriptor: Union(GtUnion(
                   span: GtSpan(9, 19),
                   doc: None,
@@ -1877,6 +1937,7 @@ mod tests {
                       attributes: [],
                       id: GtReferenceId(GtModuleId("module"), GtSpan(9, 14)),
                       identifier: GtIdentifier(GtSpan(9, 14), "Reply"),
+                      arguments: [],
                     )),
                     Reference(GtReference(
                       span: GtSpan(17, 19),
@@ -1884,6 +1945,7 @@ mod tests {
                       attributes: [],
                       id: GtReferenceId(GtModuleId("module"), GtSpan(17, 19)),
                       identifier: GtIdentifier(GtSpan(17, 19), "DM"),
+                      arguments: [],
                     )),
                   ],
                 )),
@@ -1894,6 +1956,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(21, 26), "Reply"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(28, 76),
                   doc: None,
@@ -1945,6 +2008,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(78, 80), "DM"),
+                generics: [],
                 descriptor: Object(GtObject(
                   span: GtSpan(82, 127),
                   doc: None,
@@ -2013,6 +2077,7 @@ mod tests {
                   ),
                 ],
                 name: GtIdentifier(GtSpan(148, 158), "Assignment"),
+                generics: [],
                 descriptor: Literal(GtLiteral(
                   span: GtSpan(160, 163),
                   doc: None,
@@ -2048,6 +2113,7 @@ mod tests {
                   ),
                 ],
                 name: GtIdentifier(GtSpan(192, 201), "Arguments"),
+                generics: [],
                 descriptor: Literal(GtLiteral(
                   span: GtSpan(203, 207),
                   doc: None,
@@ -2097,6 +2163,7 @@ mod tests {
                   ),
                 ],
                 name: GtIdentifier(GtSpan(251, 261), "Properties"),
+                generics: [],
                 descriptor: Literal(GtLiteral(
                   span: GtSpan(263, 267),
                   doc: None,
@@ -2110,6 +2177,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(269, 277), "Response"),
+                generics: [],
                 descriptor: Union(GtUnion(
                   span: GtSpan(279, 344),
                   doc: None,
@@ -2133,6 +2201,7 @@ mod tests {
                       ],
                       id: GtReferenceId(GtModuleId("module"), GtSpan(297, 312)),
                       identifier: GtIdentifier(GtSpan(297, 312), "SuccessResponse"),
+                      arguments: [],
                     )),
                     Reference(GtReference(
                       span: GtSpan(331, 344),
@@ -2152,6 +2221,7 @@ mod tests {
                       ],
                       id: GtReferenceId(GtModuleId("module"), GtSpan(331, 344)),
                       identifier: GtIdentifier(GtSpan(331, 344), "ErrorResponse"),
+                      arguments: [],
                     )),
                   ],
                 )),
@@ -2162,6 +2232,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(346, 354), "Response"),
+                generics: [],
                 descriptor: Union(GtUnion(
                   span: GtSpan(358, 431),
                   doc: None,
@@ -2185,6 +2256,7 @@ mod tests {
                       ],
                       id: GtReferenceId(GtModuleId("module"), GtSpan(380, 395)),
                       identifier: GtIdentifier(GtSpan(380, 395), "SuccessResponse"),
+                      arguments: [],
                     )),
                     Reference(GtReference(
                       span: GtSpan(418, 431),
@@ -2204,6 +2276,7 @@ mod tests {
                       ],
                       id: GtReferenceId(GtModuleId("module"), GtSpan(418, 431)),
                       identifier: GtIdentifier(GtSpan(418, 431), "ErrorResponse"),
+                      arguments: [],
                     )),
                   ],
                 )),
@@ -2214,6 +2287,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(433, 441), "Response"),
+                generics: [],
                 descriptor: Union(GtUnion(
                   span: GtSpan(445, 518),
                   doc: None,
@@ -2237,6 +2311,7 @@ mod tests {
                       ],
                       id: GtReferenceId(GtModuleId("module"), GtSpan(465, 480)),
                       identifier: GtIdentifier(GtSpan(465, 480), "SuccessResponse"),
+                      arguments: [],
                     )),
                     Reference(GtReference(
                       span: GtSpan(503, 516),
@@ -2256,6 +2331,7 @@ mod tests {
                       ],
                       id: GtReferenceId(GtModuleId("module"), GtSpan(503, 516)),
                       identifier: GtIdentifier(GtSpan(503, 516), "ErrorResponse"),
+                      arguments: [],
                     )),
                   ],
                 )),
@@ -2305,6 +2381,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(0, 4), "Dict"),
+                generics: [],
                 descriptor: Record(GtRecord(
                   span: GtSpan(6, 20),
                   doc: None,
@@ -2324,6 +2401,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(22, 25), "Map"),
+                generics: [],
                 descriptor: Record(GtRecord(
                   span: GtSpan(27, 44),
                   doc: None,
@@ -2366,6 +2444,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(0, 8), "Anything"),
+                generics: [],
                 descriptor: Any(GtAny(
                   span: GtSpan(10, 13),
                   doc: None,
@@ -2400,6 +2479,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(0, 5), "OrgId"),
+                generics: [],
                 descriptor: Branded(GtBranded(
                   span: GtSpan(7, 11),
                   doc: None,
@@ -2420,6 +2500,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(13, 19), "UserId"),
+                generics: [],
                 descriptor: Branded(GtBranded(
                   span: GtSpan(21, 28),
                   doc: None,
@@ -2440,6 +2521,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(30, 35), "Const"),
+                generics: [],
                 descriptor: Branded(GtBranded(
                   span: GtSpan(37, 43),
                   doc: None,
@@ -2460,6 +2542,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(45, 48), "Yes"),
+                generics: [],
                 descriptor: Branded(GtBranded(
                   span: GtSpan(50, 58),
                   doc: None,
@@ -2505,6 +2588,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(0, 4), "Int8"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(6, 8),
                   kind: Int8,
@@ -2518,6 +2602,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(9, 14), "Int16"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(16, 19),
                   kind: Int16,
@@ -2531,6 +2616,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(20, 25), "Int32"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(27, 30),
                   kind: Int32,
@@ -2544,6 +2630,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(31, 36), "Int64"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(38, 41),
                   kind: Int64,
@@ -2557,6 +2644,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(42, 48), "Int128"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(50, 54),
                   kind: Int128,
@@ -2570,6 +2658,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(55, 62), "IntSize"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(64, 69),
                   kind: IntSize,
@@ -2583,6 +2672,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(70, 75), "IntU8"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(77, 79),
                   kind: IntU8,
@@ -2596,6 +2686,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(80, 86), "IntU16"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(88, 91),
                   kind: IntU16,
@@ -2609,6 +2700,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(92, 98), "IntU32"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(100, 103),
                   kind: IntU32,
@@ -2622,6 +2714,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(104, 110), "IntU64"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(112, 115),
                   kind: IntU64,
@@ -2635,6 +2728,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(116, 123), "IntU128"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(125, 129),
                   kind: IntU128,
@@ -2648,6 +2742,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(130, 138), "IntUSize"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(140, 145),
                   kind: IntUSize,
@@ -2661,6 +2756,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(146, 153), "Float32"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(155, 158),
                   kind: Float32,
@@ -2674,6 +2770,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(159, 166), "Float64"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(168, 171),
                   kind: Float64,
@@ -2687,6 +2784,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(173, 183), "Int8Record"),
+                generics: [],
                 descriptor: Record(GtRecord(
                   span: GtSpan(185, 201),
                   doc: None,
@@ -2706,6 +2804,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(202, 213), "Int16Record"),
+                generics: [],
                 descriptor: Record(GtRecord(
                   span: GtSpan(215, 232),
                   doc: None,
@@ -2725,6 +2824,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(233, 244), "Int32Record"),
+                generics: [],
                 descriptor: Record(GtRecord(
                   span: GtSpan(246, 263),
                   doc: None,
@@ -2744,6 +2844,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(264, 275), "Int64Record"),
+                generics: [],
                 descriptor: Record(GtRecord(
                   span: GtSpan(277, 294),
                   doc: None,
@@ -2763,6 +2864,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(295, 307), "Int128Record"),
+                generics: [],
                 descriptor: Record(GtRecord(
                   span: GtSpan(309, 327),
                   doc: None,
@@ -2782,6 +2884,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(328, 341), "IntSizeRecord"),
+                generics: [],
                 descriptor: Record(GtRecord(
                   span: GtSpan(343, 362),
                   doc: None,
@@ -2801,6 +2904,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(363, 374), "IntU8Record"),
+                generics: [],
                 descriptor: Record(GtRecord(
                   span: GtSpan(376, 392),
                   doc: None,
@@ -2820,6 +2924,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(393, 405), "IntU16Record"),
+                generics: [],
                 descriptor: Record(GtRecord(
                   span: GtSpan(407, 424),
                   doc: None,
@@ -2839,6 +2944,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(425, 437), "IntU32Record"),
+                generics: [],
                 descriptor: Record(GtRecord(
                   span: GtSpan(439, 456),
                   doc: None,
@@ -2858,6 +2964,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(457, 469), "IntU64Record"),
+                generics: [],
                 descriptor: Record(GtRecord(
                   span: GtSpan(471, 488),
                   doc: None,
@@ -2877,6 +2984,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(489, 502), "IntU128Record"),
+                generics: [],
                 descriptor: Record(GtRecord(
                   span: GtSpan(504, 522),
                   doc: None,
@@ -2896,6 +3004,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(523, 537), "IntUSizeRecord"),
+                generics: [],
                 descriptor: Record(GtRecord(
                   span: GtSpan(539, 558),
                   doc: None,
@@ -2915,6 +3024,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(559, 572), "Float32Record"),
+                generics: [],
                 descriptor: Record(GtRecord(
                   span: GtSpan(574, 591),
                   doc: None,
@@ -2934,6 +3044,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(592, 605), "Float64Record"),
+                generics: [],
                 descriptor: Record(GtRecord(
                   span: GtSpan(607, 624),
                   doc: None,
@@ -3002,6 +3113,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(0, 5), "Hello"),
+                generics: [],
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(7, 13),
                   kind: Number,
@@ -3015,6 +3127,7 @@ mod tests {
                 doc: None,
                 attributes: [],
                 name: GtIdentifier(GtSpan(15, 20), "World"),
+                generics: [],
                 descriptor: Record(GtRecord(
                   span: GtSpan(22, 42),
                   doc: None,
@@ -3037,6 +3150,449 @@ mod tests {
               GtIdentifier(GtSpan(15, 20), "World"),
             ],
             references: [],
+          ),
+        )
+        "#);
+    }
+
+    #[test]
+    fn test_generics() {
+        assert_ron_snapshot!(parse_module("../../examples/02-syntax/19-generics.type"), @r#"
+        GtModuleParse(
+          module: GtModule(
+            id: GtModuleId("module"),
+            doc: None,
+            imports: [],
+            aliases: [
+              GtAlias(
+                id: GtDefinitionId(GtModuleId("module"), "Response"),
+                span: GtSpan(0, 67),
+                doc: None,
+                attributes: [],
+                name: GtIdentifier(GtSpan(0, 8), "Response"),
+                generics: [
+                  GtGenericParameter(
+                    span: GtSpan(9, 16),
+                    identifier: GtIdentifier(GtSpan(9, 16), "Payload"),
+                  ),
+                ],
+                descriptor: Union(GtUnion(
+                  span: GtSpan(21, 67),
+                  doc: None,
+                  attributes: [],
+                  descriptors: [
+                    Reference(GtReference(
+                      span: GtSpan(23, 47),
+                      doc: None,
+                      attributes: [],
+                      id: GtReferenceId(GtModuleId("module"), GtSpan(23, 47)),
+                      identifier: GtIdentifier(GtSpan(23, 38), "ResponseSuccess"),
+                      arguments: [
+                        GtGenericArgument(
+                          span: GtSpan(38, 47),
+                          descriptor: Reference(GtReference(
+                            span: GtSpan(39, 46),
+                            doc: None,
+                            attributes: [],
+                            id: GtReferenceId(GtModuleId("module"), GtSpan(39, 46)),
+                            identifier: GtIdentifier(GtSpan(39, 46), "Payload"),
+                            arguments: [],
+                          )),
+                        ),
+                      ],
+                    )),
+                    Reference(GtReference(
+                      span: GtSpan(52, 67),
+                      doc: None,
+                      attributes: [],
+                      id: GtReferenceId(GtModuleId("module"), GtSpan(52, 67)),
+                      identifier: GtIdentifier(GtSpan(52, 67), "ResponseFailure"),
+                      arguments: [],
+                    )),
+                  ],
+                )),
+              ),
+              GtAlias(
+                id: GtDefinitionId(GtModuleId("module"), "ResponseSuccess"),
+                span: GtSpan(69, 137),
+                doc: None,
+                attributes: [],
+                name: GtIdentifier(GtSpan(69, 84), "ResponseSuccess"),
+                generics: [
+                  GtGenericParameter(
+                    span: GtSpan(85, 92),
+                    identifier: GtIdentifier(GtSpan(85, 92), "Payload"),
+                  ),
+                ],
+                descriptor: Object(GtObject(
+                  span: GtSpan(95, 137),
+                  doc: None,
+                  attributes: [],
+                  name: Named(GtIdentifier(GtSpan(69, 84), "ResponseSuccess")),
+                  extensions: [],
+                  properties: [
+                    GtProperty(
+                      span: GtSpan(99, 116),
+                      doc: None,
+                      attributes: [],
+                      name: GtKey(GtSpan(99, 105), "status"),
+                      descriptor: Literal(GtLiteral(
+                        span: GtSpan(107, 116),
+                        doc: None,
+                        attributes: [],
+                        value: String("success"),
+                      )),
+                      required: true,
+                    ),
+                    GtProperty(
+                      span: GtSpan(120, 134),
+                      doc: None,
+                      attributes: [],
+                      name: GtKey(GtSpan(120, 125), "value"),
+                      descriptor: Reference(GtReference(
+                        span: GtSpan(127, 134),
+                        doc: None,
+                        attributes: [],
+                        id: GtReferenceId(GtModuleId("module"), GtSpan(127, 134)),
+                        identifier: GtIdentifier(GtSpan(127, 134), "Payload"),
+                        arguments: [],
+                      )),
+                      required: true,
+                    ),
+                  ],
+                )),
+              ),
+              GtAlias(
+                id: GtDefinitionId(GtModuleId("module"), "ResponseFailure"),
+                span: GtSpan(139, 197),
+                doc: None,
+                attributes: [],
+                name: GtIdentifier(GtSpan(139, 154), "ResponseFailure"),
+                generics: [],
+                descriptor: Object(GtObject(
+                  span: GtSpan(156, 197),
+                  doc: None,
+                  attributes: [],
+                  name: Named(GtIdentifier(GtSpan(139, 154), "ResponseFailure")),
+                  extensions: [],
+                  properties: [
+                    GtProperty(
+                      span: GtSpan(160, 177),
+                      doc: None,
+                      attributes: [],
+                      name: GtKey(GtSpan(160, 166), "status"),
+                      descriptor: Literal(GtLiteral(
+                        span: GtSpan(168, 177),
+                        doc: None,
+                        attributes: [],
+                        value: String("failure"),
+                      )),
+                      required: true,
+                    ),
+                    GtProperty(
+                      span: GtSpan(181, 194),
+                      doc: None,
+                      attributes: [],
+                      name: GtKey(GtSpan(181, 186), "error"),
+                      descriptor: Primitive(GtPrimitive(
+                        span: GtSpan(188, 194),
+                        kind: String,
+                        doc: None,
+                        attributes: [],
+                      )),
+                      required: true,
+                    ),
+                  ],
+                )),
+              ),
+              GtAlias(
+                id: GtDefinitionId(GtModuleId("module"), "ResponseReadFile"),
+                span: GtSpan(199, 233),
+                doc: None,
+                attributes: [],
+                name: GtIdentifier(GtSpan(199, 215), "ResponseReadFile"),
+                generics: [],
+                descriptor: Reference(GtReference(
+                  span: GtSpan(217, 233),
+                  doc: None,
+                  attributes: [],
+                  id: GtReferenceId(GtModuleId("module"), GtSpan(217, 233)),
+                  identifier: GtIdentifier(GtSpan(217, 225), "Response"),
+                  arguments: [
+                    GtGenericArgument(
+                      span: GtSpan(225, 233),
+                      descriptor: Primitive(GtPrimitive(
+                        span: GtSpan(226, 232),
+                        kind: String,
+                        doc: None,
+                        attributes: [],
+                      )),
+                    ),
+                  ],
+                )),
+              ),
+              GtAlias(
+                id: GtDefinitionId(GtModuleId("module"), "ResponseGlob"),
+                span: GtSpan(235, 267),
+                doc: None,
+                attributes: [],
+                name: GtIdentifier(GtSpan(235, 247), "ResponseGlob"),
+                generics: [],
+                descriptor: Reference(GtReference(
+                  span: GtSpan(249, 267),
+                  doc: None,
+                  attributes: [],
+                  id: GtReferenceId(GtModuleId("module"), GtSpan(249, 267)),
+                  identifier: GtIdentifier(GtSpan(249, 257), "Response"),
+                  arguments: [
+                    GtGenericArgument(
+                      span: GtSpan(257, 267),
+                      descriptor: Array(GtArray(
+                        span: GtSpan(258, 266),
+                        doc: None,
+                        attributes: [],
+                        descriptor: Primitive(GtPrimitive(
+                          span: GtSpan(259, 265),
+                          kind: String,
+                          doc: None,
+                          attributes: [],
+                        )),
+                      )),
+                    ),
+                  ],
+                )),
+              ),
+              GtAlias(
+                id: GtDefinitionId(GtModuleId("module"), "ResponseIsFile"),
+                span: GtSpan(269, 302),
+                doc: None,
+                attributes: [],
+                name: GtIdentifier(GtSpan(269, 283), "ResponseIsFile"),
+                generics: [],
+                descriptor: Reference(GtReference(
+                  span: GtSpan(285, 302),
+                  doc: None,
+                  attributes: [],
+                  id: GtReferenceId(GtModuleId("module"), GtSpan(285, 302)),
+                  identifier: GtIdentifier(GtSpan(285, 293), "Response"),
+                  arguments: [
+                    GtGenericArgument(
+                      span: GtSpan(293, 302),
+                      descriptor: Primitive(GtPrimitive(
+                        span: GtSpan(294, 301),
+                        kind: Boolean,
+                        doc: None,
+                        attributes: [],
+                      )),
+                    ),
+                  ],
+                )),
+              ),
+              GtAlias(
+                id: GtDefinitionId(GtModuleId("module"), "ResponseFindFile"),
+                span: GtSpan(304, 345),
+                doc: None,
+                attributes: [],
+                name: GtIdentifier(GtSpan(304, 320), "ResponseFindFile"),
+                generics: [],
+                descriptor: Reference(GtReference(
+                  span: GtSpan(322, 345),
+                  doc: None,
+                  attributes: [],
+                  id: GtReferenceId(GtModuleId("module"), GtSpan(322, 345)),
+                  identifier: GtIdentifier(GtSpan(322, 330), "Response"),
+                  arguments: [
+                    GtGenericArgument(
+                      span: GtSpan(330, 345),
+                      descriptor: Union(GtUnion(
+                        span: GtSpan(330, 345),
+                        doc: None,
+                        attributes: [],
+                        descriptors: [
+                          Primitive(GtPrimitive(
+                            span: GtSpan(331, 337),
+                            kind: String,
+                            doc: None,
+                            attributes: [],
+                          )),
+                          Literal(GtLiteral(
+                            span: GtSpan(340, 344),
+                            doc: None,
+                            attributes: [],
+                            value: Null,
+                          )),
+                        ],
+                      )),
+                    ),
+                  ],
+                )),
+              ),
+              GtAlias(
+                id: GtDefinitionId(GtModuleId("module"), "InlineImportGeneric"),
+                span: GtSpan(347, 394),
+                doc: None,
+                attributes: [],
+                name: GtIdentifier(GtSpan(347, 366), "InlineImportGeneric"),
+                generics: [],
+                descriptor: InlineImport(GtInlineImport(
+                  span: GtSpan(368, 394),
+                  doc: None,
+                  attributes: [],
+                  name: GtIdentifier(GtSpan(378, 386), "Response"),
+                  arguments: [
+                    GtGenericArgument(
+                      span: GtSpan(386, 394),
+                      descriptor: Primitive(GtPrimitive(
+                        span: GtSpan(387, 393),
+                        kind: String,
+                        doc: None,
+                        attributes: [],
+                      )),
+                    ),
+                  ],
+                  path: GtPath(
+                    span: GtSpan(368, 378),
+                    id: GtPathModuleId(
+                      span: GtSpan(368, 378),
+                      module_id: GtModuleId("module"),
+                    ),
+                    path: "./runtime",
+                  ),
+                )),
+              ),
+              GtAlias(
+                id: GtDefinitionId(GtModuleId("module"), "Pair"),
+                span: GtSpan(396, 448),
+                doc: None,
+                attributes: [],
+                name: GtIdentifier(GtSpan(396, 400), "Pair"),
+                generics: [
+                  GtGenericParameter(
+                    span: GtSpan(401, 405),
+                    identifier: GtIdentifier(GtSpan(401, 405), "Left"),
+                  ),
+                  GtGenericParameter(
+                    span: GtSpan(407, 412),
+                    identifier: GtIdentifier(GtSpan(407, 412), "Right"),
+                  ),
+                ],
+                descriptor: Object(GtObject(
+                  span: GtSpan(415, 448),
+                  doc: None,
+                  attributes: [],
+                  name: Named(GtIdentifier(GtSpan(396, 400), "Pair")),
+                  extensions: [],
+                  properties: [
+                    GtProperty(
+                      span: GtSpan(419, 429),
+                      doc: None,
+                      attributes: [],
+                      name: GtKey(GtSpan(419, 423), "left"),
+                      descriptor: Reference(GtReference(
+                        span: GtSpan(425, 429),
+                        doc: None,
+                        attributes: [],
+                        id: GtReferenceId(GtModuleId("module"), GtSpan(425, 429)),
+                        identifier: GtIdentifier(GtSpan(425, 429), "Left"),
+                        arguments: [],
+                      )),
+                      required: true,
+                    ),
+                    GtProperty(
+                      span: GtSpan(433, 445),
+                      doc: None,
+                      attributes: [],
+                      name: GtKey(GtSpan(433, 438), "right"),
+                      descriptor: Reference(GtReference(
+                        span: GtSpan(440, 445),
+                        doc: None,
+                        attributes: [],
+                        id: GtReferenceId(GtModuleId("module"), GtSpan(440, 445)),
+                        identifier: GtIdentifier(GtSpan(440, 445), "Right"),
+                        arguments: [],
+                      )),
+                      required: true,
+                    ),
+                  ],
+                )),
+              ),
+              GtAlias(
+                id: GtDefinitionId(GtModuleId("module"), "StringNumberPair"),
+                span: GtSpan(450, 488),
+                doc: None,
+                attributes: [],
+                name: GtIdentifier(GtSpan(450, 466), "StringNumberPair"),
+                generics: [],
+                descriptor: Reference(GtReference(
+                  span: GtSpan(468, 488),
+                  doc: None,
+                  attributes: [],
+                  id: GtReferenceId(GtModuleId("module"), GtSpan(468, 488)),
+                  identifier: GtIdentifier(GtSpan(468, 472), "Pair"),
+                  arguments: [
+                    GtGenericArgument(
+                      span: GtSpan(472, 488),
+                      descriptor: Union(GtUnion(
+                        span: GtSpan(472, 488),
+                        doc: None,
+                        attributes: [],
+                        descriptors: [
+                          Primitive(GtPrimitive(
+                            span: GtSpan(473, 479),
+                            kind: String,
+                            doc: None,
+                            attributes: [],
+                          )),
+                          Primitive(GtPrimitive(
+                            span: GtSpan(481, 487),
+                            kind: Number,
+                            doc: None,
+                            attributes: [],
+                          )),
+                        ],
+                      )),
+                    ),
+                  ],
+                )),
+              ),
+            ],
+          ),
+          resolve: GtModuleResolve(
+            deps: [
+              GtPath(
+                span: GtSpan(368, 378),
+                id: GtPathModuleId(
+                  span: GtSpan(368, 378),
+                  module_id: GtModuleId("module"),
+                ),
+                path: "./runtime",
+              ),
+            ],
+            exports: [
+              GtIdentifier(GtSpan(0, 8), "Response"),
+              GtIdentifier(GtSpan(69, 84), "ResponseSuccess"),
+              GtIdentifier(GtSpan(139, 154), "ResponseFailure"),
+              GtIdentifier(GtSpan(199, 215), "ResponseReadFile"),
+              GtIdentifier(GtSpan(235, 247), "ResponseGlob"),
+              GtIdentifier(GtSpan(269, 283), "ResponseIsFile"),
+              GtIdentifier(GtSpan(304, 320), "ResponseFindFile"),
+              GtIdentifier(GtSpan(347, 366), "InlineImportGeneric"),
+              GtIdentifier(GtSpan(396, 400), "Pair"),
+              GtIdentifier(GtSpan(450, 466), "StringNumberPair"),
+            ],
+            references: [
+              GtIdentifier(GtSpan(39, 46), "Payload"),
+              GtIdentifier(GtSpan(23, 38), "ResponseSuccess"),
+              GtIdentifier(GtSpan(52, 67), "ResponseFailure"),
+              GtIdentifier(GtSpan(127, 134), "Payload"),
+              GtIdentifier(GtSpan(217, 225), "Response"),
+              GtIdentifier(GtSpan(249, 257), "Response"),
+              GtIdentifier(GtSpan(285, 293), "Response"),
+              GtIdentifier(GtSpan(322, 330), "Response"),
+              GtIdentifier(GtSpan(425, 429), "Left"),
+              GtIdentifier(GtSpan(440, 445), "Right"),
+              GtIdentifier(GtSpan(468, 472), "Pair"),
+            ],
           ),
         )
         "#);

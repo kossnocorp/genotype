@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
 /// A name assigned to an object. It can be explicitly named,
-#[derive(Debug, PartialEq, Clone, Serialize, Visitor)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
 pub enum GtObjectName {
     /// Explicately given name.
     Named(#[visit] GtIdentifier),
@@ -32,7 +32,7 @@ impl From<String> for GtObjectName {
 }
 
 /// The kind of parent that builds the object name.
-#[derive(Debug, PartialEq, Clone, Serialize)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize)]
 pub enum GtObjectNameParent {
     /// An alias parent.
     Alias(GtIdentifier),

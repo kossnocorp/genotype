@@ -101,6 +101,16 @@ mod tests {
     }
 
     #[test]
+    fn test_number() {
+        parse_file("../../examples/02-syntax/18-number.type");
+    }
+
+    #[test]
+    fn test_generics() {
+        parse_file("../../examples/02-syntax/19-generics.type");
+    }
+
+    #[test]
     fn test_empty() {
         parse_code("");
     }

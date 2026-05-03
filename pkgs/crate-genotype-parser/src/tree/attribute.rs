@@ -81,9 +81,11 @@ impl GtAttribute {
         let span: GtSpan = pair.as_span().into();
 
         let mut inner = pair.into_inner();
-        let pair = inner
-            .next()
-            .ok_or(GtParseError::UnexpectedEnd(span, GtNode::Attribute))?;
+        let pair = inner.next().ok_or(GtParseError::UnexpectedEnd(
+            span,
+            GtNode::Attribute,
+            "attribute inner",
+        ))?;
 
         parse(inner, pair, ParseState::Name(span), context)
     }

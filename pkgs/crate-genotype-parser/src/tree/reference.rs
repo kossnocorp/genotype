@@ -10,12 +10,14 @@ pub struct GtReference {
     pub id: GtReferenceId,
     #[visit]
     pub identifier: GtIdentifier,
+    #[visit]
+    pub arguments: Vec<GtGenericArgument>,
 }
 
 impl GtReference {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> Result<Self, GtParseError> {
         let span: GtSpan = pair.as_span().into();
-        let identifier: GtIdentifier = pair.into();
+        let (identifier, arguments) = GtReference::parse_name_with_arguments(pair, context)?;
         let (doc, attributes) = context.take_annotation_or_default();
 
         context.resolve.references.insert(identifier.clone());
@@ -26,7 +28,31 @@ impl GtReference {
             attributes,
             id: GtReferenceId(context.module_id.clone(), span),
             identifier,
+            arguments,
         })
+    }
+
+    pub fn parse_name_with_arguments(
+        pair: Pair<'_, Rule>,
+        context: &mut GtContext,
+    ) -> Result<(GtIdentifier, Vec<GtGenericArgument>), GtParseError> {
+        let span: GtSpan = pair.as_span().into();
+        let mut inner = pair.into_inner();
+        let name = inner
+            .next()
+            .ok_or(GtParseError::UnexpectedEnd(
+                span,
+                GtNode::Reference,
+                "reference inner",
+            ))?
+            .into();
+
+        let mut arguments = vec![];
+        while let Some(arguments_pair) = inner.next() {
+            arguments.push(GtGenericArgument::parse(arguments_pair, context)?);
+        }
+
+        Ok((name, arguments))
     }
 }
 
@@ -72,7 +98,7 @@ mod tests {
             )],
         ));
         assert_ron_snapshot!(
-            parse_node!(GtReference, (to_parse_rules(Rule::name, "Hello"), &mut context)),
+            parse_node!(GtReference, (to_parse_rules(Rule::reference, "Hello"), &mut context)),
             @r#"
         GtReference(
           span: GtSpan(0, 5),
@@ -97,6 +123,34 @@ mod tests {
           ],
           id: GtReferenceId(GtModuleId("module"), GtSpan(0, 5)),
           identifier: GtIdentifier(GtSpan(0, 5), "Hello"),
+          arguments: [],
+        )
+        "#
+        );
+    }
+
+    #[test]
+    fn test_arguments() {
+        assert_ron_snapshot!(
+            parse_node!(GtReference, to_parse_args(Rule::reference, "Message<string>")),
+            @r#"
+        GtReference(
+          span: GtSpan(0, 15),
+          doc: None,
+          attributes: [],
+          id: GtReferenceId(GtModuleId("module"), GtSpan(0, 15)),
+          identifier: GtIdentifier(GtSpan(0, 7), "Message"),
+          arguments: [
+            GtGenericArgument(
+              span: GtSpan(7, 15),
+              descriptor: Primitive(GtPrimitive(
+                span: GtSpan(8, 14),
+                kind: String,
+                doc: None,
+                attributes: [],
+              )),
+            ),
+          ],
         )
         "#
         );

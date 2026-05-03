@@ -244,6 +244,7 @@ impl Gt {
             attributes: vec![],
             id: Self::reference_id(span),
             identifier: Self::identifier(name),
+            arguments: vec![],
         }
     }
 
@@ -261,6 +262,7 @@ impl Gt {
             attributes: vec![],
             path: Self::path(path, span),
             name: Self::identifier(name),
+            arguments: vec![],
         }
     }
 
@@ -327,6 +329,7 @@ impl Gt {
             doc: None,
             attributes: vec![],
             name: GtIdentifier::new((0, 0).into(), name.into()),
+            generics: vec![],
             descriptor: descriptor.into(),
         }
     }

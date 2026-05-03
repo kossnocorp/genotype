@@ -46,6 +46,12 @@ pub use doc::*;
 pub mod extension;
 pub use extension::*;
 
+pub mod generic_parameter;
+pub use generic_parameter::*;
+
+pub mod generic_argument;
+pub use generic_argument::*;
+
 pub mod identifier;
 pub use identifier::*;
 
