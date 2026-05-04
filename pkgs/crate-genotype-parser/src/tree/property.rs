@@ -20,9 +20,11 @@ impl GtProperty {
         let required = pair.as_rule() == Rule::required_property;
         let mut inner = pair.into_inner();
 
-        let pair = inner
-            .next()
-            .ok_or(GtParseError::InternalLegacy(span, GtNode::Property))?;
+        let pair = inner.next().ok_or(GtParseError::UnexpectedEnd(
+            span,
+            GtNode::Property,
+            "property name",
+        ))?;
         let property = parse(inner, pair, ParseState::Doc(span, required, None), context)?;
 
         context.exit_named_parent(span, GtNode::Property)?;
@@ -58,7 +60,11 @@ fn parse(
                         ParseState::Doc(span, required, doc_acc),
                         context,
                     ),
-                    None => Err(GtParseError::InternalLegacy(span, GtNode::Property)),
+                    None => Err(GtParseError::UnexpectedEnd(
+                        span,
+                        GtNode::Property,
+                        "property after doc",
+                    )),
                 }
             }
 
@@ -82,7 +88,11 @@ fn parse(
                         ParseState::Attributes(span, required, doc, attributes),
                         context,
                     ),
-                    None => Err(GtParseError::InternalLegacy(span, GtNode::Property)),
+                    None => Err(GtParseError::UnexpectedEnd(
+                        span,
+                        GtNode::Property,
+                        "property after attribute",
+                    )),
                 }
             }
 
@@ -106,7 +116,11 @@ fn parse(
                     ParseState::Descriptor(span, required, doc, attributes, name),
                     context,
                 ),
-                None => Err(GtParseError::InternalLegacy(span, GtNode::Property)),
+                None => Err(GtParseError::UnexpectedEnd(
+                    span,
+                    GtNode::Property,
+                    "property descriptor",
+                )),
             }
         }
 

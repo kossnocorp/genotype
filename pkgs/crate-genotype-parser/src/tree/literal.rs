@@ -57,15 +57,16 @@ mod tests {
     fn test_error() {
         assert_debug_snapshot!(
             parse_node_err!(GtLiteral, to_parse_args(Rule::object, "{}")),
-            @"
-        InternalLegacy(
+            @r#"
+        UnexpectedEnd(
             GtSpan(
                 0,
                 2,
             ),
             Literal,
+            "literal value",
         )
-        "
+        "#
         );
     }
 

@@ -58,6 +58,7 @@ impl GtModule {
                         pair.as_span().into(),
                         GtNode::Module,
                         rule,
+                        "expected import, alias, or end of input",
                     ));
                 }
             }

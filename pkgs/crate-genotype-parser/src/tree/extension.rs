@@ -38,7 +38,11 @@ impl GtExtension {
                 reference: GtReference::parse(pair, context)?,
             }),
 
-            None => Err(GtParseError::InternalLegacy(span, GtNode::Extension)),
+            None => Err(GtParseError::UnexpectedEnd(
+                span,
+                GtNode::Extension,
+                "extension reference",
+            )),
         }
     }
 }
@@ -73,7 +77,7 @@ mod tests {
         let mut context = GtContext::new("module".into());
         assert_eq!(
             GtExtension::parse(pairs.next().unwrap(), &mut context).unwrap_err(),
-            GtParseError::InternalLegacy((0, 5).into(), GtNode::Extension)
+            GtParseError::UnexpectedEnd((0, 5).into(), GtNode::Extension, "extension reference")
         );
     }
 

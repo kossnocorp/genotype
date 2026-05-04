@@ -31,7 +31,7 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
             .iter()
             .filter_map(|module| match module {
                 TsProjectModule::Generated(module) => Some(module),
-                TsProjectModule::Error(err) => {
+                TsProjectModule::Error(_err) => {
                     // TODO: Generate an enum variant for error instead
                     None
                 }

@@ -84,9 +84,11 @@ impl GtInlineImport {
                     )
                 }
 
-                _ => Err(GtParseError::InternalLegacy(
+                rule => Err(GtParseError::UnexpectedRule(
                     pair.as_span().into(),
                     GtNode::InlineImport,
+                    rule,
+                    "expected path segment or reference",
                 )),
             },
 

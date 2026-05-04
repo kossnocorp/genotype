@@ -126,7 +126,12 @@ fn parse(
                         ParseState::Descriptors(span, annotation, name, vec![]),
                     ),
 
-                    rule => Err(GtParseError::UnexpectedRule(span, GtNode::Alias, rule)),
+                    rule => Err(GtParseError::UnexpectedRule(
+                        span,
+                        GtNode::Alias,
+                        rule,
+                        "expected generics or descriptor",
+                    )),
                 },
 
                 None => Err(GtParseError::UnexpectedEnd(

@@ -18,10 +18,11 @@ impl GtBranded {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> GtNodeParseResult<Self> {
         let span: GtSpan = pair.as_span().into();
         let (doc, attributes) = context.take_annotation_or_default();
-        let pair = pair
-            .into_inner()
-            .next()
-            .ok_or(GtParseError::InternalLegacy(span, GtNode::Array))?;
+        let pair = pair.into_inner().next().ok_or(GtParseError::UnexpectedEnd(
+            span,
+            GtNode::Branded,
+            "branded primitive",
+        ))?;
         let primitive = GtPrimitive::parse(pair, context)?;
         let name = context.get_name(&span, &primitive.to_string());
         let id = context.get_definition_id(&name);

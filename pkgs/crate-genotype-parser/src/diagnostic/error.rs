@@ -12,21 +12,17 @@ pub enum GtParseError {
     #[diagnostic(code("GT002"))]
     InvalidGrammar,
 
-    #[error("Failed to parse {1} node")]
-    #[diagnostic(code("GT002"))]
-    #[deprecated(note = "Use InternalMessage")]
-    InternalLegacy(#[label("internal error")] GtSpan, GtNode),
-
     #[error("failed to parse {1} node: {2}")]
     #[diagnostic(code("GT003"))]
     Internal(#[label("{2}")] GtSpan, GtNode, &'static str),
 
-    #[error("Encountered unexpected rule '{2:?}' while parsing '{1}' node")]
+    #[error("Encountered unexpected rule '{2:?}' while parsing '{1}' node: {3}")]
     #[diagnostic(code("GT004"))]
     UnexpectedRule(
-        #[label("unexpected rule")] GtSpan,
+        #[label("{3}")] GtSpan,
         GtNode,
         #[serde(serialize_with = "serialize_rule")] Rule,
+        &'static str,
     ),
 
     #[error("failed to parse {1} node")]
@@ -129,9 +125,8 @@ impl From<&pest::error::Error<Rule>> for PestErrorSnapshot {
 impl GtParseError {
     pub fn span(&self) -> GtSpan {
         match self {
-            Self::InternalLegacy(span, _) => *span,
             Self::Internal(span, _, _) => *span,
-            Self::UnexpectedRule(span, _, _) => *span,
+            Self::UnexpectedRule(span, _, _, _) => *span,
             Self::UnexpectedEnd(span, _, _) => *span,
             Self::UnknownValue(span, _) => *span,
             Self::UnmatchedDescriptor(span, _) => *span,
@@ -141,15 +136,15 @@ impl GtParseError {
 
     pub fn message(&self) -> String {
         match self {
-            Self::InternalLegacy(_, node) => format!("failed to parse {:?} node", node.name()),
             Self::Internal(_, node, message) => {
                 format!("failed to parse {:?} node: {}", node.name(), message)
             }
-            Self::UnexpectedRule(_, node, rule) => {
+            Self::UnexpectedRule(_, node, rule, message) => {
                 format!(
-                    "failed to parse {:?} node: unexpected rule {:?}",
+                    "failed to parse {:?} node: unexpected rule {:?}: {}",
                     node.name(),
-                    rule
+                    rule,
+                    message
                 )
             }
             Self::UnexpectedEnd(_, node, message) => {

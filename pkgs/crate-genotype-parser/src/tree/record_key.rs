@@ -48,6 +48,7 @@ impl GtRecordKey {
                 span,
                 GtNode::RecordKey,
                 pair.as_rule(),
+                "expected record key primitive",
             )),
         }
     }

@@ -64,7 +64,8 @@ impl GtPath {
         let span = pair.as_span();
         let span_start = span.start();
         let str = pair.as_str().to_string();
-        let else_err = || GtParseError::InternalLegacy(span.into(), GtNode::Path);
+        let else_err =
+            || GtParseError::Internal(span.into(), GtNode::Path, "expected path with name segment");
 
         let name_index = str.rfind("/").ok_or_else(else_err)?;
 
@@ -86,7 +87,11 @@ impl GtPath {
                 path: path.into(),
             }),
 
-            Err(_) => Err(GtParseError::InternalLegacy(span, GtNode::Path)),
+            Err(_) => Err(GtParseError::Internal(
+                span,
+                GtNode::Path,
+                "failed to normalize path",
+            )),
         }
     }
 

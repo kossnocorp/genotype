@@ -15,10 +15,11 @@ impl GtArray {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> GtNodeParseResult<Self> {
         let span: GtSpan = pair.as_span().into();
         let (doc, attributes) = context.take_annotation_or_default();
-        let pair = pair
-            .into_inner()
-            .next()
-            .ok_or(GtParseError::InternalLegacy(span, GtNode::Array))?;
+        let pair = pair.into_inner().next().ok_or(GtParseError::UnexpectedEnd(
+            span,
+            GtNode::Array,
+            "array descriptor",
+        ))?;
         let descriptor = GtDescriptor::parse(pair, context)?;
         Ok(GtArray {
             span,
@@ -61,7 +62,7 @@ mod tests {
         assert_equal!(
             GtArray::parse(pairs.next().unwrap(), &mut GtContext::new("module".into()))
                 .unwrap_err(),
-            GtParseError::InternalLegacy((0, 5).into(), GtNode::Array)
+            GtParseError::UnexpectedEnd((0, 5).into(), GtNode::Array, "array descriptor")
         );
     }
 

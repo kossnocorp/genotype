@@ -81,7 +81,12 @@ fn parse(
                         ParseState::Annotation(span, doc_acc, attributes),
                         context,
                     ),
-                    None => Err(GtParseError::InternalLegacy(span, GtNode::Descriptor)),
+
+                    None => Err(GtParseError::UnexpectedEnd(
+                        span,
+                        GtNode::Descriptor,
+                        "descriptor after doc",
+                    )),
                 }
             }
 
@@ -96,7 +101,12 @@ fn parse(
                         ParseState::Annotation(span, doc_acc, attributes),
                         context,
                     ),
-                    None => Err(GtParseError::InternalLegacy(span, GtNode::Descriptor)),
+
+                    None => Err(GtParseError::UnexpectedEnd(
+                        span,
+                        GtNode::Descriptor,
+                        "descriptor after attribute",
+                    )),
                 }
             }
 
@@ -139,7 +149,12 @@ fn parse(
                 Rule::branded => GtDescriptor::Branded(GtBranded::parse(pair, context)?),
 
                 rule => {
-                    return Err(GtParseError::UnexpectedRule(span, GtNode::Descriptor, rule));
+                    return Err(GtParseError::UnexpectedRule(
+                        span,
+                        GtNode::Descriptor,
+                        rule,
+                        "expected descriptor inner",
+                    ));
                 }
             };
 

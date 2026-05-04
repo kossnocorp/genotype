@@ -38,6 +38,7 @@ impl GtAttributeValue {
                 span,
                 GtNode::AttributeValue,
                 rule,
+                "expected literal or identifier",
             )),
         }
     }

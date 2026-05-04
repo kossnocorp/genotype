@@ -65,6 +65,7 @@ impl GtObject {
                             property_pair.as_span().into(),
                             GtNode::Object,
                             rule,
+                            "expected object property or extension",
                         ));
                     }
                 }

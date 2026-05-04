@@ -84,15 +84,17 @@ mod tests {
     fn test_error() {
         assert_debug_snapshot!(
             parse_node_err!(GtPrimitive, to_parse_args(Rule::literal_boolean, "false")),
-            @"
-        InternalLegacy(
+            @r#"
+        UnexpectedRule(
             GtSpan(
                 0,
                 5,
             ),
             Primitive,
+            literal_boolean,
+            "expected primitive kind",
         )
-        "
+        "#
         );
     }
 

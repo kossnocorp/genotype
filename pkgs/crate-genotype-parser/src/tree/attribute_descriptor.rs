@@ -61,6 +61,7 @@ impl GtAttributeDescriptor {
                 span,
                 GtNode::AttributeDescriptor,
                 rule,
+                "expected attribute descriptor",
             )),
         }
     }

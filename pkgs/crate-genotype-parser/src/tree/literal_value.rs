@@ -104,41 +104,51 @@ impl Hash for GtLiteralValue {
 impl GtLiteralValue {
     pub fn parse(pair: Pair<'_, Rule>, _context: &mut GtContext) -> Result<Self, GtParseError> {
         let span: GtSpan = pair.as_span().into();
-        let else_err = || GtParseError::InternalLegacy(span, GtNode::Literal);
-        let pair = pair.into_inner().next().ok_or_else(else_err)?;
+        let pair = pair.into_inner().next().ok_or(GtParseError::UnexpectedEnd(
+            span,
+            GtNode::Literal,
+            "literal value",
+        ))?;
 
         match pair.as_rule() {
             Rule::literal_string => {
-                let pair = pair.into_inner().next().ok_or_else(else_err)?;
+                let pair = pair.into_inner().next().ok_or(GtParseError::UnexpectedEnd(
+                    span,
+                    GtNode::Literal,
+                    "literal string value",
+                ))?;
                 Ok(GtLiteralValue::String(pair.as_str().into()))
             }
 
             Rule::literal_integer => {
-                let value = pair
-                    .as_str()
-                    .replace("_", "")
-                    .parse()
-                    .map_err(|_| else_err())?;
+                let value = pair.as_str().replace("_", "").parse().map_err(|_| {
+                    GtParseError::Internal(span, GtNode::Literal, "failed to parse integer")
+                })?;
                 Ok(GtLiteralValue::Integer(value))
             }
 
             Rule::literal_float => {
-                let value = pair
-                    .as_str()
-                    .replace("_", "")
-                    .parse()
-                    .map_err(|_| else_err())?;
+                let value = pair.as_str().replace("_", "").parse().map_err(|_| {
+                    GtParseError::Internal(span, GtNode::Literal, "failed to parse float")
+                })?;
                 Ok(GtLiteralValue::Float(value))
             }
 
             Rule::literal_boolean => {
-                let value = pair.as_str().parse().map_err(|_| else_err())?;
+                let value = pair.as_str().parse().map_err(|_| {
+                    GtParseError::Internal(span, GtNode::Literal, "failed to parse boolean")
+                })?;
                 Ok(GtLiteralValue::Boolean(value))
             }
 
             Rule::literal_null => Ok(GtLiteralValue::Null),
 
-            _ => Err(else_err()),
+            rule => Err(GtParseError::UnexpectedRule(
+                span,
+                GtNode::Literal,
+                rule,
+                "expected literal value",
+            )),
         }
     }
 }
@@ -164,7 +174,7 @@ mod tests {
         let mut pairs = GenotypeParser::parse(Rule::object, "{}").unwrap();
         let mut context = GtContext::new("module".into());
         assert_eq!(
-            GtParseError::InternalLegacy((0, 2).into(), GtNode::Literal),
+            GtParseError::UnexpectedEnd((0, 2).into(), GtNode::Literal, "literal value"),
             GtLiteralValue::parse(pairs.next().unwrap(), &mut context).unwrap_err(),
         );
     }
