@@ -28,3 +28,14 @@ Pair<Left, Right>: {
 }
 
 StringNumberPair: Pair<string, number>
+
+WithExt: {
+  ...Pair<string, number>,
+}
+
+WithInlineImport: Response<./pair/Pair<string, number>>
+
+WithInlineImportExt: {
+  ...Response<./pair/Pair<string, number>>,
+  ..../pair/Pair<string, number>,
+}

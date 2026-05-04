@@ -111,6 +111,15 @@ mod tests {
     }
 
     #[test]
+    fn test_generics_inline_import_descriptor() {
+        GenotypeParser::parse(
+            Rule::module,
+            "WithInlineImport: Response<./pair/Pair<string, number>>",
+        )
+        .unwrap();
+    }
+
+    #[test]
     fn test_empty() {
         parse_code("");
     }

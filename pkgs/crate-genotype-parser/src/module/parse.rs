@@ -3573,6 +3573,219 @@ mod tests {
                   ],
                 )),
               ),
+              GtAlias(
+                id: GtDefinitionId(GtModuleId("module"), "WithExt"),
+                span: GtSpan(490, 529),
+                doc: None,
+                attributes: [],
+                name: GtIdentifier(GtSpan(490, 497), "WithExt"),
+                generics: [],
+                descriptor: Object(GtObject(
+                  span: GtSpan(499, 529),
+                  doc: None,
+                  attributes: [],
+                  name: Named(GtIdentifier(GtSpan(490, 497), "WithExt")),
+                  extensions: [
+                    GtExtension(
+                      span: GtSpan(503, 526),
+                      reference: GtReference(
+                        span: GtSpan(506, 526),
+                        doc: None,
+                        attributes: [],
+                        id: GtReferenceId(GtModuleId("module"), GtSpan(506, 526)),
+                        identifier: GtIdentifier(GtSpan(506, 510), "Pair"),
+                        arguments: [
+                          GtGenericArgument(
+                            span: GtSpan(510, 526),
+                            descriptor: Union(GtUnion(
+                              span: GtSpan(510, 526),
+                              doc: None,
+                              attributes: [],
+                              descriptors: [
+                                Primitive(GtPrimitive(
+                                  span: GtSpan(511, 517),
+                                  kind: String,
+                                  doc: None,
+                                  attributes: [],
+                                )),
+                                Primitive(GtPrimitive(
+                                  span: GtSpan(519, 525),
+                                  kind: Number,
+                                  doc: None,
+                                  attributes: [],
+                                )),
+                              ],
+                            )),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  properties: [],
+                )),
+              ),
+              GtAlias(
+                id: GtDefinitionId(GtModuleId("module"), "WithInlineImport"),
+                span: GtSpan(531, 586),
+                doc: None,
+                attributes: [],
+                name: GtIdentifier(GtSpan(531, 547), "WithInlineImport"),
+                generics: [],
+                descriptor: Reference(GtReference(
+                  span: GtSpan(549, 586),
+                  doc: None,
+                  attributes: [],
+                  id: GtReferenceId(GtModuleId("module"), GtSpan(549, 586)),
+                  identifier: GtIdentifier(GtSpan(549, 557), "Response"),
+                  arguments: [
+                    GtGenericArgument(
+                      span: GtSpan(557, 586),
+                      descriptor: InlineImport(GtInlineImport(
+                        span: GtSpan(558, 585),
+                        doc: None,
+                        attributes: [],
+                        name: GtIdentifier(GtSpan(565, 569), "Pair"),
+                        arguments: [
+                          GtGenericArgument(
+                            span: GtSpan(569, 585),
+                            descriptor: Union(GtUnion(
+                              span: GtSpan(569, 585),
+                              doc: None,
+                              attributes: [],
+                              descriptors: [
+                                Primitive(GtPrimitive(
+                                  span: GtSpan(570, 576),
+                                  kind: String,
+                                  doc: None,
+                                  attributes: [],
+                                )),
+                                Primitive(GtPrimitive(
+                                  span: GtSpan(578, 584),
+                                  kind: Number,
+                                  doc: None,
+                                  attributes: [],
+                                )),
+                              ],
+                            )),
+                          ),
+                        ],
+                        path: GtPath(
+                          span: GtSpan(558, 565),
+                          id: GtPathModuleId(
+                            span: GtSpan(558, 565),
+                            module_id: GtModuleId("module"),
+                          ),
+                          path: "./pair",
+                        ),
+                      )),
+                    ),
+                  ],
+                )),
+              ),
+              GtAlias(
+                id: GtDefinitionId(GtModuleId("module"), "WithInlineImportExt"),
+                span: GtSpan(588, 690),
+                doc: None,
+                attributes: [],
+                name: GtIdentifier(GtSpan(588, 607), "WithInlineImportExt"),
+                generics: [],
+                descriptor: Object(GtObject(
+                  span: GtSpan(609, 690),
+                  doc: None,
+                  attributes: [],
+                  name: Named(GtIdentifier(GtSpan(588, 607), "WithInlineImportExt")),
+                  extensions: [
+                    GtExtension(
+                      span: GtSpan(613, 653),
+                      reference: GtReference(
+                        span: GtSpan(616, 653),
+                        doc: None,
+                        attributes: [],
+                        id: GtReferenceId(GtModuleId("module"), GtSpan(616, 653)),
+                        identifier: GtIdentifier(GtSpan(616, 624), "Response"),
+                        arguments: [
+                          GtGenericArgument(
+                            span: GtSpan(624, 653),
+                            descriptor: InlineImport(GtInlineImport(
+                              span: GtSpan(625, 652),
+                              doc: None,
+                              attributes: [],
+                              name: GtIdentifier(GtSpan(632, 636), "Pair"),
+                              arguments: [
+                                GtGenericArgument(
+                                  span: GtSpan(636, 652),
+                                  descriptor: Union(GtUnion(
+                                    span: GtSpan(636, 652),
+                                    doc: None,
+                                    attributes: [],
+                                    descriptors: [
+                                      Primitive(GtPrimitive(
+                                        span: GtSpan(637, 643),
+                                        kind: String,
+                                        doc: None,
+                                        attributes: [],
+                                      )),
+                                      Primitive(GtPrimitive(
+                                        span: GtSpan(645, 651),
+                                        kind: Number,
+                                        doc: None,
+                                        attributes: [],
+                                      )),
+                                    ],
+                                  )),
+                                ),
+                              ],
+                              path: GtPath(
+                                span: GtSpan(625, 632),
+                                id: GtPathModuleId(
+                                  span: GtSpan(625, 632),
+                                  module_id: GtModuleId("module"),
+                                ),
+                                path: "./pair",
+                              ),
+                            )),
+                          ),
+                        ],
+                      ),
+                    ),
+                    GtExtension(
+                      span: GtSpan(657, 687),
+                      reference: GtReference(
+                        span: GtSpan(660, 687),
+                        doc: None,
+                        attributes: [],
+                        id: GtReferenceId(GtModuleId("module"), GtSpan(660, 687)),
+                        identifier: GtIdentifier(GtSpan(667, 671), "Pair"),
+                        arguments: [
+                          GtGenericArgument(
+                            span: GtSpan(671, 687),
+                            descriptor: Union(GtUnion(
+                              span: GtSpan(671, 687),
+                              doc: None,
+                              attributes: [],
+                              descriptors: [
+                                Primitive(GtPrimitive(
+                                  span: GtSpan(672, 678),
+                                  kind: String,
+                                  doc: None,
+                                  attributes: [],
+                                )),
+                                Primitive(GtPrimitive(
+                                  span: GtSpan(680, 686),
+                                  kind: Number,
+                                  doc: None,
+                                  attributes: [],
+                                )),
+                              ],
+                            )),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  properties: [],
+                )),
+              ),
             ],
           ),
           resolve: GtModuleResolve(
@@ -3584,6 +3797,30 @@ mod tests {
                   module_id: GtModuleId("module"),
                 ),
                 path: "./runtime",
+              ),
+              GtPath(
+                span: GtSpan(558, 565),
+                id: GtPathModuleId(
+                  span: GtSpan(558, 565),
+                  module_id: GtModuleId("module"),
+                ),
+                path: "./pair",
+              ),
+              GtPath(
+                span: GtSpan(625, 632),
+                id: GtPathModuleId(
+                  span: GtSpan(625, 632),
+                  module_id: GtModuleId("module"),
+                ),
+                path: "./pair",
+              ),
+              GtPath(
+                span: GtSpan(660, 667),
+                id: GtPathModuleId(
+                  span: GtSpan(660, 667),
+                  module_id: GtModuleId("module"),
+                ),
+                path: "./pair",
               ),
             ],
             exports: [
@@ -3597,6 +3834,9 @@ mod tests {
               GtIdentifier(GtSpan(347, 366), "InlineImportGeneric"),
               GtIdentifier(GtSpan(396, 400), "Pair"),
               GtIdentifier(GtSpan(450, 466), "StringNumberPair"),
+              GtIdentifier(GtSpan(490, 497), "WithExt"),
+              GtIdentifier(GtSpan(531, 547), "WithInlineImport"),
+              GtIdentifier(GtSpan(588, 607), "WithInlineImportExt"),
             ],
             references: [
               GtIdentifier(GtSpan(39, 46), "Payload"),
@@ -3610,6 +3850,10 @@ mod tests {
               GtIdentifier(GtSpan(425, 429), "Left"),
               GtIdentifier(GtSpan(440, 445), "Right"),
               GtIdentifier(GtSpan(468, 472), "Pair"),
+              GtIdentifier(GtSpan(506, 510), "Pair"),
+              GtIdentifier(GtSpan(549, 557), "Response"),
+              GtIdentifier(GtSpan(616, 624), "Response"),
+              GtIdentifier(GtSpan(667, 671), "Pair"),
             ],
             generic_parameters: [
               GtIdentifier(GtSpan(39, 46), "Payload"),

@@ -77,7 +77,7 @@ properties = ${
 
 property = !{ extension_property | optional_property | required_property }
 
-extension_property = ${ "..." ~ reference }
+extension_property = ${ "..." ~ (inline_import | reference) }
 
 required_property = { annotation* ~ name ~ ":" ~ descriptors }
 
@@ -91,7 +91,7 @@ generic_arguments = @{
     "<" ~
     (WHITESPACE | COMMENT)*
     ~ descriptors
-    ~ ((WHITESPACE | COMMENT)* ~ "," ~ (WHITESPACE | COMMENT)* ~ descriptors )*
+    ~ ((WHITESPACE | COMMENT)* ~ "," ~ (WHITESPACE | COMMENT)* ~ descriptors)*
     ~ (WHITESPACE | COMMENT)*
     ~ ">"
 }
@@ -146,7 +146,7 @@ inline_import = @{ path ~ reference }
 
 path = @{ path_segment+ }
 
-path_segment = ${ "../" | "./" | ((!"/" ~ !NEWLINE ~ ANY)+ ~ "/") }
+path_segment = ${ "../" | "./" | ((!"/" ~ !NEWLINE ~ !"<" ~ ANY)+ ~ "/") }
 
 // Comments
 

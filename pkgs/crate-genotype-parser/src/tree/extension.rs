@@ -12,6 +12,27 @@ impl GtExtension {
         let span = pair.as_span().into();
 
         match pair.into_inner().next() {
+            Some(pair) if pair.as_rule() == Rule::inline_import => {
+                let inline_import = GtInlineImport::parse(pair, context)?;
+                let reference_span = inline_import.span;
+                let reference = GtReference {
+                    span: reference_span,
+                    doc: inline_import.doc,
+                    attributes: inline_import.attributes,
+                    id: GtReferenceId(context.module_id.clone(), reference_span),
+                    identifier: inline_import.name,
+                    arguments: inline_import.arguments,
+                };
+
+                context
+                    .resolve
+                    .references
+                    .insert(reference.identifier.clone());
+                context.resolve_reference_identifier_as_generic_parameter(&reference.identifier);
+
+                Ok(GtExtension { span, reference })
+            }
+
             Some(pair) => Ok(GtExtension {
                 span,
                 reference: GtReference::parse(pair, context)?,
