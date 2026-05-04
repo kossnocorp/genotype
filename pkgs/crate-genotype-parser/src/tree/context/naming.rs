@@ -1,14 +1,14 @@
 use crate::prelude::internal::*;
 
 impl GtContext {
-    pub fn enter_parent(&mut self, parent: GtContextParent) {
-        self.parents.push(parent)
+    pub fn enter_named_parent(&mut self, parent: GtContextParent) {
+        self.named_parents.push(parent)
     }
 
-    pub fn exit_parent(&mut self, span: GtSpan, node: GtNode) -> GtNodeParseResult<()> {
-        self.parents
-            .pop()
-            .ok_or(GtParseError::Internal(span, node))?;
+    pub fn exit_named_parent(&mut self, span: GtSpan, node: GtNode) -> GtNodeParseResult<()> {
+        self.named_parents.pop().ok_or_else(|| {
+            GtParseError::Internal(span, node, "tried to pop from an empty parents stack")
+        })?;
         Ok(())
     }
 
@@ -23,7 +23,7 @@ impl GtContext {
         let mut keys = vec![];
 
         // Go through the parents in reverse order to build the name
-        for parent in self.parents.iter().rev() {
+        for parent in self.named_parents.iter().rev() {
             match parent {
                 // If there's an property parent, we start building the keys path
                 GtContextParent::Property(key) => keys.insert(0, key.clone()),
@@ -51,12 +51,16 @@ impl GtContext {
         }
 
         // Parents are in an invalid state, we can't resolve the object name.
-        Err(GtParseError::Internal(span, GtNode::ObjectName))
+        Err(GtParseError::Internal(
+            span,
+            GtNode::ObjectName,
+            "tried to name an object with no named parent",
+        ))
     }
 
     /// Tries claiming the alias from the parent.
     pub fn claim_alias(&self) -> Option<GtIdentifier> {
-        if let Some(GtContextParent::Alias(identifier)) = self.parents.last() {
+        if let Some(GtContextParent::Alias(identifier)) = self.named_parents.last() {
             return Some(identifier.clone());
         }
         None
@@ -69,10 +73,10 @@ impl GtContext {
             name
         } else {
             // If the immediate parent is an anonymous parent, we'll have to use the base name.
-            let anonymous = matches!(self.parents.last(), Some(GtContextParent::Anonymous));
+            let anonymous = matches!(self.named_parents.last(), Some(GtContextParent::Anonymous));
 
             let mut segments: Vec<String> = vec![];
-            for parent in self.parents.iter().rev() {
+            for parent in self.named_parents.iter().rev() {
                 match parent {
                     // Add any keys on the path to the name segments.
                     GtContextParent::Property(key) => segments.push(key.1.to_string()),
@@ -147,12 +151,11 @@ mod tests {
         let mut context = GtContext {
             module_id: "module".into(),
             resolve: GtModuleResolve::new(),
-            parents: vec![
+            named_parents: vec![
                 GtContextParent::Alias(GtIdentifier::new((0, 5).into(), "Hi".into())),
                 GtContextParent::Alias(GtIdentifier::new((5, 10).into(), "Hello".into())),
             ],
-            claimed_names: Default::default(),
-            annotation: None,
+            ..Default::default()
         };
         assert_eq!(
             context.name_object((50, 55).into()).unwrap(),
@@ -164,14 +167,12 @@ mod tests {
     fn test_object_name_alias() {
         let mut context = GtContext {
             module_id: "module".into(),
-            resolve: GtModuleResolve::new(),
-            parents: vec![
+            named_parents: vec![
                 GtContextParent::Alias(GtIdentifier::new((0, 5).into(), "Hi".into())),
                 GtContextParent::Alias(GtIdentifier::new((5, 10).into(), "Hello".into())),
                 GtContextParent::Anonymous,
             ],
-            claimed_names: Default::default(),
-            annotation: None,
+            ..Default::default()
         };
         assert_eq!(
             context.name_object((50, 55).into()).unwrap(),
@@ -186,16 +187,14 @@ mod tests {
     fn test_object_name_property() {
         let mut context = GtContext {
             module_id: "module".into(),
-            resolve: GtModuleResolve::new(),
-            parents: vec![
+            named_parents: vec![
                 GtContextParent::Alias(GtIdentifier::new((0, 5).into(), "Hi".into())),
                 GtContextParent::Alias(GtIdentifier::new((5, 10).into(), "Hello".into())),
                 GtContextParent::Anonymous,
                 GtContextParent::Property(GtKey::new((10, 15).into(), "cruel".into())),
                 GtContextParent::Property(GtKey::new((15, 20).into(), "world".into())),
             ],
-            claimed_names: Default::default(),
-            annotation: None,
+            ..Default::default()
         };
         assert_eq!(
             context.name_object((50, 55).into()).unwrap(),

@@ -112,6 +112,23 @@ impl GtpModuleResolve {
                 continue;
             };
 
+            // Check if the reference is a generic parameter.
+            let is_generic_parameter = module_parse
+                .module_parse
+                .resolve
+                .generic_parameters
+                .iter()
+                .any(|identifier| identifier == reference);
+            if is_generic_parameter {
+                identifiers.insert(
+                    reference.clone(),
+                    GtpModuleResolveIdentifier {
+                        source: GtpModuleResolveIdentifierSource::Local,
+                    },
+                );
+                continue;
+            }
+
             // Check if the reference is a package import.
             let package_import = module_parse
                 .module_parse
@@ -143,14 +160,14 @@ impl GtpModuleResolve {
                 continue;
             }
 
-            // Check if the reference is local.
-            if module_parse
+            // Check if the reference resolves to a local export.
+            let is_local_export = module_parse
                 .module_parse
                 .resolve
                 .exports
                 .iter()
-                .any(|export| export.1 == reference.1)
-            {
+                .any(|export| export.1 == reference.1);
+            if is_local_export {
                 identifiers.insert(
                     reference.clone(),
                     GtpModuleResolveIdentifier {
@@ -214,6 +231,7 @@ impl GtpModuleResolve {
                     error: GtpError::UndefinedType {
                         span: reference.as_span(),
                         identifier: reference.as_string(),
+                        reason: "can't find local path for the reference",
                     },
                 })?;
 
@@ -247,7 +265,6 @@ impl GtpModuleResolve {
 
         Ok(resolve)
     }
-
 }
 
 // endregion

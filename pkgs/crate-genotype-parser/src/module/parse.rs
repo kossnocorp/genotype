@@ -144,6 +144,7 @@ mod tests {
             references: [
               GtIdentifier(GtSpan(22, 25), "Age"),
             ],
+            generic_parameters: [],
           ),
         )
         "#);
@@ -225,6 +226,7 @@ mod tests {
               GtIdentifier(GtSpan(40, 47), "Boolean"),
             ],
             references: [],
+            generic_parameters: [],
           ),
         )
         "#);
@@ -474,6 +476,7 @@ mod tests {
               GtIdentifier(GtSpan(168, 178), "PascalCase"),
             ],
             references: [],
+            generic_parameters: [],
           ),
         )
         "#);
@@ -569,6 +572,7 @@ mod tests {
               GtIdentifier(GtSpan(258, 263), "Hello"),
             ],
             references: [],
+            generic_parameters: [],
           ),
         )
         "#);
@@ -634,6 +638,7 @@ mod tests {
               GtIdentifier(GtSpan(0, 5), "Hello"),
             ],
             references: [],
+            generic_parameters: [],
           ),
         )
         "#);
@@ -786,6 +791,7 @@ mod tests {
               GtIdentifier(GtSpan(80, 85), "Named"),
             ],
             references: [],
+            generic_parameters: [],
           ),
         )
         "#);
@@ -856,6 +862,7 @@ mod tests {
               GtIdentifier(GtSpan(0, 4), "Book"),
             ],
             references: [],
+            generic_parameters: [],
           ),
         )
         "#);
@@ -1002,6 +1009,7 @@ mod tests {
               GtIdentifier(GtSpan(103, 108), "Empty"),
             ],
             references: [],
+            generic_parameters: [],
           ),
         )
         "#);
@@ -1236,6 +1244,7 @@ mod tests {
             references: [
               GtIdentifier(GtSpan(149, 154), "Genre"),
             ],
+            generic_parameters: [],
           ),
         )
         "#);
@@ -1390,6 +1399,7 @@ mod tests {
               GtIdentifier(GtSpan(57, 61), "Base"),
               GtIdentifier(GtSpan(93, 97), "Base"),
             ],
+            generic_parameters: [],
           ),
         )
         "#);
@@ -1703,6 +1713,7 @@ mod tests {
               GtIdentifier(GtSpan(62, 73), "CommentBase"),
               GtIdentifier(GtSpan(156, 167), "CommentBase"),
             ],
+            generic_parameters: [],
           ),
         )
         "#);
@@ -1905,6 +1916,7 @@ mod tests {
               GtIdentifier(GtSpan(166, 181), "ObjectUnionUser"),
               GtIdentifier(GtSpan(186, 204), "ObjectUnionAccount"),
             ],
+            generic_parameters: [],
           ),
         )
         "#);
@@ -2361,6 +2373,7 @@ mod tests {
               GtIdentifier(GtSpan(465, 480), "SuccessResponse"),
               GtIdentifier(GtSpan(503, 516), "ErrorResponse"),
             ],
+            generic_parameters: [],
           ),
         )
         "#);
@@ -2424,6 +2437,7 @@ mod tests {
               GtIdentifier(GtSpan(22, 25), "Map"),
             ],
             references: [],
+            generic_parameters: [],
           ),
         )
         "#);
@@ -2459,6 +2473,7 @@ mod tests {
               GtIdentifier(GtSpan(0, 8), "Anything"),
             ],
             references: [],
+            generic_parameters: [],
           ),
         )
         "#);
@@ -2568,6 +2583,7 @@ mod tests {
               GtIdentifier(GtSpan(45, 48), "Yes"),
             ],
             references: [],
+            generic_parameters: [],
           ),
         )
         "#);
@@ -3093,6 +3109,7 @@ mod tests {
               GtIdentifier(GtSpan(592, 605), "Float64Record"),
             ],
             references: [],
+            generic_parameters: [],
           ),
         )
         "#);
@@ -3150,6 +3167,7 @@ mod tests {
               GtIdentifier(GtSpan(15, 20), "World"),
             ],
             references: [],
+            generic_parameters: [],
           ),
         )
         "#);
@@ -3592,6 +3610,12 @@ mod tests {
               GtIdentifier(GtSpan(425, 429), "Left"),
               GtIdentifier(GtSpan(440, 445), "Right"),
               GtIdentifier(GtSpan(468, 472), "Pair"),
+            ],
+            generic_parameters: [
+              GtIdentifier(GtSpan(39, 46), "Payload"),
+              GtIdentifier(GtSpan(127, 134), "Payload"),
+              GtIdentifier(GtSpan(425, 429), "Left"),
+              GtIdentifier(GtSpan(440, 445), "Right"),
             ],
           ),
         )

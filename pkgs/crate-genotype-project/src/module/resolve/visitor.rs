@@ -49,6 +49,7 @@ impl GtVisitor for GtpModuleResolveVisitor<'_> {
             self.error = Some(GtpError::UndefinedType {
                 span: import.name.as_span(),
                 identifier: import.name.as_string(),
+                reason: "can't find module id for the inline-import path",
             });
             return;
         };
@@ -62,6 +63,7 @@ impl GtVisitor for GtpModuleResolveVisitor<'_> {
             self.error = Some(GtpError::UndefinedType {
                 span: import.name.as_span(),
                 identifier: import.name.as_string(),
+                reason: "can't find module for the inline-import path",
             });
             return;
         };
@@ -73,6 +75,7 @@ impl GtVisitor for GtpModuleResolveVisitor<'_> {
             self.error = Some(GtpError::UndefinedType {
                 span: import.name.as_span(),
                 identifier: import.name.as_string(),
+                reason: "can't find definition for the inline-import reference",
             });
         }
     }

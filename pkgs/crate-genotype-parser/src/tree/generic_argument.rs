@@ -11,8 +11,17 @@ impl GtGenericArgument {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> Result<Self, GtParseError> {
         let span: GtSpan = pair.as_span().into();
         let descriptor = GtDescriptor::parse(pair, context)?;
-
         Ok(Self { span, descriptor })
+    }
+}
+
+impl<Type: Into<GtDescriptor>> From<Type> for GtGenericArgument {
+    fn from(descriptor: Type) -> Self {
+        let descriptor = descriptor.into();
+        GtGenericArgument {
+            span: descriptor.span(),
+            descriptor,
+        }
     }
 }
 

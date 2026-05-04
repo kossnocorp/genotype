@@ -219,6 +219,13 @@ impl Gt {
         GtIdentifier((0, 0).into(), name.into())
     }
 
+    pub fn identifier_with_span<Span>(name: &str, span: Span) -> GtIdentifier
+    where
+        Span: Into<GtSpan>,
+    {
+        GtIdentifier(span.into(), name.into())
+    }
+
     pub fn definition_id(name: &str) -> GtDefinitionId {
         GtDefinitionId("module".into(), name.into())
     }
@@ -331,6 +338,20 @@ impl Gt {
             name: GtIdentifier::new((0, 0).into(), name.into()),
             generics: vec![],
             descriptor: descriptor.into(),
+        }
+    }
+
+    pub fn alias_with_generics<Type>(
+        name: &str,
+        generics: Vec<GtGenericParameter>,
+        descriptor: Type,
+    ) -> GtAlias
+    where
+        Type: Into<GtDescriptor>,
+    {
+        GtAlias {
+            generics,
+            ..Self::alias(name, descriptor.into())
         }
     }
 
@@ -533,6 +554,13 @@ impl Gt {
             doc: None,
             imports,
             aliases,
+        }
+    }
+
+    pub fn generic_parameter(name: &str) -> GtGenericParameter {
+        GtGenericParameter {
+            span: (0, 0).into(),
+            identifier: Self::identifier(name),
         }
     }
 }

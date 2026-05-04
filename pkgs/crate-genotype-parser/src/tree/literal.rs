@@ -58,7 +58,7 @@ mod tests {
         assert_debug_snapshot!(
             parse_node_err!(GtLiteral, to_parse_args(Rule::object, "{}")),
             @"
-        Internal(
+        InternalLegacy(
             GtSpan(
                 0,
                 2,

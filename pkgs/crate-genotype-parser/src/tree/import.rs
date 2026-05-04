@@ -12,7 +12,7 @@ pub struct GtImport {
 impl GtImport {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> GtNodeParseResult<Self> {
         let span: GtSpan = pair.as_span().into();
-        let else_err = || GtParseError::Internal(span, GtNode::Import);
+        let else_err = || GtParseError::InternalLegacy(span, GtNode::Import);
 
         let mut inner = pair.into_inner();
         let pair = inner.next().ok_or_else(else_err)?;
@@ -39,7 +39,7 @@ fn parse(
 
             match inner.next() {
                 Some(pair) => parse(inner, pair, context, ParseState::Names(span, path)),
-                None => Err(GtParseError::Internal(span, GtNode::Import)),
+                None => Err(GtParseError::InternalLegacy(span, GtNode::Import)),
             }
         }
 
@@ -62,7 +62,7 @@ fn parse(
 
                         let name = inner
                             .next()
-                            .ok_or(GtParseError::Internal(span, GtNode::Import))?
+                            .ok_or(GtParseError::InternalLegacy(span, GtNode::Import))?
                             .into();
 
                         if let Some(alias) = inner.next() {
@@ -85,7 +85,7 @@ fn parse(
                     reference: GtImportReference::Name(ref_span, pair.into()),
                 }),
 
-                _ => Err(GtParseError::Internal(span, GtNode::Import)),
+                _ => Err(GtParseError::InternalLegacy(span, GtNode::Import)),
             }
         }
     }

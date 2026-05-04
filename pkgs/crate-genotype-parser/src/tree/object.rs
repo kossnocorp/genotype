@@ -26,7 +26,7 @@ impl GtObject {
         // children don't get the object name.
         let named = matches!(name, GtObjectName::Named(_));
         if named {
-            context.enter_parent(GtContextParent::Anonymous);
+            context.enter_named_parent(GtContextParent::Anonymous);
         }
 
         let mut object = GtObject {
@@ -72,7 +72,7 @@ impl GtObject {
         }
 
         if named {
-            context.exit_parent(span, GtNode::Object)?;
+            context.exit_named_parent(span, GtNode::Object)?;
         }
 
         Ok(object)
@@ -89,13 +89,11 @@ mod tests {
         let mut pairs = GenotypeParser::parse(Rule::object, "{ hello: string }").unwrap();
         let mut context = GtContext {
             module_id: "module".into(),
-            resolve: GtModuleResolve::new(),
-            parents: vec![GtContextParent::Alias(GtIdentifier::new(
+            named_parents: vec![GtContextParent::Alias(GtIdentifier::new(
                 (0, 5).into(),
                 "Hello".into(),
             ))],
-            claimed_names: Default::default(),
-            annotation: None,
+            ..Default::default()
         };
         assert_ron_snapshot!(
             GtObject::parse(pairs.next().unwrap(), &mut context).unwrap(),
@@ -197,13 +195,11 @@ mod tests {
         let mut pairs = GenotypeParser::parse(Rule::object, "{ hello: string }").unwrap();
         let mut context = GtContext {
             module_id: "module".into(),
-            resolve: GtModuleResolve::new(),
-            parents: vec![
+            named_parents: vec![
                 GtContextParent::Alias(GtIdentifier::new((0, 5).into(), "Hello".into())),
                 GtContextParent::Anonymous,
             ],
-            claimed_names: Default::default(),
-            annotation: None,
+            ..Default::default()
         };
         assert_ron_snapshot!(
             GtObject::parse(pairs.next().unwrap(), &mut context).unwrap(),
@@ -237,7 +233,7 @@ mod tests {
     #[test]
     fn test_annotation() {
         let mut context = Gt::context();
-        context.enter_parent(GtContextParent::Alias(Gt::identifier("Hello")));
+        context.enter_named_parent(GtContextParent::Alias(Gt::identifier("Hello")));
         context.provide_annotation((
             Gt::some_doc("Hello, world!"),
             vec![Gt::attribute(

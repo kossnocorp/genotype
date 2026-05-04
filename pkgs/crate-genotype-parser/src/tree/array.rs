@@ -18,7 +18,7 @@ impl GtArray {
         let pair = pair
             .into_inner()
             .next()
-            .ok_or(GtParseError::Internal(span, GtNode::Array))?;
+            .ok_or(GtParseError::InternalLegacy(span, GtNode::Array))?;
         let descriptor = GtDescriptor::parse(pair, context)?;
         Ok(GtArray {
             span,
@@ -61,7 +61,7 @@ mod tests {
         assert_equal!(
             GtArray::parse(pairs.next().unwrap(), &mut GtContext::new("module".into()))
                 .unwrap_err(),
-            GtParseError::Internal((0, 5).into(), GtNode::Array)
+            GtParseError::InternalLegacy((0, 5).into(), GtNode::Array)
         );
     }
 

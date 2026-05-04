@@ -119,6 +119,7 @@ mod tests {
                       GtIdentifier(GtSpan(0, 6), "Author"),
                     ],
                     references: [],
+                    generic_parameters: [],
                   ),
                 ),
               ),
@@ -216,6 +217,7 @@ mod tests {
                     references: [
                       GtIdentifier(GtSpan(56, 62), "Author"),
                     ],
+                    generic_parameters: [],
                   ),
                 ),
               ),
@@ -364,6 +366,7 @@ mod tests {
                     references: [
                       GtIdentifier(GtSpan(57, 61), "Book"),
                     ],
+                    generic_parameters: [],
                   ),
                 ),
               ),
@@ -472,6 +475,7 @@ mod tests {
                       GtIdentifier(GtSpan(0, 4), "User"),
                     ],
                     references: [],
+                    generic_parameters: [],
                   ),
                 ),
               ),
@@ -701,6 +705,7 @@ mod tests {
                       GtIdentifier(GtSpan(93, 98), "Email"),
                     ],
                     references: [],
+                    generic_parameters: [],
                   ),
                 ),
               ),
@@ -784,6 +789,7 @@ mod tests {
               error: UndefinedType(
                 span: GtSpan(44, 59),
                 identifier: "PackgesSettings",
+                reason: "can\'t find definition for the inline-import reference",
               ),
             )),
             "examples/errors/undefined-inline/src/package.type": Resolved(GtpModuleResolved(
@@ -834,6 +840,7 @@ mod tests {
                       GtIdentifier(GtSpan(0, 15), "PackageSettings"),
                     ],
                     references: [],
+                    generic_parameters: [],
                   ),
                 ),
               ),

@@ -84,7 +84,7 @@ impl GtInlineImport {
                     )
                 }
 
-                _ => Err(GtParseError::Internal(
+                _ => Err(GtParseError::InternalLegacy(
                     pair.as_span().into(),
                     GtNode::InlineImport,
                 )),

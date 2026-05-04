@@ -22,10 +22,10 @@ impl GtProperty {
 
         let pair = inner
             .next()
-            .ok_or(GtParseError::Internal(span, GtNode::Property))?;
+            .ok_or(GtParseError::InternalLegacy(span, GtNode::Property))?;
         let property = parse(inner, pair, ParseState::Doc(span, required, None), context)?;
 
-        context.exit_parent(span, GtNode::Property)?;
+        context.exit_named_parent(span, GtNode::Property)?;
 
         Ok(property)
     }
@@ -58,7 +58,7 @@ fn parse(
                         ParseState::Doc(span, required, doc_acc),
                         context,
                     ),
-                    None => Err(GtParseError::Internal(span, GtNode::Property)),
+                    None => Err(GtParseError::InternalLegacy(span, GtNode::Property)),
                 }
             }
 
@@ -82,7 +82,7 @@ fn parse(
                         ParseState::Attributes(span, required, doc, attributes),
                         context,
                     ),
-                    None => Err(GtParseError::Internal(span, GtNode::Property)),
+                    None => Err(GtParseError::InternalLegacy(span, GtNode::Property)),
                 }
             }
 
@@ -97,7 +97,7 @@ fn parse(
         ParseState::Name(span, required, doc, attributes) => {
             let name = GtKey::parse(pair);
 
-            context.enter_parent(GtContextParent::Property(name.clone()));
+            context.enter_named_parent(GtContextParent::Property(name.clone()));
 
             match inner.next() {
                 Some(pair) => parse(
@@ -106,7 +106,7 @@ fn parse(
                     ParseState::Descriptor(span, required, doc, attributes, name),
                     context,
                 ),
-                None => Err(GtParseError::Internal(span, GtNode::Property)),
+                None => Err(GtParseError::InternalLegacy(span, GtNode::Property)),
             }
         }
 
@@ -170,14 +170,13 @@ mod tests {
         ))];
         let mut context = GtContext {
             module_id: "module".into(),
-            parents: parents.clone(),
-            resolve: GtModuleResolve::new(),
-            claimed_names: Default::default(),
+            named_parents: parents.clone(),
             annotation: None,
+            ..Default::default()
         };
 
         GtProperty::parse(pairs.next().unwrap(), &mut context).unwrap();
 
-        assert_eq!(context.parents, parents);
+        assert_eq!(context.named_parents, parents);
     }
 }

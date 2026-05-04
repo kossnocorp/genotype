@@ -69,7 +69,7 @@ impl GtPrimitiveKind {
             "float" => Ok(GtPrimitiveKind::Float64),
             "f32" => Ok(GtPrimitiveKind::Float32),
             "f64" => Ok(GtPrimitiveKind::Float64),
-            _ => Err(GtParseError::Internal(span, GtNode::Primitive)),
+            _ => Err(GtParseError::InternalLegacy(span, GtNode::Primitive)),
         }
     }
 }
@@ -153,7 +153,7 @@ mod tests {
         assert_debug_snapshot!(
             parse_node_err!(GtPrimitiveKind, to_parse_args(Rule::literal_boolean, "false")),
             @"
-        Internal(
+        InternalLegacy(
             GtSpan(
                 0,
                 5,

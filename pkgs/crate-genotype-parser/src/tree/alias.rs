@@ -33,7 +33,8 @@ impl GtAlias {
             ParseState::Annotation(span, annotation),
         )?;
 
-        context.exit_parent(span, GtNode::Alias)?;
+        context.exit_named_parent(span, GtNode::Alias)?;
+        context.exit_generics_scope(span, GtNode::Alias)?;
 
         Ok(alias)
     }
@@ -107,7 +108,7 @@ fn parse(
             let name: GtIdentifier = pair.into();
 
             context.resolve.exports.push(name.clone());
-            context.enter_parent(GtContextParent::Alias(name.clone()));
+            context.enter_named_parent(GtContextParent::Alias(name.clone()));
 
             match inner.next() {
                 Some(pair) => match pair.as_rule() {
@@ -137,7 +138,6 @@ fn parse(
         }
 
         ParseState::Generics(span, annotation, name) => {
-            println!("Parsing generics for alias '{:?}'", &name);
             let generics = parse_generics(pair, context)?;
 
             match inner.next() {
@@ -157,6 +157,8 @@ fn parse(
         }
 
         ParseState::Descriptors(span, (doc, attributes), name, generics) => {
+            context.enter_generics_scope(&generics);
+
             let id = context.module_id.definition_id(&name);
             let descriptor = GtDescriptor::parse(pair, context)?;
             Ok(GtAlias {
@@ -181,14 +183,7 @@ fn parse_generics(
     let mut generics = vec![];
 
     while let Some(generics_pair) = inner.next() {
-        println!(
-            "????? Parsing generic parameter: {:?}",
-            generics_pair.as_str()
-        );
         generics.push(GtGenericParameter::parse(generics_pair, context)?);
-        // for pair in generics_pair.into_inner() {
-        //     generics.push(GtGenericParameter::parse(pair, context)?);
-        // }
     }
 
     Ok(generics)
@@ -273,15 +268,13 @@ mod tests {
         ))];
         let mut context = GtContext {
             module_id: "module".into(),
-            parents: parents.clone(),
-            resolve: GtModuleResolve::new(),
-            claimed_names: Default::default(),
-            annotation: None,
+            named_parents: parents.clone(),
+            ..Default::default()
         };
 
         GtAlias::parse(pairs.next().unwrap(), &mut context).unwrap();
 
-        assert_eq!(context.parents, parents);
+        assert_eq!(context.named_parents, parents);
     }
 
     #[test]

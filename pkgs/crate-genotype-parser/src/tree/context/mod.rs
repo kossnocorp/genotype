@@ -4,19 +4,25 @@ mod annotations;
 pub use annotations::*;
 
 mod ids;
+
 mod naming;
 
-#[derive(Debug, PartialEq, Clone)]
+mod generics;
+
+#[derive(Default, Debug, PartialEq, Clone)]
 pub struct GtContext {
     /// Current module id.
     pub module_id: GtModuleId,
     pub resolve: GtModuleResolve,
-    pub parents: Vec<GtContextParent>,
+    pub named_parents: Vec<GtContextParent>,
     /// A set of taken definition names. It allows to generate unique synthetic
     /// names.
     // [TODO] Use `GtNamingContext` instead of `claimed_names` in the future.
     pub claimed_names: IndexSet<String>,
     pub annotation: Option<GtContextAnnotation>,
+    /// A stack of generic parameters for the current context. It allows to resolve
+    /// generic parameters in nested contexts.
+    pub generics_scope: Vec<Vec<GtGenericParameter>>,
 }
 
 /// The parent context enum that defines the kind of a parent an object has.
@@ -36,9 +42,10 @@ impl GtContext {
         GtContext {
             module_id,
             resolve: GtModuleResolve::new(),
-            parents: vec![],
+            named_parents: vec![],
             claimed_names: IndexSet::new(),
             annotation: None,
+            generics_scope: vec![],
         }
     }
 }

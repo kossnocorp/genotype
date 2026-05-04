@@ -19,7 +19,7 @@ pub enum GtDescriptor {
 }
 
 impl GtDescriptor {
-    fn span(&self) -> GtSpan {
+    pub fn span(&self) -> GtSpan {
         match &self {
             GtDescriptor::Alias(alias) => alias.span,
             GtDescriptor::Array(array) => array.span,
@@ -36,7 +36,7 @@ impl GtDescriptor {
         }
     }
 
-    fn node(&self) -> GtNode {
+    pub fn node(&self) -> GtNode {
         match &self {
             GtDescriptor::Alias(_) => GtNode::Alias,
             GtDescriptor::Array(_) => GtNode::Array,

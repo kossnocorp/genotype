@@ -21,6 +21,7 @@ impl GtReference {
         let (doc, attributes) = context.take_annotation_or_default();
 
         context.resolve.references.insert(identifier.clone());
+        context.resolve_reference_identifier_as_generic_parameter(&identifier);
 
         Ok(GtReference {
             span,
@@ -152,6 +153,34 @@ mod tests {
             ),
           ],
         )
+        "#
+        );
+    }
+
+    #[test]
+    fn test_identified_generic_parameters() {
+        let mut context = Gt::context();
+        context.enter_generics_scope(&vec![Gt::generic_parameter("T")]);
+        assert_ron_snapshot!(
+            parse_node!(GtReference, (to_parse_rules(Rule::reference, "T"), &mut context)),
+            @r#"
+        GtReference(
+          span: GtSpan(0, 1),
+          doc: None,
+          attributes: [],
+          id: GtReferenceId(GtModuleId("module"), GtSpan(0, 1)),
+          identifier: GtIdentifier(GtSpan(0, 1), "T"),
+          arguments: [],
+        )
+        "#
+        );
+
+        assert_ron_snapshot!(
+            context.resolve.generic_parameters,
+            @r#"
+        [
+          GtIdentifier(GtSpan(0, 1), "T"),
+        ]
         "#
         );
     }

@@ -25,6 +25,10 @@ impl GtIdentifier {
     pub fn as_string(&self) -> String {
         self.1.to_string()
     }
+
+    pub fn has_same_name(&self, other: &GtIdentifier) -> bool {
+        self.1 == other.1
+    }
 }
 
 impl From<Pair<'_, Rule>> for GtIdentifier {
@@ -35,9 +39,7 @@ impl From<Pair<'_, Rule>> for GtIdentifier {
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
-    use pest::Parser;
-    use pretty_assertions::assert_eq;
+    use super::*;
 
     #[test]
     fn test_parse() {
@@ -46,5 +48,14 @@ mod tests {
             GtIdentifier::new((0, 5).into(), "Hello".into()),
             pairs.next().unwrap().into(),
         );
+    }
+
+    #[test]
+    fn test_same_name() {
+        let id1 = Gt::identifier_with_span("Hello", (0, 1));
+        let id2 = Gt::identifier_with_span("Hello", (0, 2));
+        let id3 = Gt::identifier_with_span("World", (0, 3));
+        assert!(id1.has_same_name(&id2));
+        assert!(!id1.has_same_name(&id3));
     }
 }

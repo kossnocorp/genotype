@@ -10,7 +10,7 @@ impl GtDescriptor {
 
         let is_union = inner.len() > 1;
         if is_union {
-            context.enter_parent(GtContextParent::Anonymous);
+            context.enter_named_parent(GtContextParent::Anonymous);
         }
 
         for pair in inner {
@@ -32,11 +32,11 @@ impl GtDescriptor {
         }
 
         if is_union {
-            context.exit_parent(span, GtNode::Descriptor)?;
+            context.exit_named_parent(span, GtNode::Descriptor)?;
         }
 
         match descriptors.as_slice() {
-            [] => Err(GtParseError::InternalMessage(
+            [] => Err(GtParseError::Internal(
                 span,
                 GtNode::Descriptor,
                 "no descriptors found",
@@ -81,7 +81,7 @@ fn parse(
                         ParseState::Annotation(span, doc_acc, attributes),
                         context,
                     ),
-                    None => Err(GtParseError::Internal(span, GtNode::Descriptor)),
+                    None => Err(GtParseError::InternalLegacy(span, GtNode::Descriptor)),
                 }
             }
 
@@ -96,7 +96,7 @@ fn parse(
                         ParseState::Annotation(span, doc_acc, attributes),
                         context,
                     ),
-                    None => Err(GtParseError::Internal(span, GtNode::Descriptor)),
+                    None => Err(GtParseError::InternalLegacy(span, GtNode::Descriptor)),
                 }
             }
 
@@ -645,7 +645,7 @@ mod tests {
     #[test]
     pub fn parse_annotated_object() {
         let mut context = Gt::context();
-        context.enter_parent(GtContextParent::Alias(Gt::identifier("Hello")));
+        context.enter_named_parent(GtContextParent::Alias(Gt::identifier("Hello")));
 
         assert_ron_snapshot!(
             parse_node!(

@@ -21,7 +21,7 @@ impl GtBranded {
         let pair = pair
             .into_inner()
             .next()
-            .ok_or(GtParseError::Internal(span, GtNode::Array))?;
+            .ok_or(GtParseError::InternalLegacy(span, GtNode::Array))?;
         let primitive = GtPrimitive::parse(pair, context)?;
         let name = context.get_name(&span, &primitive.to_string());
         let id = context.get_definition_id(&name);
@@ -70,7 +70,7 @@ mod tests {
     fn test_alias() {
         let mut pairs = GenotypeParser::parse(Rule::branded, "@int").unwrap();
         let mut context = GtContext::new("module".into());
-        context.enter_parent(GtContextParent::Alias(GtIdentifier::new(
+        context.enter_named_parent(GtContextParent::Alias(GtIdentifier::new(
             GtSpan(0, 3),
             "Id".into(),
         )));
@@ -98,11 +98,11 @@ mod tests {
     fn test_anonymous() {
         let mut pairs = GenotypeParser::parse(Rule::branded, "@int").unwrap();
         let mut context = GtContext::new("module".into());
-        context.enter_parent(GtContextParent::Alias(GtIdentifier::new(
+        context.enter_named_parent(GtContextParent::Alias(GtIdentifier::new(
             GtSpan(0, 3),
             "Id".into(),
         )));
-        context.enter_parent(GtContextParent::Anonymous);
+        context.enter_named_parent(GtContextParent::Anonymous);
         assert_ron_snapshot!(
             GtBranded::parse(pairs.next().unwrap(), &mut context).unwrap(),
             @r#"

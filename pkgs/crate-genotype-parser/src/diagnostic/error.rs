@@ -14,11 +14,12 @@ pub enum GtParseError {
 
     #[error("Failed to parse {1} node")]
     #[diagnostic(code("GT002"))]
-    Internal(#[label("internal error")] GtSpan, GtNode),
+    #[deprecated(note = "Use InternalMessage")]
+    InternalLegacy(#[label("internal error")] GtSpan, GtNode),
 
-    #[error("Failed to parse {1} node")]
+    #[error("failed to parse {1} node: {2}")]
     #[diagnostic(code("GT003"))]
-    InternalMessage(#[label("{2}")] GtSpan, GtNode, &'static str),
+    Internal(#[label("{2}")] GtSpan, GtNode, &'static str),
 
     #[error("Encountered unexpected rule '{2:?}' while parsing '{1}' node")]
     #[diagnostic(code("GT004"))]
@@ -128,8 +129,8 @@ impl From<&pest::error::Error<Rule>> for PestErrorSnapshot {
 impl GtParseError {
     pub fn span(&self) -> GtSpan {
         match self {
-            Self::Internal(span, _) => *span,
-            Self::InternalMessage(span, _, _) => *span,
+            Self::InternalLegacy(span, _) => *span,
+            Self::Internal(span, _, _) => *span,
             Self::UnexpectedRule(span, _, _) => *span,
             Self::UnexpectedEnd(span, _, _) => *span,
             Self::UnknownValue(span, _) => *span,
@@ -140,8 +141,8 @@ impl GtParseError {
 
     pub fn message(&self) -> String {
         match self {
-            Self::Internal(_, node) => format!("failed to parse {:?} node", node.name()),
-            Self::InternalMessage(_, node, message) => {
+            Self::InternalLegacy(_, node) => format!("failed to parse {:?} node", node.name()),
+            Self::Internal(_, node, message) => {
                 format!("failed to parse {:?} node: {}", node.name(), message)
             }
             Self::UnexpectedRule(_, node, rule) => {

@@ -104,7 +104,7 @@ impl Hash for GtLiteralValue {
 impl GtLiteralValue {
     pub fn parse(pair: Pair<'_, Rule>, _context: &mut GtContext) -> Result<Self, GtParseError> {
         let span: GtSpan = pair.as_span().into();
-        let else_err = || GtParseError::Internal(span, GtNode::Literal);
+        let else_err = || GtParseError::InternalLegacy(span, GtNode::Literal);
         let pair = pair.into_inner().next().ok_or_else(else_err)?;
 
         match pair.as_rule() {
@@ -164,7 +164,7 @@ mod tests {
         let mut pairs = GenotypeParser::parse(Rule::object, "{}").unwrap();
         let mut context = GtContext::new("module".into());
         assert_eq!(
-            GtParseError::Internal((0, 2).into(), GtNode::Literal),
+            GtParseError::InternalLegacy((0, 2).into(), GtNode::Literal),
             GtLiteralValue::parse(pairs.next().unwrap(), &mut context).unwrap_err(),
         );
     }
