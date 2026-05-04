@@ -25,6 +25,7 @@ mod tests {
         TsExtension(
           reference: TsReference(
             identifier: TsIdentifier("Name"),
+            arguments: [],
             rel: Regular,
           ),
         )

@@ -1,0 +1,9 @@
+dist = "dist/ts-alias"
+
+[ts]
+enabled = true
+prefer = "alias"
+
+[ts.manifest]
+name = "genotype-test-generics-alias-types"
+version = "0.1.0"

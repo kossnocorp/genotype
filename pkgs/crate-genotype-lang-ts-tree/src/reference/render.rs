@@ -11,7 +11,23 @@ impl<'a> GtlRender<'a> for TsReference {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         let reference = self.identifier.render(state, context)?;
-        Ok(reference)
+
+        if self.arguments.is_empty() {
+            return Ok(reference);
+        }
+
+        let arguments = self
+            .arguments
+            .iter()
+            .map(|argument| argument.render(state, context))
+            .collect::<Result<Vec<_>>>()?
+            .join(", ");
+
+        if context.is_zod_mode() {
+            Ok(format!("{reference}({arguments})"))
+        } else {
+            Ok(format!("{reference}<{arguments}>"))
+        }
     }
 }
 
@@ -28,6 +44,19 @@ mod tests {
     }
 
     #[test]
+    fn test_render_with_arguments() {
+        assert_snapshot!(
+            render_node(Tst::reference_with_arguments("Foo", vec![Tst::primitive_string().into()])),
+            @"Foo<string>"
+        );
+
+        assert_snapshot!(
+            render_node(Tst::reference_with_arguments("Foo", vec![Tst::primitive_string().into(), Tst::primitive_number().into()])),
+            @"Foo<string, number>"
+        );
+    }
+
+    #[test]
     fn test_render_forward() {
         assert_snapshot!(
             render_node(Tst::reference_forward("Foo")),
@@ -37,21 +66,28 @@ mod tests {
 
     #[test]
     fn test_render_zod() {
-        let mut context = Tst::render_context_zod();
-
         assert_snapshot!(
-            render_node_with(Tst::reference("Bar"), &mut context),
+            render_node_with(Tst::reference("Bar"), &mut Tst::render_context_zod()),
             @"Bar"
         );
     }
 
     #[test]
     fn test_render_zod_forward() {
-        let mut context = Tst::render_context_zod();
-
         assert_snapshot!(
-            render_node_with(Tst::reference_forward("Bar"), &mut context),
+            render_node_with(Tst::reference_forward("Bar"), &mut Tst::render_context_zod()),
             @"Bar"
+        );
+    }
+
+    #[test]
+    fn test_render_zod_with_arguments() {
+        assert_snapshot!(
+            render_node_with(
+                Tst::reference_with_arguments("Bar", vec![Tst::primitive_string().into()]),
+                &mut Tst::render_context_zod(),
+            ),
+            @"Bar(z.string())"
         );
     }
 }

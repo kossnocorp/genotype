@@ -50,7 +50,13 @@ impl GtReference {
 
         let mut arguments = vec![];
         while let Some(arguments_pair) = inner.next() {
-            arguments.push(GtGenericArgument::parse(arguments_pair, context)?);
+            if arguments_pair.as_rule() == Rule::generic_arguments {
+                for argument_pair in arguments_pair.into_inner() {
+                    arguments.push(GtGenericArgument::parse(argument_pair, context)?);
+                }
+            } else {
+                arguments.push(GtGenericArgument::parse(arguments_pair, context)?);
+            }
         }
 
         Ok((name, arguments))
@@ -143,7 +149,7 @@ mod tests {
           identifier: GtIdentifier(GtSpan(0, 7), "Message"),
           arguments: [
             GtGenericArgument(
-              span: GtSpan(7, 15),
+              span: GtSpan(8, 14),
               descriptor: Primitive(GtPrimitive(
                 span: GtSpan(8, 14),
                 kind: String,
@@ -155,6 +161,38 @@ mod tests {
         )
         "#
         );
+    }
+
+    #[test]
+    fn test_multiple_arguments() {
+        let reference = parse_node!(
+            GtReference,
+            to_parse_args(Rule::reference, "Pair<string, number>")
+        );
+
+        assert_eq!(reference.arguments.len(), 2);
+        assert!(matches!(
+            &reference.arguments[0].descriptor,
+            GtDescriptor::Primitive(_)
+        ));
+        assert!(matches!(
+            &reference.arguments[1].descriptor,
+            GtDescriptor::Primitive(_)
+        ));
+    }
+
+    #[test]
+    fn test_union_argument() {
+        let reference = parse_node!(
+            GtReference,
+            to_parse_args(Rule::reference, "Pair<string | number>")
+        );
+
+        assert_eq!(reference.arguments.len(), 1);
+        assert!(matches!(
+            &reference.arguments[0].descriptor,
+            GtDescriptor::Union(_)
+        ));
     }
 
     #[test]

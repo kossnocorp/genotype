@@ -3207,7 +3207,7 @@ mod tests {
                       identifier: GtIdentifier(GtSpan(23, 38), "ResponseSuccess"),
                       arguments: [
                         GtGenericArgument(
-                          span: GtSpan(38, 47),
+                          span: GtSpan(39, 46),
                           descriptor: Reference(GtReference(
                             span: GtSpan(39, 46),
                             doc: None,
@@ -3338,7 +3338,7 @@ mod tests {
                   identifier: GtIdentifier(GtSpan(217, 225), "Response"),
                   arguments: [
                     GtGenericArgument(
-                      span: GtSpan(225, 233),
+                      span: GtSpan(226, 232),
                       descriptor: Primitive(GtPrimitive(
                         span: GtSpan(226, 232),
                         kind: String,
@@ -3364,7 +3364,7 @@ mod tests {
                   identifier: GtIdentifier(GtSpan(249, 257), "Response"),
                   arguments: [
                     GtGenericArgument(
-                      span: GtSpan(257, 267),
+                      span: GtSpan(258, 266),
                       descriptor: Array(GtArray(
                         span: GtSpan(258, 266),
                         doc: None,
@@ -3395,7 +3395,7 @@ mod tests {
                   identifier: GtIdentifier(GtSpan(285, 293), "Response"),
                   arguments: [
                     GtGenericArgument(
-                      span: GtSpan(293, 302),
+                      span: GtSpan(294, 301),
                       descriptor: Primitive(GtPrimitive(
                         span: GtSpan(294, 301),
                         kind: Boolean,
@@ -3421,9 +3421,9 @@ mod tests {
                   identifier: GtIdentifier(GtSpan(322, 330), "Response"),
                   arguments: [
                     GtGenericArgument(
-                      span: GtSpan(330, 345),
+                      span: GtSpan(331, 344),
                       descriptor: Union(GtUnion(
-                        span: GtSpan(330, 345),
+                        span: GtSpan(331, 344),
                         doc: None,
                         attributes: [],
                         descriptors: [
@@ -3459,7 +3459,7 @@ mod tests {
                   name: GtIdentifier(GtSpan(378, 386), "Response"),
                   arguments: [
                     GtGenericArgument(
-                      span: GtSpan(386, 394),
+                      span: GtSpan(387, 393),
                       descriptor: Primitive(GtPrimitive(
                         span: GtSpan(387, 393),
                         kind: String,
@@ -3549,25 +3549,21 @@ mod tests {
                   identifier: GtIdentifier(GtSpan(468, 472), "Pair"),
                   arguments: [
                     GtGenericArgument(
-                      span: GtSpan(472, 488),
-                      descriptor: Union(GtUnion(
-                        span: GtSpan(472, 488),
+                      span: GtSpan(473, 479),
+                      descriptor: Primitive(GtPrimitive(
+                        span: GtSpan(473, 479),
+                        kind: String,
                         doc: None,
                         attributes: [],
-                        descriptors: [
-                          Primitive(GtPrimitive(
-                            span: GtSpan(473, 479),
-                            kind: String,
-                            doc: None,
-                            attributes: [],
-                          )),
-                          Primitive(GtPrimitive(
-                            span: GtSpan(481, 487),
-                            kind: Number,
-                            doc: None,
-                            attributes: [],
-                          )),
-                        ],
+                      )),
+                    ),
+                    GtGenericArgument(
+                      span: GtSpan(481, 487),
+                      descriptor: Primitive(GtPrimitive(
+                        span: GtSpan(481, 487),
+                        kind: Number,
+                        doc: None,
+                        attributes: [],
                       )),
                     ),
                   ],
@@ -3596,25 +3592,21 @@ mod tests {
                         identifier: GtIdentifier(GtSpan(506, 510), "Pair"),
                         arguments: [
                           GtGenericArgument(
-                            span: GtSpan(510, 526),
-                            descriptor: Union(GtUnion(
-                              span: GtSpan(510, 526),
+                            span: GtSpan(511, 517),
+                            descriptor: Primitive(GtPrimitive(
+                              span: GtSpan(511, 517),
+                              kind: String,
                               doc: None,
                               attributes: [],
-                              descriptors: [
-                                Primitive(GtPrimitive(
-                                  span: GtSpan(511, 517),
-                                  kind: String,
-                                  doc: None,
-                                  attributes: [],
-                                )),
-                                Primitive(GtPrimitive(
-                                  span: GtSpan(519, 525),
-                                  kind: Number,
-                                  doc: None,
-                                  attributes: [],
-                                )),
-                              ],
+                            )),
+                          ),
+                          GtGenericArgument(
+                            span: GtSpan(519, 525),
+                            descriptor: Primitive(GtPrimitive(
+                              span: GtSpan(519, 525),
+                              kind: Number,
+                              doc: None,
+                              attributes: [],
                             )),
                           ),
                         ],
@@ -3639,7 +3631,7 @@ mod tests {
                   identifier: GtIdentifier(GtSpan(549, 557), "Response"),
                   arguments: [
                     GtGenericArgument(
-                      span: GtSpan(557, 586),
+                      span: GtSpan(558, 585),
                       descriptor: InlineImport(GtInlineImport(
                         span: GtSpan(558, 585),
                         doc: None,
@@ -3647,25 +3639,21 @@ mod tests {
                         name: GtIdentifier(GtSpan(565, 569), "Pair"),
                         arguments: [
                           GtGenericArgument(
-                            span: GtSpan(569, 585),
-                            descriptor: Union(GtUnion(
-                              span: GtSpan(569, 585),
+                            span: GtSpan(570, 576),
+                            descriptor: Primitive(GtPrimitive(
+                              span: GtSpan(570, 576),
+                              kind: String,
                               doc: None,
                               attributes: [],
-                              descriptors: [
-                                Primitive(GtPrimitive(
-                                  span: GtSpan(570, 576),
-                                  kind: String,
-                                  doc: None,
-                                  attributes: [],
-                                )),
-                                Primitive(GtPrimitive(
-                                  span: GtSpan(578, 584),
-                                  kind: Number,
-                                  doc: None,
-                                  attributes: [],
-                                )),
-                              ],
+                            )),
+                          ),
+                          GtGenericArgument(
+                            span: GtSpan(578, 584),
+                            descriptor: Primitive(GtPrimitive(
+                              span: GtSpan(578, 584),
+                              kind: Number,
+                              doc: None,
+                              attributes: [],
                             )),
                           ),
                         ],
@@ -3705,7 +3693,7 @@ mod tests {
                         identifier: GtIdentifier(GtSpan(616, 624), "Response"),
                         arguments: [
                           GtGenericArgument(
-                            span: GtSpan(624, 653),
+                            span: GtSpan(625, 652),
                             descriptor: InlineImport(GtInlineImport(
                               span: GtSpan(625, 652),
                               doc: None,
@@ -3713,25 +3701,21 @@ mod tests {
                               name: GtIdentifier(GtSpan(632, 636), "Pair"),
                               arguments: [
                                 GtGenericArgument(
-                                  span: GtSpan(636, 652),
-                                  descriptor: Union(GtUnion(
-                                    span: GtSpan(636, 652),
+                                  span: GtSpan(637, 643),
+                                  descriptor: Primitive(GtPrimitive(
+                                    span: GtSpan(637, 643),
+                                    kind: String,
                                     doc: None,
                                     attributes: [],
-                                    descriptors: [
-                                      Primitive(GtPrimitive(
-                                        span: GtSpan(637, 643),
-                                        kind: String,
-                                        doc: None,
-                                        attributes: [],
-                                      )),
-                                      Primitive(GtPrimitive(
-                                        span: GtSpan(645, 651),
-                                        kind: Number,
-                                        doc: None,
-                                        attributes: [],
-                                      )),
-                                    ],
+                                  )),
+                                ),
+                                GtGenericArgument(
+                                  span: GtSpan(645, 651),
+                                  descriptor: Primitive(GtPrimitive(
+                                    span: GtSpan(645, 651),
+                                    kind: Number,
+                                    doc: None,
+                                    attributes: [],
                                   )),
                                 ),
                               ],
@@ -3758,25 +3742,21 @@ mod tests {
                         identifier: GtIdentifier(GtSpan(667, 671), "Pair"),
                         arguments: [
                           GtGenericArgument(
-                            span: GtSpan(671, 687),
-                            descriptor: Union(GtUnion(
-                              span: GtSpan(671, 687),
+                            span: GtSpan(672, 678),
+                            descriptor: Primitive(GtPrimitive(
+                              span: GtSpan(672, 678),
+                              kind: String,
                               doc: None,
                               attributes: [],
-                              descriptors: [
-                                Primitive(GtPrimitive(
-                                  span: GtSpan(672, 678),
-                                  kind: String,
-                                  doc: None,
-                                  attributes: [],
-                                )),
-                                Primitive(GtPrimitive(
-                                  span: GtSpan(680, 686),
-                                  kind: Number,
-                                  doc: None,
-                                  attributes: [],
-                                )),
-                              ],
+                            )),
+                          ),
+                          GtGenericArgument(
+                            span: GtSpan(680, 686),
+                            descriptor: Primitive(GtPrimitive(
+                              span: GtSpan(680, 686),
+                              kind: Number,
+                              doc: None,
+                              attributes: [],
                             )),
                           ),
                         ],

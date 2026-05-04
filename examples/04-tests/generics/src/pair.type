@@ -1,0 +1,4 @@
+Pair<Left, Right>: {
+  left: Left,
+  right: Right,
+}

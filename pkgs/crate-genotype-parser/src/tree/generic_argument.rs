@@ -10,6 +10,17 @@ pub struct GtGenericArgument {
 impl GtGenericArgument {
     pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> Result<Self, GtParseError> {
         let span: GtSpan = pair.as_span().into();
+        let pair = match pair.as_rule() {
+            Rule::generic_argument => {
+                pair.into_inner().next().ok_or(GtParseError::UnexpectedEnd(
+                    span,
+                    GtNode::GenericArgument,
+                    "generic argument inner",
+                ))?
+            }
+
+            _ => pair,
+        };
         let descriptor = GtDescriptor::parse(pair, context)?;
         Ok(Self { span, descriptor })
     }

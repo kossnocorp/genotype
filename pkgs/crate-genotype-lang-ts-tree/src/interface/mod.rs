@@ -9,6 +9,8 @@ pub struct TsInterface {
     #[visit]
     pub name: TsIdentifier,
     #[visit]
+    pub generics: Vec<TsIdentifier>,
+    #[visit]
     pub extensions: Vec<TsExtension>,
     #[visit]
     pub properties: Vec<TsProperty>,

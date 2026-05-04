@@ -92,7 +92,7 @@ mod tests {
             identifier: GtIdentifier(GtSpan(3, 10), "Message"),
             arguments: [
               GtGenericArgument(
-                span: GtSpan(10, 18),
+                span: GtSpan(11, 17),
                 descriptor: Primitive(GtPrimitive(
                   span: GtSpan(11, 17),
                   kind: String,

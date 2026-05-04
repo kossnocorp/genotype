@@ -18,11 +18,6 @@ pub fn init_command(args: &GtInitCommand) -> Result<()> {
 
     let base_path: GtpCwdRelativePath = (&args.path).try_into()?;
 
-    // let root = args
-    //     .path
-    //     .clone()
-    //     .unwrap_or_else(|| GtpConfigDirRelativeRootDirPath::new(".".into()));
-
     create_dir_all(base_path.as_str())
         .map_err(|_| GtCliError::FailedCreateDir(base_path.as_str().into()))?;
 

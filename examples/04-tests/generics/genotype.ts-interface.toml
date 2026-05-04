@@ -1,0 +1,9 @@
+dist = "dist/ts-interface"
+
+[ts]
+enabled = true
+prefer = "interface"
+
+[ts.manifest]
+name = "genotype-test-generics-interface-types"
+version = "0.1.0"

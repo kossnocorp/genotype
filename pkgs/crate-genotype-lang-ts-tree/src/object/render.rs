@@ -90,7 +90,7 @@ mod tests {
     }
 
     #[test]
-    fn test_render_zod_mode() {
+    fn test_render_zod() {
         let mut context = Tst::render_context_zod();
 
         assert_snapshot!(
@@ -107,7 +107,7 @@ mod tests {
     }
 
     #[test]
-    fn test_render_zod_mode_multiple_fields() {
+    fn test_render_zod_multiple_fields() {
         let mut context = Tst::render_context_zod();
 
         assert_snapshot!(
@@ -133,7 +133,7 @@ mod tests {
     }
 
     #[test]
-    fn test_render_zod_mode_no_fields() {
+    fn test_render_zod_no_fields() {
         let mut context = Tst::render_context_zod();
 
         assert_snapshot!(

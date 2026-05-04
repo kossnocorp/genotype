@@ -1,0 +1,9 @@
+dist = "dist/rs"
+
+[rs]
+enabled = true
+
+[rs.manifest.package]
+name = "genotype_test_generics_types"
+version = "0.1.0"
+edition = "2024"

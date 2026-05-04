@@ -7,6 +7,8 @@ mod render;
 pub struct TsReference {
     #[visit]
     pub identifier: TsIdentifier,
+    #[visit]
+    pub arguments: Vec<TsDescriptor>,
     pub rel: TsReferenceRel,
 }
 
@@ -18,19 +20,27 @@ pub enum TsReferenceRel {
 }
 
 impl TsReference {
-    pub fn new(identifier: TsIdentifier, rel: TsReferenceRel) -> Self {
-        Self { identifier, rel }
+    pub fn new(
+        identifier: TsIdentifier,
+        arguments: Vec<TsDescriptor>,
+        rel: TsReferenceRel,
+    ) -> Self {
+        Self {
+            identifier,
+            arguments,
+            rel,
+        }
     }
 }
 
 impl From<&str> for TsReference {
     fn from(str: &str) -> Self {
-        TsReference::new(str.into(), TsReferenceRel::Regular)
+        TsReference::new(str.into(), vec![], TsReferenceRel::Regular)
     }
 }
 
 impl From<TsIdentifier> for TsReference {
     fn from(identifier: TsIdentifier) -> Self {
-        TsReference::new(identifier, TsReferenceRel::Regular)
+        TsReference::new(identifier, vec![], TsReferenceRel::Regular)
     }
 }

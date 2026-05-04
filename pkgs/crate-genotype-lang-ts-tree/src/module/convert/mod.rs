@@ -135,6 +135,7 @@ mod tests {
             Interface(TsInterface(
               doc: None,
               name: TsIdentifier("User"),
+              generics: [],
               extensions: [],
               properties: [
                 TsProperty(
@@ -159,6 +160,7 @@ mod tests {
             Interface(TsInterface(
               doc: None,
               name: TsIdentifier("Order"),
+              generics: [],
               extensions: [],
               properties: [
                 TsProperty(
@@ -166,6 +168,7 @@ mod tests {
                   name: TsKey("book"),
                   descriptor: Reference(TsReference(
                     identifier: TsIdentifier("Book"),
+                    arguments: [],
                     rel: Forward,
                   )),
                   required: true,
@@ -175,6 +178,7 @@ mod tests {
             Interface(TsInterface(
               doc: None,
               name: TsIdentifier("Book"),
+              generics: [],
               extensions: [],
               properties: [
                 TsProperty(
@@ -188,6 +192,7 @@ mod tests {
                   name: TsKey("author"),
                   descriptor: Reference(TsReference(
                     identifier: TsIdentifier("Author"),
+                    arguments: [],
                     rel: Regular,
                   )),
                   required: true,
@@ -197,6 +202,7 @@ mod tests {
             Alias(TsAlias(
               doc: None,
               name: TsIdentifier("Name"),
+              generics: [],
               descriptor: Primitive(String),
             )),
           ],
@@ -266,17 +272,21 @@ mod tests {
             Alias(TsAlias(
               doc: None,
               name: TsIdentifier("User"),
+              generics: [],
               descriptor: InlineImport(TsInlineImport(
                 path: TsPath("./schemas"),
                 name: TsIdentifier("UserSchema"),
+                arguments: [],
               )),
             )),
             Alias(TsAlias(
               doc: None,
               name: TsIdentifier("UserId"),
+              generics: [],
               descriptor: InlineImport(TsInlineImport(
                 path: TsPath("./ids"),
                 name: TsIdentifier("Id"),
+                arguments: [],
               )),
             )),
           ],
@@ -332,17 +342,21 @@ mod tests {
             Alias(TsAlias(
               doc: None,
               name: TsIdentifier("User"),
+              generics: [],
               descriptor: InlineImport(TsInlineImport(
                 path: TsPath("./schemas"),
                 name: TsIdentifier("UserSchema"),
+                arguments: [],
               )),
             )),
             Alias(TsAlias(
               doc: None,
               name: TsIdentifier("UserId"),
+              generics: [],
               descriptor: InlineImport(TsInlineImport(
                 path: TsPath("./ids"),
                 name: TsIdentifier("Id"),
+                arguments: [],
               )),
             )),
           ],
@@ -401,11 +415,13 @@ mod tests {
             Alias(TsAlias(
               doc: None,
               name: TsIdentifier("Zxc"),
+              generics: [],
               descriptor: Primitive(String),
             )),
             Interface(TsInterface(
               doc: None,
               name: TsIdentifier("Asd"),
+              generics: [],
               extensions: [],
               properties: [
                 TsProperty(
@@ -413,6 +429,7 @@ mod tests {
                   name: TsKey("zxc"),
                   descriptor: Reference(TsReference(
                     identifier: TsIdentifier("Zxc"),
+                    arguments: [],
                     rel: Regular,
                   )),
                   required: true,
@@ -422,6 +439,7 @@ mod tests {
             Interface(TsInterface(
               doc: None,
               name: TsIdentifier("Qwe"),
+              generics: [],
               extensions: [],
               properties: [
                 TsProperty(
@@ -429,6 +447,7 @@ mod tests {
                   name: TsKey("asd"),
                   descriptor: Reference(TsReference(
                     identifier: TsIdentifier("Asd"),
+                    arguments: [],
                     rel: Regular,
                   )),
                   required: true,
@@ -489,6 +508,7 @@ mod tests {
             Interface(TsInterface(
               doc: None,
               name: TsIdentifier("Foo"),
+              generics: [],
               extensions: [],
               properties: [
                 TsProperty(
@@ -496,6 +516,7 @@ mod tests {
                   name: TsKey("bar"),
                   descriptor: Reference(TsReference(
                     identifier: TsIdentifier("Bar"),
+                    arguments: [],
                     rel: Forward,
                   )),
                   required: true,
@@ -505,6 +526,7 @@ mod tests {
             Interface(TsInterface(
               doc: None,
               name: TsIdentifier("Bar"),
+              generics: [],
               extensions: [],
               properties: [
                 TsProperty(
@@ -512,6 +534,7 @@ mod tests {
                   name: TsKey("foo"),
                   descriptor: Reference(TsReference(
                     identifier: TsIdentifier("Foo"),
+                    arguments: [],
                     rel: Regular,
                   )),
                   required: true,
@@ -521,8 +544,10 @@ mod tests {
             Alias(TsAlias(
               doc: None,
               name: TsIdentifier("Baz"),
+              generics: [],
               descriptor: Reference(TsReference(
                 identifier: TsIdentifier("Foo"),
+                arguments: [],
                 rel: Regular,
               )),
             )),

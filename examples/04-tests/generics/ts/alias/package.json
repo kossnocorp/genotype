@@ -1,0 +1,11 @@
+{
+  "name": "genotype-test-generics-alias",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@types/node": "^25.5.2",
+    "genotype-test-generics-alias-types": "file:./../../dist/ts-alias/ts/",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
+  }
+}

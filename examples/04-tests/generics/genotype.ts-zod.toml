@@ -1,0 +1,9 @@
+dist = "dist/ts-zod"
+
+[ts]
+enabled = true
+mode = "zod"
+
+[ts.manifest]
+name = "genotype-test-generics-zod-types"
+version = "0.1.0"

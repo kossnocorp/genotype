@@ -77,13 +77,16 @@ mod tests {
             Alias(TsAlias(
               doc: None,
               name: TsIdentifier("Bar"),
+              generics: [],
               descriptor: Primitive(String),
             )),
             Alias(TsAlias(
               doc: None,
               name: TsIdentifier("Foo"),
+              generics: [],
               descriptor: Reference(TsReference(
                 identifier: TsIdentifier("Bar"),
+                arguments: [],
                 rel: Regular,
               )),
             )),
@@ -113,14 +116,17 @@ mod tests {
             Alias(TsAlias(
               doc: None,
               name: TsIdentifier("Foo"),
+              generics: [],
               descriptor: Reference(TsReference(
                 identifier: TsIdentifier("Bar"),
+                arguments: [],
                 rel: Forward,
               )),
             )),
             Alias(TsAlias(
               doc: None,
               name: TsIdentifier("Bar"),
+              generics: [],
               descriptor: Primitive(String),
             )),
           ],
@@ -157,17 +163,21 @@ mod tests {
             Alias(TsAlias(
               doc: None,
               name: TsIdentifier("Alias"),
+              generics: [],
               descriptor: Reference(TsReference(
                 identifier: TsIdentifier("Alias"),
+                arguments: [],
                 rel: SelfRecursive,
               )),
             )),
             Alias(TsAlias(
               doc: None,
               name: TsIdentifier("Array"),
+              generics: [],
               descriptor: Array(TsArray(
                 descriptor: Reference(TsReference(
                   identifier: TsIdentifier("Array"),
+                  arguments: [],
                   rel: SelfRecursive,
                 )),
               )),
@@ -175,11 +185,13 @@ mod tests {
             Alias(TsAlias(
               doc: None,
               name: TsIdentifier("Tuple"),
+              generics: [],
               descriptor: Tuple(TsTuple(
                 descriptors: [
                   Literal(Null),
                   Reference(TsReference(
                     identifier: TsIdentifier("Tuple"),
+                    arguments: [],
                     rel: SelfRecursive,
                   )),
                 ],
@@ -188,6 +200,7 @@ mod tests {
             Alias(TsAlias(
               doc: None,
               name: TsIdentifier("Object"),
+              generics: [],
               descriptor: Object(TsObject(
                 properties: [
                   TsProperty(
@@ -195,6 +208,7 @@ mod tests {
                     name: TsKey("self"),
                     descriptor: Reference(TsReference(
                       identifier: TsIdentifier("Object"),
+                      arguments: [],
                       rel: SelfRecursive,
                     )),
                     required: true,

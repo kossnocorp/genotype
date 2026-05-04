@@ -69,6 +69,7 @@ mod tests {
             TsAlias {
                 doc: None,
                 name: "Name".into(),
+                generics: vec![],
                 descriptor: TsAny.into(),
             }
             .into(),

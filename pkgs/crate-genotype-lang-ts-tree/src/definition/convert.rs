@@ -4,6 +4,11 @@ impl TsConvert<TsDefinition> for GtAlias {
     fn convert(&self, context: &mut TsConvertContext) -> TsDefinition {
         let doc = self.doc.as_ref().map(|d| d.convert(context));
         let name = self.name.convert(context);
+        let generics = self
+            .generics
+            .iter()
+            .map(|generic| generic.identifier.convert(context))
+            .collect::<Vec<_>>();
 
         match &self.descriptor {
             GtDescriptor::Branded(branded) => {
@@ -14,6 +19,7 @@ impl TsConvert<TsDefinition> for GtAlias {
             GtDescriptor::Object(object) => TsDefinition::Interface(TsInterface {
                 doc,
                 name,
+                generics,
                 extensions: object
                     .extensions
                     .iter()
@@ -29,6 +35,7 @@ impl TsConvert<TsDefinition> for GtAlias {
             _ => TsDefinition::Alias(TsAlias {
                 doc,
                 name,
+                generics,
                 descriptor: self.descriptor.convert(context),
             }),
         }
@@ -49,6 +56,30 @@ mod tests {
         Alias(TsAlias(
           doc: None,
           name: TsIdentifier("Name"),
+          generics: [],
+          descriptor: Primitive(Boolean),
+        ))
+        "#,
+        );
+    }
+
+    #[test]
+    fn test_convert_alias_with_generics() {
+        assert_ron_snapshot!(
+            convert_node(GtAlias {
+                generics: vec![GtGenericParameter {
+                    span: (0, 0).into(),
+                    identifier: Gt::identifier("Payload"),
+                }],
+                ..Gt::alias("Name", Gt::primitive_boolean())
+            }),
+            @r#"
+        Alias(TsAlias(
+          doc: None,
+          name: TsIdentifier("Name"),
+          generics: [
+            TsIdentifier("Payload"),
+          ],
           descriptor: Primitive(Boolean),
         ))
         "#,
@@ -66,6 +97,7 @@ mod tests {
         Interface(TsInterface(
           doc: None,
           name: TsIdentifier("Book"),
+          generics: [],
           extensions: [],
           properties: [
             TsProperty(
@@ -121,10 +153,12 @@ mod tests {
         Interface(TsInterface(
           doc: None,
           name: TsIdentifier("Book"),
+          generics: [],
           extensions: [
             TsExtension(
               reference: TsReference(
                 identifier: TsIdentifier("Good"),
+                arguments: [],
                 rel: Regular,
               ),
             ),
@@ -164,6 +198,7 @@ mod tests {
         Alias(TsAlias(
           doc: None,
           name: TsIdentifier("Book"),
+          generics: [],
           descriptor: Union(TsUnion(
             descriptors: [
               Intersection(TsIntersection(
@@ -180,6 +215,7 @@ mod tests {
                   )),
                   Reference(TsReference(
                     identifier: TsIdentifier("Good"),
+                    arguments: [],
                     rel: Regular,
                   )),
                 ],
@@ -203,6 +239,7 @@ mod tests {
         Interface(TsInterface(
           doc: Some(TsDoc("Hello, world!")),
           name: TsIdentifier("Book"),
+          generics: [],
           extensions: [],
           properties: [],
         ))
@@ -221,6 +258,7 @@ mod tests {
         Alias(TsAlias(
           doc: Some(TsDoc("Hello, world!")),
           name: TsIdentifier("Name"),
+          generics: [],
           descriptor: Primitive(Boolean),
         ))
         "#,

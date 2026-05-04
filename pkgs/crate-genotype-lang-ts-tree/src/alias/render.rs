@@ -11,9 +11,19 @@ impl<'a> GtlRender<'a> for TsAlias {
         context: &mut Self::RenderContext,
     ) -> Result<String> {
         let name = self.name.render(state, context)?;
+        let generic_names = self
+            .generics
+            .iter()
+            .map(|generic| generic.render(state, context))
+            .collect::<Result<Vec<_>>>()?;
+        let generic_params = if generic_names.is_empty() {
+            String::new()
+        } else {
+            format!("<{}>", generic_names.join(", "))
+        };
 
         match context.is_zod_mode() {
-            true => self.render_zod(&name, state, context),
+            true => self.render_zod(&name, &generic_names, state, context),
 
             false => {
                 let descriptor = self.descriptor.render(state, context)?;
@@ -22,7 +32,7 @@ impl<'a> GtlRender<'a> for TsAlias {
                     &self.doc,
                     state,
                     context,
-                    format!("export type {name} = {descriptor};"),
+                    format!("export type {name}{generic_params} = {descriptor};"),
                     false,
                 )
             }
@@ -34,9 +44,14 @@ impl TsAlias {
     fn render_zod<'a>(
         &self,
         name: &String,
+        generic_names: &[String],
         state: TsRenderState,
         context: &mut TsRenderContext<'a>,
     ) -> Result<String> {
+        if !generic_names.is_empty() {
+            return self.render_zod_generic(name, generic_names, state, context);
+        }
+
         let refs_scan = self.descriptor.scan_references();
         match refs_scan.has_self_recursive {
             true => self.render_zod_recursive(name, state, context),
@@ -79,21 +94,72 @@ impl TsAlias {
             false,
         )?;
 
-        let rendered_type = context.with_mode(TsMode::Types, |context| {
-            let type_descriptor = self.descriptor.render(state, context)?;
-
-            let rendered_type = TsDoc::with_doc(
+        let type_code = context.with_mode(TsMode::Types, |context| {
+            let descriptor = self.descriptor.render(state, context)?;
+            let type_code = TsDoc::with_doc(
                 &self.doc,
                 state,
                 context,
-                format!("export type {name} = {type_descriptor};"),
+                format!("export type {name} = {descriptor};"),
                 false,
             )?;
-            Ok(rendered_type)
+            Ok(type_code)
         })?;
 
-        Ok(format!("{rendered_type}\n\n{schema}"))
+        Ok(format!("{type_code}\n\n{schema}"))
     }
+
+    fn render_zod_generic<'a>(
+        &self,
+        name: &String,
+        generic_names: &[String],
+        state: TsRenderState,
+        context: &mut TsRenderContext<'a>,
+    ) -> Result<String> {
+        let zod_generic_params = render_zod_generic_params(generic_names);
+        let params = render_zod_value_params(generic_names);
+        let zod_descriptor = self.descriptor.render(state, context)?;
+        let schema = TsDoc::with_doc(
+            &self.doc,
+            state,
+            context,
+            format!("export const {name} = {zod_generic_params}({params}) => {zod_descriptor};"),
+            false,
+        )?;
+
+        let generic_params = render_zod_generic_params(generic_names);
+        let return_type_args = generic_names.join(", ");
+        let r#type = TsDoc::with_doc(
+            &self.doc,
+            state,
+            context,
+            format!(
+                "export type {name}{generic_params} = z.infer<ReturnType<typeof {name}<{return_type_args}>>>;"
+            ),
+            false,
+        )?;
+
+        Ok(format!("{schema}\n\n{type}"))
+    }
+}
+
+fn render_zod_generic_params(generic_names: &[String]) -> String {
+    format!(
+        "<{}>",
+        generic_names
+            .iter()
+            .map(|generic| format!("{generic} extends z.ZodTypeAny"))
+            .collect::<Vec<_>>()
+            .join(", ")
+    )
+}
+
+fn render_zod_value_params(generic_names: &[String]) -> String {
+    generic_names
+        .iter()
+        .map(|generic| format!("{generic}: {generic}"))
+        .collect::<Vec<_>>()
+        .join(", ")
 }
 
 #[cfg(test)]
@@ -107,6 +173,14 @@ mod tests {
         assert_snapshot!(
             render_node(Tst::alias("Name", Tst::primitive_string())),
             @"export type Name = string;"
+        );
+    }
+
+    #[test]
+    fn test_render_with_generics() {
+        assert_snapshot!(
+            render_node(Tst::alias_with_generics("Response", vec!["Payload"], Tst::primitive_string())),
+            @"export type Response<Payload> = string;"
         );
     }
 
@@ -127,11 +201,9 @@ mod tests {
     }
 
     #[test]
-    fn test_render_zod_mode() {
-        let mut context = Tst::render_context_zod();
-
+    fn test_render_zod() {
         assert_snapshot!(
-            render_node_with(Tst::alias("Name", Tst::primitive_string()), &mut context),
+            render_node_with(Tst::alias("Name", Tst::primitive_string()), &mut Tst::render_context_zod()),
             @"
         export const Name = z.string();
 
@@ -141,7 +213,22 @@ mod tests {
     }
 
     #[test]
-    fn test_render_zod_mode_doc() {
+    fn test_render_zod_with_generics() {
+        assert_snapshot!(
+            render_node_with(
+                Tst::alias_with_generics("Response", vec!["Payload"], Tst::reference("Payload")),
+                &mut Tst::render_context_zod(),
+            ),
+            @"
+        export const Response = <Payload extends z.ZodTypeAny>(Payload: Payload) => Payload;
+
+        export type Response<Payload extends z.ZodTypeAny> = z.infer<ReturnType<typeof Response<Payload>>>;
+        "
+        );
+    }
+
+    #[test]
+    fn test_render_zod_doc() {
         let mut context = Tst::render_context_zod();
 
         assert_snapshot!(
@@ -163,7 +250,7 @@ mod tests {
     }
 
     #[test]
-    fn test_render_zod_mode_self_recursive_array() {
+    fn test_render_zod_self_recursive_array() {
         assert_snapshot!(
             render_node_with(
                 Tst::alias("SelfRefArray", Tst::array(Tst::reference_self_recursive("SelfRefArray"))),
@@ -178,7 +265,7 @@ mod tests {
     }
 
     #[test]
-    fn test_render_zod_mode_self_recursive_tuple() {
+    fn test_render_zod_self_recursive_tuple() {
         assert_snapshot!(
             render_node_with(
                 Tst::alias(

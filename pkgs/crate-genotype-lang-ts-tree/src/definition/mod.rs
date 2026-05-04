@@ -26,6 +26,15 @@ impl TsDefinition {
         self.traverse(&mut visitor);
         visitor
     }
+
+    pub fn generics(&self) -> Option<&Vec<TsIdentifier>> {
+        match self {
+            TsDefinition::Alias(alias) => Some(&alias.generics),
+            TsDefinition::Interface(interface) => Some(&interface.generics),
+            TsDefinition::Branded(_) => None,
+            TsDefinition::Embed(_) => None,
+        }
+    }
 }
 
 pub struct TsDefinitionDependenciesScanVisitor {

@@ -87,11 +87,13 @@ optional_property = { annotation* ~ name ~ "?:" ~ descriptors }
 
 generic_parameters = { "<" ~ name ~ ("," ~ name)* ~ ">" }
 
-generic_arguments = @{
+generic_argument = { descriptors }
+
+generic_arguments = ${
     "<" ~
     (WHITESPACE | COMMENT)*
-    ~ descriptors
-    ~ ((WHITESPACE | COMMENT)* ~ "," ~ (WHITESPACE | COMMENT)* ~ descriptors)*
+    ~ generic_argument
+    ~ ((WHITESPACE | COMMENT)* ~ "," ~ (WHITESPACE | COMMENT)* ~ generic_argument)*
     ~ (WHITESPACE | COMMENT)*
     ~ ">"
 }

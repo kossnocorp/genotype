@@ -9,4 +9,6 @@ pub struct TsInlineImport {
     pub path: TsPath,
     #[visit]
     pub name: TsIdentifier,
+    #[visit]
+    pub arguments: Vec<TsDescriptor>,
 }

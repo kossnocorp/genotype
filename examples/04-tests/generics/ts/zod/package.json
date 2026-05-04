@@ -1,0 +1,12 @@
+{
+  "name": "genotype-test-generics-zod",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@types/node": "^25.5.2",
+    "genotype-test-generics-zod-types": "file:./../../dist/ts-zod/ts/",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2",
+    "zod": "^4"
+  }
+}

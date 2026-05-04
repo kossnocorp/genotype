@@ -1,0 +1,9 @@
+[package]
+name = "genotype_test_generics"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+genotype_test_generics_types = { path = "../dist/rs/rs" }
+
+[workspace]

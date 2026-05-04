@@ -4,6 +4,11 @@ impl TsConvert<TsInlineImport> for GtInlineImport {
     fn convert(&self, context: &mut TsConvertContext) -> TsInlineImport {
         let path = self.path.convert(context);
         let name = self.name.convert(context);
+        let arguments = self
+            .arguments
+            .iter()
+            .map(|argument| argument.descriptor.convert(context))
+            .collect();
 
         if context.is_zod_mode() {
             context.push_import(TsImport::new(
@@ -12,7 +17,11 @@ impl TsConvert<TsInlineImport> for GtInlineImport {
             ));
         }
 
-        TsInlineImport { path, name }
+        TsInlineImport {
+            path,
+            name,
+            arguments,
+        }
     }
 }
 
@@ -30,6 +39,29 @@ mod tests {
         TsInlineImport(
           path: TsPath("./path/to/module"),
           name: TsIdentifier("Name"),
+          arguments: [],
+        )
+        "#
+        );
+    }
+
+    #[test]
+    fn test_convert_with_arguments() {
+        assert_ron_snapshot!(
+            convert_node(GtInlineImport {
+                arguments: vec![GtGenericArgument {
+                    span: (0, 0).into(),
+                    descriptor: Gt::primitive_string().into(),
+                }],
+                ..Gt::inline_import_anon("./path/to/module", "Name")
+            }),
+            @r#"
+        TsInlineImport(
+          path: TsPath("./path/to/module"),
+          name: TsIdentifier("Name"),
+          arguments: [
+            Primitive(String),
+          ],
         )
         "#
         );
@@ -45,6 +77,7 @@ mod tests {
         TsInlineImport(
           path: TsPath("./path/to/module"),
           name: TsIdentifier("Name"),
+          arguments: [],
         )
         "#
         );
@@ -65,6 +98,7 @@ mod tests {
         TsInlineImport(
           path: TsPath("./path/to/module"),
           name: TsIdentifier("Name"),
+          arguments: [],
         )
         "#
         );

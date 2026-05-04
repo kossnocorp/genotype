@@ -1,0 +1,17 @@
+Response<Payload>:
+  | ResponseSuccess<Payload>
+  | ResponseFailure
+
+ResponseSuccess<Payload>: {
+  status: "success",
+  value: Payload,
+}
+
+ResponseFailure: {
+  status: "failure",
+  error: string,
+}
+
+ResponseString: Response<string>
+
+ResponsePair: Response<./pair/Pair<string, number>>

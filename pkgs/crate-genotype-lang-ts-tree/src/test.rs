@@ -42,6 +42,11 @@ static TEST_TS_ZOD_CONFIG: LazyLock<TsConfig> = LazyLock::new(|| TsConfig {
     ..Default::default()
 });
 
+static TEST_TS_ALIAS_CONFIG_LANG: LazyLock<TsConfigLang> = LazyLock::new(|| TsConfigLang {
+    prefer: TsPrefer::Alias,
+    ..Default::default()
+});
+
 pub struct Tst {}
 
 impl Tst {
@@ -63,6 +68,13 @@ impl Tst {
     pub fn render_context_zod() -> TsRenderContext<'static> {
         TsRenderContext {
             config: &TEST_TS_ZOD_CONFIG_LANG,
+            ..Default::default()
+        }
+    }
+
+    pub fn render_context_alias() -> TsRenderContext<'static> {
+        TsRenderContext {
+            config: &TEST_TS_ALIAS_CONFIG_LANG,
             ..Default::default()
         }
     }
@@ -132,15 +144,23 @@ impl Tst {
     }
 
     pub fn reference(name: &str) -> TsReference {
-        TsReference::new(Self::identifier(name), TsReferenceRel::Regular)
+        TsReference::new(Self::identifier(name), vec![], TsReferenceRel::Regular)
+    }
+
+    pub fn reference_with_arguments(name: &str, arguments: Vec<TsDescriptor>) -> TsReference {
+        TsReference::new(Self::identifier(name), arguments, TsReferenceRel::Regular)
     }
 
     pub fn reference_forward(name: &str) -> TsReference {
-        TsReference::new(Self::identifier(name), TsReferenceRel::Forward)
+        TsReference::new(Self::identifier(name), vec![], TsReferenceRel::Forward)
     }
 
     pub fn reference_self_recursive(name: &str) -> TsReference {
-        TsReference::new(Self::identifier(name), TsReferenceRel::SelfRecursive)
+        TsReference::new(
+            Self::identifier(name),
+            vec![],
+            TsReferenceRel::SelfRecursive,
+        )
     }
 
     pub fn extension(name: &str) -> TsExtension {
@@ -203,7 +223,21 @@ impl Tst {
         TsAlias {
             doc: None,
             name: Self::identifier(name),
+            generics: vec![],
             descriptor: descriptor.into(),
+        }
+    }
+
+    pub fn alias_with_generics<Type>(name: &str, generics: Vec<&str>, descriptor: Type) -> TsAlias
+    where
+        Type: Into<TsDescriptor>,
+    {
+        TsAlias {
+            generics: generics
+                .into_iter()
+                .map(Self::identifier)
+                .collect::<Vec<_>>(),
+            ..Self::alias(name, descriptor)
         }
     }
 
@@ -211,8 +245,23 @@ impl Tst {
         TsInterface {
             doc: None,
             name: Self::identifier(name),
+            generics: vec![],
             extensions: vec![],
             properties,
+        }
+    }
+
+    pub fn interface_with_generics(
+        name: &str,
+        generics: Vec<&str>,
+        properties: Vec<TsProperty>,
+    ) -> TsInterface {
+        TsInterface {
+            generics: generics
+                .into_iter()
+                .map(Self::identifier)
+                .collect::<Vec<_>>(),
+            ..Self::interface(name, properties)
         }
     }
 
@@ -289,6 +338,18 @@ impl Tst {
         TsInlineImport {
             path: Self::path(path),
             name: Self::identifier(name),
+            arguments: vec![],
+        }
+    }
+
+    pub fn inline_import_with_arguments(
+        path: &str,
+        name: &str,
+        arguments: Vec<TsDescriptor>,
+    ) -> TsInlineImport {
+        TsInlineImport {
+            arguments,
+            ..Self::inline_import(path, name)
         }
     }
 

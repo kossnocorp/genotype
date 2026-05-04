@@ -111,7 +111,7 @@ mod tests {
     }
 
     #[test]
-    fn test_render_zod_mode() {
+    fn test_render_zod() {
         let mut context = Tst::render_context_zod();
 
         assert_snapshot!(
@@ -125,7 +125,7 @@ mod tests {
     }
 
     #[test]
-    fn test_render_zod_mode_doc() {
+    fn test_render_zod_doc() {
         let mut context = Tst::render_context_zod();
 
         assert_snapshot!(

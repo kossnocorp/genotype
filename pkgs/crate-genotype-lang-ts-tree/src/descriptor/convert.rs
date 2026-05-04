@@ -67,6 +67,7 @@ mod tests {
             @r#"
         Reference(TsReference(
           identifier: TsIdentifier("Name"),
+          arguments: [],
           rel: Regular,
         ))
         "#
@@ -79,6 +80,7 @@ mod tests {
           Alias(TsAlias(
             doc: None,
             name: TsIdentifier("Name"),
+            generics: [],
             descriptor: Primitive(Boolean),
           )),
         ]
@@ -108,6 +110,7 @@ mod tests {
         InlineImport(TsInlineImport(
           path: TsPath("./path/to/module"),
           name: TsIdentifier("Name"),
+          arguments: [],
         ))
         "#
         );
@@ -170,6 +173,7 @@ mod tests {
             )),
             Reference(TsReference(
               identifier: TsIdentifier("Good"),
+              arguments: [],
               rel: Regular,
             )),
           ],
@@ -193,6 +197,7 @@ mod tests {
             @r#"
         Reference(TsReference(
           identifier: TsIdentifier("Name"),
+          arguments: [],
           rel: Regular,
         ))
         "#
@@ -268,6 +273,7 @@ mod tests {
             @r#"
         Reference(TsReference(
           identifier: TsIdentifier("UserId"),
+          arguments: [],
           rel: Regular,
         ))
         "#

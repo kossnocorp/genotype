@@ -9,5 +9,7 @@ pub struct TsAlias {
     #[visit]
     pub name: TsIdentifier,
     #[visit]
+    pub generics: Vec<TsIdentifier>,
+    #[visit]
     pub descriptor: TsDescriptor,
 }

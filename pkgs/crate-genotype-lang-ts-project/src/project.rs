@@ -31,7 +31,10 @@ impl<'a> GtlProject<'a> for TsProject<'a> {
             .iter()
             .filter_map(|module| match module {
                 TsProjectModule::Generated(module) => Some(module),
-                TsProjectModule::Error(_) => None,
+                TsProjectModule::Error(err) => {
+                    // TODO: Generate an enum variant for error instead
+                    None
+                }
             })
             .map(|module| {
                 format!(
@@ -112,6 +115,7 @@ mod tests {
                 Interface(TsInterface(
                   doc: None,
                   name: TsIdentifier("Author"),
+                  generics: [],
                   extensions: [],
                   properties: [
                     TsProperty(
@@ -142,6 +146,7 @@ mod tests {
                 Interface(TsInterface(
                   doc: None,
                   name: TsIdentifier("Book"),
+                  generics: [],
                   extensions: [],
                   properties: [
                     TsProperty(
@@ -155,6 +160,7 @@ mod tests {
                       name: TsKey("author"),
                       descriptor: Reference(TsReference(
                         identifier: TsIdentifier("Author"),
+                        arguments: [],
                         rel: Regular,
                       )),
                       required: true,
@@ -188,6 +194,7 @@ mod tests {
                 Interface(TsInterface(
                   doc: None,
                   name: TsIdentifier("Author"),
+                  generics: [],
                   extensions: [],
                   properties: [
                     TsProperty(
@@ -195,6 +202,7 @@ mod tests {
                       name: TsKey("name"),
                       descriptor: Reference(TsReference(
                         identifier: TsIdentifier("AuthorName"),
+                        arguments: [],
                         rel: Forward,
                       )),
                       required: true,
@@ -204,6 +212,7 @@ mod tests {
                 Alias(TsAlias(
                   doc: None,
                   name: TsIdentifier("AuthorName"),
+                  generics: [],
                   descriptor: Primitive(String),
                 )),
               ],
@@ -224,6 +233,7 @@ mod tests {
                 Interface(TsInterface(
                   doc: None,
                   name: TsIdentifier("Book"),
+                  generics: [],
                   extensions: [],
                   properties: [
                     TsProperty(
@@ -237,6 +247,7 @@ mod tests {
                       name: TsKey("author"),
                       descriptor: Reference(TsReference(
                         identifier: TsIdentifier("author.Author"),
+                        arguments: [],
                         rel: Regular,
                       )),
                       required: true,
@@ -246,6 +257,7 @@ mod tests {
                       name: TsKey("authorName"),
                       descriptor: Reference(TsReference(
                         identifier: TsIdentifier("author.AuthorName"),
+                        arguments: [],
                         rel: Regular,
                       )),
                       required: true,
@@ -387,7 +399,7 @@ mod tests {
     }
 
     #[test]
-    fn test_render_zod_mode() {
+    fn test_render_zod() {
         let mut project =
             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
         project.config.ts.lang.mode = TsMode::Zod;
@@ -494,6 +506,45 @@ mod tests {
           "examples/basic/dist/ts/author.ts",
           "examples/basic/dist/ts/book.ts",
         ]
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_generics() {
+        let project = GtpRuntimeSystem::new_and_load_all_modules(
+            &"../../examples/04-tests/generics/".into(),
+            Some(&"../../examples/04-tests/generics/genotype.ts-interface.toml".into()),
+        )
+        .unwrap();
+
+        assert_ron_snapshot!(
+          TsProject::generate(&project).unwrap().dist().unwrap(),
+          @r#"
+        GtlProjectDist(
+          files: [
+            GtlProjectFile(
+              path: "../../examples/04-tests/generics/dist/ts-interface/ts/.gitignore",
+              source: "node_modules",
+            ),
+            GtlProjectFile(
+              path: "../../examples/04-tests/generics/dist/ts-interface/ts/package.json",
+              source: "{\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./src/index.ts\"\n  },\n  \"name\": \"genotype-test-generics-interface-types\",\n  \"version\": \"0.1.0\"\n}",
+            ),
+            GtlProjectFile(
+              path: "../../examples/04-tests/generics/dist/ts-interface/ts/src/index.ts",
+              source: "export * from \"./generics.js\";\nexport * from \"./pair.js\";\n",
+            ),
+            GtlProjectFile(
+              path: "../../examples/04-tests/generics/dist/ts-interface/ts/src/generics.ts",
+              source: "export type Response<Payload> = ResponseSuccess<Payload> | ResponseFailure;\n\nexport interface ResponseSuccess<Payload> {\n  status: \"success\";\n  value: Payload;\n}\n\nexport interface ResponseFailure {\n  status: \"failure\";\n  error: string;\n}\n\nexport type ResponseString = Response<string>;\n\nexport type ResponsePair = Response<import(\"./pair.js\").Pair<string, number>>;\n",
+            ),
+            GtlProjectFile(
+              path: "../../examples/04-tests/generics/dist/ts-interface/ts/src/pair.ts",
+              source: "export interface Pair<Left, Right> {\n  left: Left;\n  right: Right;\n}\n",
+            ),
+          ],
+        )
         "#
         );
     }
