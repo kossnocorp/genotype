@@ -45,23 +45,15 @@ where
 
         notices.extend(generate_module_notices(&lang_project.modules));
 
-        todo!("Make compiler handle all of the notices");
-
-        let mut dist = GtlDist::pack_modules(notices, &lang_project.modules);
+        let mut dist = GtlDist::new(&lang_project.modules, notices);
 
         if let Some(package_files) = self.generate_package_files(&lang_project) {
-            dist.pack_extra_files(package_files);
+            dist.pack_extra_files(package_files, None);
         }
 
         if let Some((extra_files, extra_file_notices)) = self.generate_extra_files(&lang_project)? {
-            dist.pack_extra_files(extra_files);
-            if let Some(extra_file_notices) = extra_file_notices {
-                notices.extend(extra_file_notices);
-            }
+            dist.pack_extra_files(extra_files, extra_file_notices);
         }
-
-        // notices.extend(extra_files.map);
-        todo!("Handle notices from extra files generation");
 
         Ok(Some(dist))
     }
