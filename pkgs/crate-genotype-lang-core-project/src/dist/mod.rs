@@ -10,16 +10,14 @@ pub struct GtlDist {
 }
 
 impl GtlDist {
-    pub fn pack_modules<ProjectModule: GtlProjectModule>(
-        notices: Vec<GtNotice>,
+    pub fn new<ProjectModule: GtlProjectModule>(
         modules: &IndexMap<GtpModulePath, GtlProjectModuleState<ProjectModule>>,
+        notices: Vec<GtNotice>,
     ) -> GtlDist {
         let files = modules
             .into_iter()
             .map(|(_module_path, module)| module.into())
             .collect::<Vec<_>>();
-
-        todo!("Convert notices to warnings and errors");
 
         GtlDist { files, notices }
     }
@@ -27,12 +25,17 @@ impl GtlDist {
     pub fn pack_extra_files<ProjectModule: GtlProjectModule>(
         &mut self,
         extra_files: Vec<GtlGeneration<ProjectModule>>,
+        extra_notices: Option<Vec<GtNotice>>,
     ) {
         for extra in extra_files {
             self.files.push(extra.file.into());
             if let Some(notices) = extra.notices {
                 self.notices.extend(notices);
             }
+        }
+
+        if let Some(extra_notices) = extra_notices {
+            self.notices.extend(extra_notices);
         }
     }
 }
