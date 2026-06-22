@@ -30,7 +30,7 @@ impl PyDependencyIdent {
         }
     }
 
-    fn as_path(&self) -> PyPath {
+    pub fn as_path(&self) -> PyPath {
         match self {
             Self::Local(path) => path.clone(),
             Self::Runtime => "genotype".into(),
@@ -41,19 +41,7 @@ impl PyDependencyIdent {
     }
 }
 
-impl GtlDependencyIdent for PyDependencyIdent {
-    type Path = PyPath;
-
-    fn as_path(&self) -> Self::Path {
-        match self {
-            Self::Local(path) => path.clone(),
-            Self::Runtime => "genotype".into(),
-            Self::Typing => "typing".into(),
-            Self::TypingExtensions => "typing_extensions".into(),
-            Self::Pydantic => "pydantic".into(),
-        }
-    }
-}
+impl GtlDependencyIdent for PyDependencyIdent {}
 
 impl From<&str> for PyDependencyIdent {
     fn from(str: &str) -> Self {

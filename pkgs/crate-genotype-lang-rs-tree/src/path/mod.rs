@@ -7,10 +7,10 @@ mod render;
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
 pub struct RsPath(pub GtModuleId, pub Arc<str>);
 
-impl GtlPath for RsPath {}
-
 impl RsPath {
     pub fn join(str: &str, other: &str) -> String {
         format!("{}::{}", str, other)
     }
 }
+
+impl GtlPath for RsPath {}

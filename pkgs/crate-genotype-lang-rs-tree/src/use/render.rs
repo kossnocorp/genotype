@@ -6,14 +6,13 @@ impl<'context> GtlRender<'context, RsRenderTypes> for RsUse {
         state: RsRenderState,
         context: &mut RsRenderContext,
     ) -> RsRenderResult<String> {
-        let path = self.dependency.as_path();
+        let path = self.dependency.as_path_str();
         let reference = self.reference.render(state, context)?;
 
-        todo!();
-        // Ok(match self.reference {
-        //     RsUseReference::Module => format!(r#"use {path};"#),
-        //     _ => format!(r#"use {path}::{reference};"#),
-        // })
+        Ok(match self.reference {
+            RsUseReference::Module => format!(r#"use {path};"#),
+            _ => format!(r#"use {path}::{reference};"#),
+        })
     }
 }
 

@@ -17,7 +17,7 @@ pub struct RsDependencyExternal {
 }
 
 impl RsDependencyIdent {
-    fn as_path_str(&self) -> String {
+    pub fn as_path_str(&self) -> String {
         match self {
             Self::Local(path) => path.1.to_string(),
             Self::Runtime => "genotype_runtime".into(),
@@ -29,18 +29,4 @@ impl RsDependencyIdent {
     }
 }
 
-impl GtlDependencyIdent for RsDependencyIdent {
-    type Path = RsPath;
-
-    fn as_path(&self) -> Self::Path {
-        todo!();
-        // match self {
-        //     Self::Local(path) => path.clone(),
-        //     Self::Runtime => "genotype_runtime".into(),
-        //     Self::Litty => "litty".into(),
-        //     Self::Serde => "serde".into(),
-        //     Self::OrderedFloat => "ordered_float".into(),
-        //     Self::Std(path) => format!("std::{path}").into(),
-        // }
-    }
-}
+impl GtlDependencyIdent for RsDependencyIdent {}
