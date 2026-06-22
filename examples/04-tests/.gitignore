@@ -1,5 +1,6 @@
 # Shared
 */dist/
+*/*/dist/
 # TypeScript
 pnpm-lock.yaml
 # Rust
