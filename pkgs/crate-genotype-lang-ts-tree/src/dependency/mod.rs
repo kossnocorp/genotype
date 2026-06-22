@@ -12,15 +12,13 @@ pub enum TsDependencyIdent {
     Zod,
 }
 
-impl TsDependencyIdent {}
-
-impl GtlDependencyIdent for TsDependencyIdent {
-    type Path = TsPath;
-
-    fn as_path(&self) -> Self::Path {
+impl TsDependencyIdent {
+    pub fn as_path(&self) -> TsPath {
         match self {
             Self::Local(path) => path.clone(),
             Self::Zod => "zod".into(),
         }
     }
 }
+
+impl GtlDependencyIdent for TsDependencyIdent {}
