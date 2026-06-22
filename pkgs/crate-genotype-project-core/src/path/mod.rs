@@ -11,6 +11,7 @@
 //!         - [module]
 //!       - [dist]
 //!         - [pkg]
+//!          - [target_file]
 //!          - [pkg_src]
 //!
 //! Traits:
@@ -20,7 +21,7 @@
 
 use crate::prelude::internal::*;
 
-// region: Macros
+// region: Macros ----------------------------------------------------------------------------------
 
 macro_rules! gtp_relative_path_newtype {
     ($(#[$meta:meta])* $vis:vis struct $name:ident; parent: $parent:ty;) => {
@@ -56,11 +57,13 @@ macro_rules! gtp_relative_path_newtype {
             }
         }
 
+
         impl From<&str> for $name {
             fn from(path: &str) -> Self {
                 Self::new(path.into())
             }
         }
+
 
         impl Display for $name {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -118,6 +121,7 @@ macro_rules! gtp_relative_path_wrapper_newtype {
             }
         }
 
+
         impl From<&str> for $name {
             fn from(path: &str) -> Self {
                 Self::new(path.into())
@@ -148,7 +152,6 @@ macro_rules! gtp_cwd_relative_path_wrapper_newtype {
             $vis struct $name(GtpCwdRelativePath);
         );
 
-
         impl $name {
             pub fn from_cwd_relative_path(path: GtpCwdRelativePath) -> Self {
                 Self::from_inner(path)
@@ -158,6 +161,8 @@ macro_rules! gtp_cwd_relative_path_wrapper_newtype {
                 self.inner()
             }
         }
+
+        impl GtpCwdRelativePathWrapper for $name {}
 
         impl AsRef<GtpCwdRelativePath> for $name {
             fn as_ref(&self) -> &GtpCwdRelativePath {
@@ -180,7 +185,14 @@ macro_rules! gtp_cwd_relative_dir_path_wrapper_newtype {
 
 // endregion
 
-// region: Modules
+// region: Modules ---------------------------------------------------------------------------------
+
+// region: Compound
+
+mod project;
+pub use project::*;
+
+// endregion
 
 // region: Base paths
 
@@ -213,6 +225,9 @@ pub use module::*;
 mod dist;
 pub use dist::*;
 
+mod target_file;
+pub use target_file::*;
+
 mod pkg;
 pub use pkg::*;
 
@@ -223,7 +238,9 @@ pub use pkg_src::*;
 
 // endregion
 
-// region: Traits
+// region: Traits ----------------------------------------------------------------------------------
+
+// region: Relative path trait
 
 pub trait GtpRelativePath {
     fn new(path: RelativePathBuf) -> Self;
@@ -294,6 +311,10 @@ pub trait GtpRelativePath {
     }
 }
 
+// endregion
+
+// region: Relative path wrapper trait
+
 pub trait GtpRelativePathWrapper {
     type Inner: GtpRelativePath + From<RelativePathBuf>;
 
@@ -312,7 +333,45 @@ impl<Type: GtpRelativePathWrapper> GtpRelativePath for Type {
     }
 }
 
-// region: Cwd-relative dir path trait
+// endregion
+
+// region: Cwd-relative path wrapper trait
+
+pub trait GtpCwdRelativePathWrapper:
+    GtpRelativePathWrapper<Inner = GtpCwdRelativePath> + GtpRelativePath
+{
+    fn from_cwd_relative_path(path: GtpCwdRelativePath) -> Self
+    where
+        Self: Sized,
+    {
+        Self::from_inner(path)
+    }
+
+    fn cwd_relative_path(&self) -> &GtpCwdRelativePath {
+        self.inner()
+    }
+
+    fn relative_path_to<BasePath: GtpCwdRelativePathWrapper>(
+        &self,
+        base_path: &BasePath,
+    ) -> Result<RelativePathBuf> {
+        self.cwd_relative_path()
+            .relative_path()
+            .strip_prefix(base_path.cwd_relative_path().relative_path())
+            .map(|relative_path| relative_path.to_owned())
+            .map_err(|err| {
+                miette!(
+                    "Failed to get relative path from `{path}` to `{base_path}`: {err:?}",
+                    path = self.display(),
+                    base_path = base_path.display()
+                )
+            })
+    }
+}
+
+// endregion
+
+// region: Dir path trait
 
 pub trait GtpDirPath: GtpRelativePath {
     fn join_as_cwd_relative_path<ChildPath>(&self, path: &ChildPath) -> GtpCwdRelativePath

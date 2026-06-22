@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PyExtension {
-    type RenderState = PyRenderState;
-
-    type RenderContext = PyRenderContext<'a>;
-
+impl<'context> GtlRender<'context, PyRenderTypes> for PyExtension {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: PyRenderState,
+        context: &mut PyRenderContext,
+    ) -> PyRenderResult<String> {
         self.reference.render(state, context)
     }
 }

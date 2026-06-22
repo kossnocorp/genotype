@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
 impl RsConvert<RsTuple> for GtTuple {
-    fn convert(&self, context: &mut RsConvertContext) -> Result<RsTuple> {
+    fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsTuple> {
         context.drop_definition_id();
         context.enter_parent(RsContextParent::Anonymous);
 
@@ -9,7 +9,7 @@ impl RsConvert<RsTuple> for GtTuple {
             .descriptors
             .iter()
             .map(|descriptor| descriptor.convert(context))
-            .collect::<Result<Vec<_>>>()?;
+            .collect::<RsConvertResult<Vec<_>>>()?;
         let tuple = RsTuple { descriptors };
 
         context.exit_parent();

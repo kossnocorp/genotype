@@ -1,0 +1,9 @@
+[tool.poetry]
+packages = [{ include = "module" }]
+
+[tool.poetry.dependencies]
+python = "^3.13"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

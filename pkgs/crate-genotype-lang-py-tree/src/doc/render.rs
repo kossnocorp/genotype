@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PyDoc {
-    type RenderState = PyRenderState;
-
-    type RenderContext = PyRenderContext<'a>;
-
+impl<'context> GtlRender<'context, PyRenderTypes> for PyDoc {
     fn render(
         &self,
-        state: Self::RenderState,
-        _context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: PyRenderState,
+        _context: &mut PyRenderContext,
+    ) -> PyRenderResult<String> {
         let lines = self.0.split("\n").enumerate();
         Ok(lines
             .map(|(index, line)| {

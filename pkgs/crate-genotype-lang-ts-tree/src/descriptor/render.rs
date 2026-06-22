@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TsDescriptor {
-    type RenderState = TsRenderState;
-
-    type RenderContext = TsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, TsRenderTypes> for TsDescriptor {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: TsRenderState,
+        context: &mut TsRenderContext,
+    ) -> TsRenderResult<String> {
         match self {
             TsDescriptor::Array(array) => array.render(state, context),
             TsDescriptor::InlineImport(import) => import.render(state, context),

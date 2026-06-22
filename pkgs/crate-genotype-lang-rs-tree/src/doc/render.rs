@@ -1,15 +1,12 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RsDoc {
-    type RenderState = RsRenderState;
-
-    type RenderContext = RsRenderContext<'a>;
+impl<'context> GtlRender<'context, RsRenderTypes> for RsDoc {
 
     fn render(
         &self,
-        state: Self::RenderState,
-        _context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: RsRenderState,
+        _context: &mut RsRenderContext,
+    ) -> RsRenderResult<String> {
         Ok(self
             .0
             .split("\n")

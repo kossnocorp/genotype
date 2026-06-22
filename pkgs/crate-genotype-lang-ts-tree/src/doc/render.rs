@@ -7,7 +7,7 @@ impl TsDoc {
         context: &mut TsRenderContext,
         str: String,
         padded: bool,
-    ) -> Result<String> {
+    ) -> TsRenderResult<String> {
         let doc = if let Some(doc) = doc {
             doc.render(state, context)? + if padded { "\n\n" } else { "\n" }
         } else {
@@ -17,16 +17,12 @@ impl TsDoc {
     }
 }
 
-impl<'a> GtlRender<'a> for TsDoc {
-    type RenderState = TsRenderState;
-
-    type RenderContext = TsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, TsRenderTypes> for TsDoc {
     fn render(
         &self,
-        state: Self::RenderState,
-        _context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: TsRenderState,
+        _context: &mut TsRenderContext,
+    ) -> TsRenderResult<String> {
         let lines = self.0.split("\n").enumerate();
         Ok(lines
             .map(|(index, line)| {

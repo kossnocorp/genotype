@@ -15,17 +15,19 @@ impl GtProject {
         let project_resolve = GtpResolve::resolve(&self.modules)?;
 
         for module in self.modules.values_mut() {
-            let current_module = std::mem::replace(module, GtpModule::Initialized);
-            *module = current_module.resolve(&project_resolve);
+            let source = module.source().clone();
+            let current_module = std::mem::replace(module, GtpModule::Initialized(source.clone()));
+            *module = current_module.resolve(&source, &project_resolve);
         }
 
         Ok(())
     }
 
-    /// Sorts the project modules by their paths. This is useful for deterministic output and
-    /// testing.
+    /// Sorts the project modules and module sources by their paths. This is useful for
+    /// deterministic output and snapshot testing.
     pub fn sort_modules(&mut self) {
         self.modules.sort_keys();
+        self.module_sources.sort_keys();
     }
 }
 
@@ -108,7 +110,8 @@ impl GtpResolve {
                 module_imports.extend(definitions.clone());
             });
 
-            for tree_path in parse.resolve.deps.iter() {
+            for tree_source in parse.resolve.deps.iter() {
+                let tree_path = &tree_source.path;
                 let module_id: GtModuleId = if let Some(module_id) =
                     module_paths.get(tree_path.source_str())
                 {

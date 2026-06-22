@@ -1,6 +1,6 @@
 use crate::prelude::internal::*;
 
-impl TsConvertModule {
+impl TsModule {
     pub fn sort_definitions(definitions: Vec<TsDefinition>) -> Vec<TsDefinition> {
         let def_names: IndexSet<_> = definitions.iter().map(|def| def.name()).collect();
         let defs_order = definitions

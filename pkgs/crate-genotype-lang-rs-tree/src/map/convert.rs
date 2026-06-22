@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
 impl RsConvert<RsMap> for GtRecord {
-    fn convert(&self, context: &mut RsConvertContext) -> Result<RsMap> {
+    fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsMap> {
         context.push_import(RsUse::new(
             RsDependencyIdent::Std("collections".into()),
             "BTreeMap".into(),

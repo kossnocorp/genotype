@@ -2,22 +2,44 @@ use crate::prelude::internal::*;
 use genotype_lang_py_config::PyPackageManager;
 use toml_edit::*;
 
-impl<'a> GtlProjectManifest<'a> for PyProject<'a> {
-    const FILE_NAME: &'static str = "pyproject.toml";
-    const MANIFEST_DEPENDENCIES_KEY: &'static str = "tool.poetry.dependencies";
+pub struct PyManifest<'project, 'config> {
+    config: &'config GtlConfig<'project, PyConfig>,
+}
 
-    type Dependency = PyProjectManifestDependency;
-    type LangConfig = PyConfig;
+impl<'project, 'config> GtlManifest<'project, 'config> for PyManifest<'project, 'config> {
+    type ProjectModule = PyProjectModule;
 
-    fn config(&'a self) -> &'a GtpPkgConfig<'a, Self::LangConfig> {
-        &self.config
+    fn new(
+        config: &'config GtlConfig<'project, GtlProjectModuleTypeLangConfig<Self::ProjectModule>>,
+    ) -> Self
+    where
+        Self: Sized,
+    {
+        PyManifest { config }
     }
 
-    fn base_manifest(&self) -> String {
-        let module = self.config.target.module.as_str();
-        let python_version = self.config.target.lang.version.version_str();
+    fn config(&self) -> &GtlConfig<'_, GtlProjectModuleTypeLangConfig<Self::ProjectModule>> {
+        self.config
+    }
 
-        match self.config.target.lang.manager {
+    fn file_name(&self) -> &'static str {
+        "pyproject.toml"
+    }
+
+    fn dependencies_key(&self) -> &'static str {
+        match self.config().lang_config.lang.manager {
+            PyPackageManager::Poetry => "tool.poetry.dependencies",
+            // TODO: Currently, it is unused because uv stores dependencies as an array rather
+            // than a table. We may want to update the base logic to better reflect this difference.
+            PyPackageManager::Uv => "project.dependencies",
+        }
+    }
+
+    fn base(&self) -> String {
+        let module = self.config().lang_config.module.as_str();
+        let python_version = self.config().lang_config.lang.version.version_str();
+
+        match self.config().lang_config.lang.manager {
             PyPackageManager::Poetry => {
                 let mut source = format!(
                     r#"[tool.poetry]
@@ -25,7 +47,7 @@ packages = [{{ include = "{module}" }}]
 "#
                 );
 
-                if let Some(version) = self.config.version {
+                if let Some(version) = self.config().project_version {
                     source.push_str(format!("version = \"{version}\"\n").as_str());
                 }
 
@@ -53,7 +75,7 @@ requires-python = "{python_version}"
                     python_version = poetry_req_to_uv_req(python_version)
                 );
 
-                if let Some(version) = self.config.version {
+                if let Some(version) = self.config().project_version {
                     source.push_str(format!("version = \"{version}\"\n").as_str());
                 }
 
@@ -79,38 +101,36 @@ packages = ["{module}"]
     fn insert_dependencies(
         &self,
         manifest: &mut DocumentMut,
-        deps: &'a Vec<
-            <<Self as GtlProjectManifest<'a>>::Dependency as GtlProjectManifestDependency>::DependencyIdent,
-        >,
-    ) -> Result<()> {
-        match self.config.target.lang.manager {
+        deps: &IndexSet<PyDependencyIdent>,
+    ) -> Result<(), Box<dyn GtlError>> {
+        match self.config().lang_config.lang.manager {
             PyPackageManager::Poetry => {
-                let manifest_deps = manifest["tool"]["poetry"]["dependencies"]
-                    .as_table_mut()
-                    .ok_or(GtlProjectError::ManifestDepsAccess(Self::FILE_NAME))?;
+                let manifest_deps = manifest
+                    .drill_table_mut(self.dependencies_key())
+                    .map_err(|err| GtlManifestError::edit(err))?;
 
                 for dep in deps.iter() {
-                    if let Some((key, value)) = Self::Dependency::as_kv(dep) {
+                    if let Some((key, value)) = Self::dependency_as_kv(dep) {
                         manifest_deps[&key] = value.into();
                     }
                 }
 
                 if manifest_deps.is_empty() {
-                    manifest.remove(Self::MANIFEST_DEPENDENCIES_KEY);
+                    manifest.remove(self.dependencies_key());
                 }
 
                 Ok(())
             }
 
             PyPackageManager::Uv => {
-                let project = manifest["project"]
-                    .as_table_mut()
-                    .ok_or(GtlProjectError::ManifestDepsAccess(Self::FILE_NAME))?;
+                let project = manifest
+                    .drill_table_mut("project")
+                    .map_err(|err| GtlManifestError::edit(err))?;
 
                 let mut project_deps = deps
                     .iter()
                     .filter_map(|dep| {
-                        Self::Dependency::as_kv(dep).map(|(name, version)| {
+                        Self::dependency_as_kv(dep).map(|(name, version)| {
                             let version = version
                                 .as_str()
                                 .map(poetry_req_to_uv_req)
@@ -133,6 +153,15 @@ packages = ["{module}"]
 
                 Ok(())
             }
+        }
+    }
+
+    fn dependency_as_kv(ident: &PyDependencyIdent) -> Option<(String, Value)> {
+        match ident {
+            PyDependencyIdent::Runtime => Some(("genotype-runtime".into(), "^0.4".into())),
+            PyDependencyIdent::TypingExtensions => Some(("typing-extensions".into(), "^4".into())),
+            PyDependencyIdent::Pydantic => Some(("pydantic".into(), "^2.9".into())),
+            _ => None,
         }
     }
 }
@@ -166,23 +195,6 @@ fn poetry_req_to_uv_req(req: &str) -> String {
     };
 
     format!(">={version},<{upper}")
-}
-
-pub struct PyProjectManifestDependency {}
-
-impl GtlProjectManifestDependency for PyProjectManifestDependency {
-    type DependencyIdent = PyDependencyIdent;
-
-    fn as_kv(ident: &Self::DependencyIdent) -> Option<(String, Value)> {
-        match ident {
-            Self::DependencyIdent::Runtime => Some(("genotype-runtime".into(), "^0.4".into())),
-            Self::DependencyIdent::TypingExtensions => {
-                Some(("typing-extensions".into(), "^4".into()))
-            }
-            Self::DependencyIdent::Pydantic => Some(("pydantic".into(), "^2.9".into())),
-            _ => None,
-        }
-    }
 }
 
 #[cfg(test)]

@@ -8,6 +8,9 @@ pub struct GtpModuleParse {
     /// Module path.
     pub path: GtpModulePath,
 
+    /// Module source.
+    pub source: GtpModuleSource,
+
     /// Module source code.
     pub source_code: String,
 
@@ -17,15 +20,20 @@ pub struct GtpModuleParse {
 
 impl GtpModuleParse {
     /// Dependency module paths.
-    pub fn dep_paths(&self) -> Vec<GtpModulePath> {
-        let mut paths = vec![];
+    pub fn deps(&self) -> Vec<GtpModuleSource> {
+        let mut deps = vec![];
         for dep in self.module_parse.resolve.deps.iter() {
-            if dep.kind() == GtPathKind::Package {
+            if dep.path.kind() == GtPathKind::Package {
                 continue;
             }
-            paths.push(self.path.resolve_path_node(dep));
+            let path = self.path.resolve_path_node(&dep.path);
+            deps.push(GtpModuleSource::Dependency {
+                path: path,
+                parent_path: self.path.clone(),
+                parent_span: dep.span,
+            });
         }
-        paths
+        deps
     }
 }
 
@@ -42,6 +50,7 @@ impl Into<GtpModule> for GtpModuleParse {
 impl GtpModule {
     pub fn parse(
         path: &GtpModulePath,
+        source: &GtpModuleSource,
         module_id: GtModuleId,
         source_code: String,
     ) -> Result<GtpModuleParse, GtpModuleError> {
@@ -53,6 +62,7 @@ impl GtpModule {
             })
             .map(|parse| GtpModuleParse {
                 path: path.clone(),
+                source: source.clone(),
                 module_parse: parse,
                 source_code,
             })

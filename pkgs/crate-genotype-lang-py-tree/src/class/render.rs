@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PyClass {
-    type RenderState = PyRenderState;
-
-    type RenderContext = PyRenderContext<'a>;
-
+impl<'context> GtlRender<'context, PyRenderTypes> for PyClass {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: PyRenderState,
+        context: &mut PyRenderContext,
+    ) -> PyRenderResult<String> {
         let name = self.name.render(state, context)?;
         let extensions = self.render_extensions(state, context)?;
         let body = self.render_body(state, context)?;
@@ -23,12 +19,12 @@ impl<'a> PyClass {
         &self,
         state: PyRenderState,
         context: &mut PyRenderContext<'a>,
-    ) -> Result<String> {
+    ) -> Result<String, PyRenderError> {
         let mut extensions = self
             .extensions
             .iter()
             .map(|extension| extension.render(state, context))
-            .collect::<Result<Vec<_>>>()?;
+            .collect::<Result<Vec<_>, _>>()?;
         // [TODO] Push model when converting instead
         extensions.push("Model".into());
 
@@ -45,7 +41,7 @@ impl<'a> PyClass {
         &self,
         state: PyRenderState,
         context: &mut PyRenderContext<'a>,
-    ) -> Result<String> {
+    ) -> Result<String, PyRenderError> {
         let mut body = vec![];
 
         if let Some(doc) = &self.doc {
@@ -65,12 +61,12 @@ impl<'a> PyClass {
         &self,
         state: PyRenderState,
         context: &mut PyRenderContext<'a>,
-    ) -> Result<String> {
+    ) -> Result<String, PyRenderError> {
         Ok(self
             .properties
             .iter()
             .map(|property| property.render(state.indent_inc(), context))
-            .collect::<Result<Vec<_>>>()?
+            .collect::<Result<Vec<_>, _>>()?
             .join("\n"))
     }
 }

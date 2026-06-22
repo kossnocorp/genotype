@@ -10,6 +10,10 @@ impl GtModuleId {
     pub fn definition_id(&self, name: &GtIdentifier) -> GtDefinitionId {
         GtDefinitionId(self.clone(), name.1.clone())
     }
+
+    pub fn as_str_without_ext(&self) -> String {
+        self.0.trim_end_matches(".type").to_owned()
+    }
 }
 
 impl From<&str> for GtModuleId {

@@ -17,16 +17,18 @@ pub use visitor::*;
 
 impl GtpModule {
     /// Resolves the project module.
-    pub fn resolve(self, project_resolve: &GtpResolve) -> GtpModule {
+    pub fn resolve(self, source: &GtpModuleSource, project_resolve: &GtpResolve) -> GtpModule {
         let project_module_parse = match self {
             GtpModule::Parsed(project_module_parse) => project_module_parse,
             GtpModule::Resolved(state) => state.project_module_parse,
-            GtpModule::Error(_) => return self,
-            GtpModule::Initialized => return GtpModule::Error(GtpModuleError::ResolveInitialized),
+            GtpModule::Error(_, _) => return self,
+            GtpModule::Initialized(source) => {
+                return GtpModule::Error(source, GtpModuleError::ResolveInitialized);
+            }
         };
 
         GtpModuleResolve::resolve(project_resolve, &project_module_parse).map_or_else(
-            GtpModule::Error,
+            |err| GtpModule::Error(source.clone(), err),
             |resolve| {
                 GtpModuleResolved {
                     project_module_parse,
@@ -84,16 +86,18 @@ impl GtpModuleResolve {
 
         // Resolve module dependencies by mapping local paths to project module paths.
         let mut paths: IndexMap<GtPath, GtpSrcDirRelativeModulePath> = IndexMap::new();
-        for local_path in module_parse.module_parse.resolve.deps.iter() {
+        for local_source in module_parse.module_parse.resolve.deps.iter() {
             // Continue if the dependency is already resolved or it is a package path.
-            if paths.contains_key(local_path) || local_path.kind() == GtPathKind::Package {
+            if paths.contains_key(&local_source.path)
+                || local_source.path.kind() == GtPathKind::Package
+            {
                 continue;
             }
 
             let Some(dep_module_id) = project_resolve
                 .modules
                 .get(&module_id)
-                .and_then(|module| module.paths.get(local_path.source_str()))
+                .and_then(|module| module.paths.get(local_source.path.source_str()))
             else {
                 continue;
             };
@@ -101,7 +105,7 @@ impl GtpModuleResolve {
             let dep_path = GtpSrcDirRelativeModulePath::new(
                 RelativePathBuf::from(dep_module_id.0.as_ref()).with_extension("type"),
             );
-            paths.insert(local_path.clone(), dep_path);
+            paths.insert(local_source.path.clone(), dep_path);
         }
 
         // Resolve module references mapping identifiers to dependencies.

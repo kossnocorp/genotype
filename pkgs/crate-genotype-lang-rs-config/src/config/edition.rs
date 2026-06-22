@@ -3,25 +3,29 @@ use crate::prelude::internal::*;
 impl RsConfig {
     pub const RUST_EDITION: &'static str = "2024";
 
-    pub fn rust_edition_health_check(&self) -> Option<GtlConfigNotice> {
-        if self.has_locked_edition() {
+    pub fn rust_edition_health_check(
+        &self,
+        config_path: &GtpConfigFilePath,
+        package_enabled: bool,
+    ) -> Option<GtNotice> {
+        if self.has_locked_edition() || !package_enabled {
             return None;
         }
 
-        let message = indoc::formatdoc! {
-            r#"Rust edition is not locked in ./genotype.toml.
+        let title = indoc::formatdoc! {
+            r#"Rust edition is not locked in {config_path}.
 
-            Quick fix:
+              Quick fix:
 
-            [rs.manifest.package]
-            edition = "{edition}"
+              [rs.manifest.package]
+              edition = "{edition}"
             "#,
             edition = RsConfigLang::DEFAULT_EDITION
         };
 
-        Some(GtlConfigNotice {
-            kind: GtlConfigNoticeKind::Warning,
-            message,
+        Some(GtNotice {
+            kind: GtNoticeKind::Warning,
+            content: title.into(),
         })
     }
 
@@ -61,7 +65,7 @@ edition = "2024"
         assert!(config.has_locked_edition());
 
         assert_ron_snapshot!(
-            config.health_check(),
+            config.health_check(&"./genotype.toml".into(), true),
             @"[]"
         );
     }
@@ -83,15 +87,70 @@ edition = "2024"
         assert!(!config.has_locked_edition());
 
         assert_ron_snapshot!(
-            config.health_check(),
+            config.health_check(&"./genotype.toml".into(), true),
             @r#"
         [
-          GtlConfigNotice(
+          GtNotice(
             kind: Warning,
-            message: "Rust edition is not locked in ./genotype.toml.\n\nQuick fix:\n\n[rs.manifest.package]\nedition = \"2024\"\n",
+            content: Message(
+              title: "Rust edition is not locked in genotype.toml.\n\nQuick fix:\n\n[rs.manifest.package]\nedition = \"2024\"\n",
+            ),
           ),
         ]
         "#
+        );
+    }
+
+    #[test]
+    fn test_edition_none_custom_config_path() {
+        let config = toml::from_str::<RsConfig>(
+            r#"enabled = true
+
+[manifest.package]
+"#,
+        )
+        .unwrap();
+
+        assert_ron_snapshot!(
+            config.edition(),
+            @"None"
+        );
+        assert!(!config.has_locked_edition());
+
+        assert_ron_snapshot!(
+            config.health_check(&"./genotype.lib.toml".into(), true),
+            @r#"
+        [
+          GtNotice(
+            kind: Warning,
+            content: Message(
+              title: "Rust edition is not locked in genotype.lib.toml.\n\nQuick fix:\n\n[rs.manifest.package]\nedition = \"2024\"\n",
+            ),
+          ),
+        ]
+        "#
+        );
+    }
+
+    #[test]
+    fn test_edition_none_package_disabled() {
+        let config = toml::from_str::<RsConfig>(
+            r#"enabled = true
+
+[manifest.package]
+"#,
+        )
+        .unwrap();
+
+        assert_ron_snapshot!(
+            config.edition(),
+            @"None"
+        );
+        assert!(!config.has_locked_edition());
+
+        assert_ron_snapshot!(
+            config.health_check(&"./genotype.lib.toml".into(), false),
+            @"[]"
         );
     }
 }

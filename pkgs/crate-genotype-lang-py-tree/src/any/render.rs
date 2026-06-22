@@ -1,15 +1,12 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PyAny {
-    type RenderState = PyRenderState;
-
-    type RenderContext = PyRenderContext<'a>;
+impl<'context> GtlRender<'context, PyRenderTypes> for PyAny {
 
     fn render(
         &self,
-        _state: Self::RenderState,
-        _context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        _state: PyRenderState,
+        _context: &mut PyRenderContext,
+    ) -> PyRenderResult<String> {
         Ok("Any".into())
     }
 }

@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TsAny {
-    type RenderState = TsRenderState;
-
-    type RenderContext = TsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, TsRenderTypes> for TsAny {
     fn render(
         &self,
-        _state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        _state: TsRenderState,
+        context: &mut TsRenderContext,
+    ) -> TsRenderResult<String> {
         Ok(if context.is_zod_mode() {
             "z.any()".into()
         } else {

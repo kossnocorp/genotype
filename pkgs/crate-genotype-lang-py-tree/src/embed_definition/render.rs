@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PyEmbedDefinition {
-    type RenderState = PyRenderState;
-
-    type RenderContext = PyRenderContext<'a>;
-
+impl<'context> GtlRender<'context, PyRenderTypes> for PyEmbedDefinition {
     fn render(
         &self,
-        state: Self::RenderState,
-        _context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: PyRenderState,
+        _context: &mut PyRenderContext,
+    ) -> PyRenderResult<String> {
         Ok(self.embed.render(state))
     }
 }

@@ -1,20 +1,16 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TsObject {
-    type RenderState = TsRenderState;
-
-    type RenderContext = TsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, TsRenderTypes> for TsObject {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: TsRenderState,
+        context: &mut TsRenderContext,
+    ) -> TsRenderResult<String> {
         let properties = self
             .properties
             .iter()
             .map(|property| property.render(state.indent_inc(), context))
-            .collect::<Result<Vec<_>>>()?
+            .collect::<Result<Vec<_>, _>>()?
             .join(",\n");
 
         if context.is_zod_mode() {

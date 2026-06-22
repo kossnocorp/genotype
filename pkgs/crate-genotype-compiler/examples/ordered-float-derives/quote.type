@@ -1,0 +1,5 @@
+Quote: {
+  value: number,
+  precision: f32,
+  weight: f64,
+}

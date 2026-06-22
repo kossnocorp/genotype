@@ -2,7 +2,7 @@ use crate::prelude::internal::*;
 use heck::ToSnakeCase;
 
 impl RsConvert<RsFieldName> for GtKey {
-    fn convert(&self, context: &mut RsConvertContext) -> Result<RsFieldName> {
+    fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsFieldName> {
         let name = self.1.to_snake_case();
 
         // Add rename attribute in case of aliasing

@@ -1,6 +1,23 @@
 use crate::prelude::internal::*;
 use std::sync::LazyLock;
 
+mod error;
+pub use error::*;
+
+mod result;
+pub use result::*;
+
+mod types;
+pub use types::*;
+
+pub struct TsRenderTypes;
+
+impl<'context> GtlRenderTypes<'context> for TsRenderTypes {
+    type State = TsRenderState;
+    type Context = TsRenderContext<'context>;
+    type Error = TsRenderError;
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct TsRenderContext<'a> {
     pub config: &'a TsConfigLang,
@@ -10,6 +27,13 @@ pub struct TsRenderContext<'a> {
 impl GtlRenderContext for TsRenderContext<'_> {}
 
 impl TsRenderContext<'_> {
+    pub fn new<'config>(config: &'config TsConfigLang) -> TsRenderContext<'config> {
+        TsRenderContext {
+            config,
+            mode_override: None,
+        }
+    }
+
     pub fn is_zod_mode(&self) -> bool {
         self.mode() == TsMode::Zod
     }
@@ -20,9 +44,13 @@ impl TsRenderContext<'_> {
             .unwrap_or(self.config.mode.clone())
     }
 
-    pub fn with_mode<Cb, CbResult>(&mut self, mode: TsMode, callback: Cb) -> Result<CbResult>
+    pub fn with_mode<Cb, CbResult>(
+        &mut self,
+        mode: TsMode,
+        callback: Cb,
+    ) -> Result<CbResult, TsRenderError>
     where
-        Cb: FnOnce(&mut Self) -> Result<CbResult>,
+        Cb: FnOnce(&mut Self) -> Result<CbResult, TsRenderError>,
     {
         let prev_mode_override = self.mode_override.clone();
         self.mode_override = Some(mode);

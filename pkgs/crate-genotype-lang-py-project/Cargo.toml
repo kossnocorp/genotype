@@ -11,7 +11,6 @@ repository = "https://github.com/kossnocorp/genotype"
 genotype_project_core = { version = "0.15.0", path = "../crate-genotype-project-core" }
 genotype_parser = { version = "0.15.0", path = "../crate-genotype-parser" }
 genotype_project = { version = "0.15.0", path = "../crate-genotype-project" }
-genotype_lang_core_config = { version = "0.15.0", path = "../crate-genotype-lang-core-config" }
 genotype_lang_core_tree = { version = "0.15.0", path = "../crate-genotype-lang-core-tree" }
 genotype_lang_core_project = { version = "0.15.0", path = "../crate-genotype-lang-core-project" }
 genotype_lang_py_tree = { version = "0.15.0", path = "../crate-genotype-lang-py-tree" }
@@ -21,6 +20,8 @@ thiserror = "1.0.64"
 indexmap = { version = "2.6.0", features = ["serde"] }
 toml_edit = { version = "0.22.26", features = ["serde"] }
 serde = { version = "1.0.228", features = ["derive"] }
+indoc = "2.0.7"
+pluralizer = "0.5.0"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

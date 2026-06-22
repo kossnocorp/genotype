@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PyReference {
-    type RenderState = PyRenderState;
-
-    type RenderContext = PyRenderContext<'a>;
-
+impl<'context> GtlRender<'context, PyRenderTypes> for PyReference {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: PyRenderState,
+        context: &mut PyRenderContext,
+    ) -> PyRenderResult<String> {
         let str = self.identifier.render(state, context)?;
         if let PyVersion::Legacy = context.config.version
             && self.forward

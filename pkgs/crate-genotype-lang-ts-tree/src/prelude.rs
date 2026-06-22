@@ -7,7 +7,8 @@ pub(crate) mod internal {
     pub use genotype_parser::visitor::{Traverse, TraverseMut, Visitor, visitor};
     pub use genotype_parser::*;
     pub use indexmap::{IndexMap, IndexSet};
-    pub use miette::Result;
+    pub use miette::{Diagnostic, Result};
     pub use serde::Serialize;
     pub use std::sync::Arc;
+    pub use thiserror::Error;
 }

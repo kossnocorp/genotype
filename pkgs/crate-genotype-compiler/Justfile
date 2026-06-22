@@ -1,0 +1,5 @@
+test:
+  cargo test
+
+test-watch:
+  bacon nextest

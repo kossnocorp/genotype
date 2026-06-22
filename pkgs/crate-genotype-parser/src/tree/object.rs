@@ -137,21 +137,27 @@ mod tests {
             parse.resolve.deps,
             @r#"
         [
-          GtPath(
-            span: GtSpan(31, 36),
-            id: GtPathModuleId(
+          GtModuleSource(
+            span: GtSpan(31, 40),
+            path: GtPath(
               span: GtSpan(31, 36),
-              module_id: GtModuleId("module"),
+              id: GtPathModuleId(
+                span: GtSpan(31, 36),
+                module_id: GtModuleId("module"),
+              ),
+              path: "book",
             ),
-            path: "book",
           ),
-          GtPath(
-            span: GtSpan(64, 76),
-            id: GtPathModuleId(
+          GtModuleSource(
+            span: GtSpan(64, 80),
+            path: GtPath(
               span: GtSpan(64, 76),
-              module_id: GtModuleId("module"),
+              id: GtPathModuleId(
+                span: GtSpan(64, 76),
+                module_id: GtModuleId("module"),
+              ),
+              path: "./misc/user",
             ),
-            path: "./misc/user",
           ),
         ]
         "#
@@ -170,21 +176,27 @@ mod tests {
             parse.resolve.deps,
             @r#"
         [
-          GtPath(
-            span: GtSpan(31, 36),
-            id: GtPathModuleId(
+          GtModuleSource(
+            span: GtSpan(31, 40),
+            path: GtPath(
               span: GtSpan(31, 36),
-              module_id: GtModuleId("module"),
+              id: GtPathModuleId(
+                span: GtSpan(31, 36),
+                module_id: GtModuleId("module"),
+              ),
+              path: "book",
             ),
-            path: "book",
           ),
-          GtPath(
-            span: GtSpan(64, 86),
-            id: GtPathModuleId(
+          GtModuleSource(
+            span: GtSpan(64, 90),
+            path: GtPath(
               span: GtSpan(64, 86),
-              module_id: GtModuleId("module"),
+              id: GtPathModuleId(
+                span: GtSpan(64, 86),
+                module_id: GtModuleId("module"),
+              ),
+              path: "./misc/user",
             ),
-            path: "./misc/user",
           ),
         ]
         "#

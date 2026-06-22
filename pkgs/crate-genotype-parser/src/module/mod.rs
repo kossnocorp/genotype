@@ -3,6 +3,9 @@ use crate::prelude::internal::*;
 mod parse;
 pub use parse::*;
 
+mod source;
+pub use source::*;
+
 mod resolve;
 pub use resolve::*;
 

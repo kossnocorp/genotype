@@ -1,20 +1,16 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TsModule {
-    type RenderState = TsRenderState;
-
-    type RenderContext = TsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, TsRenderTypes> for TsModule {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: TsRenderState,
+        context: &mut TsRenderContext,
+    ) -> TsRenderResult<String> {
         let mut imports = self
             .imports
             .iter()
             .map(|import| import.render(state, context))
-            .collect::<Result<Vec<_>>>()?;
+            .collect::<Result<Vec<_>, _>>()?;
 
         if context.is_zod_mode() {
             imports.insert(0, r#"import { z } from "zod";"#.into());
@@ -28,7 +24,7 @@ impl<'a> GtlRender<'a> for TsModule {
                 .definitions
                 .iter()
                 .map(|definition| definition.render(state, context))
-                .collect::<Result<Vec<_>>>()?,
+                .collect::<Result<Vec<_>, _>>()?,
         );
         let has_definitions = !definitions.is_empty();
 

@@ -7,9 +7,6 @@ pub use any::*;
 mod attribute;
 pub use attribute::*;
 
-mod context;
-pub use context::*;
-
 mod convert;
 pub use convert::*;
 
@@ -33,9 +30,6 @@ pub use enum_variant::*;
 
 mod enum_variant_descriptor;
 pub use enum_variant_descriptor::*;
-
-mod error;
-pub use error::*;
 
 mod field;
 pub use field::*;

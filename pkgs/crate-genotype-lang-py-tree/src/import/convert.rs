@@ -21,7 +21,7 @@ impl PyConvert<PyImport> for GtImport {
 
         PyImport {
             reference,
-            dependency: PyDependencyIdent::Path(path),
+            dependency: PyDependencyIdent::Local(path),
         }
     }
 }

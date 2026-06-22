@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RsPath {
-    type RenderState = RsRenderState;
-
-    type RenderContext = RsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, RsRenderTypes> for RsPath {
     fn render(
         &self,
-        _state: Self::RenderState,
-        _context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        _state: RsRenderState,
+        _context: &mut RsRenderContext,
+    ) -> RsRenderResult<String> {
         Ok(self.1.to_string())
     }
 }

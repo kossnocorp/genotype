@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RsModule {
-    type RenderState = RsRenderState;
-
-    type RenderContext = RsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, RsRenderTypes> for RsModule {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: RsRenderState,
+        context: &mut RsRenderContext,
+    ) -> RsRenderResult<String> {
         let mut blocks = vec![];
 
         if let Some(doc) = &self.doc {
@@ -24,7 +20,7 @@ impl<'a> GtlRender<'a> for RsModule {
                 .imports
                 .iter()
                 .map(|import| import.render(state, context))
-                .collect::<Result<Vec<String>>>()?,
+                .collect::<Result<Vec<_>, _>>()?,
         );
 
         if !imports.is_empty() {
@@ -36,7 +32,7 @@ impl<'a> GtlRender<'a> for RsModule {
                 .definitions
                 .iter()
                 .map(|definition| definition.render(state, context))
-                .collect::<Result<Vec<String>>>()?,
+                .collect::<Result<Vec<_>, _>>()?,
         );
 
         if !definitions.is_empty() {

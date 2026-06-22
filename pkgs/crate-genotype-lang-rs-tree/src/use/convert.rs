@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
 impl RsConvert<RsUse> for GtImport {
-    fn convert(&self, context: &mut RsConvertContext) -> Result<RsUse> {
+    fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsUse> {
         let reference = match &self.reference {
             GtImportReference::Glob(_) => RsUseReference::Module,
 
@@ -9,7 +9,7 @@ impl RsConvert<RsUse> for GtImport {
                 names
                     .iter()
                     .map(|name| name.convert(context))
-                    .collect::<Result<Vec<_>>>()?,
+                    .collect::<RsConvertResult<Vec<_>>>()?,
             ),
 
             GtImportReference::Name(_, name) => {

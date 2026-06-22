@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PyDescriptor {
-    type RenderState = PyRenderState;
-
-    type RenderContext = PyRenderContext<'a>;
-
+impl<'context> GtlRender<'context, PyRenderTypes> for PyDescriptor {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: PyRenderState,
+        context: &mut PyRenderContext,
+    ) -> PyRenderResult<String> {
         match self {
             PyDescriptor::List(array) => array.render(state, context),
             PyDescriptor::Literal(literal) => literal.render(state, context),

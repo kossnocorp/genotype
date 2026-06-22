@@ -2,13 +2,14 @@ use crate::prelude::internal::*;
 
 // region: Modules
 
-mod paths;
-pub use paths::*;
-
 mod resolve;
 pub use resolve::*;
 
+mod notices;
+
 mod pkg;
+
+mod sources;
 
 // endregion
 
@@ -17,32 +18,60 @@ mod pkg;
 pub struct GtProject {
     /// Known project modules mapped by their workspace path.
     pub modules: IndexMap<GtpModulePath, GtpModule>,
+
+    /// Known module sources.
+    // TODO: It must rebuild when a module is changed.
+    pub module_sources: IndexMap<GtpModulePath, IndexSet<GtpModuleSource>>,
+
     /// Project configuration.
     pub config: GtpConfig,
+
     /// Project paths.
     pub paths: GtpPaths,
 }
 
 impl GtProject {
     pub fn try_new(config_file_path: GtpConfigFilePath, config: GtpConfig) -> Result<Self> {
-        let paths = GtpPaths::try_new(config_file_path, &config)
+        let paths = GtProject::try_new_paths(config_file_path, &config)
             .wrap_err("failed to initialize project paths from config")?;
 
         Ok(Self {
             modules: IndexMap::new(),
+            module_sources: IndexMap::new(),
             config,
             paths,
+        })
+    }
+
+    pub fn try_new_paths(
+        config_file_path: GtpConfigFilePath,
+        config: &GtpConfig,
+    ) -> Result<GtpPaths> {
+        let config_dir = config_file_path.to_config_dir_path();
+        let root = config.root.to_cwd_relative_path(&config_dir).into();
+        let dist = config.dist.to_cwd_relative_path(&root).into();
+        let src = config.src.to_cwd_relative_path(&root).into();
+        let entry = config.entry.to_cwd_relative_path(&src).into();
+
+        Ok(GtpPaths {
+            config_file: config_file_path,
+            root,
+            dist,
+            src,
+            entry,
         })
     }
 
     /// Tries to initialize a module in the project. If the module already initialized, it resolves
     /// none signifying that the module is already processing or loaded. Otherwise, it initializes
     /// the module and returns some [GtModuleId].
-    pub fn init_module(&mut self, path: &GtpModulePath) -> Result<Option<GtModuleId>> {
+    pub fn init_module(&mut self, source: &GtpModuleSource) -> Result<Option<GtModuleId>> {
+        let path = source.path();
         match self.has_module(path) {
             true => Ok(None),
             false => {
-                self.modules.insert(path.clone(), GtpModule::Initialized);
+                self.modules
+                    .insert(path.clone(), GtpModule::Initialized(source.clone()));
                 let module_id = path.to_module_id(&self.paths.src)?;
                 Ok(Some(module_id))
             }
@@ -57,6 +86,18 @@ impl GtProject {
     /// Sets the state of a module in the project.
     pub fn set_module(&mut self, path: &GtpModulePath, module_state: GtpModule) {
         self.modules.insert(path.clone(), module_state);
+    }
+
+    pub fn lang_enabled(&self, lang: GtLang) -> bool {
+        self.config.lang_enabled(lang)
+    }
+
+    pub fn lang_config(&self, lang: GtLang) -> &dyn GtpLangConfig {
+        self.config.lang(lang)
+    }
+
+    pub fn lang_package_enabled(&self, lang_config: &dyn GtpLangConfig) -> bool {
+        self.config.lang_package_enabled(lang_config)
     }
 }
 
@@ -74,6 +115,9 @@ mod tests {
             "examples/basic/src/author.type": Resolved(GtpModuleResolved(
               project_module_parse: GtpModuleParse(
                 path: "examples/basic/src/author.type",
+                source: Entry(
+                  path: "examples/basic/src/author.type",
+                ),
                 source_code: "Author: {\n  name: string,\n}",
                 module_parse: GtModuleParse(
                   module: GtModule(
@@ -133,6 +177,9 @@ mod tests {
             "examples/basic/src/book.type": Resolved(GtpModuleResolved(
               project_module_parse: GtpModuleParse(
                 path: "examples/basic/src/book.type",
+                source: Entry(
+                  path: "examples/basic/src/book.type",
+                ),
                 source_code: "use ./author/Author\n\nBook: {\n  title: string,\n  author: Author,\n}",
                 module_parse: GtModuleParse(
                   module: GtModule(
@@ -202,13 +249,16 @@ mod tests {
                   ),
                   resolve: GtModuleResolve(
                     deps: [
-                      GtPath(
-                        span: GtSpan(4, 12),
-                        id: GtPathModuleId(
+                      GtModuleSource(
+                        span: GtSpan(0, 19),
+                        path: GtPath(
                           span: GtSpan(4, 12),
-                          module_id: GtModuleId("book"),
+                          id: GtPathModuleId(
+                            span: GtSpan(4, 12),
+                            module_id: GtModuleId("book"),
+                          ),
+                          path: "./author",
                         ),
-                        path: "./author",
                       ),
                     ],
                     exports: [
@@ -260,6 +310,9 @@ mod tests {
             "examples/basic/src/order.type": Resolved(GtpModuleResolved(
               project_module_parse: GtpModuleParse(
                 path: "examples/basic/src/order.type",
+                source: Entry(
+                  path: "examples/basic/src/order.type",
+                ),
                 source_code: "use ./book/Book\n\nOrder: {\n  user: ./user/User,\n  books: [Book],\n}",
                 module_parse: GtModuleParse(
                   module: GtModule(
@@ -343,21 +396,27 @@ mod tests {
                   ),
                   resolve: GtModuleResolve(
                     deps: [
-                      GtPath(
-                        span: GtSpan(4, 10),
-                        id: GtPathModuleId(
+                      GtModuleSource(
+                        span: GtSpan(0, 15),
+                        path: GtPath(
                           span: GtSpan(4, 10),
-                          module_id: GtModuleId("order"),
+                          id: GtPathModuleId(
+                            span: GtSpan(4, 10),
+                            module_id: GtModuleId("order"),
+                          ),
+                          path: "./book",
                         ),
-                        path: "./book",
                       ),
-                      GtPath(
-                        span: GtSpan(34, 41),
-                        id: GtPathModuleId(
+                      GtModuleSource(
+                        span: GtSpan(34, 45),
+                        path: GtPath(
                           span: GtSpan(34, 41),
-                          module_id: GtModuleId("order"),
+                          id: GtPathModuleId(
+                            span: GtSpan(34, 41),
+                            module_id: GtModuleId("order"),
+                          ),
+                          path: "./user",
                         ),
-                        path: "./user",
                       ),
                     ],
                     exports: [
@@ -417,6 +476,9 @@ mod tests {
             "examples/basic/src/user.type": Resolved(GtpModuleResolved(
               project_module_parse: GtpModuleParse(
                 path: "examples/basic/src/user.type",
+                source: Entry(
+                  path: "examples/basic/src/user.type",
+                ),
                 source_code: "User: {\n  email: string,\n  name: string,\n}",
                 module_parse: GtModuleParse(
                   module: GtModule(
@@ -487,6 +549,43 @@ mod tests {
               ),
             )),
           },
+          module_sources: {
+            "examples/basic/src/author.type": [
+              Entry(
+                path: "examples/basic/src/author.type",
+              ),
+              Dependency(
+                path: "examples/basic/src/author.type",
+                parent_path: "examples/basic/src/book.type",
+                parent_span: GtSpan(0, 19),
+              ),
+            ],
+            "examples/basic/src/book.type": [
+              Entry(
+                path: "examples/basic/src/book.type",
+              ),
+              Dependency(
+                path: "examples/basic/src/book.type",
+                parent_path: "examples/basic/src/order.type",
+                parent_span: GtSpan(0, 15),
+              ),
+            ],
+            "examples/basic/src/order.type": [
+              Entry(
+                path: "examples/basic/src/order.type",
+              ),
+            ],
+            "examples/basic/src/user.type": [
+              Entry(
+                path: "examples/basic/src/user.type",
+              ),
+              Dependency(
+                path: "examples/basic/src/user.type",
+                parent_path: "examples/basic/src/order.type",
+                parent_span: GtSpan(34, 45),
+              ),
+            ],
+          },
           config: GtpConfig(
             name: None,
             version: None,
@@ -553,6 +652,9 @@ mod tests {
             "examples/process/src/anonymous.type": Resolved(GtpModuleResolved(
               project_module_parse: GtpModuleParse(
                 path: "examples/process/src/anonymous.type",
+                source: Entry(
+                  path: "examples/process/src/anonymous.type",
+                ),
                 source_code: "Order: {\n  delivery: {\n    address: {\n      street: string,\n      city: string,\n    }\n  }\n}\n\nEmail: string | {\n  name: string,\n  email: string,\n}\n\n",
                 module_parse: GtModuleParse(
                   module: GtModule(
@@ -717,6 +819,13 @@ mod tests {
               ),
             )),
           },
+          module_sources: {
+            "examples/process/src/anonymous.type": [
+              Entry(
+                path: "examples/process/src/anonymous.type",
+              ),
+            ],
+          },
           config: GtpConfig(
             name: None,
             version: None,
@@ -784,7 +893,9 @@ mod tests {
           @r#"
         GtProject(
           modules: {
-            "examples/errors/undefined-inline/src/collection.type": Error(Resolve(
+            "examples/errors/undefined-inline/src/collection.type": Error(Entry(
+              path: "examples/errors/undefined-inline/src/collection.type",
+            ), Resolve(
               path: "examples/errors/undefined-inline/src/collection.type",
               error: UndefinedType(
                 span: GtSpan(44, 59),
@@ -795,6 +906,9 @@ mod tests {
             "examples/errors/undefined-inline/src/package.type": Resolved(GtpModuleResolved(
               project_module_parse: GtpModuleParse(
                 path: "examples/errors/undefined-inline/src/package.type",
+                source: Entry(
+                  path: "examples/errors/undefined-inline/src/package.type",
+                ),
                 source_code: "PackageSettings: {\n  value: string,\n}\n",
                 module_parse: GtModuleParse(
                   module: GtModule(
@@ -851,6 +965,23 @@ mod tests {
                 reference_definition_ids: {},
               ),
             )),
+          },
+          module_sources: {
+            "examples/errors/undefined-inline/src/collection.type": [
+              Entry(
+                path: "examples/errors/undefined-inline/src/collection.type",
+              ),
+            ],
+            "examples/errors/undefined-inline/src/package.type": [
+              Entry(
+                path: "examples/errors/undefined-inline/src/package.type",
+              ),
+              Dependency(
+                path: "examples/errors/undefined-inline/src/package.type",
+                parent_path: "examples/errors/undefined-inline/src/collection.type",
+                parent_span: GtSpan(34, 59),
+              ),
+            ],
           },
           config: GtpConfig(
             name: None,

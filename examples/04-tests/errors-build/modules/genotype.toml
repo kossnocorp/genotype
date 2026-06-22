@@ -1,0 +1,13 @@
+name = "genotype-test-errors-build"
+
+[ts]
+enabled = true
+
+[rs]
+enabled = true
+
+[rs.manifest.package]
+edition = "2024"
+
+[py]
+enabled = true

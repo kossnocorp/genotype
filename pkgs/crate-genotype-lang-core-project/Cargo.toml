@@ -10,9 +10,9 @@ repository = "https://github.com/kossnocorp/genotype"
 [dependencies]
 genotype_project_core = { version = "0.15.0", path = "../crate-genotype-project-core" }
 genotype_project = { version = "0.15.0", path = "../crate-genotype-project" }
-genotype_lang_core_config = { version = "0.15.0", path = "../crate-genotype-lang-core-config" }
+genotype_lang_core = { version = "0.15.0", path = "../crate-genotype-lang-core" }
 genotype_lang_core_tree = { version = "0.15.0", path = "../crate-genotype-lang-core-tree" }
-toml_ext = { version = "0.1.0", path = "../crate-toml-ext" }
+toml_ext = { version = "0.2.0", path = "../crate-toml-ext" }
 miette = { version = "7.6.0", features = ["serde"] }
 thiserror = "1.0.64"
 indexmap = { version = "2.6.0", features = ["serde"] }
@@ -20,6 +20,8 @@ toml_edit = { version = "0.22.26", features = ["serde"] }
 toml = { version = "0.8.19", features = ["preserve_order"] }
 serde_json = { version = "1.0.140", features = ["preserve_order"] }
 serde = { version = "1.0.228", features = ["derive"] }
+line-index = "0.1.2"
+pluralizer = "0.5.0"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

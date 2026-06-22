@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
 impl RsConvert<RsStruct> for GtObject {
-    fn convert(&self, context: &mut RsConvertContext) -> Result<RsStruct> {
+    fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsStruct> {
         let name = match &self.name {
             GtObjectName::Named(identifier) => identifier.convert(context),
             GtObjectName::Alias(identifier, _) => identifier.convert(context),
@@ -38,7 +38,7 @@ impl RsConvert<RsStruct> for GtObject {
                 .extensions
                 .iter()
                 .map(|e| e.reference.convert(context))
-                .collect::<Result<Vec<_>>>()?;
+                .collect::<RsConvertResult<Vec<_>>>()?;
             RsStructFields::Unresolved(self.span, references, fields)
         } else {
             RsStructFields::Resolved(fields)
@@ -86,7 +86,7 @@ impl RsConvert<RsStruct> for GtObject {
 }
 
 impl RsConvert<RsStruct> for GtLiteral {
-    fn convert(&self, context: &mut RsConvertContext) -> Result<RsStruct> {
+    fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsStruct> {
         context.push_import(RsUse::new(RsDependencyIdent::Litty, "literal".into()));
 
         let doc = context.consume_doc();
@@ -112,7 +112,7 @@ impl RsConvert<RsStruct> for GtLiteral {
 }
 
 impl RsConvert<RsStruct> for GtBranded {
-    fn convert(&self, context: &mut RsConvertContext) -> Result<RsStruct> {
+    fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsStruct> {
         let doc = context.consume_doc();
         let name = self.name.convert(context)?;
         let id = context

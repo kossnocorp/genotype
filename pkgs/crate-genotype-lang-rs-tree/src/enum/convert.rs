@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
 impl RsConvert<RsEnum> for GtUnion {
-    fn convert(&self, context: &mut RsConvertContext) -> Result<RsEnum> {
+    fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsEnum> {
         let doc = context.consume_doc();
         let name = if let Some(name) = context.claim_alias() {
             name
@@ -21,7 +21,7 @@ impl RsConvert<RsEnum> for GtUnion {
             .map(|descriptor| {
                 convert_variant(descriptor, &mut variant_names, &mut literals_count, context)
             })
-            .collect::<Result<Vec<_>>>()?;
+            .collect::<RsConvertResult<Vec<_>>>()?;
 
         trim_variant_names(&name, &mut variants, &mut variant_names);
 
@@ -31,9 +31,9 @@ impl RsConvert<RsEnum> for GtUnion {
                 .flat_map(|variant| variant.attributes.iter().find(|attr| attr.0 == "default"));
             let count = default_attrs.clone().count();
             if count == 0 {
-                return Err(RsConverterError::MissingDefaultVariant(self.span).into());
+                return Err(RsConvertError::MissingDefaultVariant(self.span).into());
             } else if count > 1 {
-                return Err(RsConverterError::MultipleDefaultVariants(self.span).into());
+                return Err(RsConvertError::MultipleDefaultVariants(self.span).into());
             }
         }
 
@@ -80,7 +80,7 @@ fn convert_variant(
     variant_names: &mut IndexSet<RsIdentifier>,
     literals_count: &mut usize,
     context: &mut RsConvertContext,
-) -> Result<RsEnumVariant> {
+) -> RsConvertResult<RsEnumVariant> {
     let mut attributes = vec![];
     let variant_name = name_variant_descriptor(descriptor, context)?;
     let variant_name = ensure_unique_variant_name(variant_name, variant_names);
@@ -164,7 +164,7 @@ fn enumerated_name(name: &RsIdentifier, variant_names: &IndexSet<RsIdentifier>) 
 fn name_variant_descriptor(
     descriptor: &GtDescriptor,
     context: &mut RsConvertContext,
-) -> Result<RsIdentifier> {
+) -> RsConvertResult<RsIdentifier> {
     // If `#[variant = "<name>"]` is present, use it as the variant name
     if let Some(name) = GtAttribute::find_property_in(descriptor.attributes(), "variant") {
         return Ok(name.into());

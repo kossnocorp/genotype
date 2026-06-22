@@ -32,7 +32,7 @@ pub struct TsConfigLangTsconfig {
 }
 
 impl TsConfigLang {
-    pub fn format_module_path(&self, path: &GtpPkgSrcDirRelativePath) -> String {
+    pub fn format_module_path(&self, path: &GtpTargetFilePath) -> String {
         let mut path = path.as_str().to_string();
         if !self.tsconfig.allow_importing_ts_extensions && path.ends_with(".ts") {
             let len = path.len();
@@ -62,7 +62,7 @@ mod tests {
     }
 
     #[test]
-    fn format_module_path() {
+    fn test_format_module_path() {
         let config = TsConfigLang {
             mode: Default::default(),
             prefer: Default::default(),
@@ -89,7 +89,7 @@ mod tests {
     }
 
     #[test]
-    fn format_import_path() {
+    fn test_format_import_path() {
         let config = TsConfigLang {
             mode: Default::default(),
             prefer: Default::default(),

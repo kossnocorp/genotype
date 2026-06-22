@@ -1,0 +1,4 @@
+Node: {
+  value: string,
+  next?: Node,
+}

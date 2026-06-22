@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
 impl RsConvert<RsDescriptor> for GtDescriptor {
-    fn convert(&self, context: &mut RsConvertContext) -> Result<RsDescriptor> {
+    fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsDescriptor> {
         Ok(match self {
             GtDescriptor::Alias(alias) => context
                 .hoist(|context| Ok((alias.convert(context)?, alias.span)))?
@@ -41,7 +41,7 @@ impl RsConvert<RsDescriptor> for GtDescriptor {
 }
 
 impl RsConvert<RsDescriptor> for GtRecordKey {
-    fn convert(&self, context: &mut RsConvertContext) -> Result<RsDescriptor> {
+    fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsDescriptor> {
         Ok(match self {
             GtRecordKey::String(_) => RsPrimitive::String.into(),
             GtRecordKey::Number(_) => {

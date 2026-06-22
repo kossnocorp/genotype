@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PyPath {
-    type RenderState = PyRenderState;
-
-    type RenderContext = PyRenderContext<'a>;
-
+impl<'context> GtlRender<'context, PyRenderTypes> for PyPath {
     fn render(
         &self,
-        _state: Self::RenderState,
-        _context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        _state: PyRenderState,
+        _context: &mut PyRenderContext,
+    ) -> PyRenderResult<String> {
         Ok(self.0.to_string())
     }
 }

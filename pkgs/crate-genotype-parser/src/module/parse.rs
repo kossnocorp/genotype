@@ -15,7 +15,7 @@ impl GtModule {
     /// the resolve data.
     pub fn parse(module_id: GtModuleId, source_code: &str) -> Result<GtModuleParse, GtParseError> {
         parse_gt_code(source_code)
-            .map_err(|error| GtParseError::Syntax(error.into()))
+            .map_err(|error| error.into())
             .and_then(|mut pairs| pairs.next().ok_or(GtParseError::InvalidGrammar))
             .and_then(|pair| Self::parse_root_token_pair(module_id.clone(), pair))
     }
@@ -1188,53 +1188,71 @@ mod tests {
           ),
           resolve: GtModuleResolve(
             deps: [
-              GtPath(
-                span: GtSpan(4, 10),
-                id: GtPathModuleId(
+              GtModuleSource(
+                span: GtSpan(0, 12),
+                path: GtPath(
                   span: GtSpan(4, 10),
-                  module_id: GtModuleId("module"),
+                  id: GtPathModuleId(
+                    span: GtSpan(4, 10),
+                    module_id: GtModuleId("module"),
+                  ),
+                  path: "author",
                 ),
-                path: "author",
               ),
-              GtPath(
-                span: GtSpan(17, 29),
-                id: GtPathModuleId(
+              GtModuleSource(
+                span: GtSpan(13, 64),
+                path: GtPath(
                   span: GtSpan(17, 29),
-                  module_id: GtModuleId("module"),
+                  id: GtPathModuleId(
+                    span: GtSpan(17, 29),
+                    module_id: GtModuleId("module"),
+                  ),
+                  path: "../../author",
                 ),
-                path: "../../author",
               ),
-              GtPath(
-                span: GtSpan(69, 75),
-                id: GtPathModuleId(
+              GtModuleSource(
+                span: GtSpan(65, 82),
+                path: GtPath(
                   span: GtSpan(69, 75),
-                  module_id: GtModuleId("module"),
+                  id: GtPathModuleId(
+                    span: GtSpan(69, 75),
+                    module_id: GtModuleId("module"),
+                  ),
+                  path: "author",
                 ),
-                path: "author",
               ),
-              GtPath(
-                span: GtSpan(119, 132),
-                id: GtPathModuleId(
+              GtModuleSource(
+                span: GtSpan(119, 138),
+                path: GtPath(
                   span: GtSpan(119, 132),
-                  module_id: GtModuleId("module"),
+                  id: GtPathModuleId(
+                    span: GtSpan(119, 132),
+                    module_id: GtModuleId("module"),
+                  ),
+                  path: "../../author",
                 ),
-                path: "../../author",
               ),
-              GtPath(
-                span: GtSpan(167, 180),
-                id: GtPathModuleId(
+              GtModuleSource(
+                span: GtSpan(167, 186),
+                path: GtPath(
                   span: GtSpan(167, 180),
-                  module_id: GtModuleId("module"),
+                  id: GtPathModuleId(
+                    span: GtSpan(167, 180),
+                    module_id: GtModuleId("module"),
+                  ),
+                  path: "../../author",
                 ),
-                path: "../../author",
               ),
-              GtPath(
-                span: GtSpan(198, 211),
-                id: GtPathModuleId(
+              GtModuleSource(
+                span: GtSpan(198, 217),
+                path: GtPath(
                   span: GtSpan(198, 211),
-                  module_id: GtModuleId("module"),
+                  id: GtPathModuleId(
+                    span: GtSpan(198, 211),
+                    module_id: GtModuleId("module"),
+                  ),
+                  path: "../../author",
                 ),
-                path: "../../author",
               ),
             ],
             exports: [
@@ -3771,37 +3789,49 @@ mod tests {
           ),
           resolve: GtModuleResolve(
             deps: [
-              GtPath(
-                span: GtSpan(368, 378),
-                id: GtPathModuleId(
+              GtModuleSource(
+                span: GtSpan(368, 394),
+                path: GtPath(
                   span: GtSpan(368, 378),
-                  module_id: GtModuleId("module"),
+                  id: GtPathModuleId(
+                    span: GtSpan(368, 378),
+                    module_id: GtModuleId("module"),
+                  ),
+                  path: "./runtime",
                 ),
-                path: "./runtime",
               ),
-              GtPath(
-                span: GtSpan(558, 565),
-                id: GtPathModuleId(
+              GtModuleSource(
+                span: GtSpan(558, 585),
+                path: GtPath(
                   span: GtSpan(558, 565),
-                  module_id: GtModuleId("module"),
+                  id: GtPathModuleId(
+                    span: GtSpan(558, 565),
+                    module_id: GtModuleId("module"),
+                  ),
+                  path: "./pair",
                 ),
-                path: "./pair",
               ),
-              GtPath(
-                span: GtSpan(625, 632),
-                id: GtPathModuleId(
+              GtModuleSource(
+                span: GtSpan(625, 652),
+                path: GtPath(
                   span: GtSpan(625, 632),
-                  module_id: GtModuleId("module"),
+                  id: GtPathModuleId(
+                    span: GtSpan(625, 632),
+                    module_id: GtModuleId("module"),
+                  ),
+                  path: "./pair",
                 ),
-                path: "./pair",
               ),
-              GtPath(
-                span: GtSpan(660, 667),
-                id: GtPathModuleId(
+              GtModuleSource(
+                span: GtSpan(660, 687),
+                path: GtPath(
                   span: GtSpan(660, 667),
-                  module_id: GtModuleId("module"),
+                  id: GtPathModuleId(
+                    span: GtSpan(660, 667),
+                    module_id: GtModuleId("module"),
+                  ),
+                  path: "./pair",
                 ),
-                path: "./pair",
               ),
             ],
             exports: [

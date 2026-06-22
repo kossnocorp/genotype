@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TsRecordKey {
-    type RenderState = TsRenderState;
-
-    type RenderContext = TsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, TsRenderTypes> for TsRecordKey {
     fn render(
         &self,
-        _state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        _state: TsRenderState,
+        context: &mut TsRenderContext,
+    ) -> TsRenderResult<String> {
         if context.is_zod_mode() {
             return Ok(match self {
                 TsRecordKey::String => "z.string()".into(),

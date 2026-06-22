@@ -1,67 +1,68 @@
 use crate::prelude::internal::*;
 
-impl RsProject<'_> {
-    pub fn indices_source(&self) -> Vec<GtlProjectFile> {
-        let mut crate_paths: IndexMap<GtpPkgSrcDirRelativePath, IndexSet<String>> = IndexMap::new();
+// impl RsProjectOld<'_> {
+//     pub fn indices_source(&self) -> Vec<GtlProjectFileOld> {
+//         let mut crate_paths: IndexMap<GtpPkgSrcDirRelativePath, IndexSet<String>> = IndexMap::new();
 
-        for module in self.modules.iter() {
-            let RsProjectModule::Generated(module) = module else {
-                continue;
-            };
+//         todo!();
+//         // for module in self.modules().iter() {
+//         //     let GtlProjectModuleState::Generated(module) = module else {
+//         //         continue;
+//         //     };
 
-            let mut module_path = module.path.clone();
-            loop {
-                let name = module_path.module_name();
-                let parent_path = module_path.to_parent().unwrap_or_else(|| "".into());
+//         //     let mut module_path = module.target_path.clone();
+//         //     loop {
+//         //         let name = module_path.module_name();
+//         //         let parent_path = module_path.to_parent().unwrap_or_else(|| "".into());
 
-                crate_paths
-                    .entry(parent_path.clone())
-                    .and_modify(|paths| {
-                        paths.insert(name.clone());
-                    })
-                    .or_insert_with(|| IndexSet::from_iter(vec![name]));
+//         //         crate_paths
+//         //             .entry(parent_path.clone())
+//         //             .and_modify(|paths| {
+//         //                 paths.insert(name.clone());
+//         //             })
+//         //             .or_insert_with(|| IndexSet::from_iter(vec![name]));
 
-                if parent_path == "".into() {
-                    break;
-                }
+//         //         if parent_path == "".into() {
+//         //             break;
+//         //         }
 
-                module_path = parent_path;
-            }
-        }
+//         //         module_path = parent_path;
+//         //     }
+//         // }
 
-        crate_paths
-            .into_iter()
-            .map(|(module_path, modules)| {
-                let file_name = if module_path == "".into() {
-                    if self.config.package_enabled() {
-                        "lib.rs"
-                    } else {
-                        "mod.rs"
-                    }
-                } else {
-                    "mod.rs"
-                };
-                let path = self
-                    .config
-                    .pkg_src_file_path(&module_path.join_relative_path(&file_name.into()));
+//         //         crate_paths
+//         //             .into_iter()
+//         //             .map(|(module_path, modules)| {
+//         //                 let file_name = if module_path == "".into() {
+//         //                     if self.config.package_enabled() {
+//         //                         "lib.rs"
+//         //                     } else {
+//         //                         "mod.rs"
+//         //                     }
+//         //                 } else {
+//         //                     "mod.rs"
+//         //                 };
+//         //                 let path = self
+//         //                     .config
+//         //                     .pkg_src_file_path(&module_path.join_relative_path(&file_name.into()));
 
-                let mut code = modules
-                    .iter()
-                    .map(|module| {
-                        format!(
-                            r#"pub(crate) mod {module};
-pub use {module}::*;"#
-                        )
-                    })
-                    .collect::<Vec<_>>()
-                    .join("\n");
-                code += "\n";
+//         //                 let mut code = modules
+//         //                     .iter()
+//         //                     .map(|module| {
+//         //                         format!(
+//         //                             r#"pub(crate) mod {module};
+//         // pub use {module}::*;"#
+//         //                         )
+//         //                     })
+//         //                     .collect::<Vec<_>>()
+//         //                     .join("\n");
+//         //                 code += "\n";
 
-                GtlProjectFile { path, source: code }
-            })
-            .collect()
-    }
-}
+//         //                 GtlProjectFile::source(path, code)
+//         //             })
+//         //             .collect()
+//     }
+// }
 
 trait Module: GtpRelativePath {
     fn module_name(&self) -> String
@@ -76,4 +77,4 @@ trait Module: GtpRelativePath {
     }
 }
 
-impl Module for GtpPkgSrcDirRelativePath {}
+impl Module for GtpTargetFilePath {}

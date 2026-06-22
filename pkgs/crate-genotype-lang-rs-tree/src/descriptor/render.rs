@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RsDescriptor {
-    type RenderState = RsRenderState;
-
-    type RenderContext = RsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, RsRenderTypes> for RsDescriptor {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: RsRenderState,
+        context: &mut RsRenderContext,
+    ) -> RsRenderResult<String> {
         Ok(match self {
             RsDescriptor::Box(descriptor) => {
                 format!("Box<{}>", descriptor.render(state, context)?)

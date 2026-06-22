@@ -1,21 +1,17 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TsInlineImport {
-    type RenderState = TsRenderState;
-
-    type RenderContext = TsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, TsRenderTypes> for TsInlineImport {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: TsRenderState,
+        context: &mut TsRenderContext,
+    ) -> TsRenderResult<String> {
         let name = self.name.render(state, context)?;
         let arguments = self
             .arguments
             .iter()
             .map(|argument| argument.render(state, context))
-            .collect::<Result<Vec<_>>>()?
+            .collect::<Result<Vec<_>, _>>()?
             .join(", ");
 
         let call = if self.arguments.is_empty() {

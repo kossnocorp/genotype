@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
 impl RsConvert<RsDoc> for GtDoc {
-    fn convert(&self, _context: &mut RsConvertContext) -> Result<RsDoc> {
+    fn convert(&self, _context: &mut RsConvertContext) -> RsConvertResult<RsDoc> {
         Ok(RsDoc(
             self.1.clone(),
             false, // It is assigned by module converter

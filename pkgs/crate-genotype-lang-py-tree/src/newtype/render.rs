@@ -1,11 +1,12 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PyNewtype {
-    type RenderState = PyRenderState;
+impl<'context> GtlRender<'context, PyRenderTypes> for PyNewtype {
 
-    type RenderContext = PyRenderContext<'a>;
-
-    fn render(&self, state: PyRenderState, context: &mut PyRenderContext) -> Result<String> {
+    fn render(
+        &self,
+        state: PyRenderState,
+        context: &mut PyRenderContext,
+    ) -> PyRenderResult<String> {
         let mut blocks = vec![];
 
         let name = self.name.render(state, context)?;

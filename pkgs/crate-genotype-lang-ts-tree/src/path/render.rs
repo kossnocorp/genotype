@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TsPath {
-    type RenderState = TsRenderState;
-
-    type RenderContext = TsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, TsRenderTypes> for TsPath {
     fn render(
         &self,
-        _state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        _state: TsRenderState,
+        context: &mut TsRenderContext,
+    ) -> TsRenderResult<String> {
         if self.is_external() {
             return Ok(self.0.to_string());
         }

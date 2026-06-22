@@ -114,11 +114,11 @@ impl PyConvertContext {
 impl GtlConvertContext for PyConvertContext {
     type Import = PyImport;
 
-    fn imports(&self) -> &Vec<Self::Import> {
+    fn imports(&self) -> &Vec<PyImport> {
         &self.imports
     }
 
-    fn imports_mut(&mut self) -> &mut Vec<Self::Import> {
+    fn imports_mut(&mut self) -> &mut Vec<PyImport> {
         &mut self.imports
     }
 }

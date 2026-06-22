@@ -10,8 +10,6 @@
 
 use crate::prelude::internal::*;
 
-// region: Types
-
 // region: Package src dir path
 
 gtp_cwd_relative_dir_path_wrapper_newtype!(
@@ -29,6 +27,15 @@ gtp_relative_path_wrapper_newtype!(
     parent: GtpPkgDirPath;
 );
 
+impl GtpPkgDirRelativePkgSrcDirPath {
+    pub fn join_as_pkg_dir_relative_path(
+        &self,
+        path: &GtpPkgSrcDirRelativePath,
+    ) -> GtpPkgDirRelativePath {
+        GtpPkgDirRelativePath::new(self.relative_path().join(&path.relative_path()))
+    }
+}
+
 // endregion
 
 // region: Package src dir-relative path
@@ -38,7 +45,5 @@ gtp_relative_path_newtype!(
     pub struct GtpPkgSrcDirRelativePath;
     parent: GtpPkgSrcDirPath;
 );
-
-// endregion
 
 // endregion

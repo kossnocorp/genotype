@@ -1,12 +1,27 @@
 use crate::prelude::internal::*;
 use std::sync::LazyLock;
 
+mod error;
+pub use error::*;
+
+mod result;
+pub use result::*;
+
+mod types;
+pub use types::*;
+
 #[derive(Debug, Clone, PartialEq)]
-pub struct RsRenderContext<'a> {
-    pub config: &'a RsConfigLang,
+pub struct RsRenderContext<'config> {
+    pub config: &'config RsConfigLang,
 }
 
 impl GtlRenderContext for RsRenderContext<'_> {}
+
+impl<'config> RsRenderContext<'config> {
+    pub fn new(config: &'config RsConfigLang) -> Self {
+        Self { config }
+    }
+}
 
 static RS_DEFAULT_CONFIG: LazyLock<RsConfigLang> = LazyLock::new(RsConfigLang::default);
 

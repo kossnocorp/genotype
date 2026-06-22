@@ -1,9 +1,24 @@
 use crate::prelude::internal::*;
 use std::sync::LazyLock;
 
+mod error;
+pub use error::*;
+
+mod result;
+pub use result::*;
+
+mod types;
+pub use types::*;
+
 #[derive(Debug, PartialEq)]
-pub struct PyRenderContext<'a> {
-    pub config: &'a PyConfigLang,
+pub struct PyRenderContext<'config> {
+    pub config: &'config PyConfigLang,
+}
+
+impl<'config> PyRenderContext<'config> {
+    pub fn new(config: &'config PyConfigLang) -> Self {
+        Self { config }
+    }
 }
 
 impl GtlRenderContext for PyRenderContext<'_> {}

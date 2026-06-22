@@ -1,15 +1,12 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RsReference {
-    type RenderState = RsRenderState;
-
-    type RenderContext = RsRenderContext<'a>;
+impl<'context> GtlRender<'context, RsRenderTypes> for RsReference {
 
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: RsRenderState,
+        context: &mut RsRenderContext,
+    ) -> RsRenderResult<String> {
         self.identifier.render(state, context)
     }
 }

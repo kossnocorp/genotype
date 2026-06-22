@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
 impl RsConvert<RsVec> for GtArray {
-    fn convert(&self, context: &mut RsConvertContext) -> Result<RsVec> {
+    fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsVec> {
         let descriptor = self.descriptor.convert(context)?;
         Ok(RsVec { descriptor })
     }

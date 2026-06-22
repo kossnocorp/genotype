@@ -1,5 +1,7 @@
 use crate::prelude::internal::*;
 
+pub type GtlImportTypeDependencyIdent<Import> = <Import as GtlImport>::DependencyIdent;
+
 pub trait GtlImport {
     type DependencyIdent: GtlDependencyIdent;
     type ImportRef: GtlImportRef;

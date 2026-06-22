@@ -3,9 +3,6 @@ use crate::prelude::internal::*;
 mod error;
 pub use error::*;
 
-mod lang;
-pub use lang::*;
-
 mod save;
 
 mod toml_str;
@@ -75,6 +72,26 @@ impl GtpConfig {
     pub fn parse(source: String) -> Result<Self> {
         let config: GtpConfig = Self::from_toml_str(&source)?;
         Ok(config)
+    }
+
+    pub fn lang<'a>(&'a self, lang: GtLang) -> &'a dyn GtpLangConfig {
+        match lang {
+            GtLang::Py => &self.py,
+            GtLang::Rs => &self.rs,
+            GtLang::Ts => &self.ts,
+        }
+    }
+
+    pub fn lang_package_enabled(&self, lang_config: &dyn GtpLangConfig) -> bool {
+        lang_config.common().package.unwrap_or(self.package)
+    }
+
+    pub fn lang_enabled(&self, lang: GtLang) -> bool {
+        match lang {
+            GtLang::Py => self.python_enabled(),
+            GtLang::Rs => self.rust_enabled(),
+            GtLang::Ts => self.ts_enabled(),
+        }
     }
 
     pub fn ts_enabled(&self) -> bool {

@@ -1,16 +1,12 @@
 use crate::prelude::internal::*;
 use heck::ToLowerCamelCase;
 
-impl<'a> GtlRender<'a> for TsBranded {
-    type RenderState = TsRenderState;
-
-    type RenderContext = TsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, TsRenderTypes> for TsBranded {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: TsRenderState,
+        context: &mut TsRenderContext,
+    ) -> TsRenderResult<String> {
         if context.is_zod_mode() {
             let name = self.name.render(state, context)?;
             let primitive = self.primitive.render(state, context)?;

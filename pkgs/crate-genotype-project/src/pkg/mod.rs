@@ -3,7 +3,7 @@ use crate::prelude::internal::*;
 mod paths;
 
 #[derive(Debug, PartialEq, Clone, Serialize)]
-pub struct GtpPkgConfig<'a, LangConfig: GtlConfig> {
+pub struct GtpPkgConfig<'a, LangConfig: GtpLangConfig> {
     /// Dist directory relative to the working directory.
     pub dist: &'a GtpDistDirPath,
     /// Global package version used as language manifest default.
@@ -14,7 +14,7 @@ pub struct GtpPkgConfig<'a, LangConfig: GtlConfig> {
     pub target: &'a LangConfig,
 }
 
-impl<'a, LangConfig: GtlConfig> GtpPkgConfig<'a, LangConfig> {
+impl<'a, LangConfig: GtpLangConfig> GtpPkgConfig<'a, LangConfig> {
     pub fn new(
         dist: &'a GtpDistDirPath,
         target: &'a LangConfig,

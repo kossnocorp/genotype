@@ -1,15 +1,12 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RsUseReference {
-    type RenderState = RsRenderState;
-
-    type RenderContext = RsRenderContext<'a>;
+impl<'context> GtlRender<'context, RsRenderTypes> for RsUseReference {
 
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: RsRenderState,
+        context: &mut RsRenderContext,
+    ) -> RsRenderResult<String> {
         Ok(match self {
             RsUseReference::Module => "".into(),
 
@@ -19,7 +16,7 @@ impl<'a> GtlRender<'a> for RsUseReference {
                 let names_str = names
                     .iter()
                     .map(|name| name.render(state, context))
-                    .collect::<Result<Vec<String>>>()?
+                    .collect::<Result<Vec<_>, _>>()?
                     .join(", ");
                 if names.len() == 1
                     && let Some(RsUseName::Name(_)) = names.first()

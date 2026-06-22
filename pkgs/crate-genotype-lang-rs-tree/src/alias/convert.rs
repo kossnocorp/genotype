@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
 impl RsConvert<RsDefinition> for GtAlias {
-    fn convert(&self, context: &mut RsConvertContext) -> Result<RsDefinition> {
+    fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsDefinition> {
         let doc = if let Some(doc) = &self.doc {
             Some(doc.convert(context)?)
         } else {

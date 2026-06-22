@@ -4,7 +4,7 @@ pub struct PyDependency {}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Visitor)]
 pub enum PyDependencyIdent {
-    Path(#[visit] PyPath),
+    Local(#[visit] PyPath),
     Runtime,
     Typing,
     TypingExtensions,
@@ -12,16 +12,6 @@ pub enum PyDependencyIdent {
 }
 
 impl PyDependencyIdent {
-    pub fn as_path(&self) -> PyPath {
-        match self {
-            Self::Path(path) => path.clone(),
-            Self::Runtime => "genotype".into(),
-            Self::Typing => "typing".into(),
-            Self::TypingExtensions => "typing_extensions".into(),
-            Self::Pydantic => "pydantic".into(),
-        }
-    }
-
     pub fn external(&self) -> Option<PyDependencyExternal> {
         match self {
             Self::Runtime => Some(PyDependencyExternal {
@@ -39,13 +29,35 @@ impl PyDependencyIdent {
             _ => None,
         }
     }
+
+    fn as_path(&self) -> PyPath {
+        match self {
+            Self::Local(path) => path.clone(),
+            Self::Runtime => "genotype".into(),
+            Self::Typing => "typing".into(),
+            Self::TypingExtensions => "typing_extensions".into(),
+            Self::Pydantic => "pydantic".into(),
+        }
+    }
 }
 
-impl GtlDependencyIdent for PyDependencyIdent {}
+impl GtlDependencyIdent for PyDependencyIdent {
+    type Path = PyPath;
+
+    fn as_path(&self) -> Self::Path {
+        match self {
+            Self::Local(path) => path.clone(),
+            Self::Runtime => "genotype".into(),
+            Self::Typing => "typing".into(),
+            Self::TypingExtensions => "typing_extensions".into(),
+            Self::Pydantic => "pydantic".into(),
+        }
+    }
+}
 
 impl From<&str> for PyDependencyIdent {
     fn from(str: &str) -> Self {
-        PyDependencyIdent::Path(str.into())
+        PyDependencyIdent::Local(str.into())
     }
 }
 

@@ -1,10 +1,10 @@
 use crate::prelude::internal::*;
 
 impl RsConvert<RsReference> for GtReference {
-    fn convert(&self, context: &mut RsConvertContext) -> Result<RsReference> {
+    fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsReference> {
         let identifier = self.identifier.convert(context)?;
         let Some(definition_id) = context.resolve_reference_definition_id(self) else {
-            return Err(RsConverterError::UnresolvedReference(self.span).into());
+            return Err(RsConvertError::UnresolvedReference(self.span).into());
         };
 
         Ok(RsReference {

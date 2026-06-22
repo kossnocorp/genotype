@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
 impl RsConvert<RsAny> for GtAny {
-    fn convert(&self, resolve: &mut RsConvertContext) -> Result<RsAny> {
+    fn convert(&self, resolve: &mut RsConvertContext) -> RsConvertResult<RsAny> {
         resolve.push_import(RsUse::new(RsDependencyIdent::Runtime, "Any".into()));
         Ok(RsAny)
     }

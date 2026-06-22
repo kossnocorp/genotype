@@ -16,7 +16,7 @@ pub fn convert_node_with<GtNode: RsConvert<Node>, Node>(
 pub fn convert_node_err_with<GtNode: RsConvert<Node>, Node>(
     gt_node: GtNode,
     context: &mut RsConvertContext,
-) -> miette::Report
+) -> RsConvertError
 where
     Node: std::fmt::Debug,
 {

@@ -1,14 +1,22 @@
 use crate::prelude::internal::*;
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
-pub struct RsConvertModule(pub RsModule);
-
-impl RsConvertModule {
+impl RsModule {
     pub fn convert(
         module: &GtModule,
         resolve: &RsConvertResolve,
         config: &RsConfig,
-    ) -> Result<Self> {
+    ) -> Result<Self, Box<dyn GtlError>> {
+        match Self::convert_inner(module, resolve, config) {
+            Ok(module) => Ok(module),
+            Err(err) => Err(Box::new(err)),
+        }
+    }
+
+    fn convert_inner(
+        module: &GtModule,
+        resolve: &RsConvertResolve,
+        config: &RsConfig,
+    ) -> RsConvertResult<Self> {
         // [TODO] Get rid of unnecessary clone
         let mut context = RsConvertContext::new(
             module.id.clone(),
@@ -46,7 +54,7 @@ impl RsConvertModule {
             definitions,
         };
 
-        Ok(RsConvertModule(module))
+        Ok(module)
     }
 }
 
@@ -72,7 +80,7 @@ mod tests {
         );
 
         assert_ron_snapshot!(
-            RsConvertModule::convert(
+            RsModule::convert(
                 &GtModule {
                     id: "module".into(),
                     doc: None,
@@ -331,7 +339,7 @@ mod tests {
     #[test]
     fn test_convert_doc() {
         assert_ron_snapshot!(
-            RsConvertModule::convert(
+            RsModule::convert(
                 &GtModule {
                     id: "module".into(),
                     doc: Some(GtDoc::new((0, 0).into(), "Hello, world!".into())),

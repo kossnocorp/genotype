@@ -1,7 +1,6 @@
 use crate::prelude::internal::*;
 
 mod convert;
-pub use convert::*;
 
 mod render;
 
@@ -13,4 +12,13 @@ pub struct TsModule {
     pub imports: Vec<TsImport>,
     #[visit]
     pub definitions: Vec<TsDefinition>,
+}
+
+impl GtlModule<'_> for TsModule {
+    type Import = TsImport;
+    type RenderTypes = TsRenderTypes;
+
+    fn imports(&self) -> Vec<&TsImport> {
+        self.imports.iter().collect()
+    }
 }

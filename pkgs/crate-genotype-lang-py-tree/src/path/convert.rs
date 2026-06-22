@@ -1,14 +1,16 @@
 use crate::prelude::internal::*;
 
-pub fn py_parse_module_path(path: String) -> String {
-    path.replace("../", "..")
-        .replace("./", ".")
-        .replace("/", ".")
-}
-
 impl PyConvert<PyPath> for GtPath {
     fn convert(&self, context: &mut PyConvertContext) -> PyPath {
-        PyPath(py_parse_module_path(context.resolve_path(self)).into())
+        PyPath(PyPath::to_py_module_path(context.resolve_path(self)).into())
+    }
+}
+
+impl PyPath {
+    pub fn to_py_module_path(path: String) -> String {
+        path.replace("../", "..")
+            .replace("./", ".")
+            .replace("/", ".")
     }
 }
 

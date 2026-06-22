@@ -118,8 +118,10 @@ fn expand_literals(
     );
 
     let literal_field_names: Vec<_> = literal_fields.iter().map(|field| &field.ident).collect();
-    let literal_field_serialize_types: Vec<_> =
-        literal_fields.iter().map(|field| &field.serialize_ty).collect();
+    let literal_field_serialize_types: Vec<_> = literal_fields
+        .iter()
+        .map(|field| &field.serialize_ty)
+        .collect();
     let literal_field_deserialize_types: Vec<_> = literal_fields
         .iter()
         .map(|field| &field.deserialize_ty)
@@ -566,12 +568,15 @@ fn parse_literal_fields(attrs: &[syn::Attribute]) -> Result<Vec<LiteralField>, E
 
 fn literal_type_and_value(
     value: &syn::Expr,
-) -> Result<(
-    proc_macro2::TokenStream,
-    proc_macro2::TokenStream,
-    proc_macro2::TokenStream,
-    String,
-), Error> {
+) -> Result<
+    (
+        proc_macro2::TokenStream,
+        proc_macro2::TokenStream,
+        proc_macro2::TokenStream,
+        String,
+    ),
+    Error,
+> {
     match value {
         syn::Expr::Path(expr_path)
             if expr_path.path.segments.len() == 1
@@ -584,46 +589,46 @@ fn literal_type_and_value(
             Ok((quote! { () }, quote! { () }, quote! { () }, "null".into()))
         }
         syn::Expr::Lit(expr_lit) => match &expr_lit.lit {
-        Lit::Str(lit_str) => Ok((
-            quote! { &'static str },
-            quote! { String },
-            quote! { #lit_str },
-            lit_str.to_token_stream().to_string(),
-        )),
-        Lit::Bool(lit_bool) => Ok((
-            quote! { bool },
-            quote! { bool },
-            quote! { #lit_bool },
-            lit_bool.to_token_stream().to_string(),
-        )),
-        Lit::Int(lit_int) => {
-            let value = lit_int
-                .base10_digits()
-                .parse::<i64>()
-                .map_err(|_| Error::new_spanned(lit_int, "Invalid i64 literal"))?;
-            Ok((
-                quote! { i64 },
-                quote! { i64 },
-                quote! { #value },
-                lit_int.to_token_stream().to_string(),
-            ))
-        }
-        Lit::Float(lit_float) => {
-            let value = lit_float
-                .base10_digits()
-                .parse::<f64>()
-                .map_err(|_| Error::new_spanned(lit_float, "Invalid f64 literal"))?;
-            Ok((
-                quote! { f64 },
-                quote! { f64 },
-                quote! { #value },
-                lit_float.to_token_stream().to_string(),
-            ))
-        }
-        _ => Err(Error::new_spanned(
-            &expr_lit.lit,
-            "Literals only supports null, string, bool, int, or float literals",
-        )),
+            Lit::Str(lit_str) => Ok((
+                quote! { &'static str },
+                quote! { String },
+                quote! { #lit_str },
+                lit_str.to_token_stream().to_string(),
+            )),
+            Lit::Bool(lit_bool) => Ok((
+                quote! { bool },
+                quote! { bool },
+                quote! { #lit_bool },
+                lit_bool.to_token_stream().to_string(),
+            )),
+            Lit::Int(lit_int) => {
+                let value = lit_int
+                    .base10_digits()
+                    .parse::<i64>()
+                    .map_err(|_| Error::new_spanned(lit_int, "Invalid i64 literal"))?;
+                Ok((
+                    quote! { i64 },
+                    quote! { i64 },
+                    quote! { #value },
+                    lit_int.to_token_stream().to_string(),
+                ))
+            }
+            Lit::Float(lit_float) => {
+                let value = lit_float
+                    .base10_digits()
+                    .parse::<f64>()
+                    .map_err(|_| Error::new_spanned(lit_float, "Invalid f64 literal"))?;
+                Ok((
+                    quote! { f64 },
+                    quote! { f64 },
+                    quote! { #value },
+                    lit_float.to_token_stream().to_string(),
+                ))
+            }
+            _ => Err(Error::new_spanned(
+                &expr_lit.lit,
+                "Literals only supports null, string, bool, int, or float literals",
+            )),
         },
         _ => Err(Error::new_spanned(
             value,

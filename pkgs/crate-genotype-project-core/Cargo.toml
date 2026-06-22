@@ -12,6 +12,9 @@ genotype_parser = { version = "0.15.0", path = "../crate-genotype-parser", optio
 relative-path = { version = "1.9.3", features = ["serde"] }
 serde = { version = "1.0.228", features = ["derive"] }
 miette = { version = "7.6.0", features = ["serde"] }
+toml = { version = "0.8.19" }
+toml_edit = { version = "0.22.26", features = ["serde"] }
+indexmap = { version = "2.6.0", features = ["serde"] }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

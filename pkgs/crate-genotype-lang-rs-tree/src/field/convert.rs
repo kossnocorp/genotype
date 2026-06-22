@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
 impl RsConvert<RsField> for GtProperty {
-    fn convert(&self, context: &mut RsConvertContext) -> Result<RsField> {
+    fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsField> {
         let doc = if let Some(doc) = &self.doc {
             Some(doc.convert(context)?)
         } else {

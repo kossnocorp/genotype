@@ -1,0 +1,309 @@
+%YAML 1.2
+---
+name: Genotype
+file_extensions:
+  - type
+scope: source.genotype
+
+variables:
+  name: "[A-Za-z][A-Za-z0-9_]*"
+  primitive: "boolean|string|number|int|i8|i16|i32|i64|i128|isize|u8|u16|u32|u64|u128|usize|float|f32|f64"
+  reserved: "use|as|true|false|null|any|boolean|string|number|int|i8|i16|i32|i64|i128|isize|u8|u16|u32|u64|u128|usize|float|f32|f64"
+
+contexts:
+  main:
+    - include: module-doc
+    - include: line-doc
+    - include: comments
+    - include: imports
+    - include: attribute
+    - include: alias
+
+  alias:
+    - match: '^\s*({{name}})\s*(?:(<)\s*({{name}}(?:\s*,\s*{{name}})*)\s*(>))?\s*(:)'
+      scope: meta.alias.genotype
+      captures:
+        1: entity.name.type.alias.genotype
+        2: punctuation.definition.generic.begin.genotype
+        3: variable.parameter.generic.genotype
+        4: punctuation.definition.generic.end.genotype
+        5: punctuation.separator.key-value.genotype
+      push:
+        - meta_scope: meta.alias.genotype
+        - match: '(?=^(?:\s*//!|\s*///|\s*use\b|\s*{{name}}(?:\s*<[^>]*>)?\s*:)|\z)'
+          pop: true
+        - include: descriptors
+        - include: attribute
+        - include: line-doc
+        - include: comments
+
+  descriptors:
+    - match: '\|'
+      scope: keyword.operator.union.genotype
+    - include: generic-arguments
+    - include: descriptor
+    - include: comments
+
+  descriptor:
+    - include: attribute
+    - include: record
+    - include: object
+    - include: array
+    - include: tuple
+    - include: inline-import
+    - include: branded
+    - include: literals
+    - include: primitive
+    - match: '\bany\b'
+      scope: storage.type.any.genotype
+    - include: identifier
+
+  generic-arguments:
+    - match: "<"
+      scope: punctuation.definition.generic.begin.genotype
+      push:
+        - meta_scope: meta.generic.arguments.genotype
+        - match: ">"
+          scope: punctuation.definition.generic.end.genotype
+          pop: true
+        - match: ","
+          scope: punctuation.separator.comma.genotype
+        - include: descriptors
+
+  attribute:
+    - match: '#\['
+      scope: punctuation.definition.annotation.begin.genotype
+      push:
+        - meta_scope: meta.annotation.genotype
+        - match: '\]'
+          scope: punctuation.definition.annotation.end.genotype
+          pop: true
+        - match: '\b({{name}})\b(\s*=\s*)({{name}})\b'
+          captures:
+            1: entity.other.attribute-name.genotype
+            2: keyword.operator.assignment.genotype
+            3: entity.name.type.genotype
+        - match: '\b({{name}})\b(?=\s*\()'
+          scope: entity.name.function.annotation.genotype
+        - match: '\b({{name}})\b(?=\s*=)'
+          scope: entity.other.attribute-name.genotype
+        - match: '\b({{name}})\b(?=\s*\])'
+          scope: entity.other.attribute-name.genotype
+        - match: "="
+          scope: keyword.operator.assignment.genotype
+        - match: '\('
+          scope: punctuation.section.group.begin.genotype
+          push:
+            - meta_scope: meta.annotation.arguments.genotype
+            - match: '\)'
+              scope: punctuation.section.group.end.genotype
+              pop: true
+            - match: '\b({{name}})\b\s*(=)'
+              captures:
+                1: variable.other.property.genotype
+                2: keyword.operator.assignment.genotype
+            - include: attribute-value
+            - match: ","
+              scope: punctuation.separator.comma.genotype
+            - include: comments
+        - include: attribute-value
+
+  attribute-value:
+    - include: literals
+    - match: '\b({{name}})\b'
+      scope: entity.name.type.genotype
+
+  imports:
+    - match: '^\s*(use)\b'
+      scope: meta.import.genotype keyword.control.import.genotype
+      push:
+        - meta_scope: meta.import.genotype
+        - match: "$"
+          pop: true
+        - include: path
+        - include: import-reference
+        - include: comments
+
+  import-reference:
+    - match: '\*'
+      scope: keyword.operator.wildcard.genotype
+    - match: '\{'
+      scope: punctuation.section.block.begin.genotype
+      push:
+        - meta_scope: meta.import.names.genotype
+        - match: '\}'
+          scope: punctuation.section.block.end.genotype
+          pop: true
+        - match: '\b({{name}})\b\s+(as)\s+({{name}})\b'
+          captures:
+            1: entity.name.type.genotype
+            2: keyword.control.import.as.genotype
+            3: entity.name.type.alias.genotype
+        - match: '\b({{name}})\b'
+          scope: entity.name.type.genotype
+        - match: ","
+          scope: punctuation.separator.comma.genotype
+        - include: comments
+    - match: '\b({{name}})\b'
+      scope: entity.name.type.genotype
+
+  path:
+    - match: '\.\./'
+      scope: keyword.operator.path.parent.genotype
+    - match: '\./'
+      scope: keyword.operator.path.current.genotype
+    - match: '[^/\s<]+(?=/)'
+      scope: entity.name.namespace.genotype
+    - match: "/"
+      scope: punctuation.separator.path.genotype
+
+  inline-import:
+    - match: '(?=(?:\.\./|\./|[^/\s<]+/)+{{name}}\b)'
+      push:
+        - meta_scope: meta.inline-import.genotype
+        - match: '(?=\s|>|\]|\}|\)|\||$)'
+          pop: true
+        - include: path
+        - match: '\b({{name}})\b'
+          scope: entity.name.type.genotype
+        - include: generic-arguments
+        - match: ","
+          scope: punctuation.separator.comma.genotype
+
+  primitive:
+    - match: '\b({{primitive}})\b'
+      scope: storage.type.primitive.genotype
+
+  branded:
+    - match: '(@)({{primitive}})\b'
+      captures:
+        1: storage.modifier.branded.genotype
+        2: storage.type.primitive.genotype
+
+  literals:
+    - match: '"'
+      scope: punctuation.definition.string.begin.genotype
+      push:
+        - meta_scope: string.quoted.double.genotype
+        - match: '\\(?:["\\/bfnrt]|u[0-9A-Fa-f]{4})'
+          scope: constant.character.escape.genotype
+        - match: '"'
+          scope: punctuation.definition.string.end.genotype
+          pop: true
+    - match: '\b(?:true|false)\b'
+      scope: constant.language.boolean.genotype
+    - match: '\bnull\b'
+      scope: constant.language.null.genotype
+    - match: '[+-]?(?:0|[1-9](?:[0-9]|_[0-9])*)(?:\.(?:[0-9]|_[0-9])+(?:[eE][+-]?[0-9]+)?|[eE][+-]?[0-9]+)'
+      scope: constant.numeric.float.genotype
+    - match: "[+-]?(?:0|[1-9](?:[0-9]|_[0-9])*)"
+      scope: constant.numeric.integer.genotype
+
+  object:
+    - match: '\{'
+      scope: punctuation.section.block.begin.genotype
+      push:
+        - meta_scope: meta.object.type.genotype
+        - match: '\}'
+          scope: punctuation.section.block.end.genotype
+          pop: true
+        - include: line-doc
+        - include: attribute
+        - include: extension-property
+        - include: property
+        - match: ","
+          scope: punctuation.separator.comma.genotype
+        - include: comments
+
+  extension-property:
+    - match: '(\.\.\.)'
+      scope: keyword.operator.spread.genotype
+      push:
+        - meta_scope: meta.extension-property.genotype
+        - match: '(?=,|\}|$)'
+          pop: true
+        - include: descriptors
+        - include: comments
+
+  property:
+    - match: '\b({{name}})\b\s*(\?)?\s*(:)'
+      captures:
+        1: variable.other.property.genotype
+        2: keyword.operator.optional.genotype
+        3: punctuation.separator.key-value.genotype
+      push:
+        - meta_scope: meta.property.genotype
+        - match: '(?=,|\}|$)'
+          pop: true
+        - include: descriptors
+        - include: comments
+
+  record:
+    - match: '\{(?=\s*\[)'
+      scope: punctuation.section.block.begin.genotype
+      push:
+        - meta_scope: meta.record.type.genotype
+        - match: '\}'
+          scope: punctuation.section.block.end.genotype
+          pop: true
+        - match: '\[(?=[^\]]*\]\s:)'
+          scope: punctuation.section.brackets.begin.genotype
+          push:
+            - meta_scope: meta.record.key.genotype
+            - match: '\]'
+              scope: punctuation.section.brackets.end.genotype
+              pop: true
+            - include: primitive
+            - include: comments
+        - match: ":"
+          scope: punctuation.separator.key-value.genotype
+        - include: descriptors
+        - include: comments
+
+  array:
+    - match: '\['
+      scope: punctuation.section.brackets.begin.genotype
+      push:
+        - meta_scope: meta.array.type.genotype
+        - match: '\]'
+          scope: punctuation.section.brackets.end.genotype
+          pop: true
+        - include: descriptors
+        - include: comments
+
+  tuple:
+    - match: '\('
+      scope: punctuation.section.group.begin.genotype
+      push:
+        - meta_scope: meta.tuple.type.genotype
+        - match: '\)'
+          scope: punctuation.section.group.end.genotype
+          pop: true
+        - include: descriptors
+        - match: ","
+          scope: punctuation.separator.comma.genotype
+        - include: comments
+
+  identifier:
+    - match: '\b(?!{{reserved}}\b){{name}}\b'
+      scope: entity.name.type.genotype
+
+  module-doc:
+    - match: '^\s*//!.*$'
+      scope: comment.block.documentation.genotype
+
+  line-doc:
+    - match: '^\s*///.*$'
+      scope: comment.line.documentation.genotype
+
+  comments:
+    - match: "//(?![/!]).*$"
+      scope: comment.line.double-slash.genotype
+    - match: '/\*'
+      scope: punctuation.definition.comment.begin.genotype
+      push:
+        - meta_scope: comment.block.genotype
+        - match: '\*/'
+          scope: punctuation.definition.comment.end.genotype
+          pop: true
+        - include: comments

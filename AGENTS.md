@@ -1,5 +1,11 @@
 # AI Agent Instructions
 
+Read [CONTRIBUTING.md] for general contribution guidelines. This document contains instructions specific to AI agents. Don't read all the [CONTRIBUTING.md]-linked documents unless you need it for a specific task.
+
+## Comments
+
+Don't look up the referenced `// SEE:` comments unless you need to understand the code you're working on **in depth**. Simple code updates or reading it to get the context for a task doesn't count as "in depth".
+
 ## Architecture Hiccup Records
 
 When you try to make a change and it breaks something in unexpected ways, handle it using the following algorithm:
@@ -7,7 +13,7 @@ When you try to make a change and it breaks something in unexpected ways, handle
 1. Write down the assumptions you had before making the change. This includes what you wanted to achieve, what change you made and why, what you expected to happen, and what actually happened. Don't try to analyze the issue at this point. Just write down the facts as you see them.
 2. Create a Markdown with the description of the issue in `.agents/artifacts/architecture-hiccups/<id>-<slug>.md` where `<id>` is an incremented ID (e.g., `004`) and `<slug>` is a brief description of the issue (e.g., `hard-to-use-references-in-nodes.md`). Keep everything in the "Description" section.
 3. Continue with the task at hand, but keep the issue in mind.
-4. After you finish the task, come back to the issue and analyze it. Using the knowledge you obtain while working around the issue, try to find the root cause and possible solutions. Write down your analysis in the same Markdown file, adding a new section "Analysis".
+4. After you finish the task, come back to the issue and analyze it. Using the knowledge you obtain while working around the issue, try to find the root cause and possible solutions. Write down your analysis in the same Markdown file, adding a new section, "Analysis".
 
 The resulting Markdown should follow this template:
 
@@ -24,3 +30,5 @@ The resulting Markdown should follow this template:
 
 <issue-analysis>
 ```
+
+[CONTRIBUTING.md]: ./CONTRIBUTING.md
