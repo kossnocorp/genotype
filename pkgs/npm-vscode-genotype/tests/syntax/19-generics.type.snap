@@ -1,0 +1,238 @@
+>Response<Payload>:
+#^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#        ^ source.genotype meta.alias.genotype punctuation.definition.generic.begin.genotype
+#         ^^^^^^^ source.genotype meta.alias.genotype variable.parameter.generic.genotype
+#                ^ source.genotype meta.alias.genotype punctuation.definition.generic.end.genotype
+#                 ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+>  | ResponseSuccess<Payload>
+#^^ source.genotype meta.alias.genotype
+#  ^ source.genotype meta.alias.genotype keyword.operator.union.genotype
+#   ^ source.genotype meta.alias.genotype
+#    ^^^^^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.genotype
+#                   ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype punctuation.definition.generic.begin.genotype
+#                    ^^^^^^^ source.genotype meta.alias.genotype meta.generic.arguments.genotype entity.name.type.genotype
+#                           ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype punctuation.definition.generic.end.genotype
+>  | ResponseFailure
+#^^ source.genotype meta.alias.genotype
+#  ^ source.genotype meta.alias.genotype keyword.operator.union.genotype
+#   ^ source.genotype meta.alias.genotype
+#    ^^^^^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.genotype
+>
+>ResponseSuccess<Payload>: {
+#^^^^^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#               ^ source.genotype meta.alias.genotype punctuation.definition.generic.begin.genotype
+#                ^^^^^^^ source.genotype meta.alias.genotype variable.parameter.generic.genotype
+#                       ^ source.genotype meta.alias.genotype punctuation.definition.generic.end.genotype
+#                        ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#                         ^ source.genotype meta.alias.genotype
+#                          ^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.section.block.begin.genotype
+>  status: "success",
+#^^ source.genotype meta.alias.genotype meta.object.type.genotype
+#  ^^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype variable.other.property.genotype
+#        ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype punctuation.separator.key-value.genotype
+#         ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype
+#          ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype string.quoted.double.genotype punctuation.definition.string.begin.genotype
+#           ^^^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype string.quoted.double.genotype
+#                  ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype string.quoted.double.genotype punctuation.definition.string.end.genotype
+#                   ^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.separator.comma.genotype
+>  value: Payload,
+#^^ source.genotype meta.alias.genotype meta.object.type.genotype
+#  ^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype variable.other.property.genotype
+#       ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype punctuation.separator.key-value.genotype
+#        ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype
+#         ^^^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype entity.name.type.genotype
+#                ^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.separator.comma.genotype
+>}
+#^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.section.block.end.genotype
+>
+>ResponseFailure: {
+#^^^^^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#               ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#                ^ source.genotype meta.alias.genotype
+#                 ^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.section.block.begin.genotype
+>  status: "failure",
+#^^ source.genotype meta.alias.genotype meta.object.type.genotype
+#  ^^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype variable.other.property.genotype
+#        ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype punctuation.separator.key-value.genotype
+#         ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype
+#          ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype string.quoted.double.genotype punctuation.definition.string.begin.genotype
+#           ^^^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype string.quoted.double.genotype
+#                  ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype string.quoted.double.genotype punctuation.definition.string.end.genotype
+#                   ^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.separator.comma.genotype
+>  error: string,
+#^^ source.genotype meta.alias.genotype meta.object.type.genotype
+#  ^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype variable.other.property.genotype
+#       ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype punctuation.separator.key-value.genotype
+#        ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype
+#         ^^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype storage.type.primitive.genotype
+#               ^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.separator.comma.genotype
+>}
+#^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.section.block.end.genotype
+>
+>ResponseReadFile: Response<string>
+#^^^^^^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#                ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#                 ^ source.genotype meta.alias.genotype
+#                  ^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.genotype
+#                          ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype punctuation.definition.generic.begin.genotype
+#                           ^^^^^^ source.genotype meta.alias.genotype meta.generic.arguments.genotype storage.type.primitive.genotype
+#                                 ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype punctuation.definition.generic.end.genotype
+>
+>ResponseGlob: Response<[string]>
+#^^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#            ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#             ^ source.genotype meta.alias.genotype
+#              ^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.genotype
+#                      ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype punctuation.definition.generic.begin.genotype
+#                       ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype meta.array.type.genotype punctuation.section.brackets.begin.genotype
+#                        ^^^^^^ source.genotype meta.alias.genotype meta.generic.arguments.genotype meta.array.type.genotype storage.type.primitive.genotype
+#                              ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype meta.array.type.genotype punctuation.section.brackets.end.genotype
+#                               ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype punctuation.definition.generic.end.genotype
+>
+>ResponseIsFile: Response<boolean>
+#^^^^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#              ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#               ^ source.genotype meta.alias.genotype
+#                ^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.genotype
+#                        ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype punctuation.definition.generic.begin.genotype
+#                         ^^^^^^^ source.genotype meta.alias.genotype meta.generic.arguments.genotype storage.type.primitive.genotype
+#                                ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype punctuation.definition.generic.end.genotype
+>
+>ResponseFindFile: Response<string | null>
+#^^^^^^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#                ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#                 ^ source.genotype meta.alias.genotype
+#                  ^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.genotype
+#                          ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype punctuation.definition.generic.begin.genotype
+#                           ^^^^^^ source.genotype meta.alias.genotype meta.generic.arguments.genotype storage.type.primitive.genotype
+#                                 ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype
+#                                  ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype keyword.operator.union.genotype
+#                                   ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype
+#                                    ^^^^ source.genotype meta.alias.genotype meta.generic.arguments.genotype constant.language.null.genotype
+#                                        ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype punctuation.definition.generic.end.genotype
+>
+>InlineImportGeneric: ./runtime/Response<string>
+#^^^^^^^^^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#                   ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#                    ^ source.genotype meta.alias.genotype
+#                     ^^ source.genotype meta.alias.genotype meta.inline-import.genotype keyword.operator.path.current.genotype
+#                       ^^^^^^^ source.genotype meta.alias.genotype meta.inline-import.genotype entity.name.namespace.genotype
+#                              ^ source.genotype meta.alias.genotype meta.inline-import.genotype punctuation.separator.path.genotype
+#                               ^^^^^^^^ source.genotype meta.alias.genotype meta.inline-import.genotype entity.name.type.genotype
+#                                       ^ source.genotype meta.alias.genotype meta.inline-import.genotype meta.generic.arguments.genotype punctuation.definition.generic.begin.genotype
+#                                        ^^^^^^ source.genotype meta.alias.genotype meta.inline-import.genotype meta.generic.arguments.genotype storage.type.primitive.genotype
+#                                              ^ source.genotype meta.alias.genotype meta.inline-import.genotype meta.generic.arguments.genotype punctuation.definition.generic.end.genotype
+>
+>Pair<Left, Right>: {
+#^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#    ^ source.genotype meta.alias.genotype punctuation.definition.generic.begin.genotype
+#     ^^^^^^^^^^^ source.genotype meta.alias.genotype variable.parameter.generic.genotype
+#                ^ source.genotype meta.alias.genotype punctuation.definition.generic.end.genotype
+#                 ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#                  ^ source.genotype meta.alias.genotype
+#                   ^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.section.block.begin.genotype
+>  left: Left,
+#^^ source.genotype meta.alias.genotype meta.object.type.genotype
+#  ^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype variable.other.property.genotype
+#      ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype punctuation.separator.key-value.genotype
+#       ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype
+#        ^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype entity.name.type.genotype
+#            ^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.separator.comma.genotype
+>  right: Right,
+#^^ source.genotype meta.alias.genotype meta.object.type.genotype
+#  ^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype variable.other.property.genotype
+#       ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype punctuation.separator.key-value.genotype
+#        ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype
+#         ^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype entity.name.type.genotype
+#              ^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.separator.comma.genotype
+>}
+#^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.section.block.end.genotype
+>
+>StringNumberPair: Pair<string, number>
+#^^^^^^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#                ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#                 ^ source.genotype meta.alias.genotype
+#                  ^^^^ source.genotype meta.alias.genotype entity.name.type.genotype
+#                      ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype punctuation.definition.generic.begin.genotype
+#                       ^^^^^^ source.genotype meta.alias.genotype meta.generic.arguments.genotype storage.type.primitive.genotype
+#                             ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype punctuation.separator.comma.genotype
+#                              ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype
+#                               ^^^^^^ source.genotype meta.alias.genotype meta.generic.arguments.genotype storage.type.primitive.genotype
+#                                     ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype punctuation.definition.generic.end.genotype
+>
+>WithExt: {
+#^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#       ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#        ^ source.genotype meta.alias.genotype
+#         ^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.section.block.begin.genotype
+>  ...Pair<string, number>,
+#^^ source.genotype meta.alias.genotype meta.object.type.genotype
+#  ^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype keyword.operator.spread.genotype
+#     ^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype entity.name.type.genotype
+#         ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.generic.arguments.genotype punctuation.definition.generic.begin.genotype
+#          ^^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.generic.arguments.genotype storage.type.primitive.genotype
+#                ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.generic.arguments.genotype punctuation.separator.comma.genotype
+#                 ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.generic.arguments.genotype
+#                  ^^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.generic.arguments.genotype storage.type.primitive.genotype
+#                        ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.generic.arguments.genotype punctuation.definition.generic.end.genotype
+#                         ^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.separator.comma.genotype
+>}
+#^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.section.block.end.genotype
+>
+>WithInlineImport: Response<./pair/Pair<string, number>>
+#^^^^^^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#                ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#                 ^ source.genotype meta.alias.genotype
+#                  ^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.genotype
+#                          ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype punctuation.definition.generic.begin.genotype
+#                           ^^ source.genotype meta.alias.genotype meta.generic.arguments.genotype meta.inline-import.genotype keyword.operator.path.current.genotype
+#                             ^^^^ source.genotype meta.alias.genotype meta.generic.arguments.genotype meta.inline-import.genotype entity.name.namespace.genotype
+#                                 ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype meta.inline-import.genotype punctuation.separator.path.genotype
+#                                  ^^^^ source.genotype meta.alias.genotype meta.generic.arguments.genotype meta.inline-import.genotype entity.name.type.genotype
+#                                      ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype meta.inline-import.genotype meta.generic.arguments.genotype punctuation.definition.generic.begin.genotype
+#                                       ^^^^^^ source.genotype meta.alias.genotype meta.generic.arguments.genotype meta.inline-import.genotype meta.generic.arguments.genotype storage.type.primitive.genotype
+#                                             ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype meta.inline-import.genotype meta.generic.arguments.genotype punctuation.separator.comma.genotype
+#                                              ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype meta.inline-import.genotype meta.generic.arguments.genotype
+#                                               ^^^^^^ source.genotype meta.alias.genotype meta.generic.arguments.genotype meta.inline-import.genotype meta.generic.arguments.genotype storage.type.primitive.genotype
+#                                                     ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype meta.inline-import.genotype meta.generic.arguments.genotype punctuation.definition.generic.end.genotype
+#                                                      ^ source.genotype meta.alias.genotype meta.generic.arguments.genotype punctuation.definition.generic.end.genotype
+>
+>WithInlineImportExt: {
+#^^^^^^^^^^^^^^^^^^^ source.genotype meta.alias.genotype entity.name.type.alias.genotype
+#                   ^ source.genotype meta.alias.genotype punctuation.separator.key-value.genotype
+#                    ^ source.genotype meta.alias.genotype
+#                     ^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.section.block.begin.genotype
+>  ...Response<./pair/Pair<string, number>>,
+#^^ source.genotype meta.alias.genotype meta.object.type.genotype
+#  ^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype keyword.operator.spread.genotype
+#     ^^^^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype entity.name.type.genotype
+#             ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.generic.arguments.genotype punctuation.definition.generic.begin.genotype
+#              ^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.generic.arguments.genotype meta.inline-import.genotype keyword.operator.path.current.genotype
+#                ^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.generic.arguments.genotype meta.inline-import.genotype entity.name.namespace.genotype
+#                    ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.generic.arguments.genotype meta.inline-import.genotype punctuation.separator.path.genotype
+#                     ^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.generic.arguments.genotype meta.inline-import.genotype entity.name.type.genotype
+#                         ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.generic.arguments.genotype meta.inline-import.genotype meta.generic.arguments.genotype punctuation.definition.generic.begin.genotype
+#                          ^^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.generic.arguments.genotype meta.inline-import.genotype meta.generic.arguments.genotype storage.type.primitive.genotype
+#                                ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.generic.arguments.genotype meta.inline-import.genotype meta.generic.arguments.genotype punctuation.separator.comma.genotype
+#                                 ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.generic.arguments.genotype meta.inline-import.genotype meta.generic.arguments.genotype
+#                                  ^^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.generic.arguments.genotype meta.inline-import.genotype meta.generic.arguments.genotype storage.type.primitive.genotype
+#                                        ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.generic.arguments.genotype meta.inline-import.genotype meta.generic.arguments.genotype punctuation.definition.generic.end.genotype
+#                                         ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.generic.arguments.genotype punctuation.definition.generic.end.genotype
+#                                          ^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.separator.comma.genotype
+>  ..../pair/Pair<string, number>,
+#^^ source.genotype meta.alias.genotype meta.object.type.genotype
+#  ^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype keyword.operator.spread.genotype
+#     ^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.inline-import.genotype keyword.operator.path.current.genotype
+#       ^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.inline-import.genotype entity.name.namespace.genotype
+#           ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.inline-import.genotype punctuation.separator.path.genotype
+#            ^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.inline-import.genotype entity.name.type.genotype
+#                ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.inline-import.genotype meta.generic.arguments.genotype punctuation.definition.generic.begin.genotype
+#                 ^^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.inline-import.genotype meta.generic.arguments.genotype storage.type.primitive.genotype
+#                       ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.inline-import.genotype meta.generic.arguments.genotype punctuation.separator.comma.genotype
+#                        ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.inline-import.genotype meta.generic.arguments.genotype
+#                         ^^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.inline-import.genotype meta.generic.arguments.genotype storage.type.primitive.genotype
+#                               ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.inline-import.genotype meta.generic.arguments.genotype punctuation.definition.generic.end.genotype
+#                                ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.extension-property.genotype meta.inline-import.genotype punctuation.separator.comma.genotype
+>}
+#^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.section.block.end.genotype
+>

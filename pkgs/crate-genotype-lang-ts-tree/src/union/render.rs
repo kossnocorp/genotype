@@ -1,20 +1,16 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TsUnion {
-    type RenderState = TsRenderState;
-
-    type RenderContext = TsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, TsRenderTypes> for TsUnion {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: TsRenderState,
+        context: &mut TsRenderContext,
+    ) -> TsRenderResult<String> {
         let descriptors = self
             .descriptors
             .iter()
             .map(|d| d.render(state, context))
-            .collect::<Result<Vec<_>>>()?;
+            .collect::<Result<Vec<_>, _>>()?;
 
         if context.is_zod_mode() {
             Ok(format!("z.union([{}])", descriptors.join(", ")))

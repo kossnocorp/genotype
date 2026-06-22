@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RsPrimitive {
-    type RenderState = RsRenderState;
-
-    type RenderContext = RsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, RsRenderTypes> for RsPrimitive {
     fn render(
         &self,
-        _state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        _state: RsRenderState,
+        context: &mut RsRenderContext,
+    ) -> RsRenderResult<String> {
         Ok(match self {
             RsPrimitive::Unit => "()",
             RsPrimitive::Boolean => "bool",

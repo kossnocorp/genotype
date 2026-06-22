@@ -1,0 +1,20 @@
+NodeMeta: {
+  id: string,
+}
+
+TreeLinkFields: {
+  parent?: TreeNode,
+}
+
+TreeNode: {
+  ...NodeMeta,
+  ...TreeLinkFields,
+  payload: TreePayload,
+  children: [TreeNode],
+}
+
+TreePayload: {
+  ...NodeMeta,
+  owner?: TreeNode,
+  kind: string,
+}

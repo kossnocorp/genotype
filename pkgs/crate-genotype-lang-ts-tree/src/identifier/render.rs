@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TsIdentifier {
-    type RenderState = TsRenderState;
-
-    type RenderContext = TsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, TsRenderTypes> for TsIdentifier {
     fn render(
         &self,
-        _state: Self::RenderState,
-        _context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        _state: TsRenderState,
+        _context: &mut TsRenderContext,
+    ) -> TsRenderResult<String> {
         Ok(self.0.to_string())
     }
 }

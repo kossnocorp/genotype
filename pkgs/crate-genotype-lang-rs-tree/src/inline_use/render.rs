@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RsInlineUse {
-    type RenderState = RsRenderState;
-
-    type RenderContext = RsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, RsRenderTypes> for RsInlineUse {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: RsRenderState,
+        context: &mut RsRenderContext,
+    ) -> RsRenderResult<String> {
         let module = self.path.render(state, context)?;
         let name = self.name.render(state, context)?;
         Ok(format!("{module}::{name}"))

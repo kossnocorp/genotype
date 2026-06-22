@@ -1,22 +1,19 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RsUse {
-    type RenderState = RsRenderState;
-
-    type RenderContext = RsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, RsRenderTypes> for RsUse {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: RsRenderState,
+        context: &mut RsRenderContext,
+    ) -> RsRenderResult<String> {
         let path = self.dependency.as_path();
         let reference = self.reference.render(state, context)?;
 
-        Ok(match self.reference {
-            RsUseReference::Module => format!(r#"use {path};"#),
-            _ => format!(r#"use {path}::{reference};"#),
-        })
+        todo!();
+        // Ok(match self.reference {
+        //     RsUseReference::Module => format!(r#"use {path};"#),
+        //     _ => format!(r#"use {path}::{reference};"#),
+        // })
     }
 }
 

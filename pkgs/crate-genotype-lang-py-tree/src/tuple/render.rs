@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PyTuple {
-    type RenderState = PyRenderState;
-
-    type RenderContext = PyRenderContext<'a>;
-
+impl<'context> GtlRender<'context, PyRenderTypes> for PyTuple {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: PyRenderState,
+        context: &mut PyRenderContext,
+    ) -> PyRenderResult<String> {
         let tuple = if let PyVersion::Legacy = context.config.version {
             "Tuple"
         } else {
@@ -20,7 +16,7 @@ impl<'a> GtlRender<'a> for PyTuple {
             .descriptors
             .iter()
             .map(|d| d.render(state, context))
-            .collect::<Result<Vec<_>>>()?
+            .collect::<Result<Vec<_>, _>>()?
             .join(", ");
         let descriptors = if !descriptors.is_empty() {
             descriptors

@@ -16,15 +16,14 @@ pub fn convert_node_with<GtNode: TsConvert<Node>, Node>(
 
 pub fn render_node_with<'a, TsNode>(node: TsNode, context: &mut TsRenderContext<'a>) -> String
 where
-    TsNode: GtlRender<'a, RenderState = TsRenderState, RenderContext = TsRenderContext<'a>>,
+    TsNode: GtlRender<'a, TsRenderTypes>,
 {
     node.render(Default::default(), context).unwrap()
 }
 
 pub fn render_node<TsNode>(node: TsNode) -> String
 where
-    TsNode:
-        GtlRender<'static, RenderState = TsRenderState, RenderContext = TsRenderContext<'static>>,
+    TsNode: GtlRender<'static, TsRenderTypes>,
 {
     let mut context = Tst::render_context();
     render_node_with(node, &mut context)

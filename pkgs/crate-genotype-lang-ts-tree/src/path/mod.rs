@@ -12,6 +12,8 @@ impl TsPath {
     }
 }
 
+impl GtlPath for TsPath {}
+
 impl From<&str> for TsPath {
     fn from(str: &str) -> Self {
         TsPath(str.into())

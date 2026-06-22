@@ -1,15 +1,12 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PyIdentifier {
-    type RenderState = PyRenderState;
-
-    type RenderContext = PyRenderContext<'a>;
+impl<'context> GtlRender<'context, PyRenderTypes> for PyIdentifier {
 
     fn render(
         &self,
-        _state: Self::RenderState,
-        _context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        _state: PyRenderState,
+        _context: &mut PyRenderContext,
+    ) -> PyRenderResult<String> {
         Ok(self.0.to_string())
     }
 }

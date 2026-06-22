@@ -20,6 +20,12 @@ gtp_cwd_relative_dir_path_wrapper_newtype!(
     pub struct GtpPkgDirPath(GtpCwdRelativePath);
 );
 
+// impl GtpPkgDirPath {
+//     pub fn join_as_pkg_dir_relative_path(&self, path: Gtp) -> GtpPkgDirRelativePath {
+//         GtpPkgDirRelativePath::
+//     }
+// }
+
 // endregion
 
 // region: Dist dir-relative package dir path
@@ -29,6 +35,15 @@ gtp_relative_path_wrapper_newtype!(
     pub struct GtpDistDirRelativePkgDirPath(GtpDistDirRelativePath);
     parent: GtpDistDirPath;
 );
+
+impl GtpDistDirRelativePkgDirPath {
+    pub fn join_as_dist_dir_relative_path(
+        &self,
+        path: &GtpPkgDirRelativePath,
+    ) -> GtpDistDirRelativePath {
+        GtpDistDirRelativePath::new(self.relative_path().join(path.relative_path()))
+    }
+}
 
 // endregion
 

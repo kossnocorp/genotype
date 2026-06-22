@@ -7,22 +7,33 @@ pub struct RsConfig {
     #[serde(flatten)]
     pub lang: RsConfigLang,
     #[serde(flatten)]
-    pub common: GtlConfigCommon<RsPkgPath>,
+    pub common: GtpLangConfigCommon, //<RsPkgPath>,
 }
 
-impl GtlConfig for RsConfig {
-    type PkgPath = RsPkgPath;
+impl GtpLangConfig for RsConfig {
+    // type PkgPath = RsPkgPath;
 
-    fn common(&self) -> &GtlConfigCommon<Self::PkgPath> {
+    fn common(&self) -> &GtpLangConfigCommon {
+        // <Self::PkgPath> {
         &self.common
     }
-}
 
-impl GtlConfigHealth for RsConfig {
-    fn health_check(&self) -> Vec<GtlConfigNotice> {
+    fn pkg_src_dir_relative_module_path(&self, module_id: &GtModuleId) -> GtpPkgSrcDirRelativePath {
+        GtpPkgSrcDirRelativePath::from_str(&format!("{}.rs", module_id.0.as_ref()))
+    }
+
+    fn default_pkg_dir_path(&self) -> GtpDistDirRelativePkgDirPath {
+        "rs".into()
+    }
+
+    fn health_check(
+        &self,
+        config_path: &GtpConfigFilePath,
+        package_enabled: bool,
+    ) -> Vec<GtNotice> {
         let mut notices = vec![];
 
-        if let Some(notice) = self.rust_edition_health_check() {
+        if let Some(notice) = self.rust_edition_health_check(config_path, package_enabled) {
             notices.push(notice);
         }
 

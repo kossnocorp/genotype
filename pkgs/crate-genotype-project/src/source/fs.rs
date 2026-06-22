@@ -19,24 +19,24 @@ impl<Type: GtpSourceFs + ?Sized> GtpSource for Type {
         let path_buf = path.to_path_buf();
         let path_str = path_buf
             .to_str()
-            .ok_or_else(|| miette!("failed to convert path '{}' to string", path_buf.display()))?;
+            .ok_or_else(|| miette!("Failed to convert path '{}' to string", path_buf.display()))?;
 
         let module_paths = glob(path_str)
             .map_err(|err| {
                 miette!(
                     labels = vec![LabeledSpan::at_offset(err.pos, "here")],
-                    "invalid glob pattern: {path_str}",
+                    "Invalid glob pattern: {path_str}",
                 )
                 .with_source_code(path_str.to_string())
             })?
             .map(|file_result| {
                 file_result
                     .map_err(|e| miette!(e))
-                    .wrap_err("failed to read file path from glob pattern")
+                    .wrap_err("Failed to read file path from glob pattern")
                     .and_then(|file_path| {
                         RelativePathBuf::from_path(file_path)
                             .map_err(|e| miette!(e))
-                            .wrap_err("failed to convert file path from glob into relative path")
+                            .wrap_err("Failed to convert file path from glob into relative path")
                     })
                     .map(|file_path| GtpModulePath::from_cwd_relative_path(file_path.into()))
             })
@@ -49,7 +49,9 @@ impl<Type: GtpSourceFs + ?Sized> GtpSource for Type {
     fn read_file(&self, path: &GtpCwdRelativePath) -> Result<String> {
         let source = fs::read_to_string(self.resolve_path_buf(path))
             .map_err(|e| miette!(e))
-            .wrap_err_with(|| format!("failed to read file '{}'", path.display()))?;
+            .wrap_err_with(|| {
+                format!("File `{path}` doesn't exist or don't have permission to read it")
+            })?;
         Ok(source)
     }
 
@@ -68,7 +70,7 @@ impl<Type: GtpSourceFs + ?Sized> GtpSource for Type {
         }
 
         Err(miette!(
-            "reached the root directory without finding the file '{file_name}' starting from '{}'",
+            "Reached the root directory without finding the file '{file_name}' starting from '{}'",
             self.base_path().display()
         ))
     }

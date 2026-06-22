@@ -1,15 +1,12 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PyDictKey {
-    type RenderState = PyRenderState;
-
-    type RenderContext = PyRenderContext<'a>;
+impl<'context> GtlRender<'context, PyRenderTypes> for PyDictKey {
 
     fn render(
         &self,
-        _state: Self::RenderState,
-        _context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        _state: PyRenderState,
+        _context: &mut PyRenderContext,
+    ) -> PyRenderResult<String> {
         Ok(match self {
             PyDictKey::String => "str".into(),
             PyDictKey::Int => "int".into(),

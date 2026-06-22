@@ -1,15 +1,12 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PyProperty {
-    type RenderState = PyRenderState;
-
-    type RenderContext = PyRenderContext<'a>;
+impl<'context> GtlRender<'context, PyRenderTypes> for PyProperty {
 
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: PyRenderState,
+        context: &mut PyRenderContext,
+    ) -> PyRenderResult<String> {
         let name = self.name.render(state, context)?;
         let is_schema = self.name.0.as_ref() == "schema";
         let name = if is_schema { "schema_" } else { &name };

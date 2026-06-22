@@ -1,15 +1,12 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PyImportReference {
-    type RenderState = PyRenderState;
-
-    type RenderContext = PyRenderContext<'a>;
+impl<'context> GtlRender<'context, PyRenderTypes> for PyImportReference {
 
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: PyRenderState,
+        context: &mut PyRenderContext,
+    ) -> PyRenderResult<String> {
         Ok(match self {
             PyImportReference::Default(name) => {
                 if let Some(name) = name {
@@ -24,7 +21,7 @@ impl<'a> GtlRender<'a> for PyImportReference {
             PyImportReference::Named(names) => names
                 .iter()
                 .map(|name| name.render(state, context))
-                .collect::<Result<Vec<_>>>()?
+                .collect::<Result<Vec<_>, _>>()?
                 .join(", "),
         })
     }

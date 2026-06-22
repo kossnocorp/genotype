@@ -1,14 +1,13 @@
 use crate::prelude::internal::*;
 
 mod ordering;
+
 mod visitor;
+
 pub(crate) use visitor::*;
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
-pub struct PyConvertModule(pub PyModule);
-
-impl PyConvertModule {
-    pub fn convert(module: &GtModule, resolve: &PyConvertResolve, config: &PyConfig) -> Self {
+impl PyModule {
+    pub fn convert(module: &GtModule, resolve: &PyConvertResolve, config: &PyConfig) -> PyModule {
         // [TODO] Get rid of unnecessary clone
         let mut context = PyConvertContext::new(resolve.clone(), config.clone());
 
@@ -37,7 +36,7 @@ impl PyConvertModule {
         let mut visitor = PyModuleVisitor::new(&module, config.lang.version == PyVersion::Legacy);
         module.traverse_mut(&mut visitor);
 
-        PyConvertModule(module)
+        module
     }
 }
 
@@ -55,7 +54,7 @@ mod tests {
         );
 
         assert_ron_snapshot!(
-            PyConvertModule::convert(
+            PyModule::convert(
                 &GtModule {
                     id: "module".into(),
                     doc: None,
@@ -301,7 +300,7 @@ mod tests {
     #[test]
     fn test_convert_doc() {
         assert_ron_snapshot!(
-            PyConvertModule::convert(
+            PyModule::convert(
                 &GtModule {
                     id: "module".into(),
                     doc: Some(GtDoc::new((0, 0).into(), "Hello, world!".into())),
@@ -324,7 +323,7 @@ mod tests {
     #[test]
     fn test_convert_reorder() {
         assert_ron_snapshot!(
-            PyConvertModule::convert(
+            PyModule::convert(
                 &GtModule {
                     id: "module".into(),
                     doc: None,

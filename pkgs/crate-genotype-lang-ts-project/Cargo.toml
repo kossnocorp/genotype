@@ -20,6 +20,7 @@ serde = { version = "1.0.228", features = ["derive"] }
 miette = { version = "7.6.0", features = ["serde"] }
 thiserror = "1.0.64"
 semver = { version = "1.0.27", features = ["serde"] }
+pluralizer = "0.5.0"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

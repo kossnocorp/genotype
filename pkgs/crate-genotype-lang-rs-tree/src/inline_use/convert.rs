@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
 impl RsConvert<RsInlineUse> for GtInlineImport {
-    fn convert(&self, context: &mut RsConvertContext) -> Result<RsInlineUse> {
+    fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsInlineUse> {
         let path = self.path.convert(context)?;
         let name = self.name.convert(context)?;
         Ok(RsInlineUse { path, name })

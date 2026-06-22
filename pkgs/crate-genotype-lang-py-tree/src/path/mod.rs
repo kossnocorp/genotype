@@ -7,6 +7,8 @@ mod render;
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
 pub struct PyPath(pub Arc<str>);
 
+impl GtlPath for PyPath {}
+
 impl From<&str> for PyPath {
     fn from(str: &str) -> Self {
         PyPath(str.into())

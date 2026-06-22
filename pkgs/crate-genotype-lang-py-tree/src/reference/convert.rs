@@ -13,7 +13,7 @@ impl PyConvert<PyReference> for GtInlineImport {
         let name = self.name.convert(context);
         let path = self.path.convert(context);
         context.push_import(PyImport::new(
-            PyDependencyIdent::Path(path),
+            PyDependencyIdent::Local(path),
             PyImportReference::Named(vec![name.clone().into()]),
         ));
         PyReference::new(name, false)

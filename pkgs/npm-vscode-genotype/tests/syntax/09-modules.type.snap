@@ -53,7 +53,7 @@
 #                ^^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype meta.inline-import.genotype entity.name.namespace.genotype
 #                      ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype meta.inline-import.genotype punctuation.separator.path.genotype
 #                       ^^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype meta.inline-import.genotype entity.name.type.genotype
-#                             ^ source.genotype meta.alias.genotype meta.object.type.genotype punctuation.separator.comma.genotype
+#                             ^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype meta.inline-import.genotype punctuation.separator.comma.genotype
 >  genre: Genre,
 #^^ source.genotype meta.alias.genotype meta.object.type.genotype
 #  ^^^^^ source.genotype meta.alias.genotype meta.object.type.genotype meta.property.genotype variable.other.property.genotype

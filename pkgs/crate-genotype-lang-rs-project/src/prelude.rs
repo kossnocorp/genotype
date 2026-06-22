@@ -1,6 +1,5 @@
 pub(crate) mod internal {
     pub use crate::*;
-    pub use genotype_lang_core_config::*;
     pub use genotype_lang_core_project::*;
     pub use genotype_lang_core_tree::*;
     pub use genotype_lang_rs_config::RsConfig;
@@ -13,5 +12,6 @@ pub(crate) mod internal {
     pub use miette::{Diagnostic, IntoDiagnostic, Result};
     pub use serde::Serialize;
     pub use std::hash::{Hash, Hasher};
+    pub use std::mem;
     pub use thiserror::Error;
 }

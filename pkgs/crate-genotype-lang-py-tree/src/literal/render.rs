@@ -1,11 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PyLiteral {
-    type RenderState = PyRenderState;
-
-    type RenderContext = PyRenderContext<'a>;
-
-    fn render(&self, _state: PyRenderState, _context: &mut PyRenderContext) -> Result<String> {
+impl<'context> GtlRender<'context, PyRenderTypes> for PyLiteral {
+    fn render(
+        &self,
+        _state: PyRenderState,
+        _context: &mut PyRenderContext,
+    ) -> PyRenderResult<String> {
         let str = match self {
             PyLiteral::None => "None".to_string(),
 

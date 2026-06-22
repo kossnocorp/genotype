@@ -1,11 +1,12 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PyPrimitive {
-    type RenderState = PyRenderState;
+impl<'context> GtlRender<'context, PyRenderTypes> for PyPrimitive {
 
-    type RenderContext = PyRenderContext<'a>;
-
-    fn render(&self, _state: PyRenderState, _context: &mut PyRenderContext) -> Result<String> {
+    fn render(
+        &self,
+        _state: PyRenderState,
+        _context: &mut PyRenderContext,
+    ) -> PyRenderResult<String> {
         Ok(match self {
             PyPrimitive::Boolean => "bool",
             PyPrimitive::String => "str",

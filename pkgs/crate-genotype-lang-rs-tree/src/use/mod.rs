@@ -21,11 +21,11 @@ impl RsUse {
 }
 
 impl GtlImport for RsUse {
-    type DependencyIdent = RsDependencyIdent;
     type ImportRef = RsUseReference;
     type ImportRefName = RsUseName;
+    type DependencyIdent = RsDependencyIdent;
 
-    fn dependency(&self) -> &Self::DependencyIdent {
+    fn dependency(&self) -> &RsDependencyIdent {
         &self.dependency
     }
 

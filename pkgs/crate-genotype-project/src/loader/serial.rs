@@ -5,12 +5,16 @@ use std::cell::RefCell;
 /// It is useful for single-threaded runtimes such as WebAssembly.
 pub trait GtpLoaderSerial: GtpLoader<RefCell<GtProject>> {
     /// Loads a module and its dependencies recursively.
-    fn load_module_recursive(
+    fn load_module_recursive<LoaderModule>(
         &self,
         project: &RefCell<GtProject>,
-        path: GtpModulePath,
-    ) -> Result<()> {
-        if let Some(dep_paths) = self.load_project_module(project, path)? {
+        module: LoaderModule,
+    ) -> Result<()>
+    where
+        LoaderModule: Into<GtpModuleSource>,
+    {
+        let module = module.into();
+        if let Some(dep_paths) = self.load_project_module(project, &module)? {
             for dep_path in dep_paths {
                 self.load_module_recursive(project, dep_path)?;
             }
@@ -37,21 +41,32 @@ impl<Type: GtpLoaderSerial + GtpSource + ?Sized> GtpLoader<RefCell<GtProject>> f
     fn init_project_module(
         &self,
         project: &RefCell<GtProject>,
-        path: &GtpModulePath,
+        source: &GtpModuleSource,
     ) -> Result<Option<GtModuleId>> {
         let mut project = project.borrow_mut();
-        project.init_module(path)
+        project.init_module(&source)
     }
 
     /// Sets the module state.
     fn set_project_module(
         &self,
         project: &RefCell<GtProject>,
-        path: &GtpModulePath,
+        source: &GtpModuleSource,
         state: GtpModule,
     ) -> Result<()> {
         let mut project = project.borrow_mut();
-        project.set_module(path, state);
+        project.set_module(source.path(), state);
+        Ok(())
+    }
+
+    /// Adds module source to the project. It provides map of all module references.
+    fn add_project_module_source(
+        &self,
+        project: &RefCell<GtProject>,
+        source: &GtpModuleSource,
+    ) -> Result<()> {
+        let mut project = project.borrow_mut();
+        project.add_module_source(source.clone());
         Ok(())
     }
 }

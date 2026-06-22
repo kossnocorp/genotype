@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-#[derive(Error, Debug, PartialEq)]
+#[derive(Error, Debug, PartialEq, Clone)]
 pub enum TomlExtError {
     #[error("Failed to cast {0} to table")]
     FailedCast(String),

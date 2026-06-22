@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RsAttribute {
-    type RenderState = RsRenderState;
-
-    type RenderContext = RsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, RsRenderTypes> for RsAttribute {
     fn render(
         &self,
-        state: Self::RenderState,
-        _context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: RsRenderState,
+        _context: &mut RsRenderContext,
+    ) -> RsRenderResult<String> {
         Ok(state.indent_format(&format!("#[{content}]", content = self.0)))
     }
 }

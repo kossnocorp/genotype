@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
 impl RsConvert<RsUseName> for GtImportName {
-    fn convert(&self, context: &mut RsConvertContext) -> Result<RsUseName> {
+    fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsUseName> {
         Ok(match self {
             Self::Name(_, name) => RsUseName::Name(name.convert(context)?),
 

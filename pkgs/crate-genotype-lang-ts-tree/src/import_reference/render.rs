@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TsImportReference {
-    type RenderState = TsRenderState;
-
-    type RenderContext = TsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, TsRenderTypes> for TsImportReference {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: TsRenderState,
+        context: &mut TsRenderContext,
+    ) -> TsRenderResult<String> {
         Ok(match self {
             TsImportReference::Default(name) => name.to_string(),
 
@@ -19,7 +15,7 @@ impl<'a> GtlRender<'a> for TsImportReference {
                 let names = names
                     .iter()
                     .map(|name| name.render(state, context))
-                    .collect::<Result<Vec<_>>>()?
+                    .collect::<Result<Vec<_>, _>>()?
                     .join(", ");
                 format!("{{ {} }}", names)
             }

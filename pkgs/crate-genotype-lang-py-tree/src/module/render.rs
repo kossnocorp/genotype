@@ -1,15 +1,12 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PyModule {
-    type RenderState = PyRenderState;
-
-    type RenderContext = PyRenderContext<'a>;
+impl<'context> GtlRender<'context, PyRenderTypes> for PyModule {
 
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: PyRenderState,
+        context: &mut PyRenderContext,
+    ) -> PyRenderResult<String> {
         let mut blocks = vec![];
 
         if let Some(doc) = &self.doc {
@@ -23,7 +20,7 @@ impl<'a> GtlRender<'a> for PyModule {
                 .imports
                 .iter()
                 .map(|import| import.render(state, context))
-                .collect::<Result<Vec<_>>>()?,
+                .collect::<Result<Vec<_>, _>>()?,
         );
 
         if !imports.is_empty() {
@@ -35,7 +32,7 @@ impl<'a> GtlRender<'a> for PyModule {
                 .definitions
                 .iter()
                 .map(|definition| definition.render(state, context))
-                .collect::<Result<Vec<_>>>()?,
+                .collect::<Result<Vec<_>, _>>()?,
         );
 
         if !definitions.is_empty() {
@@ -69,14 +66,14 @@ mod tests {
                 imports: vec![
                     PyImport {
                         reference: PyImportReference::Default(Some("name".into())),
-                        dependency: PyDependencyIdent::Path(".path.to.module".into())
+                        dependency: PyDependencyIdent::Local(".path.to.module".into())
                     },
                     PyImport {
                         reference: PyImportReference::Named(vec![
                             PyImportName::Name("Name".into()),
                             PyImportName::Alias("Name".into(), "Alias".into()),
                         ]),
-                        dependency: PyDependencyIdent::Path(".path.to.module".into())
+                        dependency: PyDependencyIdent::Local(".path.to.module".into())
                     }
                 ],
                 definitions: vec![
@@ -135,7 +132,7 @@ mod tests {
                 doc: Some(PyDoc("Hello, world!".into())),
                 imports: vec![PyImport {
                     reference: PyImportReference::Default(Some("name".into())),
-                    dependency: PyDependencyIdent::Path(".path.to.module".into())
+                    dependency: PyDependencyIdent::Local(".path.to.module".into())
                 },],
                 definitions: vec![PyDefinition::Alias(PyAlias {
                     doc: None,

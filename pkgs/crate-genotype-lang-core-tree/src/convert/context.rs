@@ -1,9 +1,9 @@
 use crate::prelude::internal::*;
 
 pub trait GtlConvertContext {
-    // region: Imports
-
     type Import: GtlImport;
+
+    // region: Imports
 
     fn imports(&self) -> &Vec<Self::Import>;
 
@@ -13,7 +13,10 @@ pub trait GtlConvertContext {
         self.imports_mut().push(import);
     }
 
-    fn drain_imports(&mut self) -> Vec<Self::Import> {
+    fn drain_imports(&mut self) -> Vec<Self::Import>
+    where
+        GtlImportTypeDependencyIdent<Self::Import>: PartialEq,
+    {
         let drained_imports: Vec<_> = self.imports_mut().drain(..).collect();
         let mut imports: Vec<Self::Import> = vec![];
 

@@ -2,7 +2,7 @@ use crate::prelude::internal::*;
 use petgraph::algo::tarjan_scc;
 use petgraph::graph::{Graph, NodeIndex};
 
-impl PyConvertModule {
+impl PyModule {
     pub fn sort_definitions(unordered_definitions: Vec<PyDefinition>) -> Vec<PyDefinition> {
         let mut unordered_definitions = unordered_definitions;
 
@@ -154,7 +154,7 @@ mod tests {
             class("Author", vec![]),
         ];
 
-        let sorted = PyConvertModule::sort_definitions(definitions);
+        let sorted = PyModule::sort_definitions(definitions);
 
         assert_eq!(
             definition_names(&sorted),
@@ -171,7 +171,7 @@ mod tests {
             class("JsonProperty", vec!["JsonAny"]),
         ];
 
-        let sorted = PyConvertModule::sort_definitions(definitions);
+        let sorted = PyModule::sort_definitions(definitions);
         let sorted_names = definition_names(&sorted);
 
         let object_index = sorted_names

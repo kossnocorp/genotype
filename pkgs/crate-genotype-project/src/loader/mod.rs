@@ -85,9 +85,10 @@ pub trait GtpLoader<ProjectRef>: GtpSource {
     /// Parse module source code.
     fn parse_module(
         &self,
-        path: &GtpModulePath,
+        source: &GtpModuleSource,
         module_id_result: Result<Option<GtModuleId>>,
     ) -> Result<Option<GtpModuleParse>, GtpModuleError> {
+        let path = source.path();
         let module_id = module_id_result.map_err(|err| GtpModuleError::Init {
             path: path.clone(),
             message: err.to_string(),
@@ -102,7 +103,7 @@ pub trait GtpLoader<ProjectRef>: GtpSource {
                     }
                 })?;
 
-                let parse = GtpModule::parse(&path, module_id, source_code)?;
+                let parse = GtpModule::parse(path, &source, module_id, source_code)?;
                 Some(parse)
             }
 
@@ -117,16 +118,18 @@ pub trait GtpLoader<ProjectRef>: GtpSource {
     fn load_project_module<'a>(
         &'a self,
         project: &ProjectRef,
-        path: GtpModulePath,
-    ) -> Result<Option<Vec<GtpModulePath>>> {
-        let module_id_result = self.init_project_module(&project, &path);
-        let parse_result = self.parse_module(&path, module_id_result);
+        source: &GtpModuleSource,
+    ) -> Result<Option<Vec<GtpModuleSource>>> {
+        self.add_project_module_source(project, source)?;
 
-        let dep_paths = match parse_result {
+        let module_id_result = self.init_project_module(&project, &source);
+        let parse_result = self.parse_module(&source, module_id_result);
+
+        let module_deps = match parse_result {
             Ok(Some(module_state)) => {
-                let dep_paths = module_state.dep_paths();
-                self.set_project_module(&project, &path, module_state.into())?;
-                Some(dep_paths)
+                let module_deps = module_state.deps();
+                self.set_project_module(&project, &source, module_state.into())?;
+                Some(module_deps)
             }
 
             Ok(None) => {
@@ -135,12 +138,12 @@ pub trait GtpLoader<ProjectRef>: GtpSource {
             }
 
             Err(err) => {
-                self.set_project_module(&project, &path, GtpModule::Error(err))?;
+                self.set_project_module(&project, &source, GtpModule::Error(source.clone(), err))?;
                 None
             }
         };
 
-        Ok(dep_paths)
+        Ok(module_deps)
     }
 
     /// Initializes the module. It relies on project ref allowing to implement runtime-specific
@@ -148,7 +151,7 @@ pub trait GtpLoader<ProjectRef>: GtpSource {
     fn init_project_module<'a>(
         &'a self,
         project: &ProjectRef,
-        path: &GtpModulePath,
+        module: &GtpModuleSource,
     ) -> Result<Option<GtModuleId>>;
 
     /// Sets the module state. It relies on project ref allowing to implement runtime-specific
@@ -156,8 +159,15 @@ pub trait GtpLoader<ProjectRef>: GtpSource {
     fn set_project_module(
         &self,
         project: &ProjectRef,
-        path: &GtpModulePath,
+        module: &GtpModuleSource,
         state: GtpModule,
+    ) -> Result<()>;
+
+    /// Adds module source to the project. It provides map of all module references.
+    fn add_project_module_source(
+        &self,
+        project: &ProjectRef,
+        source: &GtpModuleSource,
     ) -> Result<()>;
 }
 

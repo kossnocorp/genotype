@@ -1,18 +1,35 @@
 use crate::prelude::internal::*;
 use toml_edit::*;
 
-impl<'a> GtlProjectManifest<'a> for TsProject<'a> {
-    const FILE_NAME: &'static str = "package.json";
-    const FORMAT: GtlProjectManifestFormat = GtlProjectManifestFormat::Json;
+pub struct TsManifest<'project, 'config> {
+    config: &'config GtlConfig<'project, TsConfig>,
+}
 
-    type Dependency = TsProjectManifestDependency;
-    type LangConfig = TsConfig;
+impl<'project, 'config> GtlManifest<'project, 'config> for TsManifest<'project, 'config> {
+    type ProjectModule = TsProjectModule;
 
-    fn config(&'a self) -> &'a GtpPkgConfig<'a, Self::LangConfig> {
-        &self.config
+    fn new(
+        config: &'config GtlConfig<'project, GtlProjectModuleTypeLangConfig<Self::ProjectModule>>,
+    ) -> Self
+    where
+        Self: Sized,
+    {
+        TsManifest { config }
     }
 
-    fn base_manifest(&self) -> String {
+    fn config(&self) -> &GtlConfig<'_, GtlProjectModuleTypeLangConfig<Self::ProjectModule>> {
+        self.config
+    }
+
+    fn file_name(&self) -> &'static str {
+        "package.json"
+    }
+
+    fn format(&self) -> GtlManifestFormat {
+        GtlManifestFormat::Json
+    }
+
+    fn base(&self) -> String {
         let entry = self
             .config
             .pkg_relative_src_file_path(&"index.ts".into())
@@ -23,7 +40,7 @@ impl<'a> GtlProjectManifest<'a> for TsProject<'a> {
 "#
         .to_string();
 
-        if let Some(version) = self.config.version {
+        if let Some(version) = self.config.project_version {
             source.push_str(format!("version = \"{version}\"\n").as_str());
         }
 
@@ -31,14 +48,8 @@ impl<'a> GtlProjectManifest<'a> for TsProject<'a> {
 
         source
     }
-}
 
-pub struct TsProjectManifestDependency;
-
-impl GtlProjectManifestDependency for TsProjectManifestDependency {
-    type DependencyIdent = TsDependencyIdent;
-
-    fn as_kv(ident: &Self::DependencyIdent) -> Option<(String, Value)> {
+    fn dependency_as_kv(ident: &TsDependencyIdent) -> Option<(String, Value)> {
         match ident {
             TsDependencyIdent::Zod => Some(("zod".into(), "^4".into())),
             TsDependencyIdent::Local(_) => None,

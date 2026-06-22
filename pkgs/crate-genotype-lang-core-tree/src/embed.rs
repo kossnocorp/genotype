@@ -54,7 +54,7 @@ mod tests {
     use super::*;
     use insta::assert_snapshot;
 
-    #[derive(Clone, Copy)]
+    #[derive(Default, Clone, Copy)]
     struct MockState(usize);
 
     impl GtlRenderState for MockState {

@@ -5,12 +5,13 @@ pub use visitor::*;
 
 mod sort;
 
-#[derive(Debug, PartialEq, Clone, Serialize)]
-pub struct TsConvertModule(pub TsModule);
-
-impl TsConvertModule {
-    pub fn convert(module: &GtModule, resolve: TsConvertResolve, config: &TsConfig) -> Self {
-        let mut context = TsConvertContext::new(resolve, config);
+impl TsModule {
+    pub fn convert(
+        module: &GtModule,
+        convert_resolve: TsConvertResolve,
+        config: &TsConfig,
+    ) -> Self {
+        let mut context = TsConvertContext::new(convert_resolve, config);
         let mode = config.lang.mode.clone();
 
         for import in &module.imports {
@@ -50,7 +51,7 @@ impl TsConvertModule {
         let mut visitor = TsModuleConvertVisitor::new(&module);
         module.traverse_mut(&mut visitor);
 
-        TsConvertModule(module)
+        module
     }
 }
 
@@ -67,7 +68,7 @@ mod tests {
         );
 
         assert_ron_snapshot!(
-            TsConvertModule::convert(
+            TsModule::convert(
                 &GtModule {
                     id: "module".into(),
                     doc: None,
@@ -214,7 +215,7 @@ mod tests {
     #[test]
     fn test_convert_doc() {
         assert_ron_snapshot!(
-            TsConvertModule::convert(
+            TsModule::convert(
                 &GtModule {
                     id: "module".into(),
                     doc: Gt::some_doc("Hello, world!"),
@@ -237,7 +238,7 @@ mod tests {
     #[test]
     fn test_convert_preserve_inline_imports() {
         assert_ron_snapshot!(
-            TsConvertModule::convert(
+            TsModule::convert(
                 &Gt::module(
                     vec![Gt::import(
                         "./schemas",
@@ -300,7 +301,7 @@ mod tests {
         let mut config = TsConfig::default();
         config.lang.mode = TsMode::Zod;
         assert_ron_snapshot!(
-            TsConvertModule::convert(
+            TsModule::convert(
                 &Gt::module(
                     vec![Gt::import(
                         "./schemas",
@@ -387,7 +388,7 @@ mod tests {
 
         let mut config = TsConfig::default();
         config.lang.mode = TsMode::Zod;
-        let converted = TsConvertModule::convert(&module, Default::default(), &config).0;
+        let converted = TsModule::convert(&module, Default::default(), &config);
 
         let positions = converted
             .definitions
@@ -480,7 +481,7 @@ mod tests {
 
         let mut config = TsConfig::default();
         config.lang.mode = TsMode::Zod;
-        let converted = TsConvertModule::convert(&module, Default::default(), &config).0;
+        let converted = TsModule::convert(&module, Default::default(), &config);
 
         let positions = converted
             .definitions
@@ -602,7 +603,7 @@ mod tests {
 
         let mut config = TsConfig::default();
         config.lang.mode = TsMode::Zod;
-        let converted = TsConvertModule::convert(&module, Default::default(), &config).0;
+        let converted = TsModule::convert(&module, Default::default(), &config);
 
         let positions = converted
             .definitions

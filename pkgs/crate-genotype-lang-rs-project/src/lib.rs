@@ -1,3 +1,8 @@
+pub mod prelude;
+
+mod compiler;
+pub use compiler::*;
+
 mod error;
 pub use error::*;
 
@@ -7,10 +12,5 @@ pub use module::*;
 mod project;
 pub use project::*;
 
-mod resolve;
-pub use resolve::*;
-
 mod manifest;
 pub use manifest::*;
-
-pub mod prelude;

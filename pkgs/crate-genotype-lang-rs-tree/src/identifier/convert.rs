@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
 impl RsConvert<RsIdentifier> for GtIdentifier {
-    fn convert(&self, context: &mut RsConvertContext) -> Result<RsIdentifier> {
+    fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsIdentifier> {
         Ok(RsIdentifier(context.resolve_identifier(self).into()))
     }
 }

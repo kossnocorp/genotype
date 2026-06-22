@@ -21,11 +21,11 @@ impl TsImport {
 }
 
 impl GtlImport for TsImport {
-    type DependencyIdent = TsDependencyIdent;
     type ImportRef = TsImportReference;
     type ImportRefName = TsImportName;
+    type DependencyIdent = TsDependencyIdent;
 
-    fn dependency(&self) -> &Self::DependencyIdent {
+    fn dependency(&self) -> &TsDependencyIdent {
         &self.dependency
     }
 

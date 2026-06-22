@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PyImport {
-    type RenderState = PyRenderState;
-
-    type RenderContext = PyRenderContext<'a>;
-
+impl<'context> GtlRender<'context, PyRenderTypes> for PyImport {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: PyRenderState,
+        context: &mut PyRenderContext,
+    ) -> PyRenderResult<String> {
         let path = self.dependency.as_path().render(state, context)?;
         let reference = self.reference.render(state, context)?;
 
@@ -39,7 +35,7 @@ mod tests {
         assert_snapshot!(
             PyImport {
                 reference: PyImportReference::Default(Some("name".into())),
-                dependency: PyDependencyIdent::Path(".path.to.module".into())
+                dependency: PyDependencyIdent::Local(".path.to.module".into())
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -48,7 +44,7 @@ mod tests {
         assert_snapshot!(
             PyImport {
                 reference: PyImportReference::Default(None),
-                dependency: PyDependencyIdent::Path(".path.to.module".into())
+                dependency: PyDependencyIdent::Local(".path.to.module".into())
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -61,7 +57,7 @@ mod tests {
         assert_snapshot!(
             PyImport {
                 reference: PyImportReference::Glob,
-                dependency: PyDependencyIdent::Path(".path.to.module".into())
+                dependency: PyDependencyIdent::Local(".path.to.module".into())
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
@@ -77,7 +73,7 @@ mod tests {
                     PyImportName::Name("Name".into()),
                     PyImportName::Alias("Name".into(), "Alias".into()),
                 ]),
-                dependency: PyDependencyIdent::Path(".path.to.module".into())
+                dependency: PyDependencyIdent::Local(".path.to.module".into())
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),

@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TsReference {
-    type RenderState = TsRenderState;
-
-    type RenderContext = TsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, TsRenderTypes> for TsReference {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: TsRenderState,
+        context: &mut TsRenderContext,
+    ) -> TsRenderResult<String> {
         let reference = self.identifier.render(state, context)?;
 
         if self.arguments.is_empty() {
@@ -20,7 +16,7 @@ impl<'a> GtlRender<'a> for TsReference {
             .arguments
             .iter()
             .map(|argument| argument.render(state, context))
-            .collect::<Result<Vec<_>>>()?
+            .collect::<Result<Vec<_>, _>>()?
             .join(", ");
 
         if context.is_zod_mode() {

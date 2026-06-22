@@ -1,8 +1,0 @@
-use serde::Serialize;
-
-#[derive(Debug, Serialize, Clone)]
-pub struct TsPackage {
-    pub types: String,
-    // [TODO] Merge with package?
-    // pub files: Vec<String>,
-}

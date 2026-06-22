@@ -79,6 +79,8 @@ importers:
 
   pkgs/crate-genotype-lsp/npm/win32-x64: {}
 
+  pkgs/npm-genotype-grammar-subline: {}
+
   pkgs/npm-genotype-tm-grammar: {}
 
   pkgs/npm-vscode-genotype:

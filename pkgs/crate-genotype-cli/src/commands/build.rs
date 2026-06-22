@@ -11,76 +11,29 @@ pub struct GtBuildCommand {
     config: Option<GtpCwdRelativeOrAbsoluteStringPath>,
 }
 
-pub fn build_command(args: &GtBuildCommand) -> Result<()> {
-    let project = GtpRuntimeSystem::new_and_load_all_modules(&args.path, args.config.as_ref())?;
-
-    let mut langs = vec![];
-
-    if project.config.ts_enabled() {
-        print_notices(&project.config.ts.health_check());
-        let ts = TsProject::generate(&project)?.dist()?;
-        langs.push(ts);
+impl GtBuildCommand {
+    pub fn run(args: &GtBuildCommand) -> Result<()> {
+        Ok(Self::build(args))
     }
 
-    if project.config.python_enabled() {
-        print_notices(&project.config.py.health_check());
-        let py = PyProject::generate(&project)?.dist()?;
-        langs.push(py);
-    }
+    pub fn build(args: &GtBuildCommand) {
+        println!(); // Output padding
 
-    if project.config.rust_enabled() {
-        if project.pkg_config_rs().package_enabled() {
-            print_notices(&project.config.rs.health_check());
-        }
-        let rs = RsProject::generate(&project)?.dist()?;
-        langs.push(rs);
-    }
+        let project = GtpRuntimeSystem::new_and_load_all_modules(&args.path, args.config.as_ref());
+        match project {
+            Ok(project) => {
+                let mut compiler = GtCompiler::new(&project, &GtcBackendSystem);
+                let exit_code = compiler.compile();
 
-    write_dist(&langs).map_err(|_| GtCliError::Write)?;
+                if exit_code > 0 {
+                    std::process::exit(exit_code);
+                }
+            }
 
-    println!(
-        "{} project to {}",
-        "Generated".green().bold(),
-        project.config.dist
-    );
-
-    Ok(())
-}
-
-fn write_dist(projects: &Vec<GtlProjectDist>) -> Result<(), Box<dyn std::error::Error>> {
-    for project in projects {
-        project.files.iter().try_for_each(|module| {
-            let dir = module.path.relative_path().parent().unwrap();
-            create_dir_all(dir.to_path(""))?;
-            write(module.path.relative_path().to_path(""), &module.source)
-        })?;
-    }
-
-    Ok(())
-}
-
-fn print_notices(notices: &Vec<GtlConfigNotice>) {
-    for notice in notices {
-        print_notice(notice);
-    }
-}
-
-fn print_notice(notice: &GtlConfigNotice) {
-    match notice.kind {
-        GtlConfigNoticeKind::Warning => {
-            eprintln!(
-                "{label}: {message}",
-                label = "Warning".yellow().bold(),
-                message = notice.message
-            );
-        }
-
-        GtlConfigNoticeKind::Info => {
-            println!(
-                "{label}: {message}",
-                label = "Info".blue().bold(),
-                message = notice.message
-            );
+            Err(err) => {
+                GtcBackendSystem.print_notice(GtNotice::error(err));
+                std::process::exit(1);
+            }
         }
     }
 }

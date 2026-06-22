@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
 impl RsConvert<RsPrimitive> for GtPrimitive {
-    fn convert(&self, context: &mut RsConvertContext) -> Result<RsPrimitive> {
+    fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsPrimitive> {
         Ok(match self.kind {
             GtPrimitiveKind::Boolean => RsPrimitive::Boolean,
             GtPrimitiveKind::String => RsPrimitive::String,

@@ -20,13 +20,14 @@ impl GtImport {
         let mut inner = pair.into_inner();
         let pair = inner.next().ok_or_else(else_err)?;
 
-        let import = parse(inner, pair, context, ParseState::Path(span))?;
+        let import = parse(&span, inner, pair, context, ParseState::Path(span))?;
 
         Ok(import)
     }
 }
 
 fn parse(
+    import_span: &GtSpan,
     mut inner: Pairs<'_, Rule>,
     pair: Pair<'_, Rule>,
     context: &mut GtContext,
@@ -35,10 +36,19 @@ fn parse(
     match state {
         ParseState::Path(span) => {
             let (path, _) = GtPath::split_parse(pair, &context.module_id)?;
-            context.resolve.deps.insert(path.clone());
+            context
+                .resolve
+                .deps
+                .insert(GtModuleSource::new(import_span, &path));
 
             match inner.next() {
-                Some(pair) => parse(inner, pair, context, ParseState::Names(span, path)),
+                Some(pair) => parse(
+                    &import_span,
+                    inner,
+                    pair,
+                    context,
+                    ParseState::Names(span, path),
+                ),
                 None => Err(GtParseError::UnexpectedEnd(
                     span,
                     GtNode::Import,
@@ -136,13 +146,45 @@ mod tests {
             use ./misc/order/{Order, SomethingElse}"#
             .to_owned();
         let parse = GtModule::parse("module".into(), &source_code).unwrap();
-        assert_eq!(
+        assert_ron_snapshot!(
             parse.resolve.deps,
-            IndexSet::<_, std::collections::hash_map::RandomState>::from_iter(vec![
-                GtPath::parse((4, 10).into(), &"module".into(), "author").unwrap(),
-                GtPath::parse((29, 36).into(), &"module".into(), "../user").unwrap(),
-                GtPath::parse((58, 70).into(), &"module".into(), "./misc/order").unwrap()
-            ])
+            @r#"
+        [
+          GtModuleSource(
+            span: GtSpan(0, 12),
+            path: GtPath(
+              span: GtSpan(4, 10),
+              id: GtPathModuleId(
+                span: GtSpan(4, 10),
+                module_id: GtModuleId("module"),
+              ),
+              path: "author",
+            ),
+          ),
+          GtModuleSource(
+            span: GtSpan(25, 41),
+            path: GtPath(
+              span: GtSpan(29, 36),
+              id: GtPathModuleId(
+                span: GtSpan(29, 36),
+                module_id: GtModuleId("module"),
+              ),
+              path: "../user",
+            ),
+          ),
+          GtModuleSource(
+            span: GtSpan(54, 93),
+            path: GtPath(
+              span: GtSpan(58, 70),
+              id: GtPathModuleId(
+                span: GtSpan(58, 70),
+                module_id: GtModuleId("module"),
+              ),
+              path: "./misc/order",
+            ),
+          ),
+        ]
+        "#
         );
     }
 
@@ -153,13 +195,45 @@ mod tests {
             use ./././misc/order/{Order, SomethingElse}"#
             .to_owned();
         let parse = GtModule::parse("module".into(), &source_code).unwrap();
-        assert_eq!(
+        assert_ron_snapshot!(
             parse.resolve.deps,
-            IndexSet::<_, std::collections::hash_map::RandomState>::from_iter(vec![
-                GtPath::parse((4, 12).into(), &"module".into(), "author").unwrap(),
-                GtPath::parse((31, 46).into(), &"module".into(), "../user").unwrap(),
-                GtPath::parse((68, 84).into(), &"module".into(), "./misc/order").unwrap(),
-            ])
+            @r#"
+        [
+          GtModuleSource(
+            span: GtSpan(0, 14),
+            path: GtPath(
+              span: GtSpan(4, 12),
+              id: GtPathModuleId(
+                span: GtSpan(4, 12),
+                module_id: GtModuleId("module"),
+              ),
+              path: "author",
+            ),
+          ),
+          GtModuleSource(
+            span: GtSpan(27, 51),
+            path: GtPath(
+              span: GtSpan(31, 46),
+              id: GtPathModuleId(
+                span: GtSpan(31, 46),
+                module_id: GtModuleId("module"),
+              ),
+              path: "../user",
+            ),
+          ),
+          GtModuleSource(
+            span: GtSpan(64, 107),
+            path: GtPath(
+              span: GtSpan(68, 84),
+              id: GtPathModuleId(
+                span: GtSpan(68, 84),
+                module_id: GtModuleId("module"),
+              ),
+              path: "./misc/order",
+            ),
+          ),
+        ]
+        "#
         );
     }
 }

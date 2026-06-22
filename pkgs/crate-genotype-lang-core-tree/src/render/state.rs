@@ -1,4 +1,4 @@
-pub trait GtlRenderState: Copy {
+pub trait GtlRenderState: Copy + Default {
     const INDENT: &'static str = "  ";
 
     fn indent_inc(&self) -> Self;

@@ -29,8 +29,14 @@ impl From<Span<'_>> for GtSpan {
     }
 }
 
-impl From<GtSpan> for SourceSpan {
-    fn from(val: GtSpan) -> Self {
-        (val.offset(), val.len()).into()
+impl Into<GtSpan> for std::ops::Range<usize> {
+    fn into(self) -> GtSpan {
+        GtSpan(self.start.into(), self.end.into())
+    }
+}
+
+impl Into<SourceSpan> for GtSpan {
+    fn into(self) -> SourceSpan {
+        (self.offset(), self.len()).into()
     }
 }

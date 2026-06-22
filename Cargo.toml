@@ -1,8 +1,8 @@
 [workspace]
-resolver = "2"
+resolver = "3"
 members = [
+  "pkgs/crate-genotype-lang-core",
   "pkgs/crate-genotype-lang-core-tree",
-  "pkgs/crate-genotype-lang-core-config",
   "pkgs/crate-genotype-lang-core-project",
   "pkgs/crate-genotype-lang-ts-tree",
   "pkgs/crate-genotype-lang-ts-project",
@@ -23,6 +23,7 @@ members = [
   "pkgs/crate-genotype-project",
   "pkgs/crate-genotype-visitor-macro",
   "pkgs/crate-genotype-cli",
+  "pkgs/crate-genotype-compiler",
   "pkgs/crate-genotype-workspace-core",
   "pkgs/crate-genotype-workspace",
   "pkgs/crate-genotype-watcher",

@@ -1,0 +1,17 @@
+{
+  "name": "@genotype-lang/grammar-sublime",
+  "version": "0.1.0",
+  "description": "Genotype Sublime syntax file",
+  "license": "MIT",
+  "files": [
+    "genotype.sublime-syntax",
+    "README.md"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./genotype.sublime-syntax"
+  },
+  "authors": [
+    "Sasha Koss <koss@nocorp.me>"
+  ]
+}

@@ -4,7 +4,7 @@ use crate::prelude::internal::*;
 /// connecting modules in a project.
 #[derive(Default, Debug, PartialEq, Clone, Serialize)]
 pub struct GtModuleResolve {
-    pub deps: IndexSet<GtPath>,
+    pub deps: IndexSet<GtModuleSource>,
     pub exports: Vec<GtIdentifier>,
     pub references: IndexSet<GtIdentifier>,
     /// Identifiers marked as generic parameters in the current module. It allows to resolve generic

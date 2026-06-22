@@ -1,9 +1,14 @@
-pub mod error;
-pub mod node;
-pub mod result;
-pub mod span;
-
+mod error;
 pub use error::*;
+
+mod node;
 pub use node::*;
+
+mod result;
 pub use result::*;
+
+mod span;
 pub use span::*;
+
+mod notice;
+pub use notice::*;

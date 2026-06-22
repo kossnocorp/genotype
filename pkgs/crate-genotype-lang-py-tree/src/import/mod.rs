@@ -21,11 +21,11 @@ impl PyImport {
 }
 
 impl GtlImport for PyImport {
-    type DependencyIdent = PyDependencyIdent;
     type ImportRef = PyImportReference;
     type ImportRefName = PyImportName;
+    type DependencyIdent = PyDependencyIdent;
 
-    fn dependency(&self) -> &Self::DependencyIdent {
+    fn dependency(&self) -> &PyDependencyIdent {
         &self.dependency
     }
 

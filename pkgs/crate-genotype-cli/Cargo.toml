@@ -16,7 +16,6 @@ genotype_project_core = { version = "0.15.0", path = "../crate-genotype-project-
 genotype_project = { version = "0.15.0", path = "../crate-genotype-project" }
 genotype_workspace = { version = "0.15.0", path = "../crate-genotype-workspace" }
 genotype_lang_core_project = { version = "0.15.0", path = "../crate-genotype-lang-core-project" }
-genotype_lang_core_config = { version = "0.15.0", path = "../crate-genotype-lang-core-config" }
 genotype_lang_ts_project = { version = "0.15.0", path = "../crate-genotype-lang-ts-project" }
 genotype_lang_ts_config = { version = "0.15.0", path = "../crate-genotype-lang-ts-config" }
 genotype_lang_py_project = { version = "0.15.0", path = "../crate-genotype-lang-py-project" }
@@ -24,9 +23,11 @@ genotype_lang_py_tree = { version = "0.15.0", path = "../crate-genotype-lang-py-
 genotype_lang_py_config = { version = "0.15.0", path = "../crate-genotype-lang-py-config" }
 genotype_lang_rs_project = { version = "0.15.0", path = "../crate-genotype-lang-rs-project" }
 genotype_lang_rs_config = { version = "0.15.0", path = "../crate-genotype-lang-rs-config" }
+genotype_compiler = { version = "0.15.0", path = "../crate-genotype-compiler" }
 relative-path = { version = "1.9.3", features = ["serde"] }
 clap = { version = "4.5.19", features = ["derive"] }
-miette = { version = "7.6.0", features = ["fancy", "serde"] }
+miette = { version = "7.6.0", features = ["fancy", "syntect-highlighter"] }
+syntect = "5.3.0"
 thiserror = "1.0.64"
 owo-colors = "4.1.0"
 inquire = "0.7.5"
@@ -34,6 +35,7 @@ heck = "0.5.0"
 regex = "1.11.1"
 toml = { version = "0.8.19", features = ["preserve_order"] }
 semver = { version = "1.0.27", features = ["serde"] }
+termbg = "0.6.2"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

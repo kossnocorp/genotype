@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TsInterface {
-    type RenderState = TsRenderState;
-
-    type RenderContext = TsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, TsRenderTypes> for TsInterface {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: TsRenderState,
+        context: &mut TsRenderContext,
+    ) -> TsRenderResult<String> {
         if context.is_zod_mode() {
             return self.render_zod(state, context);
         }
@@ -18,7 +14,11 @@ impl<'a> GtlRender<'a> for TsInterface {
 }
 
 impl TsInterface {
-    fn render_type(&self, state: TsRenderState, context: &mut TsRenderContext) -> Result<String> {
+    fn render_type(
+        &self,
+        state: TsRenderState,
+        context: &mut TsRenderContext,
+    ) -> TsRenderResult<String> {
         let name = self.name.render(state, context)?;
         let generic_names = self.generic_names();
         let generic_params = self.render_generic_params(&generic_names);
@@ -57,7 +57,11 @@ impl TsInterface {
         TsDoc::with_doc(&self.doc, state, context, code, false)
     }
 
-    fn render_zod(&self, state: TsRenderState, context: &mut TsRenderContext) -> Result<String> {
+    fn render_zod(
+        &self,
+        state: TsRenderState,
+        context: &mut TsRenderContext,
+    ) -> TsRenderResult<String> {
         let name = self.name.render(state, context)?;
         let generic_names = self.generic_names();
 
@@ -65,7 +69,7 @@ impl TsInterface {
             .properties
             .iter()
             .map(|property| property.render(state.indent_inc(), context))
-            .collect::<Result<Vec<_>>>()?
+            .collect::<Result<Vec<_>, _>>()?
             .join(",\n");
 
         let object_shape = format!(
@@ -120,12 +124,12 @@ impl TsInterface {
         &self,
         state: TsRenderState,
         context: &mut TsRenderContext,
-    ) -> Result<Vec<String>> {
+    ) -> Result<Vec<String>, TsRenderError> {
         let names = self
             .extensions
             .iter()
             .map(|extension| extension.render(state, context))
-            .collect::<Result<Vec<_>>>()?;
+            .collect::<Result<Vec<_>, _>>()?;
         Ok(names)
     }
 
@@ -133,7 +137,7 @@ impl TsInterface {
         &self,
         state: &TsRenderState,
         context: &mut TsRenderContext,
-    ) -> Result<String> {
+    ) -> TsRenderResult<String> {
         let properties = self.render_properties(state, context)?;
         let body = format!(
             "{{\n{properties}{}{}",
@@ -147,12 +151,12 @@ impl TsInterface {
         &self,
         state: &TsRenderState,
         context: &mut TsRenderContext,
-    ) -> Result<String> {
+    ) -> TsRenderResult<String> {
         let properties = self
             .properties
             .iter()
             .map(|property| property.render(state.indent_inc(), context))
-            .collect::<Result<Vec<_>>>()?
+            .collect::<Result<Vec<_>, _>>()?
             .iter()
             .map(|property| format!("{property};"))
             .collect::<Vec<_>>()

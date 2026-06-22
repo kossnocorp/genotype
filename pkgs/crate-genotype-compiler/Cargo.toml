@@ -1,0 +1,38 @@
+[package]
+name = "genotype_compiler"
+version = "0.15.0"
+edition = "2024"
+description = "Genotype language compiler"
+authors = ["Sasha Koss <koss@nocorp.me>"]
+license = "MIT"
+repository = "https://github.com/kossnocorp/genotype"
+
+
+[dependencies]
+genotype_project_core = { version = "0.15.0", path = "../crate-genotype-project-core" }
+genotype_project = { version = "0.15.0", path = "../crate-genotype-project" }
+genotype_workspace = { version = "0.15.0", path = "../crate-genotype-workspace" }
+genotype_lang_core_project = { version = "0.15.0", path = "../crate-genotype-lang-core-project" }
+genotype_lang_ts_project = { version = "0.15.0", path = "../crate-genotype-lang-ts-project" }
+genotype_lang_ts_config = { version = "0.15.0", path = "../crate-genotype-lang-ts-config" }
+genotype_lang_py_project = { version = "0.15.0", path = "../crate-genotype-lang-py-project" }
+genotype_lang_py_tree = { version = "0.15.0", path = "../crate-genotype-lang-py-tree" }
+genotype_lang_py_config = { version = "0.15.0", path = "../crate-genotype-lang-py-config" }
+genotype_lang_rs_project = { version = "0.15.0", path = "../crate-genotype-lang-rs-project" }
+genotype_lang_rs_config = { version = "0.15.0", path = "../crate-genotype-lang-rs-config" }
+relative-path = { version = "1.9.3", features = ["serde"] }
+miette = { version = "7.6.0", features = ["fancy", "syntect-highlighter"] }
+syntect = "5.3.0"
+thiserror = "1.0.64"
+heck = "0.5.0"
+regex = "1.11.1"
+toml = { version = "0.8.19", features = ["preserve_order"] }
+semver = { version = "1.0.27", features = ["serde"] }
+serde = { version = "1.0.228", features = ["derive"] }
+owo-colors = "4.1.0"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+insta = { version = "1.46.3", features = ["ron"] }
+trybuild = "1.0.111"
+ordered-float = { version = "4", features = ["serde"] }

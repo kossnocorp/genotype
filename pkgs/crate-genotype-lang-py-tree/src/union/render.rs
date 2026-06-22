@@ -1,20 +1,16 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for PyUnion {
-    type RenderState = PyRenderState;
-
-    type RenderContext = PyRenderContext<'a>;
-
+impl<'context> GtlRender<'context, PyRenderTypes> for PyUnion {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: PyRenderState,
+        context: &mut PyRenderContext,
+    ) -> PyRenderResult<String> {
         let content = self
             .descriptors
             .iter()
             .map(|d| d.render(state, context))
-            .collect::<Result<Vec<_>>>()?
+            .collect::<Result<Vec<_>, _>>()?
             .join(if let PyVersion::Legacy = context.config.version {
                 ", "
             } else {

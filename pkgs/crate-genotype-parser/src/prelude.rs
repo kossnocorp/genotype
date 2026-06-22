@@ -6,7 +6,7 @@ pub(crate) mod internal {
     pub use crate::test::*;
     pub use heck::ToPascalCase;
     pub use indexmap::IndexSet;
-    pub use miette::{Diagnostic, LabeledSpan, NamedSource, Result, SourceCode, SourceSpan};
+    pub use miette::{Diagnostic, LabeledSpan, NamedSource, Report, Result, SourceSpan, miette};
     pub use pest::Parser;
     pub use pest::Span;
     pub use pest::error::InputLocation;

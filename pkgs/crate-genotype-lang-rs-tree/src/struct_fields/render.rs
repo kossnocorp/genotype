@@ -1,15 +1,11 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for RsStructFields {
-    type RenderState = RsRenderState;
-
-    type RenderContext = RsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, RsRenderTypes> for RsStructFields {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: RsRenderState,
+        context: &mut RsRenderContext,
+    ) -> RsRenderResult<String> {
         match self {
             RsStructFields::Newtype(descriptors) => {
                 if descriptors.is_empty() {
@@ -23,7 +19,7 @@ impl<'a> GtlRender<'a> for RsStructFields {
                             .render(state, context)
                             .map(|result| format!("pub {result}"))
                     })
-                    .collect::<Result<Vec<String>>>()?
+                    .collect::<Result<Vec<_>, _>>()?
                     .join(", ");
 
                 Ok(format!("({descriptors});"))
@@ -41,7 +37,7 @@ impl<'a> GtlRender<'a> for RsStructFields {
                             .render(state.indent_inc(), context)
                             .map(|result| result + ",")
                     })
-                    .collect::<Result<Vec<String>>>()?
+                    .collect::<Result<Vec<_>, _>>()?
                     .join("\n");
 
                 Ok(format!(
@@ -53,7 +49,7 @@ impl<'a> GtlRender<'a> for RsStructFields {
             RsStructFields::Unit => Ok(";".into()),
 
             RsStructFields::Unresolved(span, _, _) => {
-                Err(RsError::UnresolvedStructFields(*span).into())
+                Err(RsRenderError::UnresolvedStructFields(*span).into())
             }
         }
     }

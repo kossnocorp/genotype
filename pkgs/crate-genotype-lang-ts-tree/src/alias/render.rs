@@ -1,21 +1,17 @@
 use crate::prelude::internal::*;
 
-impl<'a> GtlRender<'a> for TsAlias {
-    type RenderState = TsRenderState;
-
-    type RenderContext = TsRenderContext<'a>;
-
+impl<'context> GtlRender<'context, TsRenderTypes> for TsAlias {
     fn render(
         &self,
-        state: Self::RenderState,
-        context: &mut Self::RenderContext,
-    ) -> Result<String> {
+        state: TsRenderState,
+        context: &mut TsRenderContext,
+    ) -> TsRenderResult<String> {
         let name = self.name.render(state, context)?;
         let generic_names = self
             .generics
             .iter()
             .map(|generic| generic.render(state, context))
-            .collect::<Result<Vec<_>>>()?;
+            .collect::<Result<Vec<_>, _>>()?;
         let generic_params = if generic_names.is_empty() {
             String::new()
         } else {
@@ -47,7 +43,7 @@ impl TsAlias {
         generic_names: &[String],
         state: TsRenderState,
         context: &mut TsRenderContext<'a>,
-    ) -> Result<String> {
+    ) -> TsRenderResult<String> {
         if !generic_names.is_empty() {
             return self.render_zod_generic(name, generic_names, state, context);
         }
@@ -83,7 +79,7 @@ impl TsAlias {
         name: &String,
         state: TsRenderState,
         context: &mut TsRenderContext<'a>,
-    ) -> Result<String> {
+    ) -> TsRenderResult<String> {
         let zod_descriptor = self.descriptor.render(state, context)?;
 
         let schema = TsDoc::with_doc(
@@ -115,7 +111,7 @@ impl TsAlias {
         generic_names: &[String],
         state: TsRenderState,
         context: &mut TsRenderContext<'a>,
-    ) -> Result<String> {
+    ) -> TsRenderResult<String> {
         let zod_generic_params = render_zod_generic_params(generic_names);
         let params = render_zod_value_params(generic_names);
         let zod_descriptor = self.descriptor.render(state, context)?;

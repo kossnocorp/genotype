@@ -36,11 +36,11 @@ impl TsConvertContext {
 impl GtlConvertContext for TsConvertContext {
     type Import = TsImport;
 
-    fn imports(&self) -> &Vec<Self::Import> {
+    fn imports(&self) -> &Vec<TsImport> {
         &self.imports
     }
 
-    fn imports_mut(&mut self) -> &mut Vec<Self::Import> {
+    fn imports_mut(&mut self) -> &mut Vec<TsImport> {
         &mut self.imports
     }
 }
