@@ -51,7 +51,7 @@ where
             dist.pack_extra_files(package_files, None);
         }
 
-        if let Some((extra_files, extra_file_notices)) = self.generate_extra_files(&lang_project)? {
+        if let Some((extra_files, extra_file_notices)) = self.generate_extra_files(&lang_project) {
             dist.pack_extra_files(extra_files, extra_file_notices);
         }
 
@@ -61,8 +61,8 @@ where
     fn generate_extra_files(
         &self,
         _project: &GtlProject<'project, '_, Self::ProjectModule>,
-    ) -> Result<Option<GtlGenerations<Self::ProjectModule>>, GtlProjectError> {
-        Ok(None)
+    ) -> Option<GtlGenerations<Self::ProjectModule>> {
+        None
     }
 
     fn generate_package_files(

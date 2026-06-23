@@ -58,6 +58,12 @@ macro_rules! gtp_relative_path_newtype {
         }
 
 
+        impl From<&RelativePath> for $name {
+            fn from(path: &RelativePath) -> Self {
+                Self::new(path.to_owned())
+            }
+        }
+
         impl From<&str> for $name {
             fn from(path: &str) -> Self {
                 Self::new(path.into())

@@ -8,6 +8,7 @@ SOME_FAILED=0
 
 UPDATE=0
 DEBUG=0
+RUN=0
 
 for arg in "$@"; do
 	case "$arg" in
@@ -16,6 +17,9 @@ for arg in "$@"; do
 		;;
 	--debug | -d)
 		DEBUG=1
+		;;
+	--run | -r)
+		RUN=1
 		;;
 	*)
 		echo "🔴 Unknown argument: $arg"
@@ -36,6 +40,12 @@ else
 	echo "🔵 Update mode: OFF"
 fi
 
+if [ $RUN -eq 1 ]; then
+	echo "🔵 Run mode: ON"
+else
+	echo "🔵 Run mode: OFF"
+fi
+
 echo
 
 echo "🌀 Building CLI"
@@ -54,8 +64,17 @@ echo "🔵 CLI path: $CLI_PATH"
 
 echo
 
-echo "🌀 Checking module build errors"
 cd modules
+
+if [ $RUN -eq 1 ]; then
+	echo "🌀 Running \`gt build\`"
+	echo "-----------------------------------------------------"
+	"$CLI_PATH" build .
+	exit 0
+fi
+
+echo "🌀 Checking module build errors"
+
 if output=$("$CLI_PATH" build . 2>&1); then
 	echo "🔴 Module errors: NONE"
 	echo "--- Output ------------------------------------------"

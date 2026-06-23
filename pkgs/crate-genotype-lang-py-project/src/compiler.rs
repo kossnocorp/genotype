@@ -34,7 +34,7 @@ impl<'project> GtlCompiler<'project> for PyCompiler<'project> {
     fn generate_extra_files(
         &self,
         project: &GtlProject<'project, '_, PyProjectModule>,
-    ) -> Result<Option<GtlGenerations<PyProjectModule>>, GtlProjectError> {
+    ) -> Option<GtlGenerations<PyProjectModule>> {
         let mut files = vec![];
         let mut notices = None;
 
@@ -48,7 +48,7 @@ impl<'project> GtlCompiler<'project> for PyCompiler<'project> {
 
         files.push(self.generate_py_typed_file());
 
-        Ok(Some((files, notices)))
+        Some((files, notices))
     }
 
     fn gitignore_source_code(&self) -> Option<String> {

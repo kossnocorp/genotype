@@ -848,6 +848,7 @@ dependencies = [
  "genotype_project_core",
  "genotype_test",
  "indexmap",
+ "indoc",
  "insta",
  "miette",
  "petgraph",

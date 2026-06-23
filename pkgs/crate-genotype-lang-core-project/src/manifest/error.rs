@@ -1,6 +1,6 @@
 use crate::prelude::internal::*;
 
-#[derive(Debug, Clone, Error, Diagnostic)]
+#[derive(Error, Diagnostic, Debug, Clone)]
 pub enum GtlManifestError {
     #[error("Failed to parse {which} TOML")]
     TomlParse {

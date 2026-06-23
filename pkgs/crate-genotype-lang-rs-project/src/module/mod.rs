@@ -23,10 +23,6 @@ impl GtlProjectModule for RsProjectModule {
         &self.module
     }
 
-    // fn module_mut(&mut self) -> &mut Self::Module<'_> {
-    //     &mut self.module
-    // }
-
     fn convert(
         lang_config: &RsConfig,
         resolved: &GtpModuleResolved,
@@ -134,7 +130,6 @@ impl GtlProjectModule for RsProjectModule {
         modules: &mut IndexMap<GtpModulePath, GtlProjectModuleState<RsProjectModule>>,
     ) -> Result<(), GtlProjectError> {
         Self::resolve_extensions(modules)?;
-        todo!("Handle errors!");
         Self::box_modules(modules);
         Self::tree_shake_modules(modules);
         Self::resolve_all_eligible_modules(modules);
