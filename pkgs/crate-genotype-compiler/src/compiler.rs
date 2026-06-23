@@ -26,7 +26,7 @@ impl GtCompiler<'_, '_> {
     pub fn compile(&mut self) -> i32 {
         let project = self.project;
 
-        let project_notices = project.as_notices();
+        let project_notices = project.as_final_notices();
         self.handle_notices(project_notices);
 
         self.compile_project(&TsCompiler::new(project));

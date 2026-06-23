@@ -37,7 +37,7 @@ pub enum GtpModule {
 
 impl GtpModule {
     /// Module state name.
-    pub fn name(&self) -> &str {
+    pub fn state_name(&self) -> &str {
         match self {
             GtpModule::Initialized(_) => "initialized",
             GtpModule::Error(_, _) => "error",
