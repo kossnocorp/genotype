@@ -32,12 +32,12 @@ impl GtProject {
             .unwrap_or_default()
     }
 
-    pub fn as_notices(&self) -> Vec<GtNotice> {
+    pub fn as_final_notices(&self) -> Vec<GtNotice> {
         let mut notices = vec![];
         for module in self.modules.values() {
             match &module {
-                GtpModule::Initialized(_source) => {
-                    todo!()
+                GtpModule::Resolved(_) => {
+                    // Resolved, the expected final state, no notice needed.
                 }
 
                 GtpModule::Error(source, err) => {
@@ -46,9 +46,20 @@ impl GtProject {
                     notices.push(notice);
                 }
 
-                _ => {}
+                GtpModule::Parsed(_) | GtpModule::Initialized(_) => {
+                    notices.push(Self::invalid_state_error_notice(module))
+                }
             }
         }
         notices
+    }
+
+    fn invalid_state_error_notice(module: &GtpModule) -> GtNotice {
+        let source = module.source();
+        GtNotice::error(format!(
+            "Module `{path}` is in an invalid state \"{state}\"",
+            path = source.path(),
+            state = module.state_name()
+        ))
     }
 }
