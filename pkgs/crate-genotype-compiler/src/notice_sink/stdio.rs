@@ -17,18 +17,15 @@ pub trait GtcNoticeSinkStdio {
     }
 
     fn print_notice_reports(notice: &GtNotice) {
-        match &notice.content {
-            GtNoticeContent::Reports { reports, .. } => {
-                println!();
-                for report in reports {
-                    let report = report.trim();
-                    match &notice.kind {
-                        GtNoticeKind::Success | GtNoticeKind::Info => println!("{report}"),
-                        GtNoticeKind::Warning | GtNoticeKind::Error => eprintln!("{report}"),
-                    }
+        if let GtNoticeContent::Reports { reports, .. } = &notice.content {
+            println!();
+            for report in reports {
+                let report = report.trim();
+                match &notice.kind {
+                    GtNoticeKind::Success | GtNoticeKind::Info => println!("{report}"),
+                    GtNoticeKind::Warning | GtNoticeKind::Error => eprintln!("{report}"),
                 }
             }
-            _ => {}
         }
     }
 }

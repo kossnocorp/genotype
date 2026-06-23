@@ -70,7 +70,7 @@ impl TryInto<GtpCwdRelativePath> for &GtpCwdRelativeOrAbsoluteStringPath {
         let cwd_path = GtpCwdPath::try_new()?;
         let path = PathBuf::from(&self.0);
         let rel_path = if path.is_absolute() {
-            path.relative_to(&cwd_path.as_path())
+            path.relative_to(cwd_path.as_path())
                 .map_err(|e| miette!(e)).wrap_err_with(||format!("failed to resolve base path from '{}' relative to current working directory '{}'", path.display(), cwd_path.as_path().display()))?
         } else {
             RelativePathBuf::from_path(&path)

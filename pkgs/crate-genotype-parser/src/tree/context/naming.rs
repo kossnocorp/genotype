@@ -6,7 +6,7 @@ impl GtContext {
     }
 
     pub fn exit_named_parent(&mut self, span: GtSpan, node: GtNode) -> GtNodeParseResult<()> {
-        self.named_parents.pop().ok_or_else(|| {
+        self.named_parents.pop().ok_or({
             GtParseError::Internal(span, node, "tried to pop from an empty parents stack")
         })?;
         Ok(())

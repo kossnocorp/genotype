@@ -29,9 +29,9 @@ impl GtCompiler<'_, '_> {
         let project_notices = project.as_notices();
         self.handle_notices(project_notices);
 
-        self.compile_project(&TsCompiler::new(&project));
-        self.compile_project(&PyCompiler::new(&project));
-        self.compile_project(&RsCompiler::new(&project));
+        self.compile_project(&TsCompiler::new(project));
+        self.compile_project(&PyCompiler::new(project));
+        self.compile_project(&RsCompiler::new(project));
 
         self.finalize(&project.paths.dist)
     }
@@ -137,11 +137,11 @@ impl GtCompiler<'_, '_> {
             .to_parent()
             .ok_or_else(|| miette!("Failed to get parent directory for `{path}`"))?;
 
-        fs::create_dir_all(&parent_dir_path.to_path_buf())
+        fs::create_dir_all(parent_dir_path.to_path_buf())
             .map_err(|err| miette!(err))
             .wrap_err_with(|| format!("Failed to create directory `{parent_dir_path}`"))?;
 
-        fs::write(&path.to_path_buf(), &source_code)
+        fs::write(path.to_path_buf(), source_code)
             .map_err(|err| miette!(err))
             .wrap_err_with(|| format!("Failed to write file `{path}`"))?;
 

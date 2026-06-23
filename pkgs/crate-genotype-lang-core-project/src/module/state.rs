@@ -59,10 +59,7 @@ impl<ProjectModule: GtlProjectModule> GtlProjectModuleState<ProjectModule> {
     pub fn dependencies(
         &self,
     ) -> Option<IndexSet<GtlProjectModuleTypeDependencyIdent<'_, ProjectModule>>> {
-        match self.converted() {
-            Some(generated) => Some(generated.dependencies()),
-            None => None,
-        }
+        self.converted().map(|generated| generated.dependencies())
     }
 
     pub fn as_inner(&self) -> &dyn GtlProjectModuleStateInner {

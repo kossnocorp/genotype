@@ -77,7 +77,7 @@ depends = [
 run = "cargo clippy --all-targets --all-features"
 
 [tasks."lint/rust:fix"]
-run = "cargo clippy --all-targets --all-features --fix"
+run = "cargo clippy --all-targets --all-features --fix --allow-dirty"
 depends_post = "format/rust"
 
 [tasks."lint/rust:watch"]

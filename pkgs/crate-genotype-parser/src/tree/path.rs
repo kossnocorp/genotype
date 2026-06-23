@@ -116,12 +116,11 @@ impl GtPath {
                     // Skip redundant .
                 }
 
-                Component::ParentDir => {
+                Component::ParentDir
                     // Pop the last component if possible, else push ..
-                    if !result.pop() {
+                    if !result.pop() => {
                         result.push("..");
                     }
-                }
 
                 Component::Normal(c) => {
                     result.push(c);

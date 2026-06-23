@@ -16,14 +16,14 @@ impl GtlDistFile {
     pub fn path(&self) -> &GtpTargetFilePath {
         match self {
             GtlDistFile::Error(GtlDistFileError { path, .. })
-            | GtlDistFile::Generated(GtlDistFileGenerated { path, .. }) => &path,
+            | GtlDistFile::Generated(GtlDistFileGenerated { path, .. }) => path,
         }
     }
 
     pub fn source_code(&self) -> &String {
         match self {
-            GtlDistFile::Error(GtlDistFileError { source_code, .. }) => &source_code,
-            GtlDistFile::Generated(GtlDistFileGenerated { source_code, .. }) => &source_code,
+            GtlDistFile::Error(GtlDistFileError { source_code, .. }) => source_code,
+            GtlDistFile::Generated(GtlDistFileGenerated { source_code, .. }) => source_code,
         }
     }
 }

@@ -49,7 +49,7 @@ impl GtReference {
             .into();
 
         let mut arguments = vec![];
-        while let Some(arguments_pair) = inner.next() {
+        for arguments_pair in inner {
             if arguments_pair.as_rule() == Rule::generic_arguments {
                 for argument_pair in arguments_pair.into_inner() {
                     arguments.push(GtGenericArgument::parse(argument_pair, context)?);
@@ -72,15 +72,14 @@ mod tests {
     fn test_parse_references() {
         let parse = GtModule::parse(
             "module".into(),
-            &r#"use user/User
+            r#"use user/User
 
             Author: {
               name: Name,
               user: User
             }
 
-            Name: string"#
-                .to_owned(),
+            Name: string"#,
         )
         .unwrap();
         assert_ron_snapshot!(

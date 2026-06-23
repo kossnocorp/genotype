@@ -44,7 +44,7 @@ impl<Type: GtpLoaderSerial + GtpSource + ?Sized> GtpLoader<RefCell<GtProject>> f
         source: &GtpModuleSource,
     ) -> Result<Option<GtModuleId>> {
         let mut project = project.borrow_mut();
-        project.init_module(&source)
+        project.init_module(source)
     }
 
     /// Sets the module state.

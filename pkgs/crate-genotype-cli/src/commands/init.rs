@@ -23,14 +23,14 @@ pub fn init_command(args: &GtInitCommand) -> Result<()> {
 
     config.save(&args.path)?;
 
-    let src_path = base_path.join_relative_path(&config.src.relative_path());
+    let src_path = base_path.join_relative_path(config.src.relative_path());
 
     create_dir_all(src_path.as_str())
         .map_err(|_| GtCliError::FailedCreateDir(src_path.as_str().into()))?;
 
     for (file, content) in GUIDE_FILES {
-        write(src_path.join_str(&file).as_str(), content)
-            .map_err(|_| GtCliError::FailedWrite(src_path.join_str(&file).as_str().into()))?;
+        write(src_path.join_str(file).as_str(), content)
+            .map_err(|_| GtCliError::FailedWrite(src_path.join_str(file).as_str().into()))?;
     }
 
     println!(

@@ -22,7 +22,7 @@ impl GtpModulePath {
     pub fn to_module_id(&self, src_path: &GtpSrcDirPath) -> Result<GtModuleId> {
         let src_relative_path = self
             .relative_path()
-            .strip_prefix(&src_path.relative_path())
+            .strip_prefix(src_path.relative_path())
             .map_err(|_| {
                 miette!(
                     "module path '{}' is not inside the src dir '{}'",

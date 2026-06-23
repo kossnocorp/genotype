@@ -36,6 +36,6 @@ impl GtlDist {
     }
 
     pub fn sort_files(&mut self) {
-        self.files.sort_by(|a, b| a.path().cmp(&b.path()));
+        self.files.sort_by(|a, b| a.path().cmp(b.path()));
     }
 }

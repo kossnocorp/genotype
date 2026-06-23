@@ -22,7 +22,7 @@ impl GtInlineImport {
 
         let mut inner = pair.into_inner();
 
-        let pair = inner.next().ok_or_else(|| {
+        let pair = inner.next().ok_or({
             GtParseError::UnexpectedEnd(span, GtNode::InlineImport, "inline import inner")
         })?;
 

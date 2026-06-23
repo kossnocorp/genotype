@@ -9,7 +9,7 @@ pub struct GtModuleSource {
 impl GtModuleSource {
     pub fn new(span: &GtSpan, path: &GtPath) -> Self {
         Self {
-            span: span.clone(),
+            span: *span,
             path: path.clone(),
         }
     }

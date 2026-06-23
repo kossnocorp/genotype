@@ -48,11 +48,10 @@ impl TomlExtPrune for Table {
                             self.remove(&key);
                         }
                     }
-                    (Item::ArrayOfTables(current_array), Item::ArrayOfTables(default_array)) => {
-                        if !original_has_key && array_tables_equal(current_array, default_array) {
+                    (Item::ArrayOfTables(current_array), Item::ArrayOfTables(default_array))
+                        if !original_has_key && array_tables_equal(current_array, default_array) => {
                             self.remove(&key);
                         }
-                    }
                     _ => {}
                 }
             }

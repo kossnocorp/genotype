@@ -13,7 +13,8 @@ pub struct GtBuildCommand {
 
 impl GtBuildCommand {
     pub fn run(args: &GtBuildCommand) -> Result<()> {
-        Ok(Self::build(args))
+        Self::build(args);
+        Ok(())
     }
 
     pub fn build(args: &GtBuildCommand) {

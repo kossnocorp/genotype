@@ -76,10 +76,10 @@ impl<ProjectModule: GtlProjectModule> GtlProjectModuleStateInnerToRenderError
     }
 }
 
-impl<ProjectModule: GtlProjectModule> Into<GtlProjectModuleState<ProjectModule>>
-    for GtlProjectModuleResolved<ProjectModule>
+impl<ProjectModule: GtlProjectModule> From<GtlProjectModuleResolved<ProjectModule>>
+    for GtlProjectModuleState<ProjectModule>
 {
-    fn into(self) -> GtlProjectModuleState<ProjectModule> {
-        GtlProjectModuleState::Resolved(self)
+    fn from(val: GtlProjectModuleResolved<ProjectModule>) -> Self {
+        GtlProjectModuleState::Resolved(val)
     }
 }

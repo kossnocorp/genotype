@@ -28,7 +28,7 @@ impl GtpModuleParse {
             }
             let path = self.path.resolve_path_node(&dep.path);
             deps.push(GtpModuleSource::Dependency {
-                path: path,
+                path,
                 parent_path: self.path.clone(),
                 parent_span: dep.span,
             });
@@ -37,9 +37,9 @@ impl GtpModuleParse {
     }
 }
 
-impl Into<GtpModule> for GtpModuleParse {
-    fn into(self) -> GtpModule {
-        GtpModule::Parsed(self)
+impl From<GtpModuleParse> for GtpModule {
+    fn from(val: GtpModuleParse) -> Self {
+        GtpModule::Parsed(val)
     }
 }
 

@@ -37,7 +37,7 @@ pub trait GtpLoader<ProjectRef>: GtpSource {
     ) -> Result<GtpConfigFilePath> {
         match config_path {
             Some(config_path) => {
-                if self.is_file(&config_path) {
+                if self.is_file(config_path) {
                     Ok(config_path.clone().into())
                 } else {
                     Err(miette!("config file '{config_path}' does not exist"))
@@ -58,11 +58,10 @@ pub trait GtpLoader<ProjectRef>: GtpSource {
         let module_entries = self
             .glob(project.paths.entry.as_ref())?
             .into_iter()
-            .map(|path| path.into())
             .collect::<Vec<GtpModulePath>>();
 
         ensure!(
-            module_entries.len() > 0,
+            !module_entries.is_empty(),
             "no module files found for entry pattern '{}'",
             project.paths.entry.display()
         );
@@ -103,7 +102,7 @@ pub trait GtpLoader<ProjectRef>: GtpSource {
                     }
                 })?;
 
-                let parse = GtpModule::parse(path, &source, module_id, source_code)?;
+                let parse = GtpModule::parse(path, source, module_id, source_code)?;
                 Some(parse)
             }
 
@@ -115,20 +114,20 @@ pub trait GtpLoader<ProjectRef>: GtpSource {
 
     /// Loads a project module. It relies on project ref allowing to implement runtime-specific
     /// project reference counting and mutability.
-    fn load_project_module<'a>(
-        &'a self,
+    fn load_project_module(
+        &self,
         project: &ProjectRef,
         source: &GtpModuleSource,
     ) -> Result<Option<Vec<GtpModuleSource>>> {
         self.add_project_module_source(project, source)?;
 
-        let module_id_result = self.init_project_module(&project, &source);
-        let parse_result = self.parse_module(&source, module_id_result);
+        let module_id_result = self.init_project_module(project, source);
+        let parse_result = self.parse_module(source, module_id_result);
 
         let module_deps = match parse_result {
             Ok(Some(module_state)) => {
                 let module_deps = module_state.deps();
-                self.set_project_module(&project, &source, module_state.into())?;
+                self.set_project_module(project, source, module_state.into())?;
                 Some(module_deps)
             }
 
@@ -138,7 +137,7 @@ pub trait GtpLoader<ProjectRef>: GtpSource {
             }
 
             Err(err) => {
-                self.set_project_module(&project, &source, GtpModule::Error(source.clone(), err))?;
+                self.set_project_module(project, source, GtpModule::Error(source.clone(), err))?;
                 None
             }
         };
@@ -148,8 +147,8 @@ pub trait GtpLoader<ProjectRef>: GtpSource {
 
     /// Initializes the module. It relies on project ref allowing to implement runtime-specific
     /// project reference counting and mutability.
-    fn init_project_module<'a>(
-        &'a self,
+    fn init_project_module(
+        &self,
         project: &ProjectRef,
         module: &GtpModuleSource,
     ) -> Result<Option<GtModuleId>>;

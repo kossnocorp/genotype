@@ -13,11 +13,10 @@ impl GtwFileKind {
         let path = path.as_path();
         let ext = path.extension().and_then(|ext| ext.to_str());
         match ext {
-            Some("toml") => {
-                if path.starts_with("genotype") {
+            Some("toml")
+                if path.starts_with("genotype") => {
                     return Ok(GtwFileKind::Config);
                 }
-            }
             Some("type") => {
                 return Ok(GtwFileKind::Module);
             }

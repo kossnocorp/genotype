@@ -21,10 +21,10 @@ impl GtlProjectModuleStateInner for GtlProjectModuleConvertErrorState {
     }
 }
 
-impl<ProjectModule: GtlProjectModule> Into<GtlProjectModuleState<ProjectModule>>
-    for GtlProjectModuleConvertErrorState
+impl<ProjectModule: GtlProjectModule> From<GtlProjectModuleConvertErrorState>
+    for GtlProjectModuleState<ProjectModule>
 {
-    fn into(self) -> GtlProjectModuleState<ProjectModule> {
-        GtlProjectModuleState::ConvertError(self)
+    fn from(val: GtlProjectModuleConvertErrorState) -> Self {
+        GtlProjectModuleState::ConvertError(val)
     }
 }

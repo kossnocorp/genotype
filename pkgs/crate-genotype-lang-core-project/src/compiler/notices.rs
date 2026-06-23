@@ -22,7 +22,7 @@ pub fn generate_module_notices<ProjectModule: GtlProjectModule>(
         }
     }
 
-    if let Some(render_notice) = generate_render_files_notice(&modules) {
+    if let Some(render_notice) = generate_render_files_notice(modules) {
         notices.push(render_notice);
     }
 
@@ -39,11 +39,11 @@ fn generate_render_files_notice<ProjectModule: GtlProjectModule>(
             state @ GtlProjectModuleState::ConvertError(_)
             | state @ GtlProjectModuleState::ResolveError(_)
             | state @ GtlProjectModuleState::RenderError(_) => {
-                messages.push(format_module_error_state_message(&state))
+                messages.push(format_module_error_state_message(state))
             }
             state @ GtlProjectModuleState::Converted(_)
             | state @ GtlProjectModuleState::Resolved(_) => {
-                messages.push(format_invalid_module_state_message(&state));
+                messages.push(format_invalid_module_state_message(state));
             }
             _ => {}
         }
@@ -74,7 +74,7 @@ fn format_invalid_module_state_message<ProjectModule: GtlProjectModule>(
     state: &GtlProjectModuleState<ProjectModule>,
 ) -> String {
     let name = state.name();
-    let (source_path_str, target_path_str) = format_module_state_paths(&state);
+    let (source_path_str, target_path_str) = format_module_state_paths(state);
     format!("`{target_path_str}` is in error state '{name}' (from `{source_path_str}`)")
 }
 

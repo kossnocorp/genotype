@@ -54,9 +54,9 @@ pub struct GtpModuleResolved {
     pub resolve: GtpModuleResolve,
 }
 
-impl Into<GtpModule> for GtpModuleResolved {
-    fn into(self) -> GtpModule {
-        GtpModule::Resolved(self)
+impl From<GtpModuleResolved> for GtpModule {
+    fn from(val: GtpModuleResolved) -> Self {
+        GtpModule::Resolved(val)
     }
 }
 

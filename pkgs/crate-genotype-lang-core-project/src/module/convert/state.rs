@@ -59,11 +59,11 @@ impl<ProjectModule: GtlProjectModule> GtlProjectModuleStateInnerConverted
     }
 }
 
-impl<ProjectModule: GtlProjectModule> Into<GtlProjectModuleState<ProjectModule>>
-    for GtlProjectModuleConverted<ProjectModule>
+impl<ProjectModule: GtlProjectModule> From<GtlProjectModuleConverted<ProjectModule>>
+    for GtlProjectModuleState<ProjectModule>
 {
-    fn into(self) -> GtlProjectModuleState<ProjectModule> {
-        GtlProjectModuleState::Converted(self)
+    fn from(val: GtlProjectModuleConverted<ProjectModule>) -> Self {
+        GtlProjectModuleState::Converted(val)
     }
 }
 

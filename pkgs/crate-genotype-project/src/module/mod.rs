@@ -82,7 +82,7 @@ impl GtpModule {
     }
 
     // Resolves the module source code.
-    pub fn source_code<'a>(&'a self) -> Option<&'a str> {
+    pub fn source_code(&self) -> Option<&str> {
         match self {
             GtpModule::Initialized(_) => None,
             GtpModule::Error(_, _) => None,

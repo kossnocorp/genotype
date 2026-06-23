@@ -22,7 +22,7 @@ impl GtpRuntimeSystem {
         config_path: Option<&GtpCwdRelativeOrAbsoluteStringPath>,
     ) -> Result<GtProject> {
         let project_runtime =
-            GtpRuntimeSystem::new(&path).wrap_err("failed to create system project runtime")?;
+            GtpRuntimeSystem::new(path).wrap_err("failed to create system project runtime")?;
 
         let config_path = config_path
             .map(|path| {

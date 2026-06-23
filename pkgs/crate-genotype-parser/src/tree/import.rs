@@ -43,7 +43,7 @@ fn parse(
 
             match inner.next() {
                 Some(pair) => parse(
-                    &import_span,
+                    import_span,
                     inner,
                     pair,
                     context,
