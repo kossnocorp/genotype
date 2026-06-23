@@ -13,6 +13,4 @@ pub(crate) mod internal {
     pub use miette::Result;
     pub use pluralizer::pluralize;
     pub use serde::Serialize;
-    
-    
 }

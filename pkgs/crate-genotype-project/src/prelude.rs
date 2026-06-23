@@ -1,6 +1,6 @@
 pub(crate) mod internal {
     pub use crate::*;
-    pub use figment::{providers::Format, Figment};
+    pub use figment::{Figment, providers::Format};
     pub use genotype_lang_core::prelude::*;
     pub use genotype_lang_py_config::*;
     pub use genotype_lang_rs_config::*;
@@ -12,8 +12,8 @@ pub(crate) mod internal {
     pub use genotype_workspace_core::prelude::*;
     pub use indexmap::{IndexMap, IndexSet};
     pub use miette::{
-        bail, diagnostic, ensure, miette, Context, Diagnostic, IntoDiagnostic, LabeledSpan,
-        NamedSource, Report, Result,
+        Context, Diagnostic, IntoDiagnostic, LabeledSpan, NamedSource, Report, Result, bail,
+        diagnostic, ensure, miette,
     };
     pub use relative_path::{PathExt, RelativePath, RelativePathBuf};
     pub use semver::Version;

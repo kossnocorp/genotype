@@ -1,7 +1,6 @@
 use crate::prelude::internal::*;
 
 impl<'context> GtlRender<'context, PyRenderTypes> for PyProperty {
-
     fn render(
         &self,
         state: PyRenderState,

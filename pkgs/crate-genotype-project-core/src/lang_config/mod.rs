@@ -18,7 +18,8 @@ pub trait GtpLangConfig {
     /// Returns the target package directory path relative to the dist directory, i.e. "rs".
     fn dist_relative_pkg_path(&self) -> GtpDistDirRelativePkgDirPath {
         self.common()
-            .dist.clone()
+            .dist
+            .clone()
             .unwrap_or_else(|| self.default_pkg_dir_path())
     }
 

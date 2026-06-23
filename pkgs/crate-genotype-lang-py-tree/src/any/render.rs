@@ -1,7 +1,6 @@
 use crate::prelude::internal::*;
 
 impl<'context> GtlRender<'context, PyRenderTypes> for PyAny {
-
     fn render(
         &self,
         _state: PyRenderState,

@@ -1,7 +1,6 @@
 use crate::prelude::internal::*;
 
 impl<'context> GtlRender<'context, RsRenderTypes> for RsMap {
-
     fn render(
         &self,
         state: RsRenderState,

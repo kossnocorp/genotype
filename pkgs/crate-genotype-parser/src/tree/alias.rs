@@ -22,9 +22,11 @@ impl GtAlias {
         let annotation = context.take_annotation_or_default();
         let mut inner = pair.into_inner();
 
-        let pair = inner
-            .next()
-            .ok_or(GtParseError::UnexpectedEnd(span, GtNode::Alias, "alias inner"))?;
+        let pair = inner.next().ok_or(GtParseError::UnexpectedEnd(
+            span,
+            GtNode::Alias,
+            "alias inner",
+        ))?;
 
         let alias = parse(
             inner,

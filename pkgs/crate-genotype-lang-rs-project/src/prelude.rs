@@ -13,5 +13,4 @@ pub(crate) mod internal {
     pub use serde::Serialize;
     pub use std::hash::Hasher;
     pub use std::mem;
-    
 }
