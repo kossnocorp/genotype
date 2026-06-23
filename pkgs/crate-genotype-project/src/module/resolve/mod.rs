@@ -20,7 +20,7 @@ impl GtpModule {
     pub fn resolve(self, source: &GtpModuleSource, project_resolve: &GtpResolve) -> GtpModule {
         let project_module_parse = match self {
             GtpModule::Parsed(project_module_parse) => project_module_parse,
-            GtpModule::Resolved(state) => state.project_module_parse,
+            GtpModule::Resolved(state) => Box::new(state.project_module_parse),
             GtpModule::Error(_, _) => return self,
             GtpModule::Initialized(source) => {
                 return GtpModule::Error(source, GtpModuleError::ResolveInitialized);
@@ -31,7 +31,7 @@ impl GtpModule {
             |err| GtpModule::Error(source.clone(), err),
             |resolve| {
                 GtpModuleResolved {
-                    project_module_parse,
+                    project_module_parse: *project_module_parse,
                     resolve,
                 }
                 .into()
@@ -42,7 +42,7 @@ impl GtpModule {
 
 // endregion
 
-/// region: Resolved module state
+// region: Resolved module state
 
 /// Resolved project module state.
 #[derive(Debug, PartialEq, Clone, Serialize)]
@@ -56,7 +56,7 @@ pub struct GtpModuleResolved {
 
 impl From<GtpModuleResolved> for GtpModule {
     fn from(val: GtpModuleResolved) -> Self {
-        GtpModule::Resolved(val)
+        GtpModule::Resolved(Box::new(val))
     }
 }
 

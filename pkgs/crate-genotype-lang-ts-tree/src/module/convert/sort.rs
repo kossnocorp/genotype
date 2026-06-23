@@ -210,11 +210,7 @@ impl TsModule {
             if idxs.get(&node) == low_links.get(&node) {
                 let mut comp = vec![];
 
-                loop {
-                    let Some(component_node) = stack.pop() else {
-                        break;
-                    };
-
+                while let Some(component_node) = stack.pop() {
                     on_stack.shift_remove(&component_node);
                     comp.push(component_node.clone());
 
