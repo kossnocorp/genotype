@@ -11,5 +11,7 @@ pub struct RsAlias {
     #[visit]
     pub name: RsIdentifier,
     #[visit]
+    pub generics: Vec<RsIdentifier>,
+    #[visit]
     pub descriptor: RsDescriptor,
 }

@@ -81,6 +81,7 @@ mod tests {
                         id: GtDefinitionId("module".into(), "Name".into()),
                         doc: None,
                         name: "Name".into(),
+                        generics: vec![],
                         descriptor: RsDescriptor::Primitive(RsPrimitive::String),
                     }),
                     RsDefinition::Struct(RsStruct {
@@ -88,6 +89,7 @@ mod tests {
                         doc: None,
                         attributes: vec![],
                         name: "Name".into(),
+                        generics: vec![],
                         fields: vec![
                             RsField {
                                 doc: None,
@@ -139,6 +141,7 @@ mod tests {
                     id: GtDefinitionId("module".into(), "Name".into()),
                     doc: None,
                     name: "Name".into(),
+                    generics: vec![],
                     descriptor: RsDescriptor::Primitive(RsPrimitive::String),
                 })]
             }

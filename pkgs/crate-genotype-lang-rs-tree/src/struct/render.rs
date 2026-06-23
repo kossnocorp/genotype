@@ -1,7 +1,6 @@
 use crate::prelude::internal::*;
 
 impl<'context> GtlRender<'context, RsRenderTypes> for RsStruct {
-
     fn render(
         &self,
         state: RsRenderState,
@@ -18,9 +17,10 @@ impl<'context> GtlRender<'context, RsRenderTypes> for RsStruct {
         }
 
         let name = self.name.render(state, context)?;
+        let generics = render_generics(&self.generics, state, context)?;
         let fields = self.fields.render(state, context)?;
 
-        blocks.push(state.indent_format(&format!("pub struct {name}{fields}")));
+        blocks.push(state.indent_format(&format!("pub struct {name}{generics}{fields}")));
 
         Ok(blocks.join("\n"))
     }
@@ -39,11 +39,44 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: "Name".into(),
+                generics: vec![],
                 fields: vec![].into(),
             }
             .render(Default::default(), &mut Default::default())
             .unwrap(),
             @"pub struct Name {}"
+        );
+    }
+
+    #[test]
+    fn test_render_with_generics() {
+        assert_snapshot!(
+            RsStruct {
+                id: GtDefinitionId("module".into(), "ResponseSuccess".into()),
+                doc: None,
+                attributes: vec![],
+                name: "ResponseSuccess".into(),
+                generics: vec!["Payload".into()],
+                fields: vec![RsField {
+                    doc: None,
+                    attributes: vec![],
+                    name: "value".into(),
+                    descriptor: RsReference {
+                        id: GtReferenceId("module".into(), (0, 0).into()),
+                        identifier: "Payload".into(),
+                        arguments: vec![],
+                        definition_id: GtDefinitionId("module".into(), "Payload".into())
+                    }.into(),
+                }]
+                .into(),
+            }
+            .render(Default::default(), &mut Default::default())
+            .unwrap(),
+            @"
+        pub struct ResponseSuccess<Payload> {
+            pub value: Payload,
+        }
+        "
         );
     }
 
@@ -55,6 +88,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: "Name".into(),
+                generics: vec![],
                 fields: vec![
                     RsField {
                         doc: None,
@@ -90,6 +124,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: "Name".into(),
+                generics: vec![],
                 fields: vec![
                     RsField {
                         doc: None,
@@ -128,6 +163,7 @@ mod tests {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "Name".into(),
+                generics: vec![],
                 fields: vec![].into(),
             }
             .render(Default::default(), &mut Default::default())
@@ -147,6 +183,7 @@ mod tests {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "Name".into(),
+                generics: vec![],
                 fields: vec![RsField {
                     doc: None,
                     attributes: vec![],
@@ -178,6 +215,7 @@ mod tests {
                     "literals(ok = true, version = 1)".into(),
                 ],
                 name: "Name".into(),
+                generics: vec![],
                 fields: vec![RsField {
                     doc: None,
                     attributes: vec![],

@@ -9,6 +9,7 @@ impl RsConvert<RsEnum> for GtUnion {
             context.name_child(None)
         };
         let id = context.build_definition_id(&name);
+        let generics = context.consume_definition_generics();
         context.drop_definition_id();
         context.enter_parent(RsContextParent::Definition(name.clone()));
 
@@ -60,6 +61,7 @@ impl RsConvert<RsEnum> for GtUnion {
             id,
             doc,
             name,
+            generics,
             attributes,
             variants,
         };
@@ -232,6 +234,7 @@ mod tests {
             RsAttribute("serde(untagged)"),
           ],
           name: RsIdentifier("Union"),
+          generics: [],
           variants: [
             RsEnumVariant(
               doc: None,
@@ -292,6 +295,7 @@ mod tests {
             RsAttribute("serde(untagged)"),
           ],
           name: RsIdentifier("Union"),
+          generics: [],
           variants: [
             RsEnumVariant(
               doc: None,
@@ -331,6 +335,7 @@ mod tests {
             RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
           ],
           name: RsIdentifier("AnimalKind"),
+          generics: [],
           variants: [
             RsEnumVariant(
               doc: None,
@@ -408,6 +413,7 @@ mod tests {
             RsAttribute("serde(untagged)"),
           ],
           name: RsIdentifier("Union"),
+          generics: [],
           variants: [
             RsEnumVariant(
               doc: None,
@@ -476,6 +482,7 @@ mod tests {
             RsAttribute("serde(untagged)"),
           ],
           name: RsIdentifier("Union"),
+          generics: [],
           variants: [
             RsEnumVariant(
               doc: None,
@@ -535,6 +542,7 @@ mod tests {
             RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
           ],
           name: RsIdentifier("Union"),
+          generics: [],
           variants: [
             RsEnumVariant(
               doc: None,
@@ -584,6 +592,7 @@ mod tests {
             RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
           ],
           name: RsIdentifier("Version"),
+          generics: [],
           variants: [
             RsEnumVariant(
               doc: None,
@@ -625,6 +634,7 @@ mod tests {
             RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
           ],
           name: RsIdentifier("Version"),
+          generics: [],
           variants: [
             RsEnumVariant(
               doc: None,
@@ -666,6 +676,7 @@ mod tests {
             RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
           ],
           name: RsIdentifier("Version"),
+          generics: [],
           variants: [
             RsEnumVariant(
               doc: None,
@@ -722,6 +733,7 @@ mod tests {
             RsAttribute("serde(untagged)"),
           ],
           name: RsIdentifier("ServerMessage"),
+          generics: [],
           variants: [
             RsEnumVariant(
               doc: None,
@@ -730,6 +742,7 @@ mod tests {
               descriptor: Some(Descriptor(Reference(RsReference(
                 id: GtReferenceId(GtModuleId("module"), GtSpan(0, 1)),
                 identifier: RsIdentifier("ServerMessagePing"),
+                arguments: [],
                 definition_id: GtDefinitionId(GtModuleId("module"), "ServerMessagePing"),
               )))),
             ),
@@ -740,6 +753,7 @@ mod tests {
               descriptor: Some(Descriptor(Reference(RsReference(
                 id: GtReferenceId(GtModuleId("module"), GtSpan(0, 2)),
                 identifier: RsIdentifier("ServerMessagePong"),
+                arguments: [],
                 definition_id: GtDefinitionId(GtModuleId("module"), "ServerMessagePong"),
               )))),
             ),
@@ -784,6 +798,7 @@ mod tests {
             RsAttribute("serde(untagged)"),
           ],
           name: RsIdentifier("ServerMessage"),
+          generics: [],
           variants: [
             RsEnumVariant(
               doc: None,
@@ -792,6 +807,7 @@ mod tests {
               descriptor: Some(Descriptor(Reference(RsReference(
                 id: GtReferenceId(GtModuleId("module"), GtSpan(0, 1)),
                 identifier: RsIdentifier("ServerMessagePing"),
+                arguments: [],
                 definition_id: GtDefinitionId(GtModuleId("module"), "ServerMessagePing"),
               )))),
             ),
@@ -802,6 +818,7 @@ mod tests {
               descriptor: Some(Descriptor(Reference(RsReference(
                 id: GtReferenceId(GtModuleId("module"), GtSpan(0, 2)),
                 identifier: RsIdentifier("ServerMessagePong"),
+                arguments: [],
                 definition_id: GtDefinitionId(GtModuleId("module"), "ServerMessagePong"),
               )))),
             ),
@@ -812,6 +829,7 @@ mod tests {
               descriptor: Some(Descriptor(Reference(RsReference(
                 id: GtReferenceId(GtModuleId("module"), GtSpan(0, 3)),
                 identifier: RsIdentifier("Ping"),
+                arguments: [],
                 definition_id: GtDefinitionId(GtModuleId("module"), "Ping"),
               )))),
             ),
@@ -893,6 +911,7 @@ mod tests {
             RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
           ],
           name: RsIdentifier("Status"),
+          generics: [],
           variants: [
             RsEnumVariant(
               doc: None,
@@ -901,6 +920,7 @@ mod tests {
               descriptor: Some(Descriptor(Reference(RsReference(
                 id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
                 identifier: RsIdentifier("Hello"),
+                arguments: [],
                 definition_id: GtDefinitionId(GtModuleId("module"), "Hello"),
               )))),
             ),
@@ -919,6 +939,7 @@ mod tests {
               descriptor: Some(Descriptor(InlineUse(RsInlineUse(
                 path: RsPath(GtModuleId("module/path"), "src::module"),
                 name: RsIdentifier("Type"),
+                arguments: [],
               )))),
             ),
             RsEnumVariant(
@@ -936,6 +957,7 @@ mod tests {
               descriptor: Some(Descriptor(Reference(RsReference(
                 id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
                 identifier: RsIdentifier("Status"),
+                arguments: [],
                 definition_id: GtDefinitionId(GtModuleId("module"), "Status"),
               )))),
             ),
@@ -952,6 +974,7 @@ mod tests {
               descriptor: Some(Descriptor(Reference(RsReference(
                 id: GtReferenceId(GtModuleId("module"), GtSpan(0, 2)),
                 identifier: RsIdentifier("Hello"),
+                arguments: [],
                 definition_id: GtDefinitionId(GtModuleId("module"), "Hello"),
               )))),
             ),
@@ -973,6 +996,7 @@ mod tests {
               descriptor: Some(Descriptor(Reference(RsReference(
                 id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
                 identifier: RsIdentifier("Status"),
+                arguments: [],
                 definition_id: GtDefinitionId(GtModuleId("module"), "Status"),
               )))),
             ),
@@ -998,6 +1022,7 @@ mod tests {
               descriptor: Some(Descriptor(Reference(RsReference(
                 id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
                 identifier: RsIdentifier("StatusStr"),
+                arguments: [],
                 definition_id: GtDefinitionId(GtModuleId("module"), "StatusStr"),
               )))),
             ),
@@ -1043,6 +1068,7 @@ mod tests {
             name: RsIdentifier(
                 "Status",
             ),
+            generics: [],
             variants: [
                 RsEnumVariant {
                     doc: None,

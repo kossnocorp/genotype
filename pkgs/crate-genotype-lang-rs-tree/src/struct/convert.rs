@@ -12,6 +12,7 @@ impl RsConvert<RsStruct> for GtObject {
         context.enter_parent(RsContextParent::Definition(name.clone()));
 
         let doc = context.consume_doc();
+        let generics = context.consume_definition_generics();
 
         // Collect regular and literal fields separately. Literal fields will be
         // converted to attributes and won't be actual fields in the struct.
@@ -72,6 +73,7 @@ impl RsConvert<RsStruct> for GtObject {
             doc,
             attributes,
             name,
+            generics,
             fields,
         };
 
@@ -106,6 +108,7 @@ impl RsConvert<RsStruct> for GtLiteral {
             doc,
             attributes: vec![RsAttribute(format!("literal({literal})"))],
             name,
+            generics: vec![],
             fields: RsStructFields::Unit,
         })
     }
@@ -118,6 +121,7 @@ impl RsConvert<RsStruct> for GtBranded {
         let id = context
             .consume_definition_id()
             .unwrap_or_else(|| context.build_definition_id(&name));
+        let generics = context.consume_definition_generics();
         let descriptor = self.primitive.convert(context)?.into();
 
         Ok(RsStruct {
@@ -132,6 +136,7 @@ impl RsConvert<RsStruct> for GtBranded {
                     .into(),
             ],
             name,
+            generics,
             fields: RsStructFields::Newtype(vec![descriptor]),
         })
     }
@@ -180,6 +185,7 @@ mod tests {
             RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
           ],
           name: RsIdentifier("Person"),
+          generics: [],
           fields: Resolved([
             RsField(
               doc: None,
@@ -225,6 +231,7 @@ mod tests {
             RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
           ],
           name: RsIdentifier("Person"),
+          generics: [],
           fields: Resolved([]),
         )
         "#
@@ -298,6 +305,7 @@ mod tests {
             RsAttribute("literals(ok = true, version = 1)"),
           ],
           name: RsIdentifier("Person"),
+          generics: [],
           fields: Resolved([
             RsField(
               doc: None,
@@ -377,10 +385,12 @@ mod tests {
             RsAttribute("literals(ok = true)"),
           ],
           name: RsIdentifier("Person"),
+          generics: [],
           fields: Unresolved(GtSpan(1, 8), [
             RsReference(
               id: GtReferenceId(GtModuleId("module"), GtSpan(2, 9)),
               identifier: RsIdentifier("Model"),
+              arguments: [],
               definition_id: GtDefinitionId(GtModuleId("module"), "Model"),
             ),
           ], [
@@ -419,6 +429,7 @@ mod tests {
             RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
           ],
           name: RsIdentifier("Person"),
+          generics: [],
           fields: Resolved([]),
         )
         "#
@@ -479,10 +490,12 @@ mod tests {
             RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
           ],
           name: RsIdentifier("Person"),
+          generics: [],
           fields: Unresolved(GtSpan(1, 8), [
             RsReference(
               id: GtReferenceId(GtModuleId("module"), GtSpan(2, 9)),
               identifier: RsIdentifier("Model"),
+              arguments: [],
               definition_id: GtDefinitionId(GtModuleId("module"), "Model"),
             ),
           ], [
@@ -522,6 +535,7 @@ mod tests {
             RsAttribute("literal(true)"),
           ],
           name: RsIdentifier("True"),
+          generics: [],
           fields: Unit,
         )
         "#
@@ -544,6 +558,7 @@ mod tests {
             RsAttribute("literal(1)"),
           ],
           name: RsIdentifier("Version"),
+          generics: [],
           fields: Unit,
         )
         "#
@@ -567,6 +582,7 @@ mod tests {
             RsAttribute("literal(1)"),
           ],
           name: RsIdentifier("UserV1"),
+          generics: [],
           fields: Unit,
         )
         "#
@@ -588,6 +604,7 @@ mod tests {
             RsAttribute("literal(false)"),
           ],
           name: RsIdentifier("False"),
+          generics: [],
           fields: Unit,
         )
         "#
@@ -623,6 +640,7 @@ mod tests {
             RsAttribute("literal(false)"),
           ],
           name: RsIdentifier("False"),
+          generics: [],
           fields: Unit,
         )
         "#
@@ -643,6 +661,7 @@ mod tests {
             RsAttribute("literal(1.23456)"),
           ],
           name: RsIdentifier("Lit1_23456"),
+          generics: [],
           fields: Unit,
         )
         "#
@@ -663,6 +682,7 @@ mod tests {
             RsAttribute("literal(true)"),
           ],
           name: RsIdentifier("True"),
+          generics: [],
           fields: Unit,
         )
         "#
@@ -685,6 +705,7 @@ mod tests {
             RsAttribute("literal(1)"),
           ],
           name: RsIdentifier("Version"),
+          generics: [],
           fields: Unit,
         )
         "#
@@ -708,6 +729,7 @@ mod tests {
             RsAttribute("literal(1)"),
           ],
           name: RsIdentifier("UserV1"),
+          generics: [],
           fields: Unit,
         )
         "#
@@ -729,6 +751,7 @@ mod tests {
             RsAttribute("literal(false)"),
           ],
           name: RsIdentifier("False"),
+          generics: [],
           fields: Unit,
         )
         "#
@@ -764,6 +787,7 @@ mod tests {
             RsAttribute("literal(false)"),
           ],
           name: RsIdentifier("False"),
+          generics: [],
           fields: Unit,
         )
         "#

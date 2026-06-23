@@ -9,25 +9,34 @@ impl RsConvert<RsDefinition> for GtAlias {
         };
 
         let name = self.name.convert(context)?;
+        let generics = self
+            .generics
+            .iter()
+            .map(|generic| generic.identifier.convert(context))
+            .collect::<RsConvertResult<Vec<_>>>()?;
         context.push_defined(&name);
+        context.enter_generics_scope(generics.clone());
         context.enter_parent(RsContextParent::Alias(name.clone()));
 
         let definition = match &self.descriptor {
             GtDescriptor::Object(object) => {
                 context.provide_definition_id(self.id.clone());
                 context.provide_doc(doc);
+                context.provide_definition_generics(generics);
                 RsDefinition::Struct(object.convert(context)?)
             }
 
             GtDescriptor::Branded(branded) => {
                 context.provide_definition_id(self.id.clone());
                 context.provide_doc(doc);
+                context.provide_definition_generics(generics);
                 RsDefinition::Struct(branded.convert(context)?)
             }
 
             GtDescriptor::Union(union) => {
                 context.provide_definition_id(self.id.clone());
                 context.provide_doc(doc);
+                context.provide_definition_generics(generics);
                 RsDefinition::Enum(union.convert(context)?)
             }
 
@@ -38,12 +47,14 @@ impl RsConvert<RsDefinition> for GtAlias {
                     id: self.id.clone(),
                     doc,
                     name,
+                    generics,
                     descriptor,
                 })
             }
         };
 
         context.exit_parent();
+        context.exit_generics_scope();
         Ok(definition)
     }
 }
@@ -72,7 +83,37 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "Name"),
           doc: None,
           name: RsIdentifier("Name"),
+          generics: [],
           descriptor: Primitive(Boolean),
+        ))
+        "#,
+        );
+    }
+
+    #[test]
+    fn test_convert_alias_with_generics() {
+        assert_ron_snapshot!(
+            Gt::alias_with_generics(
+                "Response",
+                vec![Gt::generic_parameter("Payload")],
+                Gt::reference_anon("Payload")
+            )
+            .convert(&mut RsConvertContext::empty("module".into()))
+            .unwrap(),
+            @r#"
+        Alias(RsAlias(
+          id: GtDefinitionId(GtModuleId("module"), "Response"),
+          doc: None,
+          name: RsIdentifier("Response"),
+          generics: [
+            RsIdentifier("Payload"),
+          ],
+          descriptor: Reference(RsReference(
+            id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
+            identifier: RsIdentifier("Payload"),
+            arguments: [],
+            definition_id: GtDefinitionId(GtModuleId("module"), "Payload"),
+          )),
         ))
         "#,
         );
@@ -124,6 +165,7 @@ mod tests {
             RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
           ],
           name: RsIdentifier("Book"),
+          generics: [],
           fields: Resolved([
             RsField(
               doc: None,
@@ -167,6 +209,7 @@ mod tests {
             RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
           ],
           name: RsIdentifier("BookId"),
+          generics: [],
           fields: Newtype([
             Primitive(Int32),
           ]),
@@ -205,6 +248,7 @@ mod tests {
             RsAttribute("serde(untagged)"),
           ],
           name: RsIdentifier("Book"),
+          generics: [],
           variants: [
             RsEnumVariant(
               doc: None,
@@ -213,6 +257,7 @@ mod tests {
               descriptor: Some(Descriptor(Reference(RsReference(
                 id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
                 identifier: RsIdentifier("BookObj"),
+                arguments: [],
                 definition_id: GtDefinitionId(GtModuleId("module"), "BookObj"),
               )))),
             ),
@@ -238,6 +283,7 @@ mod tests {
               RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
             ],
             name: RsIdentifier("BookObj"),
+            generics: [],
             fields: Resolved([
               RsField(
                 doc: None,
@@ -271,6 +317,7 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "Name"),
           doc: Some(RsDoc("Hello, world!", false)),
           name: RsIdentifier("Name"),
+          generics: [],
           descriptor: Primitive(Boolean),
         ))
         "#,

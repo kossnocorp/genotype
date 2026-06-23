@@ -9,4 +9,6 @@ pub struct RsInlineUse {
     pub path: RsPath,
     #[visit]
     pub name: RsIdentifier,
+    #[visit]
+    pub arguments: Vec<RsDescriptor>,
 }

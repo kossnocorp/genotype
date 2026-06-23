@@ -16,6 +16,7 @@ impl RsConvertContext {
         let reference = RsReference {
             id: self.reference_id(span),
             identifier: definition.name().clone(),
+            arguments: vec![],
             definition_id: definition.id().clone(),
         };
         self.hoisted.push(definition);

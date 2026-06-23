@@ -17,7 +17,8 @@ impl<'context> GtlRender<'context, RsRenderTypes> for RsEnum {
         }
 
         let name = self.name.render(state, context)?;
-        blocks.push(state.indent_format(&format!("pub enum {name} {{")));
+        let generics = render_generics(&self.generics, state, context)?;
+        blocks.push(state.indent_format(&format!("pub enum {name}{generics} {{")));
 
         for variant in &self.variants {
             blocks.push(variant.render(state.indent_inc(), context)?);
@@ -41,6 +42,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: "Union".into(),
+                generics: vec![],
                 variants: vec![
                     RsEnumVariant {
                         doc: None,
@@ -68,6 +70,42 @@ mod tests {
     }
 
     #[test]
+    fn test_render_with_generics() {
+        assert_snapshot!(
+            RsEnum {
+                id: GtDefinitionId("module".into(), "Response".into()),
+                doc: None,
+                attributes: vec![],
+                name: "Response".into(),
+                generics: vec!["Payload".into()],
+                variants: vec![RsEnumVariant {
+                    doc: None,
+                    attributes: vec![],
+                    name: "Success".into(),
+                    descriptor: Some(RsEnumVariantDescriptor::Descriptor(RsReference {
+                        id: GtReferenceId("module".into(), (0, 0).into()),
+                        identifier: "ResponseSuccess".into(),
+                        arguments: vec![RsReference {
+                            id: GtReferenceId("module".into(), (0, 0).into()),
+                            identifier: "Payload".into(),
+                            arguments: vec![],
+                            definition_id: GtDefinitionId("module".into(), "Payload".into())
+                        }.into()],
+                        definition_id: GtDefinitionId("module".into(), "ResponseSuccess".into())
+                    }.into())),
+                }],
+            }
+            .render(Default::default(), &mut Default::default())
+            .unwrap(),
+            @"
+        pub enum Response<Payload> {
+            Success(ResponseSuccess<Payload>),
+        }
+        "
+        );
+    }
+
+    #[test]
     fn test_render_indent() {
         assert_snapshot!(
             RsEnum {
@@ -75,6 +113,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: "Union".into(),
+                generics: vec![],
                 variants: vec![
                     RsEnumVariant {
                         doc: None,
@@ -112,6 +151,7 @@ mod tests {
                 doc: None,
                 attributes: vec![RsAttribute("derive(Deserialize, Serialize)".into())],
                 name: "Union".into(),
+                generics: vec![],
                 variants: vec![
                     RsEnumVariant {
                         doc: None,
@@ -147,6 +187,7 @@ mod tests {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "Union".into(),
+                generics: vec![],
                 variants: vec![
                     RsEnumVariant {
                         doc: None,
@@ -182,6 +223,7 @@ mod tests {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![RsAttribute("derive(Deserialize, Serialize)".into())],
                 name: "Union".into(),
+                generics: vec![],
                 variants: vec![
                     RsEnumVariant {
                         doc: None,

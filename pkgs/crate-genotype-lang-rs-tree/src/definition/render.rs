@@ -1,7 +1,6 @@
 use crate::prelude::internal::*;
 
 impl<'context> GtlRender<'context, RsRenderTypes> for RsDefinition {
-
     fn render(
         &self,
         state: RsRenderState,
@@ -27,6 +26,7 @@ mod tests {
                 id: GtDefinitionId("module".into(), "Name".into()),
                 doc: None,
                 name: "Name".into(),
+                generics: vec![],
                 descriptor: RsDescriptor::Primitive(RsPrimitive::String),
             })
             .render(Default::default(), &mut Default::default())
@@ -43,6 +43,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: "Name".into(),
+                generics: vec![],
                 fields: vec![
                     RsField {
                         doc: None,
@@ -78,6 +79,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: "ValuesUnion".into(),
+                generics: vec![],
                 variants: vec![
                     RsEnumVariant {
                         doc: None,

@@ -62,6 +62,7 @@ mod tests {
                 id: GtDefinitionId("module".into(), "Name".into()),
                 doc: None,
                 name: "Name".into(),
+                generics: vec![],
                 descriptor: RsDescriptor::Primitive(RsPrimitive::Boolean),
             })
             .name(),
@@ -74,6 +75,7 @@ mod tests {
                 doc: None,
                 attributes: vec![],
                 name: "Name".into(),
+                generics: vec![],
                 fields: vec![].into(),
             })
             .name(),
@@ -88,6 +90,7 @@ mod tests {
                 id: GtDefinitionId("module".into(), "Name".into()),
                 doc: Some("Hello, world!".into()),
                 name: "Name".into(),
+                generics: vec![],
                 descriptor: RsDescriptor::Primitive(RsPrimitive::Boolean),
             })
             .doc(),
@@ -100,6 +103,7 @@ mod tests {
                 doc: Some("Hello, world!".into()),
                 attributes: vec![],
                 name: "Name".into(),
+                generics: vec![],
                 fields: vec![].into(),
             })
             .doc(),

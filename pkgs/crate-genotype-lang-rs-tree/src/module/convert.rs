@@ -259,6 +259,7 @@ mod tests {
                 RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
               ],
               name: RsIdentifier("User"),
+              generics: [],
               fields: Resolved([
                 RsField(
                   doc: None,
@@ -285,6 +286,7 @@ mod tests {
                 RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
               ],
               name: RsIdentifier("Order"),
+              generics: [],
               fields: Resolved([
                 RsField(
                   doc: None,
@@ -293,6 +295,7 @@ mod tests {
                   descriptor: Reference(RsReference(
                     id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
                     identifier: RsIdentifier("Book"),
+                    arguments: [],
                     definition_id: GtDefinitionId(GtModuleId("module"), "Book"),
                   )),
                 ),
@@ -305,6 +308,7 @@ mod tests {
                 RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
               ],
               name: RsIdentifier("Book"),
+              generics: [],
               fields: Resolved([
                 RsField(
                   doc: None,
@@ -319,6 +323,7 @@ mod tests {
                   descriptor: Reference(RsReference(
                     id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
                     identifier: RsIdentifier("Author"),
+                    arguments: [],
                     definition_id: GtDefinitionId(GtModuleId("module"), "Author"),
                   )),
                 ),
@@ -328,6 +333,7 @@ mod tests {
               id: GtDefinitionId(GtModuleId("module"), "Name"),
               doc: None,
               name: RsIdentifier("Name"),
+              generics: [],
               descriptor: Primitive(String),
             )),
           ],

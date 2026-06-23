@@ -13,5 +13,7 @@ pub struct RsEnum {
     #[visit]
     pub name: RsIdentifier,
     #[visit]
+    pub generics: Vec<RsIdentifier>,
+    #[visit]
     pub variants: Vec<RsEnumVariant>,
 }

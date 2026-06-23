@@ -72,6 +72,7 @@ mod tests {
             RsDescriptor::Reference(RsReference {
                 id: GtReferenceId("module".into(), (0, 0).into()),
                 identifier: "Name".into(),
+                arguments: vec![],
                 definition_id: GtDefinitionId("module".into(), "Name".into())
             })
             .render(Default::default(), &mut Default::default())
@@ -85,7 +86,8 @@ mod tests {
         assert_snapshot!(
             RsDescriptor::InlineUse(RsInlineUse {
                 path: RsPath("path/to/module".into(), "self::path::to::module".into()),
-                name: "Name".into()
+                name: "Name".into(),
+                arguments: vec![]
             })
             .render(Default::default(), &mut Default::default())
             .unwrap(),

@@ -10,6 +10,42 @@ pub fn render_literal(literal: &GtLiteral) -> String {
     }
 }
 
+pub fn render_generics<'context>(
+    generics: &[RsIdentifier],
+    state: RsRenderState,
+    context: &mut RsRenderContext,
+) -> RsRenderResult<String> {
+    if generics.is_empty() {
+        return Ok(String::new());
+    }
+
+    let generics = generics
+        .iter()
+        .map(|generic| generic.render(state, context))
+        .collect::<Result<Vec<_>, _>>()?
+        .join(", ");
+
+    Ok(format!("<{generics}>"))
+}
+
+pub fn render_generic_arguments<'context>(
+    arguments: &[RsDescriptor],
+    state: RsRenderState,
+    context: &mut RsRenderContext,
+) -> RsRenderResult<String> {
+    if arguments.is_empty() {
+        return Ok(String::new());
+    }
+
+    let arguments = arguments
+        .iter()
+        .map(|argument| argument.render(state, context))
+        .collect::<Result<Vec<_>, _>>()?
+        .join(", ");
+
+    Ok(format!("<{arguments}>"))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

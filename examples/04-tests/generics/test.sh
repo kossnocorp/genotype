@@ -166,8 +166,7 @@ else
 	echo "--- Output ------------------------------------------"
 	echo "$output"
 	echo "-----------------------------------------------------"
-	# TODO: Implement and enable:
-	# exit 1
+	exit 1
 fi
 
 echo
@@ -180,8 +179,7 @@ else
 	echo "--- Output ------------------------------------------"
 	echo "$output"
 	echo "-----------------------------------------------------"
-	# TODO: Implement and enable:
-	# exit 1
+	exit 1
 fi
 
 #endregion

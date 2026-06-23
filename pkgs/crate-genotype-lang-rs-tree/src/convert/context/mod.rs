@@ -4,6 +4,8 @@ mod attributing;
 
 mod hoisting;
 
+mod generics;
+
 mod ids;
 
 mod naming;
@@ -26,6 +28,8 @@ pub struct RsConvertContext {
     parents: Vec<RsContextParent>,
     module_id: GtModuleId,
     definition_id: Option<GtDefinitionId>,
+    definition_generics: Vec<RsIdentifier>,
+    generics_scope: Vec<Vec<RsIdentifier>>,
     field_attributes: Vec<RsAttribute>,
     dependencies_config: IndexMap<String, String>,
 }
@@ -61,6 +65,8 @@ impl RsConvertContext {
         Self {
             module_id,
             definition_id: None,
+            definition_generics: vec![],
+            generics_scope: vec![],
             resolve,
             config,
             imports: vec![],
@@ -207,6 +213,7 @@ mod tests {
                     id: GtDefinitionId("module".into(), "Name".into()),
                     doc: None,
                     name: "Name".into(),
+                    generics: vec![],
                     descriptor: RsDescriptor::Primitive(RsPrimitive::Boolean),
                 }),
                 (0, 0).into(),
@@ -219,6 +226,7 @@ mod tests {
                 id: GtDefinitionId("module".into(), "Name".into()),
                 doc: None,
                 name: "Name".into(),
+                generics: vec![],
                 descriptor: RsDescriptor::Primitive(RsPrimitive::Boolean),
             })],
         );

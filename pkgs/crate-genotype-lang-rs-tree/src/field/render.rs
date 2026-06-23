@@ -52,6 +52,7 @@ mod tests {
                 descriptor: RsReference {
                     id: GtReferenceId("module".into(), (0, 0).into()),
                     identifier: "Name".into(),
+                    arguments: vec![],
                     definition_id: GtDefinitionId("module".into(), "Name".into())
                 }
                 .into(),

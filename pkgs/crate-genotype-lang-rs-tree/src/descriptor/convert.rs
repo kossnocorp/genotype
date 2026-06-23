@@ -110,6 +110,7 @@ mod tests {
         Reference(RsReference(
           id: GtReferenceId(GtModuleId("module"), GtSpan(0, 1)),
           identifier: RsIdentifier("Name"),
+          arguments: [],
           definition_id: GtDefinitionId(GtModuleId("module"), "Name"),
         ))
         "#
@@ -123,6 +124,7 @@ mod tests {
             id: GtDefinitionId(GtModuleId("module"), "Name"),
             doc: None,
             name: RsIdentifier("Name"),
+            generics: [],
             descriptor: Primitive(Boolean),
           )),
         ]
@@ -159,6 +161,7 @@ mod tests {
         InlineUse(RsInlineUse(
           path: RsPath(GtModuleId("module/path"), "super::path::to::module"),
           name: RsIdentifier("Name"),
+          arguments: [],
         ))
         "#
         );
@@ -199,6 +202,7 @@ mod tests {
         Reference(RsReference(
           id: GtReferenceId(GtModuleId("module"), GtSpan(0, 1)),
           identifier: RsIdentifier("Person"),
+          arguments: [],
           definition_id: GtDefinitionId(GtModuleId("module"), "Person"),
         ))
         "#
@@ -215,6 +219,7 @@ mod tests {
               RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
             ],
             name: RsIdentifier("Person"),
+            generics: [],
             fields: Resolved([
               RsField(
                 doc: None,
@@ -262,6 +267,7 @@ mod tests {
         Reference(RsReference(
           id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
           identifier: RsIdentifier("Name"),
+          arguments: [],
           definition_id: GtDefinitionId(GtModuleId("module"), "Name"),
         ))
         "#
@@ -299,6 +305,7 @@ mod tests {
         Reference(RsReference(
           id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
           identifier: RsIdentifier("Union"),
+          arguments: [],
           definition_id: GtDefinitionId(GtModuleId("module"), "Union"),
         ))
         "#
@@ -316,6 +323,7 @@ mod tests {
               RsAttribute("serde(untagged)"),
             ],
             name: RsIdentifier("Union"),
+            generics: [],
             variants: [
               RsEnumVariant(
                 doc: None,

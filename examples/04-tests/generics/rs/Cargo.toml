@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-genotype_test_generics_types = { path = "../dist/rs/rs" }
+genotype_test_generics_types = { path = "../dist/rs" }
+
+[patch.crates-io]
+litty = { path = "../../../../pkgs/crate-litty" }
 
 [workspace]
