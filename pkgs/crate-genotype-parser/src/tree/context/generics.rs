@@ -1,8 +1,8 @@
 use crate::prelude::internal::*;
 
 impl GtContext {
-    pub fn enter_generics_scope(&mut self, generics: &Vec<GtGenericParameter>) {
-        self.generics_scope.push(generics.clone());
+    pub fn enter_generics_scope(&mut self, generics: &[GtGenericParameter]) {
+        self.generics_scope.push(generics.to_owned());
     }
 
     pub fn exit_generics_scope(&mut self, span: GtSpan, node: GtNode) -> GtNodeParseResult<()> {
@@ -39,7 +39,7 @@ mod tests {
     fn test_generics_stack() {
         let mut context = GtContext::new("module".into());
 
-        context.enter_generics_scope(&vec![Gt::generic_parameter("Q")]);
+        context.enter_generics_scope(&[Gt::generic_parameter("Q")]);
 
         let q = Gt::identifier_with_span("Q", (0, 1));
         let w = Gt::identifier_with_span("W", (0, 2));
@@ -49,7 +49,7 @@ mod tests {
         assert!(!context.is_generic_parameter(&w));
         assert!(!context.is_generic_parameter(&e));
 
-        context.enter_generics_scope(&vec![Gt::generic_parameter("W")]);
+        context.enter_generics_scope(&[Gt::generic_parameter("W")]);
 
         assert!(context.is_generic_parameter(&q));
         assert!(context.is_generic_parameter(&w));
@@ -84,7 +84,7 @@ mod tests {
     #[test]
     fn test_resolve_reference_identifier_as_generic_parameter() {
         let mut context = GtContext::new("module".into());
-        context.enter_generics_scope(&vec![Gt::generic_parameter("Q")]);
+        context.enter_generics_scope(&[Gt::generic_parameter("Q")]);
         context.resolve_reference_identifier_as_generic_parameter(&Gt::identifier_with_span(
             "Q",
             (0, 1),

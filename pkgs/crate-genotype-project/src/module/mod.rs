@@ -29,10 +29,10 @@ pub enum GtpModule {
     Error(GtpModuleSource, GtpModuleError),
 
     /// Module has been parsed successfully.
-    Parsed(GtpModuleParse),
+    Parsed(Box<GtpModuleParse>),
 
     /// Module has been resolved successfully.
-    Resolved(GtpModuleResolved),
+    Resolved(Box<GtpModuleResolved>),
 }
 
 impl GtpModule {

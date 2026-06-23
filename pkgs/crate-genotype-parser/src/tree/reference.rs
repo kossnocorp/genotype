@@ -197,7 +197,7 @@ mod tests {
     #[test]
     fn test_identified_generic_parameters() {
         let mut context = Gt::context();
-        context.enter_generics_scope(&vec![Gt::generic_parameter("T")]);
+        context.enter_generics_scope(&[Gt::generic_parameter("T")]);
         assert_ron_snapshot!(
             parse_node!(GtReference, (to_parse_rules(Rule::reference, "T"), &mut context)),
             @r#"

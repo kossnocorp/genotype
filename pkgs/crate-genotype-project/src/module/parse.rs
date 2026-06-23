@@ -39,7 +39,7 @@ impl GtpModuleParse {
 
 impl From<GtpModuleParse> for GtpModule {
     fn from(val: GtpModuleParse) -> Self {
-        GtpModule::Parsed(val)
+        GtpModule::Parsed(Box::new(val))
     }
 }
 
