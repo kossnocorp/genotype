@@ -121,7 +121,7 @@ impl GtCompiler<'_, '_> {
         };
 
         if should_write {
-            let write_result = Self::write_file_source_code(path, source_code);
+            let write_result = self.backend.file_write(&path.to_path_buf(), source_code);
             if let Err(err) = write_result {
                 notices.push(GtNotice::error(format!(
                     "Failed to write `{path}` to file system: {err}"
@@ -130,21 +130,5 @@ impl GtCompiler<'_, '_> {
         }
 
         notices
-    }
-
-    fn write_file_source_code(path: &GtpTargetFilePath, source_code: &String) -> Result<()> {
-        let parent_dir_path = path
-            .to_parent()
-            .ok_or_else(|| miette!("Failed to get parent directory for `{path}`"))?;
-
-        fs::create_dir_all(parent_dir_path.to_path_buf())
-            .map_err(|err| miette!(err))
-            .wrap_err_with(|| format!("Failed to create directory `{parent_dir_path}`"))?;
-
-        fs::write(path.to_path_buf(), source_code)
-            .map_err(|err| miette!(err))
-            .wrap_err_with(|| format!("Failed to write file `{path}`"))?;
-
-        Ok(())
     }
 }
