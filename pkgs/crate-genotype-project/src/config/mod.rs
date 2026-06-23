@@ -74,7 +74,7 @@ impl GtpConfig {
         Ok(config)
     }
 
-    pub fn lang<'a>(&'a self, lang: GtLang) -> &'a dyn GtpLangConfig {
+    pub fn lang(&self, lang: GtLang) -> &dyn GtpLangConfig {
         match lang {
             GtLang::Py => &self.py,
             GtLang::Rs => &self.rs,

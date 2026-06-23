@@ -31,9 +31,9 @@ impl RsConvert<RsEnum> for GtUnion {
                 .flat_map(|variant| variant.attributes.iter().find(|attr| attr.0 == "default"));
             let count = default_attrs.clone().count();
             if count == 0 {
-                return Err(RsConvertError::MissingDefaultVariant(self.span).into());
+                return Err(RsConvertError::MissingDefaultVariant(self.span));
             } else if count > 1 {
-                return Err(RsConvertError::MultipleDefaultVariants(self.span).into());
+                return Err(RsConvertError::MultipleDefaultVariants(self.span));
             }
         }
 

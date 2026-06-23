@@ -51,7 +51,7 @@ impl GtParseError {
         match self {
             GtParseError::Syntax { span, message } => {
                 let report = miette!(
-                    labels = vec![LabeledSpan::at(span.clone(), "Here")],
+                    labels = vec![LabeledSpan::at(*span, "Here")],
                     "Syntax error: {message}"
                 )
                 .with_source_code(source_code);
@@ -72,13 +72,13 @@ impl GtParseError {
     }
 }
 
-impl Into<GtParseError> for pest::error::Error<Rule> {
-    fn into(self) -> GtParseError {
-        let span = match self.location {
+impl From<pest::error::Error<Rule>> for GtParseError {
+    fn from(val: pest::error::Error<Rule>) -> Self {
+        let span = match val.location {
             InputLocation::Pos(pos) => (pos, pos).into(),
             InputLocation::Span((start, end)) => (start, end).into(),
         };
-        let message = self.variant.message().to_string();
+        let message = val.variant.message().to_string();
         GtParseError::Syntax { span, message }
     }
 }

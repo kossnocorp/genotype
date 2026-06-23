@@ -4,7 +4,7 @@ impl GtpModuleError {
     pub fn as_notice(&self, config: &GtpConfig, details: Vec<GtpModuleErrorDetails>) -> GtNotice {
         let err_str = format!("{self}");
         match self {
-            GtpModuleError::Init { path, message } => {
+            GtpModuleError::Init { path: _, message: _ } => {
                 todo!()
             }
 
@@ -18,7 +18,7 @@ impl GtpModuleError {
                 GtNotice {
                     kind: GtNoticeKind::Error,
                     content: GtNoticeContent::Reports {
-                        title: format!("{err_str}"),
+                        title: err_str.to_string(),
                         reports,
                     },
                 }

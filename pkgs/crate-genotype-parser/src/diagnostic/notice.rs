@@ -9,8 +9,8 @@ pub struct GtNotice {
 impl GtNotice {
     pub fn title(&self) -> &str {
         match &self.content {
-            GtNoticeContent::Message { title, .. } => &title,
-            GtNoticeContent::Reports { title, .. } => &title,
+            GtNoticeContent::Message { title, .. } => title,
+            GtNoticeContent::Reports { title, .. } => title,
         }
     }
 
@@ -100,9 +100,9 @@ impl From<Report> for GtNoticeContent {
     }
 }
 
-impl Into<Vec<GtNotice>> for GtNotice {
-    fn into(self) -> Vec<GtNotice> {
-        vec![self]
+impl From<GtNotice> for Vec<GtNotice> {
+    fn from(val: GtNotice) -> Self {
+        vec![val]
     }
 }
 

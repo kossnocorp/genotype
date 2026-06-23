@@ -6,7 +6,7 @@ impl GtContext {
     }
 
     pub fn exit_generics_scope(&mut self, span: GtSpan, node: GtNode) -> GtNodeParseResult<()> {
-        self.generics_scope.pop().ok_or_else(|| {
+        self.generics_scope.pop().ok_or({
             GtParseError::Internal(span, node, "tried to exit from an empty generics scope")
         })?;
         Ok(())
@@ -21,8 +21,8 @@ impl GtContext {
     }
 
     pub fn resolve_reference_identifier_as_generic_parameter(&mut self, identifier: &GtIdentifier) {
-        if self.is_generic_parameter(&identifier) {
-            self.mark_identifier_as_generic_parameter(&identifier);
+        if self.is_generic_parameter(identifier) {
+            self.mark_identifier_as_generic_parameter(identifier);
         }
     }
 

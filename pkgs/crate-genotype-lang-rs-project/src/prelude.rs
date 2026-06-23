@@ -9,9 +9,9 @@ pub(crate) mod internal {
     #[cfg(test)]
     pub use genotype_test::*;
     pub use indexmap::{IndexMap, IndexSet};
-    pub use miette::{Diagnostic, IntoDiagnostic, Result};
+    pub use miette::{Diagnostic, Result};
     pub use serde::Serialize;
-    pub use std::hash::{Hash, Hasher};
+    pub use std::hash::Hasher;
     pub use std::mem;
-    pub use thiserror::Error;
+    
 }

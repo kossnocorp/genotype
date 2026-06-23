@@ -25,7 +25,7 @@ impl<ProjectModule: GtlProjectModule> GtlProjectModuleStateInnerConverted
     type ProjectModule = ProjectModule;
 
     fn converted(&self) -> &GtlProjectModuleConverted<ProjectModule> {
-        &self.source_state.converted()
+        self.source_state.converted()
     }
 
     fn converted_mut(&mut self) -> &mut GtlProjectModuleConverted<Self::ProjectModule> {

@@ -117,7 +117,7 @@ impl TsInterface {
         };
         let r#type = TsDoc::with_doc(&self.doc, state, context, r#type, false)?;
 
-        return Ok(format!("{schema}\n\n{type}"));
+        Ok(format!("{schema}\n\n{type}"))
     }
 
     fn render_extension_names(

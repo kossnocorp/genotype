@@ -6,15 +6,15 @@ pub enum GtlProjectFileExtra {
     Error(GtlProjectFileExtraError),
 }
 
-impl<ProjectModule: GtlProjectModule> Into<GtlProjectFile<ProjectModule>> for GtlProjectFileExtra {
-    fn into(self) -> GtlProjectFile<ProjectModule> {
-        GtlProjectFile::Extra(self)
+impl<ProjectModule: GtlProjectModule> From<GtlProjectFileExtra> for GtlProjectFile<ProjectModule> {
+    fn from(val: GtlProjectFileExtra) -> Self {
+        GtlProjectFile::Extra(val)
     }
 }
 
-impl<ProjectModule: GtlProjectModule> Into<GtlGeneration<ProjectModule>> for GtlProjectFileExtra {
-    fn into(self) -> GtlGeneration<ProjectModule> {
-        GtlGeneration::file(GtlProjectFile::Extra(self))
+impl<ProjectModule: GtlProjectModule> From<GtlProjectFileExtra> for GtlGeneration<ProjectModule> {
+    fn from(val: GtlProjectFileExtra) -> Self {
+        GtlGeneration::file(GtlProjectFile::Extra(val))
     }
 }
 
@@ -29,17 +29,17 @@ pub enum GtlProjectFileExtraError {
     },
 }
 
-impl Into<GtlProjectFileExtra> for GtlProjectFileExtraError {
-    fn into(self) -> GtlProjectFileExtra {
-        GtlProjectFileExtra::Error(self)
+impl From<GtlProjectFileExtraError> for GtlProjectFileExtra {
+    fn from(val: GtlProjectFileExtraError) -> Self {
+        GtlProjectFileExtra::Error(val)
     }
 }
 
-impl<ProjectModule: GtlProjectModule> Into<GtlProjectFile<ProjectModule>>
-    for GtlProjectFileExtraError
+impl<ProjectModule: GtlProjectModule> From<GtlProjectFileExtraError>
+    for GtlProjectFile<ProjectModule>
 {
-    fn into(self) -> GtlProjectFile<ProjectModule> {
-        GtlProjectFile::Extra(self.into())
+    fn from(val: GtlProjectFileExtraError) -> Self {
+        GtlProjectFile::Extra(val.into())
     }
 }
 
@@ -49,24 +49,24 @@ pub struct GtlProjectFileExtraGenerated {
     pub source_code: String,
 }
 
-impl Into<GtlProjectFileExtra> for GtlProjectFileExtraGenerated {
-    fn into(self) -> GtlProjectFileExtra {
-        GtlProjectFileExtra::Generated(self)
+impl From<GtlProjectFileExtraGenerated> for GtlProjectFileExtra {
+    fn from(val: GtlProjectFileExtraGenerated) -> Self {
+        GtlProjectFileExtra::Generated(val)
     }
 }
 
-impl<ProjectModule: GtlProjectModule> Into<GtlProjectFile<ProjectModule>>
-    for GtlProjectFileExtraGenerated
+impl<ProjectModule: GtlProjectModule> From<GtlProjectFileExtraGenerated>
+    for GtlProjectFile<ProjectModule>
 {
-    fn into(self) -> GtlProjectFile<ProjectModule> {
-        GtlProjectFile::Extra(self.into())
+    fn from(val: GtlProjectFileExtraGenerated) -> Self {
+        GtlProjectFile::Extra(val.into())
     }
 }
 
-impl<ProjectModule: GtlProjectModule> Into<GtlGeneration<ProjectModule>>
-    for GtlProjectFileExtraGenerated
+impl<ProjectModule: GtlProjectModule> From<GtlProjectFileExtraGenerated>
+    for GtlGeneration<ProjectModule>
 {
-    fn into(self) -> GtlGeneration<ProjectModule> {
-        GtlGeneration::file(GtlProjectFile::Extra(self.into()))
+    fn from(val: GtlProjectFileExtraGenerated) -> Self {
+        GtlGeneration::file(GtlProjectFile::Extra(val.into()))
     }
 }

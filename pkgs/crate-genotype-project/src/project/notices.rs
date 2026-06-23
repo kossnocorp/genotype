@@ -36,7 +36,7 @@ impl GtProject {
         let mut notices = vec![];
         for module in self.modules.values() {
             match &module {
-                GtpModule::Initialized(source) => {
+                GtpModule::Initialized(_source) => {
                     todo!()
                 }
 

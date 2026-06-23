@@ -9,10 +9,10 @@ pub enum GtlProjectFile<ProjectModule: GtlProjectModule> {
     Extra(GtlProjectFileExtra),
 }
 
-impl<ProjectModule: GtlProjectModule> Into<GtlProjectFile<ProjectModule>>
-    for GtlProjectModuleState<ProjectModule>
+impl<ProjectModule: GtlProjectModule> From<GtlProjectModuleState<ProjectModule>>
+    for GtlProjectFile<ProjectModule>
 {
-    fn into(self) -> GtlProjectFile<ProjectModule> {
-        GtlProjectFile::Module(self)
+    fn from(val: GtlProjectModuleState<ProjectModule>) -> Self {
+        GtlProjectFile::Module(val)
     }
 }

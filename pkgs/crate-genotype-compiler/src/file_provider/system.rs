@@ -12,11 +12,11 @@ impl<Type: GtcFileProviderSystem> GtcFileProvider for Type {
             .parent()
             .ok_or_else(|| miette!("Failed to get parent directory for `{path:?}`"))?;
 
-        fs::create_dir_all(&parent_dir_path.to_path_buf())
+        fs::create_dir_all(parent_dir_path)
             .map_err(|err| miette!(err))
             .wrap_err_with(|| format!("Failed to create directory `{parent_dir_path:?}`"))?;
 
-        fs::write(&path.to_path_buf(), &content)
+        fs::write(path, content)
             .map_err(|err| miette!(err))
             .wrap_err_with(|| format!("Failed to write file `{path:?}`"))?;
 

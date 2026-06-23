@@ -157,7 +157,7 @@ impl PyCompiler<'_> {
                             if module_parent_path == ".".into() {
                                 continue;
                             }
-                            module_paths.insert(module_parent_path.into());
+                            module_paths.insert(module_parent_path);
                         }
                     }
 
@@ -170,7 +170,7 @@ impl PyCompiler<'_> {
             None
         } else {
             Some(GtNotice::warning((
-                format!("Some of `__init__.py` could be missing"),
+                "Some of `__init__.py` could be missing".to_string(),
                 formatted_errors,
             )))
         };

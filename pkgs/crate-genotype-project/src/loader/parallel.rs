@@ -68,15 +68,15 @@ impl<Type: GtpLoaderParallel + GtpSource + Sync + Send + ?Sized> GtpLoader<Arc<M
     }
 
     /// Initializes the module.
-    fn init_project_module<'a>(
-        &'a self,
+    fn init_project_module(
+        &self,
         project: &Arc<Mutex<GtProject>>,
         source: &GtpModuleSource,
     ) -> Result<Option<GtModuleId>> {
         let mut project = project
             .lock()
             .map_err(|_| miette!("failed to lock project mutex"))?;
-        project.init_module(&source)
+        project.init_module(source)
     }
 
     /// Sets the module state.

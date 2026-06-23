@@ -24,7 +24,7 @@ impl GtAlias {
 
         let pair = inner
             .next()
-            .ok_or_else(|| GtParseError::UnexpectedEnd(span, GtNode::Alias, "alias inner"))?;
+            .ok_or(GtParseError::UnexpectedEnd(span, GtNode::Alias, "alias inner"))?;
 
         let alias = parse(
             inner,
@@ -183,11 +183,11 @@ fn parse_generics(
     pair: Pair<'_, Rule>,
     context: &mut GtContext,
 ) -> GtNodeParseResult<Vec<GtGenericParameter>> {
-    let mut inner = pair.into_inner();
+    let inner = pair.into_inner();
 
     let mut generics = vec![];
 
-    while let Some(generics_pair) = inner.next() {
+    for generics_pair in inner {
         generics.push(GtGenericParameter::parse(generics_pair, context)?);
     }
 

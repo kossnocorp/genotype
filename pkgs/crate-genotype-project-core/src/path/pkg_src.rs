@@ -32,7 +32,7 @@ impl GtpPkgDirRelativePkgSrcDirPath {
         &self,
         path: &GtpPkgSrcDirRelativePath,
     ) -> GtpPkgDirRelativePath {
-        GtpPkgDirRelativePath::new(self.relative_path().join(&path.relative_path()))
+        GtpPkgDirRelativePath::new(self.relative_path().join(path.relative_path()))
     }
 }
 

@@ -26,7 +26,6 @@ mod convert;
 pub use convert::*;
 
 mod codegen;
-pub use codegen::*;
 
 mod module;
 pub use module::*;

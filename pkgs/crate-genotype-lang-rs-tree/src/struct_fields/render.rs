@@ -49,7 +49,7 @@ impl<'context> GtlRender<'context, RsRenderTypes> for RsStructFields {
             RsStructFields::Unit => Ok(";".into()),
 
             RsStructFields::Unresolved(span, _, _) => {
-                Err(RsRenderError::UnresolvedStructFields(*span).into())
+                Err(RsRenderError::UnresolvedStructFields(*span))
             }
         }
     }
