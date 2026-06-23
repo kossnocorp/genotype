@@ -55,6 +55,8 @@ where
             dist.pack_extra_files(extra_files, extra_file_notices);
         }
 
+        dist.sort_files();
+
         Ok(Some(dist))
     }
 
