@@ -737,7 +737,6 @@ dependencies = [
  "genotype_lang_core",
  "genotype_lang_core_tree",
  "genotype_project",
- "genotype_project_core",
  "indexmap",
  "insta",
  "line-index",
@@ -908,7 +907,6 @@ dependencies = [
  "pretty_assertions",
  "semver",
  "serde",
- "thiserror 1.0.64",
  "toml_edit",
 ]
 

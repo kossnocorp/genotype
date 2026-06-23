@@ -5,15 +5,20 @@ pub fn generate_module_notices<ProjectModule: GtlProjectModule>(
 ) -> Vec<GtNotice> {
     let mut notices = vec![];
 
-    for (module_path, module_state) in modules {
+    for (_module_path, module_state) in modules {
         match module_state {
-            GtlProjectModuleState::ConvertError(convert_error) => {
-                todo!()
+            state @ GtlProjectModuleState::ConvertError(_)
+            | state @ GtlProjectModuleState::ResolveError(_)
+            | state @ GtlProjectModuleState::RenderError(_) => {
+                notices.push(GtNotice::error(format_module_error_state_message(state)));
             }
 
-            _ => {
-                todo!()
+            state @ GtlProjectModuleState::Converted(_)
+            | state @ GtlProjectModuleState::Resolved(_) => {
+                notices.push(GtNotice::error(format_invalid_module_state_message(state)));
             }
+
+            GtlProjectModuleState::Rendered(_) => {}
         }
     }
 
