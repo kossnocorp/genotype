@@ -115,7 +115,7 @@ mod tests {
             @r#"
         [
           PyImport(
-            dependency: Path(PyPath(".path.to.module")),
+            dependency: Local(PyPath(".path.to.module")),
             reference: Named([
               Name(PyIdentifier("Name")),
             ]),

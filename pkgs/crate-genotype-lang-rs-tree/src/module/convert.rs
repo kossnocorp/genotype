@@ -228,7 +228,7 @@ mod tests {
             )
             .unwrap(),
             @r#"
-        RsConvertModule(RsModule(
+        RsModule(
           id: GtModuleId("module"),
           doc: None,
           imports: [
@@ -331,7 +331,7 @@ mod tests {
               descriptor: Primitive(String),
             )),
           ],
-        ))
+        )
         "#
         );
     }
@@ -351,12 +351,12 @@ mod tests {
             )
             .unwrap(),
             @r#"
-        RsConvertModule(RsModule(
+        RsModule(
           id: GtModuleId("module"),
           doc: Some(RsDoc("Hello, world!", true)),
           imports: [],
           definitions: [],
-        ))
+        )
         "#
         );
     }

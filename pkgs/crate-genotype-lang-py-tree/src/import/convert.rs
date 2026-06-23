@@ -53,7 +53,7 @@ mod tests {
             .convert(&mut context),
             @r#"
         PyImport(
-          dependency: Path(PyPath(".path.to.module")),
+          dependency: Local(PyPath(".path.to.module")),
           reference: Default(Some(PyIdentifier("module"))),
         )
         "#
@@ -84,7 +84,7 @@ mod tests {
             .convert(&mut PyConvertContext::default()),
             @r#"
         PyImport(
-          dependency: Path(PyPath(".path.to.module")),
+          dependency: Local(PyPath(".path.to.module")),
           reference: Named([
             Name(PyIdentifier("Name")),
             Alias(PyIdentifier("Name"), PyIdentifier("Alias")),
@@ -105,7 +105,7 @@ mod tests {
             .convert(&mut PyConvertContext::default()),
             @r#"
         PyImport(
-          dependency: Path(PyPath(".path.to.module")),
+          dependency: Local(PyPath(".path.to.module")),
           reference: Named([
             Name(PyIdentifier("Name")),
           ]),
