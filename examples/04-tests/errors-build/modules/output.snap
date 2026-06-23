@@ -6,7 +6,7 @@
  [2m1[0m │ [38;2;180;142;173muse[38;2;79;91;102m ./nope/Noop[0m
    · [35;1m───────┬───────[0m
    ·        [35;1m╰── [35;1mImported here[0m[0m
- [2m2[0m │
+ [2m2[0m │ 
    ╰────
 
 [1m[31mError[39m[0m: Failed to parse module `src/syntax.type`.
@@ -18,3 +18,28 @@
    ·       [35;1m╰── [35;1mHere[0m[0m
    ╰────
 
+[1m[31mError[39m[0m: Failed to convert `dist/ts/src/nope.ts` from `src/nope.type`.
+
+[1m[31mError[39m[0m: Failed to convert `dist/ts/src/syntax.ts` from `src/syntax.type`.
+
+[1m[33mWarning[39m[0m: Some of the modules failed to render.
+
+[1m[33mWarning[39m[0m: Barrel file `dist/ts/src/index.ts` rendered, but it excludes 2 modules that failed to render.
+
+[1m[31mError[39m[0m: Failed to convert `dist/py/module/nope.py` from `src/nope.type`.
+
+[1m[31mError[39m[0m: Failed to convert `dist/py/module/syntax.py` from `src/syntax.type`.
+
+[1m[33mWarning[39m[0m: Some of the modules failed to render.
+
+[1m[33mWarning[39m[0m: Init file `dist/py/module/__init__.py` rendered, but it excludes 2 modules that failed to render.
+
+[1m[31mError[39m[0m: Failed to convert `dist/rs/src/missingUse.rs` from `src/missingUse.type`.
+
+[1m[31mError[39m[0m: Failed to convert `dist/rs/src/nope.rs` from `src/nope.type`.
+
+[1m[31mError[39m[0m: Failed to convert `dist/rs/src/syntax.rs` from `src/syntax.type`.
+
+[1m[33mWarning[39m[0m: Some of the modules failed to render.
+
+[1m[33mWarning[39m[0m: Project generated to `dist` with 9 errors.
