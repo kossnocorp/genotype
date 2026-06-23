@@ -4,131 +4,116 @@
 
 ### Traits to Implement
 
-The starting point for implementing a new target project is `GtlProject`. It defines several supertrait and associated types with trait bounds that create chain reaction leading to a complete implementation of the target project.
+The starting point for implementing a new target project is `GtlCompiler`. It defines the target compiler, project module, and manifest types that create a chain reaction leading to a complete implementation of the target project.
 
-Here's the `GtlProject` traits hierarchy chart:
+Here's the `GtlCompiler` component hierarchy chart:
 
 ```mermaid
 graph TD
-    %% region: GtlProject ------------------------------------------------------
+    %% region: Compiler --------------------------------------------------------
 
-    GtlProject{{GtlProject}}:::trait
+    GtlCompiler{{GtlCompiler}}:::trait
+    NewCompiler[NewCompiler]:::newType
 
-    %% Supertraits
-
-    GtlProject -- Self::Module --> GtlProjectManifestGenerator
-
-    %% Associated Types
-
-    GtlProject -- type --> GtlProjectTypeModule[Self::Module]:::type
-    GtlProjectTypeModule -- bound --> GtlModule
-
-    GtlProject -- type --> GtlProjectTypeLangConfig[Self::LangConfig]:::type
-    GtlProjectTypeLangConfig -- bound --> GtlConfig
+    NewCompiler -- implements --> GtlCompiler
+    GtlCompiler -- Self::ProjectModule --> NewProjectModule
+    GtlCompiler -- Self::Manifest --> NewManifest
+    GtlCompiler -- uses --> GtlConfig
 
     %% endregion
 
-    %% region: GtlProjectManifestGenerator -------------------------------------------
+    %% region: Project Module --------------------------------------------------
 
-    GtlProjectManifestGenerator{{GtlProjectManifestGenerator}}:::trait
+    GtlProjectModule{{GtlProjectModule}}:::trait
+    NewProjectModule[NewProjectModule]:::newType
 
-    %% Generics
-
-    GtlProjectManifestGenerator -- generic --> GtlModule
-
-    %% Associated Types
-
-    GtlProjectManifestGenerator -- type --> GtlProjectManifestGeneratorTypeManifestDependency[Self::ManifestDependency]:::type
-    GtlProjectManifestGeneratorTypeManifestDependency -- bound --> GtlProjectManifestDependency
-
-    GtlProjectManifestGenerator -- type --> GtlProjectManifestGeneratorTypeLangConfig[Self::LangConfig]:::type
-    GtlProjectManifestGeneratorTypeLangConfig -- bound --> GtlConfig
+    NewProjectModule -- implements --> GtlProjectModule
+    GtlProjectModule -- Self::LangConfig --> NewConfig
+    GtlProjectModule -- Self::Module --> NewModule
+    GtlProjectModule -- optional --> ResolveModules[resolve_modules]:::type
 
     %% endregion
 
-    %% region: GtlProjectManifestDependency ------------------------------------------
+    %% region: Manifest --------------------------------------------------------
 
-    GtlProjectManifestDependency{{GtlProjectManifestDependency}}:::trait
+    GtlManifest{{GtlManifest}}:::trait
+    NewManifest[NewManifest]:::newType
 
-    %% Associated Types
-
-    GtlProjectManifestDependency -- type --> GtlProjectManifestDependencyTypeDependencyIdent[Self::DependencyIdent]:::type
-    GtlProjectManifestDependencyTypeDependencyIdent -- bound --> GtlDependencyIdent
+    NewManifest -- implements --> GtlManifest
+    GtlManifest -- Self::ProjectModule --> NewProjectModule
+    GtlManifest -- reads --> GtlDependencyIdent
 
     %% endregion
 
-    %% region: GtlModule -------------------------------------------------------
+    %% region: Module ----------------------------------------------------------
 
     GtlModule{{GtlModule}}:::trait
+    NewModule[NewModule]:::newType
 
-    %% Associated Types
-
-    GtlModule -- type --> GtlModuleTypeImport[Self::Import]:::type
-    GtlModuleTypeImport -- bound --> GtlImport
+    NewModule -- implements --> GtlModule
+    GtlModule -- supertrait --> GtlRender
+    GtlModule -- Self::Import --> NewImport
+    GtlModule -- Self::RenderTypes --> NewRenderTypes
 
     %% endregion
 
-    %% region: GtlImport -------------------------------------------------------
+    %% region: Import ----------------------------------------------------------
 
     GtlImport{{GtlImport}}:::trait
+    NewImport[NewImport]:::newType
 
-    %% Associated Types
-
-    GtlImport -- type --> GtlImportTypeDependencyIdent[Self::DependencyIdent]:::type
-    GtlImportTypeDependencyIdent -- bound --> GtlDependencyIdent
-
-    GtlImport -- type --> GtlImportTypeImportRef[Self::ImportRef]:::type
-    GtlImportTypeImportRef -- bound --> GtlImportRef
-
-    GtlImport -- type --> GtlImportTypeImportRefName[Self::ImportRefName]:::type
-    GtlImportTypeImportRefName -- bound --> GtlImportRefName
+    NewImport -- implements --> GtlImport
+    GtlImport -- Self::DependencyIdent --> NewDependencyIdent
+    GtlImport -- Self::ImportRef --> NewImportRef
+    GtlImport -- Self::ImportRefName --> NewImportRefName
 
     %% endregion
 
-    %% region: GtlConfig -------------------------------------------------------
+    %% region: Render ----------------------------------------------------------
 
-    GtlConfig{{GtlConfig}}:::trait
+    GtlRender{{GtlRender}}:::trait
+    GtlRenderTypes{{GtlRenderTypes}}:::trait
+    NewRenderTypes[NewRenderTypes]:::newType
 
-    %% Supertraits
-
-    GtlConfig -- supertrait --> GtlConfigHealth
-
-    %% endregion
-
-    %% region: GtlConfigHealth -------------------------------------------------
-
-    GtlConfigHealth{{GtlConfigHealth}}:::trait
+    NewRenderTypes -- implements --> GtlRenderTypes
+    GtlRender -- generic --> GtlRenderTypes
+    GtlRenderTypes -- Self::State --> NewRenderState
+    GtlRenderTypes -- Self::Context --> NewRenderContext
+    GtlRenderTypes -- Self::Error --> NewRenderError
 
     %% endregion
 
-    %% region: GtlDependencyIdent ----------------------------------------------
+    %% region: Supporting Traits -----------------------------------------------
 
+    GtlConfig[GtlConfig]:::type
+    GtpLangConfig{{GtpLangConfig}}:::trait
     GtlDependencyIdent{{GtlDependencyIdent}}:::trait
-
-    %% Associated Types
-
-    GtlDependencyIdent -- type --> GtlPath[Self::Path]:::type
-
-    %% endregion
-
-    %% region: GtlImportRef ----------------------------------------------------
-
     GtlImportRef{{GtlImportRef}}:::trait
-
-    %% endregion
-
-    %% region: GtlImportRefName ------------------------------------------------
-
     GtlImportRefName{{GtlImportRefName}}:::trait
+    GtlRenderState{{GtlRenderState}}:::trait
+    GtlRenderContext{{GtlRenderContext}}:::trait
+    GtlError{{GtlError}}:::trait
 
-    %% endregion
+    NewConfig[NewConfig]:::newType
+    NewDependencyIdent[NewDependencyIdent]:::newType
+    NewImportRef[NewImportRef]:::newType
+    NewImportRefName[NewImportRefName]:::newType
+    NewRenderState[NewRenderState]:::newType
+    NewRenderContext[NewRenderContext]:::newType
+    NewRenderError[NewRenderError]:::newType
 
-    %% region: GtlPath ------------------------------------------------
-
-    GtlPath{{GtlPath}}:::trait
+    GtlConfig -- contains --> GtpLangConfig
+    NewConfig -- implements --> GtpLangConfig
+    NewDependencyIdent -- implements --> GtlDependencyIdent
+    NewImportRef -- implements --> GtlImportRef
+    NewImportRefName -- implements --> GtlImportRefName
+    NewRenderState -- implements --> GtlRenderState
+    NewRenderContext -- implements --> GtlRenderContext
+    NewRenderError -- implements --> GtlError
 
     %% endregion
 
     classDef type opacity:0.75,stroke:#140977
+    classDef newType opacity:1,stroke:lime,stroke-width:2px
     classDef trait opacity:1,stroke:#B100B4,stroke-width:2px
 ```
