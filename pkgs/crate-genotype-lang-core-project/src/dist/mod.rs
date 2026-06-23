@@ -14,11 +14,7 @@ impl GtlDist {
         modules: &IndexMap<GtpModulePath, GtlProjectModuleState<ProjectModule>>,
         notices: Vec<GtNotice>,
     ) -> GtlDist {
-        let files = modules
-            .into_iter()
-            .map(|(_module_path, module)| module.into())
-            .collect::<Vec<_>>();
-
+        let files = modules.values().map(|module| module.into()).collect();
         GtlDist { files, notices }
     }
 
@@ -37,5 +33,9 @@ impl GtlDist {
         if let Some(extra_notices) = extra_notices {
             self.notices.extend(extra_notices);
         }
+    }
+
+    pub fn sort_files(&mut self) {
+        self.files.sort_by(|a, b| a.path().cmp(&b.path()));
     }
 }

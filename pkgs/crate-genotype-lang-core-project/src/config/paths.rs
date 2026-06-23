@@ -64,9 +64,8 @@ impl<'a, LangConfig: GtpLangConfig> GtlConfig<'a, LangConfig> {
                 self.lang_config.pkg_src_dir_relative_module_path(&module_id))
             .map(|pkg_src_dir_relative_path|
                 // e.g., "src/module/name.rs"
-                self.lang_config
-                    .pkg_dir_relative_src_dir_path() // e.g., "src"
-                    .join_as_pkg_dir_relative_path(&pkg_src_dir_relative_path))
+                self.pkg_relative_src_path()
+                    .join_relative_path(pkg_src_dir_relative_path.relative_path()))
             .map(|pkg_dir_relative_path|
                 // e.g., "rs/src/module/name.rs"
                 self.lang_config

@@ -110,7 +110,9 @@ impl TsCompiler<'_> {
             }
         };
 
-        let source_code = export_lines.join("");
+        export_lines.push("".into());
+
+        let source_code = export_lines.join("\n");
 
         let generation = (
             GtlProjectFileExtraGenerated { path, source_code }.into(),
@@ -134,527 +136,681 @@ impl TsCompiler<'_> {
     }
 }
 
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-//     #[test]
-//     fn test_convert_base() {
-//         let project =
-//             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+    #[test]
+    fn test_convert_base() {
+        let project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
 
-//         assert_ron_snapshot!(
-//           TsProjectOld::generate_old(&project).unwrap().modules(),
-//           @r#"
-//         [
-//           Generated(TsProjectModuleGenerated(
-//             path: "author.ts",
-//             module: TsModule(
-//               doc: None,
-//               imports: [],
-//               definitions: [
-//                 Interface(TsInterface(
-//                   doc: None,
-//                   name: TsIdentifier("Author"),
-//                   generics: [],
-//                   extensions: [],
-//                   properties: [
-//                     TsProperty(
-//                       doc: None,
-//                       name: TsKey("name"),
-//                       descriptor: Primitive(String),
-//                       required: true,
-//                     ),
-//                   ],
-//                 )),
-//               ],
-//             ),
-//             mode: types,
-//           )),
-//           Generated(TsProjectModuleGenerated(
-//             path: "book.ts",
-//             module: TsModule(
-//               doc: None,
-//               imports: [
-//                 TsImport(
-//                   dependency: Local(TsPath("./author")),
-//                   reference: Named([
-//                     Name(TsIdentifier("Author")),
-//                   ]),
-//                 ),
-//               ],
-//               definitions: [
-//                 Interface(TsInterface(
-//                   doc: None,
-//                   name: TsIdentifier("Book"),
-//                   generics: [],
-//                   extensions: [],
-//                   properties: [
-//                     TsProperty(
-//                       doc: None,
-//                       name: TsKey("title"),
-//                       descriptor: Primitive(String),
-//                       required: true,
-//                     ),
-//                     TsProperty(
-//                       doc: None,
-//                       name: TsKey("author"),
-//                       descriptor: Reference(TsReference(
-//                         identifier: TsIdentifier("Author"),
-//                         arguments: [],
-//                         rel: Regular,
-//                       )),
-//                       required: true,
-//                     ),
-//                   ],
-//                 )),
-//               ],
-//             ),
-//             mode: types,
-//           )),
-//         ]
-//         "#
-//         );
-//     }
+        assert_ron_snapshot!(
+          modules(&project),
+          @r#"
+        {
+          "examples/basic/src/author.type": Resolved(GtlProjectModuleResolved(
+            converted: GtlProjectModuleConverted(
+              source_path: "examples/basic/src/author.type",
+              target_path: "examples/basic/dist/ts/src/author.ts",
+              project_module: TsProjectModule(
+                module: TsModule(
+                  doc: None,
+                  imports: [],
+                  definitions: [
+                    Interface(TsInterface(
+                      doc: None,
+                      name: TsIdentifier("Author"),
+                      generics: [],
+                      extensions: [],
+                      properties: [
+                        TsProperty(
+                          doc: None,
+                          name: TsKey("name"),
+                          descriptor: Primitive(String),
+                          required: true,
+                        ),
+                      ],
+                    )),
+                  ],
+                ),
+              ),
+            ),
+            resolved_module: TsProjectModule(
+              module: TsModule(
+                doc: None,
+                imports: [],
+                definitions: [
+                  Interface(TsInterface(
+                    doc: None,
+                    name: TsIdentifier("Author"),
+                    generics: [],
+                    extensions: [],
+                    properties: [
+                      TsProperty(
+                        doc: None,
+                        name: TsKey("name"),
+                        descriptor: Primitive(String),
+                        required: true,
+                      ),
+                    ],
+                  )),
+                ],
+              ),
+            ),
+          )),
+          "examples/basic/src/book.type": Resolved(GtlProjectModuleResolved(
+            converted: GtlProjectModuleConverted(
+              source_path: "examples/basic/src/book.type",
+              target_path: "examples/basic/dist/ts/src/book.ts",
+              project_module: TsProjectModule(
+                module: TsModule(
+                  doc: None,
+                  imports: [
+                    TsImport(
+                      dependency: Local(TsPath("./author")),
+                      reference: Named([
+                        Name(TsIdentifier("Author")),
+                      ]),
+                    ),
+                  ],
+                  definitions: [
+                    Interface(TsInterface(
+                      doc: None,
+                      name: TsIdentifier("Book"),
+                      generics: [],
+                      extensions: [],
+                      properties: [
+                        TsProperty(
+                          doc: None,
+                          name: TsKey("title"),
+                          descriptor: Primitive(String),
+                          required: true,
+                        ),
+                        TsProperty(
+                          doc: None,
+                          name: TsKey("author"),
+                          descriptor: Reference(TsReference(
+                            identifier: TsIdentifier("Author"),
+                            arguments: [],
+                            rel: Regular,
+                          )),
+                          required: true,
+                        ),
+                      ],
+                    )),
+                  ],
+                ),
+              ),
+            ),
+            resolved_module: TsProjectModule(
+              module: TsModule(
+                doc: None,
+                imports: [
+                  TsImport(
+                    dependency: Local(TsPath("./author")),
+                    reference: Named([
+                      Name(TsIdentifier("Author")),
+                    ]),
+                  ),
+                ],
+                definitions: [
+                  Interface(TsInterface(
+                    doc: None,
+                    name: TsIdentifier("Book"),
+                    generics: [],
+                    extensions: [],
+                    properties: [
+                      TsProperty(
+                        doc: None,
+                        name: TsKey("title"),
+                        descriptor: Primitive(String),
+                        required: true,
+                      ),
+                      TsProperty(
+                        doc: None,
+                        name: TsKey("author"),
+                        descriptor: Reference(TsReference(
+                          identifier: TsIdentifier("Author"),
+                          arguments: [],
+                          rel: Regular,
+                        )),
+                        required: true,
+                      ),
+                    ],
+                  )),
+                ],
+              ),
+            ),
+          )),
+        }
+        "#
+        );
+    }
 
-//     #[test]
-//     fn test_convert_glob() {
-//         let project =
-//             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/glob".into(), None).unwrap();
+    #[test]
+    fn test_convert_glob() {
+        let project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/glob".into(), None).unwrap();
 
-//         assert_ron_snapshot!(
-//           TsProjectOld::generate_old(&project).unwrap().modules(),
-//           @r#"
-//         [
-//           Generated(TsProjectModuleGenerated(
-//             path: "author.ts",
-//             module: TsModule(
-//               doc: None,
-//               imports: [],
-//               definitions: [
-//                 Interface(TsInterface(
-//                   doc: None,
-//                   name: TsIdentifier("Author"),
-//                   generics: [],
-//                   extensions: [],
-//                   properties: [
-//                     TsProperty(
-//                       doc: None,
-//                       name: TsKey("name"),
-//                       descriptor: Reference(TsReference(
-//                         identifier: TsIdentifier("AuthorName"),
-//                         arguments: [],
-//                         rel: Forward,
-//                       )),
-//                       required: true,
-//                     ),
-//                   ],
-//                 )),
-//                 Alias(TsAlias(
-//                   doc: None,
-//                   name: TsIdentifier("AuthorName"),
-//                   generics: [],
-//                   descriptor: Primitive(String),
-//                 )),
-//               ],
-//             ),
-//             mode: types,
-//           )),
-//           Generated(TsProjectModuleGenerated(
-//             path: "book.ts",
-//             module: TsModule(
-//               doc: None,
-//               imports: [
-//                 TsImport(
-//                   dependency: Local(TsPath("./author")),
-//                   reference: Glob("author"),
-//                 ),
-//               ],
-//               definitions: [
-//                 Interface(TsInterface(
-//                   doc: None,
-//                   name: TsIdentifier("Book"),
-//                   generics: [],
-//                   extensions: [],
-//                   properties: [
-//                     TsProperty(
-//                       doc: None,
-//                       name: TsKey("title"),
-//                       descriptor: Primitive(String),
-//                       required: true,
-//                     ),
-//                     TsProperty(
-//                       doc: None,
-//                       name: TsKey("author"),
-//                       descriptor: Reference(TsReference(
-//                         identifier: TsIdentifier("author.Author"),
-//                         arguments: [],
-//                         rel: Regular,
-//                       )),
-//                       required: true,
-//                     ),
-//                     TsProperty(
-//                       doc: None,
-//                       name: TsKey("authorName"),
-//                       descriptor: Reference(TsReference(
-//                         identifier: TsIdentifier("author.AuthorName"),
-//                         arguments: [],
-//                         rel: Regular,
-//                       )),
-//                       required: true,
-//                     ),
-//                   ],
-//                 )),
-//               ],
-//             ),
-//             mode: types,
-//           )),
-//         ]
-//         "#
-//         );
-//     }
+        assert_ron_snapshot!(
+          modules(&project),
+          @r#"
+        {
+          "examples/glob/src/author.type": Resolved(GtlProjectModuleResolved(
+            converted: GtlProjectModuleConverted(
+              source_path: "examples/glob/src/author.type",
+              target_path: "examples/glob/dist/ts/src/author.ts",
+              project_module: TsProjectModule(
+                module: TsModule(
+                  doc: None,
+                  imports: [],
+                  definitions: [
+                    Interface(TsInterface(
+                      doc: None,
+                      name: TsIdentifier("Author"),
+                      generics: [],
+                      extensions: [],
+                      properties: [
+                        TsProperty(
+                          doc: None,
+                          name: TsKey("name"),
+                          descriptor: Reference(TsReference(
+                            identifier: TsIdentifier("AuthorName"),
+                            arguments: [],
+                            rel: Forward,
+                          )),
+                          required: true,
+                        ),
+                      ],
+                    )),
+                    Alias(TsAlias(
+                      doc: None,
+                      name: TsIdentifier("AuthorName"),
+                      generics: [],
+                      descriptor: Primitive(String),
+                    )),
+                  ],
+                ),
+              ),
+            ),
+            resolved_module: TsProjectModule(
+              module: TsModule(
+                doc: None,
+                imports: [],
+                definitions: [
+                  Interface(TsInterface(
+                    doc: None,
+                    name: TsIdentifier("Author"),
+                    generics: [],
+                    extensions: [],
+                    properties: [
+                      TsProperty(
+                        doc: None,
+                        name: TsKey("name"),
+                        descriptor: Reference(TsReference(
+                          identifier: TsIdentifier("AuthorName"),
+                          arguments: [],
+                          rel: Forward,
+                        )),
+                        required: true,
+                      ),
+                    ],
+                  )),
+                  Alias(TsAlias(
+                    doc: None,
+                    name: TsIdentifier("AuthorName"),
+                    generics: [],
+                    descriptor: Primitive(String),
+                  )),
+                ],
+              ),
+            ),
+          )),
+          "examples/glob/src/book.type": Resolved(GtlProjectModuleResolved(
+            converted: GtlProjectModuleConverted(
+              source_path: "examples/glob/src/book.type",
+              target_path: "examples/glob/dist/ts/src/book.ts",
+              project_module: TsProjectModule(
+                module: TsModule(
+                  doc: None,
+                  imports: [
+                    TsImport(
+                      dependency: Local(TsPath("./author")),
+                      reference: Glob("author"),
+                    ),
+                  ],
+                  definitions: [
+                    Interface(TsInterface(
+                      doc: None,
+                      name: TsIdentifier("Book"),
+                      generics: [],
+                      extensions: [],
+                      properties: [
+                        TsProperty(
+                          doc: None,
+                          name: TsKey("title"),
+                          descriptor: Primitive(String),
+                          required: true,
+                        ),
+                        TsProperty(
+                          doc: None,
+                          name: TsKey("author"),
+                          descriptor: Reference(TsReference(
+                            identifier: TsIdentifier("author.Author"),
+                            arguments: [],
+                            rel: Regular,
+                          )),
+                          required: true,
+                        ),
+                        TsProperty(
+                          doc: None,
+                          name: TsKey("authorName"),
+                          descriptor: Reference(TsReference(
+                            identifier: TsIdentifier("author.AuthorName"),
+                            arguments: [],
+                            rel: Regular,
+                          )),
+                          required: true,
+                        ),
+                      ],
+                    )),
+                  ],
+                ),
+              ),
+            ),
+            resolved_module: TsProjectModule(
+              module: TsModule(
+                doc: None,
+                imports: [
+                  TsImport(
+                    dependency: Local(TsPath("./author")),
+                    reference: Glob("author"),
+                  ),
+                ],
+                definitions: [
+                  Interface(TsInterface(
+                    doc: None,
+                    name: TsIdentifier("Book"),
+                    generics: [],
+                    extensions: [],
+                    properties: [
+                      TsProperty(
+                        doc: None,
+                        name: TsKey("title"),
+                        descriptor: Primitive(String),
+                        required: true,
+                      ),
+                      TsProperty(
+                        doc: None,
+                        name: TsKey("author"),
+                        descriptor: Reference(TsReference(
+                          identifier: TsIdentifier("author.Author"),
+                          arguments: [],
+                          rel: Regular,
+                        )),
+                        required: true,
+                      ),
+                      TsProperty(
+                        doc: None,
+                        name: TsKey("authorName"),
+                        descriptor: Reference(TsReference(
+                          identifier: TsIdentifier("author.AuthorName"),
+                          arguments: [],
+                          rel: Regular,
+                        )),
+                        required: true,
+                      ),
+                    ],
+                  )),
+                ],
+              ),
+            ),
+          )),
+        }
+        "#
+        );
+    }
 
-//     #[test]
-//     fn test_render() {
-//         let project =
-//             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+    #[test]
+    fn test_render() {
+        let project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
 
-//         assert_ron_snapshot!(
-//           TsProjectOld::generate_old(&project).unwrap().dist().unwrap(),
-//           @r#"
-//         GtlProjectDist(
-//           files: [
-//             Generated(GtlProjectFileGenerated(
-//               path: "examples/basic/dist/ts/.gitignore",
-//               source: "node_modules",
-//             )),
-//             Generated(GtlProjectFileGenerated(
-//               path: "examples/basic/dist/ts/package.json",
-//               source: "{\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./src/index.ts\"\n  }\n}",
-//             )),
-//             Generated(GtlProjectFileGenerated(
-//               path: "examples/basic/dist/ts/src/index.ts",
-//               source: "export * from \"./author.js\";\nexport * from \"./book.js\";\n",
-//             )),
-//             Generated(GtlProjectFileGenerated(
-//               path: "examples/basic/dist/ts/src/author.ts",
-//               source: "export interface Author {\n  name: string;\n}\n",
-//             )),
-//             Generated(GtlProjectFileGenerated(
-//               path: "examples/basic/dist/ts/src/book.ts",
-//               source: "import { Author } from \"./author.js\";\n\nexport interface Book {\n  title: string;\n  author: Author;\n}\n",
-//             )),
-//           ],
-//         )
-//         "#
-//         );
-//     }
+        assert_ron_snapshot!(
+          compile(&project),
+          @r#"
+        GtlDist(
+          files: [
+            Generated(GtlDistFileGenerated(
+              path: "examples/basic/dist/ts/.gitignore",
+              source_code: "node_modules",
+            )),
+            Generated(GtlDistFileGenerated(
+              path: "examples/basic/dist/ts/package.json",
+              source_code: "{\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./src/index.ts\"\n  }\n}",
+            )),
+            Generated(GtlDistFileGenerated(
+              path: "examples/basic/dist/ts/src/author.ts",
+              source_code: "export interface Author {\n  name: string;\n}\n",
+            )),
+            Generated(GtlDistFileGenerated(
+              path: "examples/basic/dist/ts/src/book.ts",
+              source_code: "import { Author } from \"./author.js\";\n\nexport interface Book {\n  title: string;\n  author: Author;\n}\n",
+            )),
+            Generated(GtlDistFileGenerated(
+              path: "examples/basic/dist/ts/src/index.ts",
+              source_code: "export * from \"./author.js\";\nexport * from \"./book.js\";\n",
+            )),
+          ],
+          notices: [],
+        )
+        "#
+        );
+    }
 
-//     #[test]
-//     fn test_render_dependencies() {
-//         let mut project =
-//             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/dependencies".into(), None)
-//                 .unwrap();
-//         project.config.ts.common.dependencies = IndexMap::from_iter(vec![(
-//             "genotype_json_types".into(),
-//             "@genotype/json".into(),
-//         )]);
+    #[test]
+    fn test_render_dependencies() {
+        let mut project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/dependencies".into(), None)
+                .unwrap();
+        project.config.ts.common.dependencies = IndexMap::from_iter(vec![(
+            "genotype_json_types".into(),
+            "@genotype/json".into(),
+        )]);
 
-//         assert_ron_snapshot!(
-//           TsProjectOld::generate_old(&project).unwrap().dist().unwrap(),
-//           @r#"
-//         GtlProjectDist(
-//           files: [
-//             Generated(GtlProjectFileGenerated(
-//               path: "examples/dependencies/dist/ts/.gitignore",
-//               source: "node_modules",
-//             )),
-//             Generated(GtlProjectFileGenerated(
-//               path: "examples/dependencies/dist/ts/package.json",
-//               source: "{\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./src/index.ts\"\n  }\n}",
-//             )),
-//             Generated(GtlProjectFileGenerated(
-//               path: "examples/dependencies/dist/ts/src/index.ts",
-//               source: "export * from \"./prompt.js\";\n",
-//             )),
-//             Generated(GtlProjectFileGenerated(
-//               path: "examples/dependencies/dist/ts/src/prompt.ts",
-//               source: "import { JsonAny } from \"@genotype/json\";\n\nexport interface Prompt {\n  content: string;\n  output: JsonAny;\n}\n",
-//             )),
-//           ],
-//         )
-//         "#
-//         );
-//     }
+        assert_ron_snapshot!(
+          compile(&project),
+          @r#"
+        GtlDist(
+          files: [
+            Generated(GtlDistFileGenerated(
+              path: "examples/dependencies/dist/ts/.gitignore",
+              source_code: "node_modules",
+            )),
+            Generated(GtlDistFileGenerated(
+              path: "examples/dependencies/dist/ts/package.json",
+              source_code: "{\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./src/index.ts\"\n  }\n}",
+            )),
+            Generated(GtlDistFileGenerated(
+              path: "examples/dependencies/dist/ts/src/index.ts",
+              source_code: "export * from \"./prompt.js\";\n",
+            )),
+            Generated(GtlDistFileGenerated(
+              path: "examples/dependencies/dist/ts/src/prompt.ts",
+              source_code: "import { JsonAny } from \"@genotype/json\";\n\nexport interface Prompt {\n  content: string;\n  output: JsonAny;\n}\n",
+            )),
+          ],
+          notices: [],
+        )
+        "#
+        );
+    }
 
-//     #[test]
-//     fn test_render_uses_global_version_by_default() {
-//         let mut project =
-//             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-//         project.config.version = Some("0.2.0".parse().unwrap());
+    #[test]
+    fn test_render_uses_global_version_by_default() {
+        let mut project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        project.config.version = Some("0.2.0".parse().unwrap());
 
-//         let dist = TsProjectOld::generate_old(&project)
-//             .unwrap()
-//             .dist()
-//             .unwrap();
-//         let package_file = get_package_file(&dist);
+        let dist = compile(&project);
+        let package_file = get_package_file(&dist);
 
-//         assert_snapshot!(
-//             package_file.source,
-//             @r#"
-//         {
-//           "type": "module",
-//           "version": "0.2.0",
-//           "exports": {
-//             ".": "./src/index.ts"
-//           }
-//         }
-//         "#
-//         );
-//     }
+        assert_snapshot!(
+            package_file.source_code,
+            @r#"
+        {
+          "type": "module",
+          "version": "0.2.0",
+          "exports": {
+            ".": "./src/index.ts"
+          }
+        }
+        "#
+        );
+    }
 
-//     #[test]
-//     fn test_render_prefers_ts_manifest_version_over_global() {
-//         let mut project =
-//             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-//         project.config.version = Some("0.2.0".parse().unwrap());
-//         project
-//             .config
-//             .ts
-//             .common
-//             .manifest
-//             .insert("version".into(), "0.3.0".into());
+    #[test]
+    fn test_render_prefers_ts_manifest_version_over_global() {
+        let mut project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        project.config.version = Some("0.2.0".parse().unwrap());
+        project
+            .config
+            .ts
+            .common
+            .manifest
+            .insert("version".into(), "0.3.0".into());
 
-//         let dist = TsProjectOld::generate_old(&project)
-//             .unwrap()
-//             .dist()
-//             .unwrap();
-//         let package_file = get_package_file(&dist);
+        let dist = compile(&project);
+        let package_file = get_package_file(&dist);
 
-//         assert_snapshot!(
-//             package_file.source,
-//             @r#"
-//         {
-//           "type": "module",
-//           "version": "0.3.0",
-//           "exports": {
-//             ".": "./src/index.ts"
-//           }
-//         }
-//         "#
-//         );
-//     }
+        assert_snapshot!(
+            package_file.source_code,
+            @r#"
+        {
+          "type": "module",
+          "version": "0.3.0",
+          "exports": {
+            ".": "./src/index.ts"
+          }
+        }
+        "#
+        );
+    }
 
-//     #[test]
-//     fn test_render_zod() {
-//         let mut project =
-//             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-//         project.config.ts.lang.mode = TsMode::Zod;
+    #[test]
+    fn test_render_zod() {
+        let mut project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        project.config.ts.lang.mode = TsMode::Zod;
 
-//         let dist = TsProjectOld::generate_old(&project)
-//             .unwrap()
-//             .dist()
-//             .unwrap();
+        let dist = compile(&project);
 
-//         let package_file = get_package_file(&dist);
-//         assert_snapshot!(
-//             package_file.source,
-//             @r#"
-//         {
-//           "type": "module",
-//           "exports": {
-//             ".": "./src/index.ts"
-//           },
-//           "dependencies": {
-//             "zod": "^4"
-//           }
-//         }
-//         "#
-//         );
+        let package_file = get_package_file(&dist);
+        assert_snapshot!(
+            package_file.source_code,
+            @r#"
+        {
+          "type": "module",
+          "exports": {
+            ".": "./src/index.ts"
+          },
+          "dependencies": {
+            "zod": "^4"
+          }
+        }
+        "#
+        );
 
-//         let author_file = get_dist_file(&dist, "src/author.ts");
-//         assert_snapshot!(
-//             author_file.source,
-//             @r#"
-//         import { z } from "zod";
+        let author_file = get_dist_file(&dist, "src/author.ts");
+        assert_snapshot!(
+            author_file.source_code,
+            @r#"
+        import { z } from "zod";
 
-//         export const Author = z.object({
-//           name: z.string()
-//         });
+        export const Author = z.object({
+          name: z.string()
+        });
 
-//         export type Author = z.infer<typeof Author>;
-//         "#
-//         );
-//     }
+        export type Author = z.infer<typeof Author>;
+        "#
+        );
+    }
 
-//     #[test]
-//     fn test_render_prefer_alias() {
-//         let mut project =
-//             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-//         project.config.ts.lang.prefer = TsPrefer::Alias;
+    #[test]
+    fn test_render_prefer_alias() {
+        let mut project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        project.config.ts.lang.prefer = TsPrefer::Alias;
 
-//         let dist = TsProjectOld::generate_old(&project)
-//             .unwrap()
-//             .dist()
-//             .unwrap();
+        let dist = compile(&project);
 
-//         let author_file = get_dist_file(&dist, "src/author.ts");
-//         assert_snapshot!(
-//             author_file.source,
-//             @r#"
-//         export type Author = {
-//           name: string;
-//         };
-//         "#
-//         );
+        let author_file = get_dist_file(&dist, "src/author.ts");
+        assert_snapshot!(
+            author_file.source_code,
+            @r#"
+        export type Author = {
+          name: string;
+        };
+        "#
+        );
 
-//         let book_file = get_dist_file(&dist, "src/book.ts");
-//         assert_snapshot!(
-//             book_file.source,
-//             @r#"
-//         import { Author } from "./author.js";
+        let book_file = get_dist_file(&dist, "src/book.ts");
+        assert_snapshot!(
+            book_file.source_code,
+            @r#"
+        import { Author } from "./author.js";
 
-//         export type Book = {
-//           title: string;
-//           author: Author;
-//         };
-//         "#
-//         );
-//     }
+        export type Book = {
+          title: string;
+          author: Author;
+        };
+        "#
+        );
+    }
 
-//     #[test]
-//     fn test_render_without_package_global() {
-//         let mut project =
-//             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-//         project.config.package = false;
+    #[test]
+    fn test_render_without_package_global() {
+        let mut project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        project.config.package = false;
 
-//         let dist = TsProjectOld::generate_old(&project)
-//             .unwrap()
-//             .dist()
-//             .unwrap();
+        let dist = compile(&project);
 
-//         assert_ron_snapshot!(
-//           dist.files.iter().map(|file| file.path().as_str()).collect::<Vec<_>>(),
-//           @r#"
-//         [
-//           "examples/basic/dist/ts/index.ts",
-//           "examples/basic/dist/ts/author.ts",
-//           "examples/basic/dist/ts/book.ts",
-//         ]
-//         "#
-//         );
-//     }
+        assert_ron_snapshot!(
+          dist.files.iter().map(|file| file.path().as_str()).collect::<Vec<_>>(),
+          @r#"
+        [
+          "examples/basic/dist/ts/author.ts",
+          "examples/basic/dist/ts/book.ts",
+          "examples/basic/dist/ts/index.ts",
+        ]
+        "#
+        );
+    }
 
-//     #[test]
-//     fn test_render_without_package_target() {
-//         let mut project =
-//             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-//         project.config.package = true;
-//         project.config.ts.common.package = Some(false);
+    #[test]
+    fn test_render_without_package_target() {
+        let mut project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        project.config.package = true;
+        project.config.ts.common.package = Some(false);
 
-//         let dist = TsProjectOld::generate_old(&project)
-//             .unwrap()
-//             .dist()
-//             .unwrap();
+        let dist = compile(&project);
 
-//         assert_ron_snapshot!(
-//           dist.files.iter().map(|file| file.path().as_str()).collect::<Vec<_>>(),
-//           @r#"
-//         [
-//           "examples/basic/dist/ts/index.ts",
-//           "examples/basic/dist/ts/author.ts",
-//           "examples/basic/dist/ts/book.ts",
-//         ]
-//         "#
-//         );
-//     }
+        assert_ron_snapshot!(
+          dist.files.iter().map(|file| file.path().as_str()).collect::<Vec<_>>(),
+          @r#"
+        [
+          "examples/basic/dist/ts/author.ts",
+          "examples/basic/dist/ts/book.ts",
+          "examples/basic/dist/ts/index.ts",
+        ]
+        "#
+        );
+    }
 
-//     // #[test]
-//     // fn test_dist_includes_module_errors() {
-//     //     let project =
-//     //         GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-//     //     let mut ts_project = TsProject::generate(&project).unwrap();
-//     //     ts_project.modules.push(TsProjectModule::Error(
-//     //         TsProjectModuleError::ProjectModuleError {
-//     //             path: "examples/basic/src/broken.type".into(),
-//     //             target_path: GtpPkgSrcDirRelativePath::from_str("broken.ts"),
-//     //             message: "synthetic parse failure".into(),
-//     //         },
-//     //     ));
+    #[test]
+    fn test_dist_includes_module_errors() {
+        let mut project =
+            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let path: GtpModulePath = "examples/basic/src/broken.type".into();
+        let source = GtpModuleSource::Entry { path: path.clone() };
+        project.modules.insert(
+            path.clone(),
+            GtpModule::Error(
+                source,
+                GtpModuleError::Init {
+                    path,
+                    message: "synthetic parse failure".into(),
+                },
+            ),
+        );
 
-//     //     let dist = ts_project.dist().unwrap();
+        let dist = compile(&project);
 
-//     //     assert!(dist.files.iter().any(|file| matches!(
-//     //         file,
-//     //         GtlProjectFile::Error(error)
-//     //             if error.path.as_str() == "examples/basic/dist/ts/src/broken.ts"
-//     //                 && error.message.contains("synthetic parse failure")
-//     //     )));
-//     // }
+        assert!(dist.files.iter().any(|file| matches!(
+            file,
+            GtlDistFile::Error(error)
+                if error.path.as_str() == "examples/basic/dist/ts/src/broken.ts"
+                    && error.message.contains("Failed to convert")
+        )));
+    }
 
-//     #[test]
-//     fn test_render_generics() {
-//         let project = GtpRuntimeSystem::new_and_load_all_modules(
-//             &"../../examples/04-tests/generics/".into(),
-//             Some(&"../../examples/04-tests/generics/genotype.ts-interface.toml".into()),
-//         )
-//         .unwrap();
+    #[test]
+    fn test_render_generics() {
+        let project = GtpRuntimeSystem::new_and_load_all_modules(
+            &"../../examples/04-tests/generics/".into(),
+            Some(&"../../examples/04-tests/generics/genotype.ts-interface.toml".into()),
+        )
+        .unwrap();
 
-//         assert_ron_snapshot!(
-//           TsProjectOld::generate_old(&project).unwrap().dist().unwrap(),
-//           @r#"
-//         GtlProjectDist(
-//           files: [
-//             Generated(GtlProjectFileGenerated(
-//               path: "../../examples/04-tests/generics/dist/ts-interface/ts/.gitignore",
-//               source: "node_modules",
-//             )),
-//             Generated(GtlProjectFileGenerated(
-//               path: "../../examples/04-tests/generics/dist/ts-interface/ts/package.json",
-//               source: "{\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./src/index.ts\"\n  },\n  \"name\": \"genotype-test-generics-interface-types\",\n  \"version\": \"0.1.0\"\n}",
-//             )),
-//             Generated(GtlProjectFileGenerated(
-//               path: "../../examples/04-tests/generics/dist/ts-interface/ts/src/index.ts",
-//               source: "export * from \"./generics.js\";\nexport * from \"./pair.js\";\n",
-//             )),
-//             Generated(GtlProjectFileGenerated(
-//               path: "../../examples/04-tests/generics/dist/ts-interface/ts/src/generics.ts",
-//               source: "export type Response<Payload> = ResponseSuccess<Payload> | ResponseFailure;\n\nexport interface ResponseSuccess<Payload> {\n  status: \"success\";\n  value: Payload;\n}\n\nexport interface ResponseFailure {\n  status: \"failure\";\n  error: string;\n}\n\nexport type ResponseString = Response<string>;\n\nexport type ResponsePair = Response<import(\"./pair.js\").Pair<string, number>>;\n",
-//             )),
-//             Generated(GtlProjectFileGenerated(
-//               path: "../../examples/04-tests/generics/dist/ts-interface/ts/src/pair.ts",
-//               source: "export interface Pair<Left, Right> {\n  left: Left;\n  right: Right;\n}\n",
-//             )),
-//           ],
-//         )
-//         "#
-//         );
-//     }
+        assert_ron_snapshot!(
+          compile(&project),
+          @r#"
+        GtlDist(
+          files: [
+            Generated(GtlDistFileGenerated(
+              path: "../../examples/04-tests/generics/dist/ts-interface/ts/.gitignore",
+              source_code: "node_modules",
+            )),
+            Generated(GtlDistFileGenerated(
+              path: "../../examples/04-tests/generics/dist/ts-interface/ts/package.json",
+              source_code: "{\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./src/index.ts\"\n  },\n  \"name\": \"genotype-test-generics-interface-types\",\n  \"version\": \"0.1.0\"\n}",
+            )),
+            Generated(GtlDistFileGenerated(
+              path: "../../examples/04-tests/generics/dist/ts-interface/ts/src/generics.ts",
+              source_code: "export type Response<Payload> = ResponseSuccess<Payload> | ResponseFailure;\n\nexport interface ResponseSuccess<Payload> {\n  status: \"success\";\n  value: Payload;\n}\n\nexport interface ResponseFailure {\n  status: \"failure\";\n  error: string;\n}\n\nexport type ResponseString = Response<string>;\n\nexport type ResponsePair = Response<import(\"./pair.js\").Pair<string, number>>;\n",
+            )),
+            Generated(GtlDistFileGenerated(
+              path: "../../examples/04-tests/generics/dist/ts-interface/ts/src/index.ts",
+              source_code: "export * from \"./generics.js\";\nexport * from \"./pair.js\";\n",
+            )),
+            Generated(GtlDistFileGenerated(
+              path: "../../examples/04-tests/generics/dist/ts-interface/ts/src/pair.ts",
+              source_code: "export interface Pair<Left, Right> {\n  left: Left;\n  right: Right;\n}\n",
+            )),
+          ],
+          notices: [],
+        )
+        "#
+        );
+    }
 
-//     fn get_package_file(dist: &GtlProjectDistOld) -> &GtlProjectFileCompiledOld {
-//         dist.files
-//             .iter()
-//             .find_map(|file| match file {
-//                 GtlProjectFileOld::Compiled(file) if file.path.as_str().contains("package.json") => {
-//                     Some(file)
-//                 }
-//                 _ => None,
-//             })
-//             .unwrap()
-//     }
+    fn modules(project: &GtProject) -> GtlProjectModules<TsProjectModule> {
+        let compiler = TsCompiler::new(project);
+        let mut lang_project = GtlProject::<TsProjectModule>::new(compiler.config());
+        lang_project.convert(&project.modules);
+        lang_project.resolve().unwrap();
+        lang_project.modules
+    }
 
-//     fn get_dist_file<'a>(
-//         dist: &'a GtlProjectDistOld,
-//         path_suffix: &str,
-//     ) -> &'a GtlProjectFileCompiledOld {
-//         dist.files
-//             .iter()
-//             .find_map(|file| match file {
-//                 GtlProjectFileOld::Compiled(file) if file.path.as_str().ends_with(path_suffix) => {
-//                     Some(file)
-//                 }
-//                 _ => None,
-//             })
-//             .unwrap()
-//     }
-// }
+    fn compile(project: &GtProject) -> GtlDist {
+        TsCompiler::new(project).compile().unwrap().unwrap()
+    }
+
+    fn get_package_file(dist: &GtlDist) -> &GtlDistFileGenerated {
+        dist.files
+            .iter()
+            .find_map(|file| match file {
+                GtlDistFile::Generated(file) if file.path.as_str().contains("package.json") => {
+                    Some(file)
+                }
+                _ => None,
+            })
+            .unwrap()
+    }
+
+    fn get_dist_file<'a>(dist: &'a GtlDist, path_suffix: &str) -> &'a GtlDistFileGenerated {
+        dist.files
+            .iter()
+            .find_map(|file| match file {
+                GtlDistFile::Generated(file) if file.path.as_str().ends_with(path_suffix) => {
+                    Some(file)
+                }
+                _ => None,
+            })
+            .unwrap()
+    }
+}
