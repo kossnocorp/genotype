@@ -13,10 +13,6 @@ impl GtlProjectModule for PyProjectModule {
         &self.module
     }
 
-    // fn module_mut(&mut self) -> &mut Self::Module<'_> {
-    //     &mut self.module
-    // }
-
     fn convert(
         lang_config: &PyConfig,
         resolved: &GtpModuleResolved,

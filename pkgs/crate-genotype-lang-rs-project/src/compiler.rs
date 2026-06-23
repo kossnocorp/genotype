@@ -34,13 +34,102 @@ impl<'project> GtlCompiler<'project> for RsCompiler<'project> {
     fn generate_extra_files(
         &self,
         _project: &GtlProject<'project, '_, RsProjectModule>,
-    ) -> Result<Option<GtlGenerations<RsProjectModule>>, GtlProjectError> {
-        todo!()
+    ) -> Option<GtlGenerations<RsProjectModule>> {
+        let mut files = vec![];
+        let mut notices = vec![];
+
+        let (module_indices, module_indices_notices) = self.generate_module_indices();
+        files.extend(module_indices);
+        if let Some(module_indices_notices) = module_indices_notices {
+            notices.extend(module_indices_notices);
+        }
+
+        Some((files, Some(notices)))
     }
 
     fn gitignore_source_code(&self) -> Option<String> {
         Some("target".into())
     }
+}
+
+impl<'project> RsCompiler<'project> {
+    fn generate_module_indices(&self) -> GtlGenerations<RsProjectModule> {
+        let mut notices = vec![];
+        let mut crate_paths: IndexMap<GtpTargetFilePath, IndexSet<String>> = IndexMap::new();
+
+        for module_path_ in self.project.modules.keys() {
+            let module_path = self.config.module_target_file_path(module_path_);
+            match module_path {
+                Ok(module_path) => {
+                    let mut module_path = module_path;
+
+                    loop {
+                        let name = module_name(&module_path);
+                        let parent_path = module_path.to_parent().unwrap_or_else(|| "".into());
+
+                        crate_paths
+                            .entry(parent_path.clone())
+                            .and_modify(|paths| {
+                                paths.insert(name.clone());
+                            })
+                            .or_insert_with(|| IndexSet::from_iter(vec![name]));
+
+                        if parent_path == "".into() {
+                            break;
+                        }
+
+                        module_path = parent_path;
+                    }
+                }
+
+                Err(err) => {
+                    notices.push(GtNotice::error(format!(
+                        "Failed to generate index `mod.rs` files for `{module_path_}`: {err}",
+                    )));
+                }
+            }
+        }
+
+        let generations = crate_paths
+            .into_iter()
+            .map(|(module_path, modules)| {
+                let file_name = if module_path == "".into() {
+                    if self.config.package_enabled {
+                        "lib.rs"
+                    } else {
+                        "mod.rs"
+                    }
+                } else {
+                    "mod.rs"
+                };
+                let path = module_path.join_relative_path(&file_name.into());
+
+                let mut source_code = modules
+                    .iter()
+                    .map(|module| {
+                        indoc::formatdoc! {r#"
+                            pub(crate) mod {module};
+                            pub use {module}::*;
+                        "#}
+                    })
+                    .collect::<Vec<_>>()
+                    .join("\n");
+                source_code += "\n";
+
+                GtlProjectFileExtraGenerated { path, source_code }.into()
+            })
+            .collect();
+
+        (generations, Some(notices))
+    }
+}
+
+fn module_name(path: &GtpTargetFilePath) -> String {
+    path.relative_path()
+        .with_extension("")
+        .file_name()
+        .unwrap_or_default()
+        .into()
 }
 
 // #[cfg(test)]

@@ -4,6 +4,14 @@ use crate::prelude::internal::*;
 pub enum GtlProjectError {
     #[error("Failed to resolve project")]
     Resolve { error: Box<dyn GtlError> },
+
+    #[error("Failed to generate file `{path}`")]
+    GenerateFile {
+        path: GtpCwdRelativePath,
+        #[source]
+        #[diagnostic_source]
+        error: Box<dyn GtlError>,
+    },
 }
 
 impl GtlProjectError {

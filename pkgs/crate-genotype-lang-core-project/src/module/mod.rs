@@ -27,8 +27,6 @@ pub trait GtlProjectModule: Clone {
 
     fn module(&self) -> &Self::Module<'_>;
 
-    // fn module_mut(&mut self) -> &mut Self::Module<'_>;
-
     fn convert(
         lang_config: &Self::LangConfig,
         resolved: &GtpModuleResolved,

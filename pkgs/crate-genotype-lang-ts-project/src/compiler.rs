@@ -34,9 +34,9 @@ impl<'project> GtlCompiler<'project> for TsCompiler<'project> {
     fn generate_extra_files(
         &self,
         project: &GtlProject<'_, '_, TsProjectModule>,
-    ) -> Result<Option<GtlGenerations<TsProjectModule>>, GtlProjectError> {
-        let barrel_file = self.generate_barrel_file(&project.modules);
-        Ok(Some((vec![barrel_file], None)))
+    ) -> Option<GtlGenerations<TsProjectModule>> {
+        let (barrel_file, notices) = self.generate_barrel_file(&project.modules);
+        Some((vec![barrel_file], Some(notices)))
     }
 
     fn gitignore_source_code(&self) -> Option<String> {
@@ -48,47 +48,89 @@ impl TsCompiler<'_> {
     fn generate_barrel_file(
         &self,
         modules: &IndexMap<GtpModulePath, GtlProjectModuleState<TsProjectModule>>,
-    ) -> GtlGeneration<TsProjectModule> {
+    ) -> (GtlGeneration<TsProjectModule>, Vec<GtNotice>) {
+        let mut notices = vec![];
         let mut export_lines = vec![];
-        let mut failed_to_render_count = 0;
+        let mut failed_to_render_modules_count = 0;
+        let mut failed_to_format_module_path_count = 0;
 
         for module in modules.values() {
             match module {
                 GtlProjectModuleState::Rendered(rendered) => {
                     let path_str = self.format_module_path(&rendered.converted().target_path);
-                    export_lines.push(format!(r#"export * from "./{path_str}";"#));
+                    match path_str {
+                        Ok(path_str) => {
+                            export_lines.push(format!(r#"export * from "./{path_str}";"#))
+                        }
+
+                        Err(err) => {
+                            notices.push(GtNotice::error(format!(
+                                "Failed to format module path for barrel file: {err:?}"
+                            )));
+                            failed_to_format_module_path_count += 1;
+                        }
+                    }
                 }
 
                 _ => {
-                    failed_to_render_count += 1;
+                    failed_to_render_modules_count += 1;
                 }
             }
         }
 
         let path = self.config.pkg_src_file_path(&"index.ts".into());
 
-        let notice = match failed_to_render_count {
-            0 => None,
-            failed_count => Some(GtNotice::warning(format!(
-                "Barrel file `{path}` rendered, but it excludes {count} that failed to render",
-                count = pluralize("module", failed_count, true)
-            ))),
+        let notice = match (
+            failed_to_render_modules_count,
+            failed_to_format_module_path_count,
+        ) {
+            (0, 0) => None,
+
+            (failed_render_count, failed_format_count) => {
+                let mut components = vec![];
+
+                if failed_render_count > 0 {
+                    components.push(format!(
+                        "{} that failed to render",
+                        pluralize("module", failed_render_count, true)
+                    ));
+                }
+
+                if failed_format_count > 0 {
+                    components.push(format!(
+                        "{} that failed to format",
+                        pluralize("export line", failed_format_count, true)
+                    ));
+                }
+
+                Some(GtNotice::warning(format!(
+                    "Barrel file `{path}` rendered, but it excludes {}",
+                    components.join(" and ")
+                )))
+            }
         };
 
         let source_code = export_lines.join("");
 
-        (
+        let generation = (
             GtlProjectFileExtraGenerated { path, source_code }.into(),
             notice,
         )
-            .into()
+            .into();
+
+        (generation, notices)
     }
 
-    fn format_module_path(&self, target_path: &GtpTargetFilePath) -> String {
-        self.config()
+    fn format_module_path(&self, target_path: &GtpTargetFilePath) -> Result<String> {
+        let path = target_path
+            .relative_path()
+            .strip_prefix(self.config().pkg_src_path().relative_path())
+            .map_err(|err| miette!("Failed to strip prefix: {err:?}"))?;
+        Ok(self
+            .config()
             .lang_config
             .lang
-            .format_module_path(target_path)
+            .format_module_path(&path.into()))
     }
 }
 

@@ -8,3 +8,9 @@ pub enum GtlConfigError {
         message: String,
     },
 }
+
+impl GtlError for GtlConfigError {
+    fn clone_box(&self) -> Box<dyn GtlError> {
+        Box::new(self.clone())
+    }
+}

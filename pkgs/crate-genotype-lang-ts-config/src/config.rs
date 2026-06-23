@@ -3,17 +3,14 @@ use crate::prelude::internal::*;
 #[derive(Default, Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct TsConfig {
     #[serde(flatten)]
-    pub common: GtpLangConfigCommon, // <TsPkgPath>,
+    pub common: GtpLangConfigCommon,
 
     #[serde(flatten)]
     pub lang: TsConfigLang,
 }
 
 impl GtpLangConfig for TsConfig {
-    // type PkgPath = TsPkgPath;
-
     fn common(&self) -> &GtpLangConfigCommon {
-        //<Self::PkgPath> {
         &self.common
     }
 
