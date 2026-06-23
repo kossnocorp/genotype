@@ -10,14 +10,17 @@ impl PyConvert<PyClass> for GtObject {
         };
 
         let doc = context.consume_doc();
+        let generics = context.consume_definition_generics();
         let extensions = self.extensions.iter().map(|e| e.convert(context)).collect();
         let properties = self.properties.iter().map(|p| p.convert(context)).collect();
 
         let references = context.pop_references_scope();
+        context.resolve_generics_imports(&generics, PyGenericsKind::Class);
 
         PyClass {
             doc,
             name,
+            generics,
             extensions,
             properties,
             references,
@@ -64,6 +67,7 @@ mod tests {
         PyClass(
           doc: None,
           name: PyIdentifier("Person"),
+          generics: [],
           extensions: [],
           properties: [
             PyProperty(
@@ -102,6 +106,7 @@ mod tests {
         PyClass(
           doc: None,
           name: PyIdentifier("Person"),
+          generics: [],
           extensions: [],
           properties: [],
           references: [],
@@ -141,6 +146,7 @@ mod tests {
         PyClass(
           doc: Some(PyDoc("Hello, world!")),
           name: PyIdentifier("Person"),
+          generics: [],
           extensions: [],
           properties: [],
           references: [],

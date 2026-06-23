@@ -229,6 +229,7 @@ mod tests {
                     Class(PyClass(
                       doc: None,
                       name: PyIdentifier("Author"),
+                      generics: [],
                       extensions: [],
                       properties: [
                         PyProperty(
@@ -259,6 +260,7 @@ mod tests {
                   Class(PyClass(
                     doc: None,
                     name: PyIdentifier("Author"),
+                    generics: [],
                     extensions: [],
                     properties: [
                       PyProperty(
@@ -299,6 +301,7 @@ mod tests {
                     Class(PyClass(
                       doc: None,
                       name: PyIdentifier("Book"),
+                      generics: [],
                       extensions: [],
                       properties: [
                         PyProperty(
@@ -312,6 +315,7 @@ mod tests {
                           name: PyKey("author"),
                           descriptor: Reference(PyReference(
                             identifier: PyIdentifier("Author"),
+                            arguments: [],
                             forward: false,
                           )),
                           required: true,
@@ -346,6 +350,7 @@ mod tests {
                   Class(PyClass(
                     doc: None,
                     name: PyIdentifier("Book"),
+                    generics: [],
                     extensions: [],
                     properties: [
                       PyProperty(
@@ -359,6 +364,7 @@ mod tests {
                         name: PyKey("author"),
                         descriptor: Reference(PyReference(
                           identifier: PyIdentifier("Author"),
+                          arguments: [],
                           forward: false,
                         )),
                         required: true,
@@ -405,12 +411,14 @@ mod tests {
                     Alias(PyAlias(
                       doc: None,
                       name: PyIdentifier("AuthorName"),
+                      generics: [],
                       descriptor: Primitive(String),
                       references: [],
                     )),
                     Class(PyClass(
                       doc: None,
                       name: PyIdentifier("Author"),
+                      generics: [],
                       extensions: [],
                       properties: [
                         PyProperty(
@@ -418,6 +426,7 @@ mod tests {
                           name: PyKey("name"),
                           descriptor: Reference(PyReference(
                             identifier: PyIdentifier("AuthorName"),
+                            arguments: [],
                             forward: false,
                           )),
                           required: true,
@@ -446,12 +455,14 @@ mod tests {
                   Alias(PyAlias(
                     doc: None,
                     name: PyIdentifier("AuthorName"),
+                    generics: [],
                     descriptor: Primitive(String),
                     references: [],
                   )),
                   Class(PyClass(
                     doc: None,
                     name: PyIdentifier("Author"),
+                    generics: [],
                     extensions: [],
                     properties: [
                       PyProperty(
@@ -459,6 +470,7 @@ mod tests {
                         name: PyKey("name"),
                         descriptor: Reference(PyReference(
                           identifier: PyIdentifier("AuthorName"),
+                          arguments: [],
                           forward: false,
                         )),
                         required: true,
@@ -495,6 +507,7 @@ mod tests {
                     Class(PyClass(
                       doc: None,
                       name: PyIdentifier("Book"),
+                      generics: [],
                       extensions: [],
                       properties: [
                         PyProperty(
@@ -508,6 +521,7 @@ mod tests {
                           name: PyKey("author"),
                           descriptor: Reference(PyReference(
                             identifier: PyIdentifier("author.Author"),
+                            arguments: [],
                             forward: false,
                           )),
                           required: true,
@@ -517,6 +531,7 @@ mod tests {
                           name: PyKey("author_name"),
                           descriptor: Reference(PyReference(
                             identifier: PyIdentifier("author.AuthorName"),
+                            arguments: [],
                             forward: false,
                           )),
                           required: true,
@@ -550,6 +565,7 @@ mod tests {
                   Class(PyClass(
                     doc: None,
                     name: PyIdentifier("Book"),
+                    generics: [],
                     extensions: [],
                     properties: [
                       PyProperty(
@@ -563,6 +579,7 @@ mod tests {
                         name: PyKey("author"),
                         descriptor: Reference(PyReference(
                           identifier: PyIdentifier("author.Author"),
+                          arguments: [],
                           forward: false,
                         )),
                         required: true,
@@ -572,6 +589,7 @@ mod tests {
                         name: PyKey("author_name"),
                         descriptor: Reference(PyReference(
                           identifier: PyIdentifier("author.AuthorName"),
+                          arguments: [],
                           forward: false,
                         )),
                         required: true,

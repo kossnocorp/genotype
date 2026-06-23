@@ -25,6 +25,7 @@ mod tests {
         PyExtension(
           reference: PyReference(
             identifier: PyIdentifier("Name"),
+            arguments: [],
             forward: true,
           ),
         )

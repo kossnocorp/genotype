@@ -36,7 +36,17 @@ impl PyDefinition {
             Self::Newtype(_) | Self::Embed(_) => vec![],
         }
     }
+
+    pub fn generics(&self) -> &Vec<PyIdentifier> {
+        match self {
+            Self::Alias(alias) => &alias.generics,
+            Self::Class(class) => &class.generics,
+            Self::Newtype(_) | Self::Embed(_) => EMPTY_GENERICS,
+        }
+    }
 }
+
+static EMPTY_GENERICS: &Vec<PyIdentifier> = &Vec::new();
 
 impl GtlDefinition for PyDefinition {}
 
@@ -75,6 +85,7 @@ mod tests {
             *PyDefinition::Alias(PyAlias {
                 doc: None,
                 name: "Name".into(),
+                generics: vec![],
                 descriptor: PyDescriptor::Primitive(PyPrimitive::Boolean),
                 references: vec![],
             })
@@ -86,6 +97,7 @@ mod tests {
             *PyDefinition::Class(PyClass {
                 doc: None,
                 name: "Name".into(),
+                generics: vec![],
                 extensions: vec![],
                 properties: vec![],
                 references: vec![],
@@ -110,6 +122,7 @@ mod tests {
             *PyDefinition::Alias(PyAlias {
                 doc: Some(PyDoc("Hello, world!".into())),
                 name: "Name".into(),
+                generics: vec![],
                 descriptor: PyDescriptor::Primitive(PyPrimitive::Boolean),
                 references: vec![],
             })
@@ -121,6 +134,7 @@ mod tests {
             *PyDefinition::Class(PyClass {
                 doc: Some(PyDoc("Hello, world!".into())),
                 name: "Name".into(),
+                generics: vec![],
                 extensions: vec![],
                 properties: vec![],
                 references: vec![],

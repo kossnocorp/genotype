@@ -1,8 +1,11 @@
 use crate::prelude::internal::*;
 use indexmap::IndexSet;
 
+mod generics;
 mod hoisting;
 mod references;
+
+pub(crate) use generics::PyGenericsKind;
 
 pub struct PyConvertContext {
     resolve: PyConvertResolve,
@@ -16,6 +19,8 @@ pub struct PyConvertContext {
     hoisted: Vec<PyDefinition>,
     doc: Option<PyDoc>,
     references: Vec<IndexSet<PyIdentifier>>,
+    definition_generics: Vec<PyIdentifier>,
+    generics_scope: Vec<Vec<PyIdentifier>>,
 }
 
 impl PyConvertContext {
@@ -31,6 +36,8 @@ impl PyConvertContext {
             hoisted: vec![],
             doc: None,
             references: vec![],
+            definition_generics: vec![],
+            generics_scope: vec![],
         }
     }
 
@@ -141,6 +148,7 @@ mod tests {
             PyDefinition::Alias(PyAlias {
                 doc: None,
                 name: "Name".into(),
+                generics: vec![],
                 descriptor: PyDescriptor::Primitive(PyPrimitive::Boolean),
                 references: vec![],
             })
@@ -151,6 +159,7 @@ mod tests {
             vec![PyDefinition::Alias(PyAlias {
                 doc: None,
                 name: "Name".into(),
+                generics: vec![],
                 descriptor: PyDescriptor::Primitive(PyPrimitive::Boolean),
                 references: vec![],
             })],

@@ -34,6 +34,7 @@ mod tests {
         let mut context = PyConvertContext::default();
         let reference = PyReference {
             identifier: "Foo".into(),
+            arguments: vec![],
             forward: false,
         };
         context.track_reference(&reference);
@@ -45,10 +46,12 @@ mod tests {
         let mut context = PyConvertContext::default();
         context.track_reference(&PyReference {
             identifier: "Foo".into(),
+            arguments: vec![],
             forward: false,
         });
         context.track_reference(&PyReference {
             identifier: "Foo".into(),
+            arguments: vec![],
             forward: false,
         });
         assert_eq!(context.pop_references_scope(), vec!["Foo".into()]);
@@ -60,10 +63,12 @@ mod tests {
         context.create_references_scope();
         context.track_reference(&PyReference {
             identifier: "Foo".into(),
+            arguments: vec![],
             forward: false,
         });
         context.track_reference(&PyReference {
             identifier: "Bar".into(),
+            arguments: vec![],
             forward: false,
         });
         assert_eq!(
@@ -78,11 +83,13 @@ mod tests {
         context.create_references_scope();
         context.track_reference(&PyReference {
             identifier: "Foo".into(),
+            arguments: vec![],
             forward: false,
         });
         context.create_references_scope();
         context.track_reference(&PyReference {
             identifier: "Bar".into(),
+            arguments: vec![],
             forward: false,
         });
         assert_eq!(context.pop_references_scope(), vec!["Bar".into()]);

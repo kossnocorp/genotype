@@ -7,14 +7,34 @@ impl<'context> GtlRender<'context, PyRenderTypes> for PyClass {
         context: &mut PyRenderContext,
     ) -> PyRenderResult<String> {
         let name = self.name.render(state, context)?;
+        let generics = self.render_generics(state, context)?;
         let extensions = self.render_extensions(state, context)?;
         let body = self.render_body(state, context)?;
 
-        Ok(state.indent_format(&format!("class {name}{extensions}:\n{body}")))
+        Ok(state.indent_format(&format!("class {name}{generics}{extensions}:\n{body}")))
     }
 }
 
 impl<'a> PyClass {
+    fn render_generics(
+        &self,
+        state: PyRenderState,
+        context: &mut PyRenderContext<'a>,
+    ) -> Result<String, PyRenderError> {
+        if self.generics.is_empty() || context.config.version == PyVersion::Legacy {
+            return Ok("".into());
+        }
+
+        Ok(format!(
+            "[{}]",
+            self.generics
+                .iter()
+                .map(|generic| generic.render(state, context))
+                .collect::<Result<Vec<_>, _>>()?
+                .join(", ")
+        ))
+    }
+
     fn render_extensions(
         &self,
         state: PyRenderState,
@@ -27,6 +47,16 @@ impl<'a> PyClass {
             .collect::<Result<Vec<_>, _>>()?;
         // [TODO] Push model when converting instead
         extensions.push("Model".into());
+        if context.config.version == PyVersion::Legacy && !self.generics.is_empty() {
+            extensions.push(format!(
+                "Generic[{}]",
+                self.generics
+                    .iter()
+                    .map(|generic| generic.render(state, context))
+                    .collect::<Result<Vec<_>, _>>()?
+                    .join(", ")
+            ));
+        }
 
         let extensions = extensions.join(", ");
 
@@ -82,6 +112,7 @@ mod tests {
             PyClass {
                 doc: None,
                 name: "Name".into(),
+                generics: vec![],
                 extensions: vec![],
                 properties: vec![],
                 references: vec![],
@@ -101,6 +132,7 @@ mod tests {
             PyClass {
                 doc: None,
                 name: "Name".into(),
+                generics: vec![],
                 extensions: vec![],
                 properties: vec![
                     PyProperty {
@@ -134,6 +166,7 @@ mod tests {
             PyClass {
                 doc: None,
                 name: "Name".into(),
+                generics: vec![],
                 extensions: vec![],
                 properties: vec![
                     PyProperty {
@@ -170,6 +203,7 @@ mod tests {
             PyClass {
                 doc: None,
                 name: "Name".into(),
+                generics: vec![],
                 extensions: vec![
                     PyReference::new("Hello".into(), false).into(),
                     PyReference::new("World".into(), false).into()
@@ -197,6 +231,7 @@ mod tests {
             PyClass {
                 doc: Some(PyDoc("Hello, world!".into())),
                 name: "Name".into(),
+                generics: vec![],
                 extensions: vec![],
                 properties: vec![],
                 references: vec![],
@@ -218,6 +253,7 @@ mod tests {
             PyClass {
                 doc: Some(PyDoc("Hello, world!".into())),
                 name: "Name".into(),
+                generics: vec![],
                 extensions: vec![],
                 properties: vec![PyProperty {
                     doc: None,
@@ -235,6 +271,61 @@ mod tests {
 
             name: str
         "#
+        );
+    }
+
+    #[test]
+    fn test_render_with_generics() {
+        assert_snapshot!(
+            PyClass {
+                doc: None,
+                name: "Response".into(),
+                generics: vec!["Payload".into()],
+                extensions: vec![],
+                properties: vec![PyProperty {
+                    doc: None,
+                    name: "value".into(),
+                    descriptor: PyReference::new("Payload".into(), false).into(),
+                    required: true,
+                }],
+                references: vec![],
+            }
+            .render(Default::default(), &mut Default::default())
+            .unwrap(),
+            @"
+        class Response[Payload](Model):
+            value: Payload
+        "
+        );
+    }
+
+    #[test]
+    fn test_render_legacy_with_generics() {
+        assert_snapshot!(
+            PyClass {
+                doc: None,
+                name: "Response".into(),
+                generics: vec!["Payload".into()],
+                extensions: vec![],
+                properties: vec![PyProperty {
+                    doc: None,
+                    name: "value".into(),
+                    descriptor: PyReference::new("Payload".into(), false).into(),
+                    required: true,
+                }],
+                references: vec![],
+            }
+            .render(
+                Default::default(),
+                &mut PyRenderContext {
+                    config: &PyConfigLang::new(PyVersion::Legacy),
+                }
+            )
+            .unwrap(),
+            @"
+        class Response(Model, Generic[Payload]):
+            value: Payload
+        "
         );
     }
 }

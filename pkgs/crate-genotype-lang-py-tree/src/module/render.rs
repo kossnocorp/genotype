@@ -1,7 +1,6 @@
 use crate::prelude::internal::*;
 
 impl<'context> GtlRender<'context, PyRenderTypes> for PyModule {
-
     fn render(
         &self,
         state: PyRenderState,
@@ -27,6 +26,11 @@ impl<'context> GtlRender<'context, PyRenderTypes> for PyModule {
             blocks.push(imports);
         }
 
+        let type_vars = self.render_type_vars(state, context)?;
+        if !type_vars.is_empty() {
+            blocks.push(type_vars);
+        }
+
         let definitions = Self::join_definitions(
             &self
                 .definitions
@@ -40,6 +44,32 @@ impl<'context> GtlRender<'context, PyRenderTypes> for PyModule {
         }
 
         Ok(Self::join_blocks(&blocks))
+    }
+}
+
+impl PyModule {
+    fn render_type_vars(
+        &self,
+        state: PyRenderState,
+        context: &mut PyRenderContext,
+    ) -> PyRenderResult<String> {
+        if context.config.version != PyVersion::Legacy {
+            return Ok("".into());
+        }
+
+        let mut generics = IndexSet::new();
+        for definition in &self.definitions {
+            generics.extend(definition.generics().iter().cloned());
+        }
+
+        generics
+            .iter()
+            .map(|generic| {
+                let generic = generic.render(state, context)?;
+                Ok(format!(r#"{generic} = TypeVar("{generic}")"#))
+            })
+            .collect::<PyRenderResult<Vec<_>>>()
+            .map(|type_vars| type_vars.join("\n"))
     }
 }
 
@@ -80,12 +110,14 @@ mod tests {
                     PyDefinition::Alias(PyAlias {
                         doc: None,
                         name: "Name".into(),
+                        generics: vec![],
                         descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                         references: vec![],
                     }),
                     PyDefinition::Class(PyClass {
                         doc: None,
                         name: "Name".into(),
+                        generics: vec![],
                         extensions: vec![],
                         properties: vec![
                             PyProperty {
@@ -137,6 +169,7 @@ mod tests {
                 definitions: vec![PyDefinition::Alias(PyAlias {
                     doc: None,
                     name: "Name".into(),
+                    generics: vec![],
                     descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                     references: vec![],
                 })]

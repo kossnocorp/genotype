@@ -224,6 +224,7 @@ mod tests {
             Class(PyClass(
               doc: None,
               name: PyIdentifier("User"),
+              generics: [],
               extensions: [],
               properties: [
                 PyProperty(
@@ -244,6 +245,7 @@ mod tests {
             Class(PyClass(
               doc: None,
               name: PyIdentifier("Book"),
+              generics: [],
               extensions: [],
               properties: [
                 PyProperty(
@@ -257,6 +259,7 @@ mod tests {
                   name: PyKey("author"),
                   descriptor: Reference(PyReference(
                     identifier: PyIdentifier("Author"),
+                    arguments: [],
                     forward: true,
                   )),
                   required: true,
@@ -269,6 +272,7 @@ mod tests {
             Class(PyClass(
               doc: None,
               name: PyIdentifier("Order"),
+              generics: [],
               extensions: [],
               properties: [
                 PyProperty(
@@ -276,6 +280,7 @@ mod tests {
                   name: PyKey("book"),
                   descriptor: Reference(PyReference(
                     identifier: PyIdentifier("Book"),
+                    arguments: [],
                     forward: false,
                   )),
                   required: true,
@@ -288,6 +293,7 @@ mod tests {
             Alias(PyAlias(
               doc: None,
               name: PyIdentifier("Name"),
+              generics: [],
               descriptor: Primitive(String),
               references: [],
             )),
@@ -409,6 +415,7 @@ mod tests {
             Class(PyClass(
               doc: None,
               name: PyIdentifier("DM"),
+              generics: [],
               extensions: [],
               properties: [
                 PyProperty(
@@ -423,6 +430,7 @@ mod tests {
             Class(PyClass(
               doc: None,
               name: PyIdentifier("Comment"),
+              generics: [],
               extensions: [],
               properties: [
                 PyProperty(
@@ -437,14 +445,17 @@ mod tests {
             Alias(PyAlias(
               doc: None,
               name: PyIdentifier("Message"),
+              generics: [],
               descriptor: Union(PyUnion(
                 descriptors: [
                   Reference(PyReference(
                     identifier: PyIdentifier("DM"),
+                    arguments: [],
                     forward: false,
                   )),
                   Reference(PyReference(
                     identifier: PyIdentifier("Comment"),
+                    arguments: [],
                     forward: false,
                   )),
                 ],

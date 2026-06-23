@@ -140,6 +140,7 @@ mod tests {
         PyDefinition::Class(PyClass {
             doc: None,
             name: name.into(),
+            generics: vec![],
             extensions: vec![],
             properties: vec![],
             references: references.into_iter().map(Into::into).collect(),

@@ -10,6 +10,8 @@ pub struct PyAlias {
     #[visit]
     pub name: PyIdentifier,
     #[visit]
+    pub generics: Vec<PyIdentifier>,
+    #[visit]
     pub descriptor: PyDescriptor,
     #[visit]
     pub references: Vec<PyIdentifier>,

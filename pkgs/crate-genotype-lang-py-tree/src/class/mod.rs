@@ -11,6 +11,8 @@ pub struct PyClass {
     #[visit]
     pub name: PyIdentifier,
     #[visit]
+    pub generics: Vec<PyIdentifier>,
+    #[visit]
     pub extensions: Vec<PyExtension>,
     #[visit]
     pub properties: Vec<PyProperty>,

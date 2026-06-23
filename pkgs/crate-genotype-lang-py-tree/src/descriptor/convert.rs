@@ -23,7 +23,9 @@ impl PyConvert<PyDescriptor> for GtDescriptor {
 
             GtDescriptor::Reference(name) => {
                 let reference = name.convert(context);
-                context.track_reference(&reference);
+                if !context.is_generic_parameter(&reference.identifier) {
+                    context.track_reference(&reference);
+                }
                 reference.into()
             }
 
@@ -63,6 +65,7 @@ mod tests {
             @r#"
         Reference(PyReference(
           identifier: PyIdentifier("Name"),
+          arguments: [],
           forward: true,
         ))
         "#
@@ -75,6 +78,7 @@ mod tests {
           Alias(PyAlias(
             doc: None,
             name: PyIdentifier("Name"),
+            generics: [],
             descriptor: Primitive(Boolean),
             references: [],
           )),
@@ -106,6 +110,7 @@ mod tests {
             @r#"
         Reference(PyReference(
           identifier: PyIdentifier("Name"),
+          arguments: [],
           forward: false,
         ))
         "#
@@ -158,6 +163,7 @@ mod tests {
             @r#"
         Reference(PyReference(
           identifier: PyIdentifier("Person"),
+          arguments: [],
           forward: true,
         ))
         "#
@@ -170,6 +176,7 @@ mod tests {
           Class(PyClass(
             doc: None,
             name: PyIdentifier("Person"),
+            generics: [],
             extensions: [],
             properties: [
               PyProperty(
@@ -208,6 +215,7 @@ mod tests {
             @r#"
         Reference(PyReference(
           identifier: PyIdentifier("Name"),
+          arguments: [],
           forward: true,
         ))
         "#
@@ -265,6 +273,7 @@ mod tests {
             @r#"
         Reference(PyReference(
           identifier: PyIdentifier("UserId"),
+          arguments: [],
           forward: true,
         ))
         "#

@@ -18,6 +18,7 @@ mod tests {
         let alias = PyClass {
             doc: None,
             name: "Foo".into(),
+            generics: vec![],
             extensions: vec![],
             properties: vec![],
             references: vec![],

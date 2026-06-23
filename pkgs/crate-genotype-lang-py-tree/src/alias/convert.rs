@@ -19,11 +19,18 @@ impl PyConvert<PyDefinition> for GtAlias {
         let doc = self.doc.as_ref().map(|doc| doc.convert(context));
 
         let name = self.name.convert(context);
+        let generics = self
+            .generics
+            .iter()
+            .map(|generic| generic.identifier.convert(context))
+            .collect::<Vec<_>>();
         context.push_defined(&name);
+        context.enter_generics_scope(generics.clone());
 
-        match &self.descriptor {
+        let definition = match &self.descriptor {
             GtDescriptor::Object(object) => {
                 context.provide_doc(doc);
+                context.provide_definition_generics(generics);
                 PyDefinition::Class(object.convert(context))
             }
 
@@ -57,15 +64,20 @@ impl PyConvert<PyDefinition> for GtAlias {
                 }
 
                 let references = context.pop_references_scope();
+                context.resolve_generics_imports(&generics, PyGenericsKind::Alias);
 
                 PyDefinition::Alias(PyAlias {
                     doc,
                     name,
+                    generics,
                     descriptor,
                     references,
                 })
             }
-        }
+        };
+
+        context.exit_generics_scope();
+        definition
     }
 }
 
@@ -83,7 +95,34 @@ mod tests {
         Alias(PyAlias(
           doc: None,
           name: PyIdentifier("Name"),
+          generics: [],
           descriptor: Primitive(Boolean),
+          references: [],
+        ))
+        "#
+        );
+    }
+
+    #[test]
+    fn test_convert_alias_with_generics() {
+        assert_ron_snapshot!(
+            convert_node(Gt::alias_with_generics(
+                "Response",
+                vec![Gt::generic_parameter("Payload")],
+                Gt::reference_anon("Payload")
+            )),
+            @r#"
+        Alias(PyAlias(
+          doc: None,
+          name: PyIdentifier("Response"),
+          generics: [
+            PyIdentifier("Payload"),
+          ],
+          descriptor: Reference(PyReference(
+            identifier: PyIdentifier("Payload"),
+            arguments: [],
+            forward: false,
+          )),
           references: [],
         ))
         "#
@@ -109,6 +148,7 @@ mod tests {
         Class(PyClass(
           doc: None,
           name: PyIdentifier("Book"),
+          generics: [],
           extensions: [],
           properties: [
             PyProperty(
@@ -121,6 +161,43 @@ mod tests {
               doc: None,
               name: PyKey("author"),
               descriptor: Primitive(String),
+              required: true,
+            ),
+          ],
+          references: [],
+        ))
+        "#
+        );
+    }
+
+    #[test]
+    fn test_convert_class_with_generics() {
+        assert_ron_snapshot!(
+            convert_node(Gt::alias_with_generics(
+                "Response",
+                vec![Gt::generic_parameter("Payload")],
+                Gt::object(
+                    "Response",
+                    vec![Gt::property("value", Gt::reference_anon("Payload"))]
+                )
+            )),
+            @r#"
+        Class(PyClass(
+          doc: None,
+          name: PyIdentifier("Response"),
+          generics: [
+            PyIdentifier("Payload"),
+          ],
+          extensions: [],
+          properties: [
+            PyProperty(
+              doc: None,
+              name: PyKey("value"),
+              descriptor: Reference(PyReference(
+                identifier: PyIdentifier("Payload"),
+                arguments: [],
+                forward: false,
+              )),
               required: true,
             ),
           ],
@@ -168,10 +245,12 @@ mod tests {
         Alias(PyAlias(
           doc: None,
           name: PyIdentifier("Book"),
+          generics: [],
           descriptor: Union(PyUnion(
             descriptors: [
               Reference(PyReference(
                 identifier: PyIdentifier("BookObj"),
+                arguments: [],
                 forward: true,
               )),
               Primitive(String),
@@ -193,6 +272,7 @@ mod tests {
           Class(PyClass(
             doc: None,
             name: PyIdentifier("BookObj"),
+            generics: [],
             extensions: [],
             properties: [
               PyProperty(
@@ -222,6 +302,7 @@ mod tests {
         Alias(PyAlias(
           doc: None,
           name: PyIdentifier("Name"),
+          generics: [],
           descriptor: Primitive(String),
           references: [],
         ))
@@ -247,6 +328,7 @@ mod tests {
         Alias(PyAlias(
           doc: None,
           name: PyIdentifier("Name"),
+          generics: [],
           descriptor: Primitive(String),
           references: [],
         ))
@@ -276,6 +358,7 @@ mod tests {
         Class(PyClass(
           doc: None,
           name: PyIdentifier("Name"),
+          generics: [],
           extensions: [],
           properties: [],
           references: [],
@@ -309,14 +392,17 @@ mod tests {
         Alias(PyAlias(
           doc: None,
           name: PyIdentifier("Message"),
+          generics: [],
           descriptor: Union(PyUnion(
             descriptors: [
               Reference(PyReference(
                 identifier: PyIdentifier("Reply"),
+                arguments: [],
                 forward: true,
               )),
               Reference(PyReference(
                 identifier: PyIdentifier("DM"),
+                arguments: [],
                 forward: true,
               )),
             ],
@@ -342,9 +428,11 @@ mod tests {
         Alias(PyAlias(
           doc: None,
           name: PyIdentifier("SelfRefArray"),
+          generics: [],
           descriptor: List(PyList(
             descriptor: Reference(PyReference(
               identifier: PyIdentifier("SelfRefArray"),
+              arguments: [],
               forward: true,
             )),
           )),
@@ -377,6 +465,7 @@ mod tests {
         Alias(PyAlias(
           doc: None,
           name: PyIdentifier("SelfRefTuple"),
+          generics: [],
           descriptor: Union(PyUnion(
             descriptors: [
               Literal(r#None),
@@ -386,6 +475,7 @@ mod tests {
                   List(PyList(
                     descriptor: Reference(PyReference(
                       identifier: PyIdentifier("SelfRefTuple"),
+                      arguments: [],
                       forward: true,
                     )),
                   )),
@@ -415,6 +505,7 @@ mod tests {
         Alias(PyAlias(
           doc: Some(PyDoc("Hello, world!")),
           name: PyIdentifier("Name"),
+          generics: [],
           descriptor: Primitive(Boolean),
           references: [],
         ))

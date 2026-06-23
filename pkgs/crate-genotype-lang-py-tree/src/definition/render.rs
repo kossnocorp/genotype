@@ -1,7 +1,6 @@
 use crate::prelude::internal::*;
 
 impl<'context> GtlRender<'context, PyRenderTypes> for PyDefinition {
-
     fn render(
         &self,
         state: PyRenderState,
@@ -27,6 +26,7 @@ mod tests {
             PyDefinition::Alias(PyAlias {
                 doc: None,
                 name: "Name".into(),
+                generics: vec![],
                 descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                 references: vec![],
             })
@@ -42,6 +42,7 @@ mod tests {
             PyDefinition::Class(PyClass {
                 doc: None,
                 name: "Name".into(),
+                generics: vec![],
                 extensions: vec![],
                 properties: vec![
                     PyProperty {
