@@ -193,15 +193,15 @@ mod tests {
                 &Default::default(),
             ),
             @r#"
-        PyConvertModule(PyModule(
+        PyModule(
           doc: None,
           imports: [
             PyImport(
-              dependency: Path(PyPath(".path.to.module")),
+              dependency: Local(PyPath(".path.to.module")),
               reference: Default(Some(PyIdentifier("module"))),
             ),
             PyImport(
-              dependency: Path(PyPath(".path.to.module")),
+              dependency: Local(PyPath(".path.to.module")),
               reference: Named([
                 Name(PyIdentifier("Name")),
                 Alias(PyIdentifier("Name"), PyIdentifier("Alias")),
@@ -292,7 +292,7 @@ mod tests {
               references: [],
             )),
           ],
-        ))
+        )
         "#
         );
     }
@@ -311,11 +311,11 @@ mod tests {
                 &Default::default(),
             ),
             @r#"
-        PyConvertModule(PyModule(
+        PyModule(
           doc: Some(PyDoc("Hello, world!")),
           imports: [],
           definitions: [],
-        ))
+        )
         "#
         );
     }
@@ -395,7 +395,7 @@ mod tests {
                 &Default::default(),
             ),
             @r#"
-        PyConvertModule(PyModule(
+        PyModule(
           doc: None,
           imports: [
             PyImport(
@@ -456,7 +456,7 @@ mod tests {
               ],
             )),
           ],
-        ))
+        )
         "#
         );
     }

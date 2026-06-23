@@ -117,7 +117,7 @@ mod tests {
                 &Default::default(),
             ),
             @r#"
-        TsConvertModule(TsModule(
+        TsModule(
           doc: None,
           imports: [
             TsImport(
@@ -207,7 +207,7 @@ mod tests {
               descriptor: Primitive(String),
             )),
           ],
-        ))
+        )
         "#
         );
     }
@@ -226,11 +226,11 @@ mod tests {
                 &Default::default(),
             ),
             @r#"
-        TsConvertModule(TsModule(
+        TsModule(
           doc: Some(TsDoc("@file Hello, world!")),
           imports: [],
           definitions: [],
-        ))
+        )
         "#
         );
     }
@@ -259,7 +259,7 @@ mod tests {
                 &Default::default()
             ),
             @r#"
-        TsConvertModule(TsModule(
+        TsModule(
           doc: None,
           imports: [
             TsImport(
@@ -291,7 +291,7 @@ mod tests {
               )),
             )),
           ],
-        ))
+        )
         "#
         );
     }
@@ -322,7 +322,7 @@ mod tests {
                 &config
             ),
             @r#"
-        TsConvertModule(TsModule(
+        TsModule(
           doc: None,
           imports: [
             TsImport(
@@ -361,7 +361,7 @@ mod tests {
               )),
             )),
           ],
-        ))
+        )
         "#
         );
     }

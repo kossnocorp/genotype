@@ -94,6 +94,7 @@ edition = "2024"
             kind: Warning,
             content: Message(
               title: "Rust edition is not locked in genotype.toml.\n\nQuick fix:\n\n[rs.manifest.package]\nedition = \"2024\"\n",
+              body: None,
             ),
           ),
         ]
@@ -125,6 +126,7 @@ edition = "2024"
             kind: Warning,
             content: Message(
               title: "Rust edition is not locked in genotype.lib.toml.\n\nQuick fix:\n\n[rs.manifest.package]\nedition = \"2024\"\n",
+              body: None,
             ),
           ),
         ]
