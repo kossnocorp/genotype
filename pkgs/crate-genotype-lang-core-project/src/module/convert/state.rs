@@ -49,6 +49,14 @@ impl<ProjectModule: GtlProjectModule> GtlProjectModuleStateInnerConverted
     fn converted_mut(&mut self) -> &mut GtlProjectModuleConverted<ProjectModule> {
         self
     }
+
+    fn project_module(&self) -> &ProjectModule {
+        &self.project_module
+    }
+
+    fn project_module_mut(&mut self) -> &mut ProjectModule {
+        &mut self.project_module
+    }
 }
 
 impl<ProjectModule: GtlProjectModule> Into<GtlProjectModuleState<ProjectModule>>

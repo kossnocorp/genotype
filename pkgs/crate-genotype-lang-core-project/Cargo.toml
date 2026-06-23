@@ -8,7 +8,6 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_project_core = { version = "0.15.0", path = "../crate-genotype-project-core" }
 genotype_project = { version = "0.15.0", path = "../crate-genotype-project" }
 genotype_lang_core = { version = "0.15.0", path = "../crate-genotype-lang-core" }
 genotype_lang_core_tree = { version = "0.15.0", path = "../crate-genotype-lang-core-tree" }

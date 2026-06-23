@@ -10,14 +10,6 @@ pub use result::*;
 mod types;
 pub use types::*;
 
-pub struct TsRenderTypes;
-
-impl<'context> GtlRenderTypes<'context> for TsRenderTypes {
-    type State = TsRenderState;
-    type Context = TsRenderContext<'context>;
-    type Error = TsRenderError;
-}
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct TsRenderContext<'a> {
     pub config: &'a TsConfigLang,

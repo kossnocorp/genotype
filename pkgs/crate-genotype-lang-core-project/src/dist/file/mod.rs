@@ -30,29 +30,46 @@ impl GtlDistFile {
 
 impl<ProjectModule: GtlProjectModule> From<&GtlProjectModuleState<ProjectModule>> for GtlDistFile {
     fn from(module_state: &GtlProjectModuleState<ProjectModule>) -> Self {
+        let path = module_state.target_path().cloned().unwrap_or_else(|| {
+            GtpTargetFilePath::from(module_state.source_path().cwd_relative_path().clone())
+        });
+
         match module_state {
-            GtlProjectModuleState::ConvertError(error) => {
-                todo!();
-            }
+            GtlProjectModuleState::ConvertError(_) => GtlDistFile::Error(GtlDistFileError {
+                message: format_module_state_error_message(module_state, &path),
+                path,
+                source_code: String::new(),
+            }),
 
-            GtlProjectModuleState::Converted(generated) => {
-                todo!();
-            }
+            GtlProjectModuleState::Converted(_) => GtlDistFile::Error(GtlDistFileError {
+                path,
+                message: format!("Module is in an invalid state '{}'", module_state.name()),
+                source_code: String::new(),
+            }),
 
-            GtlProjectModuleState::RenderError(error) => {
-                todo!();
-            }
+            GtlProjectModuleState::RenderError(_) => GtlDistFile::Error(GtlDistFileError {
+                message: format_module_state_error_message(module_state, &path),
+                path,
+                source_code: String::new(),
+            }),
 
-            GtlProjectModuleState::ResolveError(error) => {
-                todo!();
-            }
+            GtlProjectModuleState::ResolveError(_) => GtlDistFile::Error(GtlDistFileError {
+                message: format_module_state_error_message(module_state, &path),
+                path,
+                source_code: String::new(),
+            }),
 
-            GtlProjectModuleState::Resolved(resolved) => {
-                todo!();
-            }
+            GtlProjectModuleState::Resolved(_) => GtlDistFile::Error(GtlDistFileError {
+                path,
+                message: format!("Module is in an invalid state '{}'", module_state.name()),
+                source_code: String::new(),
+            }),
 
             GtlProjectModuleState::Rendered(rendered) => {
-                todo!();
+                GtlDistFile::Generated(GtlDistFileGenerated {
+                    path,
+                    source_code: rendered.source_code.clone(),
+                })
             }
         }
     }
@@ -62,14 +79,32 @@ impl From<&GtlProjectFileExtra> for GtlDistFile {
     fn from(file: &GtlProjectFileExtra) -> Self {
         match file {
             GtlProjectFileExtra::Generated(generated) => {
-                todo!();
+                GtlDistFile::Generated(GtlDistFileGenerated {
+                    path: generated.path.clone(),
+                    source_code: generated.source_code.clone(),
+                })
             }
 
-            GtlProjectFileExtra::Error(error) => {
-                todo!();
-            }
+            GtlProjectFileExtra::Error(error) => match error {
+                GtlProjectFileExtraError::Generate { target_path, .. } => {
+                    GtlDistFile::Error(GtlDistFileError {
+                        path: target_path.clone(),
+                        message: format!("{}", error),
+                        source_code: String::new(),
+                    })
+                }
+            },
         }
     }
+}
+
+fn format_module_state_error_message<ProjectModule: GtlProjectModule>(
+    module_state: &GtlProjectModuleState<ProjectModule>,
+    target_path: &GtpTargetFilePath,
+) -> String {
+    let action = module_state.action();
+    let source_path = module_state.source_path();
+    format!("Failed to {action} `{target_path}` from `{source_path}`")
 }
 
 impl<ProjectModule: GtlProjectModule> From<&GtlProjectFile<ProjectModule>> for GtlDistFile {
