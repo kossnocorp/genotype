@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use crate::LitStr;
-    use litty_macro::literal;
+    use litty_macro::serde_literal;
     use pretty_assertions::assert_eq;
     use serde::{Deserialize, Serialize};
     use std::fmt::Debug;
@@ -133,10 +133,12 @@ mod tests {
         }
     }
 
-    #[literal("v1")]
+    #[serde_literal("v1")]
+    #[derive(Serialize, Deserialize)]
     struct VersionV1Lit;
 
-    #[literal("v2")]
+    #[serde_literal("v2")]
+    #[derive(Serialize, Deserialize)]
     struct VersionV2Lit;
 
     #[derive(Debug, Default, PartialEq, Hash, Eq, Clone, Serialize, Deserialize)]

@@ -138,12 +138,14 @@ mod tests {
                     PyProperty {
                         doc: None,
                         name: "name".into(),
+                        alias: None,
                         descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                         required: true
                     },
                     PyProperty {
                         doc: None,
                         name: "age".into(),
+                        alias: None,
                         descriptor: PyDescriptor::Primitive(PyPrimitive::Int),
                         required: false
                     }
@@ -172,12 +174,14 @@ mod tests {
                     PyProperty {
                         doc: None,
                         name: "name".into(),
+                        alias: None,
                         descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                         required: true
                     },
                     PyProperty {
                         doc: None,
                         name: "age".into(),
+                        alias: None,
                         descriptor: PyDescriptor::Primitive(PyPrimitive::Int),
                         required: false
                     }
@@ -211,6 +215,7 @@ mod tests {
                 properties: vec![PyProperty {
                     doc: None,
                     name: "name".into(),
+                    alias: None,
                     descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                     required: true
                 }],
@@ -258,6 +263,7 @@ mod tests {
                 properties: vec![PyProperty {
                     doc: None,
                     name: "name".into(),
+                    alias: None,
                     descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                     required: true
                 }],
@@ -285,6 +291,7 @@ mod tests {
                 properties: vec![PyProperty {
                     doc: None,
                     name: "value".into(),
+                    alias: None,
                     descriptor: PyReference::new("Payload".into(), false).into(),
                     required: true,
                 }],
@@ -310,6 +317,7 @@ mod tests {
                 properties: vec![PyProperty {
                     doc: None,
                     name: "value".into(),
+                    alias: None,
                     descriptor: PyReference::new("Payload".into(), false).into(),
                     required: true,
                 }],

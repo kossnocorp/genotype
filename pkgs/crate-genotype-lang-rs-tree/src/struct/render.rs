@@ -210,8 +210,8 @@ mod tests {
                 id: GtDefinitionId("module".into(), "Name".into()),
                 doc: None,
                 attributes: vec![
-                    "derive(Debug, Clone, PartialEq)".into(),
-                    "derive(Literals)".into(),
+                    "serde_literals".into(),
+                    "derive(Debug, Clone, PartialEq, Serialize, Deserialize)".into(),
                     "literals(ok = true, version = 1)".into(),
                 ],
                 name: "Name".into(),
@@ -227,8 +227,8 @@ mod tests {
             .render(Default::default(), &mut Default::default())
             .unwrap(),
             @"
-        #[derive(Debug, Clone, PartialEq)]
-        #[derive(Literals)]
+        #[serde_literals]
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
         #[literals(ok = true, version = 1)]
         pub struct Name {
             pub message: String,

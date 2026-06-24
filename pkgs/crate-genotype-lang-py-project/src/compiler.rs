@@ -235,6 +235,7 @@ mod tests {
                         PyProperty(
                           doc: None,
                           name: PyKey("name"),
+                          alias: None,
                           descriptor: Primitive(String),
                           required: true,
                         ),
@@ -266,6 +267,7 @@ mod tests {
                       PyProperty(
                         doc: None,
                         name: PyKey("name"),
+                        alias: None,
                         descriptor: Primitive(String),
                         required: true,
                       ),
@@ -307,12 +309,14 @@ mod tests {
                         PyProperty(
                           doc: None,
                           name: PyKey("title"),
+                          alias: None,
                           descriptor: Primitive(String),
                           required: true,
                         ),
                         PyProperty(
                           doc: None,
                           name: PyKey("author"),
+                          alias: None,
                           descriptor: Reference(PyReference(
                             identifier: PyIdentifier("Author"),
                             arguments: [],
@@ -356,12 +360,14 @@ mod tests {
                       PyProperty(
                         doc: None,
                         name: PyKey("title"),
+                        alias: None,
                         descriptor: Primitive(String),
                         required: true,
                       ),
                       PyProperty(
                         doc: None,
                         name: PyKey("author"),
+                        alias: None,
                         descriptor: Reference(PyReference(
                           identifier: PyIdentifier("Author"),
                           arguments: [],
@@ -424,6 +430,7 @@ mod tests {
                         PyProperty(
                           doc: None,
                           name: PyKey("name"),
+                          alias: None,
                           descriptor: Reference(PyReference(
                             identifier: PyIdentifier("AuthorName"),
                             arguments: [],
@@ -468,6 +475,7 @@ mod tests {
                       PyProperty(
                         doc: None,
                         name: PyKey("name"),
+                        alias: None,
                         descriptor: Reference(PyReference(
                           identifier: PyIdentifier("AuthorName"),
                           arguments: [],
@@ -497,6 +505,12 @@ mod tests {
                       reference: Default(Some(PyIdentifier("author"))),
                     ),
                     PyImport(
+                      dependency: Pydantic,
+                      reference: Named([
+                        Name(PyIdentifier("Field")),
+                      ]),
+                    ),
+                    PyImport(
                       dependency: Runtime,
                       reference: Named([
                         Name(PyIdentifier("Model")),
@@ -513,12 +527,14 @@ mod tests {
                         PyProperty(
                           doc: None,
                           name: PyKey("title"),
+                          alias: None,
                           descriptor: Primitive(String),
                           required: true,
                         ),
                         PyProperty(
                           doc: None,
                           name: PyKey("author"),
+                          alias: None,
                           descriptor: Reference(PyReference(
                             identifier: PyIdentifier("author.Author"),
                             arguments: [],
@@ -529,6 +545,7 @@ mod tests {
                         PyProperty(
                           doc: None,
                           name: PyKey("author_name"),
+                          alias: Some("authorName"),
                           descriptor: Reference(PyReference(
                             identifier: PyIdentifier("author.AuthorName"),
                             arguments: [],
@@ -555,6 +572,12 @@ mod tests {
                     reference: Default(Some(PyIdentifier("author"))),
                   ),
                   PyImport(
+                    dependency: Pydantic,
+                    reference: Named([
+                      Name(PyIdentifier("Field")),
+                    ]),
+                  ),
+                  PyImport(
                     dependency: Runtime,
                     reference: Named([
                       Name(PyIdentifier("Model")),
@@ -571,12 +594,14 @@ mod tests {
                       PyProperty(
                         doc: None,
                         name: PyKey("title"),
+                        alias: None,
                         descriptor: Primitive(String),
                         required: true,
                       ),
                       PyProperty(
                         doc: None,
                         name: PyKey("author"),
+                        alias: None,
                         descriptor: Reference(PyReference(
                           identifier: PyIdentifier("author.Author"),
                           arguments: [],
@@ -587,6 +612,7 @@ mod tests {
                       PyProperty(
                         doc: None,
                         name: PyKey("author_name"),
+                        alias: Some("authorName"),
                         descriptor: Reference(PyReference(
                           identifier: PyIdentifier("author.AuthorName"),
                           arguments: [],

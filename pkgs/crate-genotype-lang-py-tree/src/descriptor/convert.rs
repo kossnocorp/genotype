@@ -182,12 +182,14 @@ mod tests {
               PyProperty(
                 doc: None,
                 name: PyKey("name"),
+                alias: None,
                 descriptor: Primitive(String),
                 required: true,
               ),
               PyProperty(
                 doc: None,
                 name: PyKey("age"),
+                alias: None,
                 descriptor: Primitive(Int),
                 required: false,
               ),

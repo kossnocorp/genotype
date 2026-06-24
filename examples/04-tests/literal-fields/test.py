@@ -25,7 +25,7 @@ def install_genotype_runtime_stub() -> None:
 
 def main() -> None:
     install_genotype_runtime_stub()
-    from module import Response, ResponseFailure, ResponseSuccess, LiteralBag
+    from module import LiteralBag, RemoveFileRequest, Response, ResponseFailure, ResponseSuccess
 
     response_success = ResponseSuccess(status="success", value="it works!")
 
@@ -55,6 +55,26 @@ def main() -> None:
         "enabled": True,
         "code": 200,
         "empty": None,
+    }
+
+    remove_file_request = RemoveFileRequest(
+        requestType="remove-file",
+        request_kind="file-operation",
+        filePath="src/main.type",
+        retry_count=2,
+    )
+
+    assert remove_file_request.model_dump() == {
+        "requestType": "remove-file",
+        "request_kind": "file-operation",
+        "filePath": "src/main.type",
+        "retry_count": 2,
+    }
+    assert json.loads(remove_file_request.model_dump_json()) == {
+        "requestType": "remove-file",
+        "request_kind": "file-operation",
+        "filePath": "src/main.type",
+        "retry_count": 2,
     }
 
     print("🟢 OK: literal annotations match expected runtime values")

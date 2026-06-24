@@ -1,10 +1,20 @@
 use proc_macro::TokenStream;
 use quote::{ToTokens, quote};
 use syn::parse::Parser;
+use syn::parse::{Parse, ParseStream};
 use syn::{
-    Data, DeriveInput, Error, Fields, Ident, Lit, Meta, MetaList, MetaNameValue, Token,
+    Data, DeriveInput, Error, Expr, Fields, Ident, Lit, LitStr, Meta, MetaList, Token,
     parse_macro_input, punctuated::Punctuated,
 };
+
+pub fn macro_attribute_serde_literals(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(item as DeriveInput);
+
+    match expand_serde_literals_attribute(input) {
+        Ok(tokens) => tokens.into(),
+        Err(err) => err.to_compile_error().into(),
+    }
+}
 
 pub fn macro_derive_literals(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
@@ -41,10 +51,103 @@ enum LiteralsMode {
 
 struct LiteralField {
     ident: Ident,
+    rename: Option<LitStr>,
     serialize_ty: proc_macro2::TokenStream,
     deserialize_ty: proc_macro2::TokenStream,
     value: proc_macro2::TokenStream,
     expected_display: String,
+}
+
+fn expand_serde_literals_attribute(
+    mut input: DeriveInput,
+) -> Result<proc_macro2::TokenStream, Error> {
+    let mode = consume_serde_derives(&mut input)?;
+    let impls = expand_literals(&input, mode)?;
+    strip_consumed_attrs(&mut input);
+
+    Ok(quote! {
+        #input
+        #impls
+    })
+}
+
+fn consume_serde_derives(input: &mut DeriveInput) -> Result<LiteralsMode, Error> {
+    let mut serialize = false;
+    let mut deserialize = false;
+    let mut attrs = Vec::new();
+
+    for attr in input.attrs.drain(..) {
+        let Meta::List(meta) = &attr.meta else {
+            attrs.push(attr);
+            continue;
+        };
+
+        if !meta.path.is_ident("derive") {
+            attrs.push(attr);
+            continue;
+        }
+
+        let parser = Punctuated::<syn::Path, Token![,]>::parse_terminated;
+        let derives = parser.parse2(meta.tokens.clone())?;
+        let mut kept = Vec::new();
+
+        for path in derives {
+            if path.is_ident("Serialize") {
+                serialize = true;
+            } else if path.is_ident("Deserialize") {
+                deserialize = true;
+            } else {
+                kept.push(path);
+            }
+        }
+
+        if !kept.is_empty() {
+            attrs.push(syn::parse_quote!(#[derive(#(#kept),*)]));
+        }
+    }
+
+    input.attrs = attrs;
+
+    match (serialize, deserialize) {
+        (true, true) => Ok(LiteralsMode::Both),
+        (true, false) => Ok(LiteralsMode::SerializeOnly),
+        (false, true) => Ok(LiteralsMode::DeserializeOnly),
+        (false, false) => Err(Error::new_spanned(
+            &input.ident,
+            "serde_literals requires deriving Serialize and/or Deserialize",
+        )),
+    }
+}
+
+fn strip_consumed_attrs(input: &mut DeriveInput) {
+    input
+        .attrs
+        .retain(|attr| !attr.path().is_ident("literals") && !attr.path().is_ident("serde"));
+
+    match &mut input.data {
+        Data::Struct(data) => {
+            for field in data.fields.iter_mut() {
+                field.attrs.retain(|attr| !attr.path().is_ident("serde"));
+            }
+        }
+
+        Data::Enum(data) => {
+            for variant in data.variants.iter_mut() {
+                variant.attrs.retain(|attr| {
+                    !attr.path().is_ident("literal") && !attr.path().is_ident("serde")
+                });
+                for field in variant.fields.iter_mut() {
+                    field.attrs.retain(|attr| !attr.path().is_ident("serde"));
+                }
+            }
+        }
+
+        Data::Union(data) => {
+            for field in data.fields.named.iter_mut() {
+                field.attrs.retain(|attr| !attr.path().is_ident("serde"));
+            }
+        }
+    }
 }
 
 fn expand_literals(
@@ -118,6 +221,13 @@ fn expand_literals(
     );
 
     let literal_field_names: Vec<_> = literal_fields.iter().map(|field| &field.ident).collect();
+    let literal_field_attrs: Vec<_> = literal_fields
+        .iter()
+        .map(|field| match &field.rename {
+            Some(rename) => quote! { #[serde(rename = #rename)] },
+            None => quote! {},
+        })
+        .collect();
     let literal_field_serialize_types: Vec<_> = literal_fields
         .iter()
         .map(|field| &field.serialize_ty)
@@ -188,7 +298,7 @@ fn expand_literals(
         #[derive(serde::Serialize)]
         struct #serialize_ident #helper_impl_generics #helper_where_clause {
             #(#serialize_fields,)*
-            #(#literal_field_names: #literal_field_serialize_types,)*
+            #(#literal_field_attrs #literal_field_names: #literal_field_serialize_types,)*
         }
 
         impl #impl_generics serde::Serialize for #struct_ident #ty_generics #serialize_where_clause {
@@ -209,7 +319,7 @@ fn expand_literals(
         #[derive(serde::Deserialize)]
         struct #deserialize_ident #impl_generics #where_clause {
             #(#deserialize_fields,)*
-            #(#literal_field_names: #literal_field_deserialize_types,)*
+            #(#literal_field_attrs #literal_field_names: #literal_field_deserialize_types,)*
         }
 
         impl #deserialize_impl_generics serde::Deserialize<'__de> for #struct_ident #ty_generics #deserialize_where_clause {
@@ -538,23 +648,34 @@ fn parse_literal_fields(attrs: &[syn::Attribute]) -> Result<Vec<LiteralField>, E
             continue;
         }
 
-        let parser = Punctuated::<MetaNameValue, Token![,]>::parse_terminated;
+        let parser = Punctuated::<Meta, Token![,]>::parse_terminated;
         let items = parser.parse2(tokens.clone())?;
         for item in items {
-            let ident = match item.path.get_ident() {
-                Some(ident) => ident.clone(),
-                None => {
+            let (ident, rename, value_expr) = match item {
+                Meta::NameValue(item) => {
+                    let ident = literal_field_ident(item.path)?;
+                    (ident, None, item.value)
+                }
+
+                Meta::List(item) => {
+                    let ident = literal_field_ident(item.path)?;
+                    let args = syn::parse2::<LiteralFieldArgs>(item.tokens)?;
+                    (ident, args.rename, args.value)
+                }
+
+                Meta::Path(path) => {
                     return Err(Error::new_spanned(
-                        item.path,
-                        "Literal field name must be an identifier",
+                        path,
+                        "Literal field must be `name = value` or `name(value, rename = \"wireName\")`",
                     ));
                 }
             };
             let (serialize_ty, deserialize_ty, value, expected_display) =
-                literal_type_and_value(&item.value)?;
+                literal_type_and_value(&value_expr)?;
 
             literal_fields.push(LiteralField {
                 ident,
+                rename,
                 serialize_ty,
                 deserialize_ty,
                 value,
@@ -564,6 +685,44 @@ fn parse_literal_fields(attrs: &[syn::Attribute]) -> Result<Vec<LiteralField>, E
     }
 
     Ok(literal_fields)
+}
+
+struct LiteralFieldArgs {
+    value: Expr,
+    rename: Option<LitStr>,
+}
+
+impl Parse for LiteralFieldArgs {
+    fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
+        let value = input.parse::<Expr>()?;
+        let mut rename = None;
+
+        while input.peek(Token![,]) {
+            input.parse::<Token![,]>()?;
+            if input.is_empty() {
+                break;
+            }
+
+            let ident = input.parse::<Ident>()?;
+            input.parse::<Token![=]>()?;
+            if ident == "rename" {
+                rename = Some(input.parse::<LitStr>()?);
+            } else {
+                return Err(Error::new_spanned(
+                    ident,
+                    "Unsupported literal field option",
+                ));
+            }
+        }
+
+        Ok(Self { value, rename })
+    }
+}
+
+fn literal_field_ident(path: syn::Path) -> Result<Ident, Error> {
+    path.get_ident()
+        .cloned()
+        .ok_or_else(|| Error::new_spanned(path, "Literal field name must be an identifier"))
 }
 
 fn literal_type_and_value(

@@ -2,7 +2,7 @@ use crate::prelude::internal::*;
 
 impl PyContextResolve for PyProperty {
     fn resolve(self, context: &mut PyConvertContext) -> Self {
-        if self.name.0.as_ref() == "schema" {
+        if self.alias.is_some() || self.name.0.as_ref() == "schema" {
             context.push_import(PyImport::new(PyDependencyIdent::Pydantic, "Field".into()));
         }
 
@@ -25,6 +25,7 @@ mod tests {
         let alias = PyProperty {
             doc: None,
             name: "foo".into(),
+            alias: None,
             descriptor: PyPrimitive::String.into(),
             required: true,
         };
@@ -38,6 +39,7 @@ mod tests {
         let alias = PyProperty {
             doc: None,
             name: "foo".into(),
+            alias: None,
             descriptor: PyPrimitive::String.into(),
             required: false,
         };
@@ -63,6 +65,7 @@ mod tests {
         let alias = PyProperty {
             doc: None,
             name: "schema".into(),
+            alias: None,
             descriptor: PyPrimitive::String.into(),
             required: true,
         };
@@ -88,6 +91,7 @@ mod tests {
         let alias = PyProperty {
             doc: None,
             name: "schema".into(),
+            alias: None,
             descriptor: PyPrimitive::String.into(),
             required: false,
         };
@@ -106,6 +110,32 @@ mod tests {
             dependency: Typing,
             reference: Named([
               Name(PyIdentifier("Optional")),
+            ]),
+          ),
+        ]
+        "#
+        );
+    }
+
+    #[test]
+    fn test_resolve_alias() {
+        let mut context = PyConvertContext::default();
+        let alias = PyProperty {
+            doc: None,
+            name: "file_path".into(),
+            alias: Some("filePath".into()),
+            descriptor: PyPrimitive::String.into(),
+            required: true,
+        };
+        alias.resolve(&mut context);
+        assert_ron_snapshot!(
+            context.imports(),
+            @r#"
+        [
+          PyImport(
+            dependency: Pydantic,
+            reference: Named([
+              Name(PyIdentifier("Field")),
             ]),
           ),
         ]

@@ -1038,8 +1038,8 @@ mod tests {
         edition = "2024"
 
         [dependencies]
-        litty = "0.4"
         serde = { version = "1", features = ["derive"] }
+        litty = "0.5"
         "#
         );
 
@@ -1056,8 +1056,8 @@ mod tests {
         assert_snapshot!(
           dist.files[2].source_code(),
           @r#"
-        use litty::{literal, Literals};
         use serde::{Deserialize, Serialize};
+        use litty::serde_literals;
         use crate::named::Name;
 
         #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1069,7 +1069,8 @@ mod tests {
             pub role: AdminRole,
         }
 
-        #[derive(Debug, Clone, PartialEq, Literals)]
+        #[serde_literals]
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
         pub enum AdminRole {
             #[literal("superadmin")]
             Superadmin,
@@ -1118,9 +1119,11 @@ mod tests {
         assert_snapshot!(
           dist.files[4].source_code(),
           @"
-        use litty::Literals;
+        use litty::serde_literals;
+        use serde::{Deserialize, Serialize};
 
-        #[derive(Debug, Clone, PartialEq, Literals)]
+        #[serde_literals]
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
         #[literals(named = true)]
         pub struct Named {
             pub name: Name,

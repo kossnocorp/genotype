@@ -230,12 +230,14 @@ mod tests {
                 PyProperty(
                   doc: None,
                   name: PyKey("name"),
+                  alias: None,
                   descriptor: Primitive(String),
                   required: true,
                 ),
                 PyProperty(
                   doc: None,
                   name: PyKey("age"),
+                  alias: None,
                   descriptor: Primitive(Int),
                   required: false,
                 ),
@@ -251,12 +253,14 @@ mod tests {
                 PyProperty(
                   doc: None,
                   name: PyKey("title"),
+                  alias: None,
                   descriptor: Primitive(String),
                   required: true,
                 ),
                 PyProperty(
                   doc: None,
                   name: PyKey("author"),
+                  alias: None,
                   descriptor: Reference(PyReference(
                     identifier: PyIdentifier("Author"),
                     arguments: [],
@@ -278,6 +282,7 @@ mod tests {
                 PyProperty(
                   doc: None,
                   name: PyKey("book"),
+                  alias: None,
                   descriptor: Reference(PyReference(
                     identifier: PyIdentifier("Book"),
                     arguments: [],
@@ -421,6 +426,7 @@ mod tests {
                 PyProperty(
                   doc: None,
                   name: PyKey("message"),
+                  alias: None,
                   descriptor: Primitive(String),
                   required: true,
                 ),
@@ -436,6 +442,7 @@ mod tests {
                 PyProperty(
                   doc: None,
                   name: PyKey("message"),
+                  alias: None,
                   descriptor: Primitive(String),
                   required: true,
                 ),

@@ -47,7 +47,7 @@ edition = "{}"
     ) -> Option<(String, Value)> {
         match ident {
             RsDependencyIdent::Runtime => Some(("genotype_runtime".into(), "0.4".into())),
-            RsDependencyIdent::Litty => Some(("litty".into(), "0.4".into())),
+            RsDependencyIdent::Litty => Some(("litty".into(), "0.5".into())),
             RsDependencyIdent::Serde => {
                 Some(("serde".into(), dependency_value("1", vec!["derive"])))
             }

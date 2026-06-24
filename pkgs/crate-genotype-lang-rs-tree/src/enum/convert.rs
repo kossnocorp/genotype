@@ -40,19 +40,18 @@ impl RsConvert<RsEnum> for GtUnion {
 
         let has_literals = literals_count > 0;
 
-        let mut attributes = vec![{
-            // Use Litty derives instead of Serde if there are literal variants. It is
-            // a drop-in replacement and behaves the same for regular variants, but also
-            // adds support for literal variants.
-            let serde_mode = if has_literals {
-                RsContextRenderDeriveSerdeMode::Litty
-            } else {
-                RsContextRenderDeriveSerdeMode::Serde
-            };
+        let mut attributes = vec![];
+        if has_literals {
+            attributes.push(RsAttribute("serde_literals".into()));
+        }
+        attributes.push(
             context
-                .render_derive(RsContextRenderDeriveTypeMode::UnionEnum, serde_mode)
-                .into()
-        }];
+                .render_derive(
+                    RsContextRenderDeriveTypeMode::UnionEnum,
+                    RsContextRenderDeriveSerdeMode::Serde,
+                )
+                .into(),
+        );
         if !has_literals {
             attributes.push(r#"serde(untagged)"#.into());
         }
@@ -69,7 +68,10 @@ impl RsConvert<RsEnum> for GtUnion {
         context.push_import(RsUse::new(RsDependencyIdent::Serde, "Deserialize".into()));
         context.push_import(RsUse::new(RsDependencyIdent::Serde, "Serialize".into()));
         if has_literals {
-            context.push_import(RsUse::new(RsDependencyIdent::Litty, "Literals".into()));
+            context.push_import(RsUse::new(
+                RsDependencyIdent::Litty,
+                "serde_literals".into(),
+            ));
         }
 
         context.exit_parent();
@@ -97,7 +99,6 @@ fn convert_variant(
         GtDescriptor::Literal(literal) => {
             let str = render_literal(literal);
             attributes.push(RsAttribute(format!("literal({str})",)));
-            context.push_import(RsUse::new(RsDependencyIdent::Litty, "literal".into()));
             *literals_count += 1;
             None
         }
@@ -332,7 +333,8 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "AnimalKind"),
           doc: None,
           attributes: [
-            RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
+            RsAttribute("serde_literals"),
+            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
           ],
           name: RsIdentifier("AnimalKind"),
           generics: [],
@@ -371,17 +373,16 @@ mod tests {
             @r#"
         [
           RsUse(
-            dependency: Litty,
-            reference: Named([
-              Name(RsIdentifier("literal")),
-              Name(RsIdentifier("Literals")),
-            ]),
-          ),
-          RsUse(
             dependency: Serde,
             reference: Named([
               Name(RsIdentifier("Deserialize")),
               Name(RsIdentifier("Serialize")),
+            ]),
+          ),
+          RsUse(
+            dependency: Litty,
+            reference: Named([
+              Name(RsIdentifier("serde_literals")),
             ]),
           ),
         ]
@@ -539,7 +540,8 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "Union"),
           doc: None,
           attributes: [
-            RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
+            RsAttribute("serde_literals"),
+            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
           ],
           name: RsIdentifier("Union"),
           generics: [],
@@ -589,7 +591,8 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "Version"),
           doc: None,
           attributes: [
-            RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
+            RsAttribute("serde_literals"),
+            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
           ],
           name: RsIdentifier("Version"),
           generics: [],
@@ -631,7 +634,8 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "Version"),
           doc: None,
           attributes: [
-            RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
+            RsAttribute("serde_literals"),
+            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
           ],
           name: RsIdentifier("Version"),
           generics: [],
@@ -673,7 +677,8 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "Version"),
           doc: None,
           attributes: [
-            RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
+            RsAttribute("serde_literals"),
+            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
           ],
           name: RsIdentifier("Version"),
           generics: [],
@@ -908,7 +913,8 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "Status"),
           doc: None,
           attributes: [
-            RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
+            RsAttribute("serde_literals"),
+            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
           ],
           name: RsIdentifier("Status"),
           generics: [],

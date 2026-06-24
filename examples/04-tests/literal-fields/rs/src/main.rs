@@ -1,4 +1,6 @@
-use genotype_test_literal_fields_types::{Response, ResponseFailure, ResponseSuccess};
+use genotype_test_literal_fields_types::{
+    RemoveFileRequest, Response, ResponseFailure, ResponseSuccess,
+};
 
 fn main() {}
 
@@ -31,5 +33,33 @@ mod tests {
         let decoded: Response =
             from_value(json!({"status": "failure", "error": "boom"})).expect("deserialize failure");
         assert_eq!(decoded, failure);
+    }
+
+    #[test]
+    fn remove_file_request_roundtrip() {
+        let request = RemoveFileRequest {
+            file_path: "src/main.type".into(),
+            retry_count: 2,
+        };
+
+        let value = to_value(&request).expect("serialize request");
+        assert_eq!(
+            value,
+            json!({
+                "requestType": "remove-file",
+                "request_kind": "file-operation",
+                "filePath": "src/main.type",
+                "retry_count": 2,
+            })
+        );
+
+        let decoded: RemoveFileRequest = from_value(json!({
+            "requestType": "remove-file",
+            "request_kind": "file-operation",
+            "filePath": "src/main.type",
+            "retry_count": 2,
+        }))
+        .expect("deserialize request");
+        assert_eq!(decoded, request);
     }
 }

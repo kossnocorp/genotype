@@ -154,12 +154,14 @@ mod tests {
             PyProperty(
               doc: None,
               name: PyKey("title"),
+              alias: None,
               descriptor: Primitive(String),
               required: true,
             ),
             PyProperty(
               doc: None,
               name: PyKey("author"),
+              alias: None,
               descriptor: Primitive(String),
               required: true,
             ),
@@ -193,6 +195,7 @@ mod tests {
             PyProperty(
               doc: None,
               name: PyKey("value"),
+              alias: None,
               descriptor: Reference(PyReference(
                 identifier: PyIdentifier("Payload"),
                 arguments: [],
@@ -278,6 +281,7 @@ mod tests {
               PyProperty(
                 doc: None,
                 name: PyKey("author"),
+                alias: None,
                 descriptor: Primitive(String),
                 required: true,
               ),

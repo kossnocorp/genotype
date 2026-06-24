@@ -18,3 +18,10 @@ LiteralBag: {
   code: 200,
   empty: null,
 }
+
+RemoveFileRequest: {
+  requestType: "remove-file",
+  request_kind: "file-operation",
+  filePath: string,
+  retry_count: int,
+}

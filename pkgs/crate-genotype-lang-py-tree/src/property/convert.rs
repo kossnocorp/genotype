@@ -2,9 +2,18 @@ use crate::prelude::internal::*;
 
 impl PyConvert<PyProperty> for GtProperty {
     fn convert(&self, context: &mut PyConvertContext) -> PyProperty {
+        let name = self.name.convert(context);
+        let original_name = self.name.1.as_ref();
+        let alias = if name.0.as_ref() == original_name {
+            None
+        } else {
+            Some(original_name.to_string())
+        };
+
         PyProperty {
             doc: self.doc.as_ref().map(|doc| doc.convert(context)),
-            name: self.name.convert(context),
+            name,
+            alias,
             descriptor: self.descriptor.convert(context),
             required: self.required,
         }
@@ -33,8 +42,33 @@ mod tests {
         PyProperty(
           doc: None,
           name: PyKey("name"),
+          alias: None,
           descriptor: Primitive(String),
           required: false,
+        )
+        "#
+        );
+    }
+
+    #[test]
+    fn test_convert_alias() {
+        assert_ron_snapshot!(
+            GtProperty {
+                span: (0, 0).into(),
+                doc: None,
+                attributes: vec![],
+                name: GtKey::new((0, 0).into(), "filePath".into()),
+                descriptor: Gt::primitive_string().into(),
+                required: true,
+            }
+            .convert(&mut PyConvertContext::default()),
+            @r#"
+        PyProperty(
+          doc: None,
+          name: PyKey("file_path"),
+          alias: Some("filePath"),
+          descriptor: Primitive(String),
+          required: true,
         )
         "#
         );
@@ -63,6 +97,7 @@ mod tests {
         PyProperty(
           doc: None,
           name: PyKey("name"),
+          alias: None,
           descriptor: Primitive(String),
           required: false,
         )

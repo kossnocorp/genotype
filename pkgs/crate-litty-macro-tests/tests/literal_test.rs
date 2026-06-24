@@ -1,6 +1,8 @@
+#![allow(deprecated)]
+
 use litty_macro::{
-    DeserializeLiterals, Literals, SerializeLiterals, deserialize_literal, literal,
-    serialize_literal,
+    DeserializeLiterals, Literals, SerializeLiterals, deserialize_literal, literal, serde_literal,
+    serde_literals, serialize_literal,
 };
 use pretty_assertions::assert_eq;
 use serde::{Deserialize, Serialize};
@@ -57,6 +59,34 @@ fn test_null() {
 
     assert_eq!(serde_json::to_string_pretty(&Null).unwrap(), "null");
     assert_eq!(serde_json::from_str::<Null>("null").unwrap(), Null);
+}
+
+#[test]
+fn test_serde_literal_struct_attribute() {
+    #[serde_literal("hello")]
+    #[derive(Serialize, Deserialize)]
+    struct Hello;
+
+    assert_eq!(serde_json::to_string_pretty(&Hello).unwrap(), r#""hello""#);
+    assert_eq!(serde_json::from_str::<Hello>(r#""hello""#).unwrap(), Hello);
+}
+
+#[test]
+fn test_serde_literal_struct_attribute_serialize_only() {
+    #[serde_literal("hello")]
+    #[derive(Serialize)]
+    struct Hello;
+
+    assert_eq!(serde_json::to_string_pretty(&Hello).unwrap(), r#""hello""#);
+}
+
+#[test]
+fn test_serde_literal_struct_attribute_deserialize_only() {
+    #[serde_literal("hello")]
+    #[derive(Deserialize)]
+    struct Hello;
+
+    assert_eq!(serde_json::from_str::<Hello>(r#""hello""#).unwrap(), Hello);
 }
 
 #[test]
@@ -214,6 +244,107 @@ fn test_literal_fields() {
 
     assert!(
         serde_json::from_str::<SuccessV1>(r#"{"message":"hello","ok":false,"version":1}"#).is_err()
+    );
+}
+
+#[test]
+fn test_literal_fields_with_serde_field_attrs() {
+    #[serde_literals]
+    #[derive(Debug, PartialEq, Serialize, Deserialize)]
+    #[literals(kind = "success-response")]
+    struct SuccessResponse {
+        #[serde(rename = "messageText")]
+        message_text: String,
+
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        details: Option<String>,
+    }
+
+    let value = SuccessResponse {
+        message_text: "hello".to_string(),
+        details: None,
+    };
+
+    assert_eq!(
+        serde_json::to_string(&value).unwrap(),
+        r#"{"messageText":"hello","kind":"success-response"}"#
+    );
+
+    let parsed: SuccessResponse =
+        serde_json::from_str(r#"{"messageText":"hello","kind":"success-response"}"#).unwrap();
+    assert_eq!(parsed, value);
+}
+
+#[test]
+fn test_literal_fields_with_renamed_literal_field() {
+    #[serde_literals]
+    #[derive(Debug, PartialEq, Serialize, Deserialize)]
+    #[literals(request_type("remove-file", rename = "requestType"))]
+    struct RemoveFileRequest {
+        #[serde(rename = "filePath")]
+        file_path: String,
+    }
+
+    let value = RemoveFileRequest {
+        file_path: "src/main.type".to_string(),
+    };
+
+    assert_eq!(
+        serde_json::to_string(&value).unwrap(),
+        r#"{"filePath":"src/main.type","requestType":"remove-file"}"#
+    );
+
+    let parsed: RemoveFileRequest =
+        serde_json::from_str(r#"{"filePath":"src/main.type","requestType":"remove-file"}"#)
+            .unwrap();
+    assert_eq!(parsed, value);
+}
+
+#[test]
+fn test_serialize_literals_with_serde_field_attrs() {
+    #[serde_literals]
+    #[derive(Debug, PartialEq, Serialize)]
+    #[literals(kind = "success-response")]
+    struct SuccessResponse {
+        #[serde(rename = "messageText")]
+        message_text: String,
+
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        details: Option<String>,
+    }
+
+    let value = SuccessResponse {
+        message_text: "hello".to_string(),
+        details: None,
+    };
+
+    assert_eq!(
+        serde_json::to_string(&value).unwrap(),
+        r#"{"messageText":"hello","kind":"success-response"}"#
+    );
+}
+
+#[test]
+fn test_deserialize_literals_with_serde_field_attrs() {
+    #[serde_literals]
+    #[derive(Debug, PartialEq, Deserialize)]
+    #[literals(kind = "success-response")]
+    struct SuccessResponse {
+        #[serde(rename = "messageText")]
+        message_text: String,
+
+        #[serde(default)]
+        details: Option<String>,
+    }
+
+    let parsed: SuccessResponse =
+        serde_json::from_str(r#"{"messageText":"hello","kind":"success-response"}"#).unwrap();
+    assert_eq!(
+        parsed,
+        SuccessResponse {
+            message_text: "hello".to_string(),
+            details: None,
+        }
     );
 }
 

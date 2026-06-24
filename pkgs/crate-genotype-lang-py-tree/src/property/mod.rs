@@ -10,6 +10,7 @@ pub struct PyProperty {
     pub doc: Option<PyDoc>,
     #[visit]
     pub name: PyKey,
+    pub alias: Option<String>,
     #[visit]
     pub descriptor: PyDescriptor,
     pub required: bool,

@@ -1,4 +1,4 @@
-import type { LiteralBag, Response } from "genotype-test-literal-fields-types";
+import type { LiteralBag, RemoveFileRequest, Response } from "genotype-test-literal-fields-types";
 
 const _success: Response = {
   status: "success",
@@ -28,3 +28,16 @@ const bag: LiteralBag = {
   code: 200,
   empty: null,
 };
+
+const removeFileRequest: RemoveFileRequest = {
+  requestType: "remove-file",
+  request_kind: "file-operation",
+  filePath: "src/main.type",
+  retry_count: 2,
+};
+
+// @ts-expect-error
+removeFileRequest.requestType = "write-file";
+
+// @ts-expect-error
+removeFileRequest.request_kind = "other-operation";

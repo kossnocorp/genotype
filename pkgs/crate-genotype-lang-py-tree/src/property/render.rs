@@ -9,6 +9,11 @@ impl<'context> GtlRender<'context, PyRenderTypes> for PyProperty {
         let name = self.name.render(state, context)?;
         let is_schema = self.name.0.as_ref() == "schema";
         let name = if is_schema { "schema_" } else { &name };
+        let alias = if is_schema {
+            Some("schema")
+        } else {
+            self.alias.as_deref()
+        };
 
         let descriptor = self.descriptor.render(state, context)?;
         let descriptor = if self.required {
@@ -17,11 +22,11 @@ impl<'context> GtlRender<'context, PyRenderTypes> for PyProperty {
             format!("Optional[{descriptor}]")
         };
 
-        let descriptor = if is_schema {
+        let descriptor = if let Some(alias) = alias {
             if self.required {
-                format!("{descriptor} = Field(alias=\"schema\")")
+                format!("{descriptor} = Field(alias=\"{alias}\")")
             } else {
-                format!("{descriptor} = Field(default=None, alias=\"schema\")")
+                format!("{descriptor} = Field(default=None, alias=\"{alias}\")")
             }
         } else if self.required {
             descriptor
@@ -50,6 +55,7 @@ mod tests {
             PyProperty {
                 doc: None,
                 name: "name".into(),
+                alias: None,
                 descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                 required: true
             }
@@ -61,6 +67,7 @@ mod tests {
             PyProperty {
                 doc: None,
                 name: "name".into(),
+                alias: None,
                 descriptor: PyReference::new("Name".into(), false).into(),
                 required: true
             }
@@ -76,6 +83,7 @@ mod tests {
             PyProperty {
                 doc: None,
                 name: "name".into(),
+                alias: None,
                 descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                 required: true
             }
@@ -94,6 +102,7 @@ mod tests {
             PyProperty {
                 doc: None,
                 name: "name".into(),
+                alias: None,
                 descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                 required: false
             }
@@ -109,6 +118,7 @@ mod tests {
             PyProperty {
                 doc: None,
                 name: "schema".into(),
+                alias: None,
                 descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                 required: true
             }
@@ -119,11 +129,44 @@ mod tests {
     }
 
     #[test]
+    fn test_render_required_alias() {
+        assert_snapshot!(
+            PyProperty {
+                doc: None,
+                name: "file_path".into(),
+                alias: Some("filePath".into()),
+                descriptor: PyDescriptor::Primitive(PyPrimitive::String),
+                required: true
+            }
+            .render(Default::default(), &mut Default::default())
+            .unwrap(),
+            @r#"file_path: str = Field(alias="filePath")"#
+        );
+    }
+
+    #[test]
+    fn test_render_optional_alias() {
+        assert_snapshot!(
+            PyProperty {
+                doc: None,
+                name: "file_path".into(),
+                alias: Some("filePath".into()),
+                descriptor: PyDescriptor::Primitive(PyPrimitive::String),
+                required: false
+            }
+            .render(Default::default(), &mut Default::default())
+            .unwrap(),
+            @r#"file_path: Optional[str] = Field(default=None, alias="filePath")"#
+        );
+    }
+
+    #[test]
     fn test_render_optional_schema() {
         assert_snapshot!(
             PyProperty {
                 doc: None,
                 name: "schema".into(),
+                alias: None,
                 descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                 required: false
             }
@@ -139,6 +182,7 @@ mod tests {
             PyProperty {
                 doc: Some(PyDoc("Hello, world!".into())),
                 name: "name".into(),
+                alias: None,
                 descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                 required: false
             }

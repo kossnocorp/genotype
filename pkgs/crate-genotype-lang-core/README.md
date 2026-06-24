@@ -1,4 +1,4 @@
-# `genotype_lang_core_config`
+# `genotype_lang_core`
 
 This is an internal crate of Genotype Programming Language. It is not intended to be used by external users.
 

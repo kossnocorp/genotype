@@ -9,7 +9,7 @@ mod generics;
 mod ids;
 
 mod naming;
-use genotype_project::IndexMap;
+use genotype_project::{IndexMap, IndexSet};
 pub use naming::*;
 
 mod config;
@@ -43,7 +43,6 @@ pub enum RsContextRenderDeriveTypeMode {
 #[derive(PartialEq)]
 pub enum RsContextRenderDeriveSerdeMode {
     Serde,
-    Litty,
 }
 
 impl RsConvertContext {
@@ -149,21 +148,13 @@ impl RsConvertContext {
             .iter()
             .filter(|f| mode != RsContextRenderDeriveTypeMode::UnionEnum || *f != "Default")
             .map(|derive| derive.as_str())
-            .collect::<Vec<&str>>();
+            .collect::<IndexSet<&str>>();
 
-        // All types need to have serialize and deserialize derive macros.
-        match serde_mode {
-            RsContextRenderDeriveSerdeMode::Serde => {
-                traits.push("Serialize");
-                traits.push("Deserialize");
-            }
-
-            RsContextRenderDeriveSerdeMode::Litty => {
-                // Literals combines SerializeLiterals and DeserializeLiterals.
-                traits.push("Literals");
-            }
+        if serde_mode == RsContextRenderDeriveSerdeMode::Serde {
+            traits.insert("Serialize");
+            traits.insert("Deserialize");
         }
-        let traits = traits.join(", ");
+        let traits = traits.into_iter().collect::<Vec<_>>().join(", ");
 
         format!("derive({traits})")
     }
@@ -237,5 +228,77 @@ mod tests {
         let mut context = RsConvertContext::empty("module".into());
         context.push_defined(&"Name".into());
         assert_eq!(context.defined, vec!["Name".into()]);
+    }
+
+    #[test]
+    fn test_render_derive_struct() {
+        let context = RsConvertContext::empty("module".into());
+        assert_eq!(
+            context.render_derive(
+                RsContextRenderDeriveTypeMode::Struct,
+                RsContextRenderDeriveSerdeMode::Serde,
+            ),
+            "derive(Debug, Clone, PartialEq, Serialize, Deserialize)",
+        );
+    }
+
+    #[test]
+    fn test_render_derive_filters_default_for_union_enum() {
+        let mut context = RsConvertContext::empty("module".into());
+        let mut config = RsConfigLang::default();
+        config.derive.push("Default".into());
+        context.assign_config(config);
+
+        assert_eq!(
+            context.render_derive(
+                RsContextRenderDeriveTypeMode::UnionEnum,
+                RsContextRenderDeriveSerdeMode::Serde,
+            ),
+            "derive(Debug, Clone, PartialEq, Serialize, Deserialize)",
+        );
+        assert_eq!(
+            context.render_derive(
+                RsContextRenderDeriveTypeMode::Struct,
+                RsContextRenderDeriveSerdeMode::Serde,
+            ),
+            "derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)",
+        );
+    }
+
+    #[test]
+    fn test_render_derive_deduplicates_configured_serde() {
+        let mut context = RsConvertContext::empty("module".into());
+        context.assign_config(RsConfigLang {
+            derive: vec![
+                "Debug".into(),
+                "Serialize".into(),
+                "Clone".into(),
+                "Deserialize".into(),
+            ],
+        });
+
+        assert_eq!(
+            context.render_derive(
+                RsContextRenderDeriveTypeMode::Struct,
+                RsContextRenderDeriveSerdeMode::Serde,
+            ),
+            "derive(Debug, Serialize, Clone, Deserialize)",
+        );
+    }
+
+    #[test]
+    fn test_render_derive_appends_missing_serde() {
+        let mut context = RsConvertContext::empty("module".into());
+        context.assign_config(RsConfigLang {
+            derive: vec!["Debug".into(), "Serialize".into()],
+        });
+
+        assert_eq!(
+            context.render_derive(
+                RsContextRenderDeriveTypeMode::Struct,
+                RsContextRenderDeriveSerdeMode::Serde,
+            ),
+            "derive(Debug, Serialize, Deserialize)",
+        );
     }
 }

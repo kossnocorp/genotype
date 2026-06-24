@@ -16,6 +16,14 @@ pub use float::*;
 mod r#enum;
 
 pub use litty_macro::{
-    DeserializeLiterals, Literals, SerializeLiterals, deserialize_literal, literal,
-    serialize_literal,
+    deserialize_literal, literal, serde_literal, serde_literals, serialize_literal,
 };
+
+#[deprecated(note = "use #[serde_literals] with #[derive(Serialize, Deserialize)] instead")]
+pub use litty_macro::Literals;
+
+#[deprecated(note = "use #[serde_literals] with #[derive(Serialize)] instead")]
+pub use litty_macro::SerializeLiterals;
+
+#[deprecated(note = "use #[serde_literals] with #[derive(Deserialize)] instead")]
+pub use litty_macro::DeserializeLiterals;

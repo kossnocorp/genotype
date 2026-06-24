@@ -48,12 +48,14 @@ mod tests {
                     PyProperty {
                         doc: None,
                         name: "name".into(),
+                        alias: None,
                         descriptor: PyDescriptor::Primitive(PyPrimitive::String),
                         required: true
                     },
                     PyProperty {
                         doc: None,
                         name: "age".into(),
+                        alias: None,
                         descriptor: PyDescriptor::Primitive(PyPrimitive::Int),
                         required: false
                     }

@@ -16,16 +16,23 @@ impl RsConvert<RsStruct> for GtObject {
 
         // Collect regular and literal fields separately. Literal fields will be
         // converted to attributes and won't be actual fields in the struct.
-        // Having them as fields results in extra struct, naming issues, and
+        // Having them as fields results in an extra struct, naming issues, and
         // ultimately verbose code for the end user without any benefit.
         let mut fields = vec![];
         let mut literal_fields = vec![];
         for property in &self.properties {
             match &property.descriptor {
                 GtDescriptor::Literal(literal) => {
-                    let name = RsNaming::render(property.name.1.as_ref());
+                    let original_name = property.name.1.as_ref();
+                    let rust_name = original_name.to_snake_case();
+                    let name = RsNaming::render(&rust_name);
                     let value = render_literal(literal);
-                    literal_fields.push(format!("{name} = {value}"));
+                    if rust_name == original_name {
+                        literal_fields.push(format!("{name} = {value}"));
+                    } else {
+                        literal_fields
+                            .push(format!(r#"{name}({value}, rename = "{original_name}")"#));
+                    }
                 }
 
                 _ => fields.push(property.convert(context)?),
@@ -45,27 +52,26 @@ impl RsConvert<RsStruct> for GtObject {
             RsStructFields::Resolved(fields)
         };
 
-        let mut attributes = vec![{
-            // Use Litty derives instead of Serde if there are literal fields. It is a drop-in
-            // replacement and behaves the same for regular fields, but also adds support for
-            // literal fields.
-            let derive_mode = if literal_fields.is_empty() {
-                RsContextRenderDeriveSerdeMode::Serde
-            } else {
-                RsContextRenderDeriveSerdeMode::Litty
-            };
+        let mut attributes = vec![
             context
-                .render_derive(RsContextRenderDeriveTypeMode::Struct, derive_mode)
-                .into()
-        }];
+                .render_derive(
+                    RsContextRenderDeriveTypeMode::Struct,
+                    RsContextRenderDeriveSerdeMode::Serde,
+                )
+                .into(),
+        ];
 
         // Add literal fields via Litty's literals attribute.
         if !literal_fields.is_empty() {
+            attributes.insert(0, RsAttribute("serde_literals".into()));
             attributes.push(RsAttribute(format!(
                 "literals({})",
                 literal_fields.join(", ")
             )));
-            context.push_import(RsUse::new(RsDependencyIdent::Litty, "Literals".into()));
+            context.push_import(RsUse::new(
+                RsDependencyIdent::Litty,
+                "serde_literals".into(),
+            ));
         }
 
         let r#struct = RsStruct {
@@ -77,10 +83,8 @@ impl RsConvert<RsStruct> for GtObject {
             fields,
         };
 
-        if literal_fields.is_empty() {
-            context.push_import(RsUse::new(RsDependencyIdent::Serde, "Deserialize".into()));
-            context.push_import(RsUse::new(RsDependencyIdent::Serde, "Serialize".into()));
-        }
+        context.push_import(RsUse::new(RsDependencyIdent::Serde, "Deserialize".into()));
+        context.push_import(RsUse::new(RsDependencyIdent::Serde, "Serialize".into()));
 
         context.exit_parent();
         Ok(r#struct)
@@ -288,6 +292,14 @@ mod tests {
                         span: (0, 0).into(),
                         doc: None,
                         attributes: vec![],
+                        name: GtKey::new((0, 0).into(), "requestType".into()),
+                        descriptor: Gt::literal_string("remove-file").into(),
+                        required: true,
+                    },
+                    GtProperty {
+                        span: (0, 0).into(),
+                        doc: None,
+                        attributes: vec![],
                         name: GtKey::new((0, 0).into(), "message".into()),
                         descriptor: Gt::primitive_string().into(),
                         required: true,
@@ -301,8 +313,9 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "Person"),
           doc: None,
           attributes: [
-            RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
-            RsAttribute("literals(ok = true, version = 1)"),
+            RsAttribute("serde_literals"),
+            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("literals(ok = true, version = 1, request_type(\"remove-file\", rename = \"requestType\"))"),
           ],
           name: RsIdentifier("Person"),
           generics: [],
@@ -324,7 +337,19 @@ mod tests {
           RsUse(
             dependency: Litty,
             reference: Named([
-              Name(RsIdentifier("Literals")),
+              Name(RsIdentifier("serde_literals")),
+            ]),
+          ),
+          RsUse(
+            dependency: Serde,
+            reference: Named([
+              Name(RsIdentifier("Deserialize")),
+            ]),
+          ),
+          RsUse(
+            dependency: Serde,
+            reference: Named([
+              Name(RsIdentifier("Serialize")),
             ]),
           ),
         ]
@@ -381,7 +406,8 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "Person"),
           doc: None,
           attributes: [
-            RsAttribute("derive(Debug, Clone, PartialEq, Literals)"),
+            RsAttribute("serde_literals"),
+            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
             RsAttribute("literals(ok = true)"),
           ],
           name: RsIdentifier("Person"),
