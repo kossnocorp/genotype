@@ -1,7 +1,7 @@
 {
   "name": "genotype",
   "displayName": "Genotype",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Genotype language support",
   "categories": [
     "Programming Languages"
@@ -27,7 +27,7 @@
     "vscode-languageclient": "^9.0.1"
   },
   "devDependencies": {
-    "@genotype-lang/tm-grammar": "workspace:*",
+    "@genotype-lang/grammar-tm": "workspace:*",
     "@types/node": "^24.12.2",
     "@types/vscode": "^1.115.0",
     "@vscode/vsce": "^3.7.1",
@@ -67,7 +67,7 @@
       {
         "language": "genotype",
         "scopeName": "source.genotype",
-        "path": "./node_modules/@genotype-lang/tm-grammar/genotype.json"
+        "path": "./node_modules/@genotype-lang/grammar-tm/genotype.json"
       }
     ]
   },

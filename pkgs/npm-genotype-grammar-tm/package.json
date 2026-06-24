@@ -1,5 +1,5 @@
 {
-  "name": "@genotype-lang/tm-grammar",
+  "name": "@genotype-lang/grammar-tm",
   "version": "0.1.0",
   "description": "Genotype TextMate grammar file",
   "license": "MIT",
