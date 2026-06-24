@@ -6,5 +6,6 @@
   },
   "files.associations": {
     "*.css": "tailwindcss"
-  }
+  },
+  "languageToolLinter.languageTool.ignoredWordsInWorkspace": ["enums", "litty", "serde"]
 }
