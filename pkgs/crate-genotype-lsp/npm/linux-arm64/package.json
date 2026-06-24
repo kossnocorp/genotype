@@ -1,17 +1,17 @@
 {
   "name": "@genotype-lsp/linux-arm64",
   "version": "0.15.0",
+  "license": "MIT",
+  "files": [
+    "bin/gts",
+    "README.md"
+  ],
   "os": [
     "linux"
   ],
   "cpu": [
     "arm64"
   ],
-  "files": [
-    "bin/gts",
-    "README.md"
-  ],
-  "license": "MIT",
   "scripts": {
     "prepublish": "node -e \"require('fs').lstatSync('bin/gts')\""
   }

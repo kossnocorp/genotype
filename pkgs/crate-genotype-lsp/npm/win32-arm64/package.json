@@ -1,17 +1,17 @@
 {
   "name": "@genotype-lsp/win32-arm64",
   "version": "0.15.0",
+  "license": "MIT",
+  "files": [
+    "bin/gts.exe",
+    "README.md"
+  ],
   "os": [
     "win32"
   ],
   "cpu": [
     "arm64"
   ],
-  "files": [
-    "bin/gts.exe",
-    "README.md"
-  ],
-  "license": "MIT",
   "scripts": {
     "prepublish": "node -e \"require('fs').lstatSync('bin/gts.exe')\""
   }

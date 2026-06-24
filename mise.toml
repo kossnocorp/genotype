@@ -9,7 +9,6 @@ rust = { version = "latest", channel = "stable", components = "rustfmt,clippy" }
 # Node.js
 node = "lts"
 pnpm = "latest"
-oxfmt = "latest"
 # Python
 python = "3.14.4"
 uv = "latest"
@@ -85,15 +84,23 @@ run = "watchexec -e rs,Cargo.toml,Cargo.lock -rc reset -- cargo clippy --all-tar
 
 [tasks.format]
 depends = [
+  "format/base",
   "format/rust",
   # TODO: Add JS/Python formatters
 ]
 
 [tasks."format:check"]
 depends = [
+  "format/base:check",
   "format/rust:check",
-  # TODO: Add JS/Python formatters
+  # TODO: Add Python formatter
 ]
+
+[tasks."format/base"]
+run = "pnpm exec oxfmt"
+
+[tasks."format/base:check"]
+run = "pnpm exec oxfmt --check"
 
 [tasks."format/rust"]
 run = "cargo fmt --all"

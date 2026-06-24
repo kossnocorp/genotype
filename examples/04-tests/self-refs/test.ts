@@ -1,8 +1,4 @@
-import {
-  SelfRefArray,
-  SelfRefObject,
-  SelfRefTuple,
-} from "genotype-test-self-refs-ts-zod";
+import { SelfRefArray, SelfRefObject, SelfRefTuple } from "genotype-test-self-refs-ts-zod";
 import assert from "node:assert/strict";
 
 // direct self-reference object case

@@ -1,14 +1,14 @@
 import assert from "node:assert/strict";
 
 import type {
-    Base as AliasBase,
-    Envelope as AliasEnvelope,
-    Payload as AliasPayload,
+  Base as AliasBase,
+  Envelope as AliasEnvelope,
+  Payload as AliasPayload,
 } from "genotype-test-ts-types-alias";
 import type {
-    Base as InterfaceBase,
-    Envelope as InterfaceEnvelope,
-    Payload as InterfacePayload,
+  Base as InterfaceBase,
+  Envelope as InterfaceEnvelope,
+  Payload as InterfacePayload,
 } from "genotype-test-ts-types-interface";
 
 const interfaceBase: InterfaceBase = {
@@ -38,4 +38,3 @@ const aliasEnvelope: AliasEnvelope = aliasPayload;
 
 assert.equal(interfaceEnvelope.kind, "payload");
 assert.equal(aliasEnvelope.kind, "payload");
-

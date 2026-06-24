@@ -6,7 +6,7 @@
     "tamasfe.even-better-toml",
     "nefrob.vscode-just-syntax",
     "docker.docker",
-    "esbenp.prettier-vscode",
-    "hverlin.mise-vscode"
+    "hverlin.mise-vscode",
+    "oxc.oxc-vscode"
   ]
 }

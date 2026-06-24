@@ -4,7 +4,7 @@ A programming language that transpiles to idiomatic TypeScript/Rust/Python types
 
 Its goal is to help developers working on projects that use multiple languages or require API clients in multiple languages.
 
-🚧 Work in progress, **follow for updates on [Twitter](https://twitter.com/kossnocorp).
+🚧 Work in progress, **follow for updates on [Twitter](https://twitter.com/kossnocorp)**.
 
 ## Installation
 

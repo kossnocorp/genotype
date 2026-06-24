@@ -1,17 +1,17 @@
 {
   "name": "@genotype-lsp/darwin-x64",
   "version": "0.15.0",
+  "license": "MIT",
+  "files": [
+    "bin/gts",
+    "README.md"
+  ],
   "os": [
     "darwin"
   ],
   "cpu": [
     "x64"
   ],
-  "files": [
-    "bin/gts",
-    "README.md"
-  ],
-  "license": "MIT",
   "scripts": {
     "prepublish": "node -e \"require('fs').lstatSync('bin/gts')\""
   }
