@@ -1,0 +1,4 @@
+{
+  "include": [],
+  "references": [{ "path": "./pkgs/app-website/" }, { "path": "./pkgs/npm-vscode-genotype/" }]
+}

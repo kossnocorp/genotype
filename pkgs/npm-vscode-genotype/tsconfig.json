@@ -3,10 +3,19 @@
     "module": "CommonJS",
     "target": "ES2024",
     "lib": ["ES2024"],
-    "outDir": "dist/dev",
     "rootDir": "src",
     "sourceMap": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    // Output
+    // TODO: Make a separate tsconfig.dist.json
+    "outDir": "dist/dev",
+    // "outDir": "./.ts",
+    "tsBuildInfoFile": "./.ts/tsconfig.tsbuildinfo",
+    "emitDeclarationOnly": true,
+    // Build
+    "incremental": true,
+    // Project references
+    "composite": true
   },
   "include": ["src"],
   "exclude": ["node_modules"]

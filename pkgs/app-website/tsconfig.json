@@ -1,5 +1,30 @@
 {
   "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "**/*", "./worker-configuration.d.ts"],
-  "exclude": ["dist"]
+  "include": [
+    "./*.ts",
+    "./src/**/*.ts",
+    "./src/**/*.js",
+    "./src/**/*.json",
+    "./src/**/*.astro",
+    "./scripts/**/*.ts"
+  ],
+  // Re-enable after this PR is merged: https://github.com/withastro/starlight/pull/3572
+  "exclude": ["./astro.config.ts", "./src/content.config.ts"],
+  "compilerOptions": {
+    // Resolve
+    "paths": {
+      "#/*": ["./src/*"]
+    },
+    // Output
+    "outDir": "./.ts",
+    "tsBuildInfoFile": "./.ts/tsconfig.tsbuildinfo",
+    "emitDeclarationOnly": true,
+    // Checks
+    "checkJs": true,
+    // Build
+    "incremental": true,
+    // Project references
+    "composite": true
+  },
+  "references": [{ "path": "../npm-vscode-genotype/" }]
 }

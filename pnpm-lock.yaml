@@ -11,6 +11,9 @@ importers:
       oxfmt:
         specifier: ^0.56.0
         version: 0.56.0
+      typescript:
+        specifier: 7.0.1-rc
+        version: 7.0.1-rc
 
   pkgs/app-website:
     dependencies:
@@ -45,6 +48,9 @@ importers:
       '@types/node':
         specifier: ^22.15.18
         version: 22.15.18
+      typescript:
+        specifier: 7.0.1-rc
+        version: 7.0.1-rc
 
   pkgs/crate-genotype-lsp:
     optionalDependencies:

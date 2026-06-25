@@ -7,5 +7,6 @@
   "files.associations": {
     "*.css": "tailwindcss"
   },
-  "languageToolLinter.languageTool.ignoredWordsInWorkspace": ["enums", "litty", "serde"]
+  "languageToolLinter.languageTool.ignoredWordsInWorkspace": ["enums", "litty", "serde"],
+  "js/ts.experimental.useTsgo": true
 }

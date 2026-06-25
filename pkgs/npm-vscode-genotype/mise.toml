@@ -29,3 +29,11 @@ run = '''
 pnpm exec vscode-tmgrammar-snap "tests/syntax/*.type" --scope source.genotype --updateSnapshot
 '''
 depends = "gen/syntax-test-links"
+
+[tasks."types"]
+description = "Checks types"
+run = "pnpm exec tsc --build"
+
+[tasks."types:watch"]
+description = "Checks types in watch mode"
+run = "pnpm exec tsc --build --watch"

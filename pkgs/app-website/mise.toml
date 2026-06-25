@@ -14,3 +14,12 @@ depends = "build"
 run = "pnpm exec wrangler types"
 sources = ["wrangler.toml"]
 outputs = ["worker-configuration.d.ts"]
+
+[tasks."types"]
+description = "Checks types"
+run = "pnpm exec tsc --build"
+
+[tasks."types:watch"]
+description = "Checks types in watch mode"
+run = "pnpm exec tsc --build --watch"
+

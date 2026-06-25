@@ -141,6 +141,14 @@ depends = [
 [tasks."test/system/examples"]
 run = "./scripts/test-examples.sh"
 
+[tasks."types/ts"]
+description = "Checks workspace TypeScript types"
+run = "pnpm exec tsc --build"
+
+[tasks."types/ts:watch"]
+description = "Checks workspace TypeScript types in watch mode"
+run = "pnpm exec tsc --build --watch"
+
 [tasks.publish]
 run = [{ task = "publish/cargo" }]
 
