@@ -8,6 +8,11 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 
+[features]
+default = ["system"]
+system = ["miette/fancy", "miette/syntect-highlighter"]
+wasm = ["miette/fancy-no-syscall"]
+
 [dependencies]
 genotype_core = { version = "0.15.0", path = "../crate-genotype-core" }
 genotype_project_core = { version = "0.15.0", path = "../crate-genotype-project-core" }
@@ -23,8 +28,7 @@ genotype_lang_py_config = { version = "0.15.0", path = "../crate-genotype-lang-p
 genotype_lang_rs_project = { version = "0.15.0", path = "../crate-genotype-lang-rs-project" }
 genotype_lang_rs_config = { version = "0.15.0", path = "../crate-genotype-lang-rs-config" }
 relative-path = { version = "1.9.3", features = ["serde"] }
-miette = { version = "7.6.0", features = ["serde", "fancy", "syntect-highlighter"] }
-syntect = "5.3.0"
+miette = { version = "7.6.0", features = ["serde"] }
 thiserror = "1.0.64"
 heck = "0.5.0"
 regex = "1.11.1"

@@ -131,7 +131,7 @@ impl GtcCompilation<'_, '_> {
                     Ok(false) => true,
 
                     Ok(true) | Err(_) => {
-                        diagnostics.push(GtDiagnostic::error(format!(
+                        diagnostics.push(GtDiagnostic::warning(format!(
                             "Failed to write `{path}` to file system as it was generated with errors: {message}",
                             message = error.message
                         )));
