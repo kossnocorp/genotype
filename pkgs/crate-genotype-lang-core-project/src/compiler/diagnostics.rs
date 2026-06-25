@@ -1,37 +1,41 @@
 use crate::prelude::internal::*;
 
-pub fn generate_module_notices<ProjectModule: GtlProjectModule>(
+pub fn generate_module_diagnostics<ProjectModule: GtlProjectModule>(
     modules: &GtlProjectModules<ProjectModule>,
-) -> Vec<GtNotice> {
-    let mut notices = vec![];
+) -> Vec<GtDiagnostic> {
+    let mut diagnostics = vec![];
 
     for (_module_path, module_state) in modules {
         match module_state {
             state @ GtlProjectModuleState::ConvertError(_)
             | state @ GtlProjectModuleState::ResolveError(_)
             | state @ GtlProjectModuleState::RenderError(_) => {
-                notices.push(GtNotice::error(format_module_error_state_message(state)));
+                diagnostics.push(GtDiagnostic::error(format_module_error_state_message(
+                    state,
+                )));
             }
 
             state @ GtlProjectModuleState::Converted(_)
             | state @ GtlProjectModuleState::Resolved(_) => {
-                notices.push(GtNotice::error(format_invalid_module_state_message(state)));
+                diagnostics.push(GtDiagnostic::error(format_invalid_module_state_message(
+                    state,
+                )));
             }
 
             GtlProjectModuleState::Rendered(_) => {}
         }
     }
 
-    if let Some(render_notice) = generate_render_files_notice(modules) {
-        notices.push(render_notice);
+    if let Some(render_diagnostic) = generate_render_files_diagnostic(modules) {
+        diagnostics.push(render_diagnostic);
     }
 
-    notices
+    diagnostics
 }
 
-fn generate_render_files_notice<ProjectModule: GtlProjectModule>(
+fn generate_render_files_diagnostic<ProjectModule: GtlProjectModule>(
     modules: &GtlProjectModules<ProjectModule>,
-) -> Option<GtNotice> {
+) -> Option<GtDiagnostic> {
     let mut messages = vec![];
 
     for module in modules.values() {
@@ -58,7 +62,7 @@ fn generate_render_files_notice<ProjectModule: GtlProjectModule>(
             .map(|msg| format!("- {msg}"))
             .collect::<Vec<_>>()
             .join("\n");
-        Some(GtNotice::warning((title, body)))
+        Some(GtDiagnostic::warning((title, body)))
     }
 }
 

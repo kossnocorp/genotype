@@ -1,17 +1,21 @@
 use crate::prelude::internal::*;
 
 impl GtpModuleError {
-    pub fn as_notice(&self, config: &GtpConfig, details: Vec<GtpModuleErrorDetails>) -> GtNotice {
+    pub fn as_diagnostic(
+        &self,
+        config: &GtpConfig,
+        details: Vec<GtpModuleErrorDetails>,
+    ) -> GtDiagnostic {
         let err_str = format!("{self}");
         match self {
             GtpModuleError::Init { .. } => {
                 let reports = Self::format_import_reports(config, details);
-                Self::notice_with_reports(err_str, reports)
+                Self::diagnostic_with_reports(err_str, reports)
             }
 
             GtpModuleError::Read { .. } => {
                 let reports = Self::format_import_reports(config, details);
-                Self::notice_with_reports(err_str, reports)
+                Self::diagnostic_with_reports(err_str, reports)
             }
 
             GtpModuleError::Parse {
@@ -20,27 +24,27 @@ impl GtpModuleError {
                 source_code,
             } => {
                 let named_source = NamedSource::new(path.to_string(), source_code.clone());
-                error.as_notice(path.as_str(), named_source)
+                error.as_diagnostic(path.as_str(), named_source)
             }
 
             GtpModuleError::Resolve { error, .. } => {
-                let mut reports = vec![GtNotice::format_report(Report::new(error.clone()))];
+                let mut reports = vec![GtDiagnostic::format_report(Report::new(error.clone()))];
                 reports.extend(Self::format_import_reports(config, details));
-                Self::notice_with_reports(err_str, reports)
+                Self::diagnostic_with_reports(err_str, reports)
             }
 
             GtpModuleError::ResolveInitialized => {
                 let reports = Self::format_import_reports(config, details);
-                Self::notice_with_reports(err_str, reports)
+                Self::diagnostic_with_reports(err_str, reports)
             }
         }
     }
 
-    fn notice_with_reports(title: String, reports: Vec<String>) -> GtNotice {
+    fn diagnostic_with_reports(title: String, reports: Vec<String>) -> GtDiagnostic {
         if reports.is_empty() {
-            GtNotice::error(title)
+            GtDiagnostic::error(title)
         } else {
-            GtNotice::error((title, reports))
+            GtDiagnostic::error((title, reports))
         }
     }
 

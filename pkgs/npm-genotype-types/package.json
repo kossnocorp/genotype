@@ -1,0 +1,12 @@
+{
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "description": "Genotype Programming Language TypeScript types",
+  "name": "@genotype-lang/types",
+  "version": "0.15.0",
+  "dependencies": {
+    "zod": "^4"
+  }
+}

@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
-mod notices;
-use notices::*;
+mod diagnostics;
+use diagnostics::*;
 
 pub trait GtlCompiler<'project>
 where
@@ -34,25 +34,27 @@ where
             return Ok(None);
         }
 
-        let mut notices = vec![];
+        let mut diagnostics = vec![];
 
-        notices.extend(self.config().lang_config_health_check());
+        diagnostics.extend(self.config().lang_config_health_check());
 
         let mut lang_project = GtlProject::<Self::ProjectModule>::new(self.config());
         lang_project.convert(&self.project().modules);
         lang_project.resolve()?;
         lang_project.render();
 
-        notices.extend(generate_module_notices(&lang_project.modules));
+        diagnostics.extend(generate_module_diagnostics(&lang_project.modules));
 
-        let mut dist = GtlDist::new(&lang_project.modules, notices);
+        let mut dist = GtlDist::new(&lang_project.modules, diagnostics);
 
         if let Some(package_files) = self.generate_package_files(&lang_project) {
             dist.pack_extra_files(package_files, None);
         }
 
-        if let Some((extra_files, extra_file_notices)) = self.generate_extra_files(&lang_project) {
-            dist.pack_extra_files(extra_files, extra_file_notices);
+        if let Some((extra_files, extra_file_diagnostics)) =
+            self.generate_extra_files(&lang_project)
+        {
+            dist.pack_extra_files(extra_files, extra_file_diagnostics);
         }
 
         dist.sort_files();

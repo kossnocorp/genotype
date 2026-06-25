@@ -6,7 +6,7 @@
     "@astrojs/cloudflare": "^13.1.8",
     "@astrojs/starlight": "^0.38.2",
     "@astrojs/starlight-tailwind": "^5.0.0",
-    "@genotype-lang/tm-grammar": "workspace:*",
+    "@genotype-lang/grammar-tm": "workspace:*",
     "@tailwindcss/vite": "^4.2.2",
     "astro": "^6.0.1",
     "sharp": "^0.34.2",

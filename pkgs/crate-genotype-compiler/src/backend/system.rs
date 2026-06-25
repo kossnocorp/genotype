@@ -2,7 +2,7 @@ use crate::prelude::internal::*;
 
 pub struct GtcBackendSystem;
 
-impl GtcNoticeSinkStdio for GtcBackendSystem {}
+impl GtcDiagnosticSinkStdio for GtcBackendSystem {}
 
 impl GtcFileProviderSystem for GtcBackendSystem {}
 

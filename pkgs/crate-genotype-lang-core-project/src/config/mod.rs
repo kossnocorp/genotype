@@ -26,7 +26,7 @@ impl<'project, LangConfig: GtpLangConfig> GtlConfig<'project, LangConfig> {
         }
     }
 
-    pub fn lang_config_health_check(&self) -> Vec<GtNotice> {
+    pub fn lang_config_health_check(&self) -> Vec<GtDiagnostic> {
         self.lang_config
             .health_check(&self.project_paths.config_file, self.package_enabled)
     }

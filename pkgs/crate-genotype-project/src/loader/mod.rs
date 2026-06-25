@@ -14,7 +14,7 @@ pub use serial::*;
 
 /// Project loader trait. It defines the interface for loading a project. It bounds to the project
 /// source trait to provide file system interop.
-pub trait GtpLoader<ProjectRef>: GtpSource {
+pub trait GtpLoader<ProjectRef>: GtpFileSource {
     /// Creates a new project.
     fn create_project(&self, config_path: Option<&GtpCwdRelativePath>) -> Result<GtProject> {
         let config_file_path = self.find_config_path(config_path)?;
@@ -37,10 +37,10 @@ pub trait GtpLoader<ProjectRef>: GtpSource {
     ) -> Result<GtpConfigFilePath> {
         match config_path {
             Some(config_path) => {
-                if self.is_file(config_path) {
+                if self.is_file(config_path)? {
                     Ok(config_path.clone().into())
                 } else {
-                    Err(miette!("config file '{config_path}' does not exist"))
+                    Err(miette!("Config file '{config_path}' does not exist"))
                 }
             }
 
@@ -56,8 +56,9 @@ pub trait GtpLoader<ProjectRef>: GtpSource {
     /// Loads all project modules.
     fn load_all_modules(&self, project: GtProject) -> Result<GtProject> {
         let module_entries = self
-            .glob(project.paths.entry.as_ref())?
+            .glob_files(project.paths.entry.as_ref())?
             .into_iter()
+            .map(|file_path| GtpModulePath::from_cwd_relative_path(file_path))
             .collect::<Vec<GtpModulePath>>();
 
         ensure!(

@@ -45,7 +45,7 @@ pub trait GtpLangConfig {
         &self,
         _config_path: &GtpConfigFilePath,
         _package_enabled: bool,
-    ) -> Vec<GtNotice> {
+    ) -> Vec<GtDiagnostic> {
         vec![]
     }
 }

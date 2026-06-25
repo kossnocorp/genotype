@@ -1,27 +1,20 @@
 use crate::prelude::internal::*;
+
 use glob::glob;
 
-/// File system project source. It provides file system interop for the project loader.
-/// It is the default project source used by the system project runtime.
-pub trait GtpSourceFs {
-    /// Returns the base project directory to resolve relative file paths.
-    fn base_path(&self) -> &GtpCwdRelativePath;
+/// System project file source. It provides file system interop for the project. It is the default
+/// system project source used by the system project runtime.
+pub trait GtpFileSourceSystem: GtpFileAccessSystem {}
 
-    /// Resolves full path from the given relative path using the file system.
-    fn resolve_path_buf(&self, path: &GtpCwdRelativePath) -> PathBuf {
-        path.to_path_buf()
-    }
-}
-
-impl<Type: GtpSourceFs + ?Sized> GtpSource for Type {
+impl<Type: GtpFileSourceSystem + ?Sized> GtpFileSource for Type {
     /// Globs files from the given path using the file system.
-    fn glob(&self, path: &GtpCwdRelativePath) -> Result<Vec<GtpModulePath>> {
+    fn glob_files(&self, path: &GtpCwdRelativePath) -> Result<Vec<GtpCwdRelativePath>> {
         let path_buf = path.to_path_buf();
         let path_str = path_buf
             .to_str()
             .ok_or_else(|| miette!("Failed to convert path '{}' to string", path_buf.display()))?;
 
-        let module_paths = glob(path_str)
+        let paths = glob(path_str)
             .map_err(|err| {
                 miette!(
                     labels = vec![LabeledSpan::at_offset(err.pos, "here")],
@@ -38,11 +31,11 @@ impl<Type: GtpSourceFs + ?Sized> GtpSource for Type {
                             .map_err(|e| miette!(e))
                             .wrap_err("Failed to convert file path from glob into relative path")
                     })
-                    .map(|file_path| GtpModulePath::from_cwd_relative_path(file_path.into()))
+                    .map(|file_path| file_path.into())
             })
             .collect::<Result<Vec<_>, _>>()?;
 
-        Ok(module_paths)
+        Ok(paths)
     }
 
     /// Reads a file from the given path using the file system.
@@ -55,9 +48,14 @@ impl<Type: GtpSourceFs + ?Sized> GtpSource for Type {
         Ok(source)
     }
 
+    /// Checks if the given path exists using the file system.
+    fn file_exists(&self, path: &GtpCwdRelativePath) -> Result<bool> {
+        Ok(self.resolve_path_buf(path).exists())
+    }
+
     /// Checks if the given path is a file using the file system.
-    fn is_file(&self, path: &GtpCwdRelativePath) -> bool {
-        self.resolve_path_buf(path).is_file()
+    fn is_file(&self, path: &GtpCwdRelativePath) -> Result<bool> {
+        Ok(self.resolve_path_buf(path).is_file())
     }
 
     /// Searches for a file path using the file system starting from the base path.

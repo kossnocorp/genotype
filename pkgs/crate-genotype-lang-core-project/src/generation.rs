@@ -1,53 +1,54 @@
 use crate::prelude::internal::*;
 
-pub type GtlGenerations<ProjectModule> = (Vec<GtlGeneration<ProjectModule>>, Option<Vec<GtNotice>>);
+pub type GtlGenerations<ProjectModule> =
+    (Vec<GtlGeneration<ProjectModule>>, Option<Vec<GtDiagnostic>>);
 
 pub struct GtlGeneration<ProjectModule: GtlProjectModule> {
     pub file: GtlProjectFile<ProjectModule>,
-    pub notices: Option<Vec<GtNotice>>,
+    pub diagnostics: Option<Vec<GtDiagnostic>>,
 }
 
 impl<ProjectModule: GtlProjectModule> GtlGeneration<ProjectModule> {
     pub fn file<File: Into<GtlProjectFile<ProjectModule>>>(file: File) -> Self {
         GtlGeneration {
             file: file.into(),
-            notices: None,
+            diagnostics: None,
         }
     }
 
-    pub fn file_with_notice<File: Into<GtlProjectFile<ProjectModule>>>(
+    pub fn file_with_diagnostic<File: Into<GtlProjectFile<ProjectModule>>>(
         file: File,
-        notice: GtNotice,
+        diagnostic: GtDiagnostic,
     ) -> Self {
-        Self::file_with_notices(file, vec![notice])
+        Self::file_with_diagnostics(file, vec![diagnostic])
     }
 
-    pub fn file_with_notice_option<File: Into<GtlProjectFile<ProjectModule>>>(
+    pub fn file_with_diagnostic_option<File: Into<GtlProjectFile<ProjectModule>>>(
         file: File,
-        notice: Option<GtNotice>,
+        diagnostic: Option<GtDiagnostic>,
     ) -> Self {
-        match notice {
-            Some(notice) => Self::file_with_notices(file, vec![notice]),
+        match diagnostic {
+            Some(diagnostic) => Self::file_with_diagnostics(file, vec![diagnostic]),
             None => Self::file(file),
         }
     }
 
-    pub fn file_with_notices<File: Into<GtlProjectFile<ProjectModule>>>(
+    pub fn file_with_diagnostics<File: Into<GtlProjectFile<ProjectModule>>>(
         file: File,
-        notices: Vec<GtNotice>,
+        diagnostics: Vec<GtDiagnostic>,
     ) -> Self {
         GtlGeneration {
             file: file.into(),
-            notices: Some(notices),
+            diagnostics: Some(diagnostics),
         }
     }
 }
 
-impl<ProjectModule: GtlProjectModule> From<(GtlProjectFile<ProjectModule>, Vec<GtNotice>)>
+impl<ProjectModule: GtlProjectModule> From<(GtlProjectFile<ProjectModule>, Vec<GtDiagnostic>)>
     for GtlGeneration<ProjectModule>
 {
-    fn from((file, notices): (GtlProjectFile<ProjectModule>, Vec<GtNotice>)) -> Self {
-        Self::file_with_notices(file, notices)
+    fn from((file, diagnostics): (GtlProjectFile<ProjectModule>, Vec<GtDiagnostic>)) -> Self {
+        Self::file_with_diagnostics(file, diagnostics)
     }
 }
 
@@ -59,45 +60,18 @@ impl<ProjectModule: GtlProjectModule> From<GtlProjectFile<ProjectModule>>
     }
 }
 
-impl<ProjectModule: GtlProjectModule> From<(GtlProjectFile<ProjectModule>, GtNotice)>
+impl<ProjectModule: GtlProjectModule> From<(GtlProjectFile<ProjectModule>, GtDiagnostic)>
     for GtlGeneration<ProjectModule>
 {
-    fn from((file, notice): (GtlProjectFile<ProjectModule>, GtNotice)) -> Self {
-        Self::file_with_notice(file, notice)
+    fn from((file, diagnostic): (GtlProjectFile<ProjectModule>, GtDiagnostic)) -> Self {
+        Self::file_with_diagnostic(file, diagnostic)
     }
 }
 
-impl<ProjectModule: GtlProjectModule> From<(GtlProjectFile<ProjectModule>, Option<GtNotice>)>
+impl<ProjectModule: GtlProjectModule> From<(GtlProjectFile<ProjectModule>, Option<GtDiagnostic>)>
     for GtlGeneration<ProjectModule>
 {
-    fn from((file, notice): (GtlProjectFile<ProjectModule>, Option<GtNotice>)) -> Self {
-        Self::file_with_notice_option(file, notice)
+    fn from((file, diagnostic): (GtlProjectFile<ProjectModule>, Option<GtDiagnostic>)) -> Self {
+        Self::file_with_diagnostic_option(file, diagnostic)
     }
 }
-
-// pub struct GtlCompilerGenerationFiles<Module: GtlModule> {
-//     pub files: Vec<GtlProjectFile<Module>>,
-//     pub notices: Vec<GtNotice>,
-// }
-
-// impl<Module: GtlModule> GtlCompilerGenerationFiles<Module> {
-//     pub fn files(files: Vec<GtlProjectFile<Module>>) -> Self {
-//         GtlCompilerGenerationFiles {
-//             files,
-//             notices: vec![],
-//         }
-//     }
-
-//     pub fn new(files: Vec<GtlProjectFile<Module>>, notices: Vec<GtNotice>) -> Self {
-//         GtlCompilerGenerationFiles { files, notices }
-//     }
-// }
-
-// impl<Module: GtlModule> From<Vec<GtlProjectFile<Module>>> for GtlCompilerGenerationFiles<Module>
-// where
-//     Module: GtlModule,
-// {
-//     fn from(files: Vec<GtlProjectFile<Module>>) -> Self {
-//         GtlCompilerGenerationFiles::files(files)
-//     }
-// }

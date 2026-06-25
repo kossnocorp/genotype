@@ -36,19 +36,19 @@ impl<'project> GtlCompiler<'project> for PyCompiler<'project> {
         project: &GtlProject<'project, '_, PyProjectModule>,
     ) -> Option<GtlGenerations<PyProjectModule>> {
         let mut files = vec![];
-        let mut notices = None;
+        let mut diagnostics = None;
 
         files.push(self.generate_root_init_file(&project.modules));
 
-        let (module_init_files, notice) = self.generate_module_init_files(&project.modules);
+        let (module_init_files, diagnostic) = self.generate_module_init_files(&project.modules);
         files.extend(module_init_files);
-        if let Some(notice) = notice {
-            notices = Some(vec![notice]);
+        if let Some(diagnostic) = diagnostic {
+            diagnostics = Some(vec![diagnostic]);
         }
 
         files.push(self.generate_py_typed_file());
 
-        Some((files, notices))
+        Some((files, diagnostics))
     }
 
     fn gitignore_source_code(&self) -> Option<String> {
@@ -67,7 +67,7 @@ impl PyCompiler<'_> {
         &self,
         modules: &IndexMap<GtpModulePath, GtlProjectModuleState<PyProjectModule>>,
     ) -> GtlGeneration<PyProjectModule> {
-        let mut notices = vec![];
+        let mut diagnostics = vec![];
 
         let mut import_lines = vec![];
         let mut exports = vec![];
@@ -95,7 +95,7 @@ impl PyCompiler<'_> {
 
                         Err(err) => {
                             failed_count += 1;
-                            notices.push(GtNotice::error(format!(
+                            diagnostics.push(GtDiagnostic::error(format!(
                                 "Failed to resolve module path for `{source_path}`: {}",
                                 err
                             )));
@@ -112,7 +112,7 @@ impl PyCompiler<'_> {
         let path = self.config.pkg_src_file_path(&"__init__.py".into());
 
         if failed_count > 0 {
-            notices.push(GtNotice::warning(format!(
+            diagnostics.push(GtDiagnostic::warning(format!(
                 "Init file `{path}` rendered, but it excludes {count} that failed to render",
                 count = pluralize("module", failed_count, true)
             )));
@@ -126,7 +126,7 @@ impl PyCompiler<'_> {
 
         (
             GtlProjectFileExtraGenerated { path, source_code }.into(),
-            notices,
+            diagnostics,
         )
             .into()
     }
@@ -140,7 +140,7 @@ impl PyCompiler<'_> {
     fn generate_module_init_files(
         &self,
         modules: &IndexMap<GtpModulePath, GtlProjectModuleState<PyProjectModule>>,
-    ) -> (Vec<GtlGeneration<PyProjectModule>>, Option<GtNotice>) {
+    ) -> (Vec<GtlGeneration<PyProjectModule>>, Option<GtDiagnostic>) {
         let mut files = vec![];
 
         let mut module_paths: IndexSet<GtpPkgSrcDirRelativePath> = IndexSet::new();
@@ -161,15 +161,15 @@ impl PyCompiler<'_> {
                         }
                     }
 
-                    Err(err) => formatted_errors.push(GtNotice::format_report(err)),
+                    Err(err) => formatted_errors.push(GtDiagnostic::format_report(err)),
                 }
             }
         }
 
-        let notice = if formatted_errors.is_empty() {
+        let diagnostic = if formatted_errors.is_empty() {
             None
         } else {
-            Some(GtNotice::warning((
+            Some(GtDiagnostic::warning((
                 "Some of `__init__.py` could be missing".to_string(),
                 formatted_errors,
             )))
@@ -187,7 +187,7 @@ impl PyCompiler<'_> {
             )));
         }
 
-        (files, notice)
+        (files, diagnostic)
     }
 
     fn py_module_path(&self, module_path: &GtpModulePath) -> Result<String> {
@@ -670,7 +670,7 @@ mod tests {
               source_code: "[tool.poetry]\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.13\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
             )),
           ],
-          notices: [],
+          diagnostics: [],
         )
         "#
         );
@@ -715,7 +715,7 @@ mod tests {
               source_code: "[tool.poetry]\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.13\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
             )),
           ],
-          notices: [],
+          diagnostics: [],
         )
         "#
         );
@@ -755,7 +755,7 @@ mod tests {
               source_code: "[tool.poetry]\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.13\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
             )),
           ],
-          notices: [],
+          diagnostics: [],
         )
         "#
         );

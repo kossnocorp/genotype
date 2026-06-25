@@ -35,8 +35,8 @@ impl<'project> GtlCompiler<'project> for TsCompiler<'project> {
         &self,
         project: &GtlProject<'_, '_, TsProjectModule>,
     ) -> Option<GtlGenerations<TsProjectModule>> {
-        let (barrel_file, notices) = self.generate_barrel_file(&project.modules);
-        Some((vec![barrel_file], Some(notices)))
+        let (barrel_file, diagnostics) = self.generate_barrel_file(&project.modules);
+        Some((vec![barrel_file], Some(diagnostics)))
     }
 
     fn gitignore_source_code(&self) -> Option<String> {
@@ -48,8 +48,8 @@ impl TsCompiler<'_> {
     fn generate_barrel_file(
         &self,
         modules: &IndexMap<GtpModulePath, GtlProjectModuleState<TsProjectModule>>,
-    ) -> (GtlGeneration<TsProjectModule>, Vec<GtNotice>) {
-        let mut notices = vec![];
+    ) -> (GtlGeneration<TsProjectModule>, Vec<GtDiagnostic>) {
+        let mut diagnostics = vec![];
         let mut export_lines = vec![];
         let mut failed_to_render_modules_count = 0;
         let mut failed_to_format_module_path_count = 0;
@@ -64,7 +64,7 @@ impl TsCompiler<'_> {
                         }
 
                         Err(err) => {
-                            notices.push(GtNotice::error(format!(
+                            diagnostics.push(GtDiagnostic::error(format!(
                                 "Failed to format module path for barrel file: {err:?}"
                             )));
                             failed_to_format_module_path_count += 1;
@@ -80,7 +80,7 @@ impl TsCompiler<'_> {
 
         let path = self.config.pkg_src_file_path(&"index.ts".into());
 
-        let notice = match (
+        let diagnostic = match (
             failed_to_render_modules_count,
             failed_to_format_module_path_count,
         ) {
@@ -103,7 +103,7 @@ impl TsCompiler<'_> {
                     ));
                 }
 
-                Some(GtNotice::warning(format!(
+                Some(GtDiagnostic::warning(format!(
                     "Barrel file `{path}` rendered, but it excludes {}",
                     components.join(" and ")
                 )))
@@ -116,11 +116,11 @@ impl TsCompiler<'_> {
 
         let generation = (
             GtlProjectFileExtraGenerated { path, source_code }.into(),
-            notice,
+            diagnostic,
         )
             .into();
 
-        (generation, notices)
+        (generation, diagnostics)
     }
 
     fn format_module_path(&self, target_path: &GtpTargetFilePath) -> Result<String> {
@@ -503,7 +503,7 @@ mod tests {
               source_code: "export * from \"./author.js\";\nexport * from \"./book.js\";\n",
             )),
           ],
-          notices: [],
+          diagnostics: [],
         )
         "#
         );
@@ -541,7 +541,7 @@ mod tests {
               source_code: "import { JsonAny } from \"@genotype/json\";\n\nexport interface Prompt {\n  content: string;\n  output: JsonAny;\n}\n",
             )),
           ],
-          notices: [],
+          diagnostics: [],
         )
         "#
         );
@@ -772,7 +772,7 @@ mod tests {
               source_code: "export interface Pair<Left, Right> {\n  left: Left;\n  right: Right;\n}\n",
             )),
           ],
-          notices: [],
+          diagnostics: [],
         )
         "#
         );

@@ -30,8 +30,8 @@ impl GtcCompilation<'_, '_> {
     pub fn compile_langs(&mut self, langs: &[GtLang]) -> i32 {
         let project = self.project;
 
-        let project_notices = project.as_final_notices();
-        self.handle_notices(project_notices);
+        let project_diagnostics = project.as_final_diagnostics();
+        self.handle_diagnostics(project_diagnostics);
 
         if langs.contains(&GtLang::Ts) {
             self.compile_project(&TsCompiler::new(project));
@@ -55,11 +55,11 @@ impl GtcCompilation<'_, '_> {
     {
         match compiler.compile() {
             Ok(Some(dist)) => {
-                let dist_notices = dist.notices;
-                self.handle_notices(dist_notices);
+                let dist_diagnostics = dist.diagnostics;
+                self.handle_diagnostics(dist_diagnostics);
 
-                let write_notices = self.write_files(&dist.files);
-                self.handle_notices(write_notices);
+                let write_diagnostics = self.write_files(&dist.files);
+                self.handle_diagnostics(write_diagnostics);
             }
 
             Ok(None) => {
@@ -67,7 +67,7 @@ impl GtcCompilation<'_, '_> {
             }
 
             Err(err) => {
-                self.handle_notices(GtNotice::error(format!("{err:?}")));
+                self.handle_diagnostics(GtDiagnostic::error(format!("{err:?}")));
             }
         }
     }
@@ -75,43 +75,46 @@ impl GtcCompilation<'_, '_> {
     fn finalize(&mut self, dist_dir: &GtpDistDirPath) -> i32 {
         let errors_count = self.errors_count;
         if errors_count > 0 {
-            self.backend.print_notice(GtNotice::warning(format!(
+            self.backend.print_diagnostic(GtDiagnostic::warning(format!(
                 "Project generated to `{dist_dir}` with {errors_count} errors"
             )));
 
             return 1;
         }
 
-        self.backend.print_notice(GtNotice::success(format!(
+        self.backend.print_diagnostic(GtDiagnostic::success(format!(
             "Project generated to `{dist_dir}`"
         )));
 
         0
     }
 
-    fn handle_notices<Notices: Into<Vec<GtNotice>>>(&mut self, notices: Notices) {
-        let notices = notices.into();
-        self.errors_count += notices
+    fn handle_diagnostics<Diagnostics: Into<Vec<GtDiagnostic>>>(
+        &mut self,
+        diagnostics: Diagnostics,
+    ) {
+        let diagnostics = diagnostics.into();
+        self.errors_count += diagnostics
             .iter()
-            .filter(|notice| matches!(notice.kind, GtNoticeKind::Error))
+            .filter(|diagnostic| matches!(diagnostic.kind, GtDiagnosticKind::Error))
             .count();
 
-        self.backend.print_notices(notices);
+        self.backend.print_diagnostics(diagnostics);
     }
 
-    fn write_files(&self, files: &Vec<GtlDistFile>) -> Vec<GtNotice> {
-        let mut notices = vec![];
+    fn write_files(&self, files: &Vec<GtlDistFile>) -> Vec<GtDiagnostic> {
+        let mut diagnostics = vec![];
 
         for file in files {
-            let file_notices = self.write_file(file);
-            notices.extend(file_notices);
+            let file_diagnostics = self.write_file(file);
+            diagnostics.extend(file_diagnostics);
         }
 
-        notices
+        diagnostics
     }
 
-    fn write_file(&self, file: &GtlDistFile) -> Vec<GtNotice> {
-        let mut notices = vec![];
+    fn write_file(&self, file: &GtlDistFile) -> Vec<GtDiagnostic> {
+        let mut diagnostics = vec![];
         let path = &file.path();
         let source_code = &file.source_code();
 
@@ -128,13 +131,13 @@ impl GtcCompilation<'_, '_> {
                     Ok(false) => true,
 
                     Ok(true) | Err(_) => {
-                        notices.push(GtNotice::error(format!(
+                        diagnostics.push(GtDiagnostic::error(format!(
                             "Failed to write `{path}` to file system as it was generated with errors: {message}",
                             message = error.message
                         )));
 
                         if let Err(err) = file_exist_result {
-                            notices.push(GtNotice::error(format!(
+                            diagnostics.push(GtDiagnostic::error(format!(
                                 "Failed to check if `{path}` exists in file system: {err}"
                             )));
                         }
@@ -148,12 +151,12 @@ impl GtcCompilation<'_, '_> {
         if should_write {
             let write_result = self.backend.file_write(&path.relative_path(), source_code);
             if let Err(err) = write_result {
-                notices.push(GtNotice::error(format!(
+                diagnostics.push(GtDiagnostic::error(format!(
                     "Failed to write `{path}` to file system: {err}"
                 )));
             }
         }
 
-        notices
+        diagnostics
     }
 }

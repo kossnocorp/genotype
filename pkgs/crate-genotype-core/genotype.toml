@@ -1,0 +1,17 @@
+src = "./types/"
+dist = "."
+
+[ts]
+enabled = true
+mode = "zod"
+dist = "../npm-genotype-types/"
+
+[ts.manifest]
+name = "@genotype-lang/types"
+version = "0.15.0"
+description = "Genotype Programming Language TypeScript types"
+
+[rs]
+enabled = true
+package = false
+dist = "./src/types/"

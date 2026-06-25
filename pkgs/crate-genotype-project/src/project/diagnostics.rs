@@ -32,31 +32,31 @@ impl GtProject {
             .unwrap_or_default()
     }
 
-    pub fn as_final_notices(&self) -> Vec<GtNotice> {
-        let mut notices = vec![];
+    pub fn as_final_diagnostics(&self) -> Vec<GtDiagnostic> {
+        let mut diagnostics = vec![];
         for module in self.modules.values() {
             match &module {
                 GtpModule::Resolved(_) => {
-                    // Resolved, the expected final state, no notice needed.
+                    // Resolved, the expected final state, no diagnostic needed.
                 }
 
                 GtpModule::Error(source, err) => {
                     let details = self.source_code_details_for(source);
-                    let notice = err.as_notice(&self.config, details);
-                    notices.push(notice);
+                    let diagnostic = err.as_diagnostic(&self.config, details);
+                    diagnostics.push(diagnostic);
                 }
 
                 GtpModule::Parsed(_) | GtpModule::Initialized(_) => {
-                    notices.push(Self::invalid_state_error_notice(module))
+                    diagnostics.push(Self::invalid_state_error_diagnostic(module))
                 }
             }
         }
-        notices
+        diagnostics
     }
 
-    fn invalid_state_error_notice(module: &GtpModule) -> GtNotice {
+    fn invalid_state_error_diagnostic(module: &GtpModule) -> GtDiagnostic {
         let source = module.source();
-        GtNotice::error(format!(
+        GtDiagnostic::error(format!(
             "Module `{path}` is in an invalid state \"{state}\"",
             path = source.path(),
             state = module.state_name()

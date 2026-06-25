@@ -1,8 +1,7 @@
 use crate::prelude::internal::*;
 
 use rayon::Scope;
-use std::sync::Arc;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
 /// Parallel project loader trait. It implements the project loader trait with parallel loading
 /// capabilities. It is used by the system project runtime.
@@ -41,8 +40,8 @@ pub trait GtpLoaderParallel: GtpLoader<Arc<Mutex<GtProject>>> {
     }
 }
 
-impl<Type: GtpLoaderParallel + GtpSource + Sync + Send + ?Sized> GtpLoader<Arc<Mutex<GtProject>>>
-    for Type
+impl<Type: GtpLoaderParallel + GtpFileSource + Sync + Send + ?Sized>
+    GtpLoader<Arc<Mutex<GtProject>>> for Type
 {
     /// Loads module entries in parallel.
     fn load_module_entries(

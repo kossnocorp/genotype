@@ -47,7 +47,7 @@ pub enum GtParseError {
 }
 
 impl GtParseError {
-    pub fn as_notice(&self, path: &str, source_code: NamedSource<String>) -> GtNotice {
+    pub fn as_diagnostic(&self, path: &str, source_code: NamedSource<String>) -> GtDiagnostic {
         match self {
             GtParseError::Syntax { span, message } => {
                 let report = miette!(
@@ -55,17 +55,17 @@ impl GtParseError {
                     "Syntax error: {message}"
                 )
                 .with_source_code(source_code);
-                GtNotice {
-                    kind: GtNoticeKind::Error,
-                    content: GtNoticeContent::Reports {
+                GtDiagnostic {
+                    kind: GtDiagnosticKind::Error,
+                    content: GtDiagnosticContent::Message(GtDiagnosticContentMessage {
                         title: format!("Failed to parse module `{path}`"),
-                        reports: vec![format!("{report:?}")],
-                    },
+                        body: Some(vec![format!("{report:?}")].into()),
+                    }),
                 }
             }
 
-            err => GtNotice {
-                kind: GtNoticeKind::Error,
+            err => GtDiagnostic {
+                kind: GtDiagnosticKind::Error,
                 content: format!("{err}").into(),
             },
         }

@@ -7,7 +7,7 @@ impl RsConfig {
         &self,
         config_path: &GtpConfigFilePath,
         package_enabled: bool,
-    ) -> Option<GtNotice> {
+    ) -> Option<GtDiagnostic> {
         if self.has_locked_edition() || !package_enabled {
             return None;
         }
@@ -23,8 +23,8 @@ impl RsConfig {
             edition = RsConfigLang::DEFAULT_EDITION
         };
 
-        Some(GtNotice {
-            kind: GtNoticeKind::Warning,
+        Some(GtDiagnostic {
+            kind: GtDiagnosticKind::Warning,
             content: title.into(),
         })
     }
@@ -90,11 +90,10 @@ edition = "2024"
             config.health_check(&"./genotype.toml".into(), true),
             @r#"
         [
-          GtNotice(
-            kind: Warning,
-            content: Message(
+          GtDiagnostic(
+            kind: "warning",
+            content: GtDiagnosticContentMessage(
               title: "Rust edition is not locked in genotype.toml.\n\nQuick fix:\n\n[rs.manifest.package]\nedition = \"2024\"\n",
-              body: None,
             ),
           ),
         ]
@@ -122,11 +121,10 @@ edition = "2024"
             config.health_check(&"./genotype.lib.toml".into(), true),
             @r#"
         [
-          GtNotice(
-            kind: Warning,
-            content: Message(
+          GtDiagnostic(
+            kind: "warning",
+            content: GtDiagnosticContentMessage(
               title: "Rust edition is not locked in genotype.lib.toml.\n\nQuick fix:\n\n[rs.manifest.package]\nedition = \"2024\"\n",
-              body: None,
             ),
           ),
         ]

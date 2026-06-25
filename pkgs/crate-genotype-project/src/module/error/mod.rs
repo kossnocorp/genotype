@@ -1,7 +1,7 @@
 use crate::prelude::internal::*;
 
-mod notice;
-pub use notice::*;
+mod diagnostic;
+pub use diagnostic::*;
 
 /// Project module error. Represents errors that can occur during the loading and resolving of
 /// a project module.

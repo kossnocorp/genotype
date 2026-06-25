@@ -1,0 +1,22 @@
+use crate::prelude::internal::*;
+
+mod system;
+pub use system::*;
+
+/// Project file source trait. It abstracts the read file system operations for the project.
+pub trait GtpFileSource {
+    /// Globs files from the given path.
+    fn glob_files(&self, path: &GtpCwdRelativePath) -> Result<Vec<GtpCwdRelativePath>>;
+
+    /// Reads a file from the given path.
+    fn read_file(&self, path: &GtpCwdRelativePath) -> Result<String>;
+
+    /// Checks if the given path exists.
+    fn file_exists(&self, path: &GtpCwdRelativePath) -> Result<bool>;
+
+    /// Checks if the given path is a file.
+    fn is_file(&self, path: &GtpCwdRelativePath) -> Result<bool>;
+
+    /// Searches for a file path in the current environment.
+    fn find_file(&self, file_name: &str) -> Result<GtpCwdRelativePath>;
+}

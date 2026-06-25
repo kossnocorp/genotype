@@ -71,7 +71,7 @@ impl GtDescriptor {
     }
 }
 
-//#region Alias
+// region: Alias
 
 impl From<GtAlias> for GtDescriptor {
     fn from(alias: GtAlias) -> Self {
@@ -93,9 +93,9 @@ impl TryFrom<GtDescriptor> for GtAlias {
     }
 }
 
-//#endregion
+// endregion
 
-//#region Array
+// region: Array
 
 impl From<GtArray> for GtDescriptor {
     fn from(array: GtArray) -> Self {
@@ -117,9 +117,9 @@ impl TryFrom<GtDescriptor> for GtArray {
     }
 }
 
-//#endregion
+// endregion
 
-//#region InlineImport
+// region: InlineImport
 
 impl From<GtInlineImport> for GtDescriptor {
     fn from(inline_import: GtInlineImport) -> Self {
@@ -141,9 +141,9 @@ impl TryFrom<GtDescriptor> for GtInlineImport {
     }
 }
 
-//#endregion
+// endregion
 
-//#region Object
+// region: Object
 
 impl From<GtObject> for GtDescriptor {
     fn from(object: GtObject) -> Self {
@@ -165,9 +165,9 @@ impl TryFrom<GtDescriptor> for GtObject {
     }
 }
 
-//#endregion
+// endregion
 
-//#region Literal
+// region: Literal
 
 impl From<GtLiteral> for GtDescriptor {
     fn from(literal: GtLiteral) -> Self {
@@ -189,9 +189,9 @@ impl TryFrom<GtDescriptor> for GtLiteral {
     }
 }
 
-//#endregion
+// endregion
 
-//#region Primitive
+// region: Primitive
 
 impl TryFrom<GtDescriptor> for GtPrimitive {
     type Error = GtParseError;
@@ -207,9 +207,9 @@ impl TryFrom<GtDescriptor> for GtPrimitive {
     }
 }
 
-//#endregion
+// endregion
 
-//#region Reference
+// region: Reference
 
 impl From<GtReference> for GtDescriptor {
     fn from(reference: GtReference) -> Self {
@@ -231,9 +231,9 @@ impl TryFrom<GtDescriptor> for GtReference {
     }
 }
 
-//#endregion
+// endregion
 
-//#region Tuple
+// region: Tuple
 
 impl From<GtTuple> for GtDescriptor {
     fn from(tuple: GtTuple) -> Self {
@@ -255,9 +255,9 @@ impl TryFrom<GtDescriptor> for GtTuple {
     }
 }
 
-//#endregion
+// endregion
 
-//#region Union
+// region: Union
 
 impl From<GtUnion> for GtDescriptor {
     fn from(union: GtUnion) -> Self {
@@ -279,9 +279,9 @@ impl TryFrom<GtDescriptor> for GtUnion {
     }
 }
 
-//#endregion
+// endregion
 
-//#region Record
+// region: Record
 
 impl From<GtRecord> for GtDescriptor {
     fn from(record: GtRecord) -> Self {
@@ -303,9 +303,9 @@ impl TryFrom<GtDescriptor> for GtRecord {
     }
 }
 
-//#endregion
+// endregion
 
-//#region Any
+// region: Any
 
 impl From<GtAny> for GtDescriptor {
     fn from(any: GtAny) -> Self {
@@ -327,9 +327,9 @@ impl TryFrom<GtDescriptor> for GtAny {
     }
 }
 
-//#endregion
+// endregion
 
-//#region Branded
+// region: Branded
 
 impl From<GtBranded> for GtDescriptor {
     fn from(branded: GtBranded) -> Self {
@@ -351,4 +351,4 @@ impl TryFrom<GtDescriptor> for GtBranded {
     }
 }
 
-//#endregion
+// endregion

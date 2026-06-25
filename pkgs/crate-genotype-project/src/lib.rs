@@ -10,8 +10,8 @@ pub use project::*;
 mod loader;
 pub use loader::*;
 
-mod source;
-pub use source::*;
+mod file;
+pub use file::*;
 
 mod runtime;
 pub use runtime::*;

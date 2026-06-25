@@ -1,4 +1,5 @@
 use crate::prelude::internal::*;
+
 use std::cell::RefCell;
 
 /// Serial project loader trait. It implements the project loader trait without spawning threads.
@@ -23,7 +24,7 @@ pub trait GtpLoaderSerial: GtpLoader<RefCell<GtProject>> {
     }
 }
 
-impl<Type: GtpLoaderSerial + GtpSource + ?Sized> GtpLoader<RefCell<GtProject>> for Type {
+impl<Type: GtpLoaderSerial + GtpFileSource + ?Sized> GtpLoader<RefCell<GtProject>> for Type {
     /// Loads module entries serially.
     fn load_module_entries(
         &self,

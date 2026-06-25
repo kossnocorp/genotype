@@ -6,32 +6,32 @@ pub use file::*;
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GtlDist {
     pub files: Vec<GtlDistFile>,
-    pub notices: Vec<GtNotice>,
+    pub diagnostics: Vec<GtDiagnostic>,
 }
 
 impl GtlDist {
     pub fn new<ProjectModule: GtlProjectModule>(
         modules: &IndexMap<GtpModulePath, GtlProjectModuleState<ProjectModule>>,
-        notices: Vec<GtNotice>,
+        diagnostics: Vec<GtDiagnostic>,
     ) -> GtlDist {
         let files = modules.values().map(|module| module.into()).collect();
-        GtlDist { files, notices }
+        GtlDist { files, diagnostics }
     }
 
     pub fn pack_extra_files<ProjectModule: GtlProjectModule>(
         &mut self,
         extra_files: Vec<GtlGeneration<ProjectModule>>,
-        extra_notices: Option<Vec<GtNotice>>,
+        extra_diagnostics: Option<Vec<GtDiagnostic>>,
     ) {
         for extra in extra_files {
             self.files.push(extra.file.into());
-            if let Some(notices) = extra.notices {
-                self.notices.extend(notices);
+            if let Some(diagnostics) = extra.diagnostics {
+                self.diagnostics.extend(diagnostics);
             }
         }
 
-        if let Some(extra_notices) = extra_notices {
-            self.notices.extend(extra_notices);
+        if let Some(extra_diagnostics) = extra_diagnostics {
+            self.diagnostics.extend(extra_diagnostics);
         }
     }
 

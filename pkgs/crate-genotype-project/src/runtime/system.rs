@@ -1,5 +1,7 @@
 use crate::prelude::internal::*;
 
+use std::sync::{Arc, Mutex};
+
 /// System project runtime. It combines parallel project loader with file system project source.
 /// It is the default project runtime used by the CLI.
 pub struct GtpRuntimeSystem {
@@ -45,9 +47,13 @@ impl GtpRuntimeSystem {
 
 impl GtpLoaderParallel for GtpRuntimeSystem {}
 
-impl GtpSourceFs for GtpRuntimeSystem {
+impl GtpFileAccessSystem for GtpRuntimeSystem {
     /// Returns the base project directory to resolve relative file paths.
     fn base_path(&self) -> &GtpCwdRelativePath {
         &self.base_path
     }
 }
+
+impl GtpFileSourceSystem for GtpRuntimeSystem {}
+
+impl GtpRuntime<Arc<Mutex<GtProject>>> for GtpRuntimeSystem {}

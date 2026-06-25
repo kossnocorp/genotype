@@ -3,4 +3,4 @@ use crate::prelude::internal::*;
 mod system;
 pub use system::*;
 
-pub trait GtcBackend: GtcFileProvider + GtcNoticeSink {}
+pub trait GtcBackend: GtcFileProvider + GtcDiagnosticSink {}

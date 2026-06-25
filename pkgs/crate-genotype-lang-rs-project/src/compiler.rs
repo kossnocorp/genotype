@@ -36,15 +36,15 @@ impl<'project> GtlCompiler<'project> for RsCompiler<'project> {
         _project: &GtlProject<'project, '_, RsProjectModule>,
     ) -> Option<GtlGenerations<RsProjectModule>> {
         let mut files = vec![];
-        let mut notices = vec![];
+        let mut diagnostics = vec![];
 
-        let (module_indices, module_indices_notices) = self.generate_module_indices();
+        let (module_indices, module_indices_diagnostics) = self.generate_module_indices();
         files.extend(module_indices);
-        if let Some(module_indices_notices) = module_indices_notices {
-            notices.extend(module_indices_notices);
+        if let Some(module_indices_diagnostics) = module_indices_diagnostics {
+            diagnostics.extend(module_indices_diagnostics);
         }
 
-        Some((files, Some(notices)))
+        Some((files, Some(diagnostics)))
     }
 
     fn gitignore_source_code(&self) -> Option<String> {
@@ -54,7 +54,7 @@ impl<'project> GtlCompiler<'project> for RsCompiler<'project> {
 
 impl<'project> RsCompiler<'project> {
     fn generate_module_indices(&self) -> GtlGenerations<RsProjectModule> {
-        let mut notices = vec![];
+        let mut diagnostics = vec![];
         let mut crate_paths: IndexMap<GtpTargetFilePath, IndexSet<String>> = IndexMap::new();
 
         for module_path in self.project.modules.keys() {
@@ -67,7 +67,7 @@ impl<'project> RsCompiler<'project> {
                         .map_err(|err| miette!("Failed to strip package source path: {err:?}"));
 
                     let Ok(rel_path) = rel_path else {
-                        notices.push(GtNotice::error(format!(
+                        diagnostics.push(GtDiagnostic::error(format!(
                             "Failed to generate index `mod.rs` files for `{target_path}` (generated from `{module_path}`): {}",
                             rel_path.unwrap_err()
                         )));
@@ -96,7 +96,7 @@ impl<'project> RsCompiler<'project> {
                 }
 
                 Err(err) => {
-                    notices.push(GtNotice::error(format!(
+                    diagnostics.push(GtDiagnostic::error(format!(
                         "Failed to generate index `mod.rs` files for `{module_path}`: {err}",
                     )));
                 }
@@ -138,7 +138,7 @@ impl<'project> RsCompiler<'project> {
             })
             .collect();
 
-        (generations, Some(notices))
+        (generations, Some(diagnostics))
     }
 }
 

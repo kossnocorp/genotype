@@ -30,13 +30,13 @@ impl GtpLangConfig for RsConfig {
         &self,
         config_path: &GtpConfigFilePath,
         package_enabled: bool,
-    ) -> Vec<GtNotice> {
-        let mut notices = vec![];
+    ) -> Vec<GtDiagnostic> {
+        let mut diagnostics = vec![];
 
-        if let Some(notice) = self.rust_edition_health_check(config_path, package_enabled) {
-            notices.push(notice);
+        if let Some(diagnostic) = self.rust_edition_health_check(config_path, package_enabled) {
+            diagnostics.push(diagnostic);
         }
 
-        notices
+        diagnostics
     }
 }

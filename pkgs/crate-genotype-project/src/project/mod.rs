@@ -5,7 +5,7 @@ use crate::prelude::internal::*;
 mod resolve;
 pub use resolve::*;
 
-mod notices;
+mod diagnostics;
 
 mod pkg;
 

@@ -1,0 +1,30 @@
+GtDiagnostic: {
+  kind: GtDiagnosticKind,
+  content: GtDiagnosticContent,
+}
+
+GtDiagnosticKind: "error" | "warning" | "success" | "info"
+
+GtDiagnosticContent: GtDiagnosticContentMessage | GtDiagnosticContentReport
+
+GtDiagnosticContentBase: {
+  title: string
+}
+
+GtDiagnosticContentMessage: {
+  ...GtDiagnosticContentBase,
+  body?: GtDiagnosticContentMessageBody,
+}
+
+GtDiagnosticContentReport: {
+  ...GtDiagnosticContentBase,
+  report: string
+}
+
+GtDiagnosticContentMessageBody:
+  | GtDiagnosticContentMessageBodySingle
+  | GtDiagnosticContentMessageBodyMulti
+
+GtDiagnosticContentMessageBodySingle: string
+
+GtDiagnosticContentMessageBodyMulti: [string]

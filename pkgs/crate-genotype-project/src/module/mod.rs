@@ -14,8 +14,6 @@ pub use error::*;
 mod source;
 pub use source::*;
 
-mod notice;
-
 // endregion
 
 // region: Module
