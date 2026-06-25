@@ -9,7 +9,6 @@ mod generics;
 mod ids;
 
 mod naming;
-use genotype_project::{IndexMap, IndexSet};
 pub use naming::*;
 
 mod config;

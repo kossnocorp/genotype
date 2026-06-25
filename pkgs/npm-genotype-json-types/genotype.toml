@@ -16,7 +16,7 @@ enabled = true
 
 [rs.manifest.package]
 name = "genotype_json_types"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2024"
 description = "Genotype language JSON types"
 license = "MIT"
@@ -30,7 +30,7 @@ version = "legacy"
 
 [py.manifest.tool.poetry]
 name = "genotype-json-types"
-version = "0.3.0"
+version = "0.4.0"
 description = "Genotype language JSON types"
 authors = ["Sasha Koss <koss@nocorp.me>"]
 license = "MIT"

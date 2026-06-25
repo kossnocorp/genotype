@@ -1,6 +1,9 @@
 mod compiler;
 pub use compiler::*;
 
+mod compilation;
+pub use compilation::*;
+
 mod file_provider;
 pub use file_provider::*;
 

@@ -69,7 +69,7 @@ Response:
 
 #[something("else")]
 SuccessResponse: {
-  status: "success"
+  status: "success",
   data: any
 }
 

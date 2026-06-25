@@ -8,7 +8,7 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_parser = { version = "0.15.0", path = "../crate-genotype-parser" }
+genotype_core = { version = "0.15.0", path = "../crate-genotype-core" }
 genotype_project_core = { version = "0.15.0", path = "../crate-genotype-project-core" }
 serde = { version = "1.0.228", features = ["derive"] }
 relative-path = { version = "1.9.3", features = ["serde"] }

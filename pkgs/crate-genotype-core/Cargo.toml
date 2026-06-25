@@ -1,17 +1,15 @@
 [package]
-name = "genotype_lang_py_config"
+name = "genotype_core"
 version = "0.15.0"
 edition = "2024"
-description = "Genotype language Python target config crate"
+description = "Genotype language core crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
 license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_core = { version = "0.15.0", path = "../crate-genotype-core" }
-genotype_project_core = { version = "0.15.0", path = "../crate-genotype-project-core" }
 serde = { version = "1.0.228", features = ["derive"] }
-relative-path = { version = "1.9.3", features = ["serde"] }
+miette = { version = "7.6.0", features = ["serde"] }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

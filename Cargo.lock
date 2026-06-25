@@ -670,6 +670,8 @@ dependencies = [
 name = "genotype_compiler"
 version = "0.15.0"
 dependencies = [
+ "genotype_core",
+ "genotype_lang_core",
  "genotype_lang_core_project",
  "genotype_lang_py_config",
  "genotype_lang_py_project",
@@ -691,10 +693,19 @@ dependencies = [
  "relative-path",
  "semver",
  "serde",
- "syntect",
  "thiserror 1.0.64",
  "toml 0.8.22",
  "trybuild",
+]
+
+[[package]]
+name = "genotype_core"
+version = "0.15.0"
+dependencies = [
+ "insta",
+ "miette",
+ "pretty_assertions",
+ "serde",
 ]
 
 [[package]]
@@ -734,15 +745,20 @@ dependencies = [
 name = "genotype_lang_core_project"
 version = "0.15.0"
 dependencies = [
+ "genotype_core",
  "genotype_lang_core",
  "genotype_lang_core_tree",
+ "genotype_parser",
  "genotype_project",
+ "genotype_project_core",
  "indexmap",
  "insta",
  "line-index",
  "miette",
  "pluralizer",
  "pretty_assertions",
+ "relative-path",
+ "semver",
  "serde",
  "serde_json",
  "thiserror 1.0.64",
@@ -768,7 +784,7 @@ dependencies = [
 name = "genotype_lang_py_config"
 version = "0.15.0"
 dependencies = [
- "genotype_parser",
+ "genotype_core",
  "genotype_project_core",
  "insta",
  "pretty_assertions",
@@ -780,6 +796,8 @@ dependencies = [
 name = "genotype_lang_py_project"
 version = "0.15.0"
 dependencies = [
+ "genotype_core",
+ "genotype_lang_core",
  "genotype_lang_core_project",
  "genotype_lang_core_tree",
  "genotype_lang_py_config",
@@ -798,6 +816,7 @@ dependencies = [
  "thiserror 1.0.64",
  "toml 0.8.22",
  "toml_edit",
+ "toml_ext",
 ]
 
 [[package]]
@@ -822,7 +841,7 @@ dependencies = [
 name = "genotype_lang_rs_config"
 version = "0.15.0"
 dependencies = [
- "genotype_parser",
+ "genotype_core",
  "genotype_project_core",
  "genotype_test",
  "indoc",
@@ -838,6 +857,8 @@ dependencies = [
 name = "genotype_lang_rs_project"
 version = "0.15.0"
 dependencies = [
+ "genotype_core",
+ "genotype_lang_core",
  "genotype_lang_core_project",
  "genotype_lang_core_tree",
  "genotype_lang_rs_config",
@@ -862,6 +883,7 @@ dependencies = [
 name = "genotype_lang_rs_tree"
 version = "0.15.0"
 dependencies = [
+ "genotype_core",
  "genotype_lang_core_tree",
  "genotype_lang_rs_config",
  "genotype_parser",
@@ -881,7 +903,7 @@ dependencies = [
 name = "genotype_lang_ts_config"
 version = "0.15.0"
 dependencies = [
- "genotype_parser",
+ "genotype_core",
  "genotype_project_core",
  "insta",
  "pretty_assertions",
@@ -893,6 +915,8 @@ dependencies = [
 name = "genotype_lang_ts_project"
 version = "0.15.0"
 dependencies = [
+ "genotype_core",
+ "genotype_lang_core",
  "genotype_lang_core_project",
  "genotype_lang_core_tree",
  "genotype_lang_ts_config",
@@ -901,6 +925,7 @@ dependencies = [
  "genotype_project",
  "genotype_project_core",
  "genotype_test",
+ "indexmap",
  "insta",
  "miette",
  "pluralizer",
@@ -946,6 +971,7 @@ dependencies = [
 name = "genotype_parser"
 version = "0.15.0"
 dependencies = [
+ "genotype_core",
  "genotype_visitor_macro",
  "heck",
  "indexmap",
@@ -965,6 +991,7 @@ version = "0.15.0"
 dependencies = [
  "delegate",
  "figment",
+ "genotype_core",
  "genotype_lang_core",
  "genotype_lang_py_config",
  "genotype_lang_rs_config",
@@ -992,7 +1019,9 @@ dependencies = [
 [[package]]
 name = "genotype_project_core"
 version = "0.15.0"
+ "genotype_core",
 dependencies = [
+ "genotype_core",
  "genotype_parser",
  "genotype_test",
  "indexmap",

@@ -166,7 +166,7 @@ fn parse(
         ParseState::Descriptors(span, (doc, attributes), name, generics) => {
             context.enter_generics_scope(&generics);
 
-            let id = context.module_id.definition_id(&name);
+            let id = GtDefinitionId(context.module_id.clone(), name.1.clone());
             let descriptor = GtDescriptor::parse(pair, context)?;
             Ok(GtAlias {
                 id,

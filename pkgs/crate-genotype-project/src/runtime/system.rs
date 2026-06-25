@@ -1,4 +1,4 @@
-pub use crate::prelude::internal::*;
+use crate::prelude::internal::*;
 
 /// System project runtime. It combines parallel project loader with file system project source.
 /// It is the default project runtime used by the CLI.

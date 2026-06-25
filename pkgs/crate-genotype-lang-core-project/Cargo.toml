@@ -8,7 +8,10 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
+genotype_core = { version = "0.15.0", path = "../crate-genotype-core" }
+genotype_parser = { version = "0.15.0", path = "../crate-genotype-parser" }
 genotype_project = { version = "0.15.0", path = "../crate-genotype-project" }
+genotype_project_core = { version = "0.15.0", path = "../crate-genotype-project-core" }
 genotype_lang_core = { version = "0.15.0", path = "../crate-genotype-lang-core" }
 genotype_lang_core_tree = { version = "0.15.0", path = "../crate-genotype-lang-core-tree" }
 toml_ext = { version = "0.2.0", path = "../crate-toml-ext" }
@@ -21,6 +24,8 @@ serde_json = { version = "1.0.140", features = ["preserve_order"] }
 serde = { version = "1.0.228", features = ["derive"] }
 line-index = "0.1.2"
 pluralizer = "0.5.0"
+semver = { version = "1.0.27", features = ["serde"] }
+relative-path = { version = "1.9.3", features = ["serde"] }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

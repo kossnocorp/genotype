@@ -2,6 +2,7 @@ pub use crate::*;
 
 pub(crate) mod internal {
     pub use super::*;
+    pub use genotype_core::prelude::*;
     #[cfg(feature = "parser")]
     pub use genotype_parser::*;
     #[cfg(test)]

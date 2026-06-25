@@ -9,6 +9,3 @@ pub use result::*;
 
 mod span;
 pub use span::*;
-
-mod notice;
-pub use notice::*;

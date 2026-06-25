@@ -76,9 +76,6 @@ pub use literal::*;
 pub mod literal_value;
 pub use literal_value::*;
 
-pub mod module_id;
-pub use module_id::*;
-
 pub mod object;
 pub use object::*;
 

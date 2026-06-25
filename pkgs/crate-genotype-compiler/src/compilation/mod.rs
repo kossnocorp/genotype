@@ -1,22 +1,22 @@
 use crate::prelude::internal::*;
 
-pub struct GtCompiler<'project, 'backend> {
+pub struct GtcCompilation<'project, 'backend> {
     /// Project to compile.
     project: &'project GtProject,
 
-    /// Compiler backend to use for file system operations and notice printing.
+    /// Compiler runtime to use for file system operations and notice handling.
     backend: &'backend dyn GtcBackend,
 
     /// Count of errors encountered during compilation.
     errors_count: usize,
 }
 
-impl GtCompiler<'_, '_> {
+impl GtcCompilation<'_, '_> {
     pub fn new<'project, 'backend>(
         project: &'project GtProject,
         backend: &'backend dyn GtcBackend,
-    ) -> GtCompiler<'project, 'backend> {
-        GtCompiler {
+    ) -> GtcCompilation<'project, 'backend> {
+        GtcCompilation {
             project,
             backend,
             errors_count: 0,
@@ -24,14 +24,26 @@ impl GtCompiler<'_, '_> {
     }
 
     pub fn compile(&mut self) -> i32 {
+        self.compile_langs(&[GtLang::Ts, GtLang::Py, GtLang::Rs])
+    }
+
+    pub fn compile_langs(&mut self, langs: &[GtLang]) -> i32 {
         let project = self.project;
 
         let project_notices = project.as_final_notices();
         self.handle_notices(project_notices);
 
-        self.compile_project(&TsCompiler::new(project));
-        self.compile_project(&PyCompiler::new(project));
-        self.compile_project(&RsCompiler::new(project));
+        if langs.contains(&GtLang::Ts) {
+            self.compile_project(&TsCompiler::new(project));
+        }
+
+        if langs.contains(&GtLang::Py) {
+            self.compile_project(&PyCompiler::new(project));
+        }
+
+        if langs.contains(&GtLang::Rs) {
+            self.compile_project(&RsCompiler::new(project));
+        }
 
         self.finalize(&project.paths.dist)
     }
@@ -109,19 +121,32 @@ impl GtCompiler<'_, '_> {
             GtlDistFile::Error(error) => {
                 // We only write the errored file if it doesn't exist in the file system, to avoid
                 // overwriting existing files with errors.
-                let file_exist_result = self.backend.file_exists(&path.to_path_buf());
-                if !file_exist_result {
-                    notices.push(GtNotice::error(format!(
-                        "Failed to write `{path}` to file system as it was generated with errors: {message}",
-                        message = error.message
-                    )));
+                let file_exist_result = self.backend.file_exists(path.relative_path());
+
+                match file_exist_result {
+                    // Write to file system if it doesn't exist
+                    Ok(false) => true,
+
+                    Ok(true) | Err(_) => {
+                        notices.push(GtNotice::error(format!(
+                            "Failed to write `{path}` to file system as it was generated with errors: {message}",
+                            message = error.message
+                        )));
+
+                        if let Err(err) = file_exist_result {
+                            notices.push(GtNotice::error(format!(
+                                "Failed to check if `{path}` exists in file system: {err}"
+                            )));
+                        }
+
+                        false
+                    }
                 }
-                !file_exist_result
             }
         };
 
         if should_write {
-            let write_result = self.backend.file_write(&path.to_path_buf(), source_code);
+            let write_result = self.backend.file_write(&path.relative_path(), source_code);
             if let Err(err) = write_result {
                 notices.push(GtNotice::error(format!(
                     "Failed to write `{path}` to file system: {err}"

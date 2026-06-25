@@ -1,6 +1,7 @@
 [workspace]
 resolver = "3"
 members = [
+  "pkgs/crate-genotype-core",
   "pkgs/crate-genotype-lang-core",
   "pkgs/crate-genotype-lang-core-tree",
   "pkgs/crate-genotype-lang-core-project",

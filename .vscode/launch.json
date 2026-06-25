@@ -10,7 +10,7 @@
       "request": "launch",
       "url": "http://localhost:4321",
       "webRoot": "${workspaceFolder}/websites/docs",
-      "preLaunchTask": "docs#dev"
+      "preLaunchTask": "website#dev"
     },
 
     //#endregion

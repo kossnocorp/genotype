@@ -54,6 +54,12 @@ run = "uv sync"
 [tasks.build]
 run = "cargo build"
 
+[tasks.check]
+run = "cargo check"
+
+[tasks."check:watch"]
+run = "bacon check"
+
 [tasks.lint]
 depends = [
   "lint/rust",
@@ -86,7 +92,7 @@ run = "watchexec -e rs,Cargo.toml,Cargo.lock -rc reset -- cargo clippy --all-tar
 depends = [
   "format/base",
   "format/rust",
-  # TODO: Add JS/Python formatters
+  # TODO: Add Python formatter
 ]
 
 [tasks."format:check"]

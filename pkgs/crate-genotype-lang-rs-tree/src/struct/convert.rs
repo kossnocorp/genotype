@@ -93,7 +93,9 @@ impl RsConvert<RsStruct> for GtObject {
 
 impl RsConvert<RsStruct> for GtLiteral {
     fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsStruct> {
-        context.push_import(RsUse::new(RsDependencyIdent::Litty, "literal".into()));
+        context.push_import(RsUse::new(RsDependencyIdent::Litty, "serde_literal".into()));
+        context.push_import(RsUse::new(RsDependencyIdent::Serde, "Deserialize".into()));
+        context.push_import(RsUse::new(RsDependencyIdent::Serde, "Serialize".into()));
 
         let doc = context.consume_doc();
         let name = if let Some(name) = context.claim_alias() {
@@ -110,7 +112,10 @@ impl RsConvert<RsStruct> for GtLiteral {
         Ok(RsStruct {
             id,
             doc,
-            attributes: vec![RsAttribute(format!("literal({literal})"))],
+            attributes: vec![
+                RsAttribute(format!("serde_literal({literal})")),
+                RsAttribute("derive(Serialize, Deserialize)".into()),
+            ],
             name,
             generics: vec![],
             fields: RsStructFields::Unit,
@@ -558,7 +563,8 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "True"),
           doc: None,
           attributes: [
-            RsAttribute("literal(true)"),
+            RsAttribute("serde_literal(true)"),
+            RsAttribute("derive(Serialize, Deserialize)"),
           ],
           name: RsIdentifier("True"),
           generics: [],
@@ -581,7 +587,8 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "Version"),
           doc: None,
           attributes: [
-            RsAttribute("literal(1)"),
+            RsAttribute("serde_literal(1)"),
+            RsAttribute("derive(Serialize, Deserialize)"),
           ],
           name: RsIdentifier("Version"),
           generics: [],
@@ -605,7 +612,8 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "UserV1"),
           doc: None,
           attributes: [
-            RsAttribute("literal(1)"),
+            RsAttribute("serde_literal(1)"),
+            RsAttribute("derive(Serialize, Deserialize)"),
           ],
           name: RsIdentifier("UserV1"),
           generics: [],
@@ -627,7 +635,8 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "False"),
           doc: None,
           attributes: [
-            RsAttribute("literal(false)"),
+            RsAttribute("serde_literal(false)"),
+            RsAttribute("derive(Serialize, Deserialize)"),
           ],
           name: RsIdentifier("False"),
           generics: [],
@@ -642,7 +651,19 @@ mod tests {
           RsUse(
             dependency: Litty,
             reference: Named([
-              Name(RsIdentifier("literal")),
+              Name(RsIdentifier("serde_literal")),
+            ]),
+          ),
+          RsUse(
+            dependency: Serde,
+            reference: Named([
+              Name(RsIdentifier("Deserialize")),
+            ]),
+          ),
+          RsUse(
+            dependency: Serde,
+            reference: Named([
+              Name(RsIdentifier("Serialize")),
             ]),
           ),
         ]
@@ -663,7 +684,8 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "False"),
           doc: Some(RsDoc("Hello, world!", false)),
           attributes: [
-            RsAttribute("literal(false)"),
+            RsAttribute("serde_literal(false)"),
+            RsAttribute("derive(Serialize, Deserialize)"),
           ],
           name: RsIdentifier("False"),
           generics: [],
@@ -684,7 +706,8 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "Lit1_23456"),
           doc: None,
           attributes: [
-            RsAttribute("literal(1.23456)"),
+            RsAttribute("serde_literal(1.23456)"),
+            RsAttribute("derive(Serialize, Deserialize)"),
           ],
           name: RsIdentifier("Lit1_23456"),
           generics: [],
@@ -705,7 +728,8 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "True"),
           doc: None,
           attributes: [
-            RsAttribute("literal(true)"),
+            RsAttribute("serde_literal(true)"),
+            RsAttribute("derive(Serialize, Deserialize)"),
           ],
           name: RsIdentifier("True"),
           generics: [],
@@ -728,7 +752,8 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "Version"),
           doc: None,
           attributes: [
-            RsAttribute("literal(1)"),
+            RsAttribute("serde_literal(1)"),
+            RsAttribute("derive(Serialize, Deserialize)"),
           ],
           name: RsIdentifier("Version"),
           generics: [],
@@ -752,7 +777,8 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "UserV1"),
           doc: None,
           attributes: [
-            RsAttribute("literal(1)"),
+            RsAttribute("serde_literal(1)"),
+            RsAttribute("derive(Serialize, Deserialize)"),
           ],
           name: RsIdentifier("UserV1"),
           generics: [],
@@ -774,7 +800,8 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "False"),
           doc: None,
           attributes: [
-            RsAttribute("literal(false)"),
+            RsAttribute("serde_literal(false)"),
+            RsAttribute("derive(Serialize, Deserialize)"),
           ],
           name: RsIdentifier("False"),
           generics: [],
@@ -789,7 +816,19 @@ mod tests {
           RsUse(
             dependency: Litty,
             reference: Named([
-              Name(RsIdentifier("literal")),
+              Name(RsIdentifier("serde_literal")),
+            ]),
+          ),
+          RsUse(
+            dependency: Serde,
+            reference: Named([
+              Name(RsIdentifier("Deserialize")),
+            ]),
+          ),
+          RsUse(
+            dependency: Serde,
+            reference: Named([
+              Name(RsIdentifier("Serialize")),
             ]),
           ),
         ]
@@ -810,7 +849,8 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "False"),
           doc: Some(RsDoc("Hello, world!", false)),
           attributes: [
-            RsAttribute("literal(false)"),
+            RsAttribute("serde_literal(false)"),
+            RsAttribute("derive(Serialize, Deserialize)"),
           ],
           name: RsIdentifier("False"),
           generics: [],

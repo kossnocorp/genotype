@@ -19,8 +19,6 @@ impl<'context> GtlRender<'context, RsRenderTypes> for RsUse {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_parser::GtModuleId;
-    use insta::assert_snapshot;
 
     #[test]
     fn test_render_module() {
