@@ -66,6 +66,8 @@ echo
 
 cd modules
 
+rm -rf ./dist
+
 if [ $RUN -eq 1 ]; then
 	echo "🌀 Running \`gt build\`"
 	echo "-----------------------------------------------------"
