@@ -1,4 +1,11 @@
-import type { LiteralBag, RemoveFileRequest, Response } from "genotype-test-literal-fields-types";
+import type {
+  Executor,
+  ExecutorKind,
+  Formatter,
+  LiteralBag,
+  RemoveFileRequest,
+  Response,
+} from "genotype-test-literal-fields-types";
 
 const _success: Response = {
   status: "success",
@@ -41,3 +48,26 @@ removeFileRequest.requestType = "write-file";
 
 // @ts-expect-error
 removeFileRequest.request_kind = "other-operation";
+
+const executorKindNode: ExecutorKind = "pnpm";
+const executorKindCargo: ExecutorKind = "cargo";
+
+// @ts-expect-error
+const executorKindInvalid: ExecutorKind = "yarn";
+
+const executor: Executor = {
+  kind: "pnpm",
+  cmd: "prettier",
+};
+
+const cargoExecutor: Executor = {
+  kind: "cargo",
+  cmd: "fmt",
+};
+
+const shellFormatter: Formatter = {
+  kind: "shell",
+  cmd: "npm run format",
+};
+
+const executorFormatter: Formatter = executor;

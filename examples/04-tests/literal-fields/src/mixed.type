@@ -1,0 +1,26 @@
+ExecutorKindNode:
+  | "pnpm"
+  | "npx"
+
+ExecutorKindPython:
+  | "pip"
+  | "uv"
+
+ExecutorKind:
+  | "cargo"
+  | ExecutorKindNode
+  | ExecutorKindPython
+
+Executor: {
+  kind: ExecutorKind,
+  cmd: string,
+}
+
+FormatterShell: {
+  kind: "shell",
+  cmd: string,
+}
+
+Formatter:
+  | FormatterShell
+  | Executor

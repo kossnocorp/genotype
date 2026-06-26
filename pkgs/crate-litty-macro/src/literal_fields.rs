@@ -3,7 +3,7 @@ use quote::{ToTokens, quote};
 use syn::parse::Parser;
 use syn::parse::{Parse, ParseStream};
 use syn::{
-    Data, DeriveInput, Error, Expr, Fields, Ident, Lit, LitStr, Meta, MetaList, Token,
+    Data, DeriveInput, Error, Expr, Fields, Ident, Lit, LitStr, Meta, MetaList, Token, Variant,
     parse_macro_input, punctuated::Punctuated,
 };
 
@@ -351,6 +351,12 @@ struct EnumLiteralVariant {
     lit: Lit,
 }
 
+struct EnumLiteralVariantHelper {
+    ident: Ident,
+    helper_ident: Ident,
+    trait_ident: proc_macro2::TokenStream,
+}
+
 fn expand_literal_enum(
     input: &DeriveInput,
     mode: LiteralsMode,
@@ -369,6 +375,7 @@ fn expand_literal_enum(
     };
 
     let mut variants: Vec<EnumLiteralVariant> = vec![];
+    let mut non_literal_variants: Vec<&Variant> = vec![];
     for variant in &data_enum.variants {
         let mut literal: Option<Lit> = None;
 
@@ -403,6 +410,8 @@ fn expand_literal_enum(
                 ident: variant.ident.clone(),
                 lit,
             });
+        } else {
+            non_literal_variants.push(variant);
         }
     }
 
@@ -422,6 +431,7 @@ fn expand_literal_enum(
     let mut helper_structs = quote! {};
     let mut serialize_arms = quote! {};
     let mut deserialize_arms = quote! {};
+    let mut literal_helpers = Vec::new();
 
     let helper_suffix = match mode {
         LiteralsMode::Both => "Serde",
@@ -449,6 +459,12 @@ fn expand_literal_enum(
         );
 
         let (trait_ident, literal_type, literal_value) = literal_trait_def(&variant.lit)?;
+
+        literal_helpers.push(EnumLiteralVariantHelper {
+            ident: variant_ident.clone(),
+            helper_ident: helper_ident.clone(),
+            trait_ident: trait_ident.clone(),
+        });
 
         helper_structs.extend(quote! {
             struct #helper_ident;
@@ -487,6 +503,10 @@ fn expand_literal_enum(
         deserialize_arms.extend(deserialize_match);
     }
 
+    for variant in &non_literal_variants {
+        serialize_arms.extend(non_literal_variant_serialize_arm(enum_ident, variant)?);
+    }
+
     let serialize_impl = quote! {
         impl #impl_generics serde::Serialize for #enum_ident #ty_generics #serialize_where_clause {
             fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
@@ -503,7 +523,8 @@ fn expand_literal_enum(
         }
     };
 
-    let deserialize_impl = quote! {
+    let deserialize_impl = if non_literal_variants.is_empty() {
+        quote! {
         enum #literal_value_ident {
             Str(String),
             Bool(bool),
@@ -580,6 +601,43 @@ fn expand_literal_enum(
                 }
             }
         }
+        }
+    } else {
+        let helper_enum_ident = Ident::new(
+            &format!("__{}LittyUntagged{}", enum_ident, helper_suffix),
+            enum_ident.span(),
+        );
+        let helper_variants = data_enum
+            .variants
+            .iter()
+            .map(|variant| helper_enum_variant(variant, &literal_helpers))
+            .collect::<Result<Vec<_>, _>>()?;
+        let helper_match_arms = data_enum
+            .variants
+            .iter()
+            .map(|variant| helper_enum_match_arm(enum_ident, &helper_enum_ident, variant))
+            .collect::<Result<Vec<_>, _>>()?;
+
+        quote! {
+            impl #deserialize_impl_generics serde::Deserialize<'__de> for #enum_ident #ty_generics #deserialize_where_clause {
+                fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+                where
+                    D: serde::Deserializer<'__de>,
+                {
+                    #[derive(serde::Deserialize)]
+                    #[serde(untagged)]
+                    enum #helper_enum_ident #impl_generics {
+                        #(#helper_variants),*
+                    }
+
+                    let value = <#helper_enum_ident #ty_generics as serde::Deserialize>::deserialize(deserializer)?;
+
+                    Ok(match value {
+                        #(#helper_match_arms),*
+                    })
+                }
+            }
+        }
     };
 
     Ok(match mode {
@@ -596,6 +654,126 @@ fn expand_literal_enum(
             #helper_structs
             #deserialize_impl
         },
+    })
+}
+
+fn helper_enum_variant(
+    variant: &Variant,
+    literal_helpers: &[EnumLiteralVariantHelper],
+) -> Result<proc_macro2::TokenStream, Error> {
+    let variant_ident = &variant.ident;
+    let fields = &variant.fields;
+
+    if let Some(helper) = literal_helpers
+        .iter()
+        .find(|helper| helper.ident == *variant_ident)
+    {
+        let helper_ident = &helper.helper_ident;
+        let trait_ident = &helper.trait_ident;
+        let deserialize_with = LitStr::new(
+            &format!(
+                "<{helper_ident} as litty::{}>::lit_deserialize",
+                trait_ident.to_string()
+            ),
+            variant_ident.span(),
+        );
+        return Ok(quote! {
+            #[serde(deserialize_with = #deserialize_with)]
+            #variant_ident
+        });
+    }
+
+    Ok(quote! { #variant_ident #fields })
+}
+
+fn helper_enum_match_arm(
+    enum_ident: &Ident,
+    helper_enum_ident: &Ident,
+    variant: &Variant,
+) -> Result<proc_macro2::TokenStream, Error> {
+    let variant_ident = &variant.ident;
+
+    Ok(match &variant.fields {
+        Fields::Unit => quote! {
+            #helper_enum_ident::#variant_ident => #enum_ident::#variant_ident
+        },
+        Fields::Unnamed(fields) => {
+            let bindings = (0..fields.unnamed.len())
+                .map(|index| Ident::new(&format!("field_{index}"), variant_ident.span()))
+                .collect::<Vec<_>>();
+            quote! {
+                #helper_enum_ident::#variant_ident(#(#bindings),*) => {
+                    #enum_ident::#variant_ident(#(#bindings),*)
+                }
+            }
+        }
+        Fields::Named(fields) => {
+            let bindings = fields
+                .named
+                .iter()
+                .map(|field| {
+                    field.ident.clone().ok_or_else(|| {
+                        Error::new_spanned(field, "named enum fields must have identifiers")
+                    })
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            quote! {
+                #helper_enum_ident::#variant_ident { #(#bindings),* } => {
+                    #enum_ident::#variant_ident { #(#bindings),* }
+                }
+            }
+        }
+    })
+}
+
+fn non_literal_variant_serialize_arm(
+    enum_ident: &Ident,
+    variant: &Variant,
+) -> Result<proc_macro2::TokenStream, Error> {
+    let variant_ident = &variant.ident;
+
+    Ok(match &variant.fields {
+        Fields::Unit => quote! {
+            #enum_ident::#variant_ident => serde::Serialize::serialize(&(), serializer),
+        },
+        Fields::Unnamed(fields) if fields.unnamed.len() == 1 => quote! {
+            #enum_ident::#variant_ident(value) => serde::Serialize::serialize(value, serializer),
+        },
+        Fields::Unnamed(fields) => {
+            let bindings = (0..fields.unnamed.len())
+                .map(|index| Ident::new(&format!("field_{index}"), variant_ident.span()))
+                .collect::<Vec<_>>();
+            quote! {
+                #enum_ident::#variant_ident(#(#bindings),*) => {
+                    serde::Serialize::serialize(&(#(#bindings),*), serializer)
+                },
+            }
+        }
+        Fields::Named(fields) => {
+            let bindings = fields
+                .named
+                .iter()
+                .map(|field| {
+                    field.ident.clone().ok_or_else(|| {
+                        Error::new_spanned(field, "named enum fields must have identifiers")
+                    })
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            let field_names = bindings
+                .iter()
+                .map(|ident| ident.to_string())
+                .collect::<Vec<_>>();
+            let fields_len = bindings.len();
+            quote! {
+                #enum_ident::#variant_ident { #(#bindings),* } => {
+                    let mut map = serde::Serializer::serialize_map(serializer, Some(#fields_len))?;
+                    #(
+                        serde::ser::SerializeMap::serialize_entry(&mut map, #field_names, #bindings)?;
+                    )*
+                    serde::ser::SerializeMap::end(map)
+                },
+            }
+        }
     })
 }
 

@@ -19,7 +19,7 @@ fi
 echo
 
 echo "🌀 Checking TypeScript package"
-if output=$(pnpm --dir "./ts" install --ignore-workspace 2>&1); then
+if output=$(CI=true pnpm --dir "./ts" install --ignore-workspace 2>&1); then
 	echo "🟢 pnpm install: OK"
 else
 	echo "🔴 pnpm install: FAILED"
@@ -29,7 +29,7 @@ else
 	exit 1
 fi
 
-if output=$(pnpm --dir "./ts" tsc 2>&1); then
+if output=$(CI=true pnpm --dir "./ts" tsc 2>&1); then
 	echo "🟢 TypeScript check: OK"
 else
 	echo "🔴 TypeScript check: FAILED"

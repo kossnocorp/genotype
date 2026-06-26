@@ -106,7 +106,7 @@ run_ts_tests_for() {
 		exit 1
 	fi
 
-	if output=$(pnpm install 2>&1); then
+	if output=$(CI=true pnpm install 2>&1); then
 		echo "🟢 pnpm install: OK"
 	else
 		echo "🔴 pnpm install: FAILED"

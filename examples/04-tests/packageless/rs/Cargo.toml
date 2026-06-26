@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-litty = "0.2"
+litty = { version = "0.5", path = "../../../../pkgs/crate-litty/" }
 serde = { version = "1", features = ["derive"] }
 
 [workspace]

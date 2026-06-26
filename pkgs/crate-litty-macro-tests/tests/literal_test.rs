@@ -222,6 +222,66 @@ fn test_enum_deserialize_literals() {
 }
 
 #[test]
+fn test_serde_literals_enum_with_mixed_literal_and_nested_literal_variants() {
+    #[serde_literals]
+    #[derive(Debug, PartialEq, Serialize, Deserialize)]
+    enum ExecutorKind {
+        #[literal("cargo")]
+        Cargo,
+        Node(ExecutorKindNode),
+        Python(ExecutorKindPython),
+    }
+
+    #[serde_literals]
+    #[derive(Debug, PartialEq, Serialize, Deserialize)]
+    enum ExecutorKindNode {
+        #[literal("pnpm")]
+        Pnpm,
+        #[literal("npx")]
+        Npx,
+    }
+
+    #[serde_literals]
+    #[derive(Debug, PartialEq, Serialize, Deserialize)]
+    enum ExecutorKindPython {
+        #[literal("pip")]
+        Pip,
+        #[literal("uv")]
+        Uv,
+    }
+
+    assert_eq!(
+        serde_json::from_str::<ExecutorKind>(r#""cargo""#).unwrap(),
+        ExecutorKind::Cargo,
+    );
+
+    assert_eq!(
+        serde_json::from_str::<ExecutorKind>(r#""pnpm""#).unwrap(),
+        ExecutorKind::Node(ExecutorKindNode::Pnpm),
+    );
+
+    assert_eq!(
+        serde_json::from_str::<ExecutorKind>(r#""uv""#).unwrap(),
+        ExecutorKind::Python(ExecutorKindPython::Uv),
+    );
+
+    assert_eq!(
+        serde_json::to_string(&ExecutorKind::Cargo).unwrap(),
+        r#""cargo""#,
+    );
+
+    assert_eq!(
+        serde_json::to_string(&ExecutorKind::Node(ExecutorKindNode::Pnpm)).unwrap(),
+        r#""pnpm""#,
+    );
+
+    assert_eq!(
+        serde_json::to_string(&ExecutorKind::Python(ExecutorKindPython::Uv)).unwrap(),
+        r#""uv""#,
+    );
+}
+
+#[test]
 fn test_literal_fields() {
     #[derive(Debug, PartialEq, Literals)]
     #[literals(ok = true, version = 1)]

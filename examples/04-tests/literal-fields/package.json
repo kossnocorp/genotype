@@ -4,7 +4,8 @@
   "private": true,
   "dependencies": {
     "@types/node": "^25.5.2",
-    "genotype-test-literal-fields-types": "file:./dist/ts/",
+    "genotype-test-literal-fields-types": "file:./dist/ts-types/ts/",
+    "genotype-test-literal-fields-zod-types": "file:./dist/ts-zod/ts/",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2"
   }

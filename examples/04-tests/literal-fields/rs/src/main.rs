@@ -1,5 +1,6 @@
 use genotype_test_literal_fields_types::{
-    RemoveFileRequest, Response, ResponseFailure, ResponseSuccess,
+    Executor, ExecutorKind, ExecutorKindNode, ExecutorKindPython, Formatter, RemoveFileRequest,
+    Response, ResponseFailure, ResponseSuccess,
 };
 
 fn main() {}
@@ -61,5 +62,90 @@ mod tests {
         }))
         .expect("deserialize request");
         assert_eq!(decoded, request);
+    }
+
+    #[test]
+    fn mixed_executor_kind_node_roundtrip() {
+        let decoded: ExecutorKind =
+            from_value(json!("pnpm")).expect("deserialize node executor kind");
+        assert_eq!(decoded, ExecutorKind::Node(ExecutorKindNode::Pnpm));
+        assert_eq!(
+            to_value(&decoded).expect("serialize node executor kind"),
+            json!("pnpm")
+        );
+    }
+
+    #[test]
+    fn mixed_executor_kind_cargo_roundtrip() {
+        let decoded: ExecutorKind =
+            from_value(json!("cargo")).expect("deserialize cargo executor kind");
+        assert_eq!(decoded, ExecutorKind::Cargo);
+        assert_eq!(
+            to_value(&decoded).expect("serialize cargo executor kind"),
+            json!("cargo")
+        );
+    }
+
+    #[test]
+    fn mixed_executor_kind_python_roundtrip() {
+        let decoded: ExecutorKind =
+            from_value(json!("uv")).expect("deserialize python executor kind");
+        assert_eq!(decoded, ExecutorKind::Python(ExecutorKindPython::Uv));
+        assert_eq!(
+            to_value(&decoded).expect("serialize python executor kind"),
+            json!("uv")
+        );
+    }
+
+    #[test]
+    fn mixed_executor_roundtrip() {
+        let decoded: Executor = from_value(json!({
+            "kind": "pnpm",
+            "cmd": "prettier",
+        }))
+        .expect("deserialize executor");
+
+        assert_eq!(decoded.kind, ExecutorKind::Node(ExecutorKindNode::Pnpm));
+        assert_eq!(
+            to_value(&decoded).expect("serialize executor"),
+            json!({
+                "kind": "pnpm",
+                "cmd": "prettier",
+            })
+        );
+    }
+
+    #[test]
+    fn mixed_formatter_executor_roundtrip() {
+        let decoded: Formatter = from_value(json!({
+            "kind": "pnpm",
+            "cmd": "prettier",
+        }))
+        .expect("deserialize formatter executor");
+
+        assert_eq!(
+            to_value(&decoded).expect("serialize formatter executor"),
+            json!({
+                "kind": "pnpm",
+                "cmd": "prettier",
+            })
+        );
+    }
+
+    #[test]
+    fn mixed_formatter_shell_roundtrip() {
+        let decoded: Formatter = from_value(json!({
+            "kind": "shell",
+            "cmd": "npm run format",
+        }))
+        .expect("deserialize formatter shell");
+
+        assert_eq!(
+            to_value(&decoded).expect("serialize formatter shell"),
+            json!({
+                "kind": "shell",
+                "cmd": "npm run format",
+            })
+        );
     }
 }

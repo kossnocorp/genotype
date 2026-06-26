@@ -1,5 +1,5 @@
 {
-  "include": ["test.ts"],
+  "include": ["test.ts", "test.zod.ts"],
   "compilerOptions": {
     "strict": true,
     "noEmit": true,

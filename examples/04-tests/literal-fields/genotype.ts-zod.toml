@@ -1,0 +1,10 @@
+name = "genotype-test-literal-fields"
+dist = "dist/ts-zod"
+
+[ts]
+enabled = true
+mode = "zod"
+
+[ts.manifest]
+name = "genotype-test-literal-fields-zod-types"
+version = "0.1.0"

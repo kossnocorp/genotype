@@ -83,12 +83,24 @@ else
 	exit 1
 fi
 
+echo
+echo "🌀 Building TypeScript Zod schemas"
+if output=$(cargo run -p genotype_cli --bin gt -- build . --config genotype.ts-zod.toml 2>&1); then
+	echo "🟢 Build: OK"
+else
+	echo "🔴 Build: FAILED"
+	echo "--- Output ------------------------------------------"
+	echo "$output"
+	echo "-----------------------------------------------------"
+	exit 1
+fi
+
 #region TypeScript
 
 echo
 echo "🌀 Running TypeScript tests"
 
-if output=$(pnpm install 2>&1); then
+if output=$(CI=true pnpm install 2>&1); then
 	echo "🟢 pnpm install: OK"
 else
 	echo "🔴 pnpm install: FAILED"
@@ -109,9 +121,19 @@ else
 fi
 
 if output=$(pnpm tsx test.ts 2>&1); then
-	echo "🟢 Node test: OK"
+	echo "🟢 Node types test: OK"
 else
-	echo "🔴 Node test: FAILED"
+	echo "🔴 Node types test: FAILED"
+	echo "--- Output ------------------------------------------"
+	echo "$output"
+	echo "-----------------------------------------------------"
+	exit 1
+fi
+
+if output=$(pnpm tsx test.zod.ts 2>&1); then
+	echo "🟢 Node Zod test: OK"
+else
+	echo "🔴 Node Zod test: FAILED"
 	echo "--- Output ------------------------------------------"
 	echo "$output"
 	echo "-----------------------------------------------------"

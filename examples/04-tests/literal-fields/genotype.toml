@@ -3,6 +3,7 @@ dist = "dist"
 
 [ts]
 enabled = true
+dist = "ts-types/ts"
 
 [ts.manifest]
 name = "genotype-test-literal-fields-types"
