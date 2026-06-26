@@ -13,6 +13,9 @@ pub use loader::*;
 mod file;
 pub use file::*;
 
+mod diagnostic;
+pub use diagnostic::*;
+
 mod runtime;
 pub use runtime::*;
 

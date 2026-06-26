@@ -2,7 +2,9 @@ use crate::prelude::internal::*;
 
 use owo_colors::OwoColorize;
 
-pub trait GtcDiagnosticSinkStdio {
+pub struct GtpDiagnosticSinkStdioKind;
+
+pub trait GtpDiagnosticSinkStdio: GtpDiagnosticSink<GtpDiagnosticSinkStdioKind> {
     fn print_diagnostic_title(kind: &GtDiagnosticKind, message: &str) {
         match kind {
             GtDiagnosticKind::Success => {
@@ -58,11 +60,10 @@ pub trait GtcDiagnosticSinkStdio {
     }
 }
 
-impl<Type: GtcDiagnosticSinkStdio> GtcDiagnosticSink for Type {
-    fn print_diagnostic(&self, diagnostic: GtDiagnostic) {
-        Self::print_diagnostic_title(&diagnostic.kind, diagnostic.title());
+impl<Type: GtpDiagnosticSinkStdio + ?Sized> GtpDiagnosticSink<GtpDiagnosticSinkStdioKind> for Type {
+    fn report_diagnostic(&self, diagnostic: &GtDiagnostic) {
+        println!(); // Spacing
+        Self::print_diagnostic_title(&diagnostic.kind, &diagnostic.title());
         Self::print_diagnostic_content(&diagnostic);
-
-        println!();
     }
 }

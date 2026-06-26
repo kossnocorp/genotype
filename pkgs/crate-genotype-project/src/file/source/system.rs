@@ -4,9 +4,11 @@ use glob::glob;
 
 /// System project file source. It provides file system interop for the project. It is the default
 /// system project source used by the system project runtime.
+pub struct GtpFileSourceSystemKind;
+
 pub trait GtpFileSourceSystem: GtpFileAccessSystem {}
 
-impl<Type: GtpFileSourceSystem + ?Sized> GtpFileSource for Type {
+impl<Type: GtpFileSourceSystem + ?Sized> GtpFileSourceProvider<GtpFileSourceSystemKind> for Type {
     /// Globs files from the given path using the file system.
     fn glob_files(&self, path: &GtpCwdRelativePath) -> Result<Vec<GtpCwdRelativePath>> {
         let path_buf = path.to_path_buf();

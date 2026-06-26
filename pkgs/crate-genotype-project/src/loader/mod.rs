@@ -14,7 +14,9 @@ pub use serial::*;
 
 /// Project loader trait. It defines the interface for loading a project. It bounds to the project
 /// source trait to provide file system interop.
-pub trait GtpLoader<ProjectRef>: GtpFileSource {
+pub trait GtpLoader<Kind, FileSourceKind>: GtpFileSource<FileSourceKind> {
+    type ProjectRef;
+
     /// Creates a new project.
     fn create_project(&self, config_path: Option<&GtpCwdRelativePath>) -> Result<GtProject> {
         let config_file_path = self.find_config_path(config_path)?;
@@ -117,7 +119,7 @@ pub trait GtpLoader<ProjectRef>: GtpFileSource {
     /// project reference counting and mutability.
     fn load_project_module(
         &self,
-        project: &ProjectRef,
+        project: &Self::ProjectRef,
         source: &GtpModuleSource,
     ) -> Result<Option<Vec<GtpModuleSource>>> {
         self.add_project_module_source(project, source)?;
@@ -150,7 +152,7 @@ pub trait GtpLoader<ProjectRef>: GtpFileSource {
     /// project reference counting and mutability.
     fn init_project_module(
         &self,
-        project: &ProjectRef,
+        project: &Self::ProjectRef,
         module: &GtpModuleSource,
     ) -> Result<Option<GtModuleId>>;
 
@@ -158,7 +160,7 @@ pub trait GtpLoader<ProjectRef>: GtpFileSource {
     /// project reference counting and mutability.
     fn set_project_module(
         &self,
-        project: &ProjectRef,
+        project: &Self::ProjectRef,
         module: &GtpModuleSource,
         state: GtpModule,
     ) -> Result<()>;
@@ -166,7 +168,7 @@ pub trait GtpLoader<ProjectRef>: GtpFileSource {
     /// Adds module source to the project. It provides map of all module references.
     fn add_project_module_source(
         &self,
-        project: &ProjectRef,
+        project: &Self::ProjectRef,
         source: &GtpModuleSource,
     ) -> Result<()>;
 }

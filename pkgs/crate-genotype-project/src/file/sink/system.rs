@@ -2,9 +2,11 @@ use crate::prelude::internal::*;
 
 /// System project file sink. It provides file system interop for the project. It is the default
 /// system project sink used by the system project runtime.
+pub struct GtpFileSinkSystemKind;
+
 pub trait GtpFileSinkSystem: GtpFileAccessSystem {}
 
-impl<Type: GtpFileSinkSystem + ?Sized> GtpFileSink for Type {
+impl<Type: GtpFileSinkSystem + ?Sized> GtpFileSinkProvider<GtpFileSinkSystemKind> for Type {
     /// Writes a file to the given path using the file system.
     fn write_file(&self, path: &GtpCwdRelativePath, content: &str) -> Result<()> {
         let path = self.resolve_path_buf(path);

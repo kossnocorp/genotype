@@ -2,9 +2,13 @@ use crate::prelude::internal::*;
 
 use std::cell::RefCell;
 
+pub struct GtpLoaderSerialKind;
+
 /// Serial project loader trait. It implements the project loader trait without spawning threads.
 /// It is useful for single-threaded runtimes such as WebAssembly.
-pub trait GtpLoaderSerial: GtpLoader<RefCell<GtProject>> {
+pub trait GtpLoaderSerial<FileSourceKind>:
+    GtpLoader<GtpLoaderSerialKind, FileSourceKind, ProjectRef = RefCell<GtProject>>
+{
     /// Loads a module and its dependencies recursively.
     fn load_module_recursive<LoaderModule>(
         &self,
@@ -24,7 +28,12 @@ pub trait GtpLoaderSerial: GtpLoader<RefCell<GtProject>> {
     }
 }
 
-impl<Type: GtpLoaderSerial + GtpFileSource + ?Sized> GtpLoader<RefCell<GtProject>> for Type {
+impl<Type, FileSourceKind> GtpLoader<GtpLoaderSerialKind, FileSourceKind> for Type
+where
+    Type: GtpLoaderSerial<FileSourceKind> + GtpFileSource<FileSourceKind> + ?Sized,
+{
+    type ProjectRef = RefCell<GtProject>;
+
     /// Loads module entries serially.
     fn load_module_entries(
         &self,

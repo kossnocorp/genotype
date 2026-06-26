@@ -1,24 +1,25 @@
 use crate::prelude::internal::*;
 
-pub struct GtcCompilation<'project, 'backend> {
+pub struct GtcCompilation<'project, 'backend, Runtime: GtcRuntime + ?Sized> {
     /// Project to compile.
     project: &'project GtProject,
 
-    /// Compiler runtime to use for file system operations and notice handling.
-    backend: &'backend dyn GtcBackend,
+    /// Compiler runtime to use for file system operations and diagnostics handling.
+    runtime: &'backend Runtime,
 
     /// Count of errors encountered during compilation.
     errors_count: usize,
 }
 
-impl GtcCompilation<'_, '_> {
+impl<Runtime: GtcRuntime + ?Sized> GtcCompilation<'_, '_, Runtime> {
     pub fn new<'project, 'backend>(
         project: &'project GtProject,
-        backend: &'backend dyn GtcBackend,
-    ) -> GtcCompilation<'project, 'backend> {
+        runtime: &'backend Runtime,
+    ) -> GtcCompilation<'project, 'backend, Runtime> {
         GtcCompilation {
             project,
-            backend,
+            // backend,
+            runtime,
             errors_count: 0,
         }
     }
@@ -75,16 +76,18 @@ impl GtcCompilation<'_, '_> {
     fn finalize(&mut self, dist_dir: &GtpDistDirPath) -> i32 {
         let errors_count = self.errors_count;
         if errors_count > 0 {
-            self.backend.print_diagnostic(GtDiagnostic::warning(format!(
-                "Project generated to `{dist_dir}` with {errors_count} errors"
-            )));
+            self.runtime
+                .report_diagnostic(&GtDiagnostic::warning(format!(
+                    "Project generated to `{dist_dir}` with {errors_count} errors"
+                )));
 
             return 1;
         }
 
-        self.backend.print_diagnostic(GtDiagnostic::success(format!(
-            "Project generated to `{dist_dir}`"
-        )));
+        self.runtime
+            .report_diagnostic(&GtDiagnostic::success(format!(
+                "Project generated to `{dist_dir}`"
+            )));
 
         0
     }
@@ -99,7 +102,7 @@ impl GtcCompilation<'_, '_> {
             .filter(|diagnostic| matches!(diagnostic.kind, GtDiagnosticKind::Error))
             .count();
 
-        self.backend.print_diagnostics(diagnostics);
+        self.runtime.report_diagnostics(&diagnostics);
     }
 
     fn write_files(&self, files: &Vec<GtlDistFile>) -> Vec<GtDiagnostic> {
@@ -116,7 +119,7 @@ impl GtcCompilation<'_, '_> {
     fn write_file(&self, file: &GtlDistFile) -> Vec<GtDiagnostic> {
         let mut diagnostics = vec![];
         let path = &file.path();
-        let source_code = &file.source_code();
+        let source_code = file.source_code();
 
         let should_write = match file {
             GtlDistFile::Generated(_) => true,
@@ -124,7 +127,7 @@ impl GtcCompilation<'_, '_> {
             GtlDistFile::Error(error) => {
                 // We only write the errored file if it doesn't exist in the file system, to avoid
                 // overwriting existing files with errors.
-                let file_exist_result = self.backend.file_exists(path.relative_path());
+                let file_exist_result = self.runtime.file_exists(path.cwd_relative_path());
 
                 match file_exist_result {
                     // Write to file system if it doesn't exist
@@ -149,7 +152,9 @@ impl GtcCompilation<'_, '_> {
         };
 
         if should_write {
-            let write_result = self.backend.file_write(&path.relative_path(), source_code);
+            let write_result = self
+                .runtime
+                .write_file(&path.cwd_relative_path(), source_code);
             if let Err(err) = write_result {
                 diagnostics.push(GtDiagnostic::error(format!(
                     "Failed to write `{path}` to file system: {err}"

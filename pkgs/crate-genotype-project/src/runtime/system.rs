@@ -45,7 +45,7 @@ impl GtpRuntimeSystem {
     }
 }
 
-impl GtpLoaderParallel for GtpRuntimeSystem {}
+impl GtpLoaderParallel<GtpFileSourceSystemKind> for GtpRuntimeSystem {}
 
 impl GtpFileAccessSystem for GtpRuntimeSystem {
     /// Returns the base project directory to resolve relative file paths.
@@ -56,4 +56,18 @@ impl GtpFileAccessSystem for GtpRuntimeSystem {
 
 impl GtpFileSourceSystem for GtpRuntimeSystem {}
 
-impl GtpRuntime<Arc<Mutex<GtProject>>> for GtpRuntimeSystem {}
+impl GtpFileSinkSystem for GtpRuntimeSystem {}
+
+impl GtpDiagnosticSinkStdio for GtpRuntimeSystem {}
+
+impl GtpRuntime for GtpRuntimeSystem {
+    type LoaderKind = GtpLoaderParallelKind;
+
+    type FileSourceKind = GtpFileSourceSystemKind;
+
+    type FileSinkKind = GtpFileSinkSystemKind;
+
+    type DiagnosticSinkKind = GtpDiagnosticSinkStdioKind;
+
+    type ProjectRef = Arc<Mutex<GtProject>>;
+}
