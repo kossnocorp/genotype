@@ -1006,6 +1006,7 @@ dependencies = [
  "insta",
  "miette",
  "num_cpus",
+ "owo-colors",
  "pretty_assertions",
  "rayon",
  "relative-path",

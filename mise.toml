@@ -114,6 +114,9 @@ run = "cargo fmt --all"
 [tasks."format/rust:check"]
 run = "cargo fmt --all --check"
 
+[tasks.test]
+run = ["test/unit", "test/system"]
+
 [tasks."test/unit"]
 depends = [
   "test/unit/rust",
