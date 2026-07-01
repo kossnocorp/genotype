@@ -10,5 +10,7 @@ pub trait GtpRuntime {
 
     type DiagnosticSinkKind;
 
+    type FormatterRunnerKind;
+
     type ProjectRef;
 }

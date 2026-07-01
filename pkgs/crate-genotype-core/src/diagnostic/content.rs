@@ -11,11 +11,11 @@ impl From<(String, Vec<String>)> for GtDiagnosticContent {
     }
 }
 
-impl From<(String, String)> for GtDiagnosticContent {
-    fn from((title, body): (String, String)) -> Self {
+impl<Str: AsRef<str>> From<(Str, Str)> for GtDiagnosticContent {
+    fn from((title, body): (Str, Str)) -> Self {
         GtDiagnosticContent::Message(GtDiagnosticContentMessage {
-            title,
-            body: Some(body.into()),
+            title: title.as_ref().to_string(),
+            body: Some(body.as_ref().to_string().into()),
         })
     }
 }

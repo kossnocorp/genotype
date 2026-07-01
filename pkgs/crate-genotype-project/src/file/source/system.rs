@@ -8,7 +8,7 @@ pub struct GtpFileSourceSystemKind;
 
 pub trait GtpFileSourceSystem: GtpFileEnv {}
 
-impl<Type: GtpFileSourceSystem + ?Sized> GtpFileSourceProvider<GtpFileSourceSystemKind> for Type {
+impl<Type: GtpFileSourceSystem + ?Sized> GtpFileSource<GtpFileSourceSystemKind> for Type {
     /// Globs files from the given path using the file system.
     fn glob_files(&self, path: &GtpCwdRelativePath) -> Result<Vec<GtpCwdRelativePath>> {
         let path_buf = path.to_path_buf();

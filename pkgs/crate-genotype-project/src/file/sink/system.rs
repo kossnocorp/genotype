@@ -6,7 +6,7 @@ pub struct GtpFileSinkSystemKind;
 
 pub trait GtpFileSinkSystem: GtpFileEnv {}
 
-impl<Type: GtpFileSinkSystem + ?Sized> GtpFileSinkProvider<GtpFileSinkSystemKind> for Type {
+impl<Type: GtpFileSinkSystem + ?Sized> GtpFileSink<GtpFileSinkSystemKind> for Type {
     /// Writes a file to the given path using the file system.
     fn write_file(&self, path: &GtpCwdRelativePath, content: &str) -> Result<()> {
         let path = path.to_path_buf();

@@ -8,7 +8,7 @@ node_modules/
 # TypeScript
 .ts/
 # Python
-.venv
+.venv/
 # Cloudflare
 .wrangler/
 # Temp

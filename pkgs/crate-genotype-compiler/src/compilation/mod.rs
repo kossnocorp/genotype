@@ -36,17 +36,48 @@ impl<Runtime: GtcRuntime + ?Sized> GtcCompilation<'_, '_, Runtime> {
 
         if langs.contains(&GtLang::Ts) {
             self.compile_project(&TsCompiler::new(project));
+            self.run_lang_formatters(GtLang::Ts);
         }
 
         if langs.contains(&GtLang::Py) {
             self.compile_project(&PyCompiler::new(project));
+            self.run_lang_formatters(GtLang::Py);
         }
 
         if langs.contains(&GtLang::Rs) {
             self.compile_project(&RsCompiler::new(project));
+            self.run_lang_formatters(GtLang::Rs);
         }
 
         self.finalize(&project.paths().dist)
+    }
+
+    fn run_lang_formatters(&mut self, lang: GtLang) {
+        if !self.project.lang_enabled(lang) {
+            return;
+        }
+
+        let lang_config = self.project.config().lang(lang);
+        let dist_path = self
+            .project
+            .paths()
+            .dist
+            .join_as_cwd_relative_path(&lang_config.dist_relative_pkg_path());
+        let global_formatters = self.project.config().formatters.clone();
+        let target_formatters = lang_config.common().formatters.clone();
+
+        self.run_formatters(&global_formatters, &dist_path);
+        self.run_formatters(&target_formatters, &dist_path);
+    }
+
+    fn run_formatters(&mut self, formatters: &[GtpFormatter], path: &GtpCwdRelativePath) {
+        for formatter in formatters {
+            if let Err(err) = self.runtime.run_formatter(formatter, path) {
+                self.handle_diagnostics(GtDiagnostic::warning(format!(
+                    "Failed to run formatter in `{path}`: {err}"
+                )));
+            }
+        }
     }
 
     fn compile_project<'project, Compiler: GtlCompiler<'project>>(&mut self, compiler: &Compiler)

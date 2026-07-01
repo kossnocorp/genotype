@@ -37,6 +37,9 @@ pub struct GtpConfig {
     /// Project entry pattern. It defaults to `**/*.type` relative to [GtpConfig::src].
     #[serde(default)]
     pub entry: GtpSrcDirRelativeEntryPattern,
+    /// Global formatters to run after all selected targets are compiled.
+    #[serde(default)]
+    pub formatters: Vec<GtpFormatter>,
     /// TypeScript config.
     #[serde(default, alias = "typescript")]
     pub ts: TsConfig,
@@ -60,6 +63,7 @@ impl Default for GtpConfig {
             dist: Default::default(),
             src: Default::default(),
             entry: Default::default(),
+            formatters: Default::default(),
             ts: Default::default(),
             py: Default::default(),
             rs: Default::default(),
@@ -196,5 +200,81 @@ tsconfig = { allowImportingTsExtensions = false }
         assert!(!config.package);
         assert_eq!(config.ts.common.package, Some(true));
         assert_eq!(config.py.common.package, None);
+    }
+
+    #[test]
+    fn test_parse_root_formatters() {
+        let config = toml::from_str::<GtpConfig>(
+            r#"formatters = [
+  { kind = "shell", cmd = "npm", args = ["run", "format"] },
+  { kind = "pnpm", cmd = "prettier", args = ["--check", "."] },
+  { kind = "cargo", cmd = "fmt", args = ["--all"] },
+  { kind = "rustfmt" },
+  { kind = "oxfmt", via = "pnpm" },
+  { kind = "prettier", via = "npx" },
+]
+"#,
+        )
+        .unwrap();
+
+        assert_ron_snapshot!(config.formatters, @r#"
+        [
+          __GtpFormatterShellLiteralsSerialize(
+            cmd: "npm",
+            args: Some([
+              "run",
+              "format",
+            ]),
+            kind: "shell",
+          ),
+          GtpFormatterExecutor(
+            cmd: "prettier",
+            args: Some([
+              "--check",
+              ".",
+            ]),
+            kind: "pnpm",
+          ),
+          GtpFormatterExecutor(
+            cmd: "fmt",
+            args: Some([
+              "--all",
+            ]),
+            kind: "cargo",
+          ),
+          __GtpFormatterPresetRustfmtLiteralsSerialize(
+            kind: "rustfmt",
+          ),
+          __GtpFormatterPresetOxfmtLiteralsSerialize(
+            via: Some("pnpm"),
+            kind: "oxfmt",
+          ),
+          __GtpFormatterPresetPrettierLiteralsSerialize(
+            via: Some("npx"),
+            kind: "prettier",
+          ),
+        ]
+        "#);
+    }
+
+    #[test]
+    fn test_parse_target_formatters() {
+        let config = toml::from_str::<GtpConfig>(
+            r#"[py]
+enabled = true
+version = "latest"
+formatters = [{ kind = "ruff", via = "uv" }]
+"#,
+        )
+        .unwrap();
+
+        assert_ron_snapshot!(config.py.common.formatters, @r#"
+        [
+          __GtpFormatterPresetRuffLiteralsSerialize(
+            via: Some("uv"),
+            kind: "ruff",
+          ),
+        ]
+        "#);
     }
 }

@@ -2,8 +2,8 @@ use crate::prelude::internal::*;
 
 use std::sync::{Arc, Mutex};
 
-/// System project runtime. It combines parallel project loader with file system project source.
-/// It is the default project runtime used by the CLI.
+/// System project runtime. It combines parallel project loader, file system access and stdio
+/// diagnostics reporting. It is the default project runtime used by the CLI.
 pub struct GtpRuntimeSystem {
     /// Current working directory path.
     cwd_path: GtpCwdPath,
@@ -74,6 +74,8 @@ impl GtpFileSinkSystem for GtpRuntimeSystem {}
 
 impl GtpDiagnosticSinkStdio for GtpRuntimeSystem {}
 
+impl GtpFormatterRunnerSystem<GtpDiagnosticSinkStdioKind> for GtpRuntimeSystem {}
+
 impl GtpRuntime for GtpRuntimeSystem {
     type LoaderKind = GtpLoaderParallelKind;
 
@@ -82,6 +84,8 @@ impl GtpRuntime for GtpRuntimeSystem {
     type FileSinkKind = GtpFileSinkSystemKind;
 
     type DiagnosticSinkKind = GtpDiagnosticSinkStdioKind;
+
+    type FormatterRunnerKind = GtpFormatterRunnerSystemKind;
 
     type ProjectRef = Arc<Mutex<GtProject>>;
 }

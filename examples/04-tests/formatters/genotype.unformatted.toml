@@ -1,0 +1,13 @@
+name = "genotype-test-formatters-unformatted"
+dist = "./dist/unformatted"
+
+[ts]
+enabled = true
+
+[rs]
+enabled = true
+
+[rs.manifest.workspace]
+
+[py]
+enabled = true

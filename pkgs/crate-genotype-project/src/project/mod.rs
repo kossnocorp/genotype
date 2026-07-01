@@ -646,12 +646,14 @@ mod tests {
             dist: "dist",
             src: "src",
             entry: "**/*.type",
+            formatters: [],
             ts: {
               "enabled": false,
               "dist": None,
               "package": None,
               "manifest": {},
               "dependencies": {},
+              "formatters": [],
               "mode": types,
               "prefer": interface,
               "tsconfig": TsConfigLangTsconfig(
@@ -667,6 +669,7 @@ mod tests {
               "package": None,
               "manifest": {},
               "dependencies": {},
+              "formatters": [],
             },
             rs: {
               "derive": [
@@ -679,6 +682,7 @@ mod tests {
               "package": None,
               "manifest": {},
               "dependencies": {},
+              "formatters": [],
             },
           ),
           paths: GtpPaths(
@@ -887,12 +891,14 @@ mod tests {
             dist: "dist",
             src: "src",
             entry: "**/*.type",
+            formatters: [],
             ts: {
               "enabled": false,
               "dist": None,
               "package": None,
               "manifest": {},
               "dependencies": {},
+              "formatters": [],
               "mode": types,
               "prefer": interface,
               "tsconfig": TsConfigLangTsconfig(
@@ -908,6 +914,7 @@ mod tests {
               "package": None,
               "manifest": {},
               "dependencies": {},
+              "formatters": [],
             },
             rs: {
               "derive": [
@@ -920,6 +927,7 @@ mod tests {
               "package": None,
               "manifest": {},
               "dependencies": {},
+              "formatters": [],
             },
           ),
           paths: GtpPaths(
@@ -1045,12 +1053,14 @@ mod tests {
             dist: "dist",
             src: "src",
             entry: "**/*.type",
+            formatters: [],
             ts: {
               "enabled": false,
               "dist": None,
               "package": None,
               "manifest": {},
               "dependencies": {},
+              "formatters": [],
               "mode": types,
               "prefer": interface,
               "tsconfig": TsConfigLangTsconfig(
@@ -1066,6 +1076,7 @@ mod tests {
               "package": None,
               "manifest": {},
               "dependencies": {},
+              "formatters": [],
             },
             rs: {
               "derive": [
@@ -1078,6 +1089,7 @@ mod tests {
               "package": None,
               "manifest": {},
               "dependencies": {},
+              "formatters": [],
             },
           ),
           paths: GtpPaths(

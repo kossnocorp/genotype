@@ -2,7 +2,7 @@ use crate::prelude::internal::*;
 
 #[derive(Error, Debug, Diagnostic, PartialEq, Clone, Serialize)]
 pub enum GtpError {
-    #[error("undefined type `{identifier}`: {reason}")]
+    #[error("Undefined type `{identifier}`: {reason}")]
     #[diagnostic(code(GTP301))]
     UndefinedType {
         #[label("referenced here")]
@@ -11,7 +11,7 @@ pub enum GtpError {
         reason: &'static str,
     },
 
-    #[error("unknown error")]
+    #[error("Unknown error")]
     #[diagnostic(code(GTP999))]
     Unknown,
 }

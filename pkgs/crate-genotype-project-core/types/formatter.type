@@ -1,0 +1,82 @@
+GtpFormatter:
+  | GtpFormatterShell
+  | GtpFormatterExecutor
+  | GtpFormatterPresetOxfmt
+  | GtpFormatterPresetPrettier
+  | GtpFormatterPresetRuff
+
+//#region Generic
+
+GtpFormatterGenericBase: {
+  cmd: string,
+  args?: [string]
+}
+
+GtpFormatterShell: {
+  ...GtpFormatterGenericBase,
+  kind: "shell",
+}
+
+GtpFormatterExecutor: {
+  ...GtpFormatterGenericBase,
+  kind: GtpFormatterExecutorKind,
+}
+
+GtpFormatterExecutorKind:
+  | "cargo"
+  | GtpFormatterExecutorKindNode
+  | GtpFormatterExecutorKindPython
+
+//#endregion
+
+//#region Rust
+
+// NOTE: rustfmt requires to specify files, so we don't support it
+
+//endregion
+
+//#region TypeScript
+
+GtpFormatterExecutorKindNode: "pnpm" | "pnx" | "npm" | "npx" | "bun" | "bunx"
+
+GtpFormatterPresetNodeBase: {
+  via?: GtpFormatterExecutorKindNode,
+  args?: [string]
+}
+
+GtpFormatterPresetOxfmt: {
+  ...GtpFormatterPresetNodeBase,
+  kind: "oxfmt"
+}
+
+GtpFormatterPresetPrettier: {
+  ...GtpFormatterPresetNodeBase,
+  kind: "prettier",
+}
+
+//#endregion
+
+//#region Python
+
+GtpFormatterPresetPythonBase: {
+  via?: GtpFormatterExecutorKindPython,
+  args?: [string]
+}
+
+GtpFormatterExecutorKindPython:  "uv" | "poetry"  | "pipx"
+
+GtpFormatterPresetRuff: {
+  ...GtpFormatterPresetPythonBase,
+  kind: "ruff",
+}
+
+//#endregion
+
+//#region Command
+
+GtpFormatterCmd: {
+  cmd: string,
+  args: [string]
+}
+
+//#endregion

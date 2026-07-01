@@ -1,0 +1,17 @@
+name = "genotype-test-formatters-formatted"
+dist = "./dist/formatted"
+
+formatters = [{ kind = "oxfmt", via = "pnpm" }]
+
+[ts]
+enabled = true
+
+[rs]
+enabled = true
+formatters = [{ kind = "cargo", cmd = "fmt", args = ["--all"] }]
+
+[rs.manifest.workspace]
+
+[py]
+enabled = true
+formatters = [{ kind = "uv", cmd = "ruff", args = ["format"] }]

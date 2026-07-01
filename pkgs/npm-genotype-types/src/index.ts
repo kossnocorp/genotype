@@ -1,1 +1,2 @@
-export * from "./diagnostic.js";
+export * from "./core/index.js";
+export * from "./project/index.js";

@@ -16,6 +16,9 @@ pub use file::*;
 mod diagnostic;
 pub use diagnostic::*;
 
+mod formatter;
+pub use formatter::*;
+
 mod runtime;
 pub use runtime::*;
 

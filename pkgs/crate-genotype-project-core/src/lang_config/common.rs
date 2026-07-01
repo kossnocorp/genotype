@@ -16,4 +16,7 @@ pub struct GtpLangConfigCommon {
     /// Manually mapped dependencies.
     #[serde(default)]
     pub dependencies: IndexMap<String, String>,
+    /// Target-specific formatters to run after target compilation.
+    #[serde(default)]
+    pub formatters: Vec<GtpFormatter>,
 }

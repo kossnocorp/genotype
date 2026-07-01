@@ -1,0 +1,7 @@
+[tasks."gen/types"]
+description = "Generates Genotype project types for TypeScript and Rust"
+run = "cargo run --bin gt -p genotype_cli -- build ."
+
+[tasks."gen/types:watch"]
+description = "Generates Genotype project types for TypeScript and Rust in watch mode"
+run = "watchexec -e type -- cargo run --bin gt -p genotype_cli -- build ."
