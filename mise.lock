@@ -33,7 +33,7 @@ checksum = "sha256:89706aa5215c164d8d091597a470fee72308ac87e8553af395ea77db844a8
 url = "https://github.com/cargo-bins/cargo-binstall/releases/download/v1.18.1/cargo-binstall-x86_64-pc-windows-msvc.zip"
 
 [[tools."cargo:bacon"]]
-version = "3.22.0"
+version = "3.23.0"
 backend = "cargo:bacon"
 
 [[tools."cargo:cargo-insta"]]
@@ -370,6 +370,9 @@ provenance = "github-attestations"
 [[tools.rust]]
 version = "1.95.0"
 backend = "core:rust"
+
+[tools.rust.options]
+components = "clippy,rustfmt"
 
 [[tools.shfmt]]
 version = "3.13.1"

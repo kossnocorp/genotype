@@ -11,3 +11,4 @@ edition = "2024"
 
 [py]
 enabled = true
+manager = "uv"

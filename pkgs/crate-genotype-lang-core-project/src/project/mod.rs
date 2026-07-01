@@ -37,7 +37,7 @@ impl<'project, 'config, ProjectModule: GtlProjectModule>
         }
 
         if let Some(global_dependencies) =
-            ProjectModule::global_dependencies(self.config.lang_config)
+            ProjectModule::global_dependencies(self.config.lang_config())
         {
             dependencies.extend(global_dependencies);
         }

@@ -70,7 +70,7 @@ pub fn version_command(args: &GtVersionCommand) -> Result<()> {
     match &args.command {
         GtVersionSubcommand::Set(args) => {
             project
-                .config
+                .config_mut()
                 .set_manifest_version(GtpConfigSetVersionProps {
                     version: args.version.clone(),
                     ts: args.ts.clone(),
@@ -80,13 +80,15 @@ pub fn version_command(args: &GtVersionCommand) -> Result<()> {
         }
 
         GtVersionSubcommand::Bump(args) => {
-            project.config.bump_manifest_version(match args.part {
-                GtVersionBumpPart::Major => GtpConfigVersionPart::Major,
-                GtVersionBumpPart::Minor => GtpConfigVersionPart::Minor,
-                GtVersionBumpPart::Patch => GtpConfigVersionPart::Patch,
-            })?
+            project
+                .config_mut()
+                .bump_manifest_version(match args.part {
+                    GtVersionBumpPart::Major => GtpConfigVersionPart::Major,
+                    GtVersionBumpPart::Minor => GtpConfigVersionPart::Minor,
+                    GtVersionBumpPart::Patch => GtpConfigVersionPart::Patch,
+                })?
         }
     }
 
-    project.config.save(path)
+    project.config().save(path)
 }

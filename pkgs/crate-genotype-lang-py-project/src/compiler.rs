@@ -26,8 +26,8 @@ impl<'project> GtlCompiler<'project> for PyCompiler<'project> {
     }
 
     fn new(project: &'project GtProject) -> Self {
-        let lang_config = &project.config.py;
-        let config = GtlConfig::new(&project.config, &project.paths, lang_config);
+        let lang_config = &project.config().py;
+        let config = GtlConfig::new(project, lang_config);
         PyCompiler { project, config }
     }
 
@@ -191,7 +191,7 @@ impl PyCompiler<'_> {
     }
 
     fn py_module_path(&self, module_path: &GtpModulePath) -> Result<String> {
-        let module_id = module_path.to_module_id(&self.config.project_paths.src)?;
+        let module_id = module_path.to_module_id(&self.config.project_paths().src)?;
         Ok(PyPath::to_py_module_path(module_id.as_str_without_ext()))
     }
 }
@@ -667,7 +667,7 @@ mod tests {
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/basic/dist/py/pyproject.toml",
-              source_code: "[tool.poetry]\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.13\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
+              source_code: "[tool.poetry]\nname = \"basic\"\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.13\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
             )),
           ],
           diagnostics: [],
@@ -712,7 +712,7 @@ mod tests {
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/nested/dist/py/pyproject.toml",
-              source_code: "[tool.poetry]\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.13\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
+              source_code: "[tool.poetry]\nname = \"nested\"\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.13\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
             )),
           ],
           diagnostics: [],
@@ -726,7 +726,7 @@ mod tests {
         let mut project =
             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/dependencies".into(), None)
                 .unwrap();
-        project.config.py.common.dependencies =
+        project.config_mut().py.common.dependencies =
             IndexMap::from_iter(vec![("genotype_json_types".into(), "genotype_json".into())]);
 
         assert_ron_snapshot!(
@@ -752,7 +752,7 @@ mod tests {
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/dependencies/dist/py/pyproject.toml",
-              source_code: "[tool.poetry]\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.13\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
+              source_code: "[tool.poetry]\nname = \"dependencies\"\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.13\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
             )),
           ],
           diagnostics: [],
@@ -857,7 +857,7 @@ mod tests {
     fn test_render_uses_global_version_by_default() {
         let mut project =
             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-        project.config.version = Some("0.2.0".parse().unwrap());
+        project.config_mut().version = Some("0.2.0".parse().unwrap());
 
         let dist = compile(&project);
         let pyproject = get_project_file(&dist);
@@ -866,6 +866,7 @@ mod tests {
             pyproject.source_code,
             @r#"
         [tool.poetry]
+        name = "basic"
         packages = [{ include = "module" }]
         version = "0.2.0"
 
@@ -884,8 +885,8 @@ mod tests {
     fn test_render_prefers_py_manifest_version_over_global() {
         let mut project =
             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-        project.config.version = Some("0.2.0".parse().unwrap());
-        project.config.py.common.manifest = toml::from_str(
+        project.config_mut().version = Some("0.2.0".parse().unwrap());
+        project.config_mut().py.common.manifest = toml::from_str(
             r#"[tool.poetry]
 version = "0.3.0"
 "#,
@@ -899,6 +900,7 @@ version = "0.3.0"
             pyproject.source_code,
             @r#"
         [tool.poetry]
+        name = "basic"
         packages = [{ include = "module" }]
         version = "0.3.0"
 
@@ -917,9 +919,9 @@ version = "0.3.0"
     fn test_render_uv_manifest() {
         let mut project =
             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-        project.config.py.lang.manager = genotype_lang_py_config::PyPackageManager::Uv;
-        project.config.version = Some("0.2.0".parse().unwrap());
-        project.config.py.common.manifest = toml::from_str(
+        project.config_mut().py.lang.manager = genotype_lang_py_config::PyPackageManager::Uv;
+        project.config_mut().version = Some("0.2.0".parse().unwrap());
+        project.config_mut().py.common.manifest = toml::from_str(
             r#"[project]
 name = "module"
 "#,
@@ -933,9 +935,9 @@ name = "module"
             pyproject.source_code,
             @r#"
         [project]
+        name = "module"
         requires-python = ">=3.13,<4"
         version = "0.2.0"
-        name = "module"
         dependencies = ["genotype-runtime>=0.4,<0.5"]
 
         [build-system]
@@ -952,7 +954,7 @@ name = "module"
     fn test_render_without_package_global() {
         let mut project =
             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-        project.config.package = false;
+        project.config_mut().package = false;
 
         let dist = compile(&project);
 
@@ -973,8 +975,8 @@ name = "module"
     fn test_render_without_package_target() {
         let mut project =
             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-        project.config.package = true;
-        project.config.py.common.package = Some(false);
+        project.config_mut().package = true;
+        project.config_mut().py.common.package = Some(false);
 
         let dist = compile(&project);
 
@@ -997,7 +999,7 @@ name = "module"
             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
         let path: GtpModulePath = "examples/basic/src/broken.type".into();
         let source = GtpModuleSource::Entry { path: path.clone() };
-        project.modules.insert(
+        project.modules_mut().insert(
             path.clone(),
             GtpModule::Error(
                 source,
@@ -1021,7 +1023,7 @@ name = "module"
     fn modules(project: &GtProject) -> GtlProjectModules<PyProjectModule> {
         let compiler = PyCompiler::new(project);
         let mut lang_project = GtlProject::<PyProjectModule>::new(compiler.config());
-        lang_project.convert(&project.modules);
+        lang_project.convert(&project.modules());
         lang_project.resolve().unwrap();
         lang_project.modules
     }

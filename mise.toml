@@ -55,10 +55,10 @@ run = "uv sync"
 run = "cargo build"
 
 [tasks.check]
-run = "cargo check"
+run = "cargo check --all"
 
 [tasks."check:watch"]
-run = "bacon check"
+run = "bacon check-all"
 
 [tasks.lint]
 depends = [
@@ -134,6 +134,8 @@ run = "cargo nextest run --no-fail-fast"
 
 [tasks."test/unit/rust:watch"]
 run = "watchexec -e rs,Cargo.toml,Cargo.lock -rc reset -- cargo nextest run --no-fail-fast"
+# TODO: It's a nicer DX, but it gets stuck in "computing" state.
+# run = "bacon test"
 
 [tasks."test/system"]
 depends = [

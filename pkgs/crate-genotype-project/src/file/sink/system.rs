@@ -4,12 +4,12 @@ use crate::prelude::internal::*;
 /// system project sink used by the system project runtime.
 pub struct GtpFileSinkSystemKind;
 
-pub trait GtpFileSinkSystem: GtpFileAccessSystem {}
+pub trait GtpFileSinkSystem: GtpFileEnv {}
 
 impl<Type: GtpFileSinkSystem + ?Sized> GtpFileSinkProvider<GtpFileSinkSystemKind> for Type {
     /// Writes a file to the given path using the file system.
     fn write_file(&self, path: &GtpCwdRelativePath, content: &str) -> Result<()> {
-        let path = self.resolve_path_buf(path);
+        let path = path.to_path_buf();
 
         let parent_dir_path = path
             .parent()

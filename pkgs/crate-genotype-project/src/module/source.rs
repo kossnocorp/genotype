@@ -14,6 +14,13 @@ pub enum GtpModuleSource {
 }
 
 impl GtpModuleSource {
+    pub fn variant_name(&self) -> &'static str {
+        match self {
+            Self::Entry { .. } => "entry",
+            Self::Dependency { .. } => "dependency",
+        }
+    }
+
     pub fn path(&self) -> &GtpModulePath {
         match self {
             Self::Entry { path } | Self::Dependency { path, .. } => path,

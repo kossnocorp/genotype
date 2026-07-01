@@ -26,8 +26,8 @@ impl<'project> GtlCompiler<'project> for RsCompiler<'project> {
     }
 
     fn new(project: &'project GtProject) -> Self {
-        let lang_config = &project.config.rs;
-        let config = GtlConfig::new(&project.config, &project.paths, lang_config);
+        let lang_config = &project.config().rs;
+        let config = GtlConfig::new(project, lang_config);
         RsCompiler { project, config }
     }
 
@@ -57,7 +57,7 @@ impl<'project> RsCompiler<'project> {
         let mut diagnostics = vec![];
         let mut crate_paths: IndexMap<GtpTargetFilePath, IndexSet<String>> = IndexMap::new();
 
-        for module_path in self.project.modules.keys() {
+        for module_path in self.project.modules().keys() {
             let target_path = self.config.module_target_file_path(module_path);
             match target_path {
                 Ok(target_path) => {
@@ -107,7 +107,7 @@ impl<'project> RsCompiler<'project> {
             .into_iter()
             .map(|(module_path, modules)| {
                 let file_name = if module_path == "".into() {
-                    if self.config.package_enabled {
+                    if self.config.package_enabled() {
                         "lib.rs"
                     } else {
                         "mod.rs"
@@ -709,6 +709,7 @@ mod tests {
           @r#"
         [package]
         edition = "2024"
+        name = "basic"
 
         [dependencies]
         serde = { version = "1", features = ["derive"] }
@@ -816,6 +817,7 @@ mod tests {
           @r#"
         [package]
         edition = "2024"
+        name = "nested"
 
         [dependencies]
         serde = { version = "1", features = ["derive"] }
@@ -1036,6 +1038,7 @@ mod tests {
           @r#"
         [package]
         edition = "2024"
+        name = "extensions"
 
         [dependencies]
         serde = { version = "1", features = ["derive"] }
@@ -1248,7 +1251,7 @@ mod tests {
     fn test_render_uses_global_version_by_default() {
         let mut project =
             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-        project.config.version = Some("0.2.0".parse().unwrap());
+        project.config_mut().version = Some("0.2.0".parse().unwrap());
 
         let dist = compile(&project);
         let cargo = get_cargo_file(&dist);
@@ -1258,6 +1261,7 @@ mod tests {
             @r#"
         [package]
         edition = "2024"
+        name = "basic"
         version = "0.2.0"
 
         [dependencies]
@@ -1270,8 +1274,8 @@ mod tests {
     fn test_render_prefers_rs_manifest_version_over_global() {
         let mut project =
             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-        project.config.version = Some("0.2.0".parse().unwrap());
-        project.config.rs.common.manifest = toml::from_str(
+        project.config_mut().version = Some("0.2.0".parse().unwrap());
+        project.config_mut().rs.common.manifest = toml::from_str(
             r#"[package]
 version = "0.3.0"
 "#,
@@ -1286,6 +1290,7 @@ version = "0.3.0"
             @r#"
         [package]
         edition = "2024"
+        name = "basic"
         version = "0.3.0"
 
         [dependencies]
@@ -1298,7 +1303,7 @@ version = "0.3.0"
     fn test_render_without_package_global() {
         let mut project =
             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-        project.config.package = false;
+        project.config_mut().package = false;
 
         let dist = compile(&project);
 
@@ -1317,8 +1322,9 @@ version = "0.3.0"
     fn test_render_without_package_target() {
         let mut project =
             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-        project.config.package = true;
-        project.config.rs.common.package = Some(false);
+        let config = project.config_mut();
+        config.package = true;
+        config.rs.common.package = Some(false);
 
         let dist = compile(&project);
 
@@ -1339,7 +1345,7 @@ version = "0.3.0"
             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
         let path: GtpModulePath = "examples/basic/src/broken.type".into();
         let source = GtpModuleSource::Entry { path: path.clone() };
-        project.modules.insert(
+        project.modules_mut().insert(
             path.clone(),
             GtpModule::Error(
                 source,
@@ -1363,7 +1369,7 @@ version = "0.3.0"
     fn modules(project: &GtProject) -> GtlProjectModules<RsProjectModule> {
         let compiler = RsCompiler::new(project);
         let mut lang_project = GtlProject::<RsProjectModule>::new(compiler.config());
-        lang_project.convert(&project.modules);
+        lang_project.convert(&project.modules());
         lang_project.resolve().unwrap();
         lang_project.modules
     }

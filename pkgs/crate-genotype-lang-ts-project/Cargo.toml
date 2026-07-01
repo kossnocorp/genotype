@@ -27,4 +27,5 @@ indexmap = { version = "2.6.0", features = ["serde"] }
 [dev-dependencies]
 pretty_assertions = "1.4.1"
 insta = { version = "1.46.3", features = ["ron"] }
+toml = { version = "0.8.19" }
 genotype_test = { path = "../crate-genotype-test" }

@@ -26,8 +26,8 @@ impl<'project> GtlCompiler<'project> for TsCompiler<'project> {
     }
 
     fn new(project: &'project GtProject) -> Self {
-        let lang_config = &project.config.ts;
-        let config = GtlConfig::new(&project.config, &project.paths, lang_config);
+        let lang_config = &project.config().ts;
+        let config = GtlConfig::new(project, lang_config);
         TsCompiler { project, config }
     }
 
@@ -130,7 +130,7 @@ impl TsCompiler<'_> {
             .map_err(|err| miette!("Failed to strip prefix: {err:?}"))?;
         Ok(self
             .config()
-            .lang_config
+            .lang_config()
             .lang
             .format_module_path(&path.into()))
     }
@@ -488,7 +488,7 @@ mod tests {
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/basic/dist/ts/package.json",
-              source_code: "{\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./src/index.ts\"\n  }\n}",
+              source_code: "{\n  \"name\": \"basic\",\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./src/index.ts\"\n  }\n}",
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/basic/dist/ts/src/author.ts",
@@ -514,7 +514,7 @@ mod tests {
         let mut project =
             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/dependencies".into(), None)
                 .unwrap();
-        project.config.ts.common.dependencies = IndexMap::from_iter(vec![(
+        project.config_mut().ts.common.dependencies = IndexMap::from_iter(vec![(
             "genotype_json_types".into(),
             "@genotype/json".into(),
         )]);
@@ -530,7 +530,7 @@ mod tests {
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/dependencies/dist/ts/package.json",
-              source_code: "{\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./src/index.ts\"\n  }\n}",
+              source_code: "{\n  \"name\": \"dependencies\",\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./src/index.ts\"\n  }\n}",
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/dependencies/dist/ts/src/index.ts",
@@ -551,7 +551,7 @@ mod tests {
     fn test_render_uses_global_version_by_default() {
         let mut project =
             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-        project.config.version = Some("0.2.0".parse().unwrap());
+        project.config_mut().version = Some("0.2.0".parse().unwrap());
 
         let dist = compile(&project);
         let package_file = get_package_file(&dist);
@@ -560,6 +560,7 @@ mod tests {
             package_file.source_code,
             @r#"
         {
+          "name": "basic",
           "type": "module",
           "version": "0.2.0",
           "exports": {
@@ -574,9 +575,9 @@ mod tests {
     fn test_render_prefers_ts_manifest_version_over_global() {
         let mut project =
             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-        project.config.version = Some("0.2.0".parse().unwrap());
+        project.config_mut().version = Some("0.2.0".parse().unwrap());
         project
-            .config
+            .config_mut()
             .ts
             .common
             .manifest
@@ -589,6 +590,7 @@ mod tests {
             package_file.source_code,
             @r#"
         {
+          "name": "basic",
           "type": "module",
           "version": "0.3.0",
           "exports": {
@@ -603,7 +605,7 @@ mod tests {
     fn test_render_zod() {
         let mut project =
             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-        project.config.ts.lang.mode = TsMode::Zod;
+        project.config_mut().ts.lang.mode = TsMode::Zod;
 
         let dist = compile(&project);
 
@@ -612,6 +614,7 @@ mod tests {
             package_file.source_code,
             @r#"
         {
+          "name": "basic",
           "type": "module",
           "exports": {
             ".": "./src/index.ts"
@@ -642,7 +645,7 @@ mod tests {
     fn test_render_prefer_alias() {
         let mut project =
             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-        project.config.ts.lang.prefer = TsPrefer::Alias;
+        project.config_mut().ts.lang.prefer = TsPrefer::Alias;
 
         let dist = compile(&project);
 
@@ -674,7 +677,7 @@ mod tests {
     fn test_render_without_package_global() {
         let mut project =
             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-        project.config.package = false;
+        project.config_mut().package = false;
 
         let dist = compile(&project);
 
@@ -694,8 +697,8 @@ mod tests {
     fn test_render_without_package_target() {
         let mut project =
             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
-        project.config.package = true;
-        project.config.ts.common.package = Some(false);
+        project.config_mut().package = true;
+        project.config_mut().ts.common.package = Some(false);
 
         let dist = compile(&project);
 
@@ -717,7 +720,7 @@ mod tests {
             GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
         let path: GtpModulePath = "examples/basic/src/broken.type".into();
         let source = GtpModuleSource::Entry { path: path.clone() };
-        project.modules.insert(
+        project.modules_mut().insert(
             path.clone(),
             GtpModule::Error(
                 source,
@@ -757,7 +760,7 @@ mod tests {
             )),
             Generated(GtlDistFileGenerated(
               path: "../../examples/04-tests/generics/dist/ts-interface/ts/package.json",
-              source_code: "{\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./src/index.ts\"\n  },\n  \"name\": \"genotype-test-generics-interface-types\",\n  \"version\": \"0.1.0\"\n}",
+              source_code: "{\n  \"name\": \"genotype-test-generics-interface-types\",\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./src/index.ts\"\n  },\n  \"version\": \"0.1.0\"\n}",
             )),
             Generated(GtlDistFileGenerated(
               path: "../../examples/04-tests/generics/dist/ts-interface/ts/src/generics.ts",
@@ -781,7 +784,7 @@ mod tests {
     fn modules(project: &GtProject) -> GtlProjectModules<TsProjectModule> {
         let compiler = TsCompiler::new(project);
         let mut lang_project = GtlProject::<TsProjectModule>::new(compiler.config());
-        lang_project.convert(&project.modules);
+        lang_project.convert(&project.modules());
         lang_project.resolve().unwrap();
         lang_project.modules
     }

@@ -752,6 +752,7 @@ dependencies = [
  "genotype_parser",
  "genotype_project",
  "genotype_project_core",
+ "heck",
  "indexmap",
  "insta",
  "line-index",
@@ -868,6 +869,7 @@ dependencies = [
  "genotype_project",
  "genotype_project_core",
  "genotype_test",
+ "heck",
  "indexmap",
  "indoc",
  "insta",
@@ -933,6 +935,7 @@ dependencies = [
  "pretty_assertions",
  "semver",
  "serde",
+ "toml 0.8.22",
  "toml_edit",
 ]
 

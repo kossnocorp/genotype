@@ -3,7 +3,8 @@ dist = "dist/py-legacy"
 [py]
 enabled = true
 version = "legacy"
+manager = "uv"
 
-[py.manifest]
+[py.manifest.project]
 name = "module"
 version = "0.1.0"

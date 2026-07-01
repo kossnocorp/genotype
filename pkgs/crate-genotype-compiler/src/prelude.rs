@@ -11,6 +11,5 @@ pub(crate) mod internal {
     pub use genotype_lang_ts_project::*;
     pub use genotype_project::*;
     pub use genotype_project_core::prelude::*;
-    pub use miette::{Diagnostic, Result, WrapErr, miette};
-    pub use relative_path::RelativePathBuf;
+    pub use miette::{Diagnostic, Result, WrapErr};
 }

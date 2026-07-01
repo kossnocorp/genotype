@@ -40,7 +40,8 @@ impl<'project, 'config, ProjectModule: GtlProjectModule>
                         .into(),
 
                         GtpModule::Resolved(module_resolved) => {
-                            match ProjectModule::convert(self.config.lang_config, module_resolved) {
+                            match ProjectModule::convert(self.config.lang_config(), module_resolved)
+                            {
                                 Ok(module) => GtlProjectModuleConverted {
                                     source_path,
                                     target_path,

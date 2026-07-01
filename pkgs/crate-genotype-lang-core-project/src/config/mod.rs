@@ -6,28 +6,40 @@ mod error;
 pub use error::*;
 
 pub struct GtlConfig<'project, LangConfig: GtpLangConfig> {
-    pub project_paths: &'project GtpPaths,
-    pub lang_config: &'project LangConfig,
-    pub package_enabled: bool,
-    pub project_version: Option<&'project Version>,
+    project: &'project GtProject,
+    lang_config: &'project LangConfig,
 }
 
 impl<'project, LangConfig: GtpLangConfig> GtlConfig<'project, LangConfig> {
-    pub fn new(
-        config: &'project GtpConfig,
-        project_paths: &'project GtpPaths,
-        lang_config: &'project LangConfig,
-    ) -> Self {
+    pub fn new(project: &'project GtProject, lang_config: &'project LangConfig) -> Self {
         GtlConfig {
-            project_paths,
+            project,
             lang_config,
-            package_enabled: config.lang_package_enabled(lang_config),
-            project_version: config.version.as_ref(),
         }
     }
 
     pub fn lang_config_health_check(&self) -> Vec<GtDiagnostic> {
         self.lang_config
-            .health_check(&self.project_paths.config_file, self.package_enabled)
+            .health_check(&self.project.paths().config_file, self.package_enabled())
+    }
+
+    pub fn project_paths(&self) -> &'project GtpPaths {
+        self.project.paths()
+    }
+
+    pub fn lang_config(&self) -> &'project LangConfig {
+        self.lang_config
+    }
+
+    pub fn package_enabled(&self) -> bool {
+        self.project.config().lang_package_enabled(self.lang_config)
+    }
+
+    pub fn project_name(&self) -> &'project str {
+        &self.project.name()
+    }
+
+    pub fn project_version(&self) -> Option<&'project Version> {
+        self.project.config().version.as_ref()
     }
 }

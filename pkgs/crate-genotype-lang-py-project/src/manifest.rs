@@ -27,7 +27,7 @@ impl<'project, 'config> GtlManifest<'project, 'config> for PyManifest<'project, 
     }
 
     fn dependencies_key(&self) -> &'static str {
-        match self.config().lang_config.lang.manager {
+        match self.config().lang_config().lang.manager {
             PyPackageManager::Poetry => "tool.poetry.dependencies",
             // TODO: Currently, it is unused because uv stores dependencies as an array rather
             // than a table. We may want to update the base logic to better reflect this difference.
@@ -35,19 +35,28 @@ impl<'project, 'config> GtlManifest<'project, 'config> for PyManifest<'project, 
         }
     }
 
-    fn base(&self) -> String {
-        let module = self.config().lang_config.module.as_str();
-        let python_version = self.config().lang_config.lang.version.version_str();
+    fn name_key(&self) -> &'static str {
+        match self.config().lang_config().lang.manager {
+            PyPackageManager::Poetry => "tool.poetry.name",
+            PyPackageManager::Uv => "project.name",
+        }
+    }
 
-        match self.config().lang_config.lang.manager {
+    fn base(&self) -> String {
+        let name = self.name();
+        let module = self.config().lang_config().module.as_str();
+        let python_version = self.config().lang_config().lang.version.version_str();
+
+        match self.config().lang_config().lang.manager {
             PyPackageManager::Poetry => {
                 let mut source = format!(
                     r#"[tool.poetry]
+name = "{name}"
 packages = [{{ include = "{module}" }}]
 "#
                 );
 
-                if let Some(version) = self.config().project_version {
+                if let Some(version) = self.config().project_version() {
                     source.push_str(format!("version = \"{version}\"\n").as_str());
                 }
 
@@ -67,15 +76,17 @@ build-backend = "poetry.core.masonry.api"
 
                 source
             }
+
             PyPackageManager::Uv => {
                 let mut source = format!(
                     r#"[project]
+name = "{name}"
 requires-python = "{python_version}"
 "#,
                     python_version = poetry_req_to_uv_req(python_version)
                 );
 
-                if let Some(version) = self.config().project_version {
+                if let Some(version) = self.config().project_version() {
                     source.push_str(format!("version = \"{version}\"\n").as_str());
                 }
 
@@ -103,7 +114,7 @@ packages = ["{module}"]
         manifest: &mut DocumentMut,
         deps: &IndexSet<PyDependencyIdent>,
     ) -> Result<(), Box<dyn GtlError>> {
-        match self.config().lang_config.lang.manager {
+        match self.config().lang_config().lang.manager {
             PyPackageManager::Poetry => {
                 let manifest_deps = manifest
                     .drill_table_mut(self.dependencies_key())
@@ -207,5 +218,113 @@ mod tests {
         assert_eq!(poetry_req_to_uv_req("^2.9"), ">=2.9,<3");
         assert_eq!(poetry_req_to_uv_req("^0.4"), ">=0.4,<0.5");
         assert_eq!(poetry_req_to_uv_req("^0.0.4"), ">=0.0.4,<0.0.5");
+    }
+
+    #[test]
+    fn test_name_key_poetry() {
+        let project = GtProject::try_new(
+            "fallback-name".into(),
+            "genotype.toml".into(),
+            GtpConfig::default(),
+        )
+        .unwrap();
+        let config = GtlConfig::new(&project, &project.config().py);
+        let manifest = PyManifest::new(&config);
+
+        assert_eq!(manifest.name_key(), "tool.poetry.name");
+    }
+
+    #[test]
+    fn test_name_reads_poetry_target_config() {
+        let mut project_config = GtpConfig::default();
+        project_config.name = Some("Root Name".into());
+        project_config.py.common.manifest = toml::from_str(
+            r#"[tool.poetry]
+name = "target-name"
+"#,
+        )
+        .unwrap();
+        let project = GtProject::try_new(
+            "fallback-name".into(),
+            "genotype.toml".into(),
+            project_config,
+        )
+        .unwrap();
+        let config = GtlConfig::new(&project, &project.config().py);
+        let manifest = PyManifest::new(&config);
+
+        assert_eq!(manifest.name(), "target-name");
+    }
+
+    #[test]
+    fn test_name_falls_back_to_project_name_poetry() {
+        let mut project_config = GtpConfig::default();
+        project_config.name = Some("Root Name".into());
+        let project = GtProject::try_new(
+            "fallback-name".into(),
+            "genotype.toml".into(),
+            project_config,
+        )
+        .unwrap();
+        let config = GtlConfig::new(&project, &project.config().py);
+        let manifest = PyManifest::new(&config);
+
+        assert_eq!(manifest.name(), "root-name");
+    }
+
+    #[test]
+    fn test_name_key_uv() {
+        let mut project_config = GtpConfig::default();
+        project_config.py.lang.manager = PyPackageManager::Uv;
+        let project = GtProject::try_new(
+            "fallback-name".into(),
+            "genotype.toml".into(),
+            project_config,
+        )
+        .unwrap();
+        let config = GtlConfig::new(&project, &project.config().py);
+        let manifest = PyManifest::new(&config);
+
+        assert_eq!(manifest.name_key(), "project.name");
+    }
+
+    #[test]
+    fn test_name_reads_uv_target_config() {
+        let mut project_config = GtpConfig::default();
+        project_config.name = Some("Root Name".into());
+        project_config.py.lang.manager = PyPackageManager::Uv;
+        project_config.py.common.manifest = toml::from_str(
+            r#"[project]
+name = "target-name"
+"#,
+        )
+        .unwrap();
+        let project = GtProject::try_new(
+            "fallback-name".into(),
+            "genotype.toml".into(),
+            project_config,
+        )
+        .unwrap();
+        let config = GtlConfig::new(&project, &project.config().py);
+        let manifest = PyManifest::new(&config);
+
+        assert_eq!(manifest.name(), "target-name");
+    }
+
+    #[test]
+    fn test_name_falls_back_to_project_name_uv() {
+        let mut project_config = GtpConfig::default();
+        project_config.name = Some("Root Name".into());
+        project_config.py.lang.manager = PyPackageManager::Uv;
+        let project = GtProject::try_new(
+            "fallback-name".into(),
+            "genotype.toml".into(),
+            project_config,
+        )
+        .unwrap();
+        let config = GtlConfig::new(&project, &project.config().py);
+        let manifest = PyManifest::new(&config);
+
+        assert_eq!(manifest.name(), "root-name");
     }
 }

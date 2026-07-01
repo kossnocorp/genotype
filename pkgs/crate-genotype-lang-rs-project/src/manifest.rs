@@ -1,5 +1,6 @@
 use crate::prelude::internal::*;
 use genotype_lang_rs_config::RsConfigLang;
+use heck::ToSnakeCase;
 use toml_edit::*;
 
 pub struct RsManifest<'project, 'config> {
@@ -26,15 +27,25 @@ impl<'project, 'config> GtlManifest<'project, 'config> for RsManifest<'project, 
         "Cargo.toml"
     }
 
+    fn name_key(&self) -> &'static str {
+        "package.name"
+    }
+
+    fn format_name(&self, name: &str) -> String {
+        name.to_snake_case()
+    }
+
     fn base(&self) -> String {
+        let name = self.name();
         let mut source = format!(
             r#"[package]
 edition = "{}"
+name = "{name}"
 "#,
             RsConfigLang::DEFAULT_EDITION
         );
 
-        if let Some(version) = self.config.project_version {
+        if let Some(version) = self.config.project_version() {
             source.push_str(format!("version = \"{version}\"\n").as_str());
         }
 
@@ -85,5 +96,74 @@ mod tests {
             value.to_string(),
             @r#"{ version = "5", features = ["serde"] }"#
         );
+    }
+
+    #[test]
+    fn test_format_name() {
+        let project = GtProject::try_new(
+            "fallback-name".into(),
+            "genotype.toml".into(),
+            GtpConfig::default(),
+        )
+        .unwrap();
+        let config = GtlConfig::new(&project, &project.config().rs);
+        let manifest = RsManifest::new(&config);
+
+        assert_eq!(
+            manifest.format_name("Genotype Example Package"),
+            "genotype_example_package"
+        );
+    }
+
+    #[test]
+    fn test_name_key() {
+        let project = GtProject::try_new(
+            "fallback-name".into(),
+            "genotype.toml".into(),
+            GtpConfig::default(),
+        )
+        .unwrap();
+        let config = GtlConfig::new(&project, &project.config().rs);
+        let manifest = RsManifest::new(&config);
+
+        assert_eq!(manifest.name_key(), "package.name");
+    }
+
+    #[test]
+    fn test_name_reads_target_config() {
+        let mut project_config = GtpConfig::default();
+        project_config.name = Some("Root Name".into());
+        project_config.rs.common.manifest = toml::from_str(
+            r#"[package]
+name = "target_name"
+"#,
+        )
+        .unwrap();
+        let project = GtProject::try_new(
+            "fallback-name".into(),
+            "genotype.toml".into(),
+            project_config,
+        )
+        .unwrap();
+        let config = GtlConfig::new(&project, &project.config().rs);
+        let manifest = RsManifest::new(&config);
+
+        assert_eq!(manifest.name(), "target_name");
+    }
+
+    #[test]
+    fn test_name_falls_back_to_project_name() {
+        let mut project_config = GtpConfig::default();
+        project_config.name = Some("Root Name".into());
+        let project = GtProject::try_new(
+            "fallback-name".into(),
+            "genotype.toml".into(),
+            project_config,
+        )
+        .unwrap();
+        let config = GtlConfig::new(&project, &project.config().rs);
+        let manifest = RsManifest::new(&config);
+
+        assert_eq!(manifest.name(), "root_name");
     }
 }

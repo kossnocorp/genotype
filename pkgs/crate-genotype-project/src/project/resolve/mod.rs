@@ -28,6 +28,11 @@ impl GtProject {
     pub fn sort_modules(&mut self) {
         self.modules.sort_keys();
         self.module_sources.sort_keys();
+        self.module_sources.values_mut().for_each(|sources| {
+            sources.sort_by_key(|source| {
+                format!("{}:{}", source.variant_name(), source.path().display())
+            })
+        });
     }
 }
 

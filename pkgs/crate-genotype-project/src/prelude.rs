@@ -19,7 +19,7 @@ pub(crate) mod internal {
     pub use semver::Version;
     pub use serde::{Deserialize, Serialize};
     pub use std::fs;
-    pub use std::path::PathBuf;
+    pub use std::path::Path;
     pub use std::str::FromStr;
     pub use thiserror::Error;
     pub use toml_edit::DocumentMut;

@@ -1,4 +1,5 @@
 use crate::prelude::internal::*;
+use heck::ToKebabCase;
 
 mod error;
 pub use error::*;
@@ -33,6 +34,26 @@ pub trait GtlManifest<'project, 'config> {
 
     fn dependencies_key(&self) -> &'static str {
         "dependencies"
+    }
+
+    fn name_key(&self) -> &'static str {
+        "name"
+    }
+
+    fn format_name(&self, name: &str) -> String {
+        name.to_kebab_case()
+    }
+
+    fn name(&self) -> String {
+        let name = self
+            .config()
+            .lang_config()
+            .manifest()
+            .get_path(self.name_key())
+            .and_then(|value| value.as_str())
+            .unwrap_or(self.config().project_name());
+
+        self.format_name(name)
     }
 
     fn format(&self) -> GtlManifestFormat {
@@ -76,7 +97,7 @@ pub trait GtlManifest<'project, 'config> {
         let mut manifest = DocumentMut::from_str(&base_manifest)
             .map_err(|err| GtlManifestError::toml_parse("the base manifest", err, base_manifest))?;
 
-        let config_manifest_str = self.config().lang_config.manifest().to_string();
+        let config_manifest_str = self.config().lang_config().manifest().to_string();
         let config_manifest = DocumentMut::from_str(&config_manifest_str).map_err(|err| {
             GtlManifestError::toml_parse("the config manifest", err, config_manifest_str)
         })?;

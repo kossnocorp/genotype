@@ -5,6 +5,9 @@ use std::sync::{Arc, Mutex};
 /// System project runtime. It combines parallel project loader with file system project source.
 /// It is the default project runtime used by the CLI.
 pub struct GtpRuntimeSystem {
+    /// Current working directory path.
+    cwd_path: GtpCwdPath,
+
     /// Base path for the project source to resolve relative file paths.
     base_path: GtpCwdRelativePath,
 }
@@ -12,10 +15,16 @@ pub struct GtpRuntimeSystem {
 impl GtpRuntimeSystem {
     /// Creates a new system project runtime with the given base path.
     pub fn new(path: &GtpCwdRelativeOrAbsoluteStringPath) -> Result<Self> {
+        let cwd_path = GtpCwdPath::try_new()?;
+
         let base_path = path
             .try_into()
-            .wrap_err_with(|| format!("failed to normalize base path '{path}'"))?;
-        Ok(Self { base_path })
+            .wrap_err_with(|| format!("Failed to normalize base path '{path}'"))?;
+
+        Ok(Self {
+            cwd_path,
+            base_path,
+        })
     }
 
     /// Creates a new system project runtime and loads all modules for the project.
@@ -47,7 +56,12 @@ impl GtpRuntimeSystem {
 
 impl GtpLoaderParallel<GtpFileSourceSystemKind> for GtpRuntimeSystem {}
 
-impl GtpFileAccessSystem for GtpRuntimeSystem {
+impl GtpFileEnv for GtpRuntimeSystem {
+    /// Returns the cwd path.
+    fn cwd_path(&self) -> &GtpCwdPath {
+        &self.cwd_path
+    }
+
     /// Returns the base project directory to resolve relative file paths.
     fn base_path(&self) -> &GtpCwdRelativePath {
         &self.base_path

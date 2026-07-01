@@ -20,7 +20,7 @@ impl<'project, 'config, ProjectModule: GtlProjectModule>
                     GtlProjectModuleState::Rendered(inner) => inner.to_render_error_state(),
 
                     GtlProjectModuleState::Resolved(inner) => {
-                        let source_code = inner.resolved_module.render(self.config.lang_config);
+                        let source_code = inner.resolved_module.render(self.config.lang_config());
                         match source_code {
                             Ok(source_code) => {
                                 GtlProjectModuleState::Rendered(inner.to_rendered(source_code))

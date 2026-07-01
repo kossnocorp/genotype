@@ -6,7 +6,7 @@ use glob::glob;
 /// system project source used by the system project runtime.
 pub struct GtpFileSourceSystemKind;
 
-pub trait GtpFileSourceSystem: GtpFileAccessSystem {}
+pub trait GtpFileSourceSystem: GtpFileEnv {}
 
 impl<Type: GtpFileSourceSystem + ?Sized> GtpFileSourceProvider<GtpFileSourceSystemKind> for Type {
     /// Globs files from the given path using the file system.
@@ -42,7 +42,7 @@ impl<Type: GtpFileSourceSystem + ?Sized> GtpFileSourceProvider<GtpFileSourceSyst
 
     /// Reads a file from the given path using the file system.
     fn read_file(&self, path: &GtpCwdRelativePath) -> Result<String> {
-        let source = fs::read_to_string(self.resolve_path_buf(path))
+        let source = fs::read_to_string(path.to_path_buf())
             .map_err(|e| miette!(e))
             .wrap_err_with(|| {
                 format!("File `{path}` doesn't exist or don't have permission to read it")
@@ -52,12 +52,12 @@ impl<Type: GtpFileSourceSystem + ?Sized> GtpFileSourceProvider<GtpFileSourceSyst
 
     /// Checks if the given path exists using the file system.
     fn file_exists(&self, path: &GtpCwdRelativePath) -> Result<bool> {
-        Ok(self.resolve_path_buf(path).exists())
+        Ok(path.to_path_buf().exists())
     }
 
     /// Checks if the given path is a file using the file system.
     fn is_file(&self, path: &GtpCwdRelativePath) -> Result<bool> {
-        Ok(self.resolve_path_buf(path).is_file())
+        Ok(path.to_path_buf().is_file())
     }
 
     /// Searches for a file path using the file system starting from the base path.

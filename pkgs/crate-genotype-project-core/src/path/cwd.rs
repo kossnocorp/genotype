@@ -41,6 +41,13 @@ impl GtpCwdPath {
     }
 }
 
+impl<Str: AsRef<str>> From<Str> for GtpCwdPath {
+    fn from(path: Str) -> Self {
+        let path = PathBuf::from(path.as_ref());
+        Self(path)
+    }
+}
+
 // endregion
 
 // region: Cwd-relative path

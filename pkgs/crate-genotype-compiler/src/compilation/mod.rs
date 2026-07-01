@@ -46,7 +46,7 @@ impl<Runtime: GtcRuntime + ?Sized> GtcCompilation<'_, '_, Runtime> {
             self.compile_project(&RsCompiler::new(project));
         }
 
-        self.finalize(&project.paths.dist)
+        self.finalize(&project.paths().dist)
     }
 
     fn compile_project<'project, Compiler: GtlCompiler<'project>>(&mut self, compiler: &Compiler)

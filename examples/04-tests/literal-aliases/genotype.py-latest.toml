@@ -4,7 +4,8 @@ dist = "dist/py-latest"
 [py]
 enabled = true
 version = "latest"
+manager = "uv"
 
-[py.manifest]
+[py.manifest.project]
 name = "module"
 version = "0.1.0"

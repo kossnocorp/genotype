@@ -21,7 +21,8 @@ pub trait GtpLoader<Kind, FileSourceKind>: GtpFileSource<FileSourceKind> {
     fn create_project(&self, config_path: Option<&GtpCwdRelativePath>) -> Result<GtProject> {
         let config_file_path = self.find_config_path(config_path)?;
         let config = self.load_config(&config_file_path)?;
-        let project = GtProject::try_new(config_file_path, config)?;
+        let fallback_name = resolve_fallback_name(self.cwd_path(), &config_file_path);
+        let project = GtProject::try_new(fallback_name, config_file_path, config)?;
         Ok(project)
     }
 
@@ -58,7 +59,7 @@ pub trait GtpLoader<Kind, FileSourceKind>: GtpFileSource<FileSourceKind> {
     /// Loads all project modules.
     fn load_all_modules(&self, project: GtProject) -> Result<GtProject> {
         let module_entries = self
-            .glob_files(project.paths.entry.as_ref())?
+            .glob_files(project.paths().entry.as_ref())?
             .into_iter()
             .map(|file_path| GtpModulePath::from_cwd_relative_path(file_path))
             .collect::<Vec<GtpModulePath>>();
@@ -66,7 +67,7 @@ pub trait GtpLoader<Kind, FileSourceKind>: GtpFileSource<FileSourceKind> {
         ensure!(
             !module_entries.is_empty(),
             "no module files found for entry pattern '{}'",
-            project.paths.entry.display()
+            project.paths().entry.display()
         );
 
         let mut project = self.load_module_entries(project, module_entries)?;
@@ -174,3 +175,51 @@ pub trait GtpLoader<Kind, FileSourceKind>: GtpFileSource<FileSourceKind> {
 }
 
 // endregion
+
+// region Functions
+
+/// Resolves fallback name for the project. It is used when the project name is not specified
+/// in the config file.
+fn resolve_fallback_name(cwd_path: &GtpCwdPath, config_file_path: &GtpConfigFilePath) -> String {
+    let config_dir_path = config_file_path.to_config_dir_path().to_path_buf();
+    dir_name(config_dir_path)
+        .or_else(|| dir_name(cwd_path.as_path()))
+        .unwrap_or_else(|| DEFAULT_PROJECT_NAME.to_string())
+}
+
+fn dir_name<Pth: AsRef<Path>>(path: Pth) -> Option<String> {
+    let path = path.as_ref();
+    path.file_name()
+        .and_then(|dir_name| dir_name.to_str().map(|s| s.to_string()))
+}
+
+// endregion
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_resolves_config_dir_name() {
+        let config_file_path = GtpConfigFilePath::from_str("dir/project-name/genotype.toml");
+        let cwd_path = GtpCwdPath::from("/absolute/path/to/project-dir-name");
+        let fallback_name = resolve_fallback_name(&cwd_path, &config_file_path);
+        assert_equal!(fallback_name, "project-name");
+    }
+
+    #[test]
+    fn test_resolves_cwd_dir_name() {
+        let config_file_path = GtpConfigFilePath::from_str("genotype.toml");
+        let cwd_path = GtpCwdPath::from("/absolute/path/to/project-dir-name");
+        let fallback_name = resolve_fallback_name(&cwd_path, &config_file_path);
+        assert_equal!(fallback_name, "project-dir-name");
+    }
+
+    #[test]
+    fn test_resolves_default_project_name() {
+        let config_file_path = GtpConfigFilePath::from_str("genotype.toml");
+        let cwd_path = GtpCwdPath::from("/");
+        let fallback_name = resolve_fallback_name(&cwd_path, &config_file_path);
+        assert_equal!(fallback_name, DEFAULT_PROJECT_NAME);
+    }
+}

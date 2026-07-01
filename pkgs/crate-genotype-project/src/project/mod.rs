@@ -13,40 +13,48 @@ mod sources;
 
 // endregion
 
+pub const DEFAULT_PROJECT_NAME: &str = "types";
+
 /// Genotype project. Represents configuration with currently loaded modules.
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GtProject {
     /// Known project modules mapped by their workspace path.
-    pub modules: IndexMap<GtpModulePath, GtpModule>,
+    modules: IndexMap<GtpModulePath, GtpModule>,
 
     /// Known module sources.
     // TODO: It must rebuild when a module is changed.
-    pub module_sources: IndexMap<GtpModulePath, IndexSet<GtpModuleSource>>,
+    module_sources: IndexMap<GtpModulePath, IndexSet<GtpModuleSource>>,
+
+    /// Project name resolved from config, config parent directory, or default.
+    name: String,
 
     /// Project configuration.
-    pub config: GtpConfig,
+    config: GtpConfig,
 
     /// Project paths.
-    pub paths: GtpPaths,
+    paths: GtpPaths,
 }
 
 impl GtProject {
-    pub fn try_new(config_file_path: GtpConfigFilePath, config: GtpConfig) -> Result<Self> {
+    pub fn try_new(
+        fallback_name: String,
+        config_file_path: GtpConfigFilePath,
+        config: GtpConfig,
+    ) -> Result<Self> {
         let paths = GtProject::try_new_paths(config_file_path, &config)
             .wrap_err("failed to initialize project paths from config")?;
+        let name = config.name.clone().unwrap_or(fallback_name);
 
         Ok(Self {
             modules: IndexMap::new(),
             module_sources: IndexMap::new(),
+            name,
             config,
             paths,
         })
     }
 
-    pub fn try_new_paths(
-        config_file_path: GtpConfigFilePath,
-        config: &GtpConfig,
-    ) -> Result<GtpPaths> {
+    fn try_new_paths(config_file_path: GtpConfigFilePath, config: &GtpConfig) -> Result<GtpPaths> {
         let config_dir = config_file_path.to_config_dir_path();
         let root = config.root.to_cwd_relative_path(&config_dir).into();
         let dist = config.dist.to_cwd_relative_path(&root).into();
@@ -60,6 +68,30 @@ impl GtProject {
             src,
             entry,
         })
+    }
+
+    pub fn modules(&self) -> &IndexMap<GtpModulePath, GtpModule> {
+        &self.modules
+    }
+
+    pub fn modules_mut(&mut self) -> &mut IndexMap<GtpModulePath, GtpModule> {
+        &mut self.modules
+    }
+
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn config(&self) -> &GtpConfig {
+        &self.config
+    }
+
+    pub fn config_mut(&mut self) -> &mut GtpConfig {
+        &mut self.config
+    }
+
+    pub fn paths(&self) -> &GtpPaths {
+        &self.paths
     }
 
     /// Tries to initialize a module in the project. If the module already initialized, it resolves
@@ -79,7 +111,7 @@ impl GtProject {
     }
 
     /// Checks if the module is already initialized in the project.
-    pub fn has_module(&self, path: &GtpModulePath) -> bool {
+    fn has_module(&self, path: &GtpModulePath) -> bool {
         self.modules.contains_key(path)
     }
 
@@ -104,6 +136,25 @@ impl GtProject {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_uses_config_name() {
+        let config = GtpConfig::parse(r#"name = "example-package""#.into()).unwrap();
+        let project =
+            GtProject::try_new("fallback-name".into(), "genotype.toml".into(), config).unwrap();
+        assert_equal!(project.name, "example-package");
+    }
+
+    #[test]
+    fn test_uses_fallback_name() {
+        let project = GtProject::try_new(
+            "fallback-name".into(),
+            "genotype.toml".into(),
+            GtpConfig::default(),
+        )
+        .unwrap();
+        assert_equal!(project.name, "fallback-name");
+    }
 
     #[test]
     fn test_glob() {
@@ -551,23 +602,23 @@ mod tests {
           },
           module_sources: {
             "examples/basic/src/author.type": [
-              Entry(
-                path: "examples/basic/src/author.type",
-              ),
               Dependency(
                 path: "examples/basic/src/author.type",
                 parent_path: "examples/basic/src/book.type",
                 parent_span: GtSpan(0, 19),
               ),
+              Entry(
+                path: "examples/basic/src/author.type",
+              ),
             ],
             "examples/basic/src/book.type": [
-              Entry(
-                path: "examples/basic/src/book.type",
-              ),
               Dependency(
                 path: "examples/basic/src/book.type",
                 parent_path: "examples/basic/src/order.type",
                 parent_span: GtSpan(0, 15),
+              ),
+              Entry(
+                path: "examples/basic/src/book.type",
               ),
             ],
             "examples/basic/src/order.type": [
@@ -576,16 +627,17 @@ mod tests {
               ),
             ],
             "examples/basic/src/user.type": [
-              Entry(
-                path: "examples/basic/src/user.type",
-              ),
               Dependency(
                 path: "examples/basic/src/user.type",
                 parent_path: "examples/basic/src/order.type",
                 parent_span: GtSpan(34, 45),
               ),
+              Entry(
+                path: "examples/basic/src/user.type",
+              ),
             ],
           },
+          name: "basic",
           config: GtpConfig(
             name: None,
             version: None,
@@ -826,6 +878,7 @@ mod tests {
               ),
             ],
           },
+          name: "process",
           config: GtpConfig(
             name: None,
             version: None,
@@ -973,16 +1026,17 @@ mod tests {
               ),
             ],
             "examples/errors/undefined-inline/src/package.type": [
-              Entry(
-                path: "examples/errors/undefined-inline/src/package.type",
-              ),
               Dependency(
                 path: "examples/errors/undefined-inline/src/package.type",
                 parent_path: "examples/errors/undefined-inline/src/collection.type",
                 parent_span: GtSpan(34, 59),
               ),
+              Entry(
+                path: "examples/errors/undefined-inline/src/package.type",
+              ),
             ],
           },
+          name: "undefined-inline",
           config: GtpConfig(
             name: None,
             version: None,

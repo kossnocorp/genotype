@@ -4,7 +4,7 @@ mod system;
 pub use system::*;
 
 /// Project file source trait. It abstracts the read file system operations for the project.
-pub trait GtpFileSource<Kind> {
+pub trait GtpFileSource<Kind>: GtpFileEnv {
     /// Globs files from the given path.
     fn glob_files(&self, path: &GtpCwdRelativePath) -> Result<Vec<GtpCwdRelativePath>>;
 
@@ -38,7 +38,7 @@ pub trait GtpFileSourceProvider<Kind> {
     fn find_file(&self, file_name: &str) -> Result<GtpCwdRelativePath>;
 }
 
-impl<Type, Kind> GtpFileSource<Kind> for Type
+impl<Type: GtpFileEnv, Kind> GtpFileSource<Kind> for Type
 where
     Type: GtpFileSourceProvider<Kind> + ?Sized,
 {

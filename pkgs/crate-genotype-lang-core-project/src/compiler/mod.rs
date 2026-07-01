@@ -22,7 +22,7 @@ where
     fn new(project: &'project GtProject) -> Self;
 
     fn lang_config(&self) -> &'project GtlProjectModuleTypeLangConfig<Self::ProjectModule> {
-        self.config().lang_config
+        self.config().lang_config()
     }
 
     fn enabled(&self) -> bool {
@@ -39,7 +39,7 @@ where
         diagnostics.extend(self.config().lang_config_health_check());
 
         let mut lang_project = GtlProject::<Self::ProjectModule>::new(self.config());
-        lang_project.convert(&self.project().modules);
+        lang_project.convert(&self.project().modules());
         lang_project.resolve()?;
         lang_project.render();
 
@@ -73,7 +73,7 @@ where
         &self,
         project: &GtlProject<'project, '_, Self::ProjectModule>,
     ) -> Option<Vec<GtlGeneration<Self::ProjectModule>>> {
-        if !self.config().package_enabled {
+        if !self.config().package_enabled() {
             return None;
         }
 
