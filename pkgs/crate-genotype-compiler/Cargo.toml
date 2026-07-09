@@ -14,6 +14,7 @@ system = ["miette/fancy", "miette/syntect-highlighter"]
 wasm = ["miette/fancy-no-syscall"]
 
 [dependencies]
+genotype_backend = { version = "0.15.0", path = "../crate-genotype-backend" }
 genotype_core = { version = "0.15.0", path = "../crate-genotype-core" }
 genotype_project_core = { version = "0.15.0", path = "../crate-genotype-project-core" }
 genotype_project = { version = "0.15.0", path = "../crate-genotype-project" }
@@ -36,6 +37,7 @@ toml = { version = "0.8.19", features = ["preserve_order"] }
 semver = { version = "1.0.27", features = ["serde"] }
 serde = { version = "1.0.228", features = ["derive"] }
 owo-colors = "4.1.0"
+futures = "0.3.31"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

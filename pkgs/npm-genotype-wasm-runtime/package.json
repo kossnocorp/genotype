@@ -1,0 +1,31 @@
+{
+  "name": "@genotype-lang/wasm-runtime",
+  "version": "0.1.0",
+  "description": "Genotype WebAssembly client runtime",
+  "license": "MIT",
+  "author": "Sasha Koss <koss@nocorp.me>",
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@genotype-lang/types": "workspace:^",
+    "@genotype-lang/wasm": "workspace:^",
+    "alwaysly": "^0.4.0",
+    "minimatch": "^10.2.5",
+    "pathe": "^2.0.3",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2"
+  }
+}

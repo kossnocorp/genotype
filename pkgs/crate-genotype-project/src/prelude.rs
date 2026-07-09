@@ -12,14 +12,12 @@ pub(crate) mod internal {
     pub use genotype_test::*;
     pub use indexmap::{IndexMap, IndexSet};
     pub use miette::{
-        Context, Diagnostic, IntoDiagnostic, LabeledSpan, NamedSource, Report, Result, ensure,
-        miette,
+        Context, Diagnostic, IntoDiagnostic, LabeledSpan, NamedSource, Report, Result, miette,
     };
     pub use relative_path::RelativePathBuf;
     pub use semver::Version;
     pub use serde::{Deserialize, Serialize};
     pub use std::fs;
-    pub use std::path::Path;
     pub use std::str::FromStr;
     pub use thiserror::Error;
     pub use toml_edit::DocumentMut;

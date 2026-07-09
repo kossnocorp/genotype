@@ -1,35 +1,46 @@
 use crate::prelude::internal::*;
 
 /// System compiler.
-pub struct GtCompilerSystem;
+pub struct GtcSystem {
+    state: GtCompilerState,
+    backend: GtbSystem,
+}
 
-impl GtCompilerSystem {}
+impl GtcSystem {}
 
-impl<'a> GtCompiler<GtCompilerSystemInput<'a>, i32> for GtCompilerSystem {
-    fn build_once(input: GtCompilerSystemInput) -> Result<i32> {
-        let (base_path, config_path) = input;
+impl GtCompiler<GtcSystemProps<'_>> for GtcSystem {
+    fn new(props: GtcSystemProps) -> Result<Self> {
+        let (base_path, config_path) = props;
+        let config_path = config_path
+            .map(|path| {
+                path.try_into()
+                    .wrap_err_with(|| format!("Failed to normalize config path `{path}`"))
+            })
+            .transpose()?;
 
-        let runtime =
-            GtpRuntimeSystem::new(base_path).wrap_err("failed to create system project runtime")?;
+        let backend =
+            GtbSystem::new(base_path).wrap_err("Failed to create system project backend")?;
 
-        let project = GtpRuntimeSystem::new_and_load_all_modules(base_path, config_path);
+        Ok(Self {
+            state: GtCompilerState::New { config_path },
+            backend,
+        })
+    }
 
-        let code = match project {
-            Ok(project) => {
-                let mut compiler = GtcCompilation::new(&project, &runtime);
-                compiler.compile()
-            }
+    fn state(&self) -> &GtCompilerState {
+        &self.state
+    }
 
-            Err(err) => {
-                runtime.report_diagnostic(&GtDiagnostic::error(err));
-                1
-            }
-        };
-        Ok(code)
+    fn state_mut(&mut self) -> &mut GtCompilerState {
+        &mut self.state
+    }
+
+    fn backend(&self) -> &impl GtBackend {
+        &self.backend
     }
 }
 
-pub type GtCompilerSystemInput<'a> = (
+pub type GtcSystemProps<'a> = (
     &'a GtpCwdRelativeOrAbsoluteStringPath,
     Option<&'a GtpCwdRelativeOrAbsoluteStringPath>,
 );

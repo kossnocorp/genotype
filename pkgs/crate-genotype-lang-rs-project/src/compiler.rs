@@ -156,8 +156,8 @@ mod tests {
 
     #[test]
     fn test_convert_base() {
-        let project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
 
         assert_ron_snapshot!(
           modules(&project),
@@ -378,8 +378,8 @@ mod tests {
 
     #[test]
     fn test_convert_glob() {
-        let project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/glob".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/glob".into()).unwrap();
+        let project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
 
         assert_ron_snapshot!(
           modules(&project),
@@ -672,8 +672,8 @@ mod tests {
 
     #[test]
     fn test_render() {
-        let project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
 
         let dist = compile(&project);
 
@@ -780,8 +780,8 @@ mod tests {
 
     #[test]
     fn test_render_nested() {
-        let project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/nested".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/nested".into()).unwrap();
+        let project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
 
         let dist = compile(&project);
 
@@ -923,9 +923,8 @@ mod tests {
 
     #[test]
     fn test_render_recursive_box() {
-        let project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/recursive".into(), None)
-                .unwrap();
+        let backend = GtbSystem::new(&"./examples/recursive".into()).unwrap();
+        let project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
 
         let dist = compile(&project);
         let node_file = dist
@@ -951,9 +950,8 @@ mod tests {
 
     #[test]
     fn test_render_recursive_box_with_extensions() {
-        let project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/recursive".into(), None)
-                .unwrap();
+        let backend = GtbSystem::new(&"./examples/recursive".into()).unwrap();
+        let project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
 
         let dist = compile(&project);
         let tree_file = dist
@@ -1000,9 +998,8 @@ mod tests {
 
     #[test]
     fn test_render_extensions() {
-        let project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/extensions".into(), None)
-                .unwrap();
+        let backend = GtbSystem::new(&"./examples/extensions".into()).unwrap();
+        let project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
 
         let dist = compile(&project);
 
@@ -1164,9 +1161,8 @@ mod tests {
 
     #[test]
     fn test_render_dependencies() {
-        let project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/dependencies".into(), None)
-                .unwrap();
+        let backend = GtbSystem::new(&"./examples/dependencies".into()).unwrap();
+        let project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
 
         let dist = compile(&project);
 
@@ -1249,8 +1245,8 @@ mod tests {
 
     #[test]
     fn test_render_uses_global_version_by_default() {
-        let mut project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
         project.config_mut().version = Some("0.2.0".parse().unwrap());
 
         let dist = compile(&project);
@@ -1272,8 +1268,8 @@ mod tests {
 
     #[test]
     fn test_render_prefers_rs_manifest_version_over_global() {
-        let mut project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
         project.config_mut().version = Some("0.2.0".parse().unwrap());
         project.config_mut().rs.common.manifest = toml::from_str(
             r#"[package]
@@ -1301,8 +1297,8 @@ version = "0.3.0"
 
     #[test]
     fn test_render_without_package_global() {
-        let mut project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
         project.config_mut().package = false;
 
         let dist = compile(&project);
@@ -1320,8 +1316,8 @@ version = "0.3.0"
 
     #[test]
     fn test_render_without_package_target() {
-        let mut project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
         let config = project.config_mut();
         config.package = true;
         config.rs.common.package = Some(false);
@@ -1341,8 +1337,8 @@ version = "0.3.0"
 
     #[test]
     fn test_dist_includes_module_errors() {
-        let mut project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
         let path: GtpModulePath = "examples/basic/src/broken.type".into();
         let source = GtpModuleSource::Entry { path: path.clone() };
         project.modules_mut().insert(

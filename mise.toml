@@ -6,6 +6,9 @@ config_roots = ["pkgs/*"]
 # Stack
 # Rust
 rust = { version = "latest", channel = "stable", components = "rustfmt,clippy" }
+"cargo:wasm-pack" = "latest"
+"cargo:wasm-bindgen-cli" = "latest"
+
 # Node.js
 node = "lts"
 pnpm = "latest"

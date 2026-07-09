@@ -1,0 +1,34 @@
+[package]
+name = "genotype_backend"
+version = "0.15.0"
+edition = "2024"
+description = "Genotype language backend crate"
+authors = ["Sasha Koss <koss@nocorp.me>"]
+license = "MIT"
+repository = "https://github.com/kossnocorp/genotype"
+
+[dependencies]
+genotype_core = { version = "0.15.0", path = "../crate-genotype-core" }
+genotype_project_core = { version = "0.15.0", path = "../crate-genotype-project-core", features = [
+  "project",
+] }
+genotype_project = { version = "0.15.0", path = "../crate-genotype-project" }
+genotype_workspace_core = { version = "0.15.0", path = "../crate-genotype-workspace-core" }
+glob = "0.3.1"
+miette = { version = "7.6.0", features = ["serde", "fancy"] }
+num_cpus = "1.16.0"
+rayon = "1.10.0"
+thiserror = "1.0.64"
+delegate = "0.13.3"
+relative-path = { version = "1.9.3", features = ["serde"] }
+serde = { version = "1.0.228", features = ["derive"] }
+indexmap = { version = "2.6.0", features = ["serde"] }
+figment = { version = "0.10.19", features = ["toml", "env"] }
+owo-colors = "4.1.0"
+litty = { version = "0.5.0", path = "../crate-litty" }
+futures = "0.3.31"
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
+insta = { version = "1.46.3", features = ["ron"] }
+genotype_test = { path = "../crate-genotype-test" }

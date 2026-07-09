@@ -1,0 +1,195 @@
+use genotype_core/GtDiagnostic
+use genotype_project/GtpFormatterCmd
+
+//#region Backend to Runtime
+
+//#region Unions
+
+GtbRemoteBackendRequest:
+  | GtbRemoteBackendRequestGlobFiles
+  | GtbRemoteBackendRequestReadFile
+  | GtbRemoteBackendRequestFileExists
+  | GtbRemoteBackendRequestIsFile
+  | GtbRemoteBackendRequestFindFile
+  | GtbRemoteBackendRequestReportDiagnostic
+  | GtbRemoteBackendRequestRunFormatter
+  | GtbRemoteBackendRequestWriteFile
+
+GtbRemoteBackendRequestResponse:
+  | GtbRemoteBackendRequestResponseGlobFiles
+  | GtbRemoteBackendRequestResponseReadFile
+  | GtbRemoteBackendRequestResponseFileExists
+  | GtbRemoteBackendRequestResponseIsFile
+  | GtbRemoteBackendRequestResponseFindFile
+  | GtbRemoteBackendRequestResponseReportDiagnostic
+  | GtbRemoteBackendRequestResponseRunFormatter
+  | GtbRemoteBackendRequestResponseWriteFile
+
+//#endregion
+
+//#region glob-files
+
+GtbRemoteBackendRequestGlobFiles: {
+  kind: "glob-files",
+  path: string
+}
+
+GtbRemoteBackendRequestResponseGlobFiles: {
+  kind: "glob-files",
+  paths: [string]
+}
+
+//#endregion
+
+//#region read-file
+
+GtbRemoteBackendRequestReadFile: {
+  kind: "read-file",
+  path: string
+}
+
+GtbRemoteBackendRequestResponseReadFile: {
+  kind: "read-file",
+  content: string
+}
+
+//#endregion
+
+//#region file-exists
+
+GtbRemoteBackendRequestFileExists: {
+  kind: "file-exists",
+  path: string
+}
+
+GtbRemoteBackendRequestResponseFileExists: {
+  kind: "file-exists",
+  exists: boolean
+}
+
+//#endregion
+
+//#region is-file
+
+GtbRemoteBackendRequestIsFile: {
+  kind: "is-file",
+  path: string
+}
+
+GtbRemoteBackendRequestResponseIsFile: {
+  kind: "is-file",
+  isFile: boolean
+}
+
+//#endregion
+
+//#region find-file
+
+GtbRemoteBackendRequestFindFile: {
+  kind: "find-file",
+  fileName: string
+}
+
+GtbRemoteBackendRequestResponseFindFile: {
+  kind: "find-file",
+  path: string
+}
+
+//#endregion
+
+//#region report-diagnostic
+
+GtbRemoteBackendRequestReportDiagnostic: {
+  kind: "report-diagnostic",
+  diagnostic: GtDiagnostic
+}
+
+GtbRemoteBackendRequestResponseReportDiagnostic: {
+  kind: "report-diagnostic",
+}
+
+//#endregion
+
+//#region run-formatter
+
+GtbRemoteBackendRequestRunFormatter: {
+  kind: "run-formatter",
+  cmd: GtpFormatterCmd
+}
+
+GtbRemoteBackendRequestResponseRunFormatter: {
+  kind: "run-formatter",
+}
+
+//#endregion
+
+//#region write-file
+
+GtbRemoteBackendRequestWriteFile: {
+  kind: "write-file",
+  path: string,
+  content: string
+}
+
+GtbRemoteBackendRequestResponseWriteFile: {
+  kind: "write-file",
+}
+
+//#endregion
+
+//#endregion
+
+//#region Runtime to Backend
+
+//#region Unions
+
+GtbRemoteRuntimeRequest:
+  | GtbRemoteRuntimeRequestLoadInProject
+  | GtbRemoteRuntimeRequestLoadInModules
+  | GtbRemoteRuntimeRequestCompile
+
+GtbRemoteRuntimeRequestResponse:
+  | GtbRemoteRuntimeRequestResponseLoadInProject
+  | GtbRemoteRuntimeRequestResponseLoadInModules
+  | GtbRemoteRuntimeRequestResponseCompile
+
+//#endregion
+
+//#region load-in-project
+
+GtbRemoteRuntimeRequestLoadInProject: {
+  kind: "load-in-project",
+}
+
+GtbRemoteRuntimeRequestResponseLoadInProject: {
+  kind: "load-in-project",
+}
+
+//#endregion
+
+//#region load-in-modules
+
+GtbRemoteRuntimeRequestLoadInModules: {
+  kind: "load-in-modules",
+}
+
+GtbRemoteRuntimeRequestResponseLoadInModules: {
+  kind: "load-in-modules",
+}
+
+//#endregion
+
+//#region compile
+
+GtbRemoteRuntimeRequestCompile: {
+  kind: "compile",
+}
+
+GtbRemoteRuntimeRequestResponseCompile: {
+  kind: "compile",
+  exitCode: i32
+}
+
+//#endregion
+
+//#endregion

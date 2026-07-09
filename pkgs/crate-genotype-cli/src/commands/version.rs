@@ -61,11 +61,10 @@ pub enum GtVersionBumpPart {
 pub fn version_command(args: &GtVersionCommand) -> Result<()> {
     let path = args.path();
     let project_runtime =
-        GtpRuntimeSystem::new(path).wrap_err("failed to create system project runtime")?;
+        GtbSystem::new(path).wrap_err("failed to create system project runtime")?;
 
-    let mut project = project_runtime
-        .create_project(None)
-        .wrap_err("failed to create project")?;
+    let mut project =
+        block_on(project_runtime.create_project(None)).wrap_err("failed to create project")?;
 
     match &args.command {
         GtVersionSubcommand::Set(args) => {

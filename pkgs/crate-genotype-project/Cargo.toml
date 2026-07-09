@@ -20,10 +20,7 @@ genotype_lang_ts_config = { version = "0.15.0", path = "../crate-genotype-lang-t
 genotype_lang_rs_config = { version = "0.15.0", path = "../crate-genotype-lang-rs-config" }
 glob = "0.3.1"
 miette = { version = "7.6.0", features = ["serde", "fancy"] }
-num_cpus = "1.16.0"
-rayon = "1.10.0"
 thiserror = "1.0.64"
-delegate = "0.13.3"
 relative-path = { version = "1.9.3", features = ["serde"] }
 serde = { version = "1.0.228", features = ["derive"] }
 indexmap = { version = "2.6.0", features = ["serde"] }
@@ -32,7 +29,6 @@ semver = { version = "1.0.27", features = ["serde"] }
 toml = { version = "0.8.19", features = ["preserve_order"] }
 toml_ext = { version = "0.2.0", path = "../crate-toml-ext" }
 toml_edit = { version = "0.22.26", features = ["serde"] }
-owo-colors = "4.1.0"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

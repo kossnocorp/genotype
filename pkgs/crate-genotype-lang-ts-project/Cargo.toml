@@ -25,7 +25,9 @@ pluralizer = "0.5.0"
 indexmap = { version = "2.6.0", features = ["serde"] }
 
 [dev-dependencies]
+genotype_backend = { version = "0.15.0", path = "../crate-genotype-backend" }
+genotype_test = { path = "../crate-genotype-test" }
 pretty_assertions = "1.4.1"
 insta = { version = "1.46.3", features = ["ron"] }
 toml = { version = "0.8.19" }
-genotype_test = { path = "../crate-genotype-test" }
+futures = "0.3.31"

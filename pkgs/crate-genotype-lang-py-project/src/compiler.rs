@@ -203,8 +203,8 @@ mod tests {
 
     #[test]
     fn test_convert_base() {
-        let project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
 
         assert_ron_snapshot!(
           modules(&project),
@@ -391,8 +391,8 @@ mod tests {
 
     #[test]
     fn test_convert_glob() {
-        let project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/glob".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/glob".into()).unwrap();
+        let project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
 
         assert_ron_snapshot!(
           modules(&project),
@@ -637,8 +637,8 @@ mod tests {
 
     #[test]
     fn test_render() {
-        let project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
 
         assert_ron_snapshot!(
           compile(&project),
@@ -678,8 +678,8 @@ mod tests {
 
     #[test]
     fn test_render_nested() {
-        let project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/nested".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/nested".into()).unwrap();
+        let project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
 
         assert_ron_snapshot!(
           compile(&project),
@@ -723,9 +723,8 @@ mod tests {
 
     #[test]
     fn test_render_dependencies() {
-        let mut project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/dependencies".into(), None)
-                .unwrap();
+        let backend = GtbSystem::new(&"./examples/dependencies".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
         project.config_mut().py.common.dependencies =
             IndexMap::from_iter(vec![("genotype_json_types".into(), "genotype_json".into())]);
 
@@ -763,9 +762,8 @@ mod tests {
 
     #[test]
     fn test_render_cyclic_lists() {
-        let project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/cyclic-lists".into(), None)
-                .unwrap();
+        let backend = GtbSystem::new(&"./examples/cyclic-lists".into()).unwrap();
+        let project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
 
         let dist = compile(&project);
 
@@ -855,8 +853,8 @@ mod tests {
 
     #[test]
     fn test_render_uses_global_version_by_default() {
-        let mut project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
         project.config_mut().version = Some("0.2.0".parse().unwrap());
 
         let dist = compile(&project);
@@ -883,8 +881,8 @@ mod tests {
 
     #[test]
     fn test_render_prefers_py_manifest_version_over_global() {
-        let mut project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
         project.config_mut().version = Some("0.2.0".parse().unwrap());
         project.config_mut().py.common.manifest = toml::from_str(
             r#"[tool.poetry]
@@ -917,8 +915,8 @@ version = "0.3.0"
 
     #[test]
     fn test_render_uv_manifest() {
-        let mut project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
         project.config_mut().py.lang.manager = genotype_lang_py_config::PyPackageManager::Uv;
         project.config_mut().version = Some("0.2.0".parse().unwrap());
         project.config_mut().py.common.manifest = toml::from_str(
@@ -952,8 +950,8 @@ name = "module"
 
     #[test]
     fn test_render_without_package_global() {
-        let mut project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
         project.config_mut().package = false;
 
         let dist = compile(&project);
@@ -973,8 +971,8 @@ name = "module"
 
     #[test]
     fn test_render_without_package_target() {
-        let mut project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
         project.config_mut().package = true;
         project.config_mut().py.common.package = Some(false);
 
@@ -995,8 +993,8 @@ name = "module"
 
     #[test]
     fn test_dist_includes_module_errors() {
-        let mut project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
         let path: GtpModulePath = "examples/basic/src/broken.type".into();
         let source = GtpModuleSource::Entry { path: path.clone() };
         project.modules_mut().insert(

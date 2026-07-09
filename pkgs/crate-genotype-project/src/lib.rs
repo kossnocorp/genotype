@@ -7,21 +7,6 @@ pub use module::*;
 mod project;
 pub use project::*;
 
-mod loader;
-pub use loader::*;
-
-mod file;
-pub use file::*;
-
-mod diagnostic;
-pub use diagnostic::*;
-
-mod formatter;
-pub use formatter::*;
-
-mod runtime;
-pub use runtime::*;
-
 mod config;
 pub use config::*;
 

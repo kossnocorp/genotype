@@ -1,0 +1,22 @@
+src = "./types/"
+dist = "."
+package = false
+formatters = [{ kind = "oxfmt", via = "pnpm" }]
+
+[ts]
+enabled = true
+mode = "zod"
+dist = "../npm-genotype-types/src/backend/"
+
+[ts.dependencies]
+genotype_core = "@genotype-lang/types"
+genotype_project = "@genotype-lang/types"
+
+[rs]
+enabled = true
+dist = "./src/types/"
+formatters = [{ kind = "cargo", cmd = "fmt", args = ["--all"] }]
+
+[rs.dependencies]
+genotype_core = "genotype_core"
+genotype_project = "genotype_project_core"

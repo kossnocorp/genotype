@@ -1,0 +1,15 @@
+[tasks.preinstall]
+description = "Preinstall steps"
+run = { task = "//pkgs/crate-genotype-wasm:build" }
+
+[tasks.build]
+description = "Builds the package"
+depends = "//pkgs/crate-genotype-wasm:build"
+
+[tasks."types"]
+description = "Checks types"
+run = "pnpm exec tsc --build"
+
+[tasks."types:watch"]
+description = "Checks types in watch mode"
+run = "pnpm exec tsc --build --watch"

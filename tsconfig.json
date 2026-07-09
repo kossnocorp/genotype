@@ -1,4 +1,8 @@
 {
   "include": [],
-  "references": [{ "path": "./pkgs/app-website/" }, { "path": "./pkgs/npm-vscode-genotype/" }]
+  "references": [
+    { "path": "./pkgs/app-website/" },
+    { "path": "./pkgs/npm-genotype-wasm-runtime/" },
+    { "path": "./pkgs/npm-vscode-genotype/" }
+  ]
 }

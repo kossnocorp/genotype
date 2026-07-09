@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "declaration": true,
+    "skipLibCheck": true,
+    "lib": ["ES2022", "DOM", "WebWorker"],
+    // Output
+    "outDir": "./.ts",
+    "tsBuildInfoFile": "./.ts/tsconfig.tsbuildinfo",
+    "emitDeclarationOnly": true,
+    // Checks
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    // Build
+    "incremental": true,
+    // Project references
+    "composite": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}

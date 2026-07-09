@@ -1,5 +1,9 @@
 pub(crate) mod internal {
     pub use crate::*;
+    #[cfg(test)]
+    pub use futures::executor::block_on;
+    #[cfg(test)]
+    pub use genotype_backend::prelude::*;
     pub use genotype_core::prelude::*;
     pub use genotype_lang_core::prelude::*;
     pub use genotype_lang_core_project::*;

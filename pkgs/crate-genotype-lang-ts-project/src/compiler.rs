@@ -142,8 +142,8 @@ mod tests {
 
     #[test]
     fn test_convert_base() {
-        let project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
 
         assert_ron_snapshot!(
           modules(&project),
@@ -290,8 +290,8 @@ mod tests {
 
     #[test]
     fn test_convert_glob() {
-        let project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/glob".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/glob".into()).unwrap();
+        let project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
 
         assert_ron_snapshot!(
           modules(&project),
@@ -474,8 +474,8 @@ mod tests {
 
     #[test]
     fn test_render() {
-        let project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
 
         assert_ron_snapshot!(
           compile(&project),
@@ -511,9 +511,8 @@ mod tests {
 
     #[test]
     fn test_render_dependencies() {
-        let mut project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/dependencies".into(), None)
-                .unwrap();
+        let backend = GtbSystem::new(&"./examples/dependencies".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
         project.config_mut().ts.common.dependencies = IndexMap::from_iter(vec![(
             "genotype_json_types".into(),
             "@genotype/json".into(),
@@ -549,8 +548,8 @@ mod tests {
 
     #[test]
     fn test_render_uses_global_version_by_default() {
-        let mut project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
         project.config_mut().version = Some("0.2.0".parse().unwrap());
 
         let dist = compile(&project);
@@ -573,8 +572,8 @@ mod tests {
 
     #[test]
     fn test_render_prefers_ts_manifest_version_over_global() {
-        let mut project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
         project.config_mut().version = Some("0.2.0".parse().unwrap());
         project
             .config_mut()
@@ -603,8 +602,8 @@ mod tests {
 
     #[test]
     fn test_render_zod() {
-        let mut project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
         project.config_mut().ts.lang.mode = TsMode::Zod;
 
         let dist = compile(&project);
@@ -643,8 +642,8 @@ mod tests {
 
     #[test]
     fn test_render_prefer_alias() {
-        let mut project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
         project.config_mut().ts.lang.prefer = TsPrefer::Alias;
 
         let dist = compile(&project);
@@ -675,8 +674,8 @@ mod tests {
 
     #[test]
     fn test_render_without_package_global() {
-        let mut project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
         project.config_mut().package = false;
 
         let dist = compile(&project);
@@ -695,8 +694,8 @@ mod tests {
 
     #[test]
     fn test_render_without_package_target() {
-        let mut project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
         project.config_mut().package = true;
         project.config_mut().ts.common.package = Some(false);
 
@@ -716,8 +715,8 @@ mod tests {
 
     #[test]
     fn test_dist_includes_module_errors() {
-        let mut project =
-            GtpRuntimeSystem::new_and_load_all_modules(&"./examples/basic".into(), None).unwrap();
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
         let path: GtpModulePath = "examples/basic/src/broken.type".into();
         let source = GtpModuleSource::Entry { path: path.clone() };
         project.modules_mut().insert(
@@ -743,10 +742,10 @@ mod tests {
 
     #[test]
     fn test_render_generics() {
-        let project = GtpRuntimeSystem::new_and_load_all_modules(
-            &"../../examples/04-tests/generics/".into(),
-            Some(&"../../examples/04-tests/generics/genotype.ts-interface.toml".into()),
-        )
+        let backend = GtbSystem::new(&"../../examples/04-tests/generics/".into()).unwrap();
+        let project = block_on(backend.create_project_and_load_all_modules(Some(
+            &"../../examples/04-tests/generics/genotype.ts-interface.toml".into(),
+        )))
         .unwrap();
 
         assert_ron_snapshot!(
