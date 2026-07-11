@@ -2,6 +2,7 @@
   "include": ["test.ts"],
   "compilerOptions": {
     "strict": true,
+    "skipLibCheck": true,
     "noEmit": true,
     "types": ["node"]
   }
