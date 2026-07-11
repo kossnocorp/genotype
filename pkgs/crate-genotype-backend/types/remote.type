@@ -1,4 +1,4 @@
-use genotype_core/GtDiagnostic
+use genotype_core/{GtDiagnostic,GtMeta}
 use genotype_project/GtpFormatterCmd
 
 //#region Backend to Runtime
@@ -187,7 +187,7 @@ GtbRemoteRuntimeRequestCompile: {
 
 GtbRemoteRuntimeRequestResponseCompile: {
   kind: "compile",
-  exitCode: i32
+  meta: GtMeta
 }
 
 //#endregion

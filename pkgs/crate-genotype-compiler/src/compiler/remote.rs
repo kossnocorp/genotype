@@ -3,6 +3,7 @@ use crate::prelude::internal::*;
 /// Remote compiler.
 pub struct GtcRemote {
     state: GtCompilerState,
+    meta: GtcMetaState,
     backend: GtbRemote,
 }
 
@@ -31,9 +32,9 @@ impl GtcRemote {
             }
 
             GtbRemoteRuntimeRequest::Compile(GtbRemoteRuntimeRequestCompile { .. }) => {
-                self.compile().await?;
+                let meta = self.compile().await?;
                 Ok(GtbRemoteRuntimeRequestResponse::Compile(
-                    GtbRemoteRuntimeRequestResponseCompile { exit_code: 0 },
+                    GtbRemoteRuntimeRequestResponseCompile { meta },
                 ))
             }
         }
@@ -48,6 +49,7 @@ impl GtCompiler<GtcRemoteProps> for GtcRemote {
 
         Ok(Self {
             state: GtCompilerState::New { config_path },
+            meta: GtcMetaState::new(),
             backend,
         })
     }
@@ -58,6 +60,14 @@ impl GtCompiler<GtcRemoteProps> for GtcRemote {
 
     fn state_mut(&mut self) -> &mut GtCompilerState {
         &mut self.state
+    }
+
+    fn meta(&self) -> &GtcMetaState {
+        &self.meta
+    }
+
+    fn meta_mut(&mut self) -> &mut GtcMetaState {
+        &mut self.meta
     }
 
     fn backend(&self) -> &impl GtBackend {

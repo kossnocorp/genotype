@@ -45,7 +45,13 @@ where
 
         diagnostics.extend(generate_module_diagnostics(&lang_project.modules));
 
-        let mut dist = GtlDist::new(&lang_project.modules, diagnostics);
+        let module_generations = lang_project
+            .modules
+            .values()
+            .cloned()
+            .map(GtlGeneration::file)
+            .collect();
+        let mut dist = GtlDist::new(module_generations, diagnostics);
 
         if let Some(package_files) = self.generate_package_files(&lang_project) {
             dist.pack_extra_files(package_files, None);

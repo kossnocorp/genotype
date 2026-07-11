@@ -1,4 +1,5 @@
 use crate::prelude::internal::*;
+use std::collections::BTreeMap;
 
 pub struct GtcCompilation<'project, 'backend, Backend: GtBackend + ?Sized> {
     /// Project to compile.
@@ -9,6 +10,9 @@ pub struct GtcCompilation<'project, 'backend, Backend: GtBackend + ?Sized> {
 
     /// Count of errors encountered during compilation.
     errors_count: usize,
+
+    /// Generated language modules mapped by their source path.
+    meta_modules: BTreeMap<String, GtMetaModule>,
 }
 
 impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
@@ -20,6 +24,7 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
             project,
             backend,
             errors_count: 0,
+            meta_modules: BTreeMap::new(),
         }
     }
 
@@ -50,6 +55,10 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
         }
 
         self.finalize(&project.paths().dist).await
+    }
+
+    pub fn meta_modules(&self) -> Vec<GtMetaModule> {
+        self.meta_modules.values().cloned().collect()
     }
 
     async fn run_lang_formatters(&mut self, lang: GtLang) -> Result<()> {
@@ -97,10 +106,17 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
     {
         match compiler.compile() {
             Ok(Some(dist)) => {
-                let dist_diagnostics = dist.diagnostics;
+                let GtlDist {
+                    files,
+                    modules,
+                    diagnostics,
+                } = dist;
+                collect_meta_modules(&mut self.meta_modules, compiler.lang(), modules);
+
+                let dist_diagnostics = diagnostics;
                 self.handle_diagnostics(&dist_diagnostics).await?;
 
-                let write_diagnostics = self.write_files(&dist.files).await;
+                let write_diagnostics = self.write_files(&files).await;
                 self.handle_diagnostics(&write_diagnostics).await?;
             }
 
@@ -203,5 +219,78 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
         }
 
         diagnostics
+    }
+}
+
+fn collect_meta_modules(
+    meta_modules: &mut BTreeMap<String, GtMetaModule>,
+    lang: GtLang,
+    modules: Vec<GtlDistModule>,
+) {
+    for module in modules {
+        let source = module.source_path.to_string();
+        let target = module.target_path.to_string();
+        let meta_module = meta_modules
+            .entry(source.clone())
+            .or_insert_with(|| GtMetaModule {
+                source,
+                ts: None,
+                rs: None,
+                py: None,
+            });
+
+        match lang {
+            GtLang::Ts => meta_module.ts = Some(target),
+            GtLang::Rs => meta_module.rs = Some(target),
+            GtLang::Py => meta_module.py = Some(target),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn collects_and_merges_generated_modules_by_source() {
+        let mut modules = BTreeMap::new();
+        collect_meta_modules(
+            &mut modules,
+            GtLang::Ts,
+            vec![dist_module("src/z.type", "dist/ts/z.ts")],
+        );
+        collect_meta_modules(
+            &mut modules,
+            GtLang::Rs,
+            vec![
+                dist_module("src/a.type", "dist/rs/a.rs"),
+                dist_module("src/z.type", "dist/rs/z.rs"),
+            ],
+        );
+
+        assert_eq!(
+            modules.values().cloned().collect::<Vec<_>>(),
+            vec![
+                GtMetaModule {
+                    source: "src/a.type".into(),
+                    ts: None,
+                    rs: Some("dist/rs/a.rs".into()),
+                    py: None,
+                },
+                GtMetaModule {
+                    source: "src/z.type".into(),
+                    ts: Some("dist/ts/z.ts".into()),
+                    rs: Some("dist/rs/z.rs".into()),
+                    py: None,
+                },
+            ]
+        );
+    }
+
+    fn dist_module(source: &str, target: &str) -> GtlDistModule {
+        GtlDistModule {
+            source_path: source.into(),
+            target_path: target.into(),
+        }
     }
 }

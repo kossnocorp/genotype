@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { GtDiagnostic, GtpFormatterCmd } from "@genotype-lang/types";
+import { GtDiagnostic, GtMeta, GtpFormatterCmd } from "@genotype-lang/types";
 
 export const GtbRemoteBackendRequestGlobFiles = z.object({
   kind: z.literal("glob-files"),
@@ -205,7 +205,7 @@ export type GtbRemoteRuntimeRequest = z.infer<typeof GtbRemoteRuntimeRequest>;
 
 export const GtbRemoteRuntimeRequestResponseCompile = z.object({
   kind: z.literal("compile"),
-  exitCode: z.number(),
+  meta: GtMeta,
 });
 
 export type GtbRemoteRuntimeRequestResponseCompile = z.infer<

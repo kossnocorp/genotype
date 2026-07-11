@@ -1,4 +1,4 @@
-use genotype_core::GtDiagnostic;
+use genotype_core::{GtDiagnostic, GtMeta};
 use genotype_project_core::GtpFormatterCmd;
 use litty::serde_literals;
 use serde::{Deserialize, Serialize};
@@ -183,6 +183,5 @@ pub struct GtbRemoteRuntimeRequestCompile {}
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[literals(kind = "compile")]
 pub struct GtbRemoteRuntimeRequestResponseCompile {
-    #[serde(rename = "exitCode")]
-    pub exit_code: i32,
+    pub meta: GtMeta,
 }

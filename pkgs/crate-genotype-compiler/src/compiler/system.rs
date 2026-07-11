@@ -3,6 +3,7 @@ use crate::prelude::internal::*;
 /// System compiler.
 pub struct GtcSystem {
     state: GtCompilerState,
+    meta: GtcMetaState,
     backend: GtbSystem,
 }
 
@@ -23,6 +24,7 @@ impl GtCompiler<GtcSystemProps<'_>> for GtcSystem {
 
         Ok(Self {
             state: GtCompilerState::New { config_path },
+            meta: GtcMetaState::new(),
             backend,
         })
     }
@@ -33,6 +35,14 @@ impl GtCompiler<GtcSystemProps<'_>> for GtcSystem {
 
     fn state_mut(&mut self) -> &mut GtCompilerState {
         &mut self.state
+    }
+
+    fn meta(&self) -> &GtcMetaState {
+        &self.meta
+    }
+
+    fn meta_mut(&mut self) -> &mut GtcMetaState {
+        &mut self.meta
     }
 
     fn backend(&self) -> &impl GtBackend {

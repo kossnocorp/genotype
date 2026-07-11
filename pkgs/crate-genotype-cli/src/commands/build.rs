@@ -13,7 +13,7 @@ pub struct GtBuildCommand {
 
 impl GtBuildCommand {
     pub fn run(args: &GtBuildCommand) -> Result<()> {
-        let exit_code = block_on(GtcSystem::compile_once((&args.path, args.config.as_ref())))?;
-        std::process::exit(exit_code);
+        let meta = block_on(GtcSystem::compile_once((&args.path, args.config.as_ref())))?;
+        std::process::exit(meta.exit_code);
     }
 }

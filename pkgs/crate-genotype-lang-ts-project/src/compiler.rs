@@ -503,6 +503,16 @@ mod tests {
               source_code: "export * from \"./author.js\";\nexport * from \"./book.js\";\n",
             )),
           ],
+          modules: [
+            GtlDistModule(
+              source_path: "examples/basic/src/author.type",
+              target_path: "examples/basic/dist/ts/src/author.ts",
+            ),
+            GtlDistModule(
+              source_path: "examples/basic/src/book.type",
+              target_path: "examples/basic/dist/ts/src/book.ts",
+            ),
+          ],
           diagnostics: [],
         )
         "#
@@ -539,6 +549,12 @@ mod tests {
               path: "examples/dependencies/dist/ts/src/prompt.ts",
               source_code: "import { JsonAny } from \"@genotype/json\";\n\nexport interface Prompt {\n  content: string;\n  output: JsonAny;\n}\n",
             )),
+          ],
+          modules: [
+            GtlDistModule(
+              source_path: "examples/dependencies/src/prompt.type",
+              target_path: "examples/dependencies/dist/ts/src/prompt.ts",
+            ),
           ],
           diagnostics: [],
         )
@@ -738,6 +754,12 @@ mod tests {
                 if error.path.as_str() == "examples/basic/dist/ts/src/broken.ts"
                     && error.message.contains("Failed to convert")
         )));
+        assert!(
+            !dist
+                .modules
+                .iter()
+                .any(|module| module.source_path == "examples/basic/src/broken.type".into())
+        );
     }
 
     #[test]
@@ -773,6 +795,16 @@ mod tests {
               path: "../../examples/04-tests/generics/dist/ts-interface/ts/src/pair.ts",
               source_code: "export interface Pair<Left, Right> {\n  left: Left;\n  right: Right;\n}\n",
             )),
+          ],
+          modules: [
+            GtlDistModule(
+              source_path: "../../examples/04-tests/generics/src/generics.type",
+              target_path: "../../examples/04-tests/generics/dist/ts-interface/ts/src/generics.ts",
+            ),
+            GtlDistModule(
+              source_path: "../../examples/04-tests/generics/src/pair.type",
+              target_path: "../../examples/04-tests/generics/dist/ts-interface/ts/src/pair.ts",
+            ),
           ],
           diagnostics: [],
         )

@@ -670,6 +670,16 @@ mod tests {
               source_code: "[tool.poetry]\nname = \"basic\"\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.13\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
             )),
           ],
+          modules: [
+            GtlDistModule(
+              source_path: "examples/basic/src/author.type",
+              target_path: "examples/basic/dist/py/module/author.py",
+            ),
+            GtlDistModule(
+              source_path: "examples/basic/src/book.type",
+              target_path: "examples/basic/dist/py/module/book.py",
+            ),
+          ],
           diagnostics: [],
         )
         "#
@@ -715,6 +725,16 @@ mod tests {
               source_code: "[tool.poetry]\nname = \"nested\"\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.13\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
             )),
           ],
+          modules: [
+            GtlDistModule(
+              source_path: "examples/nested/src/inventory.type",
+              target_path: "examples/nested/dist/py/module/inventory.py",
+            ),
+            GtlDistModule(
+              source_path: "examples/nested/src/shop/goods/book.type",
+              target_path: "examples/nested/dist/py/module/shop/goods/book.py",
+            ),
+          ],
           diagnostics: [],
         )
         "#
@@ -753,6 +773,12 @@ mod tests {
               path: "examples/dependencies/dist/py/pyproject.toml",
               source_code: "[tool.poetry]\nname = \"dependencies\"\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.13\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
             )),
+          ],
+          modules: [
+            GtlDistModule(
+              source_path: "examples/dependencies/src/prompt.type",
+              target_path: "examples/dependencies/dist/py/module/prompt.py",
+            ),
           ],
           diagnostics: [],
         )

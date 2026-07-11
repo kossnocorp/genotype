@@ -1,0 +1,19 @@
+GtMeta: {
+  exitCode: i32,
+  timing: GtMetaTiming,
+  modules: [GtMetaModule]
+}
+
+GtMetaTiming: {
+  totalMs: u64,
+  loadProjectMs: u64,
+  loadModulesMs: u64,
+  compileMs: u64
+}
+
+GtMetaModule: {
+  source: string,
+  ts?: string,
+  rs?: string,
+  py?: string
+}
