@@ -5,7 +5,7 @@ test-watch:
   bacon nextest
 
 test-run-cli:
-  cargo run --bin gt -- build ${TEST_RUN_CLI_PROJECT}
+  ./bin/gt build ${TEST_RUN_CLI_PROJECT}
 
 build:
   cargo build
@@ -20,7 +20,7 @@ check-watch:
   bacon check
 
 build-json-types:
-  cargo run --bin gt -- build pkgs/npm-genotype-json-types
+  ./bin/gt build pkgs/npm-genotype-json-types
 
 build-json-types-watch:
   while sleep 0.1; do ls json/schema/src/*.type | entr -d just build-json-types; done

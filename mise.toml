@@ -234,3 +234,29 @@ cargo release publish \
   --no-confirm \
   --allow-branch '*'
 '''
+
+[tasks."dev/gt"]
+description = "Runs the pinned development Genotype CLI"
+usage = '''
+arg "<args>" var=#true
+'''
+run = "./bin/gt {{usage.args | join(sep=' ')}}"
+
+[tasks."dev/gt:watch"]
+description = "Runs the pinned development Genotype CLI when type files change"
+usage = '''
+arg "<path>"
+arg "<args>" var=#true
+'''
+run = "watchexec -w {{usage.path}} -e type -- ./bin/gt {{usage.args | join(sep=' ')}}"
+
+[tasks."dev/gt:pin"]
+description = "Builds and pins the development Genotype CLI"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+
+cargo build --package genotype_cli --bin gt
+mkdir -p ./bin
+cp ./target/debug/gt ./bin/gt
+'''

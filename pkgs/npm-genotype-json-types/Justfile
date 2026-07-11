@@ -1,5 +1,5 @@
 build:
-  cargo run --bin gt -- build .
+  mise //:dev/gt -- build pkgs/npm-genotype-json-types
 
 publish: publish-py publish-ts publish-rs
 
