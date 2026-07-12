@@ -139,6 +139,7 @@ pub trait GtCompiler<Props> {
                 match exit_code {
                     Ok(exit_code) => {
                         let modules = compilation.meta_modules();
+                        let paths = compilation.meta_paths();
                         let (started_at, load_project, load_modules) = match &self.meta().timing {
                             GtcMetaTimingState::LoadedModules {
                                 started_at,
@@ -167,6 +168,7 @@ pub trait GtCompiler<Props> {
                         };
                         Ok(GtMeta {
                             exit_code,
+                            paths,
                             timing,
                             modules,
                         })

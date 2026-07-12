@@ -1,7 +1,21 @@
 GtMeta: {
   exitCode: i32,
+  paths: GtMetaPaths,
   timing: GtMetaTiming,
   modules: [GtMetaModule]
+}
+
+GtMetaPaths: {
+  src: string,
+  dist: string,
+  ts?: GtMetaPathsLang,
+  rs?: GtMetaPathsLang,
+  py?: GtMetaPathsLang
+}
+
+GtMetaPathsLang: {
+  pkg: string,
+  src: string
 }
 
 GtMetaTiming: {

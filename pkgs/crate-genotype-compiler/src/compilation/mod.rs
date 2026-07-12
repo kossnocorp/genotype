@@ -13,6 +13,9 @@ pub struct GtcCompilation<'project, 'backend, Backend: GtBackend + ?Sized> {
 
     /// Generated language modules mapped by their source path.
     meta_modules: BTreeMap<String, GtMetaModule>,
+
+    /// Resolved project and generated language paths.
+    meta_paths: GtMetaPaths,
 }
 
 impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
@@ -25,6 +28,13 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
             backend,
             errors_count: 0,
             meta_modules: BTreeMap::new(),
+            meta_paths: GtMetaPaths {
+                src: project.paths().src.to_string(),
+                dist: project.paths().dist.to_string(),
+                ts: None,
+                rs: None,
+                py: None,
+            },
         }
     }
 
@@ -59,6 +69,10 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
 
     pub fn meta_modules(&self) -> Vec<GtMetaModule> {
         self.meta_modules.values().cloned().collect()
+    }
+
+    pub fn meta_paths(&self) -> GtMetaPaths {
+        self.meta_paths.clone()
     }
 
     async fn run_lang_formatters(&mut self, lang: GtLang) -> Result<()> {
@@ -106,6 +120,14 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
     {
         match compiler.compile() {
             Ok(Some(dist)) => {
+                collect_meta_paths(
+                    &mut self.meta_paths,
+                    compiler.lang(),
+                    GtMetaPathsLang {
+                        pkg: compiler.config().pkg_dir_path().to_string(),
+                        src: compiler.config().pkg_src_path().to_string(),
+                    },
+                );
                 let GtlDist {
                     files,
                     modules,
@@ -247,9 +269,18 @@ fn collect_meta_modules(
     }
 }
 
+fn collect_meta_paths(paths: &mut GtMetaPaths, lang: GtLang, lang_paths: GtMetaPathsLang) {
+    match lang {
+        GtLang::Ts => paths.ts = Some(lang_paths),
+        GtLang::Rs => paths.rs = Some(lang_paths),
+        GtLang::Py => paths.py = Some(lang_paths),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use futures::executor::block_on;
 
     #[test]
     fn collects_and_merges_generated_modules_by_source() {
@@ -284,6 +315,65 @@ mod tests {
                     py: None,
                 },
             ]
+        );
+    }
+
+    #[test]
+    fn collects_paths_for_compiled_languages() {
+        let mut paths = GtMetaPaths {
+            src: "src".into(),
+            dist: "dist".into(),
+            ts: None,
+            rs: None,
+            py: None,
+        };
+        collect_meta_paths(
+            &mut paths,
+            GtLang::Ts,
+            GtMetaPathsLang {
+                pkg: "dist/ts".into(),
+                src: "dist/ts/src".into(),
+            },
+        );
+
+        assert_eq!(
+            paths,
+            GtMetaPaths {
+                src: "src".into(),
+                dist: "dist".into(),
+                ts: Some(GtMetaPathsLang {
+                    pkg: "dist/ts".into(),
+                    src: "dist/ts/src".into(),
+                }),
+                rs: None,
+                py: None,
+            }
+        );
+    }
+
+    #[test]
+    fn resolves_paths_only_for_compiled_languages() {
+        let base_path: GtpCwdRelativeOrAbsoluteStringPath = ".".into();
+        let backend = GtbSystem::new(&base_path).unwrap();
+        let config_path = "../crate-genotype-lang-ts-project/examples/basic/genotype.toml".into();
+        let project =
+            block_on(backend.create_project_and_load_all_modules(Some(&config_path))).unwrap();
+        let mut compilation = GtcCompilation::new(&project, &backend);
+
+        block_on(compilation.compile_langs(&[GtLang::Ts])).unwrap();
+
+        assert_eq!(
+            compilation.meta_paths(),
+            GtMetaPaths {
+                src: "../crate-genotype-lang-ts-project/examples/basic/src".into(),
+                dist: "../crate-genotype-lang-ts-project/examples/basic/dist".into(),
+                ts: Some(GtMetaPathsLang {
+                    pkg: "../crate-genotype-lang-ts-project/examples/basic/dist/ts".into(),
+                    src: "../crate-genotype-lang-ts-project/examples/basic/dist/ts/src".into(),
+                }),
+                rs: None,
+                py: None,
+            }
         );
     }
 

@@ -4,8 +4,27 @@ use serde::{Deserialize, Serialize};
 pub struct GtMeta {
     #[serde(rename = "exitCode")]
     pub exit_code: i32,
+    pub paths: GtMetaPaths,
     pub timing: GtMetaTiming,
     pub modules: Vec<GtMetaModule>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct GtMetaPaths {
+    pub src: String,
+    pub dist: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ts: Option<GtMetaPathsLang>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rs: Option<GtMetaPathsLang>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub py: Option<GtMetaPathsLang>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct GtMetaPathsLang {
+    pub pkg: String,
+    pub src: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
