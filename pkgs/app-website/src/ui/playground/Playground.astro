@@ -77,7 +77,10 @@ const langTabs = [
   @reference "#/styles/global.css";
 
   gt-playground {
-    @apply grow flex flex-col w-full h-full min-h-0 overflow-hidden divide-x divide-(--color-divider);
+    --color-divider: var(--color-gray-800);
+    --tab-text-base: var(--color-gray-200);
+
+    @apply grow flex flex-col w-full h-full min-h-0 overflow-hidden divide-x divide-(--color-divider) bg-gray-950;
   }
 
   .nav,

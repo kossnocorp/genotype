@@ -251,6 +251,9 @@
   --pd-x-el: 0.15em;
   --pd-y-el: 0.4em;
 
+  --pd-x-button: 0.15em;
+  --pd-y-button: 0.4em;
+
   --pd-x-layout: 1rem;
   --pd-y-layout: 1.5rem;
 
@@ -361,10 +364,10 @@
     from var(--button-bg) h calc(s* var(--mod-bg-s-hover)) calc(l* var(--mod-bg-l-hover))
   );
 
-  @apply row-el pd-el font-display leading-none capsize rounded-md border-0 font-medium bg-(--button-bg) hover:bg-(--button-bg-hover) text-(--button-text) cursor-pointer transition-colors duration-100 ease-out;
+  @apply no-underline row-el pd-el leading-none capsize rounded-md border-0 font-medium bg-(--button-bg) hover:bg-(--button-bg-hover) text-(--button-text) cursor-pointer transition-colors duration-100 ease-out;
 
   & > span {
-    @apply font-display leading-none capsize;
+    @apply leading-none capsize;
   }
 
   &.is-active {
@@ -420,7 +423,7 @@
   @apply flex relative w-full;
 
   & > * {
-    @apply relative row-el pd-x-el pd-y-el font-display bg-transparent leading-none capsize font-medium text-(--tab-text-inactive) cursor-pointer transition-colors duration-100 ease-out;
+    @apply relative row-el pd-x-el pd-y-el bg-transparent leading-none capsize font-medium text-(--tab-text-inactive) cursor-pointer transition-colors duration-100 ease-out;
 
     &:after {
       @apply opacity-0 content-[""] absolute -bottom-(--tab-border-width) left-0 w-full h-(--tab-border-width) bg-(--tab-border-color-inactive) transition-opacity duration-100 ease-out;
@@ -450,7 +453,7 @@
     }
 
     & > span {
-      @apply font-display leading-none capsize;
+      @apply leading-none capsize;
     }
   }
 }

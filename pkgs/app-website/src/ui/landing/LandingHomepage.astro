@@ -1,0 +1,55 @@
+---
+import PlaygroundDemo from "../playground/PlaygroundDemo.astro";
+---
+
+<div class="grow pd-x-layout flex flex-col">
+  <div class="flex flex-col py-15 gap-6">
+    <header class="mx-auto max-w-3xl text-center flex flex-col gap-2">
+      <h1 class="text-4xl font-display leading-snug">
+        <span class="text-6xl">Genotype</span><br />
+        <span class="text-gray-600 dark:text-gray-300 font-medium"
+          >Programming Language</span
+        >
+      </h1>
+
+      <p
+        class="font-display text-xl text-balance text-gray-600 dark:text-gray-400 leading-relaxed"
+      >
+        A programming language that transpiles to idiomatic
+        TypeScript/Rust/Python types, allowing effortless type-safe interop
+        between languages.
+      </p>
+    </header>
+
+    <div class="flex gap-4 justify-center">
+      <a href="/getting-started" class="button button-main is-get-started">
+        Get Started
+      </a>
+
+      <a href="/playground" class="button is-playground"> Playground </a>
+    </div>
+  </div>
+
+  <div
+    class="flex flex-col min-h-200 border border-transparent dark:border-gray-800"
+  >
+    <PlaygroundDemo />
+  </div>
+</div>
+
+<style>
+  @reference "#/styles/global.css";
+
+  .button.is-get-started {
+    @apply text-base px-4;
+  }
+
+  .button.is-playground {
+    @apply px-4 border border-gray-500 dark:border-(--color-divider) bg-transparent;
+
+    --button-text-base: var(--color-gray-600);
+    @variant dark {
+      --button-text-base: var(--color-gray-200);
+    }
+  }
+</style>

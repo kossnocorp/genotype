@@ -2,17 +2,17 @@
 // NOTE: StarlightPage must always be the first import in the file!
 import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
 
-import PlaygroundDemo from "#/ui/playground/PlaygroundDemo.astro";
+import LandingHomepage from "#/ui/landing/LandingHomepage.astro";
 ---
 
 <StarlightPage
   frontmatter={{
-    title: "Genotype Playground",
-    description: "TODO",
+    title: "Genotype",
+    description: "Genotype Programming Language Homepage",
     template: "splash",
     bare: true,
   }}
   hasSidebar={false}
 >
-  <PlaygroundDemo />
+  <LandingHomepage />
 </StarlightPage>
