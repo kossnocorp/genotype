@@ -7,6 +7,7 @@
     "nefrob.vscode-just-syntax",
     "docker.docker",
     "hverlin.mise-vscode",
-    "oxc.oxc-vscode"
+    "oxc.oxc-vscode",
+    "astro-build.astro-vscode"
   ]
 }

@@ -19,22 +19,33 @@ export default defineConfig({
       sidebar: [
         {
           label: "Hello, World!",
-          autogenerate: { directory: "getting-started" },
+          items: [{ autogenerate: { directory: "getting-started" } }],
         },
         {
           label: "Language",
-          autogenerate: { directory: "language" },
+          items: [{ autogenerate: { directory: "language" } }],
         },
         {
           label: "Targets",
-          autogenerate: { directory: "targets" },
+          items: [{ autogenerate: { directory: "targets" } }],
         },
         {
           label: "Toolchain",
-          autogenerate: { directory: "toolchain" },
+          items: [{ autogenerate: { directory: "toolchain" } }],
         },
       ],
-      customCss: ["./src/styles/global.css"],
+      customCss: [
+        "./src/styles/global.css",
+        "@fontsource-variable/mona-sans",
+        "@fontsource-variable/jetbrains-mono",
+        "@fontsource-variable/hubot-sans",
+      ],
+      components: {
+        ContentPanel: "./src/ui/starlight/ContentPanel.astro",
+        PageTitle: "./src/ui/starlight/PageTitle.astro",
+        MarkdownContent: "./src/ui/starlight/MarkdownContent.astro",
+        Footer: "./src/ui/starlight/Footer.astro",
+      },
       expressiveCode: {
         shiki: {
           langs: [genotypeGrammar],

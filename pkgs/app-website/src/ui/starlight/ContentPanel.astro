@@ -1,0 +1,16 @@
+---
+import Default from "@astrojs/starlight/components/ContentPanel.astro";
+
+// @ts-expect-error: See `env.d.ts`
+const isBare = Astro.locals.starlightRoute.entry.data.bare;
+---
+
+{
+  isBare ? (
+    <slot />
+  ) : (
+    <Default {...Astro.props}>
+      <slot />
+    </Default>
+  )
+}

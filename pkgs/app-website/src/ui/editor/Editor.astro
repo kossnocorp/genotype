@@ -1,0 +1,25 @@
+---
+import type { EditorManager } from "./EditorManager";
+
+interface Props {
+  id: string;
+  initialState: EditorManager.State;
+}
+
+const { id, initialState } = Astro.props;
+---
+
+<gt-editor data-id={id} data-initial-state={JSON.stringify(initialState)}
+></gt-editor>
+
+<script>
+  import { EditorWebComponent } from "./EditorWebComponent";
+
+  EditorWebComponent.register();
+</script>
+
+<style>
+  gt-editor {
+    @apply block h-full overflow-hidden;
+  }
+</style>

@@ -1,0 +1,105 @@
+---
+import "#/styles/global.css";
+import PlaygroundEditor from "../editor/Editor.astro";
+import Icon from "#/ui/core/Icon/Icon.astro";
+import type { PlaygroundManager } from "./PlaygroundManager";
+import PlaygroundDiagnostics from "./diagnostics/PlaygroundDiagnostics.astro";
+
+interface Props {
+  initialState: PlaygroundManager.State;
+}
+
+const { initialState } = Astro.props;
+
+const { lang: initialLang } = initialState;
+
+const langTabs = [
+  { lang: "ts" as const, label: "TypeScript", iconId: "typescript" },
+  { lang: "rs" as const, label: "Rust", iconId: "rust" },
+  { lang: "py" as const, label: "Python", iconId: "python" },
+];
+---
+
+<gt-playground
+  class="not-content"
+  data-initial-state={JSON.stringify(initialState)}
+>
+  <nav class="nav">
+    <div class="files" data-file-tabs>
+      <div>Loading...</div>
+    </div>
+
+    <template data-id="file-tab">
+      <button class="button" data-file-tab data-file-path="">
+        <Icon id="draft" style="200" />
+        <span data-file-tab-label></span>
+      </button>
+    </template>
+
+    <div class="langs">
+      <div class="tabs" data-tabs>
+        {
+          langTabs.map(({ lang, label, iconId }) => (
+            <button
+              class:list={["tab", lang === initialLang && "is-active"]}
+              data-lang-tab
+              data-lang={lang}
+            >
+              <Icon id={iconId} style="dev" />
+              <span>{label}</span>
+            </button>
+          ))
+        }
+      </div>
+    </div>
+  </nav>
+
+  <section class="code">
+    <div class="source">
+      <PlaygroundEditor id="source" initialState={null} />
+    </div>
+
+    <div class="dist">
+      <PlaygroundEditor id="dist" initialState={null} />
+    </div>
+  </section>
+
+  <PlaygroundDiagnostics />
+</gt-playground>
+
+<script>
+  import { PlaygroundWebComponent } from "./PlaygroundWebComponent";
+
+  PlaygroundWebComponent.register();
+</script>
+
+<style>
+  @reference "#/styles/global.css";
+
+  gt-playground {
+    @apply grow flex flex-col w-full h-full min-h-0 overflow-hidden divide-x divide-(--color-divider);
+  }
+
+  .nav,
+  .code {
+    @apply grid grid-cols-2 divide-x divide-(--color-divider);
+  }
+
+  .nav {
+    @apply border-b border-(--color-divider);
+  }
+
+  .files,
+  .langs {
+    @apply row-panel pd-x-layout pd-y-panel-header;
+  }
+
+  .code {
+    @apply grow min-h-0 overflow-hidden;
+  }
+
+  .source,
+  .dist {
+    @apply min-h-0 overflow-hidden;
+  }
+</style>

@@ -1,0 +1,14 @@
+---
+import Default from "@astrojs/starlight/components/Footer.astro";
+
+// @ts-expect-error: See `env.d.ts`
+const isBare = Astro.locals.starlightRoute.entry.data.bare;
+---
+
+{
+  !isBare && (
+    <Default {...Astro.props}>
+      <slot />
+    </Default>
+  )
+}

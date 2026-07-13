@@ -1,10 +1,13 @@
-name = "genotype-examples-05-demo"
+name = "genotype-demo"
 
 [ts]
 enabled = true
 
-[rust]
+[rs]
 enabled = true
 
-[python]
+[rs.manifest.package]
+edition = "2024"
+
+[py]
 enabled = true

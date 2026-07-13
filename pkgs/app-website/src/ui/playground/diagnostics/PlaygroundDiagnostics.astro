@@ -1,0 +1,56 @@
+<gt-playground-diagnostics>
+  <template data-id="diagnostic">
+    <article data-diagnostic>
+      <div class="title">
+        <strong data-diagnostic-label></strong>: <span data-diagnostic-title
+        ></span>
+      </div>
+      <div class="content" data-diagnostic-content></div>
+    </article>
+  </template>
+
+  <template data-id="diagnostic-body"><pre data-diagnostic-body></pre></template
+  >
+</gt-playground-diagnostics>
+
+<script>
+  import { PlaygroundDiagnosticsWebComponent } from "./PlaygroundDiagnosticsWebComponent";
+
+  PlaygroundDiagnosticsWebComponent.register();
+</script>
+
+<style>
+  @reference "#/styles/global.css";
+
+  gt-playground-diagnostics {
+    @apply block h-48 shrink-0 overflow-y-auto border-t border-(--color-divider) bg-black pd-x-layout pd-y-panel font-mono text-sm text-gray-200;
+  }
+
+  article + article {
+    @apply mt-5;
+  }
+
+  [data-kind="success"] strong {
+    @apply text-green-400;
+  }
+
+  [data-kind="info"] strong {
+    @apply text-blue-400;
+  }
+
+  [data-kind="warning"] strong {
+    @apply text-yellow-400;
+  }
+
+  [data-kind="error"] strong {
+    @apply text-red-400;
+  }
+
+  .content {
+    @apply mt-3;
+  }
+
+  pre {
+    @apply whitespace-pre-wrap;
+  }
+</style>

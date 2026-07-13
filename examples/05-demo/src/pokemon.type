@@ -1,0 +1,33 @@
+PokemonId: @string
+
+PokemonType:
+  | "grass"
+  | "fire"
+  | "water"
+  | "lightning"
+  | "psychic"
+  | "fighting"
+  | "darkness"
+  | "metal"
+  | "fairy"
+  | "dragon"
+  | "colorless"
+
+PokemonStage:
+  | PokemonStageBasic
+  | PokemonStage1
+  | PokemonStage2
+
+PokemonStageBasic: {
+  kind: "basic",
+}
+
+PokemonStage1: {
+  kind: "1",
+  evolvesFrom: PokemonId,
+}
+
+PokemonStage2: {
+  kind: "2",
+  evolvesFrom: PokemonId,
+}

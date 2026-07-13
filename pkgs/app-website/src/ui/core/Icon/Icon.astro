@@ -1,0 +1,103 @@
+---
+import type { ImageMetadata } from "astro";
+import type { IconTypes } from "./Icon.types";
+// NOTE: It's `Comp` as Astro formatter trips on `| A | B` syntax so we need to
+// make it shorter.
+// TODO: Check after upgrading to Rust-based compiler.
+import type { AstroComponentFactory as Comp } from "astro/runtime/server/index.js";
+
+type Props = IconTypes.Props;
+
+// NOTE: To avoid load compilation times, each used icon id must be listed
+// inside `{...}.svg`.
+// TODO: Test the performance after Astro upgrades to the Rolldown-powered
+// Vite version.
+const icons100 = import.meta.glob<{ default: ImageMetadata }>(
+  "../../../../node_modules/@material-symbols/svg-100/rounded/{TODO,TODO}.svg",
+);
+
+const icons200 = import.meta.glob<{ default: ImageMetadata }>(
+  "../../../../node_modules/@material-symbols/svg-200/rounded/{code_blocks,close,file_export,edit_document,draft}.svg",
+);
+
+const icons300 = import.meta.glob<{ default: ImageMetadata }>(
+  "../../../../node_modules/@material-symbols/svg-300/rounded/{TODO,TODO}.svg",
+);
+
+const iconsBrands = import.meta.glob<{ default: ImageMetadata }>(
+  "../../../../node_modules/@fortawesome/fontawesome-free/svgs/brands/{TODO,TODO}.svg",
+);
+
+const iconsDev = import.meta.glob<{ default: ImageMetadata }>(
+  "../../../../node_modules/devicon/icons/{typescript,rust,python}/*.svg",
+);
+
+const iconsAssets = import.meta.glob<{ default: ImageMetadata }>(
+  "../../../assets/**/*.svg",
+);
+
+let classList: string[] = [];
+if ("class" in Astro.props) {
+  const { class: className } = Astro.props;
+  if (className) classList.push(className);
+}
+
+let directProps: IconTypes.PropsDirect;
+if ("prop" in Astro.props) {
+  const { prop } = Astro.props;
+  if (typeof prop === "string") {
+    directProps = { id: prop };
+  } else if (typeof prop === "function") {
+    directProps = { Factory: prop };
+  } else {
+    directProps = prop;
+  }
+} else {
+  directProps = Astro.props;
+}
+
+let IconFactory: Comp;
+if ("id" in directProps) {
+  const { id, style } = directProps;
+  const iconFilePath =
+    style === "brands"
+      ? `../../../../node_modules/@fortawesome/fontawesome-free/svgs/brands/${id}.svg`
+      : style === "dev"
+        ? Object.keys(iconsDev).find(
+            (path) => path.includes(id) && path.endsWith("plain.svg"),
+          ) ||
+          Object.keys(iconsDev).find(
+            (path) => path.includes(id) && path.endsWith("original.svg"),
+          )
+        : style === "assets"
+          ? Object.keys(iconsAssets).find((path) => path.includes(`${id}.svg`))
+          : `../../../../node_modules/@material-symbols/svg-${style || "100"}/rounded/${id}.svg`;
+
+  if (!iconFilePath) throw new Error(`Icon ${id} has not been found `);
+
+  const icons =
+    style === "brands"
+      ? iconsBrands
+      : style === "dev"
+        ? iconsDev
+        : style === "assets"
+          ? iconsAssets
+          : style === "200"
+            ? icons200
+            : style === "300"
+              ? icons300
+              : icons100;
+
+  const iconPath = icons[iconFilePath];
+  if (!iconPath)
+    throw new Error(`Icon ${id} has not been found at ${iconFilePath}`);
+
+  IconFactory = await iconPath().then((m) => m.default as unknown as Comp);
+} else {
+  IconFactory = directProps.Factory;
+}
+
+const { style } = directProps;
+---
+
+<IconFactory class:list={["icon", style && `is-${style}`, ...classList]} />

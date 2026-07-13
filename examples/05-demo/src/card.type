@@ -1,0 +1,40 @@
+Card:
+  | CardPokemon
+  | CardTrainer
+  | CardEnergy
+
+CardBase: {
+  rarity: CardRarity,
+  regulationMark?: CardRegulationMark
+}
+
+CardPokemon: {
+  ...CardBase,
+  kind: "pokemon",
+  hp: number,
+  types: [./pokemon/PokemonType]
+}
+
+CardTrainer: {
+  ...CardBase,
+  kind: "trainer"
+}
+
+CardEnergy: {
+  ...CardBase,
+  kind: "energy"
+}
+
+CardRarity:
+  | "common"
+  | "uncommon"
+  | "rare"
+  | "rare-holo"
+  | "double-rare"
+  | "ultra-rare"
+  | "illustration-rare"
+  | "special-illustration-rare"
+  | "hyper-rare"
+  | "promo"
+
+CardRegulationMark: "D" | "E" | "F" | "G" | "H" | "I"

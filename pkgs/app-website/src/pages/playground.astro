@@ -1,0 +1,41 @@
+---
+// NOTE: StarlightPage must always be the first import in the file!
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+
+import PlaygroundComponent from "#/ui/playground/Playground.astro";
+import type { PlaygroundManager } from "#/ui/playground/PlaygroundManager";
+
+const demoFiles = import.meta.glob("../../examples/demo/**/*", {
+  eager: true,
+  query: "?raw",
+});
+
+const files = Object.fromEntries(
+  await Promise.all(
+    Object.entries(demoFiles).map(async ([relPath, module]) => {
+      const path = relPath.replace("../../examples/demo/", "");
+      // NOTE: Astro's ?raw incorrectly identify it as a string
+      const content = (module as any).default;
+      return [path, content];
+    }),
+  ),
+);
+
+const initialState: PlaygroundManager.InitialState = {
+  lang: "ts",
+  files,
+  filePath: null,
+};
+---
+
+<StarlightPage
+  frontmatter={{
+    title: "Genotype Playground",
+    description: "TODO",
+    template: "splash",
+    bare: true,
+  }}
+  hasSidebar={false}
+>
+  <PlaygroundComponent initialState={initialState} />
+</StarlightPage>

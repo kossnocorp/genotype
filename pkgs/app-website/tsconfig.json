@@ -26,5 +26,5 @@
     // Project references
     "composite": true
   },
-  "references": [{ "path": "../npm-vscode-genotype/" }]
+  "references": [{ "path": "../npm-genotype-wasm-runtime/" }, { "path": "../npm-vscode-genotype/" }]
 }
