@@ -19,19 +19,19 @@ export default defineConfig({
       sidebar: [
         {
           label: "Hello, World!",
-          items: [{ autogenerate: { directory: "getting-started" } }],
+          items: [{ autogenerate: { directory: "docs/getting-started" } }],
         },
         {
           label: "Language",
-          items: [{ autogenerate: { directory: "language" } }],
+          items: [{ autogenerate: { directory: "docs/language" } }],
         },
         {
           label: "Targets",
-          items: [{ autogenerate: { directory: "targets" } }],
+          items: [{ autogenerate: { directory: "docs/targets" } }],
         },
         {
           label: "Toolchain",
-          items: [{ autogenerate: { directory: "toolchain" } }],
+          items: [{ autogenerate: { directory: "docs/toolchain" } }],
         },
       ],
       customCss: [

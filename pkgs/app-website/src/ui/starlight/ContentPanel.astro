@@ -1,8 +1,8 @@
 ---
 import Default from "@astrojs/starlight/components/ContentPanel.astro";
+import { isBareAstroPage } from "./utils";
 
-// @ts-expect-error: See `env.d.ts`
-const isBare = Astro.locals.starlightRoute.entry.data.bare;
+const isBare = isBareAstroPage(Astro.locals);
 ---
 
 {

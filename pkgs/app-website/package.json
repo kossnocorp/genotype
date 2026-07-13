@@ -31,7 +31,7 @@
     "smollit": "^0.3.0",
     "tailwindcss": "^4.3.2",
     "typescript-event-target": "^1.1.2",
-    "wrangler": "^4.107.1",
+    "wrangler": "^4.110.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
