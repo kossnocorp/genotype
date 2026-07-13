@@ -1,0 +1,38 @@
+use ./meta/{GtcMetaLoadedProject,GtcMetaLoadedModules,GtcMetaCompiled}
+
+GtcRemoteRuntimeRequest:
+  | GtcRemoteRuntimeRequestLoadInProject
+  | GtcRemoteRuntimeRequestLoadInModules
+  | GtcRemoteRuntimeRequestCompile
+
+GtcRemoteRuntimeRequestResponse:
+  | GtcRemoteRuntimeRequestResponseLoadInProject
+  | GtcRemoteRuntimeRequestResponseLoadInModules
+  | GtcRemoteRuntimeRequestResponseCompile
+
+GtcRemoteRuntimeRequestLoadInProject: {
+  kind: "load-in-project"
+}
+
+GtcRemoteRuntimeRequestResponseLoadInProject: {
+  kind: "load-in-project",
+  meta: GtcMetaLoadedProject
+}
+
+GtcRemoteRuntimeRequestLoadInModules: {
+  kind: "load-in-modules"
+}
+
+GtcRemoteRuntimeRequestResponseLoadInModules: {
+  kind: "load-in-modules",
+  meta: GtcMetaLoadedModules
+}
+
+GtcRemoteRuntimeRequestCompile: {
+  kind: "compile"
+}
+
+GtcRemoteRuntimeRequestResponseCompile: {
+  kind: "compile",
+  meta: GtcMetaCompiled
+}

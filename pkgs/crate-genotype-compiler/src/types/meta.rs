@@ -1,46 +1,52 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct GtMeta {
-    #[serde(rename = "exitCode")]
-    pub exit_code: i32,
-    pub paths: GtMetaPaths,
-    pub timing: GtMetaTiming,
-    pub modules: Vec<GtMetaModule>,
+pub struct GtcMetaNew {}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct GtcMetaLoadedProject {
+    pub paths: GtcMetaLoadedProjectPaths,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct GtMetaPaths {
+pub struct GtcMetaLoadedProjectPaths {
+    pub src: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct GtcMetaLoadedModules {
+    pub paths: GtcMetaLoadedProjectPaths,
+    pub modules: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct GtcMetaCompiled {
+    #[serde(rename = "exitCode")]
+    pub exit_code: i32,
+    pub paths: GtcMetaCompiledPaths,
+    pub modules: Vec<GtcMetaCompiledModule>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct GtcMetaCompiledPaths {
     pub src: String,
     pub dist: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub ts: Option<GtMetaPathsLang>,
+    pub ts: Option<GtcMetaCompiledPathsLang>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub rs: Option<GtMetaPathsLang>,
+    pub rs: Option<GtcMetaCompiledPathsLang>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub py: Option<GtMetaPathsLang>,
+    pub py: Option<GtcMetaCompiledPathsLang>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct GtMetaPathsLang {
+pub struct GtcMetaCompiledPathsLang {
     pub pkg: String,
     pub src: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct GtMetaTiming {
-    #[serde(rename = "totalMs")]
-    pub total_ms: u64,
-    #[serde(rename = "loadProjectMs")]
-    pub load_project_ms: u64,
-    #[serde(rename = "loadModulesMs")]
-    pub load_modules_ms: u64,
-    #[serde(rename = "compileMs")]
-    pub compile_ms: u64,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct GtMetaModule {
+pub struct GtcMetaCompiledModule {
     pub source: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ts: Option<String>,

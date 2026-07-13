@@ -81,11 +81,11 @@ export class GtwmMessage {
     kind: z.literal("init"),
   });
 
-  static ClientRequest = z.union([this.ClientRequestInit, Gt.GtbRemoteRuntimeRequest]);
+  static ClientRequest = z.union([this.ClientRequestInit, Gt.GtcRemoteRuntimeRequest]);
 
   static ClientRequestResponse = z.union([
     this.ClientRequestResponseInit,
-    Gt.GtbRemoteRuntimeRequestResponse,
+    Gt.GtcRemoteRuntimeRequestResponse,
   ]);
 
   //#endregion

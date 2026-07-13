@@ -12,10 +12,10 @@ pub struct GtcCompilation<'project, 'backend, Backend: GtBackend + ?Sized> {
     errors_count: usize,
 
     /// Generated language modules mapped by their source path.
-    meta_modules: BTreeMap<String, GtMetaModule>,
+    meta_modules: BTreeMap<String, GtcMetaCompiledModule>,
 
     /// Resolved project and generated language paths.
-    meta_paths: GtMetaPaths,
+    meta_paths: GtcMetaCompiledPaths,
 }
 
 impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
@@ -28,7 +28,7 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
             backend,
             errors_count: 0,
             meta_modules: BTreeMap::new(),
-            meta_paths: GtMetaPaths {
+            meta_paths: GtcMetaCompiledPaths {
                 src: project.paths().src.to_string(),
                 dist: project.paths().dist.to_string(),
                 ts: None,
@@ -67,11 +67,11 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
         self.finalize(&project.paths().dist).await
     }
 
-    pub fn meta_modules(&self) -> Vec<GtMetaModule> {
+    pub fn meta_modules(&self) -> Vec<GtcMetaCompiledModule> {
         self.meta_modules.values().cloned().collect()
     }
 
-    pub fn meta_paths(&self) -> GtMetaPaths {
+    pub fn meta_paths(&self) -> GtcMetaCompiledPaths {
         self.meta_paths.clone()
     }
 
@@ -123,7 +123,7 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
                 collect_meta_paths(
                     &mut self.meta_paths,
                     compiler.lang(),
-                    GtMetaPathsLang {
+                    GtcMetaCompiledPathsLang {
                         pkg: compiler.config().pkg_dir_path().to_string(),
                         src: compiler.config().pkg_src_path().to_string(),
                     },
@@ -245,21 +245,22 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
 }
 
 fn collect_meta_modules(
-    meta_modules: &mut BTreeMap<String, GtMetaModule>,
+    meta_modules: &mut BTreeMap<String, GtcMetaCompiledModule>,
     lang: GtLang,
     modules: Vec<GtlDistModule>,
 ) {
     for module in modules {
         let source = module.source_path.to_string();
         let target = module.target_path.to_string();
-        let meta_module = meta_modules
-            .entry(source.clone())
-            .or_insert_with(|| GtMetaModule {
-                source,
-                ts: None,
-                rs: None,
-                py: None,
-            });
+        let meta_module =
+            meta_modules
+                .entry(source.clone())
+                .or_insert_with(|| GtcMetaCompiledModule {
+                    source,
+                    ts: None,
+                    rs: None,
+                    py: None,
+                });
 
         match lang {
             GtLang::Ts => meta_module.ts = Some(target),
@@ -269,7 +270,11 @@ fn collect_meta_modules(
     }
 }
 
-fn collect_meta_paths(paths: &mut GtMetaPaths, lang: GtLang, lang_paths: GtMetaPathsLang) {
+fn collect_meta_paths(
+    paths: &mut GtcMetaCompiledPaths,
+    lang: GtLang,
+    lang_paths: GtcMetaCompiledPathsLang,
+) {
     match lang {
         GtLang::Ts => paths.ts = Some(lang_paths),
         GtLang::Rs => paths.rs = Some(lang_paths),
@@ -302,13 +307,13 @@ mod tests {
         assert_eq!(
             modules.values().cloned().collect::<Vec<_>>(),
             vec![
-                GtMetaModule {
+                GtcMetaCompiledModule {
                     source: "src/a.type".into(),
                     ts: None,
                     rs: Some("dist/rs/a.rs".into()),
                     py: None,
                 },
-                GtMetaModule {
+                GtcMetaCompiledModule {
                     source: "src/z.type".into(),
                     ts: Some("dist/ts/z.ts".into()),
                     rs: Some("dist/rs/z.rs".into()),
@@ -320,7 +325,7 @@ mod tests {
 
     #[test]
     fn collects_paths_for_compiled_languages() {
-        let mut paths = GtMetaPaths {
+        let mut paths = GtcMetaCompiledPaths {
             src: "src".into(),
             dist: "dist".into(),
             ts: None,
@@ -330,7 +335,7 @@ mod tests {
         collect_meta_paths(
             &mut paths,
             GtLang::Ts,
-            GtMetaPathsLang {
+            GtcMetaCompiledPathsLang {
                 pkg: "dist/ts".into(),
                 src: "dist/ts/src".into(),
             },
@@ -338,10 +343,10 @@ mod tests {
 
         assert_eq!(
             paths,
-            GtMetaPaths {
+            GtcMetaCompiledPaths {
                 src: "src".into(),
                 dist: "dist".into(),
-                ts: Some(GtMetaPathsLang {
+                ts: Some(GtcMetaCompiledPathsLang {
                     pkg: "dist/ts".into(),
                     src: "dist/ts/src".into(),
                 }),
@@ -364,10 +369,10 @@ mod tests {
 
         assert_eq!(
             compilation.meta_paths(),
-            GtMetaPaths {
+            GtcMetaCompiledPaths {
                 src: "../crate-genotype-lang-ts-project/examples/basic/src".into(),
                 dist: "../crate-genotype-lang-ts-project/examples/basic/dist".into(),
-                ts: Some(GtMetaPathsLang {
+                ts: Some(GtcMetaCompiledPathsLang {
                     pkg: "../crate-genotype-lang-ts-project/examples/basic/dist/ts".into(),
                     src: "../crate-genotype-lang-ts-project/examples/basic/dist/ts/src".into(),
                 }),

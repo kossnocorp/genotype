@@ -748,6 +748,7 @@ dependencies = [
  "genotype_workspace",
  "heck",
  "insta",
+ "litty 0.5.0",
  "miette",
  "ordered-float",
  "owo-colors",

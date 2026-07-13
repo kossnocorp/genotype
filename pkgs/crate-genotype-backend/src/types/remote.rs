@@ -1,4 +1,4 @@
-use genotype_core::{GtDiagnostic, GtMeta};
+use genotype_core::GtDiagnostic;
 use genotype_project_core::GtpFormatterCmd;
 use litty::serde_literals;
 use serde::{Deserialize, Serialize};
@@ -137,51 +137,3 @@ pub struct GtbRemoteBackendRequestWriteFile {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[literals(kind = "write-file")]
 pub struct GtbRemoteBackendRequestResponseWriteFile {}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum GtbRemoteRuntimeRequest {
-    LoadInProject(GtbRemoteRuntimeRequestLoadInProject),
-    LoadInModules(GtbRemoteRuntimeRequestLoadInModules),
-    Compile(GtbRemoteRuntimeRequestCompile),
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum GtbRemoteRuntimeRequestResponse {
-    LoadInProject(GtbRemoteRuntimeRequestResponseLoadInProject),
-    LoadInModules(GtbRemoteRuntimeRequestResponseLoadInModules),
-    Compile(GtbRemoteRuntimeRequestResponseCompile),
-}
-
-#[serde_literals]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[literals(kind = "load-in-project")]
-pub struct GtbRemoteRuntimeRequestLoadInProject {}
-
-#[serde_literals]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[literals(kind = "load-in-project")]
-pub struct GtbRemoteRuntimeRequestResponseLoadInProject {}
-
-#[serde_literals]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[literals(kind = "load-in-modules")]
-pub struct GtbRemoteRuntimeRequestLoadInModules {}
-
-#[serde_literals]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[literals(kind = "load-in-modules")]
-pub struct GtbRemoteRuntimeRequestResponseLoadInModules {}
-
-#[serde_literals]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[literals(kind = "compile")]
-pub struct GtbRemoteRuntimeRequestCompile {}
-
-#[serde_literals]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[literals(kind = "compile")]
-pub struct GtbRemoteRuntimeRequestResponseCompile {
-    pub meta: GtMeta,
-}

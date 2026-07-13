@@ -1,4 +1,4 @@
-use genotype_core/{GtDiagnostic,GtMeta}
+use genotype_core/GtDiagnostic
 use genotype_project/GtpFormatterCmd
 
 //#region Backend to Runtime
@@ -136,59 +136,6 @@ GtbRemoteBackendRequestResponseWriteFile: {
 }
 
 //#endregion
-
-//#endregion
-
-//#region Runtime to Backend
-
-//#region Unions
-
-GtbRemoteRuntimeRequest:
-  | GtbRemoteRuntimeRequestLoadInProject
-  | GtbRemoteRuntimeRequestLoadInModules
-  | GtbRemoteRuntimeRequestCompile
-
-GtbRemoteRuntimeRequestResponse:
-  | GtbRemoteRuntimeRequestResponseLoadInProject
-  | GtbRemoteRuntimeRequestResponseLoadInModules
-  | GtbRemoteRuntimeRequestResponseCompile
-
-//#endregion
-
-//#region load-in-project
-
-GtbRemoteRuntimeRequestLoadInProject: {
-  kind: "load-in-project",
-}
-
-GtbRemoteRuntimeRequestResponseLoadInProject: {
-  kind: "load-in-project",
-}
-
-//#endregion
-
-//#region load-in-modules
-
-GtbRemoteRuntimeRequestLoadInModules: {
-  kind: "load-in-modules",
-}
-
-GtbRemoteRuntimeRequestResponseLoadInModules: {
-  kind: "load-in-modules",
-}
-
-//#endregion
-
-//#region compile
-
-GtbRemoteRuntimeRequestCompile: {
-  kind: "compile",
-}
-
-GtbRemoteRuntimeRequestResponseCompile: {
-  kind: "compile",
-  meta: GtMeta
-}
 
 //#endregion
 

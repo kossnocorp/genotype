@@ -45,11 +45,11 @@ class GtwmWorker {
   }
 
   async #onRuntimeRequest(
-    request: Gt.GtbRemoteRuntimeRequest,
-  ): Promise<Gt.GtbRemoteRuntimeRequestResponse> {
+    request: Gt.GtcRemoteRuntimeRequest,
+  ): Promise<Gt.GtcRemoteRuntimeRequestResponse> {
     const compiler = await this.#compilerPromise;
     const rawResponse = await compiler.handleRuntimeRequest(request);
-    return Gt.GtbRemoteRuntimeRequestResponse.parse(rawResponse);
+    return Gt.GtcRemoteRuntimeRequestResponse.parse(rawResponse);
   }
 
   async #onBackendRequest(

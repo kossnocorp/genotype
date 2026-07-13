@@ -4,16 +4,28 @@ use heck::ToSnakeCase;
 impl RsConvert<RsFieldName> for GtKey {
     fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsFieldName> {
         let name = self.1.to_snake_case();
+        let rust_name = match name.as_str() {
+            "self" | "Self" | "super" | "crate" => format!("{name}_"),
+            "as" | "async" | "await" | "become" | "box" | "break" | "const" | "continue" | "do"
+            | "dyn" | "else" | "enum" | "extern" | "false" | "final" | "fn" | "for" | "gen"
+            | "if" | "impl" | "in" | "let" | "loop" | "macro" | "match" | "mod" | "move"
+            | "override" | "priv" | "pub" | "ref" | "return" | "static" | "struct" | "trait"
+            | "true" | "try" | "type" | "typeof" | "union" | "unsafe" | "unsized" | "use"
+            | "virtual" | "where" | "while" | "yield" => {
+                format!("r#{name}")
+            }
+            _ => name,
+        };
 
         // Add rename attribute in case of aliasing
-        if name.as_str() != self.1.as_ref() {
+        if rust_name.as_str() != self.1.as_ref() {
             context.attribute_field(format!(
                 r#"serde(rename = "{original_name}")"#,
                 original_name = self.1
             ));
         }
 
-        Ok(RsFieldName(name.into()))
+        Ok(RsFieldName(rust_name.into()))
     }
 }
 
@@ -58,8 +70,15 @@ mod tests {
             GtKey::new((0, 0).into(), "type".into())
                 .convert(&mut context)
                 .unwrap(),
-            @r#"RsFieldName("type")"#
+            @r#"RsFieldName("r#type")"#
         );
-        assert_ron_snapshot!(context.drain_field_attributes(), @"[]")
+        assert_ron_snapshot!(
+            context.drain_field_attributes(),
+            @r#"
+        [
+          RsAttribute("serde(rename = \"type\")"),
+        ]
+        "#
+        )
     }
 }

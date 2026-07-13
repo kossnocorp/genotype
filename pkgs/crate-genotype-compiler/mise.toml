@@ -1,0 +1,11 @@
+[tasks."gen/types"]
+description = "Generates compiler Genotype types for TypeScript and Rust"
+run = { task = "//:dev/gt", args = ["build", "pkgs/crate-genotype-compiler"] }
+
+[tasks."gen/types:watch"]
+description = "Generates compiler Genotype types for TypeScript and Rust in watch mode"
+run = { task = "//:dev/gt:watch", args = [
+  "pkgs/crate-genotype-compiler/types",
+  "build",
+  "pkgs/crate-genotype-compiler",
+] }

@@ -34,10 +34,20 @@ export class GtwmClient {
       .then(() => messenger);
   }
 
-  async compile(): Promise<Gt.GtMeta> {
+  async loadInProject(): Promise<Gt.GtcMetaLoadedProject> {
     const messenger = await this.#messengerPromise;
-    await messenger.request({ kind: "load-in-project" });
-    await messenger.request({ kind: "load-in-modules" });
+    const response = await messenger.request({ kind: "load-in-project" });
+    return response.meta;
+  }
+
+  async loadInModules(): Promise<Gt.GtcMetaLoadedModules> {
+    const messenger = await this.#messengerPromise;
+    const response = await messenger.request({ kind: "load-in-modules" });
+    return response.meta;
+  }
+
+  async compile(): Promise<Gt.GtcMetaCompiled> {
+    const messenger = await this.#messengerPromise;
     const response = await messenger.request({ kind: "compile" });
     return response.meta;
   }

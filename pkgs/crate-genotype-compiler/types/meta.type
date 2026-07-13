@@ -1,0 +1,40 @@
+GtcMetaNew: {}
+
+GtcMetaLoadedProject: {
+  paths: GtcMetaLoadedProjectPaths
+}
+
+GtcMetaLoadedProjectPaths: {
+  src: string
+}
+
+GtcMetaLoadedModules: {
+  paths: GtcMetaLoadedProjectPaths,
+  modules: [string]
+}
+
+GtcMetaCompiled: {
+  exitCode: i32,
+  paths: GtcMetaCompiledPaths,
+  modules: [GtcMetaCompiledModule]
+}
+
+GtcMetaCompiledPaths: {
+  src: string,
+  dist: string,
+  ts?: GtcMetaCompiledPathsLang,
+  rs?: GtcMetaCompiledPathsLang,
+  py?: GtcMetaCompiledPathsLang
+}
+
+GtcMetaCompiledPathsLang: {
+  pkg: string,
+  src: string
+}
+
+GtcMetaCompiledModule: {
+  source: string,
+  ts?: string,
+  rs?: string,
+  py?: string
+}

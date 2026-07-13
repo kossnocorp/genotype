@@ -3,7 +3,6 @@ use crate::prelude::internal::*;
 /// System compiler.
 pub struct GtcSystem {
     state: GtCompilerState,
-    meta: GtcMetaState,
     backend: GtbSystem,
 }
 
@@ -23,8 +22,10 @@ impl GtCompiler<GtcSystemProps<'_>> for GtcSystem {
             GtbSystem::new(base_path).wrap_err("Failed to create system project backend")?;
 
         Ok(Self {
-            state: GtCompilerState::New { config_path },
-            meta: GtcMetaState::new(),
+            state: GtCompilerState::New {
+                config_path,
+                meta: GtcMetaNew {},
+            },
             backend,
         })
     }
@@ -35,14 +36,6 @@ impl GtCompiler<GtcSystemProps<'_>> for GtcSystem {
 
     fn state_mut(&mut self) -> &mut GtCompilerState {
         &mut self.state
-    }
-
-    fn meta(&self) -> &GtcMetaState {
-        &self.meta
-    }
-
-    fn meta_mut(&mut self) -> &mut GtcMetaState {
-        &mut self.meta
     }
 
     fn backend(&self) -> &impl GtBackend {

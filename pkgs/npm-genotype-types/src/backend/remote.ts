@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { GtDiagnostic, GtMeta, GtpFormatterCmd } from "@genotype-lang/types";
+import { GtDiagnostic, GtpFormatterCmd } from "@genotype-lang/types";
 
 export const GtbRemoteBackendRequestGlobFiles = z.object({
   kind: z.literal("glob-files"),
@@ -156,66 +156,3 @@ export const GtbRemoteBackendRequestResponse = z.union([
 ]);
 
 export type GtbRemoteBackendRequestResponse = z.infer<typeof GtbRemoteBackendRequestResponse>;
-
-export const GtbRemoteRuntimeRequestLoadInProject = z.object({
-  kind: z.literal("load-in-project"),
-});
-
-export type GtbRemoteRuntimeRequestLoadInProject = z.infer<
-  typeof GtbRemoteRuntimeRequestLoadInProject
->;
-
-export const GtbRemoteRuntimeRequestResponseLoadInProject = z.object({
-  kind: z.literal("load-in-project"),
-});
-
-export type GtbRemoteRuntimeRequestResponseLoadInProject = z.infer<
-  typeof GtbRemoteRuntimeRequestResponseLoadInProject
->;
-
-export const GtbRemoteRuntimeRequestLoadInModules = z.object({
-  kind: z.literal("load-in-modules"),
-});
-
-export type GtbRemoteRuntimeRequestLoadInModules = z.infer<
-  typeof GtbRemoteRuntimeRequestLoadInModules
->;
-
-export const GtbRemoteRuntimeRequestResponseLoadInModules = z.object({
-  kind: z.literal("load-in-modules"),
-});
-
-export type GtbRemoteRuntimeRequestResponseLoadInModules = z.infer<
-  typeof GtbRemoteRuntimeRequestResponseLoadInModules
->;
-
-export const GtbRemoteRuntimeRequestCompile = z.object({
-  kind: z.literal("compile"),
-});
-
-export type GtbRemoteRuntimeRequestCompile = z.infer<typeof GtbRemoteRuntimeRequestCompile>;
-
-export const GtbRemoteRuntimeRequest = z.union([
-  GtbRemoteRuntimeRequestLoadInProject,
-  GtbRemoteRuntimeRequestLoadInModules,
-  GtbRemoteRuntimeRequestCompile,
-]);
-
-export type GtbRemoteRuntimeRequest = z.infer<typeof GtbRemoteRuntimeRequest>;
-
-export const GtbRemoteRuntimeRequestResponseCompile = z.object({
-  kind: z.literal("compile"),
-  meta: GtMeta,
-});
-
-export type GtbRemoteRuntimeRequestResponseCompile = z.infer<
-  typeof GtbRemoteRuntimeRequestResponseCompile
->;
-
-export const GtbRemoteRuntimeRequestResponse = z.union([
-  GtbRemoteRuntimeRequestResponseLoadInProject,
-  GtbRemoteRuntimeRequestResponseLoadInModules,
-  GtbRemoteRuntimeRequestResponseCompile,
-]);
-
-export type GtbRemoteRuntimeRequestResponse = z.infer<typeof GtbRemoteRuntimeRequestResponse>;

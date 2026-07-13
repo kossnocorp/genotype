@@ -34,7 +34,7 @@ impl GtwmCompiler {
         &mut self,
         request: JsValue,
     ) -> std::result::Result<JsValue, JsValue> {
-        let request: GtbRemoteRuntimeRequest = serde_wasm_bindgen::from_value(request)
+        let request: GtcRemoteRuntimeRequest = serde_wasm_bindgen::from_value(request)
             .map_err(|err| JsValue::from_str(&format!("Failed to parse worker message: {err}")))?;
 
         let response = self

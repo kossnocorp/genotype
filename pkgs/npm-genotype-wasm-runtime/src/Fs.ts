@@ -10,7 +10,7 @@ export namespace GtwmFs {
 
   export type Files = z.infer<typeof GtwmFs.Files>;
 
-  export type OnFileChange = (filePath: string, content: string | null) => void;
+  export type OnFileChange = (filePath: string, content: string | null) => unknown;
 }
 
 export class GtwmFs {
