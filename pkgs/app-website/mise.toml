@@ -4,7 +4,7 @@ depends = "gen/types"
 
 [tasks.build]
 run = "pnpm exec astro build"
-depends = ["//pkgs/npm-genotype-wasm-runtime", "gen/types"]
+depends = ["//pkgs/crate-genotype-wasm:build"]
 
 [tasks.deploy]
 run = "pnpm exec wrangler deploy"
