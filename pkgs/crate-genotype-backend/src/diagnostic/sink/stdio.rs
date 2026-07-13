@@ -42,7 +42,8 @@ pub trait GtbDiagnosticSinkStdio {
             },
 
             GtDiagnosticContent::Report(report) => {
-                todo!("Implement report printing for GtDiagnosticContent::Report: {report:?}")
+                println!();
+                Self::print_diagnostic_body(&diagnostic.kind, &report.report);
             }
         }
     }
