@@ -16,18 +16,17 @@ jobs:
     strategy:
       matrix:
         include:
-          # Linux
+          # Linux --------------------------------------------------------------
 
           # x86
-          - os: ubuntu-latest
+          - os: ubuntu-26.04
             target: x86_64-unknown-linux-gnu
 
           # ARM
-          # TODO: Enable when GitHub Actions supports ARM on Linux runners: https://github.com/actions/runner-images?tab=readme-ov-file#available-images
-          # - os: <TODO>
-          #   target: aarch64-unknown-linux-gnu
+          - os: ubuntu-26.04-arm
+            target: aarch64-unknown-linux-gnu
 
-          # macOS
+          # macOS --------------------------------------------------------------
 
           # x86
           - os: macos-26-intel
@@ -37,16 +36,15 @@ jobs:
           - os: macos-26
             target: aarch64-apple-darwin
 
-          # Windows
+          # Windows ------------------------------------------------------------
 
           # x86
           - os: windows-latest
             target: x86_64-pc-windows-msvc
 
           # ARM
-          # TODO: Enable when GitHub Actions supports ARM on Linux runners: https://github.com/actions/runner-images?tab=readme-ov-file#available-images
-          # - os: <TODO>
-          #   target: aarch64-pc-windows-msvc
+          - os: windows-11-arm
+            target: aarch64-pc-windows-msvc
 
     steps:
       - name: Git Checkout
@@ -63,12 +61,10 @@ jobs:
         run: rustup target add ${{ matrix.target }}
 
       - name: Build CLI
-        # TODO: Move to mise task
-        run: cargo build --release --package genotype_cli --target ${{ matrix.target }}
+        run: mise //pkgs/crate-genotype-cli:build
 
       - name: Build LSP
-        # TODO: Move to mise task
-        run: cargo build --release --package genotype_lsp --target ${{ matrix.target }}
+        run: mise //pkgs/crate-genotype-lsp:build
 
       - name: Derive Bin Ext
         id: bin_ext

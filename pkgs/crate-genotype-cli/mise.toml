@@ -1,0 +1,10 @@
+[env]
+CRATE_NAME = "genotype_cli"
+
+[tasks.build]
+description = "Build Genotype CLI, defaulting to release version"
+extends = "crate/build"
+
+[tasks."build:dev"]
+description = "Build dev version of Genotype CLI"
+extends = "crate/build:dev"

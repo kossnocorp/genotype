@@ -1,0 +1,10 @@
+[env]
+CRATE_NAME = "genotype_lsp"
+
+[tasks.build]
+description = "Build Genotype LSP, defaulting to release version"
+extends = "crate/build"
+
+[tasks."build:dev"]
+description = "Build dev version of Genotype LSP"
+extends = "crate/build:dev"

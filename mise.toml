@@ -259,3 +259,52 @@ cargo build --package genotype_cli --bin gt
 mkdir -p ./bin
 cp ./target/debug/gt ./bin/gt
 '''
+
+# Task templates ###############################################################
+
+# Crate build ------------------------------------------------------------------
+[task_templates."crate/build"]
+usage = '''
+arg "[target]"
+flag "--dev" help="Builds dev version"
+'''
+run = '''
+#!/usr/bin/env bash
+
+crate_name="$CRATE_NAME"
+
+if [ "${usage_dev:-false}" = "true" ]; then
+  build_version=dev
+else
+  build_version=release
+fi
+
+echo -e "\n🚧 Building $build_version version of \`$crate_name\` crate\n"
+
+if [ -z "${crate_name:-}" ]; then
+  echo "🔴 CRATE_NAME env var must be set in the pkg's 'mise.toml'" >&2
+  exit 1
+fi
+
+build_args=(--package $CRATE_NAME)
+
+if [ -n "${usage_target:-}" ]; then
+  build_args+=(--target "$usage_target")
+fi
+
+if [ "${usage_dev:-false}" = "false" ]; then
+  build_args+=(--release)
+fi
+
+echo "🌀 Running \`cargo build\`:"
+echo "........................................................................."
+time cargo build "${build_args[@]}"
+echo "........................................................................."
+echo "🟢 Build completed"
+
+echo -e "\n🎉 Successfully built $build_version version of \`$crate_name\` crate\n"
+'''
+
+# Crate build:dev --------------------------------------------------------------
+[task_templates."crate/build:dev"]
+run = [{ task = "build", args = ["--dev"] }]

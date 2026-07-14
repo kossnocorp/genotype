@@ -1,3 +1,4 @@
+# Build the Wasm package -------------------------------------------------------
 [tasks.build]
 description = "Builds the Wasm package"
 usage = '''
@@ -35,6 +36,7 @@ mv "$pkg_json_tmp_path" "$pkg_json_path"
 cp "$assets_path/README.md" "$pkg_path"
 '''
 
+# Build dev version ------------------------------------------------------------
 [tasks."build:dev"]
 description = "Builds the Wasm package in dev mode"
 run = [{ task = "build", args = ["--dev"] }]
