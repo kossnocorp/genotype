@@ -209,7 +209,6 @@ tsconfig = { allowImportingTsExtensions = false }
   { kind = "shell", cmd = "npm", args = ["run", "format"] },
   { kind = "pnpm", cmd = "prettier", args = ["--check", "."] },
   { kind = "cargo", cmd = "fmt", args = ["--all"] },
-  { kind = "rustfmt" },
   { kind = "oxfmt", via = "pnpm" },
   { kind = "prettier", via = "npx" },
 ]
@@ -241,9 +240,6 @@ tsconfig = { allowImportingTsExtensions = false }
               "--all",
             ]),
             kind: "cargo",
-          ),
-          __GtpFormatterPresetRustfmtLiteralsSerialize(
-            kind: "rustfmt",
           ),
           __GtpFormatterPresetOxfmtLiteralsSerialize(
             via: Some("pnpm"),
