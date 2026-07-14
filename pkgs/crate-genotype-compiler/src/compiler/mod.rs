@@ -37,7 +37,7 @@ pub trait GtCompiler<Props> {
             .backend()
             .create_project(config_path.as_ref())
             .await
-            .with_context(|| format!("Failed to load project"));
+            .with_context(|| "Failed to load project".to_string());
 
         match project {
             Ok(project) => {
@@ -75,7 +75,7 @@ pub trait GtCompiler<Props> {
             .backend()
             .load_all_modules(project)
             .await
-            .with_context(|| format!("Failed to load project modules"));
+            .with_context(|| "Failed to load project modules".to_string());
 
         match project {
             Ok(project) => {
@@ -126,7 +126,7 @@ pub trait GtCompiler<Props> {
         let exit_code = compilation
             .compile()
             .await
-            .with_context(|| format!("Failed to compile project modules."));
+            .with_context(|| "Failed to compile project modules.".to_string());
 
         match exit_code {
             Ok(exit_code) => {

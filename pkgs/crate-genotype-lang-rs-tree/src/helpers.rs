@@ -10,7 +10,7 @@ pub fn render_literal(literal: &GtLiteral) -> String {
     }
 }
 
-pub fn render_generics<'context>(
+pub fn render_generics(
     generics: &[RsIdentifier],
     state: RsRenderState,
     context: &mut RsRenderContext,
@@ -28,7 +28,7 @@ pub fn render_generics<'context>(
     Ok(format!("<{generics}>"))
 }
 
-pub fn render_generic_arguments<'context>(
+pub fn render_generic_arguments(
     arguments: &[RsDescriptor],
     state: RsRenderState,
     context: &mut RsRenderContext,

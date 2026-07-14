@@ -231,7 +231,7 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
         if should_write {
             let write_result = self
                 .backend
-                .write_file(&path.cwd_relative_path(), source_code)
+                .write_file(path.cwd_relative_path(), source_code)
                 .await;
             if let Err(err) = write_result {
                 diagnostics.push(GtDiagnostic::error(format!(

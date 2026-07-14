@@ -28,13 +28,13 @@ pub trait GtbDiagnosticSinkStdio {
             GtDiagnosticContent::Message(message) => match message.body.as_ref() {
                 Some(GtDiagnosticContentMessageBody::Single(body)) => {
                     println!();
-                    Self::print_diagnostic_body(&diagnostic.kind, &body);
+                    Self::print_diagnostic_body(&diagnostic.kind, body);
                 }
 
                 Some(GtDiagnosticContentMessageBody::Multi(bodies)) => {
                     println!();
                     for body in bodies {
-                        Self::print_diagnostic_body(&diagnostic.kind, &body);
+                        Self::print_diagnostic_body(&diagnostic.kind, body);
                     }
                 }
 
@@ -64,8 +64,8 @@ pub trait GtbDiagnosticSinkStdio {
 impl<Type: GtbDiagnosticSinkStdio> GtbDiagnosticSink<GtbDiagnosticSinkStdioKind> for Type {
     async fn report_diagnostic(&self, diagnostic: &GtDiagnostic) -> Result<()> {
         println!(); // Spacing
-        Self::print_diagnostic_title(&diagnostic.kind, &diagnostic.title());
-        Self::print_diagnostic_content(&diagnostic);
+        Self::print_diagnostic_title(&diagnostic.kind, diagnostic.title());
+        Self::print_diagnostic_content(diagnostic);
         Ok(())
     }
 }

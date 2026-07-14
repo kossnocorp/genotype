@@ -1047,7 +1047,7 @@ name = "module"
     fn modules(project: &GtProject) -> GtlProjectModules<PyProjectModule> {
         let compiler = PyCompiler::new(project);
         let mut lang_project = GtlProject::<PyProjectModule>::new(compiler.config());
-        lang_project.convert(&project.modules());
+        lang_project.convert(project.modules());
         lang_project.resolve().unwrap();
         lang_project.modules
     }

@@ -32,10 +32,10 @@ pub fn js_error_to_string(value: JsValue) -> String {
     }
 
     // Handle custom objects with `.message`
-    if let Ok(message) = Reflect::get(&value, &JsValue::from_str("message")) {
-        if let Some(message) = message.as_string() {
-            return message;
-        }
+    if let Ok(message) = Reflect::get(&value, &JsValue::from_str("message"))
+        && let Some(message) = message.as_string()
+    {
+        return message;
     }
 
     // Fallback equivalent-ish to JS `String(value)`

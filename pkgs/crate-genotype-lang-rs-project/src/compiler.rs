@@ -1365,7 +1365,7 @@ version = "0.3.0"
     fn modules(project: &GtProject) -> GtlProjectModules<RsProjectModule> {
         let compiler = RsCompiler::new(project);
         let mut lang_project = GtlProject::<RsProjectModule>::new(compiler.config());
-        lang_project.convert(&project.modules());
+        lang_project.convert(project.modules());
         lang_project.resolve().unwrap();
         lang_project.modules
     }

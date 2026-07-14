@@ -39,7 +39,7 @@ where
         diagnostics.extend(self.config().lang_config_health_check());
 
         let mut lang_project = GtlProject::<Self::ProjectModule>::new(self.config());
-        lang_project.convert(&self.project().modules());
+        lang_project.convert(self.project().modules());
         lang_project.resolve()?;
         lang_project.render();
 

@@ -673,7 +673,7 @@ fn helper_enum_variant(
         let deserialize_with = LitStr::new(
             &format!(
                 "<{helper_ident} as litty::{}>::lit_deserialize",
-                trait_ident.to_string()
+                trait_ident
             ),
             variant_ident.span(),
         );

@@ -815,7 +815,7 @@ mod tests {
     fn modules(project: &GtProject) -> GtlProjectModules<TsProjectModule> {
         let compiler = TsCompiler::new(project);
         let mut lang_project = GtlProject::<TsProjectModule>::new(compiler.config());
-        lang_project.convert(&project.modules());
+        lang_project.convert(project.modules());
         lang_project.resolve().unwrap();
         lang_project.modules
     }

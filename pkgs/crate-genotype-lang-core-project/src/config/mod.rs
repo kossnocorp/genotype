@@ -36,7 +36,7 @@ impl<'project, LangConfig: GtpLangConfig> GtlConfig<'project, LangConfig> {
     }
 
     pub fn project_name(&self) -> &'project str {
-        &self.project.name()
+        self.project.name()
     }
 
     pub fn project_version(&self) -> Option<&'project Version> {
