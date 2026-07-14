@@ -41,7 +41,12 @@ export default defineConfig({
         "@fontsource-variable/hubot-sans",
       ],
       components: {
-        ContentPanel: "./src/ui/starlight/ContentPanel.astro",
+        // Layout
+        Header: "./src/ui/layout/LayoutTopbar.astro",
+        PageFrame: "./src/ui/layout/LayoutFrame.astro",
+        TwoColumnContent: "./src/ui/layout/LayoutContent.astro",
+        ContentPanel: "./src/ui/layout/LayoutContentPanel.astro",
+        // General overrides
         PageTitle: "./src/ui/starlight/PageTitle.astro",
         MarkdownContent: "./src/ui/starlight/MarkdownContent.astro",
         Footer: "./src/ui/starlight/Footer.astro",

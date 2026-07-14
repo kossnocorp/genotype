@@ -137,6 +137,8 @@
   @variant dark {
     --color-divider: var(--color-gray-800);
   }
+  /* Starlight fallback */
+  --sl-color-hairline: var(--color-divider);
 }
 
 /* Starlight colors */
@@ -501,20 +503,36 @@
 
 /* Layout *********************************************************************/
 
+/* Settings */
+
+.layout {
+  --layout-topbar-h: 3rem;
+  --layout-sidebar-w: 16rem;
+  --layout-aside-w: 12rem;
+  /* Starlight fallback */
+  --sl-nav-height: var(--layout-topbar-h);
+  --sl-sidebar-width: var(--layout-sidebar-w);
+  --sl-content-inline-start: var(--layout-sidebar-w);
+}
+
 /* Stretch the content */
 
-.page {
-  & > .main-frame {
-    @apply grow flex flex-col;
+.layout {
+  & > .layout-inner {
+    @apply grow;
 
-    & > div {
+    & > .main-frame {
       @apply grow flex flex-col;
 
-      & > .main-pane {
-        @apply grow flex flex-col;
+      & > .layout-content {
+        @apply grow;
 
-        & > main {
+        & > .main-pane {
           @apply grow flex flex-col;
+
+          & > main {
+            @apply grow flex flex-col;
+          }
         }
       }
     }
@@ -525,14 +543,16 @@
   --sl-main-pad: 0;
 }
 
+/* Layout container ----------------------------------------------------------*/
+
+@utility layout-container {
+  @apply max-w-7xl mx-auto w-full;
+}
+
 /* Header *********************************************************************/
 
 :root {
   --sl-color-bg-nav: var(--color-canvas);
-}
-
-body > .page > .header {
-  @apply border-b border-(--color-divider) pd-x-layout;
 }
 
 .site-title {

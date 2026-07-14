@@ -1,0 +1,106 @@
+---
+import MobileMenuToggle from "@astrojs/starlight/components/MobileMenuToggle.astro";
+import { isBareAstroPage } from "../starlight/utils";
+
+const { hasSidebar } = Astro.locals.starlightRoute;
+const isBare = isBareAstroPage(Astro.locals);
+---
+
+<div class:list={["page layout sl-flex", isBare && "is-bare"]}>
+  <header class="layout-topbar header"><slot name="header" /></header>
+
+  <div class:list={["layout-inner", !isBare && "is-bare layout-container"]}>
+    {
+      hasSidebar && (
+        <nav
+          class="sidebar print:hidden"
+          aria-label={Astro.locals.t("sidebarNav.accessibleLabel")}
+        >
+          <MobileMenuToggle />
+
+          <div id="starlight__sidebar" class="sidebar-pane">
+            <div class="sidebar-content sl-flex">
+              <slot name="sidebar" />
+            </div>
+          </div>
+        </nav>
+      )
+    }
+
+    <div class="main-frame"><slot /></div>
+  </div>
+</div>
+
+<style>
+  @reference "#/styles/global.css";
+
+  @layer starlight.core {
+    /* TODO: Get rid of .page? */
+    .page,
+    .layout {
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .layout {
+      &:not(.is-bare) {
+        & .main-frame {
+          @apply md:pl-(--layout-sidebar-w);
+        }
+      }
+    }
+
+    .layout-inner {
+      @apply flex pt-[calc(var(--sl-nav-height)+var(--sl-mobile-toc-height))] md:border-l md:border-r border-(--color-divider);
+    }
+
+    /* TODO: Get rid of .layout-topbar? */
+    .layout-topbar,
+    .header {
+      @apply border-b border-(--color-divider) h-(--layout-topbar-h);
+      z-index: var(--sl-z-index-navbar);
+      position: fixed;
+      inset-inline-start: 0;
+      inset-block-start: 0;
+      width: 100%;
+      background-color: var(--sl-color-bg-nav);
+    }
+
+    .sidebar-pane {
+      @apply md:border-r border-(--color-divider);
+      visibility: var(--sl-sidebar-visibility, hidden);
+      position: fixed;
+      z-index: var(--sl-z-index-menu);
+      inset-block: var(--sl-nav-height) 0;
+      width: 100%;
+      background-color: var(--sl-color-black);
+      overflow-y: auto;
+      scrollbar-gutter: stable;
+
+      @variant md {
+        --sl-sidebar-visibility: visible;
+        width: var(--layout-sidebar-w);
+        background-color: var(--sl-color-bg-sidebar);
+      }
+    }
+
+    :global([aria-expanded="true"]) ~ .sidebar-pane {
+      --sl-sidebar-visibility: visible;
+    }
+
+    .sidebar-content {
+      height: 100%;
+      min-height: max-content;
+      padding: 1rem var(--sl-sidebar-pad-x) 0;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    @media (min-width: 50rem) {
+      .sidebar-content::after {
+        content: "";
+        padding-bottom: 1px;
+      }
+    }
+  }
+</style>

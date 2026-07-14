@@ -9,7 +9,7 @@
     "./scripts/**/*.ts"
   ],
   // Re-enable after this PR is merged: https://github.com/withastro/starlight/pull/3572
-  "exclude": ["./astro.config.ts", "./src/content.config.ts"],
+  "exclude": ["./astro.config.ts", "./src/content.config.ts", "./src/env.astro.d.ts"],
   "compilerOptions": {
     // Resolve
     "paths": {
