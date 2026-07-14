@@ -24,6 +24,8 @@ jobs:
         uses: ./.github/actions/setup
         with:
           target-key: qa
+          enable-pnpm: true
+          enable-uv: true
 
       - name: Check Code Formatting
         run: mise :format:check
@@ -50,6 +52,8 @@ jobs:
         uses: ./.github/actions/cache-save
         with:
           target-key: qa
+          enable-pnpm: true
+          enable-uv: true
 
       # TODO: Re-enable continue-on-error if GitHub ever addresses the problem:
       # - https://github.com/orgs/community/discussions/15452

@@ -6,6 +6,16 @@ inputs:
     required: true
     description: "Key for caching target directory."
 
+  enable-pnpm:
+    required: false
+    default: "false"
+    description: "Whether to install pnpm."
+
+  enable-uv:
+    required: false
+    default: "false"
+    description: "Whether to install uv."
+
 runs:
   using: "composite"
 
@@ -71,11 +81,13 @@ runs:
           target-${{ runner.os }}-
 
     - name: Get pnpm Store Path
+      if: ${{ inputs.enable-pnpm == 'true' }}
       id: pnpm-store
       run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Restore pnpm Cache
+      if: ${{ inputs.enable-pnpm == 'true' }}
       uses: actions/cache/restore@v5
       with:
         path: ${{ steps.pnpm-store.outputs.STORE_PATH }}
@@ -83,7 +95,13 @@ runs:
         restore-keys: |
           pnpm-${{ runner.os }}-
 
+    - name: Install pnpm
+      if: ${{ inputs.enable-pnpm == 'true' }}
+      run: mise :install/pnpm
+      shell: bash
+
     - name: Restore uv Cache
+      if: ${{ inputs.enable-uv == 'true' }}
       uses: actions/cache/restore@v5
       with:
         path: |
@@ -94,6 +112,7 @@ runs:
         restore-keys: |
           uv-${{ runner.os }}-
 
-    - name: Run Install
-      run: mise :install
+    - name: Install uv
+      if: ${{ inputs.enable-uv == 'true' }}
+      run: mise :install/uv
       shell: bash

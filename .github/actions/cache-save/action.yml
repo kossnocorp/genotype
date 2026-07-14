@@ -6,6 +6,16 @@ inputs:
     required: true
     description: "Key for caching target directory."
 
+  enable-pnpm:
+    required: false
+    default: "false"
+    description: "Whether to store pnpm cache."
+
+  enable-uv:
+    required: false
+    default: "false"
+    description: "Whether to store uv cache."
+
 runs:
   using: "composite"
 
@@ -69,11 +79,13 @@ runs:
         target-key: ${{ inputs.target-key }}
 
     - name: Get pnpm Store Path
+      if: ${{ inputs.enable-pnpm == 'true' }}
       id: pnpm-store
       run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Lookup pnpm Cache
+      if: ${{ inputs.enable-pnpm == 'true' }}
       id: lookup-pnpm
       uses: actions/cache/restore@v5
       with:
@@ -82,13 +94,14 @@ runs:
         lookup-only: true
 
     - name: Save pnpm cache
-      if: ${{ steps.lookup-pnpm.outputs.cache-hit != 'true' }}
+      if: ${{ inputs.enable-pnpm == 'true' && steps.lookup-pnpm.outputs.cache-hit != 'true' }}
       uses: actions/cache/save@v5
       with:
         path: ${{ steps.pnpm-store.outputs.STORE_PATH }}
         key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
 
     - name: Lookup uv Cache
+      if: ${{ inputs.enable-uv == 'true' }}
       id: lookup-uv
       uses: actions/cache/restore@v5
       with:
@@ -100,7 +113,7 @@ runs:
         lookup-only: true
 
     - name: Save uv Cache
-      if: ${{ steps.lookup-uv.outputs.cache-hit != 'true' }}
+      if: ${{ inputs.enable-uv == 'true' && steps.lookup-uv.outputs.cache-hit != 'true' }}
       uses: actions/cache/save@v5
       with:
         path: |
