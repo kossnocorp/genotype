@@ -20,7 +20,6 @@ ruff = "latest"
 
 # Tools
 cargo-binstall = "latest"
-"cargo:just" = "latest"
 "cargo:toml2json" = "latest"
 "cargo:bacon" = "latest"
 "cargo:cargo-nextest" = "latest"
