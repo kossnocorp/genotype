@@ -11,7 +11,7 @@ rust = { version = "latest", channel = "stable", components = "rustfmt,clippy" }
 
 # Node.js
 node = "lts"
-pnpm = "latest"
+"npm:pnpm" = "latest"
 # Python
 python = "3.14.4"
 uv = "latest"
