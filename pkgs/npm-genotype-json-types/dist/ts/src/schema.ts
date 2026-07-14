@@ -1,4 +1,13 @@
-export type GtjSchemaAny = GtjSchemaNull | GtjSchemaBoolean | GtjSchemaNumber | GtjSchemaString | GtjSchemaObject | GtjSchemaArray | GtjSchemaUnion | GtjSchemaTuple | GtjSchemaLiteral;
+export type GtjSchemaAny =
+  | GtjSchemaNull
+  | GtjSchemaBoolean
+  | GtjSchemaNumber
+  | GtjSchemaString
+  | GtjSchemaObject
+  | GtjSchemaArray
+  | GtjSchemaUnion
+  | GtjSchemaTuple
+  | GtjSchemaLiteral;
 
 export interface GtjSchemaBase {
   title?: string | undefined;

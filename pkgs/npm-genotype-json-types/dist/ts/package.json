@@ -1,14 +1,14 @@
 {
-  "types": "src/index.ts",
-  "authors": [
-    "Sasha Koss <koss@nocorp.me>"
-  ],
+  "name": "genotype-json-types",
+  "version": "0.3.0",
   "description": "Genotype language JSON types",
+  "license": "MIT",
   "files": [
     "src",
     "README.md"
   ],
-  "license": "MIT",
-  "name": "genotype-json-types",
-  "version": "0.3.0"
+  "types": "src/index.ts",
+  "authors": [
+    "Sasha Koss <koss@nocorp.me>"
+  ]
 }

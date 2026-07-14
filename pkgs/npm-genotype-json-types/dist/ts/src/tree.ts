@@ -1,4 +1,13 @@
-export type GtjAny = GtjNull | GtjBoolean | GtjNumber | GtjString | GtjObject | GtjArray | GtjUnion | GtjTuple | GtjLiteral;
+export type GtjAny =
+  | GtjNull
+  | GtjBoolean
+  | GtjNumber
+  | GtjString
+  | GtjObject
+  | GtjArray
+  | GtjUnion
+  | GtjTuple
+  | GtjLiteral;
 
 export interface GtjBase {
   name?: string | undefined;
