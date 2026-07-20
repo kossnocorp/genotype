@@ -35,30 +35,29 @@ runs:
         path: ~/.local/state/mise
         key: mise-state-${{ runner.os }}-${{ hashFiles('**/mise.toml') }}-${{ github.sha }}
 
-    - name: Lookup rustup Cache
-      id: lookup-rustup
-      uses: actions/cache/restore@v5
-      with:
-        path: ~/.rustup
-        key: rustup-${{ runner.os }}-${{ hashFiles('**/rust-toolchain.toml') }}
-        lookup-only: true
+    # - name: Lookup Rustup Cache
+    #   id: lookup-rustup
+    #   uses: actions/cache/restore@v5
+    #   with:
+    #     path: ~/.rustup/toolchains/
+    #     key: rustup-${{ runner.os }}-${{ hashFiles('**/rust-toolchain.toml') }}
+    #     lookup-only: true
 
-    - name: Save rustup Cache
-      if: ${{ steps.lookup-rustup.outputs.cache-hit != 'true' }}
-      uses: actions/cache/save@v5
-      with:
-        path: ~/.rustup
-        key: rustup-${{ runner.os }}-${{ hashFiles('**/rust-toolchain.toml') }}
+    # - name: Save Rustup Cache
+    #   if: ${{ steps.lookup-rustup.outputs.cache-hit != 'true' }}
+    #   uses: actions/cache/save@v5
+    #   with:
+    #     path: ~/.rustup/toolchains/
+    #     key: rustup-${{ runner.os }}-${{ hashFiles('**/rust-toolchain.toml') }}
 
     - name: Lookup Cargo Cache
       id: lookup-cargo
       uses: actions/cache/restore@v5
       with:
         path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          ~/.cargo/binstall
-          ~/.cargo/env
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
         key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
         lookup-only: true
 
@@ -67,11 +66,29 @@ runs:
       uses: actions/cache/save@v5
       with:
         path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          ~/.cargo/binstall
-          ~/.cargo/env
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
         key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+
+    # - name: Lookup Cargo Bins Cache
+    #   id: lookup-cargo-bins
+    #   uses: actions/cache/restore@v5
+    #   with:
+    #     path: |
+    #       ~/.cargo/binstall/
+    #       ~/.cargo/bin/
+    #     key: cargo-bins-${{ runner.os }}
+    #     lookup-only: true
+
+    # - name: Save Cargo Bins Cache
+    #   if: ${{ steps.lookup-cargo-bins.outputs.cache-hit != 'true' }}
+    #   uses: actions/cache/save@v5
+    #   with:
+    #     path: |
+    #       ~/.cargo/binstall/
+    #       ~/.cargo/bin/
+    #     key: cargo-bins-${{ runner.os }}
 
     - name: Save Target Cache
       uses: ./.github/actions/cache-save/target

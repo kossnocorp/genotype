@@ -43,25 +43,32 @@ runs:
           mise-state-${{ runner.os }}-${{ hashFiles('**/mise.toml') }}-
           mise-state-${{ runner.os }}-
 
-    - name: Restore rustup Cache
-      uses: actions/cache/restore@v5
-      with:
-        path: ~/.rustup
-        key: rustup-${{ runner.os }}-${{ hashFiles('**/rust-toolchain.toml') }}
-        restore-keys: |
-          rustup-${{ runner.os }}-
+    # - name: Restore Rustup Cache
+    #   uses: actions/cache/restore@v5
+    #   with:
+    #     path: ~/.rustup/toolchains/
+    #     key: rustup-${{ runner.os }}-${{ hashFiles('**/rust-toolchain.toml') }}
+    #     restore-keys: |
+    #       rustup-${{ runner.os }}-
 
     - name: Restore Cargo Cache
       uses: actions/cache/restore@v5
       with:
         path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          ~/.cargo/binstall
-          ~/.cargo/env
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
         key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: |
           cargo-${{ runner.os }}-
+
+    # - name: Restore Cargo Bins Cache
+    #   uses: actions/cache/restore@v5
+    #   with:
+    #     path: |
+    #       ~/.cargo/binstall/
+    #       ~/.cargo/bin/
+    #     key: cargo-bins-${{ runner.os }}
 
     - name: Install Tools
       run: |

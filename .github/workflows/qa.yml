@@ -72,4 +72,4 @@ jobs:
     name: Build
     uses: ./.github/workflows/build.yml
     with:
-      artifact_suffix: ${{ github.event_name == 'workflow_call' && inputs.build_artifact_suffix || '' }}
+      artifact_suffix: ${{ inputs.build_artifact_suffix || '' }}
