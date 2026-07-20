@@ -82,9 +82,19 @@ jobs:
             "${{ steps.attest.outputs.bundle-path }}" \
             --clobber
 
+      - name: Verify Binstall Package
+        run: |
+          cargo binstall \
+            --manifest-path pkgs/crate-genotype-cli/Cargo.toml \
+            --targets x86_64-unknown-linux-gnu \
+            --strategies crate-meta-data \
+            --dry-run \
+            --no-confirm \
+            genotype_cli
+
   publish-cargo:
     name: Publish Rust Crates
-    needs: qa
+    needs: release
     runs-on: ubuntu-latest
     environment: release
     permissions:

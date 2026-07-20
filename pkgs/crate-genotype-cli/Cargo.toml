@@ -11,6 +11,10 @@ repository = "https://github.com/kossnocorp/genotype"
 name = "gt"
 path = "src/main.rs"
 
+[package.metadata.binstall]
+pkg-url = "{ repo }/releases/download/v{ version }/gt-v{ version }-{ target }{ binary-ext }"
+pkg-fmt = "bin"
+
 [dependencies]
 genotype_backend = { version = "0.15.0", path = "../crate-genotype-backend" }
 genotype_project_core = { version = "0.15.0", path = "../crate-genotype-project-core" }

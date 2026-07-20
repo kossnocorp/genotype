@@ -8,7 +8,13 @@ Its goal is to help developers working on projects that use multiple languages o
 
 ## Installation
 
-Currently, Genotype can only be installed via Cargo:
+Install a prebuilt Genotype CLI binary with [cargo-binstall](https://github.com/cargo-bins/cargo-binstall):
+
+```sh
+cargo binstall genotype_cli
+```
+
+Alternatively, build and install the CLI from source:
 
 ```sh
 cargo install genotype_cli
