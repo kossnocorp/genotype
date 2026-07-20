@@ -18,7 +18,6 @@ ruff = "latest"
 # Tools
 cargo-binstall = "latest"
 "cargo:cargo-nextest" = "latest"
-"cargo:cargo-release" = "latest"
 gh = "latest"
 git-cliff = "latest"
 jaq = "latest"

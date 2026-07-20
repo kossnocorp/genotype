@@ -1,3 +1,4 @@
-{% if env.CI != "true" %}
-env = ["dev"]
-{% endif %}
+env = [
+  "{{ 'ci' if env.CI == 'true' else 'dev' }}",
+  "{{ 'release' if env.CI != 'true' or env.MISE_ENV_RELEASE == 'true' else 'noop' }}"
+]

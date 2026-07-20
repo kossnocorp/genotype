@@ -99,6 +99,8 @@ jobs:
     environment: release
     permissions:
       contents: read
+    env:
+      MISE_ENV_RELEASE: "true"
 
     steps:
       - name: Git Checkout
