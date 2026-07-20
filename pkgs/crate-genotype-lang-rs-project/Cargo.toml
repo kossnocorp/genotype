@@ -1,6 +1,6 @@
 [package]
 name = "genotype_lang_rs_project"
-version = "0.15.0"
+version = "0.16.0"
 edition = "2024"
 description = "Genotype language Rust target project crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
@@ -8,15 +8,15 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_core = { version = "0.15.0", path = "../crate-genotype-core" }
-genotype_project_core = { version = "0.15.0", path = "../crate-genotype-project-core" }
-genotype_parser = { version = "0.15.0", path = "../crate-genotype-parser" }
-genotype_project = { version = "0.15.0", path = "../crate-genotype-project" }
-genotype_lang_core = { version = "0.15.0", path = "../crate-genotype-lang-core" }
-genotype_lang_core_tree = { version = "0.15.0", path = "../crate-genotype-lang-core-tree" }
-genotype_lang_core_project = { version = "0.15.0", path = "../crate-genotype-lang-core-project" }
-genotype_lang_rs_tree = { version = "0.15.0", path = "../crate-genotype-lang-rs-tree" }
-genotype_lang_rs_config = { version = "0.15.0", path = "../crate-genotype-lang-rs-config" }
+genotype_core = { version = "0.16.0", path = "../crate-genotype-core" }
+genotype_project_core = { version = "0.16.0", path = "../crate-genotype-project-core" }
+genotype_parser = { version = "0.16.0", path = "../crate-genotype-parser" }
+genotype_project = { version = "0.16.0", path = "../crate-genotype-project" }
+genotype_lang_core = { version = "0.16.0", path = "../crate-genotype-lang-core" }
+genotype_lang_core_tree = { version = "0.16.0", path = "../crate-genotype-lang-core-tree" }
+genotype_lang_core_project = { version = "0.16.0", path = "../crate-genotype-lang-core-project" }
+genotype_lang_rs_tree = { version = "0.16.0", path = "../crate-genotype-lang-rs-tree" }
+genotype_lang_rs_config = { version = "0.16.0", path = "../crate-genotype-lang-rs-config" }
 miette = { version = "7.6.0", features = ["serde"] }
 thiserror = "1.0.64"
 indexmap = { version = "2.6.0", features = ["serde"] }
@@ -27,7 +27,7 @@ indoc = "2.0.7"
 heck = "0.5.0"
 
 [dev-dependencies]
-genotype_backend = { version = "0.15.0", path = "../crate-genotype-backend" }
+genotype_backend = { version = "0.16.0", path = "../crate-genotype-backend" }
 genotype_test = { path = "../crate-genotype-test" }
 pretty_assertions = "1.4.1"
 insta = { version = "1.46.3", features = ["ron"] }
