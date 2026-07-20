@@ -157,7 +157,6 @@ cargo release publish \
   --exclude toml_ext \
   --exclude genotype_runtime \
   --exclude genotype_json_types \
-  --exclude genotype_test \
   --workspace \
   --all-features \
   --no-verify \
@@ -175,7 +174,6 @@ cargo release publish \
   --exclude toml_ext \
   --exclude genotype_runtime \
   --exclude genotype_json_types \
-  --exclude genotype_test \
   --workspace \
   --all-features \
   --no-verify \
