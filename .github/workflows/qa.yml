@@ -7,6 +7,7 @@ on:
         description: Suffix forwarded to build workflow artifact names.
         required: false
         type: string
+  pull_request_target:
   push:
     branches:
       - main
