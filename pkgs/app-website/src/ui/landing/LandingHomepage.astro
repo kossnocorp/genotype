@@ -1,9 +1,11 @@
 ---
 import PlaygroundDemo from "../playground/PlaygroundDemo.astro";
+import Code from "#/ui/core/Code.astro";
+import Tabs from "#/ui/core/Tabs.astro";
 ---
 
 <div class="grow pd-x-layout flex flex-col">
-  <div class="flex flex-col py-15 gap-6">
+  <div class="flex flex-col items-center py-15 gap-6">
     <header class="layout-container text-center flex flex-col gap-2">
       <h1 class="text-4xl font-display leading-snug">
         <span class="text-6xl">Genotype</span><br />
@@ -21,6 +23,33 @@ import PlaygroundDemo from "../playground/PlaygroundDemo.astro";
       </p>
     </header>
 
+    <div class="max-w-xl w-full flex justify-center">
+      <Tabs
+        items={[
+          { id: "install-xnix", label: "Linux/macOS" },
+          { id: "install-windows", label: "Windows" },
+        ]}
+        active="install-xnix"
+        style="code"
+      >
+        <Fragment slot="install-xnix">
+          <Code
+            code="curl -fsSL https://genotype-lang.org/install.sh | sh"
+            lang="bash"
+            copy
+          />
+        </Fragment>
+
+        <Fragment slot="install-windows">
+          <Code
+            code="irm https://genotype-lang.org/install.ps1 | iex"
+            lang="powershell"
+            copy
+          />
+        </Fragment>
+      </Tabs>
+    </div>
+
     <div class="flex gap-4 justify-center">
       <a href="/docs/getting-started" class="button button-main is-get-started">
         Get Started
@@ -28,28 +57,28 @@ import PlaygroundDemo from "../playground/PlaygroundDemo.astro";
 
       <a href="/playground" class="button is-playground"> Playground </a>
     </div>
+
+    <div
+      class="layout-container flex flex-col min-h-200 border border-transparent dark:border-gray-800"
+    >
+      <PlaygroundDemo />
+    </div>
   </div>
 
-  <div
-    class="layout-container flex flex-col min-h-200 border border-transparent dark:border-gray-800"
-  >
-    <PlaygroundDemo />
-  </div>
-</div>
+  <style>
+    @reference "#/styles/global.css";
 
-<style>
-  @reference "#/styles/global.css";
-
-  .button.is-get-started {
-    @apply text-base px-4;
-  }
-
-  .button.is-playground {
-    @apply px-4 border border-gray-500 dark:border-(--color-divider) bg-transparent;
-
-    --button-text-base: var(--color-gray-600);
-    @variant dark {
-      --button-text-base: var(--color-gray-200);
+    .button.is-get-started {
+      @apply text-base px-4;
     }
-  }
-</style>
+
+    .button.is-playground {
+      @apply px-4 border border-gray-500 dark:border-(--color-divider) bg-transparent;
+
+      --button-text-base: var(--color-gray-600);
+      @variant dark {
+        --button-text-base: var(--color-gray-200);
+      }
+    }
+  </style>
+</div>

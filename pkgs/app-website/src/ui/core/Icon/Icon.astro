@@ -17,7 +17,7 @@ const icons100 = import.meta.glob<{ default: ImageMetadata }>(
 );
 
 const icons200 = import.meta.glob<{ default: ImageMetadata }>(
-  "../../../../node_modules/@material-symbols/svg-200/rounded/{code_blocks,close,file_export,edit_document,draft}.svg",
+  "../../../../node_modules/@material-symbols/svg-200/rounded/{code_blocks,close,file_export,edit_document,draft,content_copy,check}.svg",
 );
 
 const icons300 = import.meta.glob<{ default: ImageMetadata }>(
@@ -71,7 +71,7 @@ if ("id" in directProps) {
           )
         : style === "assets"
           ? Object.keys(iconsAssets).find((path) => path.includes(`${id}.svg`))
-          : `../../../../node_modules/@material-symbols/svg-${style || "100"}/rounded/${id}.svg`;
+          : `../../../../node_modules/@material-symbols/svg-${style || "200"}/rounded/${id}.svg`;
 
   if (!iconFilePath) throw new Error(`Icon ${id} has not been found `);
 
@@ -86,7 +86,9 @@ if ("id" in directProps) {
             ? icons200
             : style === "300"
               ? icons300
-              : icons100;
+              : style === "100"
+                ? icons100
+                : icons200;
 
   const iconPath = icons[iconFilePath];
   if (!iconPath)

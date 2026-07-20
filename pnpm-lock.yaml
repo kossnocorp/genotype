@@ -19,13 +19,13 @@ importers:
     dependencies:
       '@astrojs/cloudflare':
         specifier: ^14.1.2
-        version: 14.1.2(@types/node@24.13.3)(astro@7.0.7(@astrojs/markdown-remark@7.2.1)(@azure/identity@4.13.1)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2))(esbuild@0.28.1)(jiti@2.7.0)(workerd@1.20260708.1)(wrangler@4.110.0)
+        version: 14.1.2(@types/node@24.13.3)(astro@7.0.7(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2))(esbuild@0.28.1)(jiti@2.7.0)(workerd@1.20260708.1)(wrangler@4.110.0)
       '@astrojs/starlight':
         specifier: ^0.41.3
-        version: 0.41.3(@astrojs/markdown-remark@7.2.1)(astro@7.0.7(@astrojs/markdown-remark@7.2.1)(@azure/identity@4.13.1)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2))(typescript@7.0.2)
+        version: 0.41.3(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(astro@7.0.7(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2))(supports-color@10.2.2)(typescript@7.0.2)
       '@astrojs/starlight-tailwind':
         specifier: ^5.0.0
-        version: 5.0.0(@astrojs/starlight@0.41.3(@astrojs/markdown-remark@7.2.1)(astro@7.0.7(@astrojs/markdown-remark@7.2.1)(@azure/identity@4.13.1)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2))(typescript@7.0.2))(tailwindcss@4.3.2)
+        version: 5.0.0(@astrojs/starlight@0.41.3(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(astro@7.0.7(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2))(supports-color@10.2.2)(typescript@7.0.2))(tailwindcss@4.3.2)
       '@fontsource-variable/hubot-sans':
         specifier: ^5.2.8
         version: 5.2.8
@@ -48,14 +48,14 @@ importers:
         specifier: workspace:*
         version: link:../npm-genotype-wasm-runtime
       '@material-symbols/svg-100':
-        specifier: ^0.45.5
-        version: 0.45.5
+        specifier: ^0.45.8
+        version: 0.45.8
       '@material-symbols/svg-200':
-        specifier: ^0.45.5
-        version: 0.45.5
+        specifier: ^0.45.8
+        version: 0.45.8
       '@material-symbols/svg-300':
-        specifier: ^0.45.5
-        version: 0.45.5
+        specifier: ^0.45.8
+        version: 0.45.8
       '@shikijs/langs':
         specifier: ^4.2.0
         version: 4.2.0
@@ -70,7 +70,7 @@ importers:
         version: 0.4.0
       astro:
         specifier: ^7.0.7
-        version: 7.0.7(@astrojs/markdown-remark@7.2.1)(@azure/identity@4.13.1)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2)
+        version: 7.0.7(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2)
       devicon:
         specifier: ^2.17.0
         version: 2.17.0
@@ -202,13 +202,13 @@ importers:
         version: 1.115.0
       '@vscode/vsce':
         specifier: ^3.7.1
-        version: 3.7.1
+        version: 3.7.1(supports-color@10.2.2)
       genotype-lsp:
         specifier: workspace:*
         version: link:../crate-genotype-lsp
       ovsx:
         specifier: ^0.10.10
-        version: 0.10.10
+        version: 0.10.10(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
@@ -1072,14 +1072,14 @@ packages:
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
-  '@material-symbols/svg-100@0.45.5':
-    resolution: {integrity: sha512-U9HHF+1tlAv59L6+7CjG4lQBzQlwxPuFuu2fczof1ecS8xeS5FPOrft0/lXgUc3s/r8gXzRiSm27iC9rw//dlQ==}
+  '@material-symbols/svg-100@0.45.8':
+    resolution: {integrity: sha512-R2E4VqIHa/IoLFQQhTD9HrnNiUqxANRpy+RQecMoGdu9B1yhMHP1bUpSCClVlYG9/nz/OfKhXJdHwlIK43hT+g==}
 
-  '@material-symbols/svg-200@0.45.5':
-    resolution: {integrity: sha512-mNJXcjsJj4qHHvE7d+/C1EqbvdXqQT7dHqvy2AN6kVZG1Y7GiLFF9Dm83dX8Q2rBGmjjhDnuP/VySww0OyC0AA==}
+  '@material-symbols/svg-200@0.45.8':
+    resolution: {integrity: sha512-1wtztqUygVg5bumRoSL0OKVrl5ilONV0aWREaSQsZGeVkOjMRpGDCTaCzn+QzR7MgVoWT4sb15b/OXPTcrOM6Q==}
 
-  '@material-symbols/svg-300@0.45.5':
-    resolution: {integrity: sha512-2cB+/dAkrEgI6Em60Mv+Y1iaimL9Zufgft9O4lX/3fuhNEYAXsC+nAO2R/ltktCxai681gPP19WNC4+dbDL07Q==}
+  '@material-symbols/svg-300@0.45.8':
+    resolution: {integrity: sha512-tH9ERLJcvuoep0JJ+RalDr8hDz8pZ5VvgQQungwwsqfS7j7uCnRHNMB8+Fm7QXsJ0zwCwah9rNm1XDMNcZRFoQ==}
 
   '@mdx-js/mdx@3.1.1':
     resolution: {integrity: sha512-f6ZO2ifpwAQIpzGWaBQT2TXxPv6z3RBzQKpVftEWN78Vl/YweF1uwussDx8ECAXVtr3Rs89fKyG9YlzUs9DyGQ==}
@@ -4515,12 +4515,12 @@ packages:
 
 snapshots:
 
-  '@astrojs/cloudflare@14.1.2(@types/node@24.13.3)(astro@7.0.7(@astrojs/markdown-remark@7.2.1)(@azure/identity@4.13.1)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2))(esbuild@0.28.1)(jiti@2.7.0)(workerd@1.20260708.1)(wrangler@4.110.0)':
+  '@astrojs/cloudflare@14.1.2(@types/node@24.13.3)(astro@7.0.7(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2))(esbuild@0.28.1)(jiti@2.7.0)(workerd@1.20260708.1)(wrangler@4.110.0)':
     dependencies:
       '@astrojs/internal-helpers': 0.10.1
       '@astrojs/underscore-redirects': 1.0.3
       '@cloudflare/vite-plugin': 1.44.0(vite@8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0))(workerd@1.20260708.1)(wrangler@4.110.0)
-      astro: 7.0.7(@astrojs/markdown-remark@7.2.1)(@azure/identity@4.13.1)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2)
+      astro: 7.0.7(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2)
       piccolore: 0.1.3
       vite: 8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)
       wrangler: 4.110.0
@@ -4606,7 +4606,7 @@ snapshots:
       smol-toml: 1.7.0
       unified: 11.0.5
 
-  '@astrojs/markdown-remark@7.2.1':
+  '@astrojs/markdown-remark@7.2.1(supports-color@10.2.2)':
     dependencies:
       '@astrojs/internal-helpers': 0.10.1
       '@astrojs/prism': 4.0.2
@@ -4616,8 +4616,8 @@ snapshots:
       mdast-util-definitions: 6.0.0
       rehype-raw: 7.0.0
       rehype-stringify: 10.0.1
-      remark-gfm: 4.0.1
-      remark-parse: 11.0.0
+      remark-gfm: 4.0.1(supports-color@10.2.2)
+      remark-parse: 11.0.0(supports-color@10.2.2)
       remark-rehype: 11.1.2
       remark-smartypants: 3.0.2
       unified: 11.0.5
@@ -4635,19 +4635,19 @@ snapshots:
       github-slugger: 2.0.0
       satteri: 0.9.5
 
-  '@astrojs/mdx@7.0.2(@astrojs/markdown-satteri@0.3.3)(astro@7.0.7(@astrojs/markdown-remark@7.2.1)(@azure/identity@4.13.1)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2))':
+  '@astrojs/mdx@7.0.2(@astrojs/markdown-satteri@0.3.3)(astro@7.0.7(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2))(supports-color@10.2.2)':
     dependencies:
       '@astrojs/internal-helpers': 0.10.1
-      '@astrojs/markdown-remark': 7.2.1
-      '@mdx-js/mdx': 3.1.1
+      '@astrojs/markdown-remark': 7.2.1(supports-color@10.2.2)
+      '@mdx-js/mdx': 3.1.1(supports-color@10.2.2)
       acorn: 8.17.0
-      astro: 7.0.7(@astrojs/markdown-remark@7.2.1)(@azure/identity@4.13.1)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2)
+      astro: 7.0.7(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2)
       es-module-lexer: 2.3.1
       estree-util-visit: 2.0.0
       hast-util-to-html: 9.0.5
       piccolore: 0.1.3
       rehype-raw: 7.0.0
-      remark-gfm: 4.0.1
+      remark-gfm: 4.0.1(supports-color@10.2.2)
       remark-smartypants: 3.0.2
       source-map: 0.7.6
       unist-util-visit: 5.1.0
@@ -4667,22 +4667,22 @@ snapshots:
       stream-replace-string: 2.0.0
       zod: 4.4.3
 
-  '@astrojs/starlight-tailwind@5.0.0(@astrojs/starlight@0.41.3(@astrojs/markdown-remark@7.2.1)(astro@7.0.7(@astrojs/markdown-remark@7.2.1)(@azure/identity@4.13.1)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2))(typescript@7.0.2))(tailwindcss@4.3.2)':
+  '@astrojs/starlight-tailwind@5.0.0(@astrojs/starlight@0.41.3(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(astro@7.0.7(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2))(supports-color@10.2.2)(typescript@7.0.2))(tailwindcss@4.3.2)':
     dependencies:
-      '@astrojs/starlight': 0.41.3(@astrojs/markdown-remark@7.2.1)(astro@7.0.7(@astrojs/markdown-remark@7.2.1)(@azure/identity@4.13.1)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2))(typescript@7.0.2)
+      '@astrojs/starlight': 0.41.3(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(astro@7.0.7(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2))(supports-color@10.2.2)(typescript@7.0.2)
       tailwindcss: 4.3.2
 
-  '@astrojs/starlight@0.41.3(@astrojs/markdown-remark@7.2.1)(astro@7.0.7(@astrojs/markdown-remark@7.2.1)(@azure/identity@4.13.1)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2))(typescript@7.0.2)':
+  '@astrojs/starlight@0.41.3(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(astro@7.0.7(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2))(supports-color@10.2.2)(typescript@7.0.2)':
     dependencies:
       '@astrojs/markdown-satteri': 0.3.3
-      '@astrojs/mdx': 7.0.2(@astrojs/markdown-satteri@0.3.3)(astro@7.0.7(@astrojs/markdown-remark@7.2.1)(@azure/identity@4.13.1)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2))
+      '@astrojs/mdx': 7.0.2(@astrojs/markdown-satteri@0.3.3)(astro@7.0.7(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2))(supports-color@10.2.2)
       '@astrojs/sitemap': 3.7.3
       '@pagefind/default-ui': 1.5.2
       '@types/hast': 3.0.5
       '@types/js-yaml': 4.0.9
       '@types/mdast': 4.0.4
-      astro: 7.0.7(@astrojs/markdown-remark@7.2.1)(@azure/identity@4.13.1)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2)
-      astro-expressive-code: 0.44.0(astro@7.0.7(@astrojs/markdown-remark@7.2.1)(@azure/identity@4.13.1)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2))
+      astro: 7.0.7(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2)
+      astro-expressive-code: 0.44.0(astro@7.0.7(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2))
       bcp-47: 2.1.1
       hast-util-from-html: 2.0.3
       hast-util-select: 6.0.4
@@ -4692,20 +4692,20 @@ snapshots:
       js-yaml: 4.3.0
       klona: 2.0.6
       magic-string: 0.30.21
-      mdast-util-directive: 3.1.0
+      mdast-util-directive: 3.1.0(supports-color@10.2.2)
       mdast-util-to-markdown: 2.1.2
       mdast-util-to-string: 4.0.0
       pagefind: 1.5.2
       rehype: 13.0.2
       rehype-format: 5.0.1
-      remark-directive: 4.0.0
+      remark-directive: 4.0.0(supports-color@10.2.2)
       satteri: 0.9.5
       ultrahtml: 1.7.0
       unified: 11.0.5
       unist-util-visit: 5.1.0
       vfile: 6.0.3
     optionalDependencies:
-      '@astrojs/markdown-remark': 7.2.1
+      '@astrojs/markdown-remark': 7.2.1(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -4729,34 +4729,34 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@azure/core-auth@1.10.1':
+  '@azure/core-auth@1.10.1(supports-color@10.2.2)':
     dependencies:
       '@azure/abort-controller': 2.1.2
-      '@azure/core-util': 1.13.1
+      '@azure/core-util': 1.13.1(supports-color@10.2.2)
       tslib: 2.8.1
     transitivePeerDependencies:
       - supports-color
 
-  '@azure/core-client@1.10.2':
+  '@azure/core-client@1.10.2(supports-color@10.2.2)':
     dependencies:
       '@azure/abort-controller': 2.1.2
-      '@azure/core-auth': 1.10.1
-      '@azure/core-rest-pipeline': 1.24.0
+      '@azure/core-auth': 1.10.1(supports-color@10.2.2)
+      '@azure/core-rest-pipeline': 1.24.0(supports-color@10.2.2)
       '@azure/core-tracing': 1.3.1
-      '@azure/core-util': 1.13.1
-      '@azure/logger': 1.3.0
+      '@azure/core-util': 1.13.1(supports-color@10.2.2)
+      '@azure/logger': 1.3.0(supports-color@10.2.2)
       tslib: 2.8.1
     transitivePeerDependencies:
       - supports-color
 
-  '@azure/core-rest-pipeline@1.24.0':
+  '@azure/core-rest-pipeline@1.24.0(supports-color@10.2.2)':
     dependencies:
       '@azure/abort-controller': 2.1.2
-      '@azure/core-auth': 1.10.1
+      '@azure/core-auth': 1.10.1(supports-color@10.2.2)
       '@azure/core-tracing': 1.3.1
-      '@azure/core-util': 1.13.1
-      '@azure/logger': 1.3.0
-      '@typespec/ts-http-runtime': 0.3.6
+      '@azure/core-util': 1.13.1(supports-color@10.2.2)
+      '@azure/logger': 1.3.0(supports-color@10.2.2)
+      '@typespec/ts-http-runtime': 0.3.6(supports-color@10.2.2)
       tslib: 2.8.1
     transitivePeerDependencies:
       - supports-color
@@ -4765,23 +4765,23 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@azure/core-util@1.13.1':
+  '@azure/core-util@1.13.1(supports-color@10.2.2)':
     dependencies:
       '@azure/abort-controller': 2.1.2
-      '@typespec/ts-http-runtime': 0.3.6
+      '@typespec/ts-http-runtime': 0.3.6(supports-color@10.2.2)
       tslib: 2.8.1
     transitivePeerDependencies:
       - supports-color
 
-  '@azure/identity@4.13.1':
+  '@azure/identity@4.13.1(supports-color@10.2.2)':
     dependencies:
       '@azure/abort-controller': 2.1.2
-      '@azure/core-auth': 1.10.1
-      '@azure/core-client': 1.10.2
-      '@azure/core-rest-pipeline': 1.24.0
+      '@azure/core-auth': 1.10.1(supports-color@10.2.2)
+      '@azure/core-client': 1.10.2(supports-color@10.2.2)
+      '@azure/core-rest-pipeline': 1.24.0(supports-color@10.2.2)
       '@azure/core-tracing': 1.3.1
-      '@azure/core-util': 1.13.1
-      '@azure/logger': 1.3.0
+      '@azure/core-util': 1.13.1(supports-color@10.2.2)
+      '@azure/logger': 1.3.0(supports-color@10.2.2)
       '@azure/msal-browser': 5.17.0
       '@azure/msal-node': 5.4.0
       open: 10.2.0
@@ -4789,9 +4789,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@azure/logger@1.3.0':
+  '@azure/logger@1.3.0(supports-color@10.2.2)':
     dependencies:
-      '@typespec/ts-http-runtime': 0.3.6
+      '@typespec/ts-http-runtime': 0.3.6(supports-color@10.2.2)
       tslib: 2.8.1
     transitivePeerDependencies:
       - supports-color
@@ -5291,13 +5291,13 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@material-symbols/svg-100@0.45.5': {}
+  '@material-symbols/svg-100@0.45.8': {}
 
-  '@material-symbols/svg-200@0.45.5': {}
+  '@material-symbols/svg-200@0.45.8': {}
 
-  '@material-symbols/svg-300@0.45.5': {}
+  '@material-symbols/svg-300@0.45.8': {}
 
-  '@mdx-js/mdx@3.1.1':
+  '@mdx-js/mdx@3.1.1(supports-color@10.2.2)':
     dependencies:
       '@types/estree': 1.0.9
       '@types/estree-jsx': 1.0.5
@@ -5309,14 +5309,14 @@ snapshots:
       estree-util-is-identifier-name: 3.0.0
       estree-util-scope: 1.0.0
       estree-walker: 3.0.3
-      hast-util-to-jsx-runtime: 2.3.6
+      hast-util-to-jsx-runtime: 2.3.6(supports-color@10.2.2)
       markdown-extensions: 2.0.0
       recma-build-jsx: 1.0.0
       recma-jsx: 1.0.1(acorn@8.17.0)
       recma-stringify: 1.0.0
-      rehype-recma: 1.0.0
-      remark-mdx: 3.1.1
-      remark-parse: 11.0.0
+      rehype-recma: 1.0.0(supports-color@10.2.2)
+      remark-mdx: 3.1.1(supports-color@10.2.2)
+      remark-parse: 11.0.0(supports-color@10.2.2)
       remark-rehype: 11.1.2
       source-map: 0.7.6
       unified: 11.0.5
@@ -5715,35 +5715,35 @@ snapshots:
     dependencies:
       '@secretlint/types': 10.2.2
 
-  '@secretlint/config-loader@10.2.2':
+  '@secretlint/config-loader@10.2.2(supports-color@10.2.2)':
     dependencies:
       '@secretlint/profiler': 10.2.2
       '@secretlint/resolver': 10.2.2
       '@secretlint/types': 10.2.2
       ajv: 8.18.0
-      debug: 4.4.3
-      rc-config-loader: 4.1.4
+      debug: 4.4.3(supports-color@10.2.2)
+      rc-config-loader: 4.1.4(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
-  '@secretlint/core@10.2.2':
+  '@secretlint/core@10.2.2(supports-color@10.2.2)':
     dependencies:
       '@secretlint/profiler': 10.2.2
       '@secretlint/types': 10.2.2
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.2.2)
       structured-source: 4.0.0
     transitivePeerDependencies:
       - supports-color
 
-  '@secretlint/formatter@10.2.2':
+  '@secretlint/formatter@10.2.2(supports-color@10.2.2)':
     dependencies:
       '@secretlint/resolver': 10.2.2
       '@secretlint/types': 10.2.2
-      '@textlint/linter-formatter': 15.5.4
+      '@textlint/linter-formatter': 15.5.4(supports-color@10.2.2)
       '@textlint/module-interop': 15.5.4
       '@textlint/types': 15.5.4
       chalk: 5.6.2
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.2.2)
       pluralize: 8.0.0
       strip-ansi: 7.2.0
       table: 6.9.0
@@ -5751,15 +5751,15 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@secretlint/node@10.2.2':
+  '@secretlint/node@10.2.2(supports-color@10.2.2)':
     dependencies:
-      '@secretlint/config-loader': 10.2.2
-      '@secretlint/core': 10.2.2
-      '@secretlint/formatter': 10.2.2
+      '@secretlint/config-loader': 10.2.2(supports-color@10.2.2)
+      '@secretlint/core': 10.2.2(supports-color@10.2.2)
+      '@secretlint/formatter': 10.2.2(supports-color@10.2.2)
       '@secretlint/profiler': 10.2.2
       '@secretlint/source-creator': 10.2.2
       '@secretlint/types': 10.2.2
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.2.2)
       p-map: 7.0.4
     transitivePeerDependencies:
       - supports-color
@@ -5928,7 +5928,7 @@ snapshots:
 
   '@textlint/ast-node-types@15.5.4': {}
 
-  '@textlint/linter-formatter@15.5.4':
+  '@textlint/linter-formatter@15.5.4(supports-color@10.2.2)':
     dependencies:
       '@azu/format-text': 1.0.2
       '@azu/style-format': 1.0.1
@@ -5936,7 +5936,7 @@ snapshots:
       '@textlint/resolver': 15.5.4
       '@textlint/types': 15.5.4
       chalk: 4.1.2
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.2.2)
       js-yaml: 4.3.0
       lodash: 4.18.1
       pluralize: 2.0.0
@@ -6079,10 +6079,10 @@ snapshots:
   '@typescript/typescript-win32-x64@7.0.2':
     optional: true
 
-  '@typespec/ts-http-runtime@0.3.6':
+  '@typespec/ts-http-runtime@0.3.6(supports-color@10.2.2)':
     dependencies:
-      http-proxy-agent: 7.0.2
-      https-proxy-agent: 7.0.6
+      http-proxy-agent: 7.0.2(supports-color@10.2.2)
+      https-proxy-agent: 7.0.6(supports-color@10.2.2)
       tslib: 2.8.1
     transitivePeerDependencies:
       - supports-color
@@ -6128,10 +6128,10 @@ snapshots:
       '@vscode/vsce-sign-win32-arm64': 2.0.6
       '@vscode/vsce-sign-win32-x64': 2.0.6
 
-  '@vscode/vsce@3.7.1':
+  '@vscode/vsce@3.7.1(supports-color@10.2.2)':
     dependencies:
-      '@azure/identity': 4.13.1
-      '@secretlint/node': 10.2.2
+      '@azure/identity': 4.13.1(supports-color@10.2.2)
+      '@secretlint/node': 10.2.2(supports-color@10.2.2)
       '@secretlint/secretlint-formatter-sarif': 10.2.2
       '@secretlint/secretlint-rule-no-dotenv': 10.2.2
       '@secretlint/secretlint-rule-preset-recommend': 10.2.2
@@ -6151,7 +6151,7 @@ snapshots:
       minimatch: 3.1.5
       parse-semver: 1.1.1
       read: 1.0.7
-      secretlint: 10.2.2
+      secretlint: 10.2.2(supports-color@10.2.2)
       semver: 7.7.4
       tmp: 0.2.5
       typed-rest-client: 1.8.11
@@ -6218,13 +6218,13 @@ snapshots:
 
   astring@1.9.0: {}
 
-  astro-expressive-code@0.44.0(astro@7.0.7(@astrojs/markdown-remark@7.2.1)(@azure/identity@4.13.1)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2)):
+  astro-expressive-code@0.44.0(astro@7.0.7(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2)):
     dependencies:
-      astro: 7.0.7(@astrojs/markdown-remark@7.2.1)(@azure/identity@4.13.1)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2)
+      astro: 7.0.7(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2)
       rehype-expressive-code: 0.44.0
       url-extras: 0.1.0
 
-  astro@7.0.7(@astrojs/markdown-remark@7.2.1)(@azure/identity@4.13.1)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2):
+  astro@7.0.7(@astrojs/markdown-remark@7.2.1(supports-color@10.2.2))(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(jiti@2.7.0)(rollup@4.62.2):
     dependencies:
       '@astrojs/compiler-rs': 0.3.1(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)
       '@astrojs/internal-helpers': 0.10.1
@@ -6273,14 +6273,14 @@ snapshots:
       tinyglobby: 0.2.17
       ultrahtml: 1.7.0
       unifont: 0.7.4
-      unstorage: 1.17.5(@azure/identity@4.13.1)
+      unstorage: 1.17.5(@azure/identity@4.13.1(supports-color@10.2.2))
       vite: 8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)
       vitefu: 1.1.3(vite@8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0))
       xxhash-wasm: 1.1.0
       yargs-parser: 22.0.0
       zod: 4.4.3
     optionalDependencies:
-      '@astrojs/markdown-remark': 7.2.1
+      '@astrojs/markdown-remark': 7.2.1(supports-color@10.2.2)
       sharp: 0.35.3(@types/node@24.13.3)
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -6538,9 +6538,11 @@ snapshots:
     dependencies:
       css-tree: 2.2.1
 
-  debug@4.4.3:
+  debug@4.4.3(supports-color@10.2.2):
     dependencies:
       ms: 2.1.3
+    optionalDependencies:
+      supports-color: 10.2.2
 
   decode-named-character-reference@1.3.0:
     dependencies:
@@ -6815,7 +6817,9 @@ snapshots:
 
   flattie@1.1.1: {}
 
-  follow-redirects@1.15.11: {}
+  follow-redirects@1.15.11(debug@4.4.3(supports-color@10.2.2)):
+    optionalDependencies:
+      debug: 4.4.3(supports-color@10.2.2)
 
   fontace@0.4.1:
     dependencies:
@@ -7052,7 +7056,7 @@ snapshots:
       unist-util-visit: 5.1.0
       zwitch: 2.0.4
 
-  hast-util-to-estree@3.1.3:
+  hast-util-to-estree@3.1.3(supports-color@10.2.2):
     dependencies:
       '@types/estree': 1.0.9
       '@types/estree-jsx': 1.0.5
@@ -7062,9 +7066,9 @@ snapshots:
       estree-util-attach-comments: 3.0.0
       estree-util-is-identifier-name: 3.0.0
       hast-util-whitespace: 3.0.0
-      mdast-util-mdx-expression: 2.0.1
-      mdast-util-mdx-jsx: 3.2.0
-      mdast-util-mdxjs-esm: 2.0.1
+      mdast-util-mdx-expression: 2.0.1(supports-color@10.2.2)
+      mdast-util-mdx-jsx: 3.2.0(supports-color@10.2.2)
+      mdast-util-mdxjs-esm: 2.0.1(supports-color@10.2.2)
       property-information: 7.2.0
       space-separated-tokens: 2.0.2
       style-to-js: 1.1.21
@@ -7087,7 +7091,7 @@ snapshots:
       stringify-entities: 4.0.4
       zwitch: 2.0.4
 
-  hast-util-to-jsx-runtime@2.3.6:
+  hast-util-to-jsx-runtime@2.3.6(supports-color@10.2.2):
     dependencies:
       '@types/estree': 1.0.9
       '@types/hast': 3.0.5
@@ -7096,9 +7100,9 @@ snapshots:
       devlop: 1.1.0
       estree-util-is-identifier-name: 3.0.0
       hast-util-whitespace: 3.0.0
-      mdast-util-mdx-expression: 2.0.1
-      mdast-util-mdx-jsx: 3.2.0
-      mdast-util-mdxjs-esm: 2.0.1
+      mdast-util-mdx-expression: 2.0.1(supports-color@10.2.2)
+      mdast-util-mdx-jsx: 3.2.0(supports-color@10.2.2)
+      mdast-util-mdxjs-esm: 2.0.1(supports-color@10.2.2)
       property-information: 7.2.0
       space-separated-tokens: 2.0.2
       style-to-js: 1.1.21
@@ -7163,17 +7167,17 @@ snapshots:
 
   http-cache-semantics@4.2.0: {}
 
-  http-proxy-agent@7.0.2:
+  http-proxy-agent@7.0.2(supports-color@10.2.2):
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
-  https-proxy-agent@7.0.6:
+  https-proxy-agent@7.0.6(supports-color@10.2.2):
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -7431,13 +7435,13 @@ snapshots:
       '@types/unist': 3.0.3
       unist-util-visit: 5.1.0
 
-  mdast-util-directive@3.1.0:
+  mdast-util-directive@3.1.0(supports-color@10.2.2):
     dependencies:
       '@types/mdast': 4.0.4
       '@types/unist': 3.0.3
       ccount: 2.0.1
       devlop: 1.1.0
-      mdast-util-from-markdown: 2.0.3
+      mdast-util-from-markdown: 2.0.3(supports-color@10.2.2)
       mdast-util-to-markdown: 2.1.2
       parse-entities: 4.0.2
       stringify-entities: 4.0.4
@@ -7452,14 +7456,14 @@ snapshots:
       unist-util-is: 6.0.1
       unist-util-visit-parents: 6.0.2
 
-  mdast-util-from-markdown@2.0.3:
+  mdast-util-from-markdown@2.0.3(supports-color@10.2.2):
     dependencies:
       '@types/mdast': 4.0.4
       '@types/unist': 3.0.3
       decode-named-character-reference: 1.3.0
       devlop: 1.1.0
       mdast-util-to-string: 4.0.0
-      micromark: 4.0.2
+      micromark: 4.0.2(supports-color@10.2.2)
       micromark-util-decode-numeric-character-reference: 2.0.2
       micromark-util-decode-string: 2.0.1
       micromark-util-normalize-identifier: 2.0.1
@@ -7477,67 +7481,67 @@ snapshots:
       mdast-util-find-and-replace: 3.0.2
       micromark-util-character: 2.1.1
 
-  mdast-util-gfm-footnote@2.1.0:
+  mdast-util-gfm-footnote@2.1.0(supports-color@10.2.2):
     dependencies:
       '@types/mdast': 4.0.4
       devlop: 1.1.0
-      mdast-util-from-markdown: 2.0.3
+      mdast-util-from-markdown: 2.0.3(supports-color@10.2.2)
       mdast-util-to-markdown: 2.1.2
       micromark-util-normalize-identifier: 2.0.1
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-gfm-strikethrough@2.0.0:
+  mdast-util-gfm-strikethrough@2.0.0(supports-color@10.2.2):
     dependencies:
       '@types/mdast': 4.0.4
-      mdast-util-from-markdown: 2.0.3
+      mdast-util-from-markdown: 2.0.3(supports-color@10.2.2)
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-gfm-table@2.0.0:
+  mdast-util-gfm-table@2.0.0(supports-color@10.2.2):
     dependencies:
       '@types/mdast': 4.0.4
       devlop: 1.1.0
       markdown-table: 3.0.4
-      mdast-util-from-markdown: 2.0.3
+      mdast-util-from-markdown: 2.0.3(supports-color@10.2.2)
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-gfm-task-list-item@2.0.0:
+  mdast-util-gfm-task-list-item@2.0.0(supports-color@10.2.2):
     dependencies:
       '@types/mdast': 4.0.4
       devlop: 1.1.0
-      mdast-util-from-markdown: 2.0.3
+      mdast-util-from-markdown: 2.0.3(supports-color@10.2.2)
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-gfm@3.1.0:
+  mdast-util-gfm@3.1.0(supports-color@10.2.2):
     dependencies:
-      mdast-util-from-markdown: 2.0.3
+      mdast-util-from-markdown: 2.0.3(supports-color@10.2.2)
       mdast-util-gfm-autolink-literal: 2.0.1
-      mdast-util-gfm-footnote: 2.1.0
-      mdast-util-gfm-strikethrough: 2.0.0
-      mdast-util-gfm-table: 2.0.0
-      mdast-util-gfm-task-list-item: 2.0.0
+      mdast-util-gfm-footnote: 2.1.0(supports-color@10.2.2)
+      mdast-util-gfm-strikethrough: 2.0.0(supports-color@10.2.2)
+      mdast-util-gfm-table: 2.0.0(supports-color@10.2.2)
+      mdast-util-gfm-task-list-item: 2.0.0(supports-color@10.2.2)
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-mdx-expression@2.0.1:
+  mdast-util-mdx-expression@2.0.1(supports-color@10.2.2):
     dependencies:
       '@types/estree-jsx': 1.0.5
       '@types/hast': 3.0.5
       '@types/mdast': 4.0.4
       devlop: 1.1.0
-      mdast-util-from-markdown: 2.0.3
+      mdast-util-from-markdown: 2.0.3(supports-color@10.2.2)
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-mdx-jsx@3.2.0:
+  mdast-util-mdx-jsx@3.2.0(supports-color@10.2.2):
     dependencies:
       '@types/estree-jsx': 1.0.5
       '@types/hast': 3.0.5
@@ -7545,7 +7549,7 @@ snapshots:
       '@types/unist': 3.0.3
       ccount: 2.0.1
       devlop: 1.1.0
-      mdast-util-from-markdown: 2.0.3
+      mdast-util-from-markdown: 2.0.3(supports-color@10.2.2)
       mdast-util-to-markdown: 2.1.2
       parse-entities: 4.0.2
       stringify-entities: 4.0.4
@@ -7554,23 +7558,23 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-mdx@3.0.0:
+  mdast-util-mdx@3.0.0(supports-color@10.2.2):
     dependencies:
-      mdast-util-from-markdown: 2.0.3
-      mdast-util-mdx-expression: 2.0.1
-      mdast-util-mdx-jsx: 3.2.0
-      mdast-util-mdxjs-esm: 2.0.1
+      mdast-util-from-markdown: 2.0.3(supports-color@10.2.2)
+      mdast-util-mdx-expression: 2.0.1(supports-color@10.2.2)
+      mdast-util-mdx-jsx: 3.2.0(supports-color@10.2.2)
+      mdast-util-mdxjs-esm: 2.0.1(supports-color@10.2.2)
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-mdxjs-esm@2.0.1:
+  mdast-util-mdxjs-esm@2.0.1(supports-color@10.2.2):
     dependencies:
       '@types/estree-jsx': 1.0.5
       '@types/hast': 3.0.5
       '@types/mdast': 4.0.4
       devlop: 1.1.0
-      mdast-util-from-markdown: 2.0.3
+      mdast-util-from-markdown: 2.0.3(supports-color@10.2.2)
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
@@ -7868,10 +7872,10 @@ snapshots:
 
   micromark-util-types@2.0.2: {}
 
-  micromark@4.0.2:
+  micromark@4.0.2(supports-color@10.2.2):
     dependencies:
       '@types/debug': 4.1.13
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.2.2)
       decode-named-character-reference: 1.3.0
       devlop: 1.1.0
       micromark-core-commonmark: 2.0.3
@@ -8022,11 +8026,11 @@ snapshots:
       is-inside-container: 1.0.0
       wsl-utils: 0.1.0
 
-  ovsx@0.10.10:
+  ovsx@0.10.10(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2):
     dependencies:
-      '@vscode/vsce': 3.7.1
+      '@vscode/vsce': 3.7.1(supports-color@10.2.2)
       commander: 6.2.1
-      follow-redirects: 1.15.11
+      follow-redirects: 1.15.11(debug@4.4.3(supports-color@10.2.2))
       is-ci: 2.0.0
       leven: 3.1.0
       semver: 7.7.4
@@ -8212,9 +8216,9 @@ snapshots:
 
   radix3@1.1.2: {}
 
-  rc-config-loader@4.1.4:
+  rc-config-loader@4.1.4(supports-color@10.2.2):
     dependencies:
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.2.2)
       js-yaml: 4.3.0
       json5: 2.2.3
       require-from-string: 2.0.2
@@ -8310,11 +8314,11 @@ snapshots:
       hast-util-raw: 9.1.0
       vfile: 6.0.3
 
-  rehype-recma@1.0.0:
+  rehype-recma@1.0.0(supports-color@10.2.2):
     dependencies:
       '@types/estree': 1.0.9
       '@types/hast': 3.0.5
-      hast-util-to-estree: 3.1.3
+      hast-util-to-estree: 3.1.3(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -8331,37 +8335,37 @@ snapshots:
       rehype-stringify: 10.0.1
       unified: 11.0.5
 
-  remark-directive@4.0.0:
+  remark-directive@4.0.0(supports-color@10.2.2):
     dependencies:
       '@types/mdast': 4.0.4
-      mdast-util-directive: 3.1.0
+      mdast-util-directive: 3.1.0(supports-color@10.2.2)
       micromark-extension-directive: 4.0.0
       unified: 11.0.5
     transitivePeerDependencies:
       - supports-color
 
-  remark-gfm@4.0.1:
+  remark-gfm@4.0.1(supports-color@10.2.2):
     dependencies:
       '@types/mdast': 4.0.4
-      mdast-util-gfm: 3.1.0
+      mdast-util-gfm: 3.1.0(supports-color@10.2.2)
       micromark-extension-gfm: 3.0.0
-      remark-parse: 11.0.0
+      remark-parse: 11.0.0(supports-color@10.2.2)
       remark-stringify: 11.0.0
       unified: 11.0.5
     transitivePeerDependencies:
       - supports-color
 
-  remark-mdx@3.1.1:
+  remark-mdx@3.1.1(supports-color@10.2.2):
     dependencies:
-      mdast-util-mdx: 3.0.0
+      mdast-util-mdx: 3.0.0(supports-color@10.2.2)
       micromark-extension-mdxjs: 3.0.0
     transitivePeerDependencies:
       - supports-color
 
-  remark-parse@11.0.0:
+  remark-parse@11.0.0(supports-color@10.2.2):
     dependencies:
       '@types/mdast': 4.0.4
-      mdast-util-from-markdown: 2.0.3
+      mdast-util-from-markdown: 2.0.3(supports-color@10.2.2)
       micromark-util-types: 2.0.2
       unified: 11.0.5
     transitivePeerDependencies:
@@ -8522,13 +8526,13 @@ snapshots:
 
   sax@1.6.0: {}
 
-  secretlint@10.2.2:
+  secretlint@10.2.2(supports-color@10.2.2):
     dependencies:
       '@secretlint/config-creator': 10.2.2
-      '@secretlint/formatter': 10.2.2
-      '@secretlint/node': 10.2.2
+      '@secretlint/formatter': 10.2.2(supports-color@10.2.2)
+      '@secretlint/node': 10.2.2(supports-color@10.2.2)
       '@secretlint/profiler': 10.2.2
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@10.2.2)
       globby: 14.1.0
       read-pkg: 9.0.1
     transitivePeerDependencies:
@@ -8969,7 +8973,7 @@ snapshots:
 
   universalify@2.0.1: {}
 
-  unstorage@1.17.5(@azure/identity@4.13.1):
+  unstorage@1.17.5(@azure/identity@4.13.1(supports-color@10.2.2)):
     dependencies:
       anymatch: 3.1.3
       chokidar: 5.0.0
@@ -8980,7 +8984,7 @@ snapshots:
       ofetch: 1.5.1
       ufo: 1.6.4
     optionalDependencies:
-      '@azure/identity': 4.13.1
+      '@azure/identity': 4.13.1(supports-color@10.2.2)
 
   url-extras@0.1.0: {}
 

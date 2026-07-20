@@ -250,7 +250,7 @@
   --pd-x-base: 0.75rem;
   --pd-y-base: 0.35rem;
 
-  --pd-x-el: 0.15em;
+  --pd-x-el: clamp(0.3rem, 0.15em, 0.15em);
   --pd-y-el: 0.4em;
 
   --pd-x-button: 0.15em;
@@ -424,7 +424,7 @@
 
   @apply flex relative w-full;
 
-  & > * {
+  & > .tab {
     @apply relative row-el pd-x-el pd-y-el bg-transparent leading-none capsize font-medium text-(--tab-text-inactive) cursor-pointer transition-colors duration-100 ease-out;
 
     &:after {
@@ -563,4 +563,19 @@
 
 :root {
   --sl-color-bg-sidebar: var(--color-canvas);
+}
+
+/* Code ***********************************************************************/
+
+/* Code theme */
+:root {
+  /* Base */
+  --astro-code-background: #000;
+  --astro-code-foreground: #b8b0cb;
+  --astro-code-token-comment: #cca879;
+  /* Tokens */
+  --astro-code-token-keyword: #ff8df4;
+  --astro-code-token-function: #d4b0ff;
+  --astro-code-token-string-expression: #94c0ef;
+  --astro-code-token-string: #94c0ef;
 }
