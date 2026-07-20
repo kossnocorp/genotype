@@ -111,10 +111,10 @@ main() {
 	download "$tmp_binary" "$binary_url"
 
 	printf "Verifying checksum... "
-	if command -v shasum >/dev/null 2>&1; then
-		actual_checksum="$(shasum -a 256 "$tmp_binary" | cut -d' ' -f1)"
-	elif command -v sha256sum >/dev/null 2>&1; then
+	if command -v sha256sum >/dev/null 2>&1; then
 		actual_checksum="$(sha256sum "$tmp_binary" | cut -d' ' -f1)"
+	elif command -v shasum >/dev/null 2>&1; then
+		actual_checksum="$(shasum -a 256 "$tmp_binary" | cut -d' ' -f1)"
 	else
 		echo "shasum or sha256sum is required" >&2
 		exit 1
