@@ -5,7 +5,8 @@
     "editor.defaultFormatter": "mkhl.shfmt"
   },
   "files.associations": {
-    "*.css": "tailwindcss"
+    "*.css": "tailwindcss",
+    ".miserc.toml": "tera"
   },
   "languageToolLinter.languageTool.ignoredWordsInWorkspace": ["enums", "litty", "serde"],
   "js/ts.experimental.useTsgo": true

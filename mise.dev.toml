@@ -1,0 +1,7 @@
+# Tools ========================================================================
+[tools]
+fnox = "latest"
+"cargo:cargo-insta" = "latest"
+"cargo:bacon" = "latest"
+shfmt = "latest"
+watchexec = "latest"

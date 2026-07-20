@@ -8,6 +8,7 @@
     "docker.docker",
     "hverlin.mise-vscode",
     "oxc.oxc-vscode",
-    "astro-build.astro-vscode"
+    "astro-build.astro-vscode",
+    "uncenter.better-tera"
   ]
 }

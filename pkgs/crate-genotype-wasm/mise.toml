@@ -1,3 +1,8 @@
+# Tools ========================================================================
+[tools]
+"cargo:wasm-pack" = "latest"
+"cargo:wasm-bindgen-cli" = "latest"
+
 # Build the Wasm package -------------------------------------------------------
 [tasks.build]
 description = "Builds the Wasm package"

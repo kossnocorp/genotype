@@ -4,13 +4,11 @@ config_roots = ["pkgs/*"]
 
 [tools]
 # Stack
-# Rust
-"cargo:wasm-pack" = "latest"
-"cargo:wasm-bindgen-cli" = "latest"
 
 # Node.js
 node = "lts"
 "npm:pnpm" = "latest"
+
 # Python
 python = "3.14.4"
 uv = "latest"
@@ -19,16 +17,10 @@ ruff = "latest"
 
 # Tools
 cargo-binstall = "latest"
-"cargo:bacon" = "latest"
 "cargo:cargo-nextest" = "latest"
 "cargo:cargo-release" = "latest"
-"cargo:cargo-insta" = "latest"
-"cargo:just-lsp" = "latest"
-watchexec = "latest"
-shfmt = "latest"
 gh = "latest"
 git-cliff = "latest"
-fnox = "latest"
 jaq = "latest"
 
 [settings]
