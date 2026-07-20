@@ -1,8 +1,11 @@
 [package]
 name = "genotype_wasm"
 version = "0.16.0"
-authors = ["Sasha Koss <koss@nocorp.me>"]
 edition = "2024"
+description = "Genotype language Wasm crate"
+authors = ["Sasha Koss <koss@nocorp.me>"]
+license = "MIT"
+repository = "https://github.com/kossnocorp/genotype"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
