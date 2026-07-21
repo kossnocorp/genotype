@@ -5,35 +5,44 @@ body = """
 {%- endmacro -%}
 
 {% macro group_section(label, commits) %}
-    ### {{ label }}
-    {% for commit in commits %}
-        - {% if commit.scope %}*({{ commit.scope }})* {% endif %}\
-            {% if commit.breaking %}[**breaking**] {% endif %}\
-            {{ commit.message | upper_first }}
-            ([{{ commit.id | truncate(length=7, end="") }}]({{ self::remote_url() }}/commit/{{ commit.id }}))\
-    {% endfor %}
-{% endmacro input %}
+  ### {{ label }}
+  {% for commit in commits %}
+    - {% if commit.scope %}*({{ commit.scope }})* {% endif -%}
+      {% if commit.breaking %}[**breaking**] {% endif -%}
+      {{ commit.message | upper_first }} ([{{ commit.id | truncate(length=7, end="") }}]({{ self::remote_url() }}/commit/{{ commit.id }}))\
+  {% endfor %}
+{% endmacro %}
 
-{% if version %}\
-    ## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
-{% else %}\
-    ## [unreleased]
-{% endif %}\
-{% for group, commits in commits | group_by(attribute="group") %}
-    {% set group_label = group | striptags | trim | upper_first %}\
-    {% if group_label != "Chores" %}\
-        {{ self::group_section(label=group_label, commits=commits) }}
-    {% else %}\
-        <details>
+{%- if version %}
+  ## {{ version }} - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else %}
+  ## Unreleased
+{% endif %}
 
-        <summary>Show internal changes</summary>
+{%- set_global has_internal_groups = false -%}
+{%- for group, commits in commits | group_by(attribute="group") -%}
+  {%- set group_label = group | striptags | trim | upper_first -%}
 
-        {{ self::group_section(label=group_label, commits=commits) }}
+  {%- if group_label != "Chores" and group_label != "Refactors" -%}
+    {{ self::group_section(label=group_label, commits=commits) }}
+  {%- else -%}
+    {% set_global has_internal_groups = true %}
+  {%- endif -%}
+{%- endfor -%}
 
-        </details>
-    {% endif %}\
-{% endfor %}
+{%- if has_internal_groups -%}
+<details>
 
+<summary>Show internal changes</summary>
+{%  for group, commits in commits | group_by(attribute="group") -%}
+  {%- set group_label = group | striptags | trim | upper_first -%}
+
+  {%- if group_label == "Chores" or group_label == "Refactors" -%}
+    {{ self::group_section(label=group_label, commits=commits) }}
+  {%- endif -%}
+{%- endfor %}
+</details>
+{% endif %}
 """
 trim = true
 render_always = true
@@ -49,6 +58,7 @@ commit_parsers = [
   { message = "^doc(.+)?!?:", group = "<!-- 3 --> Documentation" },
   { message = "^perf(.+)?!?:", group = "<!-- 4 --> Performance" },
   { message = "^chore(.+)?!?:", group = "<!-- 5 --> Chores" },
+  { message = "^refactor(.+)?!?:", group = "<!-- 6 --> Refactors" },
 ]
 topo_order_commits = true
 sort_commits = "oldest"

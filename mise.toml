@@ -19,7 +19,6 @@ ruff = "latest"
 cargo-binstall = "latest"
 "cargo:cargo-nextest" = "latest"
 gh = "latest"
-git-cliff = "latest"
 jaq = "latest"
 
 [settings]
@@ -32,6 +31,8 @@ idiomatic_version_file_enable_tools = ["rust"] # Use rust-toolchain.toml
 _.file = "./.env"
 _.python.venv = { create = true, path = '.venv' }
 MISE_EXPERIMENTAL = true # Enable monorepo root support
+
+# Tasks ########################################################################
 
 [tasks.install]
 depends = ["install/pnpm", "install/uv"]
@@ -221,6 +222,15 @@ cargo release publish \
   --allow-branch '*'
 '''
 
+# changelog --------------------------------------------------------------------
+[tasks.changelog]
+run = '''
+git-cliff --latest --strip all --tag-pattern '^v\d+\.\d+\.\d+'
+'''
+quiet = true
+tools = { git-cliff = "latest" }
+
+# dev/gt -----------------------------------------------------------------------
 [tasks."dev/gt"]
 description = "Runs the pinned development Genotype CLI"
 usage = '''
@@ -228,6 +238,7 @@ arg "<args>" var=#true
 '''
 run = "./bin/gt {{usage.args | join(sep=' ')}}"
 
+# dev/gt:watch -----------------------------------------------------------------
 [tasks."dev/gt:watch"]
 description = "Runs the pinned development Genotype CLI when type files change"
 usage = '''
@@ -236,6 +247,7 @@ arg "<args>" var=#true
 '''
 run = "watchexec -w {{usage.path}} -e type -- ./bin/gt {{usage.args | join(sep=' ')}}"
 
+# dev/gt:pin -------------------------------------------------------------------
 [tasks."dev/gt:pin"]
 description = "Builds and pins the development Genotype CLI"
 run = '''

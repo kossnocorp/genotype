@@ -64,7 +64,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
         run: |
-          notes="$(git-cliff --latest --strip all --tag-pattern '^v\d+\.\d+\.\d+')"
+          notes="$(mise //:changelog)"
           if gh release view "$TAG" > /dev/null 2>&1; then
             gh release edit "$TAG" --notes "$notes"
           else
