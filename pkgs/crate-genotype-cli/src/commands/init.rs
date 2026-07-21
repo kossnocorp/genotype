@@ -98,6 +98,7 @@ fn configure_targets(config: &mut GtpConfig, name: &str) -> Result<()> {
 
 fn configure_ts(config: &mut GtpConfig, name: &str) -> Result<()> {
     let mut ts = TsConfig::default();
+    ts.common.enabled = true;
 
     let default_name = name.to_kebab_case();
     let name = Text::new("Name the TypeScript package:")
@@ -127,6 +128,7 @@ fn configure_ts(config: &mut GtpConfig, name: &str) -> Result<()> {
 
 fn configure_py(config: &mut GtpConfig, name: &str) -> Result<()> {
     let mut py = PyConfig::default();
+    py.common.enabled = true;
 
     let default_name = name.to_kebab_case();
     let name = Text::new("Name the Python package:")
@@ -158,6 +160,7 @@ fn configure_py(config: &mut GtpConfig, name: &str) -> Result<()> {
 
 fn configure_rs(config: &mut GtpConfig, name: &str) -> Result<()> {
     let mut rs = RsConfig::default();
+    rs.common.enabled = true;
 
     let default_name = name.to_snake_case();
     let name = Text::new("Name the Rust crate:")
