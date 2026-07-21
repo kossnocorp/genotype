@@ -1,6 +1,7 @@
 GtpFormatter:
   | GtpFormatterShell
   | GtpFormatterExecutor
+  | GtpFormatterPresetPrettyplease
   | GtpFormatterPresetOxfmt
   | GtpFormatterPresetPrettier
   | GtpFormatterPresetRuff
@@ -31,7 +32,9 @@ GtpFormatterExecutorKind:
 
 //#region Rust
 
-// NOTE: rustfmt requires to specify files, so we don't support it
+GtpFormatterPresetPrettyplease: {
+  kind: "prettyplease"
+}
 
 //endregion
 

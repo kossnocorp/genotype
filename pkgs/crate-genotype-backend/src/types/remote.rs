@@ -1,5 +1,5 @@
 use genotype_core::GtDiagnostic;
-use genotype_project_core::GtpFormatterCmd;
+use genotype_project_core::GtpFormatter;
 use litty::serde_literals;
 use serde::{Deserialize, Serialize};
 
@@ -117,7 +117,7 @@ pub struct GtbRemoteBackendRequestResponseReportDiagnostic {}
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[literals(kind = "run-formatter")]
 pub struct GtbRemoteBackendRequestRunFormatter {
-    pub cmd: GtpFormatterCmd,
+    pub formatter: GtpFormatter,
 }
 
 #[serde_literals]

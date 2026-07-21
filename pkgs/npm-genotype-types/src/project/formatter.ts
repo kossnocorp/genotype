@@ -13,6 +13,12 @@ export const GtpFormatterShell = GtpFormatterGenericBase.extend({
 
 export type GtpFormatterShell = z.infer<typeof GtpFormatterShell>;
 
+export const GtpFormatterPresetPrettyplease = z.object({
+  kind: z.literal("prettyplease"),
+});
+
+export type GtpFormatterPresetPrettyplease = z.infer<typeof GtpFormatterPresetPrettyplease>;
+
 export const GtpFormatterExecutorKindNode = z.union([
   z.literal("pnpm"),
   z.literal("pnx"),
@@ -81,6 +87,7 @@ export type GtpFormatterPresetRuff = z.infer<typeof GtpFormatterPresetRuff>;
 export const GtpFormatter = z.union([
   GtpFormatterShell,
   GtpFormatterExecutor,
+  GtpFormatterPresetPrettyplease,
   GtpFormatterPresetOxfmt,
   GtpFormatterPresetPrettier,
   GtpFormatterPresetRuff,

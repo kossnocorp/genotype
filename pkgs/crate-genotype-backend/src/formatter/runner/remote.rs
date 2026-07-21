@@ -17,7 +17,7 @@ where
             .remote_interop()
             .send_request(GtbRemoteBackendRequest::RunFormatter(
                 GtbRemoteBackendRequestRunFormatter {
-                    cmd: formatter.cmd(),
+                    formatter: formatter.clone(),
                 },
             ))
             .await?

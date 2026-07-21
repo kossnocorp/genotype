@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { GtDiagnostic, GtpFormatterCmd } from "@genotype-lang/types";
+import { GtDiagnostic, GtpFormatter } from "@genotype-lang/types";
 
 export const GtbRemoteBackendRequestGlobFiles = z.object({
   kind: z.literal("glob-files"),
@@ -100,7 +100,7 @@ export type GtbRemoteBackendRequestResponseReportDiagnostic = z.infer<
 
 export const GtbRemoteBackendRequestRunFormatter = z.object({
   kind: z.literal("run-formatter"),
-  cmd: GtpFormatterCmd,
+  formatter: GtpFormatter,
 });
 
 export type GtbRemoteBackendRequestRunFormatter = z.infer<
