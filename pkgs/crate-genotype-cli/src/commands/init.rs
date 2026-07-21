@@ -18,10 +18,9 @@ pub fn init_command(args: &GtInitCommand) -> Result<()> {
 
     let base_path: GtpCwdRelativePath = (&args.path).try_into()?;
 
-    create_dir_all(base_path.as_str())
-        .map_err(|_| GtCliError::FailedCreateDir(base_path.as_str().into()))?;
-
-    config.save(&args.path)?;
+    let backend = GtbSystem::new(&args.path).wrap_err("Failed to create system backend")?;
+    let config_path: GtpConfigFilePath = base_path.join_str(GTCONFIG_FILE).into();
+    block_on(backend.save_config(&config_path, &config))?;
 
     let src_path = base_path.join_relative_path(config.src.relative_path());
 

@@ -3,8 +3,6 @@ use crate::prelude::internal::*;
 mod error;
 pub use error::*;
 
-mod save;
-
 mod toml_str;
 
 mod manifest;

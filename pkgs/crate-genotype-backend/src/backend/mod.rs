@@ -31,6 +31,11 @@ pub trait GtBackend:
         create_project(self, config_path).await
     }
 
+    async fn save_config(&self, path: &GtpConfigFilePath, config: &GtpConfig) -> Result<()> {
+        let source = config.to_toml_str_pruned()?;
+        self.write_file(path.as_ref(), &source).await
+    }
+
     async fn load_all_modules(&self, project: GtProject) -> Result<GtProject> {
         load_all_modules(self, project).await
     }
