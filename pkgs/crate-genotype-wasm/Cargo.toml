@@ -1,6 +1,6 @@
 [package]
 name = "genotype_wasm"
-version = "0.16.0"
+version = "0.16.1"
 edition = "2024"
 description = "Genotype language Wasm crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
@@ -14,9 +14,9 @@ crate-type = ["cdylib", "rlib"]
 default = ["console_error_panic_hook"]
 
 [dependencies]
-genotype_backend = { version = "0.16.0", path = "../crate-genotype-backend" }
-genotype_project_core = { version = "0.16.0", path = "../crate-genotype-project-core" }
-genotype_compiler = { version = "0.16.0", path = "../crate-genotype-compiler", default-features = false, features = [
+genotype_backend = { version = "0.16.1", path = "../crate-genotype-backend" }
+genotype_project_core = { version = "0.16.1", path = "../crate-genotype-project-core" }
+genotype_compiler = { version = "0.16.1", path = "../crate-genotype-compiler", default-features = false, features = [
   "wasm",
 ] }
 futures = "0.3.31"

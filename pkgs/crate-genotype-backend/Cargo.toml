@@ -1,6 +1,6 @@
 [package]
 name = "genotype_backend"
-version = "0.16.0"
+version = "0.16.1"
 edition = "2024"
 description = "Genotype language backend crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
@@ -8,12 +8,12 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_core = { version = "0.16.0", path = "../crate-genotype-core" }
-genotype_project_core = { version = "0.16.0", path = "../crate-genotype-project-core", features = [
+genotype_core = { version = "0.16.1", path = "../crate-genotype-core" }
+genotype_project_core = { version = "0.16.1", path = "../crate-genotype-project-core", features = [
   "project",
 ] }
-genotype_project = { version = "0.16.0", path = "../crate-genotype-project" }
-genotype_workspace_core = { version = "0.16.0", path = "../crate-genotype-workspace-core" }
+genotype_project = { version = "0.16.1", path = "../crate-genotype-project" }
+genotype_workspace_core = { version = "0.16.1", path = "../crate-genotype-workspace-core" }
 glob = "0.3.1"
 miette = { version = "7.6.0", features = ["serde", "fancy"] }
 num_cpus = "1.16.0"

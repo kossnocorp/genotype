@@ -1,6 +1,6 @@
 [package]
 name = "genotype_compiler"
-version = "0.16.0"
+version = "0.16.1"
 edition = "2024"
 description = "Genotype language compiler"
 authors = ["Sasha Koss <koss@nocorp.me>"]
@@ -14,20 +14,20 @@ system = ["miette/fancy", "miette/syntect-highlighter"]
 wasm = ["miette/fancy-no-syscall"]
 
 [dependencies]
-genotype_backend = { version = "0.16.0", path = "../crate-genotype-backend" }
-genotype_core = { version = "0.16.0", path = "../crate-genotype-core" }
-genotype_project_core = { version = "0.16.0", path = "../crate-genotype-project-core" }
-genotype_project = { version = "0.16.0", path = "../crate-genotype-project" }
-genotype_workspace = { version = "0.16.0", path = "../crate-genotype-workspace" }
-genotype_lang_core = { version = "0.16.0", path = "../crate-genotype-lang-core" }
-genotype_lang_core_project = { version = "0.16.0", path = "../crate-genotype-lang-core-project" }
-genotype_lang_ts_project = { version = "0.16.0", path = "../crate-genotype-lang-ts-project" }
-genotype_lang_ts_config = { version = "0.16.0", path = "../crate-genotype-lang-ts-config" }
-genotype_lang_py_project = { version = "0.16.0", path = "../crate-genotype-lang-py-project" }
-genotype_lang_py_tree = { version = "0.16.0", path = "../crate-genotype-lang-py-tree" }
-genotype_lang_py_config = { version = "0.16.0", path = "../crate-genotype-lang-py-config" }
-genotype_lang_rs_project = { version = "0.16.0", path = "../crate-genotype-lang-rs-project" }
-genotype_lang_rs_config = { version = "0.16.0", path = "../crate-genotype-lang-rs-config" }
+genotype_backend = { version = "0.16.1", path = "../crate-genotype-backend" }
+genotype_core = { version = "0.16.1", path = "../crate-genotype-core" }
+genotype_project_core = { version = "0.16.1", path = "../crate-genotype-project-core" }
+genotype_project = { version = "0.16.1", path = "../crate-genotype-project" }
+genotype_workspace = { version = "0.16.1", path = "../crate-genotype-workspace" }
+genotype_lang_core = { version = "0.16.1", path = "../crate-genotype-lang-core" }
+genotype_lang_core_project = { version = "0.16.1", path = "../crate-genotype-lang-core-project" }
+genotype_lang_ts_project = { version = "0.16.1", path = "../crate-genotype-lang-ts-project" }
+genotype_lang_ts_config = { version = "0.16.1", path = "../crate-genotype-lang-ts-config" }
+genotype_lang_py_project = { version = "0.16.1", path = "../crate-genotype-lang-py-project" }
+genotype_lang_py_tree = { version = "0.16.1", path = "../crate-genotype-lang-py-tree" }
+genotype_lang_py_config = { version = "0.16.1", path = "../crate-genotype-lang-py-config" }
+genotype_lang_rs_project = { version = "0.16.1", path = "../crate-genotype-lang-rs-project" }
+genotype_lang_rs_config = { version = "0.16.1", path = "../crate-genotype-lang-rs-config" }
 relative-path = { version = "1.9.3", features = ["serde"] }
 miette = { version = "7.6.0", features = ["serde"] }
 thiserror = "1.0.64"
