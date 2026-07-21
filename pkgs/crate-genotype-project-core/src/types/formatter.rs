@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 pub enum GtpFormatter {
     Shell(GtpFormatterShell),
     Executor(GtpFormatterExecutor),
+    PresetPrettyplease(GtpFormatterPresetPrettyplease),
     PresetOxfmt(GtpFormatterPresetOxfmt),
     PresetPrettier(GtpFormatterPresetPrettier),
     PresetRuff(GtpFormatterPresetRuff),
@@ -43,6 +44,11 @@ pub enum GtpFormatterExecutorKind {
     Node(GtpFormatterExecutorKindNode),
     Python(GtpFormatterExecutorKindPython),
 }
+
+#[serde_literals]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[literals(kind = "prettyplease")]
+pub struct GtpFormatterPresetPrettyplease {}
 
 #[serde_literals]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

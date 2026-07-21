@@ -1,5 +1,5 @@
 use genotype_core/GtDiagnostic
-use genotype_project/GtpFormatterCmd
+use genotype_project/GtpFormatter
 
 //#region Backend to Runtime
 
@@ -114,7 +114,7 @@ GtbRemoteBackendRequestResponseReportDiagnostic: {
 
 GtbRemoteBackendRequestRunFormatter: {
   kind: "run-formatter",
-  cmd: GtpFormatterCmd
+  formatter: GtpFormatter
 }
 
 GtbRemoteBackendRequestResponseRunFormatter: {

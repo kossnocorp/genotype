@@ -207,6 +207,7 @@ tsconfig = { allowImportingTsExtensions = false }
   { kind = "shell", cmd = "npm", args = ["run", "format"] },
   { kind = "pnpm", cmd = "prettier", args = ["--check", "."] },
   { kind = "cargo", cmd = "fmt", args = ["--all"] },
+  { kind = "prettyplease" },
   { kind = "oxfmt", via = "pnpm" },
   { kind = "prettier", via = "npx" },
 ]
@@ -238,6 +239,9 @@ tsconfig = { allowImportingTsExtensions = false }
               "--all",
             ]),
             kind: "cargo",
+          ),
+          __GtpFormatterPresetPrettypleaseLiteralsSerialize(
+            kind: "prettyplease",
           ),
           __GtpFormatterPresetOxfmtLiteralsSerialize(
             via: Some("pnpm"),

@@ -14,13 +14,19 @@ where
         formatter: &GtpFormatter,
         dist_path: &GtpCwdRelativePath,
     ) -> Result<()> {
-        let dist_path_buf = dist_path.to_path_buf();
-        let formatter_cmd = formatter.cmd();
+        let Some(formatter_cmd) = formatter.cmd() else {
+            return self
+                .report_diagnostic(&GtDiagnostic::error(format!(
+                    "The formatter '{kind}' is not available in the system runner.",
+                    kind = formatter.kind()
+                )))
+                .await;
+        };
 
         let mut process = Command::new(&formatter_cmd.cmd);
         process.args(&formatter_cmd.args);
 
-        let output = match process.current_dir(&dist_path_buf).output() {
+        let output = match process.current_dir(&dist_path.to_path_buf()).output() {
             Ok(output) => output,
 
             Err(err) => {

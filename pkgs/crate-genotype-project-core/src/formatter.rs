@@ -1,8 +1,25 @@
 use crate::prelude::internal::*;
 
 impl GtpFormatter {
-    pub fn cmd(&self) -> GtpFormatterCmd {
+    // TODO: Add literal fields method generation to litty
+    pub fn kind(&self) -> &'static str {
         match self {
+            GtpFormatter::Shell(_) => "shell",
+
+            GtpFormatter::Executor(_) => "executor",
+
+            GtpFormatter::PresetPrettyplease(_) => "prettyplease",
+
+            GtpFormatter::PresetOxfmt(_) => "oxfmt",
+
+            GtpFormatter::PresetPrettier(_) => "prettier",
+
+            GtpFormatter::PresetRuff(_) => "ruff",
+        }
+    }
+
+    pub fn cmd(&self) -> Option<GtpFormatterCmd> {
+        let cmd = match self {
             GtpFormatter::Shell(GtpFormatterShell { cmd, args }) => GtpFormatterCmd {
                 cmd: cmd.clone(),
                 args: args.clone().unwrap_or_default(),
@@ -13,6 +30,8 @@ impl GtpFormatter {
                 exec.cmd.clone(),
                 exec.args.clone(),
             ),
+
+            GtpFormatter::PresetPrettyplease(_) => return None,
 
             GtpFormatter::PresetOxfmt(GtpFormatterPresetOxfmt { via, args }) => {
                 let mut cmd = GtpFormatterCmd {
@@ -61,7 +80,9 @@ impl GtpFormatter {
                     None => cmd,
                 }
             }
-        }
+        };
+
+        Some(cmd)
     }
 
     fn apply_executor_cmd(
@@ -146,5 +167,38 @@ impl Display for GtpFormatterCmd {
         let mut chunks = vec![self.cmd.clone()];
         chunks.extend(self.args.clone());
         write!(f, "{}", chunks.join(" "))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn prettyplease_has_no_system_command() {
+        let formatter = GtpFormatter::PresetPrettyplease(GtpFormatterPresetPrettyplease {});
+
+        assert_eq!(formatter.cmd(), None);
+    }
+
+    #[test]
+    fn executable_formatter_has_system_command() {
+        let formatter = GtpFormatter::PresetRuff(GtpFormatterPresetRuff {
+            via: Some(GtpFormatterExecutorKindPython::Uv),
+            args: None,
+        });
+
+        assert_eq!(
+            formatter.cmd(),
+            Some(GtpFormatterCmd {
+                cmd: "uv".to_owned(),
+                args: vec![
+                    "run".to_owned(),
+                    "ruff".to_owned(),
+                    "format".to_owned(),
+                    ".".to_owned(),
+                ],
+            })
+        );
     }
 }
