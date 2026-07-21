@@ -13,12 +13,6 @@ body = """
   {% endfor %}
 {% endmacro %}
 
-{%- if version %}
-  ## {{ version }} - {{ timestamp | date(format="%Y-%m-%d") }}
-{% else %}
-  ## Unreleased
-{% endif %}
-
 {%- set_global has_internal_groups = false -%}
 {%- for group, commits in commits | group_by(attribute="group") -%}
   {%- set group_label = group | striptags | trim | upper_first -%}
