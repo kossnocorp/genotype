@@ -1,7 +1,7 @@
 import * as Gt from "@genotype-lang/types";
-import { GtwmWorkerClient } from "./worker/WorkerClient";
-import { GtwmMessenger } from "./message/Messenger";
 import { GtwmFs } from "./Fs";
+import { GtwmRpc } from "./rpc";
+import { RpcWorkerClientTransport } from "@js-fns/rpc/transports/worker";
 
 export namespace GtwmClient {
   export interface Props {
@@ -17,8 +17,8 @@ export namespace GtwmClient {
 export class GtwmClient {
   #fs: GtwmFs;
   #onDiagnostic: GtwmClient.OnDiagnostic | undefined;
-  #workerClient: GtwmWorkerClient;
-  #messengerPromise: Promise<GtwmMessenger<GtwmWorkerClient>>;
+  #peerPromise: Promise<GtwmRpc.ClientPeer>;
+  #worker: Worker;
 
   constructor(props: GtwmClient.Props) {
     const { fs, cwdPath = "/workspace", basePath = ".", onDiagnostic } = props;
@@ -26,60 +26,51 @@ export class GtwmClient {
     this.#fs = fs;
     this.#onDiagnostic = onDiagnostic;
 
-    this.#workerClient = new GtwmWorkerClient();
-    const messenger = new GtwmMessenger(this.#workerClient, this.#onBackendRequest.bind(this));
+    this.#worker = new Worker(new URL("./Worker.ts", import.meta.url), {
+      type: "module",
+    });
 
-    this.#messengerPromise = messenger
-      .request({ kind: "init", cwdPath, basePath })
-      .then(() => messenger);
+    const peer = GtwmRpc.rpc.peer("client", new RpcWorkerClientTransport(this.#worker), {
+      "report-diagnostic": this.#onReportDiagnostic.bind(this),
+
+      "file-exists": this.#onFileExists.bind(this),
+
+      "read-file": this.#onReadFile.bind(this),
+
+      "write-file": this.#onWriteFile.bind(this),
+
+      "find-file": this.#onFindFile.bind(this),
+
+      "glob-files": this.#onGlobFiles.bind(this),
+
+      "is-file": this.#onIsFile.bind(this),
+
+      "run-formatter": this.#onRunFormatter.bind(this),
+    });
+
+    this.#peerPromise = peer.call("init", { cwdPath, basePath }).then(() => peer);
   }
 
   async loadInProject(): Promise<Gt.GtcMetaLoadedProject> {
-    const messenger = await this.#messengerPromise;
-    const response = await messenger.request({ kind: "load-in-project" });
+    const peer = await this.#peerPromise;
+    const response = await peer.call("load-in-project", {
+      kind: "load-in-project",
+    });
     return response.meta;
   }
 
   async loadInModules(): Promise<Gt.GtcMetaLoadedModules> {
-    const messenger = await this.#messengerPromise;
-    const response = await messenger.request({ kind: "load-in-modules" });
+    const peer = await this.#peerPromise;
+    const response = await peer.call("load-in-modules", {
+      kind: "load-in-modules",
+    });
     return response.meta;
   }
 
   async compile(): Promise<Gt.GtcMetaCompiled> {
-    const messenger = await this.#messengerPromise;
-    const response = await messenger.request({ kind: "compile" });
+    const peer = await this.#peerPromise;
+    const response = await peer.call("compile", { kind: "compile" });
     return response.meta;
-  }
-
-  async #onBackendRequest(
-    request: Gt.GtbRemoteBackendRequest,
-  ): Promise<Gt.GtbRemoteBackendRequestResponse> {
-    switch (request.kind) {
-      case "report-diagnostic":
-        return this.#onReportDiagnostic(request);
-
-      case "file-exists":
-        return this.#onFileExists(request);
-
-      case "read-file":
-        return this.#onReadFile(request);
-
-      case "write-file":
-        return this.#onWriteFile(request);
-
-      case "find-file":
-        return this.#onFindFile(request);
-
-      case "glob-files":
-        return this.#onGlobFiles(request);
-
-      case "is-file":
-        return this.#onIsFile(request);
-
-      case "run-formatter":
-        return this.#onRunFormatter(request);
-    }
   }
 
   async #onReportDiagnostic(
@@ -93,10 +84,7 @@ export class GtwmClient {
     request: Gt.GtbRemoteBackendRequestFileExists,
   ): Promise<Gt.GtbRemoteBackendRequestResponseFileExists> {
     const exists = this.#fs.isFile(request.path);
-    return {
-      kind: "file-exists",
-      exists,
-    };
+    return { kind: "file-exists", exists };
   }
 
   async #onReadFile(
@@ -137,7 +125,7 @@ export class GtwmClient {
   }
 
   async #onRunFormatter(
-    request: Gt.GtbRemoteBackendRequestRunFormatter,
+    _request: Gt.GtbRemoteBackendRequestRunFormatter,
   ): Promise<Gt.GtbRemoteBackendRequestResponseRunFormatter> {
     return { kind: "run-formatter" };
   }
