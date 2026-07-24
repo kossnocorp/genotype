@@ -384,7 +384,7 @@ fn expand_literal_enum(
                 let is_literal = path
                     .segments
                     .iter()
-                    .last()
+                    .next_back()
                     .is_some_and(|segment| segment.ident == "literal");
 
                 if is_literal {
