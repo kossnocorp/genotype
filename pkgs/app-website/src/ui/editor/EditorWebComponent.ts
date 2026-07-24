@@ -1,4 +1,4 @@
-import flatPromise from "../utils/promise";
+import { flatPromise } from "@js-fns/promise";
 import { EditorManager } from "./EditorManager";
 
 export namespace EditorWebComponent {}

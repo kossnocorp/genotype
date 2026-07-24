@@ -1,6 +1,7 @@
 import * as Gt from "@genotype-lang/types";
 import { GtwmFs } from "./Fs";
-import { GtwmRpc } from "./rpc";
+import { GtwmCompilerRpc } from "./compiler/CompilerRpc";
+import { GtwmFormattersRpc } from "./formatters/FormattersRpc";
 import { RpcWorkerClientTransport } from "@js-fns/rpc/transports/worker";
 
 export namespace GtwmClient {
@@ -12,25 +13,48 @@ export namespace GtwmClient {
   }
 
   export type OnDiagnostic = (diagnostic: Gt.GtDiagnostic) => void;
+
+  export type Formatter = FormatterTs | FormatterRs | FormatterPy;
+
+  export interface FormatterTs {
+    kind: "oxfmt";
+    extension: ".ts";
+  }
+
+  export interface FormatterRs {
+    kind: "prettyplease";
+    extension: ".rs";
+  }
+
+  export interface FormatterPy {
+    kind: "ruff";
+    extension: ".py";
+  }
 }
 
 export class GtwmClient {
   #fs: GtwmFs;
   #onDiagnostic: GtwmClient.OnDiagnostic | undefined;
-  #peerPromise: Promise<GtwmRpc.ClientPeer>;
-  #worker: Worker;
+  #compilerPeerPromise: Promise<GtwmCompilerRpc.ClientPeer>;
+  #formattersPeer: GtwmFormattersRpc.ClientPeer;
 
   constructor(props: GtwmClient.Props) {
-    const { fs, cwdPath = "/workspace", basePath = ".", onDiagnostic } = props;
-
+    const { fs, onDiagnostic } = props;
     this.#fs = fs;
     this.#onDiagnostic = onDiagnostic;
 
-    this.#worker = new Worker(new URL("./Worker.ts", import.meta.url), {
+    const { cwdPath = "/workspace", basePath = "." } = props;
+    this.#compilerPeerPromise = this.#initCompilerWorker({ cwdPath, basePath });
+
+    this.#formattersPeer = this.#initFormattersWorker();
+  }
+
+  #initCompilerWorker(request: GtwmCompilerRpc.InitRequest): Promise<GtwmCompilerRpc.ClientPeer> {
+    const worker = new Worker(new URL("./compiler/CompilerWorker.ts", import.meta.url), {
       type: "module",
     });
 
-    const peer = GtwmRpc.rpc.peer("client", new RpcWorkerClientTransport(this.#worker), {
+    const compilerPeer = GtwmCompilerRpc.rpc.peer("client", new RpcWorkerClientTransport(worker), {
       "report-diagnostic": this.#onReportDiagnostic.bind(this),
 
       "file-exists": this.#onFileExists.bind(this),
@@ -48,11 +72,19 @@ export class GtwmClient {
       "run-formatter": this.#onRunFormatter.bind(this),
     });
 
-    this.#peerPromise = peer.call("init", { cwdPath, basePath }).then(() => peer);
+    return compilerPeer.call("init", request).then(() => compilerPeer);
+  }
+
+  #initFormattersWorker(): GtwmFormattersRpc.ClientPeer {
+    const worker = new Worker(new URL("./formatters/FormattersWorker.ts", import.meta.url), {
+      type: "module",
+    });
+
+    return GtwmFormattersRpc.rpc.peer("client", new RpcWorkerClientTransport(worker), {});
   }
 
   async loadInProject(): Promise<Gt.GtcMetaLoadedProject> {
-    const peer = await this.#peerPromise;
+    const peer = await this.#compilerPeerPromise;
     const response = await peer.call("load-in-project", {
       kind: "load-in-project",
     });
@@ -60,15 +92,13 @@ export class GtwmClient {
   }
 
   async loadInModules(): Promise<Gt.GtcMetaLoadedModules> {
-    const peer = await this.#peerPromise;
-    const response = await peer.call("load-in-modules", {
-      kind: "load-in-modules",
-    });
+    const peer = await this.#compilerPeerPromise;
+    const response = await peer.call("load-in-modules", { kind: "load-in-modules" });
     return response.meta;
   }
 
   async compile(): Promise<Gt.GtcMetaCompiled> {
-    const peer = await this.#peerPromise;
+    const peer = await this.#compilerPeerPromise;
     const response = await peer.call("compile", { kind: "compile" });
     return response.meta;
   }
@@ -125,8 +155,51 @@ export class GtwmClient {
   }
 
   async #onRunFormatter(
-    _request: Gt.GtbRemoteBackendRequestRunFormatter,
+    request: Gt.GtbRemoteBackendRequestRunFormatter,
   ): Promise<Gt.GtbRemoteBackendRequestResponseRunFormatter> {
+    const formatter = this.#resolveFormatter(request);
+    if (!formatter) return { kind: "run-formatter" };
+
+    await Promise.all(
+      this.#fs.listFiles().map(async (filePath) => {
+        if (!filePath.endsWith(formatter.extension)) return;
+
+        const content = this.#fs.readFile(filePath);
+        if (content === null) return;
+
+        try {
+          const { content: formatted } = await this.#formattersPeer.call("format", {
+            kind: formatter.kind,
+            content,
+          });
+          this.#fs.writeFile(filePath, formatted);
+        } catch (error) {
+          this.#onDiagnostic?.({
+            kind: "error",
+            content: {
+              title: `Failed to write formatted content to file '${filePath}'`,
+              body: String(error),
+            },
+          });
+        }
+      }),
+    );
+
     return { kind: "run-formatter" };
+  }
+
+  #resolveFormatter(request: Gt.GtbRemoteBackendRequestRunFormatter): GtwmClient.Formatter | null {
+    switch (request.formatter.kind) {
+      case "oxfmt":
+        return { kind: "oxfmt", extension: ".ts" };
+
+      case "ruff":
+        return { kind: "ruff", extension: ".py" };
+
+      case "prettyplease":
+        return { kind: "prettyplease", extension: ".rs" };
+    }
+
+    return null;
   }
 }

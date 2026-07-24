@@ -16,6 +16,7 @@
     "@genotype-lang/grammar-tm": "workspace:*",
     "@genotype-lang/types": "workspace:*",
     "@genotype-lang/wasm-runtime": "workspace:*",
+    "@js-fns/promise": "^0.1.0",
     "@material-symbols/svg-100": "^0.45.8",
     "@material-symbols/svg-200": "^0.45.8",
     "@material-symbols/svg-300": "^0.45.8",

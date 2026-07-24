@@ -26,7 +26,7 @@ where
         let mut process = Command::new(&formatter_cmd.cmd);
         process.args(&formatter_cmd.args);
 
-        let output = match process.current_dir(&dist_path.to_path_buf()).output() {
+        let output = match process.current_dir(dist_path.to_path_buf()).output() {
             Ok(output) => output,
 
             Err(err) => {

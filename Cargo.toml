@@ -3,6 +3,7 @@ resolver = "3"
 members = [
   "pkgs/crate-genotype-backend",
   "pkgs/crate-genotype-core",
+  "pkgs/crate-genotype-formatters-wasm",
   "pkgs/crate-genotype-lang-core",
   "pkgs/crate-genotype-lang-core-tree",
   "pkgs/crate-genotype-lang-core-project",

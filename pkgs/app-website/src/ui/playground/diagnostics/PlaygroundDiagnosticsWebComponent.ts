@@ -1,4 +1,4 @@
-import flatPromise from "../../utils/promise";
+import { flatPromise } from "@js-fns/promise";
 import { Wc } from "../../utils/Wc";
 import { PlaygroundDiagnosticsManager } from "./PlaygroundDiagnosticsManager";
 
