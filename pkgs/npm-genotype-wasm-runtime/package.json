@@ -18,8 +18,10 @@
     }
   },
   "dependencies": {
+    "@genotype-lang/formatters-wasm": "workspace:^",
     "@genotype-lang/types": "workspace:^",
     "@genotype-lang/wasm": "workspace:^",
+    "@js-fns/promise": "^0.1.0",
     "@js-fns/rpc": "^0.1.1",
     "minimatch": "^10.2.5",
     "pathe": "^2.0.3",

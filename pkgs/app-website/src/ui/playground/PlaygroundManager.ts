@@ -4,7 +4,7 @@ import { z } from "zod";
 import type { PlaygroundWebComponent } from "./PlaygroundWebComponent";
 import type { EditorWebComponent } from "../editor/EditorWebComponent";
 import type { EditorManager } from "../editor/EditorManager";
-import { resettableFlatPromise } from "../utils/promise";
+import { resettablePromise } from "@js-fns/promise";
 import { always } from "alwaysly";
 import type { PlaygroundDiagnosticsWebComponent } from "./diagnostics/PlaygroundDiagnosticsWebComponent";
 
@@ -49,7 +49,7 @@ export class PlaygroundManager {
 
   #fs: GtwmFs;
 
-  #compiledMetaPromise = resettableFlatPromise<Gt.GtcMetaCompiled>();
+  #compiledMetaPromise = resettablePromise<Gt.GtcMetaCompiled>();
   #compileTimer: ReturnType<typeof setTimeout> | undefined;
 
   constructor(props: PlaygroundManager.Props) {

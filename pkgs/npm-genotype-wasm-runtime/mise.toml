@@ -1,10 +1,17 @@
 [tasks.preinstall]
 description = "Preinstall steps"
-run = { task = "//pkgs/crate-genotype-wasm:build" }
+depends = ["//pkgs/crate-genotype-formatters-wasm:build", "//pkgs/crate-genotype-wasm:build"]
 
 [tasks.build]
 description = "Builds the package"
-depends = "//pkgs/crate-genotype-wasm:build"
+depends = ["//pkgs/crate-genotype-formatters-wasm:build", "//pkgs/crate-genotype-wasm:build"]
+
+[tasks."build:dev"]
+description = "Builds the package for development"
+depends = [
+  "//pkgs/crate-genotype-formatters-wasm:build:dev",
+  "//pkgs/crate-genotype-wasm:build:dev",
+]
 
 [tasks."types"]
 description = "Checks types"

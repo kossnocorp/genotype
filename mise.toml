@@ -149,6 +149,7 @@ run = "pnpm exec tsc --build --watch"
 [tasks.publish]
 run = [{ task = "publish/cargo" }]
 
+# TODO: Exclude genotype_wasm?
 [tasks."publish/cargo"]
 run = '''
 cargo release publish \
@@ -158,6 +159,7 @@ cargo release publish \
   --exclude toml_ext \
   --exclude genotype_runtime \
   --exclude genotype_json_types \
+  --exclude genotype_formatters_wasm \
   --workspace \
   --all-features \
   --no-verify \
@@ -166,6 +168,7 @@ cargo release publish \
   --execute
 '''
 
+# TODO: Exclude genotype_wasm?
 [tasks."publish/cargo:dry"]
 run = '''
 cargo release publish \
@@ -175,6 +178,7 @@ cargo release publish \
   --exclude toml_ext \
   --exclude genotype_runtime \
   --exclude genotype_json_types \
+  --exclude genotype_formatters_wasm \
   --workspace \
   --all-features \
   --no-verify \

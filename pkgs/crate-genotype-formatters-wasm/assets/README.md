@@ -1,0 +1,5 @@
+# `@genotype-lang/formatters-wasm`
+
+This is an internal npm package of the Genotype Programming Language. It is not intended to be used by external users.
+
+See the [Genotype website](https://genotype-lang.org) for more information about the project.

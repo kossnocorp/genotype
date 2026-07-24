@@ -1,10 +1,10 @@
 [tasks.dev]
 run = "pnpm exec astro dev --host 0.0.0.0"
-depends = "gen/types"
+depends = ["gen/types", "//pkgs/npm-genotype-wasm-runtime:build:dev"]
 
 [tasks.build]
 run = "pnpm exec astro build"
-depends = ["//pkgs/crate-genotype-wasm:build"]
+depends = "//pkgs/npm-genotype-wasm-runtime:build"
 
 [tasks.deploy]
 run = "pnpm exec wrangler deploy"
@@ -22,4 +22,3 @@ run = "pnpm exec tsc --build"
 [tasks."types:watch"]
 description = "Checks types in watch mode"
 run = "pnpm exec tsc --build --watch"
-

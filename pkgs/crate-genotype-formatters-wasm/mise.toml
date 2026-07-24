@@ -1,0 +1,47 @@
+# Tools ========================================================================
+[tools]
+"cargo:wasm-pack" = "latest"
+"cargo:wasm-bindgen-cli" = "latest"
+
+# Build the Wasm package -------------------------------------------------------
+[tasks.build]
+description = "Builds the Wasm package"
+usage = '''
+flag "--dev" help="Builds in dev mode"
+'''
+run = '''
+#!/usr/bin/env bash
+
+pkg_path="../npm-genotype-formatters-wasm"
+pkg_json_path="$pkg_path/package.json"
+pkg_json_tmp_path="$pkg_json_path.tmp"
+
+assets_path="./assets"
+
+build_args=()
+if [ "${usage_dev:-false}" = "true" ]; then
+  build_args+=(--dev)
+fi
+
+# Build with wasm-pack
+wasm-pack build . \
+  "${build_args[@]}" \
+  --target web \
+  --out-dir "$pkg_path" \
+  --out-name genotype_formatters_wasm
+
+# Assign name in package.json to @genotype-lang/formatters-wasm
+jaq \
+  -e '.name = "@genotype-lang/formatters-wasm"' \
+  < "$pkg_json_path" \
+  > "$pkg_json_tmp_path"
+mv "$pkg_json_tmp_path" "$pkg_json_path"
+
+# Copy assets
+cp "$assets_path/README.md" "$pkg_path"
+'''
+
+# Build dev version ------------------------------------------------------------
+[tasks."build:dev"]
+description = "Builds the formatters Wasm package in dev mode"
+run = [{ task = "build", args = ["--dev"] }]

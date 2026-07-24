@@ -1,0 +1,42 @@
+[package]
+name = "genotype_formatters_wasm"
+version = "0.16.1"
+edition = "2024"
+description = "Genotype language formatters Wasm crate"
+authors = ["Sasha Koss <koss@nocorp.me>"]
+license = "MIT"
+repository = "https://github.com/kossnocorp/genotype"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["console_error_panic_hook"]
+
+[dependencies]
+js-sys = "0.3.95"
+oxc_allocator = { git = "https://github.com/oxc-project/oxc.git", rev = "4b81f4d963cd7fd8b539cb4935b9fd58002c8765" }
+oxc_formatter = { git = "https://github.com/oxc-project/oxc.git", rev = "4b81f4d963cd7fd8b539cb4935b9fd58002c8765" }
+oxc_formatter_core = { git = "https://github.com/oxc-project/oxc.git", rev = "4b81f4d963cd7fd8b539cb4935b9fd58002c8765" }
+oxc_span = { git = "https://github.com/oxc-project/oxc.git", rev = "4b81f4d963cd7fd8b539cb4935b9fd58002c8765" }
+proc-macro2 = { version = "1.0.107", features = ["span-locations"] }
+prettyplease = "0.3.0"
+ruff_formatter = "0.0.5"
+ruff_python_formatter = "0.0.5"
+syn = { version = "3.0.2", default-features = false, features = ["full", "parsing", "printing"] }
+wasm-bindgen = "0.2.84"
+wasm-bindgen-test = "0.3.76"
+
+# The `console_error_panic_hook` crate provides better debugging of panics by
+# logging them with `console.error`. This is great for development, but requires
+# all the `std::fmt` and `std::panicking` infrastructure, so isn't great for
+# code size when deploying.
+console_error_panic_hook = { version = "0.1.7", optional = true }
+
+[dev-dependencies]
+insta = "1.46.3"
+indoc = "2.0.7"
+
+[profile.release]
+# Tell `rustc` to optimize for small code size.
+opt-level = "s"

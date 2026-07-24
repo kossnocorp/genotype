@@ -2,15 +2,19 @@ import * as Gt from "@genotype-lang/types";
 import { BiRpc, type BiRpcPeer } from "@js-fns/rpc/birpc";
 import { z } from "zod";
 
-export abstract class GtwmRpc {
+export abstract class GtwmCompilerRpc {
+  static InitRequest = z.object({
+    cwdPath: z.string(),
+    basePath: z.string(),
+  });
+
+  static InitResponse = z.object({});
+
   static schema = {
     client: {
       init: {
-        in: z.object({
-          cwdPath: z.string(),
-          basePath: z.string(),
-        }),
-        out: z.object({}),
+        in: this.InitRequest,
+        out: this.InitResponse,
       },
 
       "load-in-project": {
@@ -75,8 +79,18 @@ export abstract class GtwmRpc {
   static rpc = new BiRpc(this.schema);
 }
 
-export namespace GtwmRpc {
-  export type ClientPeer = BiRpcPeer<typeof GtwmRpc.schema.client, typeof GtwmRpc.schema.worker>;
+export namespace GtwmCompilerRpc {
+  export type InitRequest = z.infer<typeof GtwmCompilerRpc.InitRequest>;
 
-  export type WorkerPeer = BiRpcPeer<typeof GtwmRpc.schema.worker, typeof GtwmRpc.schema.client>;
+  export type InitResponse = z.infer<typeof GtwmCompilerRpc.InitResponse>;
+
+  export type ClientPeer = BiRpcPeer<
+    typeof GtwmCompilerRpc.schema.client,
+    typeof GtwmCompilerRpc.schema.worker
+  >;
+
+  export type WorkerPeer = BiRpcPeer<
+    typeof GtwmCompilerRpc.schema.worker,
+    typeof GtwmCompilerRpc.schema.client
+  >;
 }

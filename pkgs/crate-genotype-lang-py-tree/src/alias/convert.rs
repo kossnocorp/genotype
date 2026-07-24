@@ -316,7 +316,7 @@ mod tests {
         assert_ron_snapshot!(
             context.imports(),
             @"[]"
-        )
+        );
     }
 
     #[test]

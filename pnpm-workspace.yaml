@@ -7,6 +7,7 @@ packages:
   - "pkgs/npm-vscode-genotype"
   - "pkgs/npm-genotype-types"
   - "pkgs/npm-genotype-wasm"
+  - "pkgs/npm-genotype-formatters-wasm"
   - "pkgs/npm-genotype-wasm-runtime"
 
 allowBuilds:
@@ -39,3 +40,4 @@ minimumReleaseAgeExclude:
   - '@typescript/typescript-win32-x64@7.0.2'
   - typescript@7.0.2
   - '@js-fns/rpc@0.1.1'
+  - '@js-fns/promise@0.1.0'

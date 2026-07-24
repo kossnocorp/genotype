@@ -1,14 +1,14 @@
 import * as Gt from "@genotype-lang/types";
 import initWasm, { GtwmCompiler } from "@genotype-lang/wasm";
 import type { z } from "zod";
-import { GtwmRpc } from "./rpc";
-import flatPromise, { FlatPromise } from "./utils/promise";
+import { GtwmCompilerRpc } from "./CompilerRpc";
+import { flatPromise, type FlatPromise } from "@js-fns/promise";
 import { RpcWorkerServerTransport } from "@js-fns/rpc/transports/worker";
 
 // NOTE: This class is initiated right below, hence never exported.
 
-class GtwmWorker {
-  #peer: GtwmRpc.WorkerPeer;
+class GtwmCompilerWorker {
+  #peer: GtwmCompilerRpc.WorkerPeer;
 
   #compilerPromise: Promise<GtwmCompiler>;
   #compilerResolver: FlatPromise.Resolver<GtwmCompiler> = {
@@ -17,7 +17,7 @@ class GtwmWorker {
   };
 
   constructor() {
-    this.#peer = GtwmRpc.rpc.peer("worker", new RpcWorkerServerTransport(), {
+    this.#peer = GtwmCompilerRpc.rpc.peer("worker", new RpcWorkerServerTransport(), {
       init: this.#onInit.bind(this),
 
       "load-in-project": (request) =>
@@ -35,10 +35,12 @@ class GtwmWorker {
     this.#compilerResolver = compilerResolver;
   }
 
-  async #onInit(input: { cwdPath: string; basePath: string }): Promise<Record<string, never>> {
+  async #onInit(input: GtwmCompilerRpc.InitRequest): Promise<Record<string, never>> {
     const { cwdPath, basePath } = input;
     await initWasm();
-    const compiler = new GtwmCompiler(cwdPath, basePath, this.#onBackendRequest.bind(this));
+    const compiler = new GtwmCompiler(cwdPath, basePath, (request: Gt.GtbRemoteBackendRequest) =>
+      this.#peer.call(request.kind, request),
+    );
     this.#compilerResolver.resolve(compiler);
     return {};
   }
@@ -51,36 +53,6 @@ class GtwmWorker {
     const rawResponse = await compiler.handleRuntimeRequest(request);
     return responseSchema.parse(rawResponse);
   }
-
-  async #onBackendRequest(
-    request: Gt.GtbRemoteBackendRequest,
-  ): Promise<Gt.GtbRemoteBackendRequestResponse> {
-    switch (request.kind) {
-      case "glob-files":
-        return this.#peer.call("glob-files", request);
-
-      case "read-file":
-        return this.#peer.call("read-file", request);
-
-      case "file-exists":
-        return this.#peer.call("file-exists", request);
-
-      case "is-file":
-        return this.#peer.call("is-file", request);
-
-      case "find-file":
-        return this.#peer.call("find-file", request);
-
-      case "report-diagnostic":
-        return this.#peer.call("report-diagnostic", request);
-
-      case "run-formatter":
-        return this.#peer.call("run-formatter", request);
-
-      case "write-file":
-        return this.#peer.call("write-file", request);
-    }
-  }
 }
 
-new GtwmWorker();
+new GtwmCompilerWorker();

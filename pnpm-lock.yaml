@@ -47,6 +47,9 @@ importers:
       '@genotype-lang/wasm-runtime':
         specifier: workspace:*
         version: link:../npm-genotype-wasm-runtime
+      '@js-fns/promise':
+        specifier: ^0.1.0
+        version: 0.1.0
       '@material-symbols/svg-100':
         specifier: ^0.45.8
         version: 0.45.8
@@ -148,6 +151,8 @@ importers:
 
   pkgs/crate-genotype-lsp/npm/win32-x64: {}
 
+  pkgs/npm-genotype-formatters-wasm: {}
+
   pkgs/npm-genotype-grammar-sublime: {}
 
   pkgs/npm-genotype-grammar-tm: {}
@@ -162,12 +167,18 @@ importers:
 
   pkgs/npm-genotype-wasm-runtime:
     dependencies:
+      '@genotype-lang/formatters-wasm':
+        specifier: workspace:^
+        version: link:../npm-genotype-formatters-wasm
       '@genotype-lang/types':
         specifier: workspace:^
         version: link:../npm-genotype-types
       '@genotype-lang/wasm':
         specifier: workspace:^
         version: link:../npm-genotype-wasm
+      '@js-fns/promise':
+        specifier: ^0.1.0
+        version: 0.1.0
       '@js-fns/rpc':
         specifier: ^0.1.1
         version: 0.1.1
@@ -1074,6 +1085,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
+
+  '@js-fns/promise@0.1.0':
+    resolution: {integrity: sha512-TH3myvZnn4ZJkWvDkpK4lhcMGFq7dhK68zPfXbVCzQmF2t8mhlwhhkxAY5Rmk8DwzvtVFGvUr8+A+Ahx27ZYhg==}
 
   '@js-fns/rpc@0.1.1':
     resolution: {integrity: sha512-rpAlqQONgp2POMueEgPM9NDn9K/dgM1yuLbqQ5fE2DPlDe7sqgRwwRa/tqbzOrDKWj2xZaFpW4ZcuoiRNIkfHg==}
@@ -5411,6 +5425,8 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@js-fns/promise@0.1.0': {}
 
   '@js-fns/rpc@0.1.1': {}
 
