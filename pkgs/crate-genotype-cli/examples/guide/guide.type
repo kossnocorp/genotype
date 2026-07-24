@@ -1,4 +1,8 @@
-//! Welcome to the Genotype language guide!
+//! Welcome to the Genotype Programming Language guide!
+//!
+//! Genotype is a language that allows you to define types and data structures
+//! and generate code implementing them in multiple programming languages, such
+//! as TypeScript, Rust, Python, and more.
 //!
 //! Comments at the beginning of a file prefixed with `//!` are treated as
 //! the module documentation and translated to the corresponding documentation
