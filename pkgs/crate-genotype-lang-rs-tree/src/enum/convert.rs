@@ -1,4 +1,5 @@
 use crate::prelude::internal::*;
+use unicode_xid::UnicodeXID;
 
 impl RsConvert<RsEnum> for GtUnion {
     fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsEnum> {
@@ -128,7 +129,12 @@ fn trim_variant_names(
         if variant.name.0.starts_with(enum_name.0.as_ref())
             && let Some(trimmed_name) = variant.name.0.strip_prefix(enum_name.0.as_ref())
         {
-            let trimmed_name = RsIdentifier(trimmed_name.into());
+            let first = trimmed_name.chars().next().unwrap_or_default();
+            let trimmed_name = if first == '_' || UnicodeXID::is_xid_start(first) {
+                RsIdentifier(trimmed_name.into())
+            } else {
+                RsIdentifier(format!("Lit{trimmed_name}").into())
+            };
             if !variant_names.contains(&trimmed_name) {
                 variant_names.shift_remove(&variant.name);
                 variant_names.insert(trimmed_name.clone());
@@ -520,7 +526,6 @@ mod tests {
         "#
         );
     }
-
     #[test]
     fn test_literal_names() {
         let mut context = RsConvertContext::empty("module".into());
@@ -836,6 +841,79 @@ mod tests {
                 identifier: RsIdentifier("Ping"),
                 arguments: [],
                 definition_id: GtDefinitionId(GtModuleId("module"), "Ping"),
+              )))),
+            ),
+          ],
+        )
+        "#
+        );
+    }
+
+    #[test]
+    fn test_trimmed_literal_numeric_name() {
+        let mut context = RsConvertContext::empty("module".into());
+        context.enter_parent(RsContextParent::Alias("PokemonStage".into()));
+
+        let union = Gt::union(vec_into![
+            Gt::object(
+                "PokemonStageBasic",
+                vec![Gt::property("kind", Gt::literal_string("basic")),]
+            ),
+            Gt::object(
+                "PokemonStage1",
+                vec![Gt::property("kind", Gt::literal_string("1")),]
+            ),
+            Gt::object(
+                "PokemonStage2",
+                vec![Gt::property("kind", Gt::literal_string("2")),]
+            ),
+        ]);
+        assert_ron_snapshot!(
+            union
+            .convert(&mut context)
+            .unwrap(),
+            @r#"
+        RsEnum(
+          id: GtDefinitionId(GtModuleId("module"), "PokemonStage"),
+          doc: None,
+          attributes: [
+            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("serde(untagged)"),
+          ],
+          name: RsIdentifier("PokemonStage"),
+          generics: [],
+          variants: [
+            RsEnumVariant(
+              doc: None,
+              attributes: [],
+              name: RsIdentifier("Basic"),
+              descriptor: Some(Descriptor(Reference(RsReference(
+                id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
+                identifier: RsIdentifier("PokemonStageBasic"),
+                arguments: [],
+                definition_id: GtDefinitionId(GtModuleId("module"), "PokemonStageBasic"),
+              )))),
+            ),
+            RsEnumVariant(
+              doc: None,
+              attributes: [],
+              name: RsIdentifier("Lit1"),
+              descriptor: Some(Descriptor(Reference(RsReference(
+                id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
+                identifier: RsIdentifier("PokemonStage1"),
+                arguments: [],
+                definition_id: GtDefinitionId(GtModuleId("module"), "PokemonStage1"),
+              )))),
+            ),
+            RsEnumVariant(
+              doc: None,
+              attributes: [],
+              name: RsIdentifier("Lit2"),
+              descriptor: Some(Descriptor(Reference(RsReference(
+                id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
+                identifier: RsIdentifier("PokemonStage2"),
+                arguments: [],
+                definition_id: GtDefinitionId(GtModuleId("module"), "PokemonStage2"),
               )))),
             ),
           ],

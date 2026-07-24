@@ -60,7 +60,7 @@ mod tests {
           RsAttribute("serde(rename = \"fooBar\")"),
         ]
         "#
-        )
+        );
     }
 
     #[test]
@@ -79,6 +79,6 @@ mod tests {
           RsAttribute("serde(rename = \"type\")"),
         ]
         "#
-        )
+        );
     }
 }
