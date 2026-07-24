@@ -4,6 +4,7 @@
 "cargo:wasm-bindgen-cli" = "latest"
 
 # Build the Wasm package -------------------------------------------------------
+# TODO: Extract into common task template.
 [tasks.build]
 description = "Builds the Wasm package"
 usage = '''
@@ -11,6 +12,8 @@ flag "--dev" help="Builds in dev mode"
 '''
 run = '''
 #!/usr/bin/env bash
+
+set -euo pipefail
 
 pkg_path="../npm-genotype-formatters-wasm"
 pkg_json_path="$pkg_path/package.json"
