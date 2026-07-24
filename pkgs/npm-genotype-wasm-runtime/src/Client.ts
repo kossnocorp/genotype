@@ -35,6 +35,8 @@ export namespace GtwmClient {
 export class GtwmClient {
   #fs: GtwmFs;
   #onDiagnostic: GtwmClient.OnDiagnostic | undefined;
+  #compilerWorker: Worker | undefined;
+  #formattersWorker: Worker | undefined;
   #compilerPeerPromise: Promise<GtwmCompilerRpc.ClientPeer>;
   #formattersPeer: GtwmFormattersRpc.ClientPeer;
 
@@ -53,6 +55,7 @@ export class GtwmClient {
     const worker = new Worker(new URL("./compiler/CompilerWorker.ts", import.meta.url), {
       type: "module",
     });
+    this.#compilerWorker = worker;
 
     const compilerPeer = GtwmCompilerRpc.rpc.peer("client", new RpcWorkerClientTransport(worker), {
       "report-diagnostic": this.#onReportDiagnostic.bind(this),
@@ -79,8 +82,17 @@ export class GtwmClient {
     const worker = new Worker(new URL("./formatters/FormattersWorker.ts", import.meta.url), {
       type: "module",
     });
+    this.#formattersWorker = worker;
 
     return GtwmFormattersRpc.rpc.peer("client", new RpcWorkerClientTransport(worker), {});
+  }
+
+  dispose(): void {
+    this.#compilerWorker?.terminate();
+    this.#compilerWorker = undefined;
+
+    this.#formattersWorker?.terminate();
+    this.#formattersWorker = undefined;
   }
 
   async loadInProject(): Promise<Gt.GtcMetaLoadedProject> {
