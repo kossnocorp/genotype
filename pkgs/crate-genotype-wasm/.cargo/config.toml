@@ -1,0 +1,3 @@
+[profile.release]
+# Optimize for small code size.
+opt-level = "s"

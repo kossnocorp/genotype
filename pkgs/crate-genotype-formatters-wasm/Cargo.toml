@@ -36,7 +36,3 @@ console_error_panic_hook = { version = "0.1.7", optional = true }
 [dev-dependencies]
 insta = "1.46.3"
 indoc = "2.0.7"
-
-[profile.release]
-# Tell `rustc` to optimize for small code size.
-opt-level = "s"
