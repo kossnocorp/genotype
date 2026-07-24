@@ -29,8 +29,6 @@ jobs:
 
       - name: Set Up Dev Env
         uses: ./.github/actions/setup
-        with:
-          target-key: publish-cargo
 
       - name: Download Build Artifacts
         uses: actions/download-artifact@v8
@@ -92,6 +90,10 @@ jobs:
             --no-confirm \
             genotype_cli
 
+      - name: Display Stats
+        if: always()
+        uses: ./.github/actions/stats
+
   publish-cargo:
     name: Publish Rust Crates
     needs: release
@@ -110,8 +112,6 @@ jobs:
 
       - name: Set Up Dev Env
         uses: ./.github/actions/setup
-        with:
-          target-key: publish-cargo
 
       - name: Clean Up Git State
         shell: bash
@@ -123,3 +123,7 @@ jobs:
         run: mise :publish/cargo
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+
+      - name: Display Stats
+        if: always()
+        uses: ./.github/actions/stats

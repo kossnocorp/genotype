@@ -20,6 +20,7 @@ cargo-binstall = "latest"
 "cargo:cargo-nextest" = "latest"
 gh = "latest"
 jaq = "latest"
+sccache = "latest" # Shared compilation cache
 
 [settings]
 lockfile = true

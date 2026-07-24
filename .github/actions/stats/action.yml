@@ -1,0 +1,12 @@
+name: Display Stats
+description: "Display stats about the workflow run."
+
+runs:
+  using: "composite"
+
+  steps:
+    # sccache ##################################################################
+
+    - name: Show sccache Stats
+      shell: bash
+      run: sccache --show-stats

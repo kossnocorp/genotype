@@ -2,73 +2,88 @@ name: Set Up Dev Env
 description: "Set up development environment by installing dependencies and restoring caches."
 
 inputs:
-  target-key:
-    required: true
-    description: "Key for caching target directory."
-
-  enable-pnpm:
+  enable-node:
     required: false
     default: "false"
-    description: "Whether to install pnpm."
+    description: "Whether to set up Node.js."
 
-  enable-uv:
+  enable-python:
     required: false
     default: "false"
-    description: "Whether to install uv."
+    description: "Whether to set up Python."
 
 runs:
   using: "composite"
 
   steps:
+    # Rust #####################################################################
+
+    # Config ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    - name: Set Rust Env Vars
+      shell: bash
+      run: |
+        echo "CARGO_INCREMENTAL=0" >> $GITHUB_ENV
+
+    # Cargo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    # Main cache
+
+    - name: Restore Cargo Cache
+      uses: actions/cache/restore@v6
+      with:
+        path: |
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+        key: cargo-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          cargo-${{ runner.os }}-${{ runner.arch }}-
+
+    # Bins cache
+
+    - name: Restore Cargo Bins Cache
+      uses: actions/cache/restore@v6
+      with:
+        path: |
+          ~/.cargo/binstall/
+        key: cargo-bins-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/rust-toolchain.toml', '**/Cargo.lock', '**/mise.lock', '**/mise.release.lock') }}
+        restore-keys: |
+          rustup-${{ runner.os }}-${{ runner.arch }}-
+
+    # mise #####################################################################
+
+    # Cache ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    # mise cache
+
+    - name: Restore mise Cache
+      uses: actions/cache/restore@v6
+      with:
+        path: ~/.local/share/mise
+        key: mise-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/mise.lock', '**/mise.release.lock') }}
+        restore-keys: |
+          mise-${{ runner.os }}-${{ runner.arch }}-
+
+    # mise state
+
+    - name: Restore mise State (Tasks)
+      uses: actions/cache/restore@v6
+      with:
+        path: ~/.local/state/mise
+        key: mise-state-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/mise.toml') }}
+        restore-keys: |
+          mise-state-${{ runner.os }}-${{ runner.arch }}-
+
+    # Install ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
     - name: Install mise
       uses: jdx/mise-action@v4
       with:
         cache: false
         install: false
 
-    - name: Restore mise Cache
-      uses: actions/cache/restore@v5
-      with:
-        path: ~/.local/share/mise
-        key: mise-${{ runner.os }}-${{ hashFiles('**/mise.toml', '**/mise.lock') }}
-        restore-keys: |
-          mise-${{ runner.os }}-
-
-    - name: Restore mise State (Tasks)
-      uses: actions/cache/restore@v5
-      with:
-        path: ~/.local/state/mise
-        key: mise-state-${{ runner.os }}-${{ hashFiles('**/mise.toml') }}-${{ github.sha }}
-        restore-keys: |
-          mise-state-${{ runner.os }}-${{ hashFiles('**/mise.toml') }}-
-          mise-state-${{ runner.os }}-
-
-    # - name: Restore Rustup Cache
-    #   uses: actions/cache/restore@v5
-    #   with:
-    #     path: ~/.rustup/toolchains/
-    #     key: rustup-${{ runner.os }}-${{ hashFiles('**/rust-toolchain.toml') }}
-    #     restore-keys: |
-    #       rustup-${{ runner.os }}-
-
-    - name: Restore Cargo Cache
-      uses: actions/cache/restore@v5
-      with:
-        path: |
-          ~/.cargo/registry/index/
-          ~/.cargo/registry/cache/
-          ~/.cargo/git/db/
-        key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
-        restore-keys: |
-          cargo-${{ runner.os }}-
-
-    # - name: Restore Cargo Bins Cache
-    #   uses: actions/cache/restore@v5
-    #   with:
-    #     path: |
-    #       ~/.cargo/binstall/
-    #       ~/.cargo/bin/
-    #     key: cargo-bins-${{ runner.os }}
+    # Tools ####################################################################
 
     - name: Install Tools
       run: |
@@ -78,48 +93,82 @@ runs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
 
-    - name: Restore Target Cache
-      uses: actions/cache/restore@v5
+    # sccache ##################################################################
+
+    - name: Configure sccache
+      uses: actions/github-script@v9
       with:
-        path: target
-        key: target-${{ runner.os }}-${{ inputs.target-key }}-${{ github.sha }}
-        restore-keys: |
-          target-${{ runner.os }}-${{ inputs.target-key }}-
-          target-${{ runner.os }}-
+        script: |
+          core.exportVariable('ACTIONS_RESULTS_URL', process.env.ACTIONS_RESULTS_URL || '');
+          core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+    - name: Set Rust sccache Env Vars
+      shell: bash
+      run: |
+        echo "SCCACHE_GHA_ENABLED=on" >> $GITHUB_ENV
+        echo "ACTIONS_CACHE_SERVICE_V2=on" >> $GITHUB_ENV
+        echo "SCCACHE_PATH=$(mise which sccache)" >> $GITHUB_ENV
+        echo "RUSTC_WRAPPER=$(mise which sccache)" >> $GITHUB_ENV
+
+    # Node.js ##################################################################
+
+    # pnpm ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    # Cache
 
     - name: Get pnpm Store Path
-      if: ${{ inputs.enable-pnpm == 'true' }}
+      if: ${{ inputs.enable-node == 'true' }}
       id: pnpm-store
       run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Restore pnpm Cache
-      if: ${{ inputs.enable-pnpm == 'true' }}
-      uses: actions/cache/restore@v5
+      if: ${{ inputs.enable-node == 'true' }}
+      uses: actions/cache/restore@v6
       with:
         path: ${{ steps.pnpm-store.outputs.STORE_PATH }}
-        key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: pnpm-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/pnpm-lock.yaml') }}
         restore-keys: |
-          pnpm-${{ runner.os }}-
+          pnpm-${{ runner.os }}-${{ runner.arch }}
+
+    # Install
 
     - name: Install pnpm
-      if: ${{ inputs.enable-pnpm == 'true' }}
+      if: ${{ inputs.enable-node == 'true' }}
       run: mise :install/pnpm
       shell: bash
 
+    # Python ###################################################################
+
+    # venv ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    - name: Restore .venv
+      if: ${{ inputs.enable-python == 'true' }}
+      uses: actions/cache/restore@v6
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('uv.lock', '**/pyproject.toml') }}
+        restore-keys: |
+          venv-${{ runner.os }}-${{ runner.arch }}-
+
+    # uv ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    # Cache
+
     - name: Restore uv Cache
-      if: ${{ inputs.enable-uv == 'true' }}
-      uses: actions/cache/restore@v5
+      if: ${{ inputs.enable-python == 'true' }}
+      uses: actions/cache/restore@v6
       with:
         path: |
           ~/.cache/uv
           ~/.local/share/uv
-          .venv
-        key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+        key: uv-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('uv.lock') }}
         restore-keys: |
-          uv-${{ runner.os }}-
+          uv-${{ runner.os }}-${{ runner.arch }}-
+
+    # Install
 
     - name: Install uv
-      if: ${{ inputs.enable-uv == 'true' }}
+      if: ${{ inputs.enable-python == 'true' }}
       run: mise :install/uv
       shell: bash

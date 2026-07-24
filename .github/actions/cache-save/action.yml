@@ -2,139 +2,166 @@ name: Save Cache
 description: "Save caches for the development environment."
 
 inputs:
-  target-key:
-    required: true
-    description: "Key for caching target directory."
-
-  enable-pnpm:
+  enable-node:
     required: false
     default: "false"
-    description: "Whether to store pnpm cache."
+    description: "Whether to store Node.js cache."
 
-  enable-uv:
+  enable-python:
     required: false
     default: "false"
-    description: "Whether to store uv cache."
+    description: "Whether to store Python cache."
 
 runs:
   using: "composite"
 
   steps:
-    - name: Lookup mise State (Tasks) Cache
-      id: lookup-mise
-      uses: actions/cache/restore@v5
-      with:
-        path: ~/.local/state/mise
-        key: mise-state-${{ runner.os }}-${{ hashFiles('**/mise.toml') }}-${{ github.sha }}
-        lookup-only: true
+    # Rust #####################################################################
 
-    - name: Save mise State (Tasks)
-      if: ${{ steps.lookup-mise.outputs.cache-hit != 'true' }}
-      uses: actions/cache/save@v5
-      with:
-        path: ~/.local/state/mise
-        key: mise-state-${{ runner.os }}-${{ hashFiles('**/mise.toml') }}-${{ github.sha }}
+    # Cargo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    # - name: Lookup Rustup Cache
-    #   id: lookup-rustup
-    #   uses: actions/cache/restore@v5
-    #   with:
-    #     path: ~/.rustup/toolchains/
-    #     key: rustup-${{ runner.os }}-${{ hashFiles('**/rust-toolchain.toml') }}
-    #     lookup-only: true
-
-    # - name: Save Rustup Cache
-    #   if: ${{ steps.lookup-rustup.outputs.cache-hit != 'true' }}
-    #   uses: actions/cache/save@v5
-    #   with:
-    #     path: ~/.rustup/toolchains/
-    #     key: rustup-${{ runner.os }}-${{ hashFiles('**/rust-toolchain.toml') }}
+    # Main cache
 
     - name: Lookup Cargo Cache
       id: lookup-cargo
-      uses: actions/cache/restore@v5
+      uses: actions/cache/restore@v6
       with:
         path: |
           ~/.cargo/registry/index/
           ~/.cargo/registry/cache/
           ~/.cargo/git/db/
-        key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+        key: cargo-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/Cargo.lock') }}
         lookup-only: true
 
     - name: Save Cargo Cache
       if: ${{ steps.lookup-cargo.outputs.cache-hit != 'true' }}
-      uses: actions/cache/save@v5
+      uses: actions/cache/save@v6
       with:
         path: |
           ~/.cargo/registry/index/
           ~/.cargo/registry/cache/
           ~/.cargo/git/db/
-        key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+        key: cargo-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/Cargo.lock') }}
 
-    # - name: Lookup Cargo Bins Cache
-    #   id: lookup-cargo-bins
-    #   uses: actions/cache/restore@v5
-    #   with:
-    #     path: |
-    #       ~/.cargo/binstall/
-    #       ~/.cargo/bin/
-    #     key: cargo-bins-${{ runner.os }}
-    #     lookup-only: true
+    # Bins cache
 
-    # - name: Save Cargo Bins Cache
-    #   if: ${{ steps.lookup-cargo-bins.outputs.cache-hit != 'true' }}
-    #   uses: actions/cache/save@v5
-    #   with:
-    #     path: |
-    #       ~/.cargo/binstall/
-    #       ~/.cargo/bin/
-    #     key: cargo-bins-${{ runner.os }}
-
-    - name: Save Target Cache
-      uses: ./.github/actions/cache-save/target
+    - name: Lookup Cargo Bins Cache
+      id: lookup-cargo-bins
+      uses: actions/cache/restore@v6
       with:
-        target-key: ${{ inputs.target-key }}
+        path: |
+          ~/.cargo/binstall/
+        key: cargo-bins-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/rust-toolchain.toml', '**/Cargo.lock', '**/mise.lock', '**/mise.release.lock') }}
+        lookup-only: true
+
+    - name: Save Cargo Bins Cache
+      if: ${{ steps.lookup-cargo-bins.outputs.cache-hit != 'true' }}
+      uses: actions/cache/save@v6
+      with:
+        path: |
+          ~/.cargo/binstall/
+        key: cargo-bins-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/rust-toolchain.toml', '**/Cargo.lock', '**/mise.lock', '**/mise.release.lock') }}
+
+    # Node.js ##################################################################
+
+    # pnpm ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     - name: Get pnpm Store Path
-      if: ${{ inputs.enable-pnpm == 'true' }}
+      if: ${{ inputs.enable-node == 'true' }}
       id: pnpm-store
       run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Lookup pnpm Cache
-      if: ${{ inputs.enable-pnpm == 'true' }}
+      if: ${{ inputs.enable-node == 'true' }}
       id: lookup-pnpm
-      uses: actions/cache/restore@v5
+      uses: actions/cache/restore@v6
       with:
         path: ${{ steps.pnpm-store.outputs.STORE_PATH }}
-        key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: pnpm-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/pnpm-lock.yaml') }}
         lookup-only: true
 
     - name: Save pnpm cache
-      if: ${{ inputs.enable-pnpm == 'true' && steps.lookup-pnpm.outputs.cache-hit != 'true' }}
-      uses: actions/cache/save@v5
+      if: ${{ inputs.enable-node == 'true' && steps.lookup-pnpm.outputs.cache-hit != 'true' }}
+      uses: actions/cache/save@v6
       with:
         path: ${{ steps.pnpm-store.outputs.STORE_PATH }}
-        key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: pnpm-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/pnpm-lock.yaml') }}
 
-    - name: Lookup uv Cache
-      if: ${{ inputs.enable-uv == 'true' }}
-      id: lookup-uv
-      uses: actions/cache/restore@v5
+    # Python ###################################################################
+
+    # venv ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    - name: Lookup venv Cache
+      if: ${{ inputs.enable-python == 'true' }}
+      id: lookup-venv
+      uses: actions/cache/restore@v6
       with:
-        path: |
-          ~/.cache/uv
-          ~/.local/share/uv
-          .venv
-        key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+        path: .venv
+        key: venv-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('uv.lock', '**/pyproject.toml') }}
         lookup-only: true
 
     - name: Save uv Cache
-      if: ${{ inputs.enable-uv == 'true' && steps.lookup-uv.outputs.cache-hit != 'true' }}
-      uses: actions/cache/save@v5
+      if: ${{ inputs.enable-python == 'true' && steps.lookup-venv.outputs.cache-hit != 'true' }}
+      uses: actions/cache/save@v6
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('uv.lock', '**/pyproject.toml') }}
+
+    # uv ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    - name: Lookup uv Cache
+      if: ${{ inputs.enable-python == 'true' }}
+      id: lookup-uv
+      uses: actions/cache/restore@v6
       with:
         path: |
           ~/.cache/uv
           ~/.local/share/uv
-          .venv
-        key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+        key: uv-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('uv.lock') }}
+        lookup-only: true
+
+    - name: Save uv Cache
+      if: ${{ inputs.enable-python == 'true' && steps.lookup-uv.outputs.cache-hit != 'true' }}
+      uses: actions/cache/save@v6
+      with:
+        path: |
+          ~/.cache/uv
+          ~/.local/share/uv
+        key: uv-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('uv.lock') }}
+
+    # mise #####################################################################
+
+    # mise cache ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    - name: Lookup mise Cache
+      id: lookup-mise
+      uses: actions/cache/restore@v6
+      with:
+        path: ~/.local/share/mise
+        key: mise-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/mise.lock', '**/mise.release.lock') }}
+        lookup-only: true
+
+    - name: Save mise Cache
+      if: ${{ steps.lookup-mise.outputs.cache-hit != 'true' }}
+      uses: actions/cache/save@v6
+      with:
+        path: ~/.local/share/mise
+        key: mise-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/mise.lock', '**/mise.release.lock') }}
+
+    # mise state ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    - name: Lookup mise State (Tasks) Cache
+      id: lookup-mise-state
+      uses: actions/cache/restore@v6
+      with:
+        path: ~/.local/state/mise
+        key: mise-state-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/mise.toml') }}
+        lookup-only: true
+
+    - name: Save mise State (Tasks)
+      if: ${{ steps.lookup-mise-state.outputs.cache-hit != 'true' }}
+      uses: actions/cache/save@v6
+      with:
+        path: ~/.local/state/mise
+        key: mise-state-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/mise.toml') }}

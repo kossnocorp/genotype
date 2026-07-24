@@ -54,8 +54,6 @@ jobs:
 
       - name: Set Up Dev Env
         uses: ./.github/actions/setup
-        with:
-          target-key: build-${{ matrix.target }}
 
       - name: Add Target
         run: rustup target add ${{ matrix.target }}
@@ -76,11 +74,6 @@ jobs:
           fi
           echo "value=$ext" >> "$GITHUB_OUTPUT"
 
-      - name: Save Target Cache
-        uses: ./.github/actions/cache-save/target
-        with:
-          target-key: build-${{ matrix.target }}-${{ github.sha }}
-
       - name: Upload CLI Binaries
         uses: actions/upload-artifact@v6
         with:
@@ -94,3 +87,7 @@ jobs:
           path: target/${{ matrix.target }}/release/gts${{ steps.bin_ext.outputs.value }}
           name: gts-${{ inputs.artifact_suffix || github.sha }}-${{ matrix.target }}${{ steps.bin_ext.outputs.value }}
           if-no-files-found: error
+
+      - name: Display Stats
+        if: always()
+        uses: ./.github/actions/stats
