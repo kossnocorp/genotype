@@ -1,6 +1,6 @@
 [package]
 name = "genotype_test"
-version = "0.16.1"
+version = "0.16.2"
 edition = "2024"
 description = "Internal Genotype language test helpers"
 authors = ["Sasha Koss <koss@nocorp.me>"]
@@ -9,7 +9,7 @@ repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
 miette = { version = "7.6.0", features = ["serde"] }
-genotype_parser = { version = "0.16.1", path = "../crate-genotype-parser", features = ["test"] }
+genotype_parser = { version = "0.16.2", path = "../crate-genotype-parser", features = ["test"] }
 relative-path = { version = "1.9.3", features = ["serde"] }
 pretty_assertions = "1.4.1"
 insta = { version = "1.46.3", features = ["ron", "redactions"] }

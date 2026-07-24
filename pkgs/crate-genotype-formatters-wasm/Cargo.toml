@@ -1,6 +1,6 @@
 [package]
 name = "genotype_formatters_wasm"
-version = "0.16.1"
+version = "0.16.2"
 edition = "2024"
 description = "Genotype language formatters Wasm crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
