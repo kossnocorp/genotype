@@ -82,33 +82,38 @@ export class PlaygroundManager {
       const diagnosticsManager = await this.#diagnosticsWc.managerPromise;
       diagnosticsManager.clear();
 
+      // TODO: Add project reload support and reuse the same GtwmClient instance.
       const gt = new GtwmClient({ fs: this.#fs, onDiagnostic: this.#onDiagnostic.bind(this) });
 
-      const _loadedProjectMeta = await gt.loadInProject();
+      try {
+        const _loadedProjectMeta = await gt.loadInProject();
 
-      const loadedModulesMeta = await gt.loadInModules();
+        const loadedModulesMeta = await gt.loadInModules();
 
-      if (!this.#state.filePath) {
-        const modules = [...loadedModulesMeta.modules];
-        modules.sort();
-        const firstModuleFilePath = modules[0];
-        if (firstModuleFilePath) this.#state.filePath = firstModuleFilePath;
+        if (!this.#state.filePath) {
+          const modules = [...loadedModulesMeta.modules];
+          modules.sort();
+          const firstModuleFilePath = modules[0];
+          if (firstModuleFilePath) this.#state.filePath = firstModuleFilePath;
+        }
+
+        this.#wc.updateFileTabs({
+          srcPath: loadedModulesMeta.paths.src,
+          modulePaths: loadedModulesMeta.modules,
+          sourceFilePath: this.#state.filePath,
+        });
+
+        const compiledMeta = await gt.compile();
+
+        this.#compiledMetaPromise.resolve(compiledMeta);
+
+        const filePath = this.#state.filePath ?? compiledMeta.modules[0].source;
+        if (!filePath) return;
+
+        await this.openFile(filePath);
+      } finally {
+        gt.dispose();
       }
-
-      this.#wc.updateFileTabs({
-        srcPath: loadedModulesMeta.paths.src,
-        modulePaths: loadedModulesMeta.modules,
-        sourceFilePath: this.#state.filePath,
-      });
-
-      const compiledMeta = await gt.compile();
-
-      this.#compiledMetaPromise.resolve(compiledMeta);
-
-      const filePath = this.#state.filePath ?? compiledMeta.modules[0].source;
-      if (!filePath) return;
-
-      await this.openFile(filePath);
     } catch (error) {
       this.#compiledMetaPromise.reject(error);
     }
