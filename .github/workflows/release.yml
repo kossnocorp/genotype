@@ -29,8 +29,6 @@ jobs:
 
       - name: Set Up Dev Env
         uses: ./.github/actions/setup
-        with:
-          target-key: publish-cargo
 
       - name: Download Build Artifacts
         uses: actions/download-artifact@v8
@@ -110,8 +108,6 @@ jobs:
 
       - name: Set Up Dev Env
         uses: ./.github/actions/setup
-        with:
-          target-key: publish-cargo
 
       - name: Clean Up Git State
         shell: bash

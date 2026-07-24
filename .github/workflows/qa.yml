@@ -24,7 +24,6 @@ jobs:
       - name: Set Up Dev Env
         uses: ./.github/actions/setup
         with:
-          target-key: qa
           enable-pnpm: true
           enable-uv: true
 
@@ -52,7 +51,6 @@ jobs:
         if: always()
         uses: ./.github/actions/cache-save
         with:
-          target-key: qa
           enable-pnpm: true
           enable-uv: true
 

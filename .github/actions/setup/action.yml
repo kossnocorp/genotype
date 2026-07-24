@@ -2,10 +2,6 @@ name: Set Up Dev Env
 description: "Set up development environment by installing dependencies and restoring caches."
 
 inputs:
-  target-key:
-    required: true
-    description: "Key for caching target directory."
-
   enable-pnpm:
     required: false
     default: "false"

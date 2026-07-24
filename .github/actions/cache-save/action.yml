@@ -2,10 +2,6 @@ name: Save Cache
 description: "Save caches for the development environment."
 
 inputs:
-  target-key:
-    required: true
-    description: "Key for caching target directory."
-
   enable-pnpm:
     required: false
     default: "false"
