@@ -90,11 +90,6 @@ runs:
     #       ~/.cargo/bin/
     #     key: cargo-bins-${{ runner.os }}
 
-    - name: Save Target Cache
-      uses: ./.github/actions/cache-save/target
-      with:
-        target-key: ${{ inputs.target-key }}
-
     - name: Get pnpm Store Path
       if: ${{ inputs.enable-pnpm == 'true' }}
       id: pnpm-store

@@ -78,14 +78,17 @@ runs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
 
-    - name: Restore Target Cache
-      uses: actions/cache/restore@v5
-      with:
-        path: target
-        key: target-${{ runner.os }}-${{ inputs.target-key }}-${{ github.sha }}
-        restore-keys: |
-          target-${{ runner.os }}-${{ inputs.target-key }}-
-          target-${{ runner.os }}-
+    - name: Set Up sccache
+      uses: mozilla-actions/sccache-action@v0.0.10
+
+    - name: Set Rust sccache Env Vars
+      run: |
+        echo "SCCACHE_GHA_ENABLED=true" >> $GITHUB_ENV
+        echo "RUSTC_WRAPPER=sccache" >> $GITHUB_ENV
+
+    - name: Set Rust Env Vars
+      run: |
+        echo "CARGO_INCREMENTAL=0" >> $GITHUB_ENV
 
     - name: Get pnpm Store Path
       if: ${{ inputs.enable-pnpm == 'true' }}

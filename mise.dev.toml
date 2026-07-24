@@ -5,3 +5,4 @@ fnox = "latest"
 "cargo:bacon" = "latest"
 shfmt = "latest"
 watchexec = "latest"
+sccache = "latest" # Shared compilation cache

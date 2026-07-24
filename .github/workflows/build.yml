@@ -76,11 +76,6 @@ jobs:
           fi
           echo "value=$ext" >> "$GITHUB_OUTPUT"
 
-      - name: Save Target Cache
-        uses: ./.github/actions/cache-save/target
-        with:
-          target-key: build-${{ matrix.target }}-${{ github.sha }}
-
       - name: Upload CLI Binaries
         uses: actions/upload-artifact@v6
         with:
