@@ -689,6 +689,68 @@ mod tests {
     }
 
     #[test]
+    fn test_render_import_ext_ts() {
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
+        project.config_mut().ts.lang.ext = TsImportExt::Ts;
+
+        let dist = compile(&project);
+
+        let book_file = get_dist_file(&dist, "src/book.ts");
+        assert_snapshot!(
+            book_file.source_code,
+            @r#"
+        import { Author } from "./author.ts";
+
+        export interface Book {
+          title: string;
+          author: Author;
+        }
+        "#
+        );
+
+        let index_file = get_dist_file(&dist, "src/index.ts");
+        assert_snapshot!(
+            index_file.source_code,
+            @r#"
+        export * from "./author.ts";
+        export * from "./book.ts";
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_import_ext_none() {
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
+        project.config_mut().ts.lang.ext = TsImportExt::None;
+
+        let dist = compile(&project);
+
+        let book_file = get_dist_file(&dist, "src/book.ts");
+        assert_snapshot!(
+            book_file.source_code,
+            @r#"
+        import { Author } from "./author";
+
+        export interface Book {
+          title: string;
+          author: Author;
+        }
+        "#
+        );
+
+        let index_file = get_dist_file(&dist, "src/index.ts");
+        assert_snapshot!(
+            index_file.source_code,
+            @r#"
+        export * from "./author";
+        export * from "./book";
+        "#
+        );
+    }
+
+    #[test]
     fn test_render_without_package_global() {
         let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
         let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();

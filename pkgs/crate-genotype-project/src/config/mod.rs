@@ -190,7 +190,7 @@ enabled = true
 [ts]
 enabled = true
 package = true
-tsconfig = { allowImportingTsExtensions = false }
+import_ext = "ts"
 "#,
         )
         .unwrap();
@@ -198,6 +198,7 @@ tsconfig = { allowImportingTsExtensions = false }
         assert!(!config.package);
         assert_eq!(config.ts.common.package, Some(true));
         assert_eq!(config.py.common.package, None);
+        assert_eq!(config.ts.lang.ext, TsImportExt::Ts);
     }
 
     #[test]

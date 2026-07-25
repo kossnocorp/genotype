@@ -31,9 +31,7 @@ mod tests {
     fn render_ts_ext() {
         let mut ctx = TsRenderContext {
             config: &TsConfigLang {
-                tsconfig: TsConfigLangTsconfig {
-                    allow_importing_ts_extensions: true,
-                },
+                ext: TsImportExt::Ts,
                 ..Default::default()
             },
             ..Default::default()
@@ -41,6 +39,21 @@ mod tests {
         assert_snapshot!(
             render_node_with(Tst::path("./path/to/module"), &mut ctx),
             @"./path/to/module.ts"
+        );
+    }
+
+    #[test]
+    fn render_none_ext() {
+        let mut ctx = TsRenderContext {
+            config: &TsConfigLang {
+                ext: TsImportExt::None,
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+        assert_snapshot!(
+            render_node_with(Tst::path("./path/to/module"), &mut ctx),
+            @"./path/to/module"
         );
     }
 
