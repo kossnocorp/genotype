@@ -184,7 +184,7 @@ enabled = true
 
     #[test]
     fn test_parse_target() {
-        let config = toml::from_str::<GtpConfig>(
+        let config = GtpConfig::from_toml_str(
             r#"package = false
 
 [ts]
@@ -199,6 +199,42 @@ import_ext = "ts"
         assert_eq!(config.ts.common.package, Some(true));
         assert_eq!(config.py.common.package, None);
         assert_eq!(config.ts.lang.ext, TsImportExt::Ts);
+    }
+
+    #[test]
+    fn test_parse_ts_import_ext() {
+        assert_eq!(
+            GtpConfig::from_toml_str("[ts]\nimport_ext = \"js\"\n")
+                .unwrap()
+                .ts
+                .lang
+                .ext,
+            TsImportExt::Js
+        );
+        assert_eq!(
+            GtpConfig::from_toml_str("[ts]\nimport_ext = \"ts\"\n")
+                .unwrap()
+                .ts
+                .lang
+                .ext,
+            TsImportExt::Ts
+        );
+        assert_eq!(
+            GtpConfig::from_toml_str("[ts]\nimport_ext = \"none\"\n")
+                .unwrap()
+                .ts
+                .lang
+                .ext,
+            TsImportExt::None
+        );
+        assert_eq!(
+            GtpConfig::from_toml_str("[ts]\nenabled = true\n")
+                .unwrap()
+                .ts
+                .lang
+                .ext,
+            TsImportExt::Js
+        );
     }
 
     #[test]
