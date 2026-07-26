@@ -17,10 +17,9 @@ mkdir "$DIST_DIR"
 echo -e "\n🌀 Building extension bundle..."
 if ! output=$(pnpm exec vite build 2>&1); then
 
-	echo "🔴 vite: FAILED"
-	echo "--- Output ------------------------------------------"
+	echo '╭─ 🔴 `vite build` failed ─────────────────────────╮'
 	echo "$output"
-	echo "-----------------------------------------------------"
+	echo "╰───────────────────────────────────────────────────╯"
 	exit 1
 fi
 
@@ -34,21 +33,22 @@ if ! output=$(rsync -av \
 	--include='*.md' \
 	--exclude='*' \
 	. "$DIST_DIR/" 2>&1); then
-	echo "🔴 rsync: FAILED"
-	echo "--- Output ------------------------------------------"
+
+	echo '╭─ 🔴 `rsync` failed ──────────────────────────────╮'
 	echo "$output"
-	echo "-----------------------------------------------------"
+	echo "╰───────────────────────────────────────────────────╯"
 	exit 1
 fi
 
 SRC_SYNTAX_PATH="$PKG_DIR/node_modules/@genotype-lang/grammar-tm/genotype.json"
 DIST_SYNTAX_PATH="$DIST_DIR/syntaxes/genotype.tmLanguage.json"
 mkdir -p "$(dirname "$DIST_SYNTAX_PATH")"
+
 if ! output=$(cp "$SRC_SYNTAX_PATH" "$DIST_SYNTAX_PATH" 2>&1); then
-	echo "🔴 cp: FAILED"
-	echo "--- Output ------------------------------------------"
+
+	echo '╭─ 🔴 `cp` failed ─────────────────────────────────╮'
 	echo "$output"
-	echo "-----------------------------------------------------"
+	echo "╰───────────────────────────────────────────────────╯"
 	exit 1
 fi
 
@@ -71,10 +71,10 @@ if ! output=$(
 ' "$DIST_DIR"/package.json >"$TMP_PACKAGE_PATH" && mv "$TMP_PACKAGE_PATH" "$DIST_DIR"/package.json
 	2>&1
 ); then
-	echo "🔴 jaq: FAILED"
-	echo "--- Output ------------------------------------------"
+
+	echo '╭─ 🔴 `jaq` failed ────────────────────────────────╮'
 	echo "$output"
-	echo "-----------------------------------------------------"
+	echo "╰───────────────────────────────────────────────────╯"
 	exit 1
 fi
 
