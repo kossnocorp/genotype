@@ -35,8 +35,15 @@ impl<'project> GtlCompiler<'project> for TsCompiler<'project> {
         &self,
         project: &GtlProject<'_, '_, TsProjectModule>,
     ) -> Option<GtlGenerations<TsProjectModule>> {
-        let (barrel_file, diagnostics) = self.generate_barrel_file(&project.modules);
-        Some((vec![barrel_file], Some(diagnostics)))
+        let (barrel_file, mut diagnostics) = self.generate_barrel_file(&project.modules);
+        let mut files = vec![barrel_file];
+        if self.config.package_enabled()
+            && let Some(tsconfig) = &self.lang_config().lang.tsconfig
+            && let Some(tsconfig_file) = self.generate_tsconfig_file(tsconfig, &mut diagnostics)
+        {
+            files.push(tsconfig_file);
+        }
+        Some((files, Some(diagnostics)))
     }
 
     fn gitignore_source_code(&self) -> Option<String> {
@@ -45,6 +52,24 @@ impl<'project> GtlCompiler<'project> for TsCompiler<'project> {
 }
 
 impl TsCompiler<'_> {
+    fn generate_tsconfig_file(
+        &self,
+        tsconfig: &TsConfigLangTsconfig,
+        diagnostics: &mut Vec<GtDiagnostic>,
+    ) -> Option<GtlGeneration<TsProjectModule>> {
+        let path = self.config.pkg_file_path(&"tsconfig.json".into());
+        match serde_json::to_string_pretty(tsconfig) {
+            Ok(source_code) => Some(GtlProjectFileExtraGenerated { path, source_code }.into()),
+
+            Err(err) => {
+                diagnostics.push(GtDiagnostic::error(format!(
+                    "Failed to generate `{path}`: {err}"
+                )));
+                None
+            }
+        }
+    }
+
     fn generate_barrel_file(
         &self,
         modules: &IndexMap<GtpModulePath, GtlProjectModuleState<TsProjectModule>>,
@@ -516,6 +541,51 @@ mod tests {
           diagnostics: [],
         )
         "#
+        );
+    }
+
+    #[test]
+    fn test_render_ext_and_tsconfig() {
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
+        project.config_mut().ts.lang.ext = TsImportExt::Ts;
+        project.config_mut().ts.lang.tsconfig = Some(
+            toml::from_str(
+                r#"include = ["src/**/*.ts"]
+    "#,
+            )
+            .unwrap(),
+        );
+
+        let dist = compile(&project);
+
+        assert_snapshot!(
+          get_dist_file(&dist, "src/book.ts").source_code,
+          @r#"
+      import { Author } from "./author.ts";
+
+      export interface Book {
+        title: string;
+        author: Author;
+      }
+      "#
+        );
+        assert_snapshot!(
+          get_dist_file(&dist, "src/index.ts").source_code,
+          @r#"
+      export * from "./author.ts";
+      export * from "./book.ts";
+      "#
+        );
+        assert_snapshot!(
+          get_dist_file(&dist, "tsconfig.json").source_code,
+          @r#"
+      {
+        "include": [
+          "src/**/*.ts"
+        ]
+      }
+      "#
         );
     }
 

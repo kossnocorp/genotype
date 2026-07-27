@@ -6,7 +6,10 @@ pub struct TsConfigLang {
     pub mode: TsMode,
     #[serde(default)]
     pub prefer: TsPrefer,
-    pub tsconfig: TsConfigLangTsconfig,
+    #[serde(default)]
+    pub ext: TsImportExt,
+    #[serde(default)]
+    pub tsconfig: Option<TsConfigLangTsconfig>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
@@ -25,29 +28,36 @@ pub enum TsPrefer {
     Alias,
 }
 
-#[derive(Default, Debug, Serialize, Deserialize, PartialEq, Clone)]
-pub struct TsConfigLangTsconfig {
-    #[serde(rename = "allowImportingTsExtensions")]
-    pub allow_importing_ts_extensions: bool,
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum TsImportExt {
+    #[default]
+    Js,
+    Ts,
+    None,
 }
+
+pub type TsConfigLangTsconfig = toml::Table;
 
 impl TsConfigLang {
     pub fn format_module_path(&self, path: &GtpPkgSrcDirRelativePath) -> String {
-        let mut path = path.as_str().to_string();
-        if !self.tsconfig.allow_importing_ts_extensions && path.ends_with(".ts") {
-            let len = path.len();
-            path.replace_range(len - 2..len, "js");
+        let path = path.as_str();
+        let Some(path) = path.strip_suffix(".ts") else {
+            return path.to_string();
+        };
+        match self.ext {
+            TsImportExt::Js => format!("{path}.js"),
+            TsImportExt::Ts => format!("{path}.ts"),
+            TsImportExt::None => path.to_string(),
         }
-        path
     }
 
     pub fn format_import_path(&self, path: &str) -> String {
-        let ext = if self.tsconfig.allow_importing_ts_extensions {
-            "ts"
-        } else {
-            "js"
-        };
-        format!("{path}.{ext}")
+        match self.ext {
+            TsImportExt::Js => format!("{path}.js"),
+            TsImportExt::Ts => format!("{path}.ts"),
+            TsImportExt::None => path.to_string(),
+        }
     }
 }
 
@@ -62,13 +72,15 @@ mod tests {
     }
 
     #[test]
+    fn test_default_tsconfig() {
+        assert_eq!(TsConfigLang::default().tsconfig, None);
+    }
+
+    #[test]
     fn test_format_module_path() {
         let config = TsConfigLang {
-            mode: Default::default(),
-            prefer: Default::default(),
-            tsconfig: TsConfigLangTsconfig {
-                allow_importing_ts_extensions: true,
-            },
+            ext: TsImportExt::Ts,
+            ..Default::default()
         };
         assert_eq!(
             config.format_module_path(&"path/to/module.ts".into()),
@@ -76,36 +88,42 @@ mod tests {
         );
 
         let config = TsConfigLang {
-            mode: Default::default(),
-            prefer: Default::default(),
-            tsconfig: TsConfigLangTsconfig {
-                allow_importing_ts_extensions: false,
-            },
+            ext: TsImportExt::Js,
+            ..Default::default()
         };
         assert_eq!(
             config.format_module_path(&"path/to/module.ts".into()),
             "path/to/module.js"
+        );
+
+        let config = TsConfigLang {
+            ext: TsImportExt::None,
+            ..Default::default()
+        };
+        assert_eq!(
+            config.format_module_path(&"path/to/module.ts".into()),
+            "path/to/module"
         );
     }
 
     #[test]
     fn test_format_import_path() {
         let config = TsConfigLang {
-            mode: Default::default(),
-            prefer: Default::default(),
-            tsconfig: TsConfigLangTsconfig {
-                allow_importing_ts_extensions: true,
-            },
+            ext: TsImportExt::Ts,
+            ..Default::default()
         };
         assert_eq!(config.format_import_path("foo"), "foo.ts");
 
         let config = TsConfigLang {
-            mode: Default::default(),
-            prefer: Default::default(),
-            tsconfig: TsConfigLangTsconfig {
-                allow_importing_ts_extensions: false,
-            },
+            ext: TsImportExt::Js,
+            ..Default::default()
         };
         assert_eq!(config.format_import_path("foo"), "foo.js");
+
+        let config = TsConfigLang {
+            ext: TsImportExt::None,
+            ..Default::default()
+        };
+        assert_eq!(config.format_import_path("foo"), "foo");
     }
 }

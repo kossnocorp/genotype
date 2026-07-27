@@ -561,9 +561,8 @@ mod tests {
               "formatters": [],
               "mode": types,
               "prefer": interface,
-              "tsconfig": TsConfigLangTsconfig(
-                allowImportingTsExtensions: false,
-              ),
+              "ext": js,
+              "tsconfig": None,
             },
             py: {
               "module": PyModuleName("module"),
@@ -807,9 +806,8 @@ mod tests {
               "formatters": [],
               "mode": types,
               "prefer": interface,
-              "tsconfig": TsConfigLangTsconfig(
-                allowImportingTsExtensions: false,
-              ),
+              "ext": js,
+              "tsconfig": None,
             },
             py: {
               "module": PyModuleName("module"),
@@ -967,9 +965,8 @@ mod tests {
               "formatters": [],
               "mode": types,
               "prefer": interface,
-              "tsconfig": TsConfigLangTsconfig(
-                allowImportingTsExtensions: false,
-              ),
+              "ext": js,
+              "tsconfig": None,
             },
             py: {
               "module": PyModuleName("module"),

@@ -190,14 +190,35 @@ enabled = true
 [ts]
 enabled = true
 package = true
-tsconfig = { allowImportingTsExtensions = false }
+ext = "ts"
 "#,
         )
         .unwrap();
 
         assert!(!config.package);
         assert_eq!(config.ts.common.package, Some(true));
+        assert_eq!(config.ts.lang.ext, TsImportExt::Ts);
         assert_eq!(config.py.common.package, None);
+    }
+
+    #[test]
+    fn test_parse_ts_ext() {
+        let config = GtpConfig::from_toml_str(
+            r#"[ts]
+ext = "none"
+tsconfig = { include = ["src/**/*.ts"] }
+"#,
+        )
+        .unwrap();
+
+        assert_eq!(config.ts.lang.ext, TsImportExt::None);
+        let tsconfig = config.ts.lang.tsconfig.as_ref().unwrap();
+        assert_eq!(
+            tsconfig.get("include"),
+            Some(&toml::Value::Array(vec![toml::Value::String(
+                "src/**/*.ts".into()
+            )]))
+        );
     }
 
     #[test]

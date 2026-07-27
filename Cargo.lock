@@ -1244,6 +1244,7 @@ dependencies = [
  "pretty_assertions",
  "relative-path",
  "serde",
+ "toml 0.8.22",
 ]
 
 [[package]]
@@ -1269,6 +1270,7 @@ dependencies = [
  "pretty_assertions",
  "semver",
  "serde",
+ "serde_json",
  "toml 0.8.22",
  "toml_edit",
 ]
