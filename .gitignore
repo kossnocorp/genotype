@@ -1,3 +1,5 @@
+# Worktrees
+/trees/
 # Rust
 /target/
 /bin/

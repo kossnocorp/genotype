@@ -1,13 +1,5 @@
 {
-  "rust-analyzer.cargo.features": "all",
-  "editor.defaultFormatter": "oxc.oxc-vscode",
-  "[shellscript]": {
-    "editor.defaultFormatter": "mkhl.shfmt"
-  },
-  "files.associations": {
-    "*.css": "tailwindcss",
-    ".miserc.toml": "tera"
-  },
-  "languageToolLinter.languageTool.ignoredWordsInWorkspace": ["enums", "litty", "serde"],
-  "js/ts.experimental.useTsgo": true
+  "files.exclude": {
+    "trees/**/*": true
+  }
 }
