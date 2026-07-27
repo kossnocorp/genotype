@@ -33,6 +33,12 @@ impl RsConvert<RsDefinition> for GtAlias {
                 RsDefinition::Struct(branded.convert(context)?)
             }
 
+            GtDescriptor::Literal(literal) => {
+                context.provide_definition_id(self.id.clone());
+                context.provide_doc(doc);
+                RsDefinition::Struct(literal.convert(context)?)
+            }
+
             GtDescriptor::Union(union) => {
                 context.provide_definition_id(self.id.clone());
                 context.provide_doc(doc);
@@ -216,6 +222,63 @@ mod tests {
         ))
         "#,
         );
+    }
+
+    #[test]
+    fn test_convert_literal_alias() {
+        let mut context = RsConvertContext::empty("module".into());
+        assert_ron_snapshot!(
+            GtAlias {
+                id: GtDefinitionId("module".into(), "Hello".into()),
+                span: (0, 0).into(),
+                doc: None,
+                attributes: vec![],
+                name: GtIdentifier::new((0, 0).into(), "Hello".into()),
+                generics: vec![],
+                descriptor: Gt::literal_string("Hello, world!").into(),
+            }
+            .convert(&mut context)
+            .unwrap(),
+            @r#"
+        Struct(RsStruct(
+          id: GtDefinitionId(GtModuleId("module"), "Hello"),
+          doc: None,
+          attributes: [
+            RsAttribute("serde_literal(\"Hello, world!\")"),
+            RsAttribute("derive(Serialize, Deserialize)"),
+          ],
+          name: RsIdentifier("Hello"),
+          generics: [],
+          fields: Unit,
+        ))
+        "#,
+        );
+        assert_ron_snapshot!(
+            context.imports(),
+            @r#"
+        [
+          RsUse(
+            dependency: Litty,
+            reference: Named([
+              Name(RsIdentifier("serde_literal")),
+            ]),
+          ),
+          RsUse(
+            dependency: Serde,
+            reference: Named([
+              Name(RsIdentifier("Deserialize")),
+            ]),
+          ),
+          RsUse(
+            dependency: Serde,
+            reference: Named([
+              Name(RsIdentifier("Serialize")),
+            ]),
+          ),
+        ]
+        "#,
+        );
+        assert!(context.drain_hoisted().is_empty());
     }
 
     #[test]
