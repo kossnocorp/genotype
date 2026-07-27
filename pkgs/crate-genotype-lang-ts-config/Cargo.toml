@@ -12,6 +12,7 @@ genotype_core = { version = "0.16.2", path = "../crate-genotype-core" }
 genotype_project_core = { version = "0.16.2", path = "../crate-genotype-project-core" }
 serde = { version = "1.0.228", features = ["derive"] }
 relative-path = { version = "1.9.3", features = ["serde"] }
+toml = { version = "0.8.19" }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
