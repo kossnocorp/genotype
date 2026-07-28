@@ -14,6 +14,10 @@ const fn default_package() -> bool {
     true
 }
 
+const fn default_warning_comment() -> bool {
+    true
+}
+
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct GtpConfig {
     /// Project name.
@@ -38,6 +42,8 @@ pub struct GtpConfig {
     /// Global formatters to run after all selected targets are compiled.
     #[serde(default)]
     pub formatters: Vec<GtpFormatter>,
+    #[serde(default = "default_warning_comment")]
+    pub warning_comment: bool,
     /// TypeScript config.
     #[serde(default, alias = "typescript")]
     pub ts: TsConfig,
@@ -66,6 +72,7 @@ impl Default for GtpConfig {
             py: Default::default(),
             rs: Default::default(),
             source_toml_str: String::new(),
+            warning_comment: true,
         }
     }
 }

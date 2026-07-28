@@ -5,13 +5,19 @@ pub enum GtlProjectError {
     #[error("Failed to resolve project")]
     Resolve { error: Box<dyn GtlError> },
 
-    #[error("Failed to generate file `{path}`")]
-    GenerateFile {
-        path: GtpCwdRelativePath,
+    #[error("Failed to generate target file `{path}`")]
+    GenerateTargetFile {
+        path: GtpTargetFilePath,
         #[source]
         #[diagnostic_source]
         error: Box<dyn GtlError>,
     },
+}
+
+impl GtlError for GtlProjectError {
+    fn clone_box(&self) -> Box<dyn GtlError> {
+        Box::new(self.clone())
+    }
 }
 
 impl GtlProjectError {

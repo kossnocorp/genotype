@@ -26,4 +26,8 @@ impl GtpLangConfig for PyConfig {
     fn default_pkg_dir_path(&self) -> GtpDistDirRelativePkgDirPath {
         "py".into()
     }
+
+    fn comment_prefix(&self) -> &'static str {
+        "#"
+    }
 }

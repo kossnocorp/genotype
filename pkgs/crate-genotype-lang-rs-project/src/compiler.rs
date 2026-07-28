@@ -729,6 +729,8 @@ mod tests {
         assert_snapshot!(
           dist.files[2].source_code(),
           @"
+        // Do not edit manually! Code generated from ../../../src/author.type
+
         use serde::{Deserialize, Serialize};
 
         #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -751,6 +753,8 @@ mod tests {
         assert_snapshot!(
           dist.files[3].source_code(),
           @"
+        // Do not edit manually! Code generated from ../../../src/book.type
+
         use super::author::Author;
         use serde::{Deserialize, Serialize};
 
@@ -837,6 +841,8 @@ mod tests {
         assert_snapshot!(
           dist.files[2].source_code(),
           @"
+        // Do not edit manually! Code generated from ../../../src/inventory.type
+
         use super::shop::goods::book::Book;
         use serde::{Deserialize, Serialize};
 
@@ -881,6 +887,8 @@ mod tests {
         assert_snapshot!(
           dist.files[4].source_code(),
           @"
+        // Do not edit manually! Code generated from ../../../../../src/shop/goods/book.type
+
         use serde::{Deserialize, Serialize};
 
         #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -936,6 +944,8 @@ mod tests {
         assert_snapshot!(
             node_file.source_code(),
             @r#"
+        // Do not edit manually! Code generated from ../../../src/node.type
+
         use serde::{Deserialize, Serialize};
 
         #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -963,6 +973,8 @@ mod tests {
         assert_snapshot!(
             tree_file.source_code(),
             @r#"
+        // Do not edit manually! Code generated from ../../../src/tree.type
+
         use serde::{Deserialize, Serialize};
 
         #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1056,6 +1068,8 @@ mod tests {
         assert_snapshot!(
           dist.files[2].source_code(),
           @r#"
+        // Do not edit manually! Code generated from ../../../src/admin.type
+
         use serde::{Deserialize, Serialize};
         use litty::serde_literals;
         use crate::named::Name;
@@ -1119,6 +1133,8 @@ mod tests {
         assert_snapshot!(
           dist.files[4].source_code(),
           @"
+        // Do not edit manually! Code generated from ../../../src/named.type
+
         use litty::serde_literals;
         use serde::{Deserialize, Serialize};
 
@@ -1140,6 +1156,8 @@ mod tests {
         assert_snapshot!(
           dist.files[5].source_code(),
           @r#"
+        // Do not edit manually! Code generated from ../../../src/user.type
+
         use super::named::Name;
         use serde::{Deserialize, Serialize};
 
@@ -1231,6 +1249,8 @@ mod tests {
         assert_snapshot!(
           dist.files[3].source_code(),
           @"
+        // Do not edit manually! Code generated from ../../../src/prompt.type
+
         use genotype_json_types::JsonAny;
         use serde::{Deserialize, Serialize};
 
@@ -1292,6 +1312,28 @@ version = "0.3.0"
         [dependencies]
         serde = { version = "1", features = ["derive"] }
         "#
+        );
+    }
+
+    #[test]
+    fn test_render_no_warning_comment() {
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
+        project.config_mut().warning_comment = false;
+
+        let dist = compile(&project);
+        let module = get_dist_file(&dist, "src/author.rs");
+
+        assert_snapshot!(
+            module.source_code,
+            @"
+        use serde::{Deserialize, Serialize};
+
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        pub struct Author {
+            pub name: String,
+        }
+        "
         );
     }
 
@@ -1378,6 +1420,18 @@ version = "0.3.0"
         dist.files
             .iter()
             .find(|file| file.path().as_str().contains("Cargo.toml"))
+            .unwrap()
+    }
+
+    fn get_dist_file<'a>(dist: &'a GtlDist, path_suffix: &str) -> &'a GtlDistFileGenerated {
+        dist.files
+            .iter()
+            .find_map(|file| match file {
+                GtlDistFile::Generated(file) if file.path.as_str().ends_with(path_suffix) => {
+                    Some(file)
+                }
+                _ => None,
+            })
             .unwrap()
     }
 }

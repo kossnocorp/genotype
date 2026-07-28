@@ -42,4 +42,8 @@ impl<'project, LangConfig: GtpLangConfig> GtlConfig<'project, LangConfig> {
     pub fn project_version(&self) -> Option<&'project Version> {
         self.project.config().version.as_ref()
     }
+
+    pub fn warning_comment(&self) -> bool {
+        self.project.config().warning_comment
+    }
 }

@@ -517,11 +517,11 @@ mod tests {
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/basic/dist/ts/src/author.ts",
-              source_code: "export interface Author {\n  name: string;\n}\n",
+              source_code: "// Do not edit manually! Code generated from ../../../src/author.type\n\nexport interface Author {\n  name: string;\n}\n",
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/basic/dist/ts/src/book.ts",
-              source_code: "import { Author } from \"./author.js\";\n\nexport interface Book {\n  title: string;\n  author: Author;\n}\n",
+              source_code: "// Do not edit manually! Code generated from ../../../src/book.type\n\nimport { Author } from \"./author.js\";\n\nexport interface Book {\n  title: string;\n  author: Author;\n}\n",
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/basic/dist/ts/src/index.ts",
@@ -562,13 +562,15 @@ mod tests {
         assert_snapshot!(
           get_dist_file(&dist, "src/book.ts").source_code,
           @r#"
-      import { Author } from "./author.ts";
+        // Do not edit manually! Code generated from ../../../src/book.type
 
-      export interface Book {
-        title: string;
-        author: Author;
-      }
-      "#
+        import { Author } from "./author.ts";
+
+        export interface Book {
+          title: string;
+          author: Author;
+        }
+        "#
         );
         assert_snapshot!(
           get_dist_file(&dist, "src/index.ts").source_code,
@@ -617,7 +619,7 @@ mod tests {
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/dependencies/dist/ts/src/prompt.ts",
-              source_code: "import { JsonAny } from \"@genotype/json\";\n\nexport interface Prompt {\n  content: string;\n  output: JsonAny;\n}\n",
+              source_code: "// Do not edit manually! Code generated from ../../../src/prompt.type\n\nimport { JsonAny } from \"@genotype/json\";\n\nexport interface Prompt {\n  content: string;\n  output: JsonAny;\n}\n",
             )),
           ],
           modules: [
@@ -715,6 +717,8 @@ mod tests {
         assert_snapshot!(
             author_file.source_code,
             @r#"
+        // Do not edit manually! Code generated from ../../../src/author.type
+
         import { z } from "zod";
 
         export const Author = z.object({
@@ -737,17 +741,21 @@ mod tests {
         let author_file = get_dist_file(&dist, "src/author.ts");
         assert_snapshot!(
             author_file.source_code,
-            @r#"
+            @"
+        // Do not edit manually! Code generated from ../../../src/author.type
+
         export type Author = {
           name: string;
         };
-        "#
+        "
         );
 
         let book_file = get_dist_file(&dist, "src/book.ts");
         assert_snapshot!(
             book_file.source_code,
             @r#"
+        // Do not edit manually! Code generated from ../../../src/book.type
+
         import { Author } from "./author.js";
 
         export type Book = {
@@ -755,6 +763,25 @@ mod tests {
           author: Author;
         };
         "#
+        );
+    }
+
+    #[test]
+    fn test_render_no_warning_comment() {
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
+        project.config_mut().warning_comment = false;
+
+        let dist = compile(&project);
+        let module = get_dist_file(&dist, "src/author.ts");
+
+        assert_snapshot!(
+            module.source_code,
+            @"
+        export interface Author {
+          name: string;
+        }
+        "
         );
     }
 
@@ -855,7 +882,7 @@ mod tests {
             )),
             Generated(GtlDistFileGenerated(
               path: "../../examples/04-tests/generics/dist/ts-interface/ts/src/generics.ts",
-              source_code: "export type Response<Payload> = ResponseSuccess<Payload> | ResponseFailure;\n\nexport interface ResponseSuccess<Payload> {\n  status: \"success\";\n  value: Payload;\n}\n\nexport interface ResponseFailure {\n  status: \"failure\";\n  error: string;\n}\n\nexport type ResponseString = Response<string>;\n\nexport type ResponsePair = Response<import(\"./pair.js\").Pair<string, number>>;\n",
+              source_code: "// Do not edit manually! Code generated from ../../../../src/generics.type\n\nexport type Response<Payload> = ResponseSuccess<Payload> | ResponseFailure;\n\nexport interface ResponseSuccess<Payload> {\n  status: \"success\";\n  value: Payload;\n}\n\nexport interface ResponseFailure {\n  status: \"failure\";\n  error: string;\n}\n\nexport type ResponseString = Response<string>;\n\nexport type ResponsePair = Response<import(\"./pair.js\").Pair<string, number>>;\n",
             )),
             Generated(GtlDistFileGenerated(
               path: "../../examples/04-tests/generics/dist/ts-interface/ts/src/index.ts",
@@ -863,7 +890,7 @@ mod tests {
             )),
             Generated(GtlDistFileGenerated(
               path: "../../examples/04-tests/generics/dist/ts-interface/ts/src/pair.ts",
-              source_code: "export interface Pair<Left, Right> {\n  left: Left;\n  right: Right;\n}\n",
+              source_code: "// Do not edit manually! Code generated from ../../../../src/pair.type\n\nexport interface Pair<Left, Right> {\n  left: Left;\n  right: Right;\n}\n",
             )),
           ],
           modules: [

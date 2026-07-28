@@ -48,4 +48,12 @@ pub trait GtpLangConfig {
     ) -> Vec<GtDiagnostic> {
         vec![]
     }
+
+    fn comment_prefix(&self) -> &'static str {
+        "//"
+    }
+
+    fn comment_line(&self, content: &str) -> String {
+        format!("{prefix} {content}", prefix = self.comment_prefix(),)
+    }
 }
