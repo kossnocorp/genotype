@@ -41,7 +41,7 @@ where
         let mut lang_project = GtlProject::<Self::ProjectModule>::new(self.config());
         lang_project.convert(self.project().modules());
         lang_project.resolve()?;
-        lang_project.render();
+        lang_project.render()?;
 
         diagnostics.extend(generate_module_diagnostics(&lang_project.modules));
 

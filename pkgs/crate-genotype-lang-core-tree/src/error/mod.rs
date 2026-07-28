@@ -1,5 +1,8 @@
 use crate::prelude::internal::*;
 
+mod message;
+pub use message::*;
+
 pub trait GtlError: StdError + Diagnostic + 'static {
     fn clone_box(&self) -> Box<dyn GtlError>;
 

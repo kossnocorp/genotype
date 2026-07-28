@@ -552,6 +552,7 @@ mod tests {
             src: "src",
             entry: "**/*.type",
             formatters: [],
+            warning_comment: true,
             ts: {
               "enabled": false,
               "dist": None,
@@ -797,6 +798,7 @@ mod tests {
             src: "src",
             entry: "**/*.type",
             formatters: [],
+            warning_comment: true,
             ts: {
               "enabled": false,
               "dist": None,
@@ -956,6 +958,7 @@ mod tests {
             src: "src",
             entry: "**/*.type",
             formatters: [],
+            warning_comment: true,
             ts: {
               "enabled": false,
               "dist": None,

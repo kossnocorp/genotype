@@ -642,7 +642,7 @@ mod tests {
 
         assert_ron_snapshot!(
           compile(&project),
-          @r#"
+          @r##"
         GtlDist(
           files: [
             Generated(GtlDistFileGenerated(
@@ -655,11 +655,11 @@ mod tests {
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/basic/dist/py/module/author.py",
-              source_code: "from __future__ import annotations\n\n\nfrom genotype import Model\n\n\nclass Author(Model):\n    name: str\n",
+              source_code: "# Do not edit manually! Code generated from ../../../src/author.type\n\nfrom __future__ import annotations\n\n\nfrom genotype import Model\n\n\nclass Author(Model):\n    name: str\n",
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/basic/dist/py/module/book.py",
-              source_code: "from __future__ import annotations\n\n\nfrom .author import Author\nfrom genotype import Model\n\n\nclass Book(Model):\n    title: str\n    author: Author\n",
+              source_code: "# Do not edit manually! Code generated from ../../../src/book.type\n\nfrom __future__ import annotations\n\n\nfrom .author import Author\nfrom genotype import Model\n\n\nclass Book(Model):\n    title: str\n    author: Author\n",
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/basic/dist/py/module/py.typed",
@@ -682,7 +682,7 @@ mod tests {
           ],
           diagnostics: [],
         )
-        "#
+        "##
         );
     }
 
@@ -693,7 +693,7 @@ mod tests {
 
         assert_ron_snapshot!(
           compile(&project),
-          @r#"
+          @r##"
         GtlDist(
           files: [
             Generated(GtlDistFileGenerated(
@@ -706,7 +706,7 @@ mod tests {
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/nested/dist/py/module/inventory.py",
-              source_code: "from __future__ import annotations\n\n\nfrom .shop.goods.book import Book\nfrom genotype import Model\n\n\nclass Inventory(Model):\n    goods: list[Book]\n",
+              source_code: "# Do not edit manually! Code generated from ../../../src/inventory.type\n\nfrom __future__ import annotations\n\n\nfrom .shop.goods.book import Book\nfrom genotype import Model\n\n\nclass Inventory(Model):\n    goods: list[Book]\n",
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/nested/dist/py/module/py.typed",
@@ -718,7 +718,7 @@ mod tests {
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/nested/dist/py/module/shop/goods/book.py",
-              source_code: "from __future__ import annotations\n\n\nfrom genotype import Model\n\n\nclass Book(Model):\n    title: str\n",
+              source_code: "# Do not edit manually! Code generated from ../../../../../src/shop/goods/book.type\n\nfrom __future__ import annotations\n\n\nfrom genotype import Model\n\n\nclass Book(Model):\n    title: str\n",
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/nested/dist/py/pyproject.toml",
@@ -737,7 +737,7 @@ mod tests {
           ],
           diagnostics: [],
         )
-        "#
+        "##
         );
     }
 
@@ -750,7 +750,7 @@ mod tests {
 
         assert_ron_snapshot!(
           compile(&project),
-          @r#"
+          @r##"
         GtlDist(
           files: [
             Generated(GtlDistFileGenerated(
@@ -763,7 +763,7 @@ mod tests {
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/dependencies/dist/py/module/prompt.py",
-              source_code: "from __future__ import annotations\n\n\nfrom genotype_json import JsonAny\nfrom genotype import Model\n\n\nclass Prompt(Model):\n    content: str\n    output: JsonAny\n",
+              source_code: "# Do not edit manually! Code generated from ../../../src/prompt.type\n\nfrom __future__ import annotations\n\n\nfrom genotype_json import JsonAny\nfrom genotype import Model\n\n\nclass Prompt(Model):\n    content: str\n    output: JsonAny\n",
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/dependencies/dist/py/module/py.typed",
@@ -782,7 +782,7 @@ mod tests {
           ],
           diagnostics: [],
         )
-        "#
+        "##
         );
     }
 
@@ -797,6 +797,8 @@ mod tests {
         assert_snapshot!(
             json.source_code,
             @r#"
+        # Do not edit manually! Code generated from ../../../src/json.type
+
         from __future__ import annotations
 
 
@@ -971,6 +973,30 @@ name = "module"
         [tool.hatch.build.targets.wheel]
         packages = ["module"]
         "#
+        );
+    }
+
+    #[test]
+    fn test_render_no_warning_comment() {
+        let backend = GtbSystem::new(&"./examples/basic".into()).unwrap();
+        let mut project = block_on(backend.create_project_and_load_all_modules(None)).unwrap();
+        project.config_mut().warning_comment = false;
+
+        let dist = compile(&project);
+        let module = get_dist_file(&dist, "module/author.py");
+
+        assert_snapshot!(
+            module.source_code,
+            @"
+        from __future__ import annotations
+
+
+        from genotype import Model
+
+
+        class Author(Model):
+            name: str
+        "
         );
     }
 

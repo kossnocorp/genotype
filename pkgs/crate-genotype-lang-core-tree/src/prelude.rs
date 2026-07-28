@@ -9,4 +9,5 @@ pub(crate) mod internal {
     pub use std::error::Error as StdError;
     pub use std::fmt::Debug;
     pub use std::hash::Hash;
+    pub use thiserror::Error;
 }
