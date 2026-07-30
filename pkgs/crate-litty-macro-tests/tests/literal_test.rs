@@ -524,6 +524,21 @@ fn test_literal_field_methods_with_single_serde_mode() {
 }
 
 #[test]
+fn test_literal_fields_on_unit_struct() {
+    #[serde_literals]
+    #[derive(Debug, PartialEq, Serialize, Deserialize)]
+    #[literals(kind = "unit")]
+    struct Unit;
+
+    assert_eq!(serde_json::to_string(&Unit).unwrap(), r#"{"kind":"unit"}"#);
+    assert_eq!(
+        serde_json::from_str::<Unit>(r#"{"kind":"unit"}"#).unwrap(),
+        Unit,
+    );
+    assert_eq!(Unit.kind(), "unit");
+}
+
+#[test]
 fn test_serialize_literal_struct_attribute() {
     #[serialize_literal("hello")]
     struct Hello;

@@ -171,13 +171,24 @@ fn expand_literals(
 
     let literal_fields = parse_literal_fields(&input.attrs)?;
 
-    let fields = match &input.data {
+    let (fields, deserialize_init) = match &input.data {
         syn::Data::Struct(data) => match &data.fields {
-            Fields::Named(named) => named.named.iter().cloned().collect::<Vec<_>>(),
-            _ => {
+            Fields::Named(named) => {
+                let fields = named.named.iter().cloned().collect::<Vec<_>>();
+                let field_names = fields
+                    .iter()
+                    .map(|field| {
+                        let ident = field.ident.as_ref().expect("Named field");
+                        quote! { #ident: helper.#ident }
+                    })
+                    .collect::<Vec<_>>();
+                (fields, quote! { Self { #(#field_names,)* } })
+            }
+            Fields::Unit => (vec![], quote! { Self }),
+            Fields::Unnamed(_) => {
                 return Err(Error::new_spanned(
                     &data.fields,
-                    "Literals only supports structs with named fields",
+                    "Literals only supports structs with named fields or unit structs",
                 ));
             }
         },
@@ -257,11 +268,6 @@ fn expand_literals(
     let serialize_init_fields = fields.iter().map(|field| {
         let ident = field.ident.as_ref().expect("Named field");
         quote! { #ident: &self.#ident }
-    });
-
-    let deserialize_init_fields = fields.iter().map(|field| {
-        let ident = field.ident.as_ref().expect("Named field");
-        quote! { #ident: helper.#ident }
     });
 
     let mut helper_generics = input.generics.clone();
@@ -352,9 +358,7 @@ fn expand_literals(
             {
                 let helper = #deserialize_ident::deserialize(deserializer)?;
                 #(#literal_checks)*
-                Ok(Self {
-                    #(#deserialize_init_fields,)*
-                })
+                Ok(#deserialize_init)
             }
         }
     };
