@@ -265,6 +265,21 @@ fn test_serde_literal_enum_primitive_accessors() {
 }
 
 #[test]
+fn test_serde_literal_enum_with_mixed_literal_kinds_compiles() {
+    #[serde_literals]
+    #[derive(Serialize, Deserialize)]
+    enum Mixed {
+        #[literal("enabled")]
+        Enabled,
+        #[literal(false)]
+        Disabled,
+    }
+
+    let _ = Mixed::Enabled;
+    let _ = Mixed::Disabled;
+}
+
+#[test]
 fn test_enum_serialize_literals() {
     #[derive(Debug, PartialEq, SerializeLiterals)]
     pub enum Abc {
