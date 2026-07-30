@@ -68,6 +68,17 @@ The struct will serialize to JSON like this:
 }
 ```
 
+Each literal field is also available as a method using its Rust field name:
+
+```rs
+let response = SuccessResponseV1 {
+    message: "Hello, world!".into(),
+};
+
+assert_eq!(response.v(), 1);
+assert_eq!(response.status(), "ok");
+```
+
 #### Renaming Literal Fields
 
 Use `rename` to serialize a literal field under a different name:
@@ -100,6 +111,17 @@ The struct will serialize to JSON like this:
   "requestType": "remove-file",
   "file_path": "src/main.type"
 }
+```
+
+Renaming only changes the serialized field name. The generated method is still
+named `request_type`:
+
+```rs
+let request = RemoveFileRequest {
+    file_path: "src/main.type".into(),
+};
+
+assert_eq!(request.request_type(), "remove-file");
 ```
 
 ### Enum Variants

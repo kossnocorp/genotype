@@ -473,6 +473,57 @@ fn test_literal_fields_with_null() {
 }
 
 #[test]
+#[allow(clippy::approx_constant)]
+fn test_literal_field_methods() {
+    #[serde_literals]
+    #[derive(Serialize, Deserialize)]
+    #[literals(
+        kind = "demo",
+        enabled = true,
+        code = 200,
+        ratio = 3.14,
+        empty = null
+    )]
+    struct LiteralBag<T> {
+        value: T,
+    }
+
+    let value = LiteralBag { value: "hello" };
+
+    assert_eq!(value.kind(), "demo");
+    assert!(value.enabled());
+    assert_eq!(value.code(), 200);
+    assert_eq!(value.ratio(), 3.14);
+    assert_eq!(value.empty(), ());
+}
+
+#[test]
+fn test_renamed_literal_field_method_uses_rust_name() {
+    #[serde_literals]
+    #[derive(Serialize, Deserialize)]
+    #[literals(request_type("remove-file", rename = "requestType"))]
+    struct RemoveFileRequest {}
+
+    assert_eq!(RemoveFileRequest {}.request_type(), "remove-file");
+}
+
+#[test]
+fn test_literal_field_methods_with_single_serde_mode() {
+    #[serde_literals]
+    #[derive(Serialize)]
+    #[literals(kind = "serialize")]
+    struct SerializeOnly {}
+
+    #[serde_literals]
+    #[derive(Deserialize)]
+    #[literals(kind = "deserialize")]
+    struct DeserializeOnly {}
+
+    assert_eq!(SerializeOnly {}.kind(), "serialize");
+    assert_eq!(DeserializeOnly {}.kind(), "deserialize");
+}
+
+#[test]
 fn test_serialize_literal_struct_attribute() {
     #[serialize_literal("hello")]
     struct Hello;

@@ -52,10 +52,12 @@ enum LiteralsMode {
 struct LiteralField {
     ident: Ident,
     rename: Option<LitStr>,
+    accessor_ty: proc_macro2::TokenStream,
     serialize_ty: proc_macro2::TokenStream,
     deserialize_ty: proc_macro2::TokenStream,
     value: proc_macro2::TokenStream,
     expected_display: String,
+    is_null: bool,
 }
 
 fn expand_serde_literals_attribute(
@@ -273,6 +275,27 @@ fn expand_literals(
 
     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
 
+    let literal_accessors = literal_fields.iter().map(|field| {
+        let ident = &field.ident;
+        let ty = &field.accessor_ty;
+        let value = &field.value;
+        let body = if field.is_null {
+            quote! {}
+        } else {
+            quote! { #value }
+        };
+        quote! {
+            pub fn #ident(&self) -> #ty {
+                #body
+            }
+        }
+    });
+    let accessor_tokens = quote! {
+        impl #impl_generics #struct_ident #ty_generics #where_clause {
+            #(#literal_accessors)*
+        }
+    };
+
     let serialize_where_clause = add_serialize_bounds(&input.generics);
     let deserialize_generics = add_deserialize_lifetime(&input.generics);
     let (deserialize_impl_generics, _deserialize_ty_generics, deserialize_where_clause) =
@@ -338,11 +361,18 @@ fn expand_literals(
 
     Ok(match mode {
         LiteralsMode::Both => quote! {
+            #accessor_tokens
             #serialize_tokens
             #deserialize_tokens
         },
-        LiteralsMode::SerializeOnly => serialize_tokens,
-        LiteralsMode::DeserializeOnly => deserialize_tokens,
+        LiteralsMode::SerializeOnly => quote! {
+            #accessor_tokens
+            #serialize_tokens
+        },
+        LiteralsMode::DeserializeOnly => quote! {
+            #accessor_tokens
+            #deserialize_tokens
+        },
     })
 }
 
@@ -848,16 +878,18 @@ fn parse_literal_fields(attrs: &[syn::Attribute]) -> Result<Vec<LiteralField>, E
                     ));
                 }
             };
-            let (serialize_ty, deserialize_ty, value, expected_display) =
+            let (accessor_ty, serialize_ty, deserialize_ty, value, expected_display, is_null) =
                 literal_type_and_value(&value_expr)?;
 
             literal_fields.push(LiteralField {
                 ident,
                 rename,
+                accessor_ty,
                 serialize_ty,
                 deserialize_ty,
                 value,
                 expected_display,
+                is_null,
             });
         }
     }
@@ -910,7 +942,9 @@ fn literal_type_and_value(
         proc_macro2::TokenStream,
         proc_macro2::TokenStream,
         proc_macro2::TokenStream,
+        proc_macro2::TokenStream,
         String,
+        bool,
     ),
     Error,
 > {
@@ -923,20 +957,31 @@ fn literal_type_and_value(
                     .first()
                     .is_some_and(|segment| segment.ident == "null") =>
         {
-            Ok((quote! { () }, quote! { () }, quote! { () }, "null".into()))
+            Ok((
+                quote! { () },
+                quote! { () },
+                quote! { () },
+                quote! { () },
+                "null".into(),
+                true,
+            ))
         }
         syn::Expr::Lit(expr_lit) => match &expr_lit.lit {
             Lit::Str(lit_str) => Ok((
                 quote! { &'static str },
+                quote! { &'static str },
                 quote! { String },
                 quote! { #lit_str },
                 lit_str.to_token_stream().to_string(),
+                false,
             )),
             Lit::Bool(lit_bool) => Ok((
                 quote! { bool },
                 quote! { bool },
+                quote! { bool },
                 quote! { #lit_bool },
                 lit_bool.to_token_stream().to_string(),
+                false,
             )),
             Lit::Int(lit_int) => {
                 let value = lit_int
@@ -946,8 +991,10 @@ fn literal_type_and_value(
                 Ok((
                     quote! { i64 },
                     quote! { i64 },
+                    quote! { i64 },
                     quote! { #value },
                     lit_int.to_token_stream().to_string(),
+                    false,
                 ))
             }
             Lit::Float(lit_float) => {
@@ -958,8 +1005,10 @@ fn literal_type_and_value(
                 Ok((
                     quote! { f64 },
                     quote! { f64 },
+                    quote! { f64 },
                     quote! { #value },
                     lit_float.to_token_stream().to_string(),
+                    false,
                 ))
             }
             _ => Err(Error::new_spanned(
