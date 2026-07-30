@@ -14,6 +14,8 @@ This change log follows the format documented in [Keep a CHANGELOG].
 
 - Added methods for accessing struct literal field values.
 
+- Added literal fields support for unit structs.
+
 ## v0.5.0 - 2026-07-20
 
 ### Changed
