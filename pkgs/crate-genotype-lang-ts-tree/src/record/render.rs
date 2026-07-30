@@ -31,6 +31,13 @@ mod tests {
             ),
             @"Record<number, string>"
         );
+        assert_snapshot!(
+            render_node(Tst::record(
+                TsRecordKey::Reference(Tst::reference("AddressId")),
+                TsReference::new("Address".into(), vec![], TsReferenceRel::Regular),
+            )),
+            @"Record<AddressId, Address>"
+        );
     }
 
     #[test]

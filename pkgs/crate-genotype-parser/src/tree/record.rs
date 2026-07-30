@@ -39,7 +39,7 @@ fn parse(
 ) -> GtNodeParseResult<GtRecord> {
     match state {
         ParseState::Key(span, annotation) => {
-            let key = GtRecordKey::parse(pair)?;
+            let key = GtRecordKey::parse(pair, context)?;
 
             match inner.next() {
                 Some(pair) => parse(
@@ -84,10 +84,8 @@ mod tests {
 
     #[test]
     fn test_parse_default() {
-        let mut pairs = GenotypeParser::parse(Rule::record, "{ []: string }").unwrap();
-        let mut context = GtContext::new("module".into());
         assert_ron_snapshot!(
-            GtRecord::parse(pairs.next().unwrap(), &mut context).unwrap(),
+            parse_node!(GtRecord, to_parse_args(Rule::record, "{ []: string }")),
             @"
         GtRecord(
           span: GtSpan(0, 14),
@@ -107,10 +105,8 @@ mod tests {
 
     #[test]
     fn test_parse_typed() {
-        let mut pairs = GenotypeParser::parse(Rule::record, "{ [int]: string }").unwrap();
-        let mut context = GtContext::new("module".into());
         assert_ron_snapshot!(
-            GtRecord::parse(pairs.next().unwrap(), &mut context).unwrap(),
+            parse_node!(GtRecord, to_parse_args(Rule::record, "{ [int]: string }")),
             @"
         GtRecord(
           span: GtSpan(0, 17),
@@ -126,6 +122,21 @@ mod tests {
         )
         "
         );
+    }
+
+    #[test]
+    fn test_parse_reference_key() {
+        let mut context = GtContext::new("module".into());
+        let record = parse_node!(
+            GtRecord,
+            (
+                to_parse_rules(Rule::record, "{ [Path]: string }"),
+                &mut context
+            )
+        );
+
+        assert!(matches!(record.key, GtRecordKey::Reference(_)));
+        assert_eq!(context.resolve.references[0].as_str(), "Path");
     }
 
     #[test]

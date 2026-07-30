@@ -130,7 +130,7 @@ tuple = { "(" ~ (descriptors ~ ("," ~ descriptors)*)? ~ ")" }
 
 record = { "{" ~ record_key ~ ":" ~ descriptors ~ "}" }
 
-record_key = { "[" ~ primitive_index? ~ "]" }
+record_key = { "[" ~ (primitive_index | name)? ~ "]" }
 
 // Modules
 

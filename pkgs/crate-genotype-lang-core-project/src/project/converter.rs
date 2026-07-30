@@ -40,8 +40,19 @@ impl<'project, 'config, ProjectModule: GtlProjectModule>
                         .into(),
 
                         GtpModule::Resolved(module_resolved) => {
-                            match ProjectModule::convert(self.config.lang_config(), module_resolved)
-                            {
+                            GtlProjectModuleConvertError::SourceState {
+                                source: module_resolved.project_module_parse.source.clone(),
+                                source_state: GtlProjectModuleConvertErrorSourceState::Parsed,
+                                target_path,
+                            }
+                            .into()
+                        }
+
+                        GtpModule::TypeChecked(module_type_checked) => {
+                            match ProjectModule::convert(
+                                self.config.lang_config(),
+                                module_type_checked,
+                            ) {
                                 Ok(module) => GtlProjectModuleConverted {
                                     source_path,
                                     target_path,

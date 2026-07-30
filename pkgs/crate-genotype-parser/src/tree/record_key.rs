@@ -2,6 +2,7 @@ use crate::prelude::internal::*;
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
 pub enum GtRecordKey {
+    Reference(#[visit] GtReference),
     String(GtSpan),
     Number(GtSpan),
     Int8(GtSpan),
@@ -21,8 +22,27 @@ pub enum GtRecordKey {
 }
 
 impl GtRecordKey {
-    pub fn parse(pair: Pair<'_, Rule>) -> GtNodeParseResult<Self> {
+    pub fn parse(pair: Pair<'_, Rule>, context: &mut GtContext) -> GtNodeParseResult<Self> {
         let span = pair.as_span().into();
+        let mut inner = pair.clone().into_inner();
+
+        if let Some(inner) = inner.next()
+            && inner.as_rule() == Rule::name
+        {
+            let identifier: GtIdentifier = inner.into();
+            let reference_span = identifier.0;
+            context.resolve.references.insert(identifier.clone());
+            context.resolve_reference_identifier_as_generic_parameter(&identifier);
+
+            return Ok(GtRecordKey::Reference(GtReference {
+                span: reference_span,
+                doc: None,
+                attributes: vec![],
+                id: GtReferenceId(context.module_id.clone(), reference_span),
+                identifier,
+                arguments: vec![],
+            }));
+        }
 
         match pair.clone().into_inner().as_str() {
             "" | "string" => Ok(GtRecordKey::String(span)),
@@ -56,122 +76,103 @@ impl GtRecordKey {
 
 #[cfg(test)]
 mod tests {
+    use crate::test::*;
     use crate::*;
-    use pest::Parser;
     use pretty_assertions::assert_eq;
 
     #[test]
     fn test_parse_default() {
-        let mut pairs = GenotypeParser::parse(Rule::record_key, "[]").unwrap();
         assert_eq!(
             GtRecordKey::String((0, 2).into()),
-            GtRecordKey::parse(pairs.next().unwrap()).unwrap(),
+            parse_node!(GtRecordKey, to_parse_args(Rule::record_key, "[]"))
         );
     }
 
     #[test]
     fn test_parse_string() {
-        let mut pairs = GenotypeParser::parse(Rule::record_key, "[string]").unwrap();
         assert_eq!(
             GtRecordKey::String((0, 8).into()),
-            GtRecordKey::parse(pairs.next().unwrap()).unwrap(),
+            parse_node!(GtRecordKey, to_parse_args(Rule::record_key, "[string]"))
         );
     }
 
     #[test]
     fn test_parse_int() {
-        let mut pairs = GenotypeParser::parse(Rule::record_key, "[int]").unwrap();
         assert_eq!(
             GtRecordKey::Int64((0, 5).into()),
-            GtRecordKey::parse(pairs.next().unwrap()).unwrap(),
+            parse_node!(GtRecordKey, to_parse_args(Rule::record_key, "[int]"))
         );
-        let mut pairs = GenotypeParser::parse(Rule::record_key, "[i8]").unwrap();
         assert_eq!(
             GtRecordKey::Int8((0, 4).into()),
-            GtRecordKey::parse(pairs.next().unwrap()).unwrap(),
+            parse_node!(GtRecordKey, to_parse_args(Rule::record_key, "[i8]"))
         );
-        let mut pairs = GenotypeParser::parse(Rule::record_key, "[i16]").unwrap();
         assert_eq!(
             GtRecordKey::Int16((0, 5).into()),
-            GtRecordKey::parse(pairs.next().unwrap()).unwrap(),
+            parse_node!(GtRecordKey, to_parse_args(Rule::record_key, "[i16]"))
         );
-        let mut pairs = GenotypeParser::parse(Rule::record_key, "[i32]").unwrap();
         assert_eq!(
             GtRecordKey::Int32((0, 5).into()),
-            GtRecordKey::parse(pairs.next().unwrap()).unwrap(),
+            parse_node!(GtRecordKey, to_parse_args(Rule::record_key, "[i32]"))
         );
-        let mut pairs = GenotypeParser::parse(Rule::record_key, "[i64]").unwrap();
         assert_eq!(
             GtRecordKey::Int64((0, 5).into()),
-            GtRecordKey::parse(pairs.next().unwrap()).unwrap(),
+            parse_node!(GtRecordKey, to_parse_args(Rule::record_key, "[i64]"))
         );
-        let mut pairs = GenotypeParser::parse(Rule::record_key, "[i128]").unwrap();
         assert_eq!(
             GtRecordKey::Int128((0, 6).into()),
-            GtRecordKey::parse(pairs.next().unwrap()).unwrap(),
+            parse_node!(GtRecordKey, to_parse_args(Rule::record_key, "[i128]"))
         );
-        let mut pairs = GenotypeParser::parse(Rule::record_key, "[isize]").unwrap();
         assert_eq!(
             GtRecordKey::IntSize((0, 7).into()),
-            GtRecordKey::parse(pairs.next().unwrap()).unwrap(),
+            parse_node!(GtRecordKey, to_parse_args(Rule::record_key, "[isize]"))
         );
-        let mut pairs = GenotypeParser::parse(Rule::record_key, "[u8]").unwrap();
         assert_eq!(
             GtRecordKey::IntU8((0, 4).into()),
-            GtRecordKey::parse(pairs.next().unwrap()).unwrap(),
+            parse_node!(GtRecordKey, to_parse_args(Rule::record_key, "[u8]"))
         );
-        let mut pairs = GenotypeParser::parse(Rule::record_key, "[u16]").unwrap();
         assert_eq!(
             GtRecordKey::IntU16((0, 5).into()),
-            GtRecordKey::parse(pairs.next().unwrap()).unwrap(),
+            parse_node!(GtRecordKey, to_parse_args(Rule::record_key, "[u16]"))
         );
-        let mut pairs = GenotypeParser::parse(Rule::record_key, "[u32]").unwrap();
         assert_eq!(
             GtRecordKey::IntU32((0, 5).into()),
-            GtRecordKey::parse(pairs.next().unwrap()).unwrap(),
+            parse_node!(GtRecordKey, to_parse_args(Rule::record_key, "[u32]"))
         );
-        let mut pairs = GenotypeParser::parse(Rule::record_key, "[u64]").unwrap();
         assert_eq!(
             GtRecordKey::IntU64((0, 5).into()),
-            GtRecordKey::parse(pairs.next().unwrap()).unwrap(),
+            parse_node!(GtRecordKey, to_parse_args(Rule::record_key, "[u64]"))
         );
-        let mut pairs = GenotypeParser::parse(Rule::record_key, "[u128]").unwrap();
         assert_eq!(
             GtRecordKey::IntU128((0, 6).into()),
-            GtRecordKey::parse(pairs.next().unwrap()).unwrap(),
+            parse_node!(GtRecordKey, to_parse_args(Rule::record_key, "[u128]"))
         );
-        let mut pairs = GenotypeParser::parse(Rule::record_key, "[usize]").unwrap();
         assert_eq!(
             GtRecordKey::IntUSize((0, 7).into()),
-            GtRecordKey::parse(pairs.next().unwrap()).unwrap(),
+            parse_node!(GtRecordKey, to_parse_args(Rule::record_key, "[usize]"))
         );
     }
 
     #[test]
     fn test_parse_float() {
-        let mut pairs = GenotypeParser::parse(Rule::record_key, "[float]").unwrap();
         assert_eq!(
             GtRecordKey::Float64((0, 7).into()),
-            GtRecordKey::parse(pairs.next().unwrap()).unwrap(),
+            parse_node!(GtRecordKey, to_parse_args(Rule::record_key, "[float]"))
         );
-        let mut pairs = GenotypeParser::parse(Rule::record_key, "[f32]").unwrap();
         assert_eq!(
             GtRecordKey::Float32((0, 5).into()),
-            GtRecordKey::parse(pairs.next().unwrap()).unwrap(),
+            parse_node!(GtRecordKey, to_parse_args(Rule::record_key, "[f32]"))
         );
-        let mut pairs = GenotypeParser::parse(Rule::record_key, "[f64]").unwrap();
         assert_eq!(
             GtRecordKey::Float64((0, 5).into()),
-            GtRecordKey::parse(pairs.next().unwrap()).unwrap(),
+            parse_node!(GtRecordKey, to_parse_args(Rule::record_key, "[f64]"))
         );
     }
 
     #[test]
     fn test_parse_number() {
-        let mut pairs = GenotypeParser::parse(Rule::record_key, "[number]").unwrap();
         assert_eq!(
             GtRecordKey::Number((0, 8).into()),
-            GtRecordKey::parse(pairs.next().unwrap()).unwrap(),
+            parse_node!(GtRecordKey, to_parse_args(Rule::record_key, "[number]"))
         );
     }
 }

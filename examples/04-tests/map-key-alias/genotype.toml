@@ -1,0 +1,18 @@
+name = "genotype-test-map-key-alias"
+dist = "dist"
+
+[ts]
+enabled = true
+dist = "ts-types/ts"
+
+[ts.manifest]
+name = "genotype-test-map-key-alias-types"
+version = "0.1.0"
+
+[rs]
+enabled = true
+
+[rs.manifest.package]
+name = "genotype_test_map_key_alias_types"
+version = "0.1.0"
+edition = "2024"

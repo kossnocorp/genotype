@@ -36,8 +36,8 @@ impl GtProject {
         let mut diagnostics = vec![];
         for module in self.modules.values() {
             match &module {
-                GtpModule::Resolved(_) => {
-                    // Resolved, the expected final state, no diagnostic needed.
+                GtpModule::TypeChecked(_) => {
+                    // Type checked, the expected final state, no diagnostic needed.
                 }
 
                 GtpModule::Error(source, err) => {
@@ -46,7 +46,7 @@ impl GtProject {
                     diagnostics.push(diagnostic);
                 }
 
-                GtpModule::Parsed(_) | GtpModule::Initialized(_) => {
+                GtpModule::Resolved(_) | GtpModule::Parsed(_) | GtpModule::Initialized(_) => {
                     diagnostics.push(Self::invalid_state_error_diagnostic(module))
                 }
             }

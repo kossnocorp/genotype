@@ -36,7 +36,19 @@ pub enum GtpModuleError {
         error: GtpError,
     },
 
-    // TODO: Make it so initialized state is module id or path-aware
-    #[error("Resolve failed as module is still in initialized state")]
-    ResolveInitialized,
+    #[error("Failed to type check module `{path}`")]
+    #[diagnostic(code("asd"))]
+    TypeCheck {
+        path: GtpModulePath,
+        #[source_code]
+        source_code: String,
+        #[related]
+        errors: Vec<GtpModuleTypeCheckError>,
+    },
+
+    #[error("Invalid module state: {current_state}, expected: {expected_states}")]
+    InvalidModuleState {
+        current_state: &'static str,
+        expected_states: &'static str,
+    },
 }

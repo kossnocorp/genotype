@@ -29,7 +29,7 @@ pub trait GtlProjectModule: Clone {
 
     fn convert(
         lang_config: &Self::LangConfig,
-        resolved: &GtpModuleResolved,
+        type_checked: &GtpModuleTypeChecked,
     ) -> Result<Self, Box<dyn GtlError>>
     where
         Self: Sized;

@@ -25,8 +25,9 @@ impl GtlProjectModule for RsProjectModule {
 
     fn convert(
         lang_config: &RsConfig,
-        resolved: &GtpModuleResolved,
+        type_checked: &GtpModuleTypeChecked,
     ) -> Result<Self, Box<dyn GtlError>> {
+        let resolved = &type_checked.module_resolved;
         let mut convert_resolve = RsConvertResolve::default();
         let mut prefixes: IndexMap<String, u8> = IndexMap::new();
         let parse = &resolved.project_module_parse.module_parse;

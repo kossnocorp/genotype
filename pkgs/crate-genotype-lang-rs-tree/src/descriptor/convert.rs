@@ -43,6 +43,7 @@ impl RsConvert<RsDescriptor> for GtDescriptor {
 impl RsConvert<RsDescriptor> for GtRecordKey {
     fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsDescriptor> {
         Ok(match self {
+            GtRecordKey::Reference(reference) => reference.convert(context)?.into(),
             GtRecordKey::String(_) => RsPrimitive::String.into(),
             GtRecordKey::Number(_) => {
                 if context.config().needs_ordered_floats() {
@@ -407,6 +408,17 @@ mod tests {
         assert_ron_snapshot!(
             convert_node(Gt::record_key_f64()),
             @"Primitive(Float64)"
+        );
+    }
+
+    #[test]
+    fn test_convert_unresolved_record_key_reference() {
+        let key = GtRecordKey::Reference(Gt::reference("Key", (1, 4)));
+        let mut context = RsConvertContext::empty("module".into());
+
+        assert_eq!(
+            key.convert(&mut context),
+            Err(RsConvertError::UnresolvedReference((1, 4).into()))
         );
     }
 

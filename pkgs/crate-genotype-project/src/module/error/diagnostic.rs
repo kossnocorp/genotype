@@ -33,7 +33,26 @@ impl GtpModuleError {
                 Self::diagnostic_with_reports(err_str, reports)
             }
 
-            GtpModuleError::ResolveInitialized => {
+            GtpModuleError::TypeCheck {
+                path,
+                source_code,
+                errors,
+                ..
+            } => {
+                let named_source = NamedSource::new(path.to_string(), source_code.clone());
+                let mut reports = vec![];
+
+                for err in errors {
+                    let report =
+                        miette!(labels = vec![LabeledSpan::at(err.span(), "Here")], "{err}")
+                            .with_source_code(named_source.clone());
+                    reports.push(GtDiagnostic::format_report(report));
+                }
+
+                Self::diagnostic_with_reports(err_str, reports)
+            }
+
+            GtpModuleError::InvalidModuleState { .. } => {
                 let reports = Self::format_import_reports(config, details);
                 Self::diagnostic_with_reports(err_str, reports)
             }

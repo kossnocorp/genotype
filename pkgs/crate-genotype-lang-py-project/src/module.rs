@@ -15,8 +15,9 @@ impl GtlProjectModule for PyProjectModule {
 
     fn convert(
         lang_config: &PyConfig,
-        resolved: &GtpModuleResolved,
+        type_checked: &GtpModuleTypeChecked,
     ) -> Result<PyProjectModule, Box<dyn GtlError>> {
+        let resolved = &type_checked.module_resolved;
         let mut convert_resolve = PyConvertResolve::default();
         let mut prefixes: IndexMap<String, u8> = IndexMap::new();
         let parse = &resolved.project_module_parse.module_parse;

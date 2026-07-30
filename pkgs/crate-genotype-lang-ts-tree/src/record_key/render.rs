@@ -8,6 +8,9 @@ impl<'context> GtlRender<'context, TsRenderTypes> for TsRecordKey {
     ) -> TsRenderResult<String> {
         if context.is_zod_mode() {
             return Ok(match self {
+                TsRecordKey::Reference(reference) => {
+                    reference.render(Default::default(), context)?
+                }
                 TsRecordKey::String => "z.string()".into(),
                 TsRecordKey::Number => "z.number()".into(),
                 TsRecordKey::Boolean => "z.boolean()".into(),
@@ -15,6 +18,7 @@ impl<'context> GtlRender<'context, TsRenderTypes> for TsRecordKey {
         }
 
         Ok(match self {
+            TsRecordKey::Reference(reference) => reference.render(Default::default(), context)?,
             TsRecordKey::String => "string".into(),
             TsRecordKey::Number => "number".into(),
             TsRecordKey::Boolean => "boolean".into(),
@@ -31,13 +35,20 @@ mod tests {
     #[test]
     fn test_render() {
         assert_snapshot!(
+            render_node(Tst::record_key_reference(Tst::reference("AddressId"))),
+            @"AddressId"
+        );
+
+        assert_snapshot!(
             render_node(Tst::record_key_string()),
             @"string"
         );
+
         assert_snapshot!(
             render_node(Tst::record_key_number()),
             @"number"
         );
+
         assert_snapshot!(
             render_node(Tst::record_key_boolean()),
             @"boolean"
@@ -47,6 +58,11 @@ mod tests {
     #[test]
     fn test_render_zod() {
         let mut context = Tst::render_context_zod();
+
+        assert_snapshot!(
+            render_node_with(Tst::record_key_reference(Tst::reference("AddressId")), &mut context),
+            @"AddressId"
+        );
 
         assert_snapshot!(
             render_node_with(Tst::record_key_string(), &mut context),
