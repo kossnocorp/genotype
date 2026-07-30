@@ -150,6 +150,25 @@ type Status = "ok" | "error";
 
 The `Status::Ok` and `Status::Error` variants will serialize to JSON strings `"ok"` and `"error"`, respectively.
 
+When every enum variant has the same literal type, Litty also generates a
+constant accessor method:
+
+| Literal type | Method    | Return type    |
+| ------------ | --------- | -------------- |
+| String       | `as_str`  | `&'static str` |
+| Boolean      | `as_bool` | `bool`         |
+| Integer      | `as_i64`  | `i64`          |
+| Float        | `as_f64`  | `f64`          |
+
+```rs
+assert_eq!(Status::Ok.as_str(), "ok");
+assert_eq!(Status::Error.as_str(), "error");
+assert_eq!(Status::Ok.as_ref(), "ok");
+```
+
+Mixed enums and enums combining different literal types do not receive an
+accessor method. String literal enums also implement `AsRef<str>`.
+
 ### Unit Structs
 
 Use `serde_literal` attribute to make unit structs literal types:

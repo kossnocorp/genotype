@@ -192,6 +192,76 @@ fn test_enum_variants() {
 
     assert_eq!(serde_json::to_string_pretty(&Abc::B).unwrap(), r#""b""#);
     assert_eq!(serde_json::from_str::<Abc>(r#""b""#).unwrap(), Abc::B);
+    assert_eq!(Abc::A.as_str(), "a");
+    assert_eq!(Abc::B.as_str(), "b");
+    assert_eq!(Abc::C.as_str(), "c");
+}
+
+#[test]
+fn test_serde_literal_enum_as_str() {
+    #[serde_literals]
+    #[derive(Serialize, Deserialize)]
+    enum Status {
+        #[literal("ok")]
+        Ok,
+        #[literal("hello-world")]
+        HelloWorld,
+    }
+
+    assert_eq!(Status::Ok.as_str(), "ok");
+    assert_eq!(Status::HelloWorld.as_str(), "hello-world");
+    assert_eq!(Status::Ok.as_ref(), "ok");
+    assert_eq!(AsRef::<str>::as_ref(&Status::HelloWorld), "hello-world");
+}
+
+#[test]
+#[allow(clippy::approx_constant)]
+fn test_serde_literal_enum_primitive_accessors() {
+    #[serde_literals]
+    #[derive(Serialize, Deserialize)]
+    enum Status {
+        #[literal("ok")]
+        Ok,
+    }
+
+    #[serde_literals]
+    #[derive(Serialize, Deserialize)]
+    enum Toggle {
+        #[literal(true)]
+        On,
+        #[literal(false)]
+        Off,
+    }
+
+    #[serde_literals]
+    #[derive(Serialize, Deserialize)]
+    enum Version {
+        #[literal(1)]
+        V1,
+        #[literal(2)]
+        V2,
+    }
+
+    #[serde_literals]
+    #[derive(Serialize, Deserialize)]
+    enum Ratio {
+        #[literal(3.14)]
+        Pi,
+        #[literal(2.71)]
+        E,
+    }
+
+    const STATUS: &str = Status::Ok.as_str();
+    const TOGGLE: bool = Toggle::On.as_bool();
+    const VERSION: i64 = Version::V2.as_i64();
+    const RATIO: f64 = Ratio::Pi.as_f64();
+
+    assert_eq!(STATUS, "ok");
+    assert_eq!(TOGGLE, Toggle::On.as_bool());
+    assert_eq!(Toggle::Off.as_bool(), false);
+    assert_eq!(VERSION, 2);
+    assert_eq!(RATIO, 3.14);
+    assert_eq!(Ratio::E.as_f64(), 2.71);
 }
 
 #[test]
@@ -206,6 +276,8 @@ fn test_enum_serialize_literals() {
 
     assert_eq!(serde_json::to_string_pretty(&Abc::A).unwrap(), r#""a""#);
     assert_eq!(serde_json::to_string_pretty(&Abc::B).unwrap(), r#""b""#);
+    assert_eq!(Abc::A.as_str(), "a");
+    assert_eq!(Abc::B.as_str(), "b");
 }
 
 #[test]
@@ -219,6 +291,40 @@ fn test_enum_deserialize_literals() {
     }
 
     assert_eq!(serde_json::from_str::<Abc>(r#""b""#).unwrap(), Abc::B);
+    assert_eq!(Abc::A.as_str(), "a");
+    assert_eq!(Abc::B.as_str(), "b");
+}
+
+#[test]
+fn test_serde_literal_enum_as_str_with_single_serde_mode() {
+    #[serde_literals]
+    #[derive(Serialize)]
+    enum SerializeOnly {
+        #[literal("serialize")]
+        Value,
+    }
+
+    #[serde_literals]
+    #[derive(Deserialize)]
+    enum DeserializeOnly {
+        #[literal("deserialize")]
+        Value,
+    }
+
+    assert_eq!(SerializeOnly::Value.as_str(), "serialize");
+    assert_eq!(DeserializeOnly::Value.as_str(), "deserialize");
+}
+
+#[test]
+fn test_serde_literal_enum_as_str_with_const_generic() {
+    #[serde_literals]
+    #[derive(Serialize, Deserialize)]
+    enum Status<const VERSION: usize> {
+        #[literal("ok")]
+        Ok,
+    }
+
+    assert_eq!(Status::<1>::Ok.as_str(), "ok");
 }
 
 #[test]

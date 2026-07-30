@@ -12,6 +12,10 @@ This change log follows the format documented in [Keep a CHANGELOG].
 
 ### Added
 
+- Added constant `as_str`, `as_bool`, `as_i64`, and `as_f64` methods to enums where every variant has the corresponding literal type.
+
+- Added `AsRef<str>` to enums where every variant is a string literal.
+
 - Added methods for accessing struct literal field values.
 
 - Added literal fields support for unit structs.
