@@ -132,18 +132,15 @@ impl RsConvert<RsStruct> for GtBranded {
             .unwrap_or_else(|| context.build_definition_id(&name));
         let generics = context.consume_definition_generics();
         let descriptor = self.primitive.convert(context)?.into();
+        let derive = context.render_derive(
+            RsContextRenderDeriveTypeMode::BrandedStruct,
+            RsContextRenderDeriveSerdeMode::Serde,
+        );
 
         Ok(RsStruct {
             id,
             doc,
-            attributes: vec![
-                context
-                    .render_derive(
-                        RsContextRenderDeriveTypeMode::Struct,
-                        RsContextRenderDeriveSerdeMode::Serde,
-                    )
-                    .into(),
-            ],
+            attributes: vec![derive.into()],
             name,
             generics,
             fields: RsStructFields::Newtype(vec![descriptor]),

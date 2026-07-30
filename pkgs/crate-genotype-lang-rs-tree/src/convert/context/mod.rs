@@ -37,6 +37,7 @@ pub struct RsConvertContext {
 pub enum RsContextRenderDeriveTypeMode {
     Struct,
     UnionEnum,
+    BrandedStruct,
 }
 
 #[derive(PartialEq)]
@@ -150,9 +151,13 @@ impl RsConvertContext {
             .collect::<IndexSet<&str>>();
 
         if serde_mode == RsContextRenderDeriveSerdeMode::Serde {
-            traits.insert("Serialize");
-            traits.insert("Deserialize");
+            traits.extend(vec!["Serialize", "Deserialize"]);
         }
+
+        if mode == RsContextRenderDeriveTypeMode::BrandedStruct {
+            traits.extend(vec!["Eq", "PartialEq", "PartialOrd", "Ord"]);
+        }
+
         let traits = traits.into_iter().collect::<Vec<_>>().join(", ");
 
         format!("derive({traits})")
