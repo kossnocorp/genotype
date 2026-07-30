@@ -456,7 +456,7 @@ fn expand_literal_enum(
         ));
     }
 
-    let (impl_generics, ty_generics, _where_clause) = input.generics.split_for_impl();
+    let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
     let serialize_where_clause = add_serialize_bounds(&input.generics);
     let deserialize_generics = add_deserialize_lifetime(&input.generics);
     let (deserialize_impl_generics, _deserialize_ty_generics, deserialize_where_clause) =
@@ -466,6 +466,18 @@ fn expand_literal_enum(
     let mut serialize_arms = quote! {};
     let mut deserialize_arms = quote! {};
     let mut literal_helpers = Vec::new();
+
+    let literal_accessor_impl = if non_literal_variants.is_empty() {
+        literal_enum_accessor(
+            enum_ident,
+            &variants,
+            &impl_generics,
+            &ty_generics,
+            where_clause,
+        )?
+    } else {
+        quote! {}
+    };
 
     let helper_suffix = match mode {
         LiteralsMode::Both => "Serde",
@@ -676,18 +688,83 @@ fn expand_literal_enum(
 
     Ok(match mode {
         LiteralsMode::Both => quote! {
+            #literal_accessor_impl
             #helper_structs
             #serialize_impl
             #deserialize_impl
         },
         LiteralsMode::SerializeOnly => quote! {
+            #literal_accessor_impl
             #helper_structs
             #serialize_impl
         },
         LiteralsMode::DeserializeOnly => quote! {
+            #literal_accessor_impl
             #helper_structs
             #deserialize_impl
         },
+    })
+}
+
+fn literal_enum_accessor(
+    enum_ident: &Ident,
+    variants: &[EnumLiteralVariant],
+    impl_generics: &syn::ImplGenerics<'_>,
+    ty_generics: &syn::TypeGenerics<'_>,
+    where_clause: Option<&syn::WhereClause>,
+) -> Result<proc_macro2::TokenStream, Error> {
+    let Some(first) = variants.first() else {
+        return Ok(quote! {});
+    };
+
+    let (method, return_ty, kind, trait_impl) = match &first.lit {
+        Lit::Str(_) => (
+            quote! { as_str },
+            quote! { &'static str },
+            0,
+            quote! {
+                impl #impl_generics AsRef<str> for #enum_ident #ty_generics #where_clause {
+                    fn as_ref(&self) -> &str {
+                        self.as_str()
+                    }
+                }
+            },
+        ),
+        Lit::Bool(_) => (quote! { as_bool }, quote! { bool }, 1, quote! {}),
+        Lit::Int(_) => (quote! { as_i64 }, quote! { i64 }, 2, quote! {}),
+        Lit::Float(_) => (quote! { as_f64 }, quote! { f64 }, 3, quote! {}),
+        _ => return Ok(quote! {}),
+    };
+
+    let same_kind = variants.iter().all(|variant| {
+        matches!(
+            (&variant.lit, kind),
+            (Lit::Str(_), 0) | (Lit::Bool(_), 1) | (Lit::Int(_), 2) | (Lit::Float(_), 3)
+        )
+    });
+    if !same_kind {
+        return Ok(quote! {});
+    }
+
+    let arms = variants
+        .iter()
+        .map(|variant| {
+            let ident = &variant.ident;
+            let (_, _, value) = literal_trait_def(&variant.lit)?;
+            Ok(quote! { Self::#ident => #value })
+        })
+        .collect::<Result<Vec<_>, Error>>()?;
+
+    Ok(quote! {
+        impl #impl_generics #enum_ident #ty_generics #where_clause {
+            pub const fn #method(&self) -> #return_ty {
+                match self {
+                    #(#arms,)*
+                }
+            }
+        }
+
+        #trait_impl
     })
 }
 
