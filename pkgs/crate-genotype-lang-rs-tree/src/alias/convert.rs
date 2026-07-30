@@ -212,7 +212,7 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "BookId"),
           doc: None,
           attributes: [
-            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("derive(Debug, Clone, Eq, PartialEq, PartialOrd, Ord, Serialize, Deserialize)"),
           ],
           name: RsIdentifier("BookId"),
           generics: [],
