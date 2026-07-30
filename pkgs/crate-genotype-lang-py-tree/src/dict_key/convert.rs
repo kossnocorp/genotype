@@ -1,8 +1,15 @@
 use crate::prelude::internal::*;
 
 impl PyConvert<PyDictKey> for GtRecordKey {
-    fn convert(&self, _context: &mut PyConvertContext) -> PyDictKey {
+    fn convert(&self, context: &mut PyConvertContext) -> PyDictKey {
         match self {
+            GtRecordKey::Reference(reference) => {
+                let reference = reference.convert(context);
+                if !context.is_generic_parameter(&reference.identifier) {
+                    context.track_reference(&reference);
+                }
+                PyDictKey::Reference(reference)
+            }
             GtRecordKey::String(_) => PyDictKey::String,
             GtRecordKey::Int8(_)
             | GtRecordKey::Int16(_)
@@ -25,20 +32,31 @@ impl PyConvert<PyDictKey> for GtRecordKey {
 
 #[cfg(test)]
 mod tests {
-
-    use crate::test::*;
-    use genotype_test::*;
+    use super::*;
 
     #[test]
     fn test_convert() {
         assert_ron_snapshot!(
+            convert_node(GtRecordKey::Reference(Gt::reference_anon("AddressId"))),
+            @r#"
+        Reference(PyReference(
+          identifier: PyIdentifier("AddressId"),
+          arguments: [],
+          forward: true,
+        ))
+        "#
+        );
+
+        assert_ron_snapshot!(
             convert_node(Gt::record_key_string()),
             @"String"
         );
+
         assert_ron_snapshot!(
             convert_node(Gt::record_key_i32()),
             @"Int"
         );
+
         assert_ron_snapshot!(
             convert_node(Gt::record_key_f64()),
             @"Float"

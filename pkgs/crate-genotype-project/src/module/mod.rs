@@ -8,6 +8,9 @@ pub use parse::*;
 mod resolve;
 pub use resolve::*;
 
+mod type_check;
+pub use type_check::*;
+
 mod error;
 pub use error::*;
 
@@ -31,16 +34,20 @@ pub enum GtpModule {
 
     /// Module has been resolved successfully.
     Resolved(Box<GtpModuleResolved>),
+
+    /// Module has been type checked successfully.
+    TypeChecked(Box<GtpModuleTypeChecked>),
 }
 
 impl GtpModule {
     /// Module state name.
-    pub fn state_name(&self) -> &str {
+    pub fn state_name(&self) -> &'static str {
         match self {
             GtpModule::Initialized(_) => "initialized",
             GtpModule::Error(_, _) => "error",
             GtpModule::Parsed(_) => "parsed",
             GtpModule::Resolved(_) => "resolved",
+            GtpModule::TypeChecked(_) => "type checked",
         }
     }
 
@@ -56,6 +63,7 @@ impl GtpModule {
             GtpModule::Error(_, _) => None,
             GtpModule::Parsed(state) => Some(state),
             GtpModule::Resolved(state) => Some(&state.project_module_parse),
+            GtpModule::TypeChecked(state) => Some(&state.module_resolved.project_module_parse),
         }
     }
 
@@ -66,6 +74,7 @@ impl GtpModule {
             GtpModule::Error(source, _) => source.path(),
             GtpModule::Parsed(state) => &state.path,
             GtpModule::Resolved(state) => &state.project_module_parse.path,
+            GtpModule::TypeChecked(state) => &state.module_resolved.project_module_parse.path,
         }
     }
 
@@ -76,6 +85,7 @@ impl GtpModule {
             GtpModule::Error(source, _) => source,
             GtpModule::Parsed(state) => &state.source,
             GtpModule::Resolved(state) => &state.project_module_parse.source,
+            GtpModule::TypeChecked(state) => &state.module_resolved.project_module_parse.source,
         }
     }
 
@@ -86,6 +96,9 @@ impl GtpModule {
             GtpModule::Error(_, _) => None,
             GtpModule::Parsed(state) => Some(&state.source_code),
             GtpModule::Resolved(state) => Some(&state.project_module_parse.source_code),
+            GtpModule::TypeChecked(state) => {
+                Some(&state.module_resolved.project_module_parse.source_code)
+            }
         }
     }
 }

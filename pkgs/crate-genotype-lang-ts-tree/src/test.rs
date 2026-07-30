@@ -362,6 +362,13 @@ impl Tst {
         }
     }
 
+    pub fn record_key_reference<Type>(reference: Type) -> TsRecordKey
+    where
+        Type: Into<TsReference>,
+    {
+        TsRecordKey::Reference(reference.into())
+    }
+
     pub fn record_key_string() -> TsRecordKey {
         TsRecordKey::String
     }

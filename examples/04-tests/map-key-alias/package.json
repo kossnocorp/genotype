@@ -1,0 +1,12 @@
+{
+  "name": "genotype-test-map-key-alias",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@types/node": "^25.5.2",
+    "genotype-test-map-key-alias-types": "file:./dist/ts-types/ts/",
+    "genotype-test-map-key-alias-zod-types": "file:./dist/ts-zod/ts/",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
+  }
+}

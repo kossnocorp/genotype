@@ -32,8 +32,8 @@ pub trait GtbDiagnosticSinkStdio {
                 }
 
                 Some(GtDiagnosticContentMessageBody::Multi(bodies)) => {
-                    println!();
                     for body in bodies {
+                        println!();
                         Self::print_diagnostic_body(&diagnostic.kind, body);
                     }
                 }

@@ -2,8 +2,6 @@
 
 set -euo pipefail
 
-SNAP_PATH="./output.actual.snap"
-EXPECTED_SNAP_PATH="./output.snap"
 SOME_FAILED=0
 
 UPDATE=0
@@ -64,60 +62,67 @@ echo "🔵 CLI path: $CLI_PATH"
 
 echo
 
-cd modules
+for project_path in */; do
+	if [ ! -f "$project_path/genotype.toml" ]; then
+		continue
+	fi
 
-rm -rf ./dist
+	project_path="${project_path%/}"
+	project_name="$(basename "$project_path")"
+	snap_path="$project_path/output.actual.snap"
+	expected_snap_path="$project_path/output.snap"
 
-if [ $RUN -eq 1 ]; then
-	echo "🌀 Running \`gt build\`"
-	echo "-----------------------------------------------------"
-	"$CLI_PATH" build .
-	exit 0
-fi
+	rm -rf "$project_path/dist"
 
-echo "🌀 Checking module build errors"
+	echo "🌀 Checking $project_name build errors"
 
-if output=$("$CLI_PATH" build . 2>&1); then
-	echo "🔴 Module errors: NONE"
-	echo "--- Output ------------------------------------------"
-	echo "$output"
-	echo "-----------------------------------------------------"
-	exit 1
-else
-	if [ "$UPDATE" -eq 1 ]; then
-		echo "🟠 Module errors: Updating snapshot with new output."
-		printf '%s\n' "$output" >"$EXPECTED_SNAP_PATH"
-		exit 0
+	if [ $RUN -eq 1 ]; then
+		(
+			cd "$project_path"
+			"$CLI_PATH" build .
+		) || SOME_FAILED=1
+		echo
+		continue
+	fi
+
+	if output=$(cd "$project_path" && "$CLI_PATH" build . 2>&1); then
+		echo "🔴 $project_name errors: NONE"
+		echo "--- Output ------------------------------------------"
+		echo "$output"
+		echo "-----------------------------------------------------"
+		SOME_FAILED=1
+	elif [ "$UPDATE" -eq 1 ]; then
+		echo "🟠 $project_name errors: Updating snapshot with new output."
+		printf '%s\n' "$output" >"$expected_snap_path"
 	else
-		printf '%s\n' "$output" >"$SNAP_PATH"
+		printf '%s\n' "$output" >"$snap_path"
 
-		if [ ! -f "$EXPECTED_SNAP_PATH" ]; then
-			echo "🟡 Module errors: Snapshot missing; run with '--update' to save the output."
+		if [ ! -f "$expected_snap_path" ]; then
+			echo "🟡 $project_name errors: Snapshot missing; run with '--update' to save the output."
 			echo "--- Output ------------------------------------------"
 			echo "$output"
 			echo "-----------------------------------------------------"
 			SOME_FAILED=1
-		else
-			if diff_output=$(diff -u --color=always "$EXPECTED_SNAP_PATH" "$SNAP_PATH" 2>&1); then
-				echo "🟢 Module errors: OK"
-				if [ $DEBUG -eq 1 ]; then
-					echo "--- Output ------------------------------------------"
-					echo "$output"
-					echo "-----------------------------------------------------"
-				fi
-			else
-				echo "🔴 Module errors: Snapshots mismatch; run with '--update' to accept the new snapshot."
-				echo "--- Diff --------------------------------------------"
-				echo -e "$diff_output"
+		elif diff_output=$(diff -u --color=always "$expected_snap_path" "$snap_path" 2>&1); then
+			echo "🟢 $project_name errors: OK"
+			if [ $DEBUG -eq 1 ]; then
+				echo "--- Output ------------------------------------------"
+				echo "$output"
 				echo "-----------------------------------------------------"
-				SOME_FAILED=1
 			fi
+		else
+			echo "🔴 $project_name errors: Snapshots mismatch; run with '--update' to accept the new snapshot."
+			echo "--- Diff --------------------------------------------"
+			echo -e "$diff_output"
+			echo "-----------------------------------------------------"
+			SOME_FAILED=1
 		fi
 
-		rm -f "$SNAP_PATH"
+		rm -f "$snap_path"
 	fi
-fi
-cd - >/dev/null
+
+	echo
+done
 
 echo
 if [ $SOME_FAILED -eq 1 ]; then

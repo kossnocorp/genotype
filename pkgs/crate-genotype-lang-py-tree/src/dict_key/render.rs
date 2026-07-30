@@ -3,10 +3,11 @@ use crate::prelude::internal::*;
 impl<'context> GtlRender<'context, PyRenderTypes> for PyDictKey {
     fn render(
         &self,
-        _state: PyRenderState,
-        _context: &mut PyRenderContext,
+        state: PyRenderState,
+        context: &mut PyRenderContext,
     ) -> PyRenderResult<String> {
         Ok(match self {
+            PyDictKey::Reference(reference) => reference.render(state, context)?,
             PyDictKey::String => "str".into(),
             PyDictKey::Int => "int".into(),
             PyDictKey::Float => "float".into(),
@@ -22,6 +23,12 @@ mod tests {
 
     #[test]
     fn test_render() {
+        assert_snapshot!(
+            PyDictKey::Reference(PyReference::new("AddressId".into(), false))
+                .render(Default::default(), &mut Default::default())
+                .unwrap(),
+            @"AddressId"
+        );
         assert_snapshot!(
             PyDictKey::Boolean
                 .render(Default::default(), &mut Default::default())

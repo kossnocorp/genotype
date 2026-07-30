@@ -1,8 +1,9 @@
 use crate::prelude::internal::*;
 
 impl TsConvert<TsRecordKey> for GtRecordKey {
-    fn convert(&self, _context: &mut TsConvertContext) -> TsRecordKey {
+    fn convert(&self, context: &mut TsConvertContext) -> TsRecordKey {
         match self {
+            GtRecordKey::Reference(reference) => TsRecordKey::Reference(reference.convert(context)),
             GtRecordKey::String(_) => TsRecordKey::String,
             GtRecordKey::Number(_)
             | GtRecordKey::Int8(_)
@@ -32,6 +33,16 @@ mod tests {
 
     #[test]
     fn test_convert() {
+        assert_ron_snapshot!(
+            convert_node(GtRecordKey::Reference(Gt::reference_anon("AddressId"))),
+            @r#"
+        Reference(TsReference(
+          identifier: TsIdentifier("AddressId"),
+          arguments: [],
+          rel: Regular,
+        ))
+        "#
+        );
         assert_ron_snapshot!(
             convert_node(GtRecordKey::String((0, 0).into())),
             @"String"

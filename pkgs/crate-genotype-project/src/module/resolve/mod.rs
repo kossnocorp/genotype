@@ -20,10 +20,17 @@ impl GtpModule {
     pub fn resolve(self, source: &GtpModuleSource, project_resolve: &GtpResolve) -> GtpModule {
         let project_module_parse = match self {
             GtpModule::Parsed(project_module_parse) => project_module_parse,
-            GtpModule::Resolved(state) => Box::new(state.project_module_parse),
+
             GtpModule::Error(_, _) => return self,
-            GtpModule::Initialized(source) => {
-                return GtpModule::Error(source, GtpModuleError::ResolveInitialized);
+
+            _ => {
+                return GtpModule::Error(
+                    source.clone(),
+                    GtpModuleError::InvalidModuleState {
+                        current_state: self.state_name(),
+                        expected_states: "parsed",
+                    },
+                );
             }
         };
 

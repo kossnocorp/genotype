@@ -533,6 +533,9 @@
               "include": "#primitive"
             },
             {
+              "include": "#identifier"
+            },
+            {
               "include": "#comments"
             }
           ]

@@ -126,6 +126,7 @@ async fn load_all_modules<Backend: GtBackend + ?Sized>(
     let mut project = load_module_entries(backend, project, module_entries).await?;
 
     project.resolve_modules()?;
+    project.type_check_modules()?;
     project.sort_modules();
 
     Ok(project)

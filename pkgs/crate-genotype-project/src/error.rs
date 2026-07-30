@@ -3,7 +3,7 @@ use crate::prelude::internal::*;
 #[derive(Error, Debug, Diagnostic, PartialEq, Clone, Serialize)]
 pub enum GtpError {
     #[error("Undefined type `{identifier}`: {reason}")]
-    #[diagnostic(code(GTP301))]
+    #[diagnostic(code(GTP201))]
     UndefinedType {
         #[label("referenced here")]
         span: GtSpan,

@@ -1,0 +1,11 @@
+AddressId: @string
+
+Address: {
+  street: string,
+}
+
+Addresses: { [AddressId]: Address }
+
+User: {
+  addresses: Addresses,
+}
