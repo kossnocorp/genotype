@@ -18,8 +18,9 @@ jobs:
 
       - name: Set Up Dev Env
         uses: ./.github/actions/setup
-        with:
-          enable-node: true
+        # TODO: Enable after adding Oxlint or similar that require Node.js
+        # with:
+        #   enable-node: true
 
       - name: Check Code Formatting
         run: mise :format:check

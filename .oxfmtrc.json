@@ -3,8 +3,8 @@
   "ignorePatterns": [
     "pnpm-*.yaml",
     ".miserc.toml",
-    "examples/04-tests/**/dist/**",
-    "npm-genotype-formatters-wasm/**",
-    "npm-genotype-wasm/**"
+    "examples/04-tests/**",
+    "pkgs/npm-genotype-formatters-wasm/**",
+    "pkgs/npm-genotype-wasm/**"
   ]
 }
