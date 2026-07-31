@@ -9,12 +9,18 @@ jobs:
   qa:
     name: Run QA
     uses: ./.github/workflows/qa.yml
+
+  build:
+    name: Build Binaries
+    uses: ./.github/workflows/build.yml
     with:
-      build_artifact_suffix: ${{ github.ref_name }}
+      artifact_suffix: ${{ github.ref_name }}
 
   release:
     name: Publish GitHub Release
-    needs: qa
+    needs:
+      - qa
+      - build
     runs-on: ubuntu-latest
     permissions:
       attestations: write

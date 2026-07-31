@@ -2,19 +2,14 @@ name: QA
 
 on:
   workflow_call:
-    inputs:
-      build_artifact_suffix:
-        description: Suffix forwarded to build workflow artifact names.
-        required: false
-        type: string
   pull_request_target:
   push:
     branches:
       - main
 
 jobs:
-  qa:
-    name: QA
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
 
     steps:
@@ -25,53 +20,63 @@ jobs:
         uses: ./.github/actions/setup
         with:
           enable-node: true
-          enable-python: true
 
       - name: Check Code Formatting
         run: mise :format:check
-        # id: format
-        # continue-on-error: true
 
       - name: Lint Code
         run: mise :lint
-        # id: lint
-        # continue-on-error: true
-
-      - name: Run Unit Tests
-        run: mise :test/unit
-        # id: test-unit
-        # continue-on-error: true
-
-      - name: Run System Tests
-        run: mise :test/system
-        # id: test-system
-        # continue-on-error: true
 
       - name: Save Cache
         if: always()
         uses: ./.github/actions/cache-save
         with:
           enable-node: true
-          enable-python: true
-
-      # TODO: Re-enable continue-on-error if GitHub ever addresses the problem:
-      # - https://github.com/orgs/community/discussions/15452
-      # - https://github.com/actions/runner/issues/2347
-
-      # - name: Fail if QA Failed
-      #   if: |
-      #     steps.format.outcome == 'failure' ||
-      #     steps.lint.outcome == 'failure' ||
-      #     steps.test-unit.outcome == 'failure' ||
-      #     steps.test-system.outcome == 'failure'
-      #   run: exit 1
 
       - name: Display Stats
         if: always()
         uses: ./.github/actions/stats
 
-  build:
-    name: Build
-    uses: ./.github/workflows/build.yml
-    with:
-      artifact_suffix: ${{ inputs.build_artifact_suffix || '' }}
+  test-unit:
+    name: Test Unit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v6
+
+      - name: Set Up Dev Env
+        uses: ./.github/actions/setup
+
+      - name: Run Unit Tests
+        run: mise :test/unit
+
+      - name: Save Cache
+        if: always()
+        uses: ./.github/actions/cache-save
+
+      - name: Display Stats
+        if: always()
+        uses: ./.github/actions/stats
+
+  test-system:
+    name: Test System
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v6
+
+      - name: Set Up Dev Env
+        uses: ./.github/actions/setup
+
+      - name: Run System Tests
+        run: mise :test/system
+
+      - name: Save Cache
+        if: always()
+        uses: ./.github/actions/cache-save
+
+      - name: Display Stats
+        if: always()
+        uses: ./.github/actions/stats
