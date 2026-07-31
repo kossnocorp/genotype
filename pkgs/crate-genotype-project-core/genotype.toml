@@ -1,7 +1,7 @@
 src = "./types/"
 dist = "."
 package = false
-formatters = [{ kind = "oxfmt", via = "pnpm" }]
+formatters = [{ kind = "oxfmt" }]
 
 [ts]
 enabled = true

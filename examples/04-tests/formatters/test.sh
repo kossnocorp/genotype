@@ -59,7 +59,7 @@ check_formatter() {
 echo
 echo "🌀 Running oxfmt checks"
 for variant in "${variants[@]}"; do
-	check_formatter "$variant" "oxfmt" "dist/${variant}" pnpm oxfmt --check
+	check_formatter "$variant" "oxfmt" "dist/${variant}" oxfmt --check
 done
 
 echo

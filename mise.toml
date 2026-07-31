@@ -16,6 +16,7 @@ ty = "latest"
 ruff = "latest"
 
 # Tools
+oxfmt = "latest"
 cargo-binstall = "latest"
 "cargo:cargo-nextest" = "latest"
 gh = "latest"
@@ -96,10 +97,10 @@ depends = [
 ]
 
 [tasks."format/base"]
-run = "pnpm exec oxfmt"
+run = "oxfmt"
 
 [tasks."format/base:check"]
-run = "pnpm exec oxfmt --check"
+run = "oxfmt --check"
 
 [tasks."format/rust"]
 run = "cargo fmt --all"

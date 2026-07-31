@@ -166,6 +166,10 @@ url = "https://nodejs.org/dist/v24.18.0/node-v24.18.0-win-x64.zip"
 version = "11.17.0"
 backend = "npm:pnpm"
 
+[[tools.oxfmt]]
+version = "0.61.0"
+backend = "npm:oxfmt"
+
 [[tools.python]]
 version = "3.14.4"
 backend = "core:python"

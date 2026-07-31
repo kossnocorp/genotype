@@ -1,7 +1,7 @@
 name = "genotype-test-formatters-formatted"
 dist = "./dist/formatted"
 
-formatters = [{ kind = "oxfmt", via = "pnpm" }]
+formatters = [{ kind = "oxfmt" }]
 
 [build]
 file = false

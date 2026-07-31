@@ -3,7 +3,6 @@
   "version": "0.6.0",
   "license": "MIT",
   "devDependencies": {
-    "oxfmt": "^0.61.0",
     "typescript": "7.0.2"
   }
 }
