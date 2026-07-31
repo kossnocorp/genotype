@@ -20,6 +20,7 @@ for example_dir in "${example_dirs[@]}"; do
 	echo -e "=== 🚧 Running $rel_example_dir ===\n"
 
 	example_failed=0
+	start_time=$SECONDS
 
 	if (cd "$example_dir" && ./test.sh); then
 		echo "🟢 Tests: OK"
@@ -28,6 +29,7 @@ for example_dir in "${example_dirs[@]}"; do
 		echo "🔴 Tests: FAILED"
 		failed_examples=$((failed_examples + 1))
 	fi
+	echo "🟣 Run time: $((SECONDS - start_time))s"
 
 	echo -e "\n=====================================================\n"
 done
