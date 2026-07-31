@@ -1,3 +1,10 @@
 {
-  "ignorePatterns": ["pnpm-*.yaml", ".miserc.toml", "examples/04-tests/**/dist/**"]
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": [
+    "pnpm-*.yaml",
+    ".miserc.toml",
+    "examples/04-tests/**/dist/**",
+    "npm-genotype-formatters-wasm/**",
+    "npm-genotype-wasm/**"
+  ]
 }
