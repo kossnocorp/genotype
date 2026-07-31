@@ -24,7 +24,7 @@ const fn default_true() -> bool {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 pub struct GtpBuildConfig {
-    /// Whether to resolve and update `genotype-build.toml`.
+    /// Whether to resolve and update `genotype.build.toml`.
     #[serde(default = "default_true")]
     pub file: bool,
     /// Whether to remove unchanged generated files no longer produced by a build.
