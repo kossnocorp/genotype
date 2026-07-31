@@ -137,6 +137,9 @@ impl RsConvert<RsStruct> for GtBranded {
             RsContextRenderDeriveSerdeMode::Serde,
         );
 
+        context.push_import(RsUse::new(RsDependencyIdent::Serde, "Deserialize".into()));
+        context.push_import(RsUse::new(RsDependencyIdent::Serde, "Serialize".into()));
+
         Ok(RsStruct {
             id,
             doc,
@@ -717,21 +720,50 @@ mod tests {
     #[test]
     fn test_convert_branded() {
         assert_ron_snapshot!(
-            Gt::literal_boolean(true)
+            Gt::branded("BookId", Gt::primitive_i32())
                 .convert(&mut RsConvertContext::empty("module".into()))
                 .unwrap(),
             @r#"
         RsStruct(
-          id: GtDefinitionId(GtModuleId("module"), "True"),
+          id: GtDefinitionId(GtModuleId("module"), "BookId"),
           doc: None,
           attributes: [
-            RsAttribute("serde_literal(true)"),
-            RsAttribute("derive(Serialize, Deserialize)"),
+            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize, Eq, PartialOrd, Ord)"),
           ],
-          name: RsIdentifier("True"),
+          name: RsIdentifier("BookId"),
           generics: [],
-          fields: Unit,
+          fields: Newtype([
+            Primitive(Int32),
+          ]),
         )
+        "#
+        );
+    }
+
+    #[test]
+    fn test_convert_branded_serde_imports() {
+        let mut context = RsConvertContext::empty("module".into());
+        Gt::branded("BookId", Gt::primitive_i32())
+            .convert(&mut context)
+            .unwrap();
+
+        assert_ron_snapshot!(
+            context.imports(),
+            @r#"
+        [
+          RsUse(
+            dependency: Serde,
+            reference: Named([
+              Name(RsIdentifier("Deserialize")),
+            ]),
+          ),
+          RsUse(
+            dependency: Serde,
+            reference: Named([
+              Name(RsIdentifier("Serialize")),
+            ]),
+          ),
+        ]
         "#
         );
     }
