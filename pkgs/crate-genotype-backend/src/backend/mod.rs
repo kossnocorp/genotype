@@ -33,6 +33,7 @@ pub trait GtBackend:
 
     async fn save_config(&self, path: &GtpConfigFilePath, config: &GtpConfig) -> Result<()> {
         let source = config.to_toml_str_pruned()?;
+        let source = oxc_toml::format(&source, oxc_toml::Options::default());
         self.write_file(path.as_ref(), &source).await
     }
 

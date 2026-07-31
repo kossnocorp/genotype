@@ -154,6 +154,7 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
 
         match toml_str {
             Ok(source) => {
+                let source = oxc_toml::format(&source, oxc_toml::Options::default());
                 if let Err(err) = self.backend.write_file(&build_file_path, &source).await {
                     diagnostics.push(GtDiagnostic::error(format!(
                         "Failed to write build info file `{build_file_path}`: {err}"

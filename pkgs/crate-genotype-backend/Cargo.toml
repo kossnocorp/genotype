@@ -25,6 +25,7 @@ serde = { version = "1.0.228", features = ["derive"] }
 indexmap = { version = "2.6.0", features = ["serde"] }
 figment = { version = "0.10.19", features = ["toml", "env"] }
 owo-colors = "4.1.0"
+oxc-toml = "0.14.4"
 litty = { version = "0.5.0", path = "../crate-litty" }
 futures = "0.3.31"
 

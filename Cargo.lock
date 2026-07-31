@@ -926,6 +926,7 @@ dependencies = [
  "miette",
  "num_cpus",
  "owo-colors",
+ "oxc-toml",
  "pretty_assertions",
  "rayon",
  "relative-path",
@@ -995,6 +996,7 @@ dependencies = [
  "miette",
  "ordered-float",
  "owo-colors",
+ "oxc-toml",
  "pluralizer",
  "pretty_assertions",
  "regex",
@@ -2353,6 +2355,12 @@ dependencies = [
  "quote",
  "syn 2.0.117",
 ]
+
+[[package]]
+name = "oxc-toml"
+version = "0.14.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d101351ce46bee825bad68f0f899431c66c2878124a8e0f0237d0d562e214ade"
 
 [[package]]
 name = "oxc_allocator"
