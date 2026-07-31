@@ -148,7 +148,7 @@ impl RsConvertContext {
             .iter()
             .filter(|f| mode != RsContextRenderDeriveTypeMode::UnionEnum || *f != "Default")
             .map(|derive| derive.as_str())
-            .collect::<IndexSet<&str>>();
+            .collect::<Vec<_>>();
 
         if serde_mode == RsContextRenderDeriveSerdeMode::Serde {
             traits.extend(["Serialize", "Deserialize"]);
@@ -158,10 +158,10 @@ impl RsConvertContext {
             traits.extend(["Eq", "PartialEq", "PartialOrd", "Ord"]);
         }
 
-        // Sort traits for consistent output
-        traits.sort();
+        traits.sort_unstable();
+        traits.dedup();
 
-        let traits = traits.into_iter().collect::<Vec<_>>().join(", ");
+        let traits = traits.join(", ");
 
         format!("derive({traits})")
     }
@@ -306,6 +306,28 @@ mod tests {
                 RsContextRenderDeriveSerdeMode::Serde,
             ),
             @"derive(Debug, Deserialize, Serialize)",
+        );
+    }
+
+    #[test]
+    fn test_render_derive_branded_sorts_and_deduplicates_traits() {
+        let mut context = RsConvertContext::empty("module".into());
+        context.assign_config(RsConfigLang {
+            derive: vec![
+                "Ord".into(),
+                "Serialize".into(),
+                "Debug".into(),
+                "Eq".into(),
+                "Debug".into(),
+            ],
+        });
+
+        assert_snapshot!(
+            context.render_derive(
+                RsContextRenderDeriveTypeMode::BrandedStruct,
+                RsContextRenderDeriveSerdeMode::Serde,
+            ),
+            @"derive(Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)",
         );
     }
 }
