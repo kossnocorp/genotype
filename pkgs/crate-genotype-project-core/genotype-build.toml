@@ -4,10 +4,7 @@ config_hash = "799e4cceb5bbc7d0"
 [src.modules."types/build_info.type"]
 id = "build_info"
 hash = "850ea1f2f090dc21"
-deps = [
-    "genotype_core",
-    "source_code",
-]
+deps = ["genotype_core", "source_code"]
 
 [src.modules."types/formatter.type"]
 id = "formatter"

@@ -1,8 +1,4 @@
-import {
-  AddressId,
-  Addresses,
-  User,
-} from "genotype-test-map-key-alias-zod-types";
+import { AddressId, Addresses, User } from "genotype-test-map-key-alias-zod-types";
 import assert from "node:assert/strict";
 
 const addressId = AddressId.parse("home");

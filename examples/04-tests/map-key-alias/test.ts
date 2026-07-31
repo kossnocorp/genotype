@@ -1,9 +1,4 @@
-import type {
-  Address,
-  Addresses,
-  AddressId,
-  User,
-} from "genotype-test-map-key-alias-types";
+import type { Address, Addresses, AddressId, User } from "genotype-test-map-key-alias-types";
 import assert from "node:assert/strict";
 
 const addressId = "home" as AddressId;
