@@ -40,10 +40,6 @@ depends = ["install/pnpm", "install/uv"]
 
 [tasks."install/pnpm"]
 run = "pnpm install"
-depends = [
-  "//pkgs/crate-genotype-formatters-wasm:build:dev",
-  "//pkgs/crate-genotype-wasm:build:dev",
-]
 
 [tasks."install/uv"]
 run = "uv sync"
