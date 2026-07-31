@@ -1,0 +1,63 @@
+[src]
+config_hash = "799e4cceb5bbc7d0"
+
+[src.modules."types/build_info.type"]
+id = "build_info"
+hash = "850ea1f2f090dc21"
+deps = [
+    "genotype_core",
+    "source_code",
+]
+
+[src.modules."types/formatter.type"]
+id = "formatter"
+hash = "3ea8191c5d3c3fdc"
+deps = []
+
+[src.modules."types/lang.type"]
+id = "lang"
+hash = "0c6b7623e39dbe48"
+deps = []
+
+[src.modules."types/source_code.type"]
+id = "source_code"
+hash = "d7b3e13e7e758d56"
+deps = []
+
+[dist.ts."../npm-genotype-types/src/project/build_info.ts"]
+hash = "4bc239e8894856d2"
+srcId = "build_info"
+
+[dist.ts."../npm-genotype-types/src/project/formatter.ts"]
+hash = "a5c23bff44419a82"
+srcId = "formatter"
+
+[dist.ts."../npm-genotype-types/src/project/index.ts"]
+hash = "32359542f0829eed"
+
+[dist.ts."../npm-genotype-types/src/project/lang.ts"]
+hash = "68689f63f1f02a4a"
+srcId = "lang"
+
+[dist.ts."../npm-genotype-types/src/project/source_code.ts"]
+hash = "45315e48ddbd80af"
+srcId = "source_code"
+
+[dist.rs."src/types/build_info.rs"]
+hash = "513fef749d575ccf"
+srcId = "build_info"
+
+[dist.rs."src/types/formatter.rs"]
+hash = "843b95d79cba73c2"
+srcId = "formatter"
+
+[dist.rs."src/types/lang.rs"]
+hash = "b8931d63d5072011"
+srcId = "lang"
+
+[dist.rs."src/types/mod.rs"]
+hash = "b5eae645ec292f6c"
+
+[dist.rs."src/types/source_code.rs"]
+hash = "ce9242204f6f4201"
+srcId = "source_code"

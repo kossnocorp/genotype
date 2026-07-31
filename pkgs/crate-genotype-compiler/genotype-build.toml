@@ -1,0 +1,34 @@
+[src]
+config_hash = "fe6f572d3d25e52e"
+
+[src.modules."types/meta.type"]
+id = "meta"
+hash = "56630ec34a014cc1"
+deps = []
+
+[src.modules."types/remote.type"]
+id = "remote"
+hash = "1f79228aed5c165c"
+deps = ["meta"]
+
+[dist.ts."../npm-genotype-types/src/compiler/index.ts"]
+hash = "820c1c6b77fd5fc4"
+
+[dist.ts."../npm-genotype-types/src/compiler/meta.ts"]
+hash = "04c4a714e3803650"
+srcId = "meta"
+
+[dist.ts."../npm-genotype-types/src/compiler/remote.ts"]
+hash = "440b17c52c57f20a"
+srcId = "remote"
+
+[dist.rs."src/types/meta.rs"]
+hash = "ede80f401141ab79"
+srcId = "meta"
+
+[dist.rs."src/types/mod.rs"]
+hash = "f9437e0cf46c0791"
+
+[dist.rs."src/types/remote.rs"]
+hash = "7676342a6e722e18"
+srcId = "remote"

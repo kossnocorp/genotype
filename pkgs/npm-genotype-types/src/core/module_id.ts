@@ -1,3 +1,5 @@
+// Do not edit manually! Code generated from ../../../crate-genotype-core/types/module_id.type
+
 import { z } from "zod";
 
 /** Module identifier. */

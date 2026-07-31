@@ -48,8 +48,6 @@ impl PartialEq<str> for GtModuleId {
     }
 }
 
-impl Eq for GtModuleId {}
-
 impl Hash for GtModuleId {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.0.hash(state);

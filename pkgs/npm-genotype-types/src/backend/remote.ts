@@ -1,3 +1,5 @@
+// Do not edit manually! Code generated from ../../../crate-genotype-backend/types/remote.type
+
 import { z } from "zod";
 import { GtDiagnostic, GtpFormatter } from "@genotype-lang/types";
 

@@ -1,3 +1,5 @@
+// Do not edit manually! Code generated from ../../types/remote.type
+
 use genotype_core::GtDiagnostic;
 use genotype_project_core::GtpFormatter;
 use litty::serde_literals;

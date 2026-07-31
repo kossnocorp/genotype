@@ -1,0 +1,34 @@
+[src]
+config_hash = "5cc5ddb26c835547"
+
+[src.modules."types/diagnostic.type"]
+id = "diagnostic"
+hash = "af1832d5b99ae79c"
+deps = []
+
+[src.modules."types/module_id.type"]
+id = "module_id"
+hash = "db3903852e508778"
+deps = []
+
+[dist.ts."../npm-genotype-types/src/core/diagnostic.ts"]
+hash = "88ee1177a8ce42f5"
+srcId = "diagnostic"
+
+[dist.ts."../npm-genotype-types/src/core/index.ts"]
+hash = "b9e37c895686a867"
+
+[dist.ts."../npm-genotype-types/src/core/module_id.ts"]
+hash = "d3f2ab0e500b8cd4"
+srcId = "module_id"
+
+[dist.rs."src/types/diagnostic.rs"]
+hash = "ea3b7d5c7691c20d"
+srcId = "diagnostic"
+
+[dist.rs."src/types/mod.rs"]
+hash = "884b07eab33cb39c"
+
+[dist.rs."src/types/module_id.rs"]
+hash = "94f403aa998d4418"
+srcId = "module_id"
