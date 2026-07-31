@@ -31,7 +31,7 @@ impl GtpConfigFilePath {
     pub fn to_build_file_path(&self) -> GtpCwdRelativePath {
         self.to_config_dir_path()
             .relative_path()
-            .join("genotype-build.toml")
+            .join("genotype.build.toml")
             .into()
     }
 }

@@ -277,7 +277,7 @@ fn prepare_project() -> (TempDir, PreparedProject) {
     let project_dir = project_tempdir.path().to_path_buf();
 
     let config_path = project_dir.join("genotype.toml");
-    let build_info_path = project_dir.join("genotype-build.toml");
+    let build_info_path = project_dir.join("genotype.build.toml");
     let keep_src_path = project_dir.join("src/keep.type");
     let stale_src_path = project_dir.join("src/stale.type");
     let stale_dist_path = project_dir.join("dist/ts/stale.ts");
