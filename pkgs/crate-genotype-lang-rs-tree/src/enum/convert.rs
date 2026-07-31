@@ -237,7 +237,7 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "Union"),
           doc: None,
           attributes: [
-            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
             RsAttribute("serde(untagged)"),
           ],
           name: RsIdentifier("Union"),
@@ -298,7 +298,7 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "Union"),
           doc: Some(RsDoc("Hello, world!", false)),
           attributes: [
-            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
             RsAttribute("serde(untagged)"),
           ],
           name: RsIdentifier("Union"),
@@ -340,7 +340,7 @@ mod tests {
           doc: None,
           attributes: [
             RsAttribute("serde_literals"),
-            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
           ],
           name: RsIdentifier("AnimalKind"),
           generics: [],
@@ -416,7 +416,7 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "Union"),
           doc: None,
           attributes: [
-            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
             RsAttribute("serde(untagged)"),
           ],
           name: RsIdentifier("Union"),
@@ -485,7 +485,7 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "Union"),
           doc: None,
           attributes: [
-            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
             RsAttribute("serde(untagged)"),
           ],
           name: RsIdentifier("Union"),
@@ -546,7 +546,7 @@ mod tests {
           doc: None,
           attributes: [
             RsAttribute("serde_literals"),
-            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
           ],
           name: RsIdentifier("Union"),
           generics: [],
@@ -597,7 +597,7 @@ mod tests {
           doc: None,
           attributes: [
             RsAttribute("serde_literals"),
-            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
           ],
           name: RsIdentifier("Version"),
           generics: [],
@@ -640,7 +640,7 @@ mod tests {
           doc: None,
           attributes: [
             RsAttribute("serde_literals"),
-            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
           ],
           name: RsIdentifier("Version"),
           generics: [],
@@ -683,7 +683,7 @@ mod tests {
           doc: None,
           attributes: [
             RsAttribute("serde_literals"),
-            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
           ],
           name: RsIdentifier("Version"),
           generics: [],
@@ -739,7 +739,7 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "ServerMessage"),
           doc: None,
           attributes: [
-            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
             RsAttribute("serde(untagged)"),
           ],
           name: RsIdentifier("ServerMessage"),
@@ -804,7 +804,7 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "ServerMessage"),
           doc: None,
           attributes: [
-            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
             RsAttribute("serde(untagged)"),
           ],
           name: RsIdentifier("ServerMessage"),
@@ -877,7 +877,7 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "PokemonStage"),
           doc: None,
           attributes: [
-            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
             RsAttribute("serde(untagged)"),
           ],
           name: RsIdentifier("PokemonStage"),
@@ -992,7 +992,7 @@ mod tests {
           doc: None,
           attributes: [
             RsAttribute("serde_literals"),
-            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
           ],
           name: RsIdentifier("Status"),
           generics: [],
@@ -1143,7 +1143,7 @@ mod tests {
             doc: None,
             attributes: [
                 RsAttribute(
-                    "derive(Debug, Clone, PartialEq, Serialize, Deserialize)",
+                    "derive(Clone, Debug, Deserialize, PartialEq, Serialize)",
                 ),
                 RsAttribute(
                     "serde(untagged)",

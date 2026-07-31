@@ -158,6 +158,9 @@ impl RsConvertContext {
             traits.extend(vec!["Eq", "PartialEq", "PartialOrd", "Ord"]);
         }
 
+        // Sort traits for consistent output
+        traits.sort();
+
         let traits = traits.into_iter().collect::<Vec<_>>().join(", ");
 
         format!("derive({traits})")
@@ -237,12 +240,12 @@ mod tests {
     #[test]
     fn test_render_derive_struct() {
         let context = RsConvertContext::empty("module".into());
-        assert_eq!(
+        assert_snapshot!(
             context.render_derive(
                 RsContextRenderDeriveTypeMode::Struct,
                 RsContextRenderDeriveSerdeMode::Serde,
             ),
-            "derive(Debug, Clone, PartialEq, Serialize, Deserialize)",
+            @"derive(Clone, Debug, Deserialize, PartialEq, Serialize)",
         );
     }
 
@@ -253,19 +256,19 @@ mod tests {
         config.derive.push("Default".into());
         context.assign_config(config);
 
-        assert_eq!(
+        assert_snapshot!(
             context.render_derive(
                 RsContextRenderDeriveTypeMode::UnionEnum,
                 RsContextRenderDeriveSerdeMode::Serde,
             ),
-            "derive(Debug, Clone, PartialEq, Serialize, Deserialize)",
+            @"derive(Clone, Debug, Deserialize, PartialEq, Serialize)",
         );
-        assert_eq!(
+        assert_snapshot!(
             context.render_derive(
                 RsContextRenderDeriveTypeMode::Struct,
                 RsContextRenderDeriveSerdeMode::Serde,
             ),
-            "derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)",
+            @"derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)",
         );
     }
 
@@ -281,12 +284,12 @@ mod tests {
             ],
         });
 
-        assert_eq!(
+        assert_snapshot!(
             context.render_derive(
                 RsContextRenderDeriveTypeMode::Struct,
                 RsContextRenderDeriveSerdeMode::Serde,
             ),
-            "derive(Debug, Serialize, Clone, Deserialize)",
+            @"derive(Clone, Debug, Deserialize, Serialize)",
         );
     }
 
@@ -297,12 +300,12 @@ mod tests {
             derive: vec!["Debug".into(), "Serialize".into()],
         });
 
-        assert_eq!(
+        assert_snapshot!(
             context.render_derive(
                 RsContextRenderDeriveTypeMode::Struct,
                 RsContextRenderDeriveSerdeMode::Serde,
             ),
-            "derive(Debug, Serialize, Deserialize)",
+            @"derive(Debug, Deserialize, Serialize)",
         );
     }
 }

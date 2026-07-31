@@ -186,7 +186,7 @@ mod tests {
                       id: GtDefinitionId(GtModuleId("author"), "Author"),
                       doc: None,
                       attributes: [
-                        RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+                        RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
                       ],
                       name: RsIdentifier("Author"),
                       generics: [],
@@ -224,7 +224,7 @@ mod tests {
                     id: GtDefinitionId(GtModuleId("author"), "Author"),
                     doc: None,
                     attributes: [
-                      RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+                      RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
                     ],
                     name: RsIdentifier("Author"),
                     generics: [],
@@ -273,7 +273,7 @@ mod tests {
                       id: GtDefinitionId(GtModuleId("book"), "Book"),
                       doc: None,
                       attributes: [
-                        RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+                        RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
                       ],
                       name: RsIdentifier("Book"),
                       generics: [],
@@ -335,7 +335,7 @@ mod tests {
                     id: GtDefinitionId(GtModuleId("book"), "Book"),
                     doc: None,
                     attributes: [
-                      RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+                      RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
                     ],
                     name: RsIdentifier("Book"),
                     generics: [],
@@ -410,7 +410,7 @@ mod tests {
                       id: GtDefinitionId(GtModuleId("author"), "Author"),
                       doc: None,
                       attributes: [
-                        RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+                        RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
                       ],
                       name: RsIdentifier("Author"),
                       generics: [],
@@ -467,7 +467,7 @@ mod tests {
                     id: GtDefinitionId(GtModuleId("author"), "Author"),
                     doc: None,
                     attributes: [
-                      RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+                      RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
                     ],
                     name: RsIdentifier("Author"),
                     generics: [],
@@ -533,7 +533,7 @@ mod tests {
                       id: GtDefinitionId(GtModuleId("book"), "Book"),
                       doc: None,
                       attributes: [
-                        RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+                        RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
                       ],
                       name: RsIdentifier("Book"),
                       generics: [],
@@ -612,7 +612,7 @@ mod tests {
                     id: GtDefinitionId(GtModuleId("book"), "Book"),
                     doc: None,
                     attributes: [
-                      RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+                      RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
                     ],
                     name: RsIdentifier("Book"),
                     generics: [],
@@ -737,7 +737,7 @@ mod tests {
 
         use serde::{Deserialize, Serialize};
 
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         pub struct Author {
             pub name: String,
         }
@@ -762,7 +762,7 @@ mod tests {
         use super::author::Author;
         use serde::{Deserialize, Serialize};
 
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         pub struct Book {
             pub title: String,
             pub author: Author,
@@ -850,7 +850,7 @@ mod tests {
         use super::shop::goods::book::Book;
         use serde::{Deserialize, Serialize};
 
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         pub struct Inventory {
             pub goods: Vec<Book>,
         }
@@ -895,7 +895,7 @@ mod tests {
 
         use serde::{Deserialize, Serialize};
 
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         pub struct Book {
             pub title: String,
         }
@@ -952,7 +952,7 @@ mod tests {
 
         use serde::{Deserialize, Serialize};
 
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         pub struct Node {
             pub value: String,
             #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -981,18 +981,18 @@ mod tests {
 
         use serde::{Deserialize, Serialize};
 
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         pub struct NodeMeta {
             pub id: String,
         }
 
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         pub struct TreeLinkFields {
             #[serde(default, skip_serializing_if = "Option::is_none")]
             pub parent: Option<TreeNode>,
         }
 
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         pub struct TreeNode {
             pub id: String,
             #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1001,7 +1001,7 @@ mod tests {
             pub children: Vec<TreeNode>,
         }
 
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         pub struct TreePayload {
             pub id: String,
             #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1078,7 +1078,7 @@ mod tests {
         use litty::serde_literals;
         use crate::named::Name;
 
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         pub struct Admin {
             pub name: Name,
             pub email: String,
@@ -1088,7 +1088,7 @@ mod tests {
         }
 
         #[serde_literals]
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         pub enum AdminRole {
             #[literal("superadmin")]
             Superadmin,
@@ -1143,7 +1143,7 @@ mod tests {
         use serde::{Deserialize, Serialize};
 
         #[serde_literals]
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         #[literals(named = true)]
         pub struct Named {
             pub name: Name,
@@ -1165,7 +1165,7 @@ mod tests {
         use super::named::Name;
         use serde::{Deserialize, Serialize};
 
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         pub struct User {
             pub name: Name,
             pub email: String,
@@ -1173,7 +1173,7 @@ mod tests {
             pub age: Option<i64>,
         }
 
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         pub struct Account {
             pub email: String,
         }
@@ -1258,7 +1258,7 @@ mod tests {
         use genotype_json_types::JsonAny;
         use serde::{Deserialize, Serialize};
 
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         pub struct Prompt {
             pub content: String,
             pub output: JsonAny,
@@ -1333,7 +1333,7 @@ version = "0.3.0"
             @"
         use serde::{Deserialize, Serialize};
 
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         pub struct Author {
             pub name: String,
         }
