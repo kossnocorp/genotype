@@ -151,11 +151,11 @@ impl RsConvertContext {
             .collect::<IndexSet<&str>>();
 
         if serde_mode == RsContextRenderDeriveSerdeMode::Serde {
-            traits.extend(vec!["Serialize", "Deserialize"]);
+            traits.extend(["Serialize", "Deserialize"]);
         }
 
         if mode == RsContextRenderDeriveTypeMode::BrandedStruct {
-            traits.extend(vec!["Eq", "PartialEq", "PartialOrd", "Ord"]);
+            traits.extend(["Eq", "PartialEq", "PartialOrd", "Ord"]);
         }
 
         // Sort traits for consistent output
