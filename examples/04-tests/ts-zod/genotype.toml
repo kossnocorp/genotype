@@ -1,5 +1,8 @@
 name = "genotype-test-ts-zod"
 
+[build]
+file = false
+
 [ts]
 enabled = true
 mode = "zod"

@@ -1,6 +1,9 @@
 name = "genotype-test-map-key-alias"
 dist = "dist/py-legacy"
 
+[build]
+file = false
+
 [py]
 enabled = true
 version = "legacy"

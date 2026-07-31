@@ -3,6 +3,9 @@ dist = "./dist/formatted"
 
 formatters = [{ kind = "oxfmt", via = "pnpm" }]
 
+[build]
+file = false
+
 [ts]
 enabled = true
 

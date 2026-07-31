@@ -1,6 +1,9 @@
 name = "genotype-test-literal-aliases-types"
 dist = "dist"
 
+[build]
+file = false
+
 [ts]
 enabled = true
 

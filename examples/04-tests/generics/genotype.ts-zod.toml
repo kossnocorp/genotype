@@ -1,5 +1,8 @@
 dist = "dist/ts-zod"
 
+[build]
+file = false
+
 [ts]
 enabled = true
 mode = "zod"

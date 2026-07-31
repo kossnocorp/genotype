@@ -1,6 +1,9 @@
 name = "genotype-test-literal-fields"
 dist = "dist/ts-zod"
 
+[build]
+file = false
+
 [ts]
 enabled = true
 mode = "zod"

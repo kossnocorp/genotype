@@ -1,6 +1,9 @@
 name = "genotype-test-formatters-unformatted"
 dist = "./dist/unformatted"
 
+[build]
+file = false
+
 [ts]
 enabled = true
 

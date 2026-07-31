@@ -1,6 +1,9 @@
 name = "genotype-test-map-key-alias"
 dist = "dist"
 
+[build]
+file = false
+
 [ts]
 enabled = true
 dist = "ts-types/ts"

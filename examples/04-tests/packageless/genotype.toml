@@ -2,6 +2,9 @@ package = false
 src = "./types/"
 dist = "."
 
+[build]
+file = false
+
 [ts]
 enabled = true
 dist = "./ts/src/types/"
