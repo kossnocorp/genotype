@@ -256,7 +256,7 @@ mod tests {
               id: GtDefinitionId(GtModuleId("module"), "User"),
               doc: None,
               attributes: [
-                RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+                RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
               ],
               name: RsIdentifier("User"),
               generics: [],
@@ -283,7 +283,7 @@ mod tests {
               id: GtDefinitionId(GtModuleId("module"), "Order"),
               doc: None,
               attributes: [
-                RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+                RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
               ],
               name: RsIdentifier("Order"),
               generics: [],
@@ -305,7 +305,7 @@ mod tests {
               id: GtDefinitionId(GtModuleId("module"), "Book"),
               doc: None,
               attributes: [
-                RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+                RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
               ],
               name: RsIdentifier("Book"),
               generics: [],

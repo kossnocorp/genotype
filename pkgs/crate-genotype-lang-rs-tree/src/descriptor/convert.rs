@@ -217,7 +217,7 @@ mod tests {
             id: GtDefinitionId(GtModuleId("module"), "Person"),
             doc: None,
             attributes: [
-              RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+              RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
             ],
             name: RsIdentifier("Person"),
             generics: [],
@@ -320,7 +320,7 @@ mod tests {
             id: GtDefinitionId(GtModuleId("module"), "Union"),
             doc: None,
             attributes: [
-              RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+              RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
               RsAttribute("serde(untagged)"),
             ],
             name: RsIdentifier("Union"),

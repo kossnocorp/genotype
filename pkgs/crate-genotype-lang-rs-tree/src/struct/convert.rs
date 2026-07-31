@@ -191,7 +191,7 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "Person"),
           doc: None,
           attributes: [
-            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
           ],
           name: RsIdentifier("Person"),
           generics: [],
@@ -237,7 +237,7 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "Person"),
           doc: None,
           attributes: [
-            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
           ],
           name: RsIdentifier("Person"),
           generics: [],
@@ -319,7 +319,7 @@ mod tests {
           doc: None,
           attributes: [
             RsAttribute("serde_literals"),
-            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
             RsAttribute("literals(ok = true, version = 1, request_type(\"remove-file\", rename = \"requestType\"))"),
           ],
           name: RsIdentifier("Person"),
@@ -412,7 +412,7 @@ mod tests {
           doc: None,
           attributes: [
             RsAttribute("serde_literals"),
-            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
             RsAttribute("literals(ok = true)"),
           ],
           name: RsIdentifier("Person"),
@@ -457,7 +457,7 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "Person"),
           doc: Some(RsDoc("Hello, world!", false)),
           attributes: [
-            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
           ],
           name: RsIdentifier("Person"),
           generics: [],
@@ -518,7 +518,7 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "Person"),
           doc: None,
           attributes: [
-            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize)"),
+            RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
           ],
           name: RsIdentifier("Person"),
           generics: [],
@@ -728,7 +728,7 @@ mod tests {
           id: GtDefinitionId(GtModuleId("module"), "BookId"),
           doc: None,
           attributes: [
-            RsAttribute("derive(Debug, Clone, PartialEq, Serialize, Deserialize, Eq, PartialOrd, Ord)"),
+            RsAttribute("derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)"),
           ],
           name: RsIdentifier("BookId"),
           generics: [],
