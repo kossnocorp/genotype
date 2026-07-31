@@ -33,15 +33,21 @@ fn main() -> miette::Result<()> {
     let cli = Cli::parse();
 
     miette::set_hook(Box::new(|_| {
-        Box::new(
-            miette::MietteHandlerOpts::new()
-                .terminal_links(true)
-                .tab_width(2)
-                .break_words(true)
-                .color(true)
-                .with_syntax_highlighting(genotype_highlighter())
-                .build(),
-        )
+        let mut opts = miette::MietteHandlerOpts::new()
+            .terminal_links(true)
+            .tab_width(2)
+            .break_words(true)
+            .color(true)
+            .with_syntax_highlighting(genotype_highlighter());
+
+        if let Some(width) = std::env::var("GT_TERM_WIDTH")
+            .ok()
+            .and_then(|value| value.parse().ok())
+        {
+            opts = opts.width(width);
+        }
+
+        Box::new(opts.build())
     }))?;
 
     match &cli.command {

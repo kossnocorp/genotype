@@ -7,7 +7,7 @@ SOME_FAILED=0
 UPDATE=0
 DEBUG=0
 RUN=0
-TERMINAL_WIDTH=60
+TERM_WIDTH=60
 
 for arg in "$@"; do
 	case "$arg" in
@@ -80,13 +80,13 @@ for project_path in */; do
 	if [ $RUN -eq 1 ]; then
 		(
 			cd "$project_path"
-			COLUMNS="$TERMINAL_WIDTH" "$CLI_PATH" build .
+			GT_TERM_WIDTH="$TERM_WIDTH" "$CLI_PATH" build .
 		) || SOME_FAILED=1
 		echo
 		continue
 	fi
 
-	if output=$(cd "$project_path" && COLUMNS="$TERMINAL_WIDTH" "$CLI_PATH" build . 2>&1); then
+	if output=$(cd "$project_path" && GT_TERM_WIDTH="$TERM_WIDTH" "$CLI_PATH" build . 2>&1); then
 		echo "🔴 $project_name errors: NONE"
 		echo "--- Output ------------------------------------------"
 		echo "$output"
