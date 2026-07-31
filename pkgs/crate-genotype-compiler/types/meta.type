@@ -33,7 +33,7 @@ GtcMetaCompiledPathsLang: {
 }
 
 GtcMetaCompiledModule: {
-  source: string,
+  src: string,
   ts?: string,
   rs?: string,
   py?: string

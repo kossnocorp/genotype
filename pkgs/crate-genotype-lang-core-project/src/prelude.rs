@@ -4,7 +4,6 @@ pub(crate) mod internal {
     pub use super::*;
 
     pub use genotype_core::prelude::*;
-    pub use genotype_lang_core::prelude::*;
     pub use genotype_lang_core_tree::*;
     pub use genotype_parser::*;
     pub use genotype_project::*;

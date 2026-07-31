@@ -1,0 +1,36 @@
+use genotype_core/GtModuleId
+use ./source_code/GtpSourceCodeHash
+
+GtpBuildInfo: {
+  src: GtpBuildInfoSrc,
+  dist: GtpBuildInfoDist,
+}
+
+/// Path relative to the config dir
+GtpBuildInfoPath: @string
+
+GtpBuildInfoSrc: {
+  config_hash: GtpSourceCodeHash,
+  modules: GtpBuildInfoSrcModules
+}
+
+GtpBuildInfoSrcModules: { [GtpBuildInfoPath]: GtpBuildInfoSrcModule }
+
+GtpBuildInfoSrcModule: {
+  id: GtModuleId,
+  hash: GtpSourceCodeHash,
+  deps: [GtModuleId],
+}
+
+GtpBuildInfoDist: {
+  ts?: GtpBuildInfoDistFiles,
+  rs?: GtpBuildInfoDistFiles,
+  py?: GtpBuildInfoDistFiles,
+}
+
+GtpBuildInfoDistFiles: { [GtpBuildInfoPath]: GtpBuildInfoDistFile }
+
+GtpBuildInfoDistFile: {
+  hash: GtpSourceCodeHash,
+  srcId?: GtModuleId,
+}

@@ -49,3 +49,4 @@ insta = { version = "1.46.3", features = ["ron"] }
 trybuild = "1.0.111"
 serde = { version = "1.0.228", features = ["derive"] }
 ordered-float = { version = "4", features = ["serde"] }
+tempfile = "3.27.0"

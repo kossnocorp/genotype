@@ -14,6 +14,7 @@ GtbRemoteBackendRequest:
   | GtbRemoteBackendRequestReportDiagnostic
   | GtbRemoteBackendRequestRunFormatter
   | GtbRemoteBackendRequestWriteFile
+  | GtbRemoteBackendRequestRemoveFile
 
 GtbRemoteBackendRequestResponse:
   | GtbRemoteBackendRequestResponseGlobFiles
@@ -24,6 +25,7 @@ GtbRemoteBackendRequestResponse:
   | GtbRemoteBackendRequestResponseReportDiagnostic
   | GtbRemoteBackendRequestResponseRunFormatter
   | GtbRemoteBackendRequestResponseWriteFile
+  | GtbRemoteBackendRequestResponseRemoveFile
 
 //#endregion
 
@@ -133,6 +135,19 @@ GtbRemoteBackendRequestWriteFile: {
 
 GtbRemoteBackendRequestResponseWriteFile: {
   kind: "write-file",
+}
+
+//#endregion
+
+//#region remove-file
+
+GtbRemoteBackendRequestRemoveFile: {
+  kind: "remove-file",
+  path: string
+}
+
+GtbRemoteBackendRequestResponseRemoveFile: {
+  kind: "remove-file",
 }
 
 //#endregion

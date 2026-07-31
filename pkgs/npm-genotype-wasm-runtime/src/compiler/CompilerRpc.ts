@@ -73,6 +73,11 @@ export abstract class GtwmCompilerRpc {
         in: Gt.GtbRemoteBackendRequestWriteFile,
         out: Gt.GtbRemoteBackendRequestResponseWriteFile,
       },
+
+      "remove-file": {
+        in: Gt.GtbRemoteBackendRequestRemoveFile,
+        out: Gt.GtbRemoteBackendRequestResponseRemoveFile,
+      },
     },
   };
 

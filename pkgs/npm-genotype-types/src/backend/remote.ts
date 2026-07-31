@@ -123,6 +123,21 @@ export const GtbRemoteBackendRequestWriteFile = z.object({
 
 export type GtbRemoteBackendRequestWriteFile = z.infer<typeof GtbRemoteBackendRequestWriteFile>;
 
+export const GtbRemoteBackendRequestResponseWriteFile = z.object({
+  kind: z.literal("write-file"),
+});
+
+export type GtbRemoteBackendRequestResponseWriteFile = z.infer<
+  typeof GtbRemoteBackendRequestResponseWriteFile
+>;
+
+export const GtbRemoteBackendRequestRemoveFile = z.object({
+  kind: z.literal("remove-file"),
+  path: z.string(),
+});
+
+export type GtbRemoteBackendRequestRemoveFile = z.infer<typeof GtbRemoteBackendRequestRemoveFile>;
+
 export const GtbRemoteBackendRequest = z.union([
   GtbRemoteBackendRequestGlobFiles,
   GtbRemoteBackendRequestReadFile,
@@ -132,16 +147,17 @@ export const GtbRemoteBackendRequest = z.union([
   GtbRemoteBackendRequestReportDiagnostic,
   GtbRemoteBackendRequestRunFormatter,
   GtbRemoteBackendRequestWriteFile,
+  GtbRemoteBackendRequestRemoveFile,
 ]);
 
 export type GtbRemoteBackendRequest = z.infer<typeof GtbRemoteBackendRequest>;
 
-export const GtbRemoteBackendRequestResponseWriteFile = z.object({
-  kind: z.literal("write-file"),
+export const GtbRemoteBackendRequestResponseRemoveFile = z.object({
+  kind: z.literal("remove-file"),
 });
 
-export type GtbRemoteBackendRequestResponseWriteFile = z.infer<
-  typeof GtbRemoteBackendRequestResponseWriteFile
+export type GtbRemoteBackendRequestResponseRemoveFile = z.infer<
+  typeof GtbRemoteBackendRequestResponseRemoveFile
 >;
 
 export const GtbRemoteBackendRequestResponse = z.union([
@@ -153,6 +169,7 @@ export const GtbRemoteBackendRequestResponse = z.union([
   GtbRemoteBackendRequestResponseReportDiagnostic,
   GtbRemoteBackendRequestResponseRunFormatter,
   GtbRemoteBackendRequestResponseWriteFile,
+  GtbRemoteBackendRequestResponseRemoveFile,
 ]);
 
 export type GtbRemoteBackendRequestResponse = z.infer<typeof GtbRemoteBackendRequestResponse>;

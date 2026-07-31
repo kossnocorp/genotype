@@ -5,7 +5,6 @@ pub(crate) mod internal {
 
     pub use genotype_backend::prelude::*;
     pub use genotype_core::prelude::*;
-    pub use genotype_lang_core::prelude::*;
     pub use genotype_lang_core_project::*;
     pub use genotype_lang_py_project::*;
     pub use genotype_lang_rs_project::*;
@@ -13,4 +12,6 @@ pub(crate) mod internal {
     pub use genotype_project::*;
     pub use genotype_project_core::prelude::*;
     pub use miette::{Diagnostic, Report, Result, WrapErr, miette};
+    pub use pluralizer::pluralize;
+    pub use std::collections::BTreeMap;
 }

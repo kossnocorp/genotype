@@ -19,7 +19,7 @@ impl GtpLangConfig for RsConfig {
     }
 
     fn pkg_src_dir_relative_module_path(&self, module_id: &GtModuleId) -> GtpPkgSrcDirRelativePath {
-        GtpPkgSrcDirRelativePath::from_str(&format!("{}.rs", module_id.0.as_ref()))
+        GtpPkgSrcDirRelativePath::from_str(&format!("{module_id}.rs"))
     }
 
     fn default_pkg_dir_path(&self) -> GtpDistDirRelativePkgDirPath {

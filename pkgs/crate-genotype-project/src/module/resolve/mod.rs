@@ -71,7 +71,7 @@ impl From<GtpModuleResolved> for GtpModule {
 
 // region: Module resolve
 
-/// Module resolve data. It describes relations between module entities. It allows to
+/// Module resolve data. It describes relations between module entities.
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GtpModuleResolve {
     /// Paths resolve.
@@ -82,6 +82,8 @@ pub struct GtpModuleResolve {
     pub definitions: IndexMap<GtDefinitionId, GtpModuleResolveDefinition>,
     /// Reference id to definition id resolve.
     pub reference_definition_ids: IndexMap<GtReferenceId, GtDefinitionId>,
+    /// Module dependencies. It defines what modules are depended on by this module.
+    pub deps: IndexSet<GtModuleId>,
 }
 
 impl GtpModuleResolve {
@@ -90,6 +92,14 @@ impl GtpModuleResolve {
         module_parse: &GtpModuleParse,
     ) -> Result<Self, GtpModuleError> {
         let module_id = module_parse.module_parse.module.id.clone();
+        let Some(project_module_resolve) = project_resolve.modules.get(&module_id) else {
+            return Err(GtpModuleError::Resolve {
+                path: module_parse.path.clone(),
+                error: GtpError::MissingModuleResolve {
+                    module_id: module_id.clone(),
+                },
+            });
+        };
 
         // Resolve module dependencies by mapping local paths to project module paths.
         let mut paths: IndexMap<GtPath, GtpSrcDirRelativeModulePath> = IndexMap::new();
@@ -101,16 +111,15 @@ impl GtpModuleResolve {
                 continue;
             }
 
-            let Some(dep_module_id) = project_resolve
-                .modules
-                .get(&module_id)
-                .and_then(|module| module.paths.get(local_source.path.source_str()))
+            let Some(dep_module_id) = project_module_resolve
+                .paths
+                .get(local_source.path.source_str())
             else {
                 continue;
             };
 
             let dep_path = GtpSrcDirRelativeModulePath::new(
-                RelativePathBuf::from(dep_module_id.0.as_ref()).with_extension("type"),
+                RelativePathBuf::from(dep_module_id.as_ref()).with_extension("type"),
             );
             paths.insert(local_source.path.clone(), dep_path);
         }
@@ -219,7 +228,7 @@ impl GtpModuleResolve {
                                     };
 
                                     dep_module
-                                        .definitions
+                                        .exports
                                         .iter()
                                         .any(|definition| definition.1 == reference.1)
                                 }
@@ -242,7 +251,7 @@ impl GtpModuleResolve {
                     error: GtpError::UndefinedType {
                         span: reference.as_span(),
                         identifier: reference.as_string(),
-                        reason: "can't find local path for the reference",
+                        reason: "Can't find local path for the reference",
                     },
                 })?;
 
@@ -259,6 +268,7 @@ impl GtpModuleResolve {
             identifiers,
             definitions: Default::default(),
             reference_definition_ids: Default::default(),
+            deps: project_module_resolve.deps.clone(),
         };
 
         let mut visitor = GtpModuleResolveVisitor::new(module_id, project_resolve);

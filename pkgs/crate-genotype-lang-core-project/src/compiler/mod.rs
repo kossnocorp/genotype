@@ -13,7 +13,7 @@ where
     where
         'project: 'config;
 
-    fn lang(&self) -> GtLang;
+    fn lang(&self) -> GtpLang;
 
     fn project(&self) -> &GtProject;
 

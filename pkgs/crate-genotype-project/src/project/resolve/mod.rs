@@ -64,7 +64,7 @@ impl GtpResolve {
 
             module_ids_by_path.insert(module_path.clone(), parse.module.id.clone());
 
-            let module_definitions = parse
+            let module_exports = parse
                 .resolve
                 .exports
                 .iter()
@@ -74,7 +74,7 @@ impl GtpResolve {
             resolve_modules
                 .entry(parse.module.id.clone())
                 .or_default()
-                .definitions = module_definitions;
+                .exports = module_exports;
         }
 
         let mut path_module_ids: IndexMap<GtPathModuleId, GtModuleId> = IndexMap::new();
@@ -86,6 +86,7 @@ impl GtpResolve {
 
             let mut module_paths: IndexMap<String, GtModuleId> = IndexMap::new();
             let mut module_imports: Vec<GtDefinitionId> = Vec::new();
+            let mut module_deps: IndexSet<GtModuleId> = IndexSet::new();
 
             // Manually assign the imports for the package modules
             parse.module.imports.iter().for_each(|import| {
@@ -93,7 +94,7 @@ impl GtpResolve {
                     return;
                 }
 
-                let package_module_id = GtModuleId(import.path.source_str().to_owned().into());
+                let package_module_id = GtModuleId(import.path.source_str().to_owned());
                 let mut definitions = vec![];
                 match &import.reference {
                     GtImportReference::Name(_, name) => {
@@ -117,37 +118,40 @@ impl GtpResolve {
 
             for tree_source in parse.resolve.deps.iter() {
                 let tree_path = &tree_source.path;
-                let module_id: GtModuleId = if let Some(module_id) =
-                    module_paths.get(tree_path.source_str())
-                {
-                    // It's already resolved
-                    module_id.clone()
-                } else if tree_path.kind() == GtPathKind::Package {
-                    // It is a package path
-                    let id = GtModuleId(tree_path.source_str().to_owned().into());
-                    module_paths.insert(tree_path.source_str().to_owned(), id.clone());
-                    id
-                } else {
-                    // Get the project module path from the local path
-                    let dep_module_path = module_path.resolve_path_node(tree_path);
-                    let id = module_ids_by_path
-                        .get(&dep_module_path)
-                        .cloned()
-                        .unwrap_or_else(|| GtModuleId(tree_path.source_str().to_owned().into()));
-                    module_paths.insert(tree_path.source_str().to_owned(), id.clone());
-                    id
-                };
+                let module_id: GtModuleId =
+                    if let Some(module_id) = module_paths.get(tree_path.source_str()) {
+                        // It's already resolved
+                        module_id.clone()
+                    } else if tree_path.kind() == GtPathKind::Package {
+                        // It is a package path
+                        let id = GtModuleId(tree_path.source_str().to_owned());
+                        module_paths.insert(tree_path.source_str().to_owned(), id.clone());
+                        id
+                    } else {
+                        // Get the project module path from the local path
+                        let dep_module_path = module_path.resolve_path_node(tree_path);
+                        let id = module_ids_by_path
+                            .get(&dep_module_path)
+                            .cloned()
+                            .unwrap_or_else(|| GtModuleId(tree_path.source_str().to_owned()));
+                        module_paths.insert(tree_path.source_str().to_owned(), id.clone());
+                        id
+                    };
+
+                // Update module dependencies
+                module_deps.insert(module_id.clone());
 
                 path_module_ids.insert(tree_path.id.clone(), module_id.clone());
 
                 if let Some(module_resolve) = resolve_modules.get(&module_id) {
-                    module_imports.extend(module_resolve.definitions.clone());
+                    module_imports.extend(module_resolve.exports.clone());
                 }
             }
 
             let module_resolve = resolve_modules.entry(parse.module.id.clone()).or_default();
             module_resolve.imports = module_imports;
             module_resolve.paths = module_paths;
+            module_resolve.deps = module_deps;
         }
 
         Ok(GtpResolve {

@@ -18,6 +18,29 @@ const fn default_warning_comment() -> bool {
     true
 }
 
+const fn default_true() -> bool {
+    true
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+pub struct GtpBuildConfig {
+    /// Whether to resolve and update `genotype-build.toml`.
+    #[serde(default = "default_true")]
+    pub file: bool,
+    /// Whether to remove unchanged generated files no longer produced by a build.
+    #[serde(default = "default_true")]
+    pub cleanup: bool,
+}
+
+impl Default for GtpBuildConfig {
+    fn default() -> Self {
+        Self {
+            file: true,
+            cleanup: true,
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct GtpConfig {
     /// Project name.
@@ -27,6 +50,9 @@ pub struct GtpConfig {
     /// Whether to generate package structure and metadata by default for all targets.
     #[serde(default = "default_package")]
     pub package: bool,
+    /// Generated file tracking and cleanup options.
+    #[serde(default)]
+    pub build: GtpBuildConfig,
     /// Project root directory relative to the cwd. It defaults to ".".
     #[serde(default)]
     pub root: GtpConfigDirRelativeRootDirPath,
@@ -54,7 +80,7 @@ pub struct GtpConfig {
     #[serde(default, alias = "rust")]
     pub rs: RsConfig,
     #[serde(skip)]
-    source_toml_str: String,
+    source_code: GtpSourceCode,
 }
 
 impl Default for GtpConfig {
@@ -63,6 +89,7 @@ impl Default for GtpConfig {
             name: None,
             version: None,
             package: true,
+            build: Default::default(),
             root: Default::default(),
             dist: Default::default(),
             src: Default::default(),
@@ -71,7 +98,7 @@ impl Default for GtpConfig {
             ts: Default::default(),
             py: Default::default(),
             rs: Default::default(),
-            source_toml_str: String::new(),
+            source_code: Default::default(),
             warning_comment: true,
         }
     }
@@ -79,15 +106,28 @@ impl Default for GtpConfig {
 
 impl GtpConfig {
     pub fn parse(source: String) -> Result<Self> {
-        let config: GtpConfig = Self::from_toml_str(&source)?;
-        Ok(config)
+        Self::from_source_code(GtpSourceCode::new(source))
     }
 
-    pub fn lang(&self, lang: GtLang) -> &dyn GtpLangConfig {
+    pub fn source(&self) -> &GtpSourceCode {
+        &self.source_code
+    }
+
+    pub fn health_check(&self) -> Vec<GtDiagnostic> {
+        if !self.build.file && self.build.cleanup {
+            vec![GtDiagnostic::warning(
+                "`build.cleanup` has no effect when `build.file` is disabled",
+            )]
+        } else {
+            vec![]
+        }
+    }
+
+    pub fn lang(&self, lang: GtpLang) -> &dyn GtpLangConfig {
         match lang {
-            GtLang::Py => &self.py,
-            GtLang::Rs => &self.rs,
-            GtLang::Ts => &self.ts,
+            GtpLang::Py => &self.py,
+            GtpLang::Rs => &self.rs,
+            GtpLang::Ts => &self.ts,
         }
     }
 
@@ -95,11 +135,11 @@ impl GtpConfig {
         lang_config.common().package.unwrap_or(self.package)
     }
 
-    pub fn lang_enabled(&self, lang: GtLang) -> bool {
+    pub fn lang_enabled(&self, lang: GtpLang) -> bool {
         match lang {
-            GtLang::Py => self.python_enabled(),
-            GtLang::Rs => self.rust_enabled(),
-            GtLang::Ts => self.ts_enabled(),
+            GtpLang::Py => self.python_enabled(),
+            GtpLang::Rs => self.rust_enabled(),
+            GtpLang::Ts => self.ts_enabled(),
         }
     }
 
@@ -121,7 +161,7 @@ impl GtpConfig {
             version: None,
             root: root.into(),
             src: ".".into(),
-            source_toml_str: String::new(),
+            source_code: Default::default(),
             ..GtpConfig::default()
         }
     }
@@ -133,7 +173,7 @@ impl GtpConfig {
             root: root.into(),
             entry: entry.into(),
             src: ".".into(),
-            source_toml_str: String::new(),
+            source_code: Default::default(),
             ..GtpConfig::default()
         }
     }
@@ -147,6 +187,45 @@ mod tests {
     fn test_parse_global_version() {
         let config = toml::from_str::<GtpConfig>("version = \"0.2.0\"\n").unwrap();
         assert_eq!(config.version, Some(Version::parse("0.2.0").unwrap()));
+    }
+
+    #[test]
+    fn test_build_defaults() {
+        let config = toml::from_str::<GtpConfig>("").unwrap();
+        assert!(config.build.file);
+        assert!(config.build.cleanup);
+    }
+
+    #[test]
+    fn test_parse_build_options() {
+        let config = toml::from_str::<GtpConfig>(
+            r#"[build]
+file = true
+cleanup = false
+"#,
+        )
+        .unwrap();
+        assert!(config.build.file);
+        assert!(!config.build.cleanup);
+    }
+
+    #[test]
+    fn test_build_cleanup_without_file_warning() {
+        let config = GtpConfig::parse(
+            r#"[build]
+file = false
+cleanup = true
+"#
+            .into(),
+        )
+        .unwrap();
+
+        assert_eq!(
+            config.health_check(),
+            vec![GtDiagnostic::warning(
+                "`build.cleanup` has no effect when `build.file` is disabled"
+            )]
+        );
     }
 
     #[test]

@@ -1,3 +1,5 @@
+// Do not edit manually! Code generated from ../../types/remote.type
+
 use super::meta::{GtcMetaCompiled, GtcMetaLoadedModules, GtcMetaLoadedProject};
 use litty::serde_literals;
 use serde::{Deserialize, Serialize};

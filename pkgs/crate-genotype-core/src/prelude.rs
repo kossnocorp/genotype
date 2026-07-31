@@ -4,5 +4,6 @@ pub(crate) mod internal {
     pub use super::*;
 
     pub use miette::Report;
-    pub use serde::Serialize;
+    pub use std::fmt::Display;
+    pub use std::hash::Hash;
 }

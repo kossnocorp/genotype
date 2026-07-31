@@ -14,4 +14,8 @@ pub enum GtpError {
     #[error("Unknown error")]
     #[diagnostic(code(GTP999))]
     Unknown,
+
+    #[error("Missing project module resolve for module `{module_id}`")]
+    #[diagnostic(code(GTP302))]
+    MissingModuleResolve { module_id: GtModuleId },
 }

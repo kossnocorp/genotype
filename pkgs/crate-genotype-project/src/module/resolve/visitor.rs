@@ -58,7 +58,7 @@ impl GtVisitor for GtpModuleResolveVisitor<'_> {
             .resolve
             .modules
             .get(module_id)
-            .map(|module| &module.definitions)
+            .map(|module| &module.exports)
         else {
             self.error = Some(GtpError::UndefinedType {
                 span: import.name.as_span(),
@@ -89,7 +89,7 @@ impl GtVisitor for GtpModuleResolveVisitor<'_> {
             .resolve
             .modules
             .get(&self.module_id)
-            .map(|module| &module.definitions)
+            .map(|module| &module.exports)
         {
             definitions
                 .iter()

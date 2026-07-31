@@ -53,12 +53,22 @@ impl<'project, 'config, ProjectModule: GtlProjectModule>
                                 self.config.lang_config(),
                                 module_type_checked,
                             ) {
-                                Ok(module) => GtlProjectModuleConverted {
-                                    source_path,
-                                    target_path,
-                                    project_module: module,
+                                Ok(project_module) => {
+                                    let source_id = module_type_checked
+                                        .module_resolved
+                                        .project_module_parse
+                                        .module_parse
+                                        .module
+                                        .id
+                                        .clone();
+                                    GtlProjectModuleConverted {
+                                        source_id,
+                                        source_path,
+                                        target_path,
+                                        project_module,
+                                    }
+                                    .into()
                                 }
-                                .into(),
 
                                 Err(error) => GtlProjectModuleConvertError::ConvertError {
                                     source_path,

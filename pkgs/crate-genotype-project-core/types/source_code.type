@@ -1,0 +1,6 @@
+GtpSourceCode: {
+    content: string,
+    hash: GtpSourceCodeHash,
+}
+
+GtpSourceCodeHash: @string

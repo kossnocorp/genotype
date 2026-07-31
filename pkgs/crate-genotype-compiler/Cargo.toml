@@ -19,7 +19,6 @@ genotype_core = { version = "0.16.2", path = "../crate-genotype-core" }
 genotype_project_core = { version = "0.16.2", path = "../crate-genotype-project-core" }
 genotype_project = { version = "0.16.2", path = "../crate-genotype-project" }
 genotype_workspace = { version = "0.16.2", path = "../crate-genotype-workspace" }
-genotype_lang_core = { version = "0.16.2", path = "../crate-genotype-lang-core" }
 genotype_lang_core_project = { version = "0.16.2", path = "../crate-genotype-lang-core-project" }
 genotype_lang_ts_project = { version = "0.16.2", path = "../crate-genotype-lang-ts-project" }
 genotype_lang_ts_config = { version = "0.16.2", path = "../crate-genotype-lang-ts-config" }
@@ -39,6 +38,7 @@ serde = { version = "1.0.228", features = ["derive"] }
 owo-colors = "4.1.0"
 futures = "0.3.31"
 litty = { version = "0.5.0", path = "../crate-litty" }
+pluralizer = "0.5.0"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

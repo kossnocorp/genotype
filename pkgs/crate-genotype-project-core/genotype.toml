@@ -8,7 +8,13 @@ enabled = true
 mode = "zod"
 dist = "../npm-genotype-types/src/project/"
 
+[ts.dependencies]
+genotype_core = "@genotype-lang/types"
+
 [rs]
 enabled = true
 dist = "./src/types/"
 formatters = [{ kind = "cargo", cmd = "fmt", args = ["--all"] }]
+
+[rs.dependencies]
+genotype_core = "genotype_core"

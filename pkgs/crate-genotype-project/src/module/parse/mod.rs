@@ -11,8 +11,8 @@ pub struct GtpModuleParse {
     /// Module source.
     pub source: GtpModuleSource,
 
-    /// Module source code.
-    pub source_code: String,
+    /// Module source code and content hash.
+    pub source_code: GtpSourceCode,
 
     /// Module parse.
     pub module_parse: GtModuleParse,
@@ -52,13 +52,13 @@ impl GtpModule {
         path: &GtpModulePath,
         source: &GtpModuleSource,
         module_id: GtModuleId,
-        source_code: String,
+        source_code: GtpSourceCode,
     ) -> Result<GtpModuleParse, GtpModuleError> {
-        GtModule::parse(module_id, &source_code)
+        GtModule::parse(module_id.clone(), &source_code.content)
             .map_err(|error| GtpModuleError::Parse {
                 path: path.clone(),
                 error,
-                source_code: source_code.clone(),
+                source_code: source_code.content.clone(),
             })
             .map(|parse| GtpModuleParse {
                 path: path.clone(),

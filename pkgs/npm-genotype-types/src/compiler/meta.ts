@@ -1,3 +1,5 @@
+// Do not edit manually! Code generated from ../../../crate-genotype-compiler/types/meta.type
+
 import { z } from "zod";
 
 export const GtcMetaNew = z.object({});
@@ -41,7 +43,7 @@ export const GtcMetaCompiledPaths = z.object({
 export type GtcMetaCompiledPaths = z.infer<typeof GtcMetaCompiledPaths>;
 
 export const GtcMetaCompiledModule = z.object({
-  source: z.string(),
+  src: z.string(),
   ts: z.union([z.string(), z.undefined()]).optional(),
   rs: z.union([z.string(), z.undefined()]).optional(),
   py: z.union([z.string(), z.undefined()]).optional(),

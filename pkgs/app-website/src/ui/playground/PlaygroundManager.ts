@@ -107,7 +107,7 @@ export class PlaygroundManager {
 
         this.#compiledMetaPromise.resolve(compiledMeta);
 
-        const filePath = this.#state.filePath ?? compiledMeta.modules[0].source;
+        const filePath = this.#state.filePath ?? compiledMeta.modules[0].src;
         if (!filePath) return;
 
         await this.openFile(filePath);
@@ -122,7 +122,7 @@ export class PlaygroundManager {
   async #currentModule(): Promise<Gt.GtcMetaCompiledModule> {
     const compiledMeta = await this.#compiledMetaPromise.promise;
 
-    const module = compiledMeta.modules.find((module) => module.source === this.#state.filePath);
+    const module = compiledMeta.modules.find((module) => module.src === this.#state.filePath);
     always(module);
     return module;
   }
@@ -137,7 +137,7 @@ export class PlaygroundManager {
     const module = await this.#currentModule();
 
     await Promise.all([
-      this.#setEditorStateWithFilePath(this.#sourceEditorWc, module.source),
+      this.#setEditorStateWithFilePath(this.#sourceEditorWc, module.src),
       this.#setEditorStateWithFilePath(this.#distEditorWc, module[this.#state.lang]),
     ]);
   }

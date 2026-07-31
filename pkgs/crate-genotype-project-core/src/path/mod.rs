@@ -361,17 +361,46 @@ pub trait GtpCwdRelativePathWrapper:
         &self,
         base_path: &BasePath,
     ) -> Result<RelativePathBuf> {
-        self.cwd_relative_path()
-            .relative_path()
-            .strip_prefix(base_path.cwd_relative_path().relative_path())
-            .map(|relative_path| relative_path.to_owned())
-            .map_err(|err| {
-                miette!(
-                    "Failed to get relative path from `{path}` to `{base_path}`: {err:?}",
-                    path = self.display(),
-                    base_path = base_path.display()
-                )
-            })
+        let rel_path = self.cwd_relative_path().relative_path();
+        let base_rel_path = base_path.cwd_relative_path().relative_path();
+
+        let stripped_path = rel_path.strip_prefix(base_rel_path);
+        let Ok(stripped_path) = stripped_path else {
+            let path_comps = rel_path.components().collect::<Vec<_>>();
+            let base_path_comps = base_rel_path.components().collect::<Vec<_>>();
+
+            let mut common_level = 0;
+            let max_level = std::cmp::min(path_comps.len(), base_path_comps.len());
+
+            for level_idx in 0..max_level {
+                let path_comp = path_comps.get(level_idx);
+                let base_path_comp = base_path_comps.get(level_idx);
+
+                if let Some(path_comp) = path_comp
+                    && let Some(base_path_comp) = base_path_comp
+                    && path_comp == base_path_comp
+                {
+                    common_level = level_idx + 1;
+                    continue;
+                }
+
+                break;
+            }
+
+            let mut final_comps = (0..base_path_comps.len() - common_level)
+                .map(|_| "..")
+                .collect::<Vec<_>>();
+
+            for base_comp in &path_comps[common_level..] {
+                final_comps.push(base_comp.as_str());
+            }
+
+            let final_path = RelativePathBuf::from_iter(final_comps);
+
+            return Ok(final_path);
+        };
+
+        Ok(stripped_path.to_owned())
     }
 }
 

@@ -1,3 +1,5 @@
+// Do not edit manually! Code generated from ../../../crate-genotype-project-core/types/formatter.type
+
 import { z } from "zod";
 
 export const GtpFormatterGenericBase = z.object({
