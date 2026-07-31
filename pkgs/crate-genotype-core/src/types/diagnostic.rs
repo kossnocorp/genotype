@@ -1,3 +1,5 @@
+// Do not edit manually! Code generated from ../../types/diagnostic.type
+
 use litty::serde_literals;
 use serde::{Deserialize, Serialize};
 
