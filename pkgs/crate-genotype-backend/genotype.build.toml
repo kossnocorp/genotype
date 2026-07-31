@@ -4,10 +4,7 @@ config_hash = "988a9770344c348d"
 [src.modules."types/remote.type"]
 id = "remote"
 hash = "3f01d1e6e6ba20b7"
-deps = [
-    "genotype_core",
-    "genotype_project",
-]
+deps = ["genotype_core", "genotype_project"]
 
 [dist.ts."../npm-genotype-types/src/backend/index.ts"]
 hash = "c3537f3f80da094a"
