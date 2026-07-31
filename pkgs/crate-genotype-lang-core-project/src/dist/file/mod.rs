@@ -23,7 +23,10 @@ impl GtlDistFile {
     pub fn source_code(&self) -> &String {
         match self {
             GtlDistFile::Error(GtlDistFileError { source_code, .. }) => source_code,
-            GtlDistFile::Generated(GtlDistFileGenerated { source_code, .. }) => source_code,
+            GtlDistFile::Generated(GtlDistFileGenerated {
+                source_code: source,
+                ..
+            }) => &source.content,
         }
     }
 }
@@ -68,7 +71,8 @@ impl<ProjectModule: GtlProjectModule> From<&GtlProjectModuleState<ProjectModule>
             GtlProjectModuleState::Rendered(rendered) => {
                 GtlDistFile::Generated(GtlDistFileGenerated {
                     path,
-                    source_code: rendered.source_code.clone(),
+                    source_code: GtpSourceCode::new(rendered.source_code.clone()),
+                    source_module_id: Some(rendered.converted().source_id.clone()),
                 })
             }
         }
@@ -81,7 +85,8 @@ impl From<&GtlProjectFileExtra> for GtlDistFile {
             GtlProjectFileExtra::Generated(generated) => {
                 GtlDistFile::Generated(GtlDistFileGenerated {
                     path: generated.path.clone(),
-                    source_code: generated.source_code.clone(),
+                    source_code: GtpSourceCode::new(generated.source_code.clone()),
+                    source_module_id: None,
                 })
             }
 

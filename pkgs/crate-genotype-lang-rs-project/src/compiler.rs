@@ -13,8 +13,8 @@ impl<'project> GtlCompiler<'project> for RsCompiler<'project> {
     where
         'project: 'config;
 
-    fn lang(&self) -> GtLang {
-        GtLang::Rs
+    fn lang(&self) -> GtpLang {
+        GtpLang::Rs
     }
 
     fn project(&self) -> &GtProject {
@@ -165,6 +165,7 @@ mod tests {
         {
           "examples/basic/src/author.type": Resolved(GtlProjectModuleResolved(
             converted: GtlProjectModuleConverted(
+              source_id: GtModuleId("author"),
               source_path: "examples/basic/src/author.type",
               target_path: "examples/basic/dist/rs/src/author.rs",
               project_module: RsProjectModule(
@@ -245,6 +246,7 @@ mod tests {
           )),
           "examples/basic/src/book.type": Resolved(GtlProjectModuleResolved(
             converted: GtlProjectModuleConverted(
+              source_id: GtModuleId("book"),
               source_path: "examples/basic/src/book.type",
               target_path: "examples/basic/dist/rs/src/book.rs",
               project_module: RsProjectModule(
@@ -387,6 +389,7 @@ mod tests {
         {
           "examples/glob/src/author.type": Resolved(GtlProjectModuleResolved(
             converted: GtlProjectModuleConverted(
+              source_id: GtModuleId("author"),
               source_path: "examples/glob/src/author.type",
               target_path: "examples/glob/dist/rs/src/author.rs",
               project_module: RsProjectModule(
@@ -505,6 +508,7 @@ mod tests {
           )),
           "examples/glob/src/book.type": Resolved(GtlProjectModuleResolved(
             converted: GtlProjectModuleConverted(
+              source_id: GtModuleId("book"),
               source_path: "examples/glob/src/book.type",
               target_path: "examples/glob/dist/rs/src/book.rs",
               project_module: RsProjectModule(

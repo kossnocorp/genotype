@@ -7,7 +7,6 @@ pub(crate) mod internal {
     #[cfg(test)]
     pub use genotype_backend::prelude::*;
     pub use genotype_core::prelude::*;
-    pub use genotype_lang_core::prelude::*;
     pub use genotype_lang_core_project::*;
     pub use genotype_lang_core_tree::*;
     pub use genotype_lang_ts_config::*;

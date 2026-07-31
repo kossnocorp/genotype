@@ -66,6 +66,8 @@ export class GtwmClient {
 
       "write-file": this.#onWriteFile.bind(this),
 
+      "remove-file": this.#onRemoveFile.bind(this),
+
       "find-file": this.#onFindFile.bind(this),
 
       "glob-files": this.#onGlobFiles.bind(this),
@@ -142,6 +144,13 @@ export class GtwmClient {
   ): Promise<Gt.GtbRemoteBackendRequestResponseWriteFile> {
     this.#fs.writeFile(request.path, request.content);
     return { kind: "write-file" };
+  }
+
+  async #onRemoveFile(
+    request: Gt.GtbRemoteBackendRequestRemoveFile,
+  ): Promise<Gt.GtbRemoteBackendRequestResponseRemoveFile> {
+    this.#fs.removeFile(request.path);
+    return { kind: "remove-file" };
   }
 
   async #onFindFile(

@@ -5,6 +5,8 @@ genotype.wt.code-workspace
 /bin/
 /pkgs/*/target/
 /pkgs/*/examples/*/target/
+*.snap.new
+*.pending-snap
 # Node.js
 node_modules/
 .pnpm-store

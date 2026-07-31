@@ -1,6 +1,7 @@
 src = "./types/"
 dist = "."
 package = false
+formatters = [{ kind = "oxfmt", via = "pnpm" }]
 
 [ts]
 enabled = true
@@ -10,3 +11,4 @@ dist = "../npm-genotype-types/src/core/"
 [rs]
 enabled = true
 dist = "./src/types/"
+formatters = [{ kind = "cargo", cmd = "fmt", args = ["--all"] }]

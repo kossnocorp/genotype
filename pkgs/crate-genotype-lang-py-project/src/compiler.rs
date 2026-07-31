@@ -13,8 +13,8 @@ impl<'project> GtlCompiler<'project> for PyCompiler<'project> {
     where
         'project: 'config;
 
-    fn lang(&self) -> GtLang {
-        GtLang::Py
+    fn lang(&self) -> GtpLang {
+        GtpLang::Py
     }
 
     fn project(&self) -> &GtProject {
@@ -212,6 +212,7 @@ mod tests {
         {
           "examples/basic/src/author.type": Resolved(GtlProjectModuleResolved(
             converted: GtlProjectModuleConverted(
+              source_id: GtModuleId("author"),
               source_path: "examples/basic/src/author.type",
               target_path: "examples/basic/dist/py/module/author.py",
               project_module: PyProjectModule(
@@ -280,6 +281,7 @@ mod tests {
           )),
           "examples/basic/src/book.type": Resolved(GtlProjectModuleResolved(
             converted: GtlProjectModuleConverted(
+              source_id: GtModuleId("book"),
               source_path: "examples/basic/src/book.type",
               target_path: "examples/basic/dist/py/module/book.py",
               project_module: PyProjectModule(
@@ -400,6 +402,7 @@ mod tests {
         {
           "examples/glob/src/author.type": Resolved(GtlProjectModuleResolved(
             converted: GtlProjectModuleConverted(
+              source_id: GtModuleId("author"),
               source_path: "examples/glob/src/author.type",
               target_path: "examples/glob/dist/py/module/author.py",
               project_module: PyProjectModule(
@@ -494,6 +497,7 @@ mod tests {
           )),
           "examples/glob/src/book.type": Resolved(GtlProjectModuleResolved(
             converted: GtlProjectModuleConverted(
+              source_id: GtModuleId("book"),
               source_path: "examples/glob/src/book.type",
               target_path: "examples/glob/dist/py/module/book.py",
               project_module: PyProjectModule(
@@ -647,27 +651,51 @@ mod tests {
           files: [
             Generated(GtlDistFileGenerated(
               path: "examples/basic/dist/py/.gitignore",
-              source_code: "__pycache__\ndist\n",
+              source_code: GtpSourceCode(
+                content: "__pycache__\ndist\n",
+                hash: GtpSourceCodeHash("dfd2403acd852739"),
+              ),
+              source_module_id: None,
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/basic/dist/py/module/__init__.py",
-              source_code: "from .author import Author\nfrom .book import Book\n\n\n__all__ = [\"Author\", \"Book\"]",
+              source_code: GtpSourceCode(
+                content: "from .author import Author\nfrom .book import Book\n\n\n__all__ = [\"Author\", \"Book\"]",
+                hash: GtpSourceCodeHash("4f0c155282fb7660"),
+              ),
+              source_module_id: None,
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/basic/dist/py/module/author.py",
-              source_code: "# Do not edit manually! Code generated from ../../../src/author.type\n\nfrom __future__ import annotations\n\n\nfrom genotype import Model\n\n\nclass Author(Model):\n    name: str\n",
+              source_code: GtpSourceCode(
+                content: "# Do not edit manually! Code generated from ../../../src/author.type\n\nfrom __future__ import annotations\n\n\nfrom genotype import Model\n\n\nclass Author(Model):\n    name: str\n",
+                hash: GtpSourceCodeHash("def5dae4bfada1ab"),
+              ),
+              source_module_id: Some(GtModuleId("author")),
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/basic/dist/py/module/book.py",
-              source_code: "# Do not edit manually! Code generated from ../../../src/book.type\n\nfrom __future__ import annotations\n\n\nfrom .author import Author\nfrom genotype import Model\n\n\nclass Book(Model):\n    title: str\n    author: Author\n",
+              source_code: GtpSourceCode(
+                content: "# Do not edit manually! Code generated from ../../../src/book.type\n\nfrom __future__ import annotations\n\n\nfrom .author import Author\nfrom genotype import Model\n\n\nclass Book(Model):\n    title: str\n    author: Author\n",
+                hash: GtpSourceCodeHash("1b4c5965db6f36c7"),
+              ),
+              source_module_id: Some(GtModuleId("book")),
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/basic/dist/py/module/py.typed",
-              source_code: "",
+              source_code: GtpSourceCode(
+                content: "",
+                hash: GtpSourceCodeHash("ef46db3751d8e999"),
+              ),
+              source_module_id: None,
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/basic/dist/py/pyproject.toml",
-              source_code: "[tool.poetry]\nname = \"basic\"\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.13\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
+              source_code: GtpSourceCode(
+                content: "[tool.poetry]\nname = \"basic\"\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.13\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
+                hash: GtpSourceCodeHash("e5137e08bc5fdceb"),
+              ),
+              source_module_id: None,
             )),
           ],
           modules: [
@@ -698,31 +726,59 @@ mod tests {
           files: [
             Generated(GtlDistFileGenerated(
               path: "examples/nested/dist/py/.gitignore",
-              source_code: "__pycache__\ndist\n",
+              source_code: GtpSourceCode(
+                content: "__pycache__\ndist\n",
+                hash: GtpSourceCodeHash("dfd2403acd852739"),
+              ),
+              source_module_id: None,
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/nested/dist/py/module/__init__.py",
-              source_code: "from .inventory import Inventory\nfrom .shop.goods.book import Book\n\n\n__all__ = [\"Inventory\", \"Book\"]",
+              source_code: GtpSourceCode(
+                content: "from .inventory import Inventory\nfrom .shop.goods.book import Book\n\n\n__all__ = [\"Inventory\", \"Book\"]",
+                hash: GtpSourceCodeHash("843cad5a40194654"),
+              ),
+              source_module_id: None,
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/nested/dist/py/module/inventory.py",
-              source_code: "# Do not edit manually! Code generated from ../../../src/inventory.type\n\nfrom __future__ import annotations\n\n\nfrom .shop.goods.book import Book\nfrom genotype import Model\n\n\nclass Inventory(Model):\n    goods: list[Book]\n",
+              source_code: GtpSourceCode(
+                content: "# Do not edit manually! Code generated from ../../../src/inventory.type\n\nfrom __future__ import annotations\n\n\nfrom .shop.goods.book import Book\nfrom genotype import Model\n\n\nclass Inventory(Model):\n    goods: list[Book]\n",
+                hash: GtpSourceCodeHash("378b690861174ce3"),
+              ),
+              source_module_id: Some(GtModuleId("inventory")),
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/nested/dist/py/module/py.typed",
-              source_code: "",
+              source_code: GtpSourceCode(
+                content: "",
+                hash: GtpSourceCodeHash("ef46db3751d8e999"),
+              ),
+              source_module_id: None,
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/nested/dist/py/module/shop/goods/__init__.py",
-              source_code: "",
+              source_code: GtpSourceCode(
+                content: "",
+                hash: GtpSourceCodeHash("ef46db3751d8e999"),
+              ),
+              source_module_id: None,
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/nested/dist/py/module/shop/goods/book.py",
-              source_code: "# Do not edit manually! Code generated from ../../../../../src/shop/goods/book.type\n\nfrom __future__ import annotations\n\n\nfrom genotype import Model\n\n\nclass Book(Model):\n    title: str\n",
+              source_code: GtpSourceCode(
+                content: "# Do not edit manually! Code generated from ../../../../../src/shop/goods/book.type\n\nfrom __future__ import annotations\n\n\nfrom genotype import Model\n\n\nclass Book(Model):\n    title: str\n",
+                hash: GtpSourceCodeHash("e0d2d7a5d62411c1"),
+              ),
+              source_module_id: Some(GtModuleId("shop/goods/book")),
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/nested/dist/py/pyproject.toml",
-              source_code: "[tool.poetry]\nname = \"nested\"\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.13\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
+              source_code: GtpSourceCode(
+                content: "[tool.poetry]\nname = \"nested\"\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.13\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
+                hash: GtpSourceCodeHash("9c96e876439d1d4e"),
+              ),
+              source_module_id: None,
             )),
           ],
           modules: [
@@ -755,23 +811,43 @@ mod tests {
           files: [
             Generated(GtlDistFileGenerated(
               path: "examples/dependencies/dist/py/.gitignore",
-              source_code: "__pycache__\ndist\n",
+              source_code: GtpSourceCode(
+                content: "__pycache__\ndist\n",
+                hash: GtpSourceCodeHash("dfd2403acd852739"),
+              ),
+              source_module_id: None,
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/dependencies/dist/py/module/__init__.py",
-              source_code: "from .prompt import Prompt\n\n\n__all__ = [\"Prompt\"]",
+              source_code: GtpSourceCode(
+                content: "from .prompt import Prompt\n\n\n__all__ = [\"Prompt\"]",
+                hash: GtpSourceCodeHash("f58ae6186764f4ca"),
+              ),
+              source_module_id: None,
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/dependencies/dist/py/module/prompt.py",
-              source_code: "# Do not edit manually! Code generated from ../../../src/prompt.type\n\nfrom __future__ import annotations\n\n\nfrom genotype_json import JsonAny\nfrom genotype import Model\n\n\nclass Prompt(Model):\n    content: str\n    output: JsonAny\n",
+              source_code: GtpSourceCode(
+                content: "# Do not edit manually! Code generated from ../../../src/prompt.type\n\nfrom __future__ import annotations\n\n\nfrom genotype_json import JsonAny\nfrom genotype import Model\n\n\nclass Prompt(Model):\n    content: str\n    output: JsonAny\n",
+                hash: GtpSourceCodeHash("f9f292c51ae5f2f0"),
+              ),
+              source_module_id: Some(GtModuleId("prompt")),
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/dependencies/dist/py/module/py.typed",
-              source_code: "",
+              source_code: GtpSourceCode(
+                content: "",
+                hash: GtpSourceCodeHash("ef46db3751d8e999"),
+              ),
+              source_module_id: None,
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/dependencies/dist/py/pyproject.toml",
-              source_code: "[tool.poetry]\nname = \"dependencies\"\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.13\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
+              source_code: GtpSourceCode(
+                content: "[tool.poetry]\nname = \"dependencies\"\npackages = [{ include = \"module\" }]\n\n[tool.poetry.dependencies]\npython = \"^3.13\"\ngenotype-runtime = \"^0.4\"\n\n[build-system]\nrequires = [\"poetry-core\"]\nbuild-backend = \"poetry.core.masonry.api\"\n",
+                hash: GtpSourceCodeHash("3d76762bacda5610"),
+              ),
+              source_module_id: None,
             )),
           ],
           modules: [

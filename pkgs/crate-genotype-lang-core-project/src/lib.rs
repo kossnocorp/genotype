@@ -1,3 +1,5 @@
+pub mod prelude;
+
 mod compiler;
 pub use compiler::*;
 
@@ -24,5 +26,3 @@ pub use manifest::*;
 
 mod error;
 pub use error::*;
-
-pub mod prelude;

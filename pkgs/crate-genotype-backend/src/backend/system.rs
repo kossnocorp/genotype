@@ -75,7 +75,10 @@ mod tests {
                   source: Entry(
                     path: "examples/basic/src/author.type",
                   ),
-                  source_code: "Author: {\n  name: string,\n}",
+                  source_code: GtpSourceCode(
+                    content: "Author: {\n  name: string,\n}",
+                    hash: GtpSourceCodeHash("a0cc1ef6c66abff6"),
+                  ),
                   module_parse: GtModuleParse(
                     module: GtModule(
                       id: GtModuleId("author"),
@@ -129,6 +132,7 @@ mod tests {
                   identifiers: {},
                   definitions: {},
                   reference_definition_ids: {},
+                  deps: [],
                 ),
               ),
             )),
@@ -139,7 +143,10 @@ mod tests {
                   source: Entry(
                     path: "examples/basic/src/book.type",
                   ),
-                  source_code: "use ./author/Author\n\nBook: {\n  title: string,\n  author: Author,\n}",
+                  source_code: GtpSourceCode(
+                    content: "use ./author/Author\n\nBook: {\n  title: string,\n  author: Author,\n}",
+                    hash: GtpSourceCodeHash("0e1f939f87013925"),
+                  ),
                   module_parse: GtModuleParse(
                     module: GtModule(
                       id: GtModuleId("book"),
@@ -264,6 +271,9 @@ mod tests {
                   reference_definition_ids: {
                     GtReferenceId(GtModuleId("book"), GtSpan(56, 62)): GtDefinitionId(GtModuleId("author"), "Author"),
                   },
+                  deps: [
+                    GtModuleId("author"),
+                  ],
                 ),
               ),
             )),
@@ -274,7 +284,10 @@ mod tests {
                   source: Entry(
                     path: "examples/basic/src/order.type",
                   ),
-                  source_code: "use ./book/Book\n\nOrder: {\n  user: ./user/User,\n  books: [Book],\n}",
+                  source_code: GtpSourceCode(
+                    content: "use ./book/Book\n\nOrder: {\n  user: ./user/User,\n  books: [Book],\n}",
+                    hash: GtpSourceCodeHash("41603d029c939314"),
+                  ),
                   module_parse: GtModuleParse(
                     module: GtModule(
                       id: GtModuleId("order"),
@@ -432,6 +445,10 @@ mod tests {
                   reference_definition_ids: {
                     GtReferenceId(GtModuleId("order"), GtSpan(57, 61)): GtDefinitionId(GtModuleId("book"), "Book"),
                   },
+                  deps: [
+                    GtModuleId("book"),
+                    GtModuleId("user"),
+                  ],
                 ),
               ),
             )),
@@ -442,7 +459,10 @@ mod tests {
                   source: Entry(
                     path: "examples/basic/src/user.type",
                   ),
-                  source_code: "User: {\n  email: string,\n  name: string,\n}",
+                  source_code: GtpSourceCode(
+                    content: "User: {\n  email: string,\n  name: string,\n}",
+                    hash: GtpSourceCodeHash("ab03677762e127e9"),
+                  ),
                   module_parse: GtModuleParse(
                     module: GtModule(
                       id: GtModuleId("user"),
@@ -509,6 +529,7 @@ mod tests {
                   identifiers: {},
                   definitions: {},
                   reference_definition_ids: {},
+                  deps: [],
                 ),
               ),
             )),
@@ -555,6 +576,10 @@ mod tests {
             name: None,
             version: None,
             package: true,
+            build: GtpBuildConfig(
+              file: true,
+              cleanup: true,
+            ),
             root: "",
             dist: "dist",
             src: "src",
@@ -626,7 +651,10 @@ mod tests {
                   source: Entry(
                     path: "examples/process/src/anonymous.type",
                   ),
-                  source_code: "Order: {\n  delivery: {\n    address: {\n      street: string,\n      city: string,\n    }\n  }\n}\n\nEmail: string | {\n  name: string,\n  email: string,\n}\n\n",
+                  source_code: GtpSourceCode(
+                    content: "Order: {\n  delivery: {\n    address: {\n      street: string,\n      city: string,\n    }\n  }\n}\n\nEmail: string | {\n  name: string,\n  email: string,\n}\n\n",
+                    hash: GtpSourceCodeHash("4abe27e1aec226ec"),
+                  ),
                   module_parse: GtModuleParse(
                     module: GtModule(
                       id: GtModuleId("anonymous"),
@@ -787,6 +815,7 @@ mod tests {
                   identifiers: {},
                   definitions: {},
                   reference_definition_ids: {},
+                  deps: [],
                 ),
               ),
             )),
@@ -803,6 +832,10 @@ mod tests {
             name: None,
             version: None,
             package: true,
+            build: GtpBuildConfig(
+              file: true,
+              cleanup: true,
+            ),
             root: "",
             dist: "dist",
             src: "src",
@@ -885,7 +918,10 @@ mod tests {
                   source: Entry(
                     path: "examples/errors/undefined-inline/src/package.type",
                   ),
-                  source_code: "PackageSettings: {\n  value: string,\n}\n",
+                  source_code: GtpSourceCode(
+                    content: "PackageSettings: {\n  value: string,\n}\n",
+                    hash: GtpSourceCodeHash("fd933c54d5fe32cd"),
+                  ),
                   module_parse: GtModuleParse(
                     module: GtModule(
                       id: GtModuleId("package"),
@@ -939,6 +975,7 @@ mod tests {
                   identifiers: {},
                   definitions: {},
                   reference_definition_ids: {},
+                  deps: [],
                 ),
               ),
             )),
@@ -965,6 +1002,10 @@ mod tests {
             name: None,
             version: None,
             package: true,
+            build: GtpBuildConfig(
+              file: true,
+              cleanup: true,
+            ),
             root: "",
             dist: "dist",
             src: "src",

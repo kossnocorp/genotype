@@ -13,8 +13,8 @@ impl<'project> GtlCompiler<'project> for TsCompiler<'project> {
     where
         'project: 'config;
 
-    fn lang(&self) -> GtLang {
-        GtLang::Ts
+    fn lang(&self) -> GtpLang {
+        GtpLang::Ts
     }
 
     fn project(&self) -> &GtProject {
@@ -176,6 +176,7 @@ mod tests {
         {
           "examples/basic/src/author.type": Resolved(GtlProjectModuleResolved(
             converted: GtlProjectModuleConverted(
+              source_id: GtModuleId("author"),
               source_path: "examples/basic/src/author.type",
               target_path: "examples/basic/dist/ts/src/author.ts",
               project_module: TsProjectModule(
@@ -226,6 +227,7 @@ mod tests {
           )),
           "examples/basic/src/book.type": Resolved(GtlProjectModuleResolved(
             converted: GtlProjectModuleConverted(
+              source_id: GtModuleId("book"),
               source_path: "examples/basic/src/book.type",
               target_path: "examples/basic/dist/ts/src/book.ts",
               project_module: TsProjectModule(
@@ -324,6 +326,7 @@ mod tests {
         {
           "examples/glob/src/author.type": Resolved(GtlProjectModuleResolved(
             converted: GtlProjectModuleConverted(
+              source_id: GtModuleId("author"),
               source_path: "examples/glob/src/author.type",
               target_path: "examples/glob/dist/ts/src/author.ts",
               project_module: TsProjectModule(
@@ -394,6 +397,7 @@ mod tests {
           )),
           "examples/glob/src/book.type": Resolved(GtlProjectModuleResolved(
             converted: GtlProjectModuleConverted(
+              source_id: GtModuleId("book"),
               source_path: "examples/glob/src/book.type",
               target_path: "examples/glob/dist/ts/src/book.ts",
               project_module: TsProjectModule(
@@ -509,23 +513,43 @@ mod tests {
           files: [
             Generated(GtlDistFileGenerated(
               path: "examples/basic/dist/ts/.gitignore",
-              source_code: "node_modules",
+              source_code: GtpSourceCode(
+                content: "node_modules",
+                hash: GtpSourceCodeHash("ea7e41592884ef60"),
+              ),
+              source_module_id: None,
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/basic/dist/ts/package.json",
-              source_code: "{\n  \"name\": \"basic\",\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./src/index.ts\"\n  }\n}",
+              source_code: GtpSourceCode(
+                content: "{\n  \"name\": \"basic\",\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./src/index.ts\"\n  }\n}",
+                hash: GtpSourceCodeHash("bf82157182a17fda"),
+              ),
+              source_module_id: None,
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/basic/dist/ts/src/author.ts",
-              source_code: "// Do not edit manually! Code generated from ../../../src/author.type\n\nexport interface Author {\n  name: string;\n}\n",
+              source_code: GtpSourceCode(
+                content: "// Do not edit manually! Code generated from ../../../src/author.type\n\nexport interface Author {\n  name: string;\n}\n",
+                hash: GtpSourceCodeHash("6301f22cdc8c8611"),
+              ),
+              source_module_id: Some(GtModuleId("author")),
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/basic/dist/ts/src/book.ts",
-              source_code: "// Do not edit manually! Code generated from ../../../src/book.type\n\nimport { Author } from \"./author.js\";\n\nexport interface Book {\n  title: string;\n  author: Author;\n}\n",
+              source_code: GtpSourceCode(
+                content: "// Do not edit manually! Code generated from ../../../src/book.type\n\nimport { Author } from \"./author.js\";\n\nexport interface Book {\n  title: string;\n  author: Author;\n}\n",
+                hash: GtpSourceCodeHash("505bfdff2b738600"),
+              ),
+              source_module_id: Some(GtModuleId("book")),
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/basic/dist/ts/src/index.ts",
-              source_code: "export * from \"./author.js\";\nexport * from \"./book.js\";\n",
+              source_code: GtpSourceCode(
+                content: "export * from \"./author.js\";\nexport * from \"./book.js\";\n",
+                hash: GtpSourceCodeHash("fc59bf6784881079"),
+              ),
+              source_module_id: None,
             )),
           ],
           modules: [
@@ -607,19 +631,35 @@ mod tests {
           files: [
             Generated(GtlDistFileGenerated(
               path: "examples/dependencies/dist/ts/.gitignore",
-              source_code: "node_modules",
+              source_code: GtpSourceCode(
+                content: "node_modules",
+                hash: GtpSourceCodeHash("ea7e41592884ef60"),
+              ),
+              source_module_id: None,
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/dependencies/dist/ts/package.json",
-              source_code: "{\n  \"name\": \"dependencies\",\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./src/index.ts\"\n  }\n}",
+              source_code: GtpSourceCode(
+                content: "{\n  \"name\": \"dependencies\",\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./src/index.ts\"\n  }\n}",
+                hash: GtpSourceCodeHash("0fa29957f3713ea7"),
+              ),
+              source_module_id: None,
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/dependencies/dist/ts/src/index.ts",
-              source_code: "export * from \"./prompt.js\";\n",
+              source_code: GtpSourceCode(
+                content: "export * from \"./prompt.js\";\n",
+                hash: GtpSourceCodeHash("1bf1c8c5ac00d5da"),
+              ),
+              source_module_id: None,
             )),
             Generated(GtlDistFileGenerated(
               path: "examples/dependencies/dist/ts/src/prompt.ts",
-              source_code: "// Do not edit manually! Code generated from ../../../src/prompt.type\n\nimport { JsonAny } from \"@genotype/json\";\n\nexport interface Prompt {\n  content: string;\n  output: JsonAny;\n}\n",
+              source_code: GtpSourceCode(
+                content: "// Do not edit manually! Code generated from ../../../src/prompt.type\n\nimport { JsonAny } from \"@genotype/json\";\n\nexport interface Prompt {\n  content: string;\n  output: JsonAny;\n}\n",
+                hash: GtpSourceCodeHash("a41a7370b1839018"),
+              ),
+              source_module_id: Some(GtModuleId("prompt")),
             )),
           ],
           modules: [
@@ -874,23 +914,43 @@ mod tests {
           files: [
             Generated(GtlDistFileGenerated(
               path: "../../examples/04-tests/generics/dist/ts-interface/ts/.gitignore",
-              source_code: "node_modules",
+              source_code: GtpSourceCode(
+                content: "node_modules",
+                hash: GtpSourceCodeHash("ea7e41592884ef60"),
+              ),
+              source_module_id: None,
             )),
             Generated(GtlDistFileGenerated(
               path: "../../examples/04-tests/generics/dist/ts-interface/ts/package.json",
-              source_code: "{\n  \"name\": \"genotype-test-generics-interface-types\",\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./src/index.ts\"\n  },\n  \"version\": \"0.1.0\"\n}",
+              source_code: GtpSourceCode(
+                content: "{\n  \"name\": \"genotype-test-generics-interface-types\",\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./src/index.ts\"\n  },\n  \"version\": \"0.1.0\"\n}",
+                hash: GtpSourceCodeHash("337e16f69853df37"),
+              ),
+              source_module_id: None,
             )),
             Generated(GtlDistFileGenerated(
               path: "../../examples/04-tests/generics/dist/ts-interface/ts/src/generics.ts",
-              source_code: "// Do not edit manually! Code generated from ../../../../src/generics.type\n\nexport type Response<Payload> = ResponseSuccess<Payload> | ResponseFailure;\n\nexport interface ResponseSuccess<Payload> {\n  status: \"success\";\n  value: Payload;\n}\n\nexport interface ResponseFailure {\n  status: \"failure\";\n  error: string;\n}\n\nexport type ResponseString = Response<string>;\n\nexport type ResponsePair = Response<import(\"./pair.js\").Pair<string, number>>;\n",
+              source_code: GtpSourceCode(
+                content: "// Do not edit manually! Code generated from ../../../../src/generics.type\n\nexport type Response<Payload> = ResponseSuccess<Payload> | ResponseFailure;\n\nexport interface ResponseSuccess<Payload> {\n  status: \"success\";\n  value: Payload;\n}\n\nexport interface ResponseFailure {\n  status: \"failure\";\n  error: string;\n}\n\nexport type ResponseString = Response<string>;\n\nexport type ResponsePair = Response<import(\"./pair.js\").Pair<string, number>>;\n",
+                hash: GtpSourceCodeHash("2328a0f8bb206527"),
+              ),
+              source_module_id: Some(GtModuleId("generics")),
             )),
             Generated(GtlDistFileGenerated(
               path: "../../examples/04-tests/generics/dist/ts-interface/ts/src/index.ts",
-              source_code: "export * from \"./generics.js\";\nexport * from \"./pair.js\";\n",
+              source_code: GtpSourceCode(
+                content: "export * from \"./generics.js\";\nexport * from \"./pair.js\";\n",
+                hash: GtpSourceCodeHash("a3b844d2b4d544dc"),
+              ),
+              source_module_id: None,
             )),
             Generated(GtlDistFileGenerated(
               path: "../../examples/04-tests/generics/dist/ts-interface/ts/src/pair.ts",
-              source_code: "// Do not edit manually! Code generated from ../../../../src/pair.type\n\nexport interface Pair<Left, Right> {\n  left: Left;\n  right: Right;\n}\n",
+              source_code: GtpSourceCode(
+                content: "// Do not edit manually! Code generated from ../../../../src/pair.type\n\nexport interface Pair<Left, Right> {\n  left: Left;\n  right: Right;\n}\n",
+                hash: GtpSourceCodeHash("9f0114b7064dab2a"),
+              ),
+              source_module_id: Some(GtModuleId("pair")),
             )),
           ],
           modules: [

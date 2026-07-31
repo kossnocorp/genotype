@@ -10,7 +10,7 @@ pub enum GtpConfigVersionPart {
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 enum GtpConfigVersionTarget {
     Global,
-    Lang(GtLang),
+    Lang(GtpLang),
 }
 
 pub struct GtpConfigSetVersionProps {
@@ -54,22 +54,31 @@ impl GtpConfig {
             updates.insert(GtpConfigVersionTarget::Global, version.clone());
         }
 
-        if let Some(cur_ts_version) = self.lang_manifest_version(GtLang::Ts)? {
+        if let Some(cur_ts_version) = self.lang_manifest_version(GtpLang::Ts)? {
             ensure_can_set_version(&cur_ts_version, &version)?;
             let ts_version = ts.as_ref().unwrap_or(&version);
-            updates.insert(GtpConfigVersionTarget::Lang(GtLang::Ts), ts_version.clone());
+            updates.insert(
+                GtpConfigVersionTarget::Lang(GtpLang::Ts),
+                ts_version.clone(),
+            );
         }
 
-        if let Some(cur_py_version) = self.lang_manifest_version(GtLang::Py)? {
+        if let Some(cur_py_version) = self.lang_manifest_version(GtpLang::Py)? {
             ensure_can_set_version(&cur_py_version, &version)?;
             let py_version = py.as_ref().unwrap_or(&version);
-            updates.insert(GtpConfigVersionTarget::Lang(GtLang::Py), py_version.clone());
+            updates.insert(
+                GtpConfigVersionTarget::Lang(GtpLang::Py),
+                py_version.clone(),
+            );
         }
 
-        if let Some(cur_rs_version) = self.lang_manifest_version(GtLang::Rs)? {
+        if let Some(cur_rs_version) = self.lang_manifest_version(GtpLang::Rs)? {
             ensure_can_set_version(&cur_rs_version, &version)?;
             let rs_version = rs.as_ref().unwrap_or(&version);
-            updates.insert(GtpConfigVersionTarget::Lang(GtLang::Rs), rs_version.clone());
+            updates.insert(
+                GtpConfigVersionTarget::Lang(GtpLang::Rs),
+                rs_version.clone(),
+            );
         }
 
         if updates.is_empty() {
@@ -87,26 +96,26 @@ impl GtpConfig {
             updates.insert(GtpConfigVersionTarget::Global, next_version.clone());
         }
 
-        if let Some(cur_ts_version) = self.lang_manifest_version(GtLang::Ts)? {
+        if let Some(cur_ts_version) = self.lang_manifest_version(GtpLang::Ts)? {
             let next_version = bump_version(&cur_ts_version, part);
             updates.insert(
-                GtpConfigVersionTarget::Lang(GtLang::Ts),
+                GtpConfigVersionTarget::Lang(GtpLang::Ts),
                 next_version.clone(),
             );
         }
 
-        if let Some(cur_py_version) = self.lang_manifest_version(GtLang::Py)? {
+        if let Some(cur_py_version) = self.lang_manifest_version(GtpLang::Py)? {
             let next_version = bump_version(&cur_py_version, part);
             updates.insert(
-                GtpConfigVersionTarget::Lang(GtLang::Py),
+                GtpConfigVersionTarget::Lang(GtpLang::Py),
                 next_version.clone(),
             );
         }
 
-        if let Some(cur_rs_version) = self.lang_manifest_version(GtLang::Rs)? {
+        if let Some(cur_rs_version) = self.lang_manifest_version(GtpLang::Rs)? {
             let next_version = bump_version(&cur_rs_version, part);
             updates.insert(
-                GtpConfigVersionTarget::Lang(GtLang::Rs),
+                GtpConfigVersionTarget::Lang(GtpLang::Rs),
                 next_version.clone(),
             );
         }
@@ -140,27 +149,27 @@ impl GtpConfig {
         Ok(())
     }
 
-    pub fn lang_manifest_mut(&mut self, lang: GtLang) -> &mut toml::Table {
+    pub fn lang_manifest_mut(&mut self, lang: GtpLang) -> &mut toml::Table {
         match lang {
-            GtLang::Ts => &mut self.ts.common.manifest,
+            GtpLang::Ts => &mut self.ts.common.manifest,
 
-            GtLang::Py => &mut self.py.common.manifest,
+            GtpLang::Py => &mut self.py.common.manifest,
 
-            GtLang::Rs => &mut self.rs.common.manifest,
+            GtpLang::Rs => &mut self.rs.common.manifest,
         }
     }
 
-    pub fn lang_manifest(&self, lang: GtLang) -> &toml::Table {
+    pub fn lang_manifest(&self, lang: GtpLang) -> &toml::Table {
         match lang {
-            GtLang::Ts => &self.ts.common.manifest,
+            GtpLang::Ts => &self.ts.common.manifest,
 
-            GtLang::Py => &self.py.common.manifest,
+            GtpLang::Py => &self.py.common.manifest,
 
-            GtLang::Rs => &self.rs.common.manifest,
+            GtpLang::Rs => &self.rs.common.manifest,
         }
     }
 
-    pub fn lang_manifest_version(&self, lang: GtLang) -> Result<Option<Version>> {
+    pub fn lang_manifest_version(&self, lang: GtpLang) -> Result<Option<Version>> {
         let manifest = self.lang_manifest(lang);
         let path = self.target_version_path(lang);
 
@@ -195,14 +204,14 @@ fn bump_version(version: &Version, part: GtpConfigVersionPart) -> Version {
 }
 
 impl GtpConfig {
-    fn target_version_path(&self, lang: GtLang) -> &'static str {
+    fn target_version_path(&self, lang: GtpLang) -> &'static str {
         match lang {
-            GtLang::Ts => TS_MANIFEST_VERSION_PATH,
-            GtLang::Py => match self.py.lang.manager {
+            GtpLang::Ts => TS_MANIFEST_VERSION_PATH,
+            GtpLang::Py => match self.py.lang.manager {
                 PyPackageManager::Poetry => PY_MANIFEST_VERSION_PATH_POETRY,
                 PyPackageManager::Uv => PY_MANIFEST_VERSION_PATH_UV,
             },
-            GtLang::Rs => RS_MANIFEST_VERSION_PATH,
+            GtpLang::Rs => RS_MANIFEST_VERSION_PATH,
         }
     }
 }

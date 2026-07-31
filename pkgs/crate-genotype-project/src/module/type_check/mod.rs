@@ -46,6 +46,19 @@ pub struct GtpModuleTypeChecked {
     pub module_resolved: GtpModuleResolved,
 }
 
+impl GtpModuleTypeChecked {
+    pub fn build_info(&self) -> GtpBuildInfoSrcModule {
+        let resolved = &self.module_resolved;
+        let project_module_parse = &resolved.project_module_parse;
+
+        let id = project_module_parse.module_parse.module.id.clone();
+        let hash = project_module_parse.source_code.hash.clone();
+        let deps = resolved.resolve.deps.iter().cloned().collect::<Vec<_>>();
+
+        GtpBuildInfoSrcModule { id, hash, deps }
+    }
+}
+
 impl From<GtpModuleTypeChecked> for GtpModule {
     fn from(value: GtpModuleTypeChecked) -> Self {
         GtpModule::TypeChecked(Box::new(value))
@@ -67,7 +80,11 @@ impl GtpModuleTypeChecked {
             Ok(Self { module_resolved })
         } else {
             Err(GtpModuleError::TypeCheck {
-                source_code: module_resolved.project_module_parse.source_code.clone(),
+                source_code: module_resolved
+                    .project_module_parse
+                    .source_code
+                    .content
+                    .clone(),
                 path: module_resolved.project_module_parse.path.clone(),
                 errors,
             })
@@ -196,7 +213,10 @@ mod tests {
         let project_module_parse = GtpModuleParse {
             path,
             source: module_source,
-            source_code: source.into(),
+            source_code: GtpSourceCode {
+                hash: GtpSourceCodeHash::new("hash"),
+                content: source.into(),
+            },
             module_parse: GtModule::parse("module".into(), source).unwrap(),
         };
         let project_resolve = GtpResolve::resolve(&IndexMap::from_iter([(

@@ -1,5 +1,6 @@
 use crate::prelude::internal::*;
-use std::collections::BTreeMap;
+
+mod build_info;
 
 pub struct GtcCompilation<'project, 'backend, Backend: GtBackend + ?Sized> {
     /// Project to compile.
@@ -16,14 +17,26 @@ pub struct GtcCompilation<'project, 'backend, Backend: GtBackend + ?Sized> {
 
     /// Resolved project and generated language paths.
     meta_paths: GtcMetaCompiledPaths,
+
+    build_info: GtpBuildInfo,
 }
 
 impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
-    pub fn new<'project, 'backend>(
+    pub fn try_new<'project, 'backend>(
         project: &'project GtProject,
         backend: &'backend Backend,
-    ) -> GtcCompilation<'project, 'backend, Backend> {
-        GtcCompilation {
+    ) -> Result<GtcCompilation<'project, 'backend, Backend>> {
+        let build_info = GtpBuildInfo {
+            dist: GtpBuildInfoDist {
+                ts: None,
+                rs: None,
+                py: None,
+            },
+
+            src: project.build_info_src()?,
+        };
+
+        Ok(GtcCompilation {
             project,
             backend,
             errors_count: 0,
@@ -35,33 +48,36 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
                 rs: None,
                 py: None,
             },
-        }
+            build_info,
+        })
     }
 
     pub async fn compile(&mut self) -> Result<i32> {
-        self.compile_langs(&[GtLang::Ts, GtLang::Py, GtLang::Rs])
+        let diagnostics = self.project.config().health_check();
+        self.handle_diagnostics(&diagnostics).await?;
+        self.compile_langs(&[GtpLang::Ts, GtpLang::Py, GtpLang::Rs])
             .await
     }
 
-    pub async fn compile_langs(&mut self, langs: &[GtLang]) -> Result<i32> {
+    pub async fn compile_langs(&mut self, langs: &[GtpLang]) -> Result<i32> {
         let project = self.project;
 
         let project_diagnostics = project.as_final_diagnostics();
         self.handle_diagnostics(&project_diagnostics).await?;
 
-        if langs.contains(&GtLang::Ts) {
+        if langs.contains(&GtpLang::Ts) {
             self.compile_project(&TsCompiler::new(project)).await?;
-            self.run_lang_formatters(GtLang::Ts).await?;
+            self.run_lang_formatters(GtpLang::Ts).await?;
         }
 
-        if langs.contains(&GtLang::Py) {
+        if langs.contains(&GtpLang::Py) {
             self.compile_project(&PyCompiler::new(project)).await?;
-            self.run_lang_formatters(GtLang::Py).await?;
+            self.run_lang_formatters(GtpLang::Py).await?;
         }
 
-        if langs.contains(&GtLang::Rs) {
+        if langs.contains(&GtpLang::Rs) {
             self.compile_project(&RsCompiler::new(project)).await?;
-            self.run_lang_formatters(GtLang::Rs).await?;
+            self.run_lang_formatters(GtpLang::Rs).await?;
         }
 
         self.finalize(&project.paths().dist).await
@@ -75,7 +91,7 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
         self.meta_paths.clone()
     }
 
-    async fn run_lang_formatters(&mut self, lang: GtLang) -> Result<()> {
+    async fn run_lang_formatters(&mut self, lang: GtpLang) -> Result<()> {
         if !self.project.lang_enabled(lang) {
             return Ok(());
         }
@@ -90,7 +106,13 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
         let target_formatters = lang_config.common().formatters.clone();
 
         self.run_formatters(&global_formatters, &dist_path).await?;
-        self.run_formatters(&target_formatters, &dist_path).await
+        self.run_formatters(&target_formatters, &dist_path).await?;
+
+        if !global_formatters.is_empty() || !target_formatters.is_empty() {
+            self.refresh_build_info_hashes(lang).await?;
+        }
+
+        Ok(())
     }
 
     async fn run_formatters(
@@ -138,7 +160,16 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
                 let dist_diagnostics = diagnostics;
                 self.handle_diagnostics(&dist_diagnostics).await?;
 
-                let write_diagnostics = self.write_files(&files).await;
+                let (lang_build_info, write_diagnostics) = self.write_files(&files).await?;
+
+                let build_info = match compiler.lang() {
+                    GtpLang::Ts => self.build_info.dist.ts.get_or_insert_default(),
+                    GtpLang::Rs => self.build_info.dist.rs.get_or_insert_default(),
+                    GtpLang::Py => self.build_info.dist.py.get_or_insert_default(),
+                };
+
+                *build_info = BTreeMap::from_iter(lang_build_info);
+
                 self.handle_diagnostics(&write_diagnostics).await?;
             }
 
@@ -165,6 +196,21 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
             return Ok(1);
         }
 
+        if self.project.config().build.file {
+            let build_info_diagnostics = self.update_build_info_file().await?;
+            self.handle_diagnostics(&build_info_diagnostics).await?;
+
+            if self.errors_count > 0 {
+                self.backend
+                    .report_diagnostic(&GtDiagnostic::warning(format!(
+                        "Project generated to `{dist_dir}` with {errors_count} errors",
+                        errors_count = self.errors_count
+                    )))
+                    .await?;
+                return Ok(1);
+            }
+        }
+
         self.backend
             .report_diagnostic(&GtDiagnostic::success(format!(
                 "Project generated to `{dist_dir}`"
@@ -183,18 +229,32 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
         self.backend.report_diagnostics(diagnostics).await
     }
 
-    async fn write_files(&self, files: &Vec<GtlDistFile>) -> Vec<GtDiagnostic> {
+    async fn write_files(
+        &self,
+        files: &Vec<GtlDistFile>,
+    ) -> Result<(
+        Vec<(GtpBuildInfoPath, GtpBuildInfoDistFile)>,
+        Vec<GtDiagnostic>,
+    )> {
         let mut diagnostics = vec![];
+        let mut lang_build_info = vec![];
 
         for file in files {
-            let file_diagnostics = self.write_file(file).await;
+            let (file_build_info, file_diagnostics) = self.write_file(file).await?;
             diagnostics.extend(file_diagnostics);
+            lang_build_info.extend(file_build_info);
         }
 
-        diagnostics
+        Ok((lang_build_info, diagnostics))
     }
 
-    async fn write_file(&self, file: &GtlDistFile) -> Vec<GtDiagnostic> {
+    async fn write_file(
+        &self,
+        file: &GtlDistFile,
+    ) -> Result<(
+        Option<(GtpBuildInfoPath, GtpBuildInfoDistFile)>,
+        Vec<GtDiagnostic>,
+    )> {
         let mut diagnostics = vec![];
         let path = &file.path();
         let source_code = file.source_code();
@@ -228,25 +288,38 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
             }
         };
 
+        let mut file_build_info = None;
         if should_write {
             let write_result = self
                 .backend
                 .write_file(path.cwd_relative_path(), source_code)
                 .await;
+
             if let Err(err) = write_result {
                 diagnostics.push(GtDiagnostic::error(format!(
                     "Failed to write `{path}` to file system: {err}"
                 )));
             }
+
+            if let GtlDistFile::Generated(generated_file) = file {
+                let build_info_path = self.project.build_info_path(&generated_file.path)?;
+                file_build_info = Some((
+                    build_info_path,
+                    GtpBuildInfoDistFile {
+                        hash: generated_file.source_code.hash.clone(),
+                        src_id: generated_file.source_module_id.clone(),
+                    },
+                ));
+            }
         }
 
-        diagnostics
+        Ok((file_build_info, diagnostics))
     }
 }
 
 fn collect_meta_modules(
     meta_modules: &mut BTreeMap<String, GtcMetaCompiledModule>,
-    lang: GtLang,
+    lang: GtpLang,
     modules: Vec<GtlDistModule>,
 ) {
     for module in modules {
@@ -256,29 +329,29 @@ fn collect_meta_modules(
             meta_modules
                 .entry(source.clone())
                 .or_insert_with(|| GtcMetaCompiledModule {
-                    source,
+                    src: source,
                     ts: None,
                     rs: None,
                     py: None,
                 });
 
         match lang {
-            GtLang::Ts => meta_module.ts = Some(target),
-            GtLang::Rs => meta_module.rs = Some(target),
-            GtLang::Py => meta_module.py = Some(target),
+            GtpLang::Ts => meta_module.ts = Some(target),
+            GtpLang::Rs => meta_module.rs = Some(target),
+            GtpLang::Py => meta_module.py = Some(target),
         }
     }
 }
 
 fn collect_meta_paths(
     paths: &mut GtcMetaCompiledPaths,
-    lang: GtLang,
+    lang: GtpLang,
     lang_paths: GtcMetaCompiledPathsLang,
 ) {
     match lang {
-        GtLang::Ts => paths.ts = Some(lang_paths),
-        GtLang::Rs => paths.rs = Some(lang_paths),
-        GtLang::Py => paths.py = Some(lang_paths),
+        GtpLang::Ts => paths.ts = Some(lang_paths),
+        GtpLang::Rs => paths.rs = Some(lang_paths),
+        GtpLang::Py => paths.py = Some(lang_paths),
     }
 }
 
@@ -292,12 +365,12 @@ mod tests {
         let mut modules = BTreeMap::new();
         collect_meta_modules(
             &mut modules,
-            GtLang::Ts,
+            GtpLang::Ts,
             vec![dist_module("src/z.type", "dist/ts/z.ts")],
         );
         collect_meta_modules(
             &mut modules,
-            GtLang::Rs,
+            GtpLang::Rs,
             vec![
                 dist_module("src/a.type", "dist/rs/a.rs"),
                 dist_module("src/z.type", "dist/rs/z.rs"),
@@ -308,13 +381,13 @@ mod tests {
             modules.values().cloned().collect::<Vec<_>>(),
             vec![
                 GtcMetaCompiledModule {
-                    source: "src/a.type".into(),
+                    src: "src/a.type".into(),
                     ts: None,
                     rs: Some("dist/rs/a.rs".into()),
                     py: None,
                 },
                 GtcMetaCompiledModule {
-                    source: "src/z.type".into(),
+                    src: "src/z.type".into(),
                     ts: Some("dist/ts/z.ts".into()),
                     rs: Some("dist/rs/z.rs".into()),
                     py: None,
@@ -334,7 +407,7 @@ mod tests {
         };
         collect_meta_paths(
             &mut paths,
-            GtLang::Ts,
+            GtpLang::Ts,
             GtcMetaCompiledPathsLang {
                 pkg: "dist/ts".into(),
                 src: "dist/ts/src".into(),
@@ -363,9 +436,9 @@ mod tests {
         let config_path = "../crate-genotype-lang-ts-project/examples/basic/genotype.toml".into();
         let project =
             block_on(backend.create_project_and_load_all_modules(Some(&config_path))).unwrap();
-        let mut compilation = GtcCompilation::new(&project, &backend);
+        let mut compilation = GtcCompilation::try_new(&project, &backend).unwrap();
 
-        block_on(compilation.compile_langs(&[GtLang::Ts])).unwrap();
+        block_on(compilation.compile_langs(&[GtpLang::Ts])).unwrap();
 
         assert_eq!(
             compilation.meta_paths(),

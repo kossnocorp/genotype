@@ -5,6 +5,8 @@ use crate::prelude::internal::*;
 mod resolve;
 pub use resolve::*;
 
+mod build_info;
+
 mod type_check;
 
 mod diagnostics;
@@ -122,11 +124,11 @@ impl GtProject {
         self.modules.insert(path.clone(), module_state);
     }
 
-    pub fn lang_enabled(&self, lang: GtLang) -> bool {
+    pub fn lang_enabled(&self, lang: GtpLang) -> bool {
         self.config.lang_enabled(lang)
     }
 
-    pub fn lang_config(&self, lang: GtLang) -> &dyn GtpLangConfig {
+    pub fn lang_config(&self, lang: GtpLang) -> &dyn GtpLangConfig {
         self.config.lang(lang)
     }
 

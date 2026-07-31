@@ -1,4 +1,7 @@
 src = "."
 
+[build]
+file = false
+
 [rs]
 enabled = true

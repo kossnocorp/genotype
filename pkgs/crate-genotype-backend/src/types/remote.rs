@@ -14,6 +14,7 @@ pub enum GtbRemoteBackendRequest {
     ReportDiagnostic(GtbRemoteBackendRequestReportDiagnostic),
     RunFormatter(GtbRemoteBackendRequestRunFormatter),
     WriteFile(GtbRemoteBackendRequestWriteFile),
+    RemoveFile(GtbRemoteBackendRequestRemoveFile),
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -27,6 +28,7 @@ pub enum GtbRemoteBackendRequestResponse {
     ReportDiagnostic(GtbRemoteBackendRequestResponseReportDiagnostic),
     RunFormatter(GtbRemoteBackendRequestResponseRunFormatter),
     WriteFile(GtbRemoteBackendRequestResponseWriteFile),
+    RemoveFile(GtbRemoteBackendRequestResponseRemoveFile),
 }
 
 #[serde_literals]
@@ -137,3 +139,15 @@ pub struct GtbRemoteBackendRequestWriteFile {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[literals(kind = "write-file")]
 pub struct GtbRemoteBackendRequestResponseWriteFile {}
+
+#[serde_literals]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[literals(kind = "remove-file")]
+pub struct GtbRemoteBackendRequestRemoveFile {
+    pub path: String,
+}
+
+#[serde_literals]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[literals(kind = "remove-file")]
+pub struct GtbRemoteBackendRequestResponseRemoveFile {}

@@ -964,6 +964,7 @@ dependencies = [
  "semver",
  "serde",
  "syntect",
+ "tempfile",
  "termbg",
  "thiserror 1.0.64",
  "toml 0.8.22",
@@ -977,7 +978,6 @@ dependencies = [
  "futures",
  "genotype_backend",
  "genotype_core",
- "genotype_lang_core",
  "genotype_lang_core_project",
  "genotype_lang_py_config",
  "genotype_lang_py_project",
@@ -995,6 +995,7 @@ dependencies = [
  "miette",
  "ordered-float",
  "owo-colors",
+ "pluralizer",
  "pretty_assertions",
  "regex",
  "relative-path",
@@ -1062,20 +1063,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "genotype_lang_core"
-version = "0.16.2"
-dependencies = [
- "insta",
- "pretty_assertions",
- "serde",
-]
-
-[[package]]
 name = "genotype_lang_core_project"
 version = "0.16.2"
 dependencies = [
  "genotype_core",
- "genotype_lang_core",
  "genotype_lang_core_tree",
  "genotype_parser",
  "genotype_project",
@@ -1129,7 +1120,6 @@ dependencies = [
  "futures",
  "genotype_backend",
  "genotype_core",
- "genotype_lang_core",
  "genotype_lang_core_project",
  "genotype_lang_core_tree",
  "genotype_lang_py_config",
@@ -1192,7 +1182,6 @@ dependencies = [
  "futures",
  "genotype_backend",
  "genotype_core",
- "genotype_lang_core",
  "genotype_lang_core_project",
  "genotype_lang_core_tree",
  "genotype_lang_rs_config",
@@ -1254,7 +1243,6 @@ dependencies = [
  "futures",
  "genotype_backend",
  "genotype_core",
- "genotype_lang_core",
  "genotype_lang_core_project",
  "genotype_lang_core_tree",
  "genotype_lang_ts_config",
@@ -1331,7 +1319,6 @@ version = "0.16.2"
 dependencies = [
  "figment",
  "genotype_core",
- "genotype_lang_core",
  "genotype_lang_py_config",
  "genotype_lang_rs_config",
  "genotype_lang_ts_config",
@@ -1369,6 +1356,7 @@ dependencies = [
  "serde",
  "toml 0.8.22",
  "toml_edit",
+ "xxhash-rust",
 ]
 
 [[package]]
@@ -3560,9 +3548,9 @@ dependencies = [
 
 [[package]]
 name = "sha2"
-version = "0.10.8"
+version = "0.10.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "793db75ad2bcafc3ffa7c68b215fee268f537982cd901d132f89c6343f3a3dc8"
+checksum = "a7507d819769d01a365ab707794a4084392c824f54a7a6a7862f8c3d0892b283"
 dependencies = [
  "cfg-if",
  "cpufeatures 0.2.12",
@@ -4790,6 +4778,12 @@ name = "writeable"
 version = "0.5.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1e9df38ee2d2c3c5948ea468a8406ff0db0b29ae1ffde1bcf20ef305bcc95c51"
+
+[[package]]
+name = "xxhash-rust"
+version = "0.8.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "aee1b19627c7c60102ab80d3a9cbe18de90bfe03bfa6c3715447681f0e8c8af6"
 
 [[package]]
 name = "yaml-rust"

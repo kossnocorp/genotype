@@ -1,3 +1,5 @@
+// Do not edit manually! Code generated from ../../types/meta.type
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -47,7 +49,7 @@ pub struct GtcMetaCompiledPathsLang {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GtcMetaCompiledModule {
-    pub source: String,
+    pub src: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ts: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]

@@ -1,14 +1,18 @@
 use crate::prelude::internal::*;
 
 impl GtpConfig {
-    pub fn from_toml_str(source: &str) -> Result<Self> {
+    pub fn from_toml_str(source_code: &str) -> Result<Self> {
+        Self::from_source_code(GtpSourceCode::new(source_code.to_owned()))
+    }
+
+    pub fn from_source_code(source_code: GtpSourceCode) -> Result<Self> {
         let mut config: GtpConfig = Figment::from(figment::providers::Serialized::defaults(
             GtpConfig::default(),
         ))
-        .merge(figment::providers::Toml::string(source))
+        .merge(figment::providers::Toml::string(&source_code.content))
         .extract()
         .into_diagnostic()?;
-        config.source_toml_str = source.to_string();
+        config.source_code = source_code;
 
         Ok(config)
     }
@@ -28,7 +32,7 @@ impl GtpConfig {
             .map_err(|_| GtpConfigError::FailedToStringify)
             .into_diagnostic()?;
 
-        let original_doc = DocumentMut::from_str(&self.source_toml_str).ok();
+        let original_doc = DocumentMut::from_str(&self.source_code.content).ok();
 
         current_doc.as_table_mut().prune_defaults(
             defaults_doc.as_table(),

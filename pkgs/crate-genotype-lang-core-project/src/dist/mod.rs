@@ -25,6 +25,7 @@ impl GtlDist {
             files: vec![],
             modules: vec![],
             diagnostics,
+            // info: BTreeMap::new(),
         };
         for generation in generations {
             dist.pack_generation(generation);
@@ -63,7 +64,22 @@ impl GtlDist {
             });
         }
 
-        self.files.push(generation.file.into());
+        let file: GtlDistFile = generation.file.into();
+        // if let GtlDistFile::Generated(generated) = &file {
+        //     let info = match &generated.info {
+        //         GtlDistFileInfo::Extra => GtpBuildInfoDistFile::Extra(GtpBuildInfoDistFileExtra {
+        //             hash: generated.source_code.hash.clone(),
+        //         }),
+        //         GtlDistFileInfo::Module { src_id } => {
+        //             GtpBuildInfoDistFile::Module(GtpBuildInfoDistFileModule {
+        //                 src_id: src_id.clone(),
+        //                 hash: generated.source_code.hash.clone(),
+        //             })
+        //         }
+        //     };
+        //     self.info.insert(generated.path.clone(), info);
+        // }
+        self.files.push(file);
         if let Some(diagnostics) = generation.diagnostics {
             self.diagnostics.extend(diagnostics);
         }

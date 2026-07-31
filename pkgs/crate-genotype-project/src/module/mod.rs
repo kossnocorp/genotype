@@ -94,11 +94,15 @@ impl GtpModule {
         match self {
             GtpModule::Initialized(_) => None,
             GtpModule::Error(_, _) => None,
-            GtpModule::Parsed(state) => Some(&state.source_code),
-            GtpModule::Resolved(state) => Some(&state.project_module_parse.source_code),
-            GtpModule::TypeChecked(state) => {
-                Some(&state.module_resolved.project_module_parse.source_code)
-            }
+            GtpModule::Parsed(state) => Some(&state.source_code.content),
+            GtpModule::Resolved(state) => Some(&state.project_module_parse.source_code.content),
+            GtpModule::TypeChecked(state) => Some(
+                &state
+                    .module_resolved
+                    .project_module_parse
+                    .source_code
+                    .content,
+            ),
         }
     }
 }

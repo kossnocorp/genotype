@@ -25,4 +25,11 @@ impl<Type: GtbFsSinkSystem> GtbFsSink<GtbFsSinkSystemKind> for Type {
 
         Ok(())
     }
+
+    async fn remove_file(&self, path: &GtpCwdRelativePath) -> Result<()> {
+        let path = path.to_path_buf();
+        fs::remove_file(&path)
+            .map_err(|err| miette!(err))
+            .wrap_err_with(|| format!("Failed to remove file `{path:?}`"))
+    }
 }

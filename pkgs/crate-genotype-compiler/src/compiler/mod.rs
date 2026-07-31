@@ -122,7 +122,7 @@ pub trait GtCompiler<Props> {
             | GtCompilerState::Compiled { project, .. } => project.clone(),
         };
 
-        let mut compilation = GtcCompilation::new(&project, self.backend());
+        let mut compilation = GtcCompilation::try_new(&project, self.backend())?;
         let exit_code = compilation
             .compile()
             .await

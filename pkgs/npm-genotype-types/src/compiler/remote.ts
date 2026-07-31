@@ -1,3 +1,5 @@
+// Do not edit manually! Code generated from ../../../crate-genotype-compiler/types/remote.type
+
 import { z } from "zod";
 import { GtcMetaLoadedProject, GtcMetaLoadedModules, GtcMetaCompiled } from "./meta.js";
 

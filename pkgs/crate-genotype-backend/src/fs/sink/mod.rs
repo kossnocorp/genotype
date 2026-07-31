@@ -11,4 +11,7 @@ pub use remote::*;
 pub trait GtbFsSink<Kind> {
     /// Writes a file to the given path.
     async fn write_file(&self, path: &GtpCwdRelativePath, content: &str) -> Result<()>;
+
+    /// Removes a file at the given path.
+    async fn remove_file(&self, path: &GtpCwdRelativePath) -> Result<()>;
 }

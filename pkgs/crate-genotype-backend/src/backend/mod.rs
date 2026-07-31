@@ -78,8 +78,9 @@ async fn load_config<Backend: GtBackend + ?Sized>(
     backend: &Backend,
     path: &GtpConfigFilePath,
 ) -> Result<GtpConfig> {
-    let config_source = backend.read_file(path.as_ref()).await?;
-    let config = GtpConfig::parse(config_source)?;
+    let config_source_code_content = backend.read_file(path.as_ref()).await?;
+    let config_source_code = GtpSourceCode::new(config_source_code_content);
+    let config = GtpConfig::from_source_code(config_source_code)?;
     Ok(config)
 }
 
@@ -189,13 +190,15 @@ async fn parse_module<Backend: GtBackend + ?Sized>(
 
     let parse = match module_id {
         Some(module_id) => {
-            let source_code = backend
-                .read_file(path.cwd_relative_path())
-                .await
-                .map_err(|err| GtpModuleError::Read {
-                    path: path.clone(),
-                    message: err.to_string(),
-                })?;
+            let source_code_content =
+                backend
+                    .read_file(path.cwd_relative_path())
+                    .await
+                    .map_err(|err| GtpModuleError::Read {
+                        path: path.clone(),
+                        message: err.to_string(),
+                    })?;
+            let source_code = GtpSourceCode::new(source_code_content);
 
             let parse = GtpModule::parse(path, source, module_id, source_code)?;
             Some(parse)

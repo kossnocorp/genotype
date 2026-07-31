@@ -2,6 +2,7 @@ use crate::prelude::internal::*;
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct GtlProjectModuleConverted<ProjectModule: GtlProjectModule> {
+    pub source_id: GtModuleId,
     pub source_path: GtpModulePath,
     pub target_path: GtpTargetFilePath,
     pub project_module: ProjectModule,

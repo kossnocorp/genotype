@@ -19,7 +19,25 @@ impl<Type: GtbFsSinkRemote> GtbFsSink<GtbFsSinkRemoteKind> for Type {
             GtbRemoteBackendRequestResponse::WriteFile(_) => Ok(()),
 
             response => Err(miette!(
-                "remote write-file request returned unexpected response: {response:?}"
+                "Remote write-file request returned unexpected response: {response:?}"
+            )),
+        }
+    }
+
+    async fn remove_file(&self, path: &GtpCwdRelativePath) -> Result<()> {
+        match self
+            .remote_interop()
+            .send_request(GtbRemoteBackendRequest::RemoveFile(
+                GtbRemoteBackendRequestRemoveFile {
+                    path: path.to_string(),
+                },
+            ))
+            .await?
+        {
+            GtbRemoteBackendRequestResponse::RemoveFile(_) => Ok(()),
+
+            response => Err(miette!(
+                "Remote remove-file request returned unexpected response: {response:?}"
             )),
         }
     }

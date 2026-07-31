@@ -1,2 +1,5 @@
+[build]
+file = false
+
 [ts]
 enabled = true

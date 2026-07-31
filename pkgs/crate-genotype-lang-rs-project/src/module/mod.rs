@@ -38,7 +38,7 @@ impl GtlProjectModule for RsProjectModule {
             if import.path.kind() == GtPathKind::Package {
                 convert_resolve.path_module_ids.insert(
                     import.path.id.clone(),
-                    GtModuleId(import.path.source_str().to_owned().into()),
+                    GtModuleId(import.path.source_str().to_owned()),
                 );
             }
 
