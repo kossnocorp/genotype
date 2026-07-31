@@ -1,8 +1,7 @@
 
 [1m[31mError[39m[0m: Failed to type check module `src/map.type`.
 
-[31m×[0m Invalid record key `ObjectKey`: record key alias must resolve to a supported
-  [31m│[0m primitive
+[31m×[0m Invalid record key `ObjectKey`: record key alias must resolve to a supported primitive
    ╭─[[36;1;4msrc/map.type:5:22[0m]
  [2m4[0m │ 
  [2m5[0m │ [38;2;79;91;102mInvalidObjectMap: { [ObjectKey]: [38;2;180;142;173mstring[38;2;79;91;102m }[0m
