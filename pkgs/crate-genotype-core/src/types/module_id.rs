@@ -3,5 +3,5 @@
 use serde::{Deserialize, Serialize};
 
 /// Module identifier.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct GtModuleId(pub String);

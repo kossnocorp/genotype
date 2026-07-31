@@ -4,7 +4,7 @@ use litty::serde_literals;
 use serde::{Deserialize, Serialize};
 
 #[serde_literals]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum GtpLang {
     #[literal("py")]
     Py,

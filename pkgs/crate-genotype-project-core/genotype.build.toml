@@ -1,10 +1,13 @@
 [src]
-config_hash = "799e4cceb5bbc7d0"
+config_hash = "f6b2d8bc727548b3"
 
 [src.modules."types/build_info.type"]
 id = "build_info"
 hash = "850ea1f2f090dc21"
-deps = ["genotype_core", "source_code"]
+deps = [
+    "genotype_core",
+    "source_code",
+]
 
 [src.modules."types/formatter.type"]
 id = "formatter"
@@ -41,20 +44,20 @@ hash = "45315e48ddbd80af"
 srcId = "source_code"
 
 [dist.rs."src/types/build_info.rs"]
-hash = "513fef749d575ccf"
+hash = "e94b9ff371f78dc2"
 srcId = "build_info"
 
 [dist.rs."src/types/formatter.rs"]
-hash = "843b95d79cba73c2"
+hash = "4682340574b1cfa4"
 srcId = "formatter"
 
 [dist.rs."src/types/lang.rs"]
-hash = "b8931d63d5072011"
+hash = "4a15ec75b0249115"
 srcId = "lang"
 
 [dist.rs."src/types/mod.rs"]
 hash = "b5eae645ec292f6c"
 
 [dist.rs."src/types/source_code.rs"]
-hash = "ce9242204f6f4201"
+hash = "3d3cc11cd25c61f1"
 srcId = "source_code"

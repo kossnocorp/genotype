@@ -1,10 +1,13 @@
 [src]
-config_hash = "8ae523f651ae5809"
+config_hash = "988a9770344c348d"
 
 [src.modules."types/remote.type"]
 id = "remote"
 hash = "3f01d1e6e6ba20b7"
-deps = ["genotype_core", "genotype_project"]
+deps = [
+    "genotype_core",
+    "genotype_project",
+]
 
 [dist.ts."../npm-genotype-types/src/backend/index.ts"]
 hash = "c3537f3f80da094a"
@@ -17,5 +20,5 @@ srcId = "remote"
 hash = "1b2f28d2f7457bed"
 
 [dist.rs."src/types/remote.rs"]
-hash = "e404936249ef1f14"
+hash = "90fd5eb8352c95ab"
 srcId = "remote"

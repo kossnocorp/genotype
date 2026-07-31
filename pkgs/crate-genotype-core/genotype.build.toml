@@ -1,5 +1,5 @@
 [src]
-config_hash = "5cc5ddb26c835547"
+config_hash = "9721834640ff8b48"
 
 [src.modules."types/diagnostic.type"]
 id = "diagnostic"
@@ -23,12 +23,12 @@ hash = "d3f2ab0e500b8cd4"
 srcId = "module_id"
 
 [dist.rs."src/types/diagnostic.rs"]
-hash = "ea3b7d5c7691c20d"
+hash = "cd625a408b500b2c"
 srcId = "diagnostic"
 
 [dist.rs."src/types/mod.rs"]
 hash = "884b07eab33cb39c"
 
 [dist.rs."src/types/module_id.rs"]
-hash = "94f403aa998d4418"
+hash = "539de3964f63f323"
 srcId = "module_id"

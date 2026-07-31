@@ -2,26 +2,26 @@
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct GtcMetaNew {}
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct GtcMetaLoadedProject {
     pub paths: GtcMetaLoadedProjectPaths,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct GtcMetaLoadedProjectPaths {
     pub src: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct GtcMetaLoadedModules {
     pub paths: GtcMetaLoadedProjectPaths,
     pub modules: Vec<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct GtcMetaCompiled {
     #[serde(rename = "exitCode")]
     pub exit_code: i32,
@@ -29,7 +29,7 @@ pub struct GtcMetaCompiled {
     pub modules: Vec<GtcMetaCompiledModule>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct GtcMetaCompiledPaths {
     pub src: String,
     pub dist: String,
@@ -41,13 +41,13 @@ pub struct GtcMetaCompiledPaths {
     pub py: Option<GtcMetaCompiledPathsLang>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct GtcMetaCompiledPathsLang {
     pub pkg: String,
     pub src: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct GtcMetaCompiledModule {
     pub src: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]

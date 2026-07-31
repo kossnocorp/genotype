@@ -1,5 +1,5 @@
 [src]
-config_hash = "fe6f572d3d25e52e"
+config_hash = "2d28c27bda6b7249"
 
 [src.modules."types/meta.type"]
 id = "meta"
@@ -23,12 +23,12 @@ hash = "440b17c52c57f20a"
 srcId = "remote"
 
 [dist.rs."src/types/meta.rs"]
-hash = "ede80f401141ab79"
+hash = "95be4ced69dbefe7"
 srcId = "meta"
 
 [dist.rs."src/types/mod.rs"]
 hash = "f9437e0cf46c0791"
 
 [dist.rs."src/types/remote.rs"]
-hash = "7676342a6e722e18"
+hash = "81d69d3e62683f7f"
 srcId = "remote"

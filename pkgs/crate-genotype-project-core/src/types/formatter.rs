@@ -3,7 +3,7 @@
 use litty::serde_literals;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum GtpFormatter {
     Shell(GtpFormatterShell),
@@ -14,7 +14,7 @@ pub enum GtpFormatter {
     PresetRuff(GtpFormatterPresetRuff),
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct GtpFormatterGenericBase {
     pub cmd: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -22,7 +22,7 @@ pub struct GtpFormatterGenericBase {
 }
 
 #[serde_literals]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[literals(kind = "shell")]
 pub struct GtpFormatterShell {
     pub cmd: String,
@@ -30,7 +30,7 @@ pub struct GtpFormatterShell {
     pub args: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct GtpFormatterExecutor {
     pub cmd: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -39,7 +39,7 @@ pub struct GtpFormatterExecutor {
 }
 
 #[serde_literals]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum GtpFormatterExecutorKind {
     #[literal("cargo")]
     Cargo,
@@ -48,12 +48,12 @@ pub enum GtpFormatterExecutorKind {
 }
 
 #[serde_literals]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[literals(kind = "prettyplease")]
 pub struct GtpFormatterPresetPrettyplease {}
 
 #[serde_literals]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum GtpFormatterExecutorKindNode {
     #[literal("pnpm")]
     Pnpm,
@@ -69,7 +69,7 @@ pub enum GtpFormatterExecutorKindNode {
     Bunx,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct GtpFormatterPresetNodeBase {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub via: Option<GtpFormatterExecutorKindNode>,
@@ -78,7 +78,7 @@ pub struct GtpFormatterPresetNodeBase {
 }
 
 #[serde_literals]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[literals(kind = "oxfmt")]
 pub struct GtpFormatterPresetOxfmt {
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -88,7 +88,7 @@ pub struct GtpFormatterPresetOxfmt {
 }
 
 #[serde_literals]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[literals(kind = "prettier")]
 pub struct GtpFormatterPresetPrettier {
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -97,7 +97,7 @@ pub struct GtpFormatterPresetPrettier {
     pub args: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct GtpFormatterPresetPythonBase {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub via: Option<GtpFormatterExecutorKindPython>,
@@ -106,7 +106,7 @@ pub struct GtpFormatterPresetPythonBase {
 }
 
 #[serde_literals]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum GtpFormatterExecutorKindPython {
     #[literal("uv")]
     Uv,
@@ -117,7 +117,7 @@ pub enum GtpFormatterExecutorKindPython {
 }
 
 #[serde_literals]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[literals(kind = "ruff")]
 pub struct GtpFormatterPresetRuff {
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -126,7 +126,7 @@ pub struct GtpFormatterPresetRuff {
     pub args: Option<Vec<String>>,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct GtpFormatterCmd {
     pub cmd: String,
     pub args: Vec<String>,
