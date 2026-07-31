@@ -1,5 +1,8 @@
 dist = "dist/py-latest"
 
+[build]
+file = false
+
 [py]
 enabled = true
 version = "latest"

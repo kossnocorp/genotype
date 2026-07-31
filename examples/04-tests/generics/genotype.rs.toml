@@ -1,5 +1,8 @@
 dist = "dist"
 
+[build]
+file = false
+
 [rs]
 enabled = true
 

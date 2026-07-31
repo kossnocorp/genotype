@@ -1,5 +1,8 @@
 dist = "dist/ts-alias"
 
+[build]
+file = false
+
 [ts]
 enabled = true
 prefer = "alias"

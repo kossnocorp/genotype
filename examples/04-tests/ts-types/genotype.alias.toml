@@ -1,6 +1,9 @@
 name = "genotype-test-ts-types"
 dist = "dist/ts-alias"
 
+[build]
+file = false
+
 [ts]
 enabled = true
 prefer = "alias"

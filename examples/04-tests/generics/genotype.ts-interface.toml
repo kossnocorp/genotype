@@ -1,5 +1,8 @@
 dist = "dist/ts-interface"
 
+[build]
+file = false
+
 [ts]
 enabled = true
 prefer = "interface"

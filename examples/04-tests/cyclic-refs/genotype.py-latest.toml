@@ -1,6 +1,9 @@
 name = "genotype-test-cyclic-refs"
 dist = "dist/py-latest"
 
+[build]
+file = false
+
 [py]
 enabled = true
 version = "latest"

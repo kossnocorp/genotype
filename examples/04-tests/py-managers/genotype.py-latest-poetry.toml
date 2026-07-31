@@ -1,6 +1,9 @@
 name = "genotype-test-py-managers"
 dist = "dist/py-latest-poetry"
 
+[build]
+file = false
+
 [py]
 enabled = true
 version = "latest"
