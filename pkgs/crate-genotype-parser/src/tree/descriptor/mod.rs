@@ -1,7 +1,5 @@
 use crate::prelude::internal::*;
 
-mod parser;
-
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
 pub enum GtDescriptor {
     Alias(#[visit] Box<GtAlias>),

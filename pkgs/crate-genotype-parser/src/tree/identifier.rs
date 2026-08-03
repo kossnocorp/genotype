@@ -31,24 +31,9 @@ impl GtIdentifier {
     }
 }
 
-impl From<Pair<'_, Rule>> for GtIdentifier {
-    fn from(pair: Pair<'_, Rule>) -> Self {
-        GtIdentifier::new(pair.as_span().into(), pair.as_str().into())
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test_parse() {
-        let mut pairs = GenotypeParser::parse(Rule::name, "Hello").unwrap();
-        assert_eq!(
-            GtIdentifier::new((0, 5).into(), "Hello".into()),
-            pairs.next().unwrap().into(),
-        );
-    }
 
     #[test]
     fn test_same_name() {

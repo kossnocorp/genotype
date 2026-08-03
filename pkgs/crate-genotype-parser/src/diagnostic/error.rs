@@ -2,32 +2,14 @@ use crate::prelude::internal::*;
 
 #[derive(Error, Diagnostic, Debug, PartialEq, Clone, Serialize)]
 pub enum GtParseError {
-    /// Pest syntax error.
+    /// Syntax errors collected while parsing the source.
     #[error("Syntax error")]
     #[diagnostic(code("GT001"))]
-    Syntax {
-        #[label("{message}")]
-        span: GtSpan,
-        message: String,
-    },
-
-    /// Pest succeeded but the result didn't match the expected structure.
-    #[error("Invalid grammar")]
-    #[diagnostic(code("GT002"))]
-    InvalidGrammar,
+    Syntax { errors: Vec<GtSyntaxError> },
 
     #[error("failed to parse {1} node: {2}")]
     #[diagnostic(code("GT003"))]
     Internal(#[label("{2}")] GtSpan, GtNode, &'static str),
-
-    #[error("Encountered unexpected rule '{2:?}' while parsing '{1}' node: {3}")]
-    #[diagnostic(code("GT004"))]
-    UnexpectedRule(
-        #[label("{3}")] GtSpan,
-        GtNode,
-        #[serde(serialize_with = "serialize_rule")] Rule,
-        &'static str,
-    ),
 
     #[error("failed to parse {1} node")]
     #[diagnostic(code("GT005"))]
@@ -49,10 +31,16 @@ pub enum GtParseError {
 impl GtParseError {
     pub fn as_diagnostic(&self, path: &str, source_code: NamedSource<String>) -> GtDiagnostic {
         match self {
-            GtParseError::Syntax { span, message } => {
+            GtParseError::Syntax { errors } => {
+                let labels = errors
+                    .iter()
+                    .map(|error| LabeledSpan::at(error.span, error.message.clone()))
+                    .collect::<Vec<_>>();
                 let report = miette!(
-                    labels = vec![LabeledSpan::at(*span, "Here")],
-                    "Syntax error: {message}"
+                    labels = labels,
+                    "{} syntax error{}",
+                    errors.len(),
+                    if errors.len() == 1 { "" } else { "s" }
                 )
                 .with_source_code(source_code);
                 GtDiagnostic {
@@ -72,20 +60,8 @@ impl GtParseError {
     }
 }
 
-impl From<pest::error::Error<Rule>> for GtParseError {
-    fn from(val: pest::error::Error<Rule>) -> Self {
-        let span = match val.location {
-            InputLocation::Pos(pos) => (pos, pos).into(),
-            InputLocation::Span((start, end)) => (start, end).into(),
-        };
-        let message = val.variant.message().to_string();
-        GtParseError::Syntax { span, message }
-    }
-}
-
-fn serialize_rule<S>(rule: &Rule, serializer: S) -> Result<S::Ok, S::Error>
-where
-    S: serde::Serializer,
-{
-    serializer.serialize_str(&format!("{rule:?}"))
+#[derive(Debug, PartialEq, Clone, Serialize)]
+pub struct GtSyntaxError {
+    pub span: GtSpan,
+    pub message: String,
 }

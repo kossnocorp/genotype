@@ -57,28 +57,6 @@ pub enum GtPathKind {
 }
 
 impl GtPath {
-    pub fn split_parse(
-        pair: Pair<'_, Rule>,
-        module_id: &GtModuleId,
-    ) -> GtNodeParseResult<(GtPath, (GtSpan, String))> {
-        let span = pair.as_span();
-        let span_start = span.start();
-        let str = pair.as_str().to_string();
-        let else_err =
-            || GtParseError::Internal(span.into(), GtNode::Path, "expected path with name segment");
-
-        let name_index = str.rfind("/").ok_or_else(else_err)?;
-
-        let path_str = str.get(..name_index).ok_or_else(else_err)?;
-        let path_span = (span_start, span_start + name_index).into();
-        let path = GtPath::parse(path_span, module_id, path_str)?;
-
-        let name = str.get(name_index + 1..).ok_or_else(else_err)?;
-        let name_span = (span_start + name_index + 1, span.end()).into();
-
-        Ok((path, (name_span, name.into())))
-    }
-
     pub fn parse(span: GtSpan, module_id: &GtModuleId, path: &str) -> GtNodeParseResult<Self> {
         match Self::normalize_path(path) {
             Ok(path) => Ok(GtPath {
@@ -143,30 +121,6 @@ impl GtPath {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test_parse() {
-        let mut pairs = GenotypeParser::parse(Rule::path, "./hello/world/").unwrap();
-        let module_id: GtModuleId = "module".into();
-        assert_eq!(
-            GtPath::parse((0, 14).into(), &module_id, "./hello/world/"),
-            pairs.next().unwrap().try_into()
-        );
-    }
-
-    #[test]
-    fn test_split() {
-        let mut pairs = GenotypeParser::parse(Rule::inline_import, "./hello/World").unwrap();
-        let module_id: GtModuleId = "module".into();
-        let result = GtPath::split_parse(pairs.next().unwrap(), &module_id).unwrap();
-        assert_eq!(
-            result,
-            (
-                GtPath::parse((0, 7).into(), &module_id, "./hello").unwrap(),
-                ((8, 13).into(), "World".into())
-            )
-        );
-    }
 
     #[test]
     fn test_normalize_path() {
@@ -345,14 +299,5 @@ mod tests {
         )
         "#
         );
-    }
-
-    impl TryFrom<Pair<'_, Rule>> for GtPath {
-        type Error = GtParseError;
-
-        fn try_from(pair: Pair<'_, Rule>) -> Result<Self, Self::Error> {
-            let module_id: GtModuleId = "module".into();
-            GtPath::parse(pair.as_span().into(), &module_id, pair.as_str())
-        }
     }
 }
