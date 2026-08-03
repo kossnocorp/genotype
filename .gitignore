@@ -1,5 +1,3 @@
-# Worktrees
-genotype.wt.code-workspace
 # Rust
 /target/
 /bin/
@@ -7,17 +5,29 @@ genotype.wt.code-workspace
 /pkgs/*/examples/*/target/
 *.snap.new
 *.pending-snap
+
 # Node.js
 node_modules/
 .pnpm-store
+
 # TypeScript
 .ts/
+
 # Python
 .venv/
+
 # Cloudflare
 .wrangler/
+
+# Worktrees
+genotype.wt.code-workspace
+
+# Assets
+*~lock~*
+
 # Temp
 tmp/
+
 # Secrets
 .env
 .env.*
