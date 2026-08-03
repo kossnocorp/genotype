@@ -11,9 +11,6 @@ pub use pretty_assertions::{
 #[cfg(test)]
 pub use std::fs;
 
-mod parser;
-pub use parser::*;
-
 pub struct Gt {}
 
 impl Gt {

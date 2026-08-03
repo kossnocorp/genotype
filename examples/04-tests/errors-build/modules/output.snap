@@ -11,11 +11,11 @@
 
 [1m[31mError[39m[0m: Failed to parse module `src/syntax.type`.
 
-[31m×[0m Syntax error: expected generic_parameters
+[31m×[0m 1 syntax error
    ╭─[[36;1;4msrc/syntax.type:1:7[0m]
  [2m1[0m │ [38;2;79;91;102mHello = "Hello, world!"[0m
-   · [35;1m      ▲[0m
-   ·       [35;1m╰── [35;1mHere[0m[0m
+   · [35;1m      ┬[0m
+   ·       [35;1m╰── [35;1mfound 'Equal' at GtSpan(6, 7) expected 'Less', or 'Colon'[0m[0m
    ╰────
 
 [1m[31mError[39m[0m: Failed to convert `dist/ts/src/nope.ts` from `src/nope.type`.

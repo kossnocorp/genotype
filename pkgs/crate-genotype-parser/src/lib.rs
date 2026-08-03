@@ -4,8 +4,8 @@ pub use diagnostic::*;
 pub mod module;
 pub use module::*;
 
-pub mod parser;
-pub use parser::*;
+mod parser;
+pub use parser::{GtToken, GtTokenKind, GtTokens, lex};
 
 pub mod tree;
 pub use tree::*;
