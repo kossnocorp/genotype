@@ -27,7 +27,20 @@ export default defineConfig({
         },
         {
           label: "Targets",
-          items: [{ autogenerate: { directory: "docs/targets" } }],
+          items: [
+            {
+              label: "TypeScript",
+              items: [{ autogenerate: { directory: "docs/targets/typescript" } }],
+            },
+            {
+              label: "Rust",
+              items: [{ autogenerate: { directory: "docs/targets/rust" } }],
+            },
+            {
+              label: "Python",
+              items: [{ autogenerate: { directory: "docs/targets/python" } }],
+            },
+          ],
         },
         {
           label: "Toolchain",
