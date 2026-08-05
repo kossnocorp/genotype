@@ -20,8 +20,8 @@ pub struct RsConvertContext {
     imports: Vec<RsUse>,
     definitions: Vec<RsDefinition>,
     /// List of reserved identifiers that is used to generate unique synthetic identifiers, i.e.,
-    /// for inline stype aliases. It is populated from module exports and then updated when new
-    /// identifiers are generated.
+    /// for inline type aliases. It is populated from module exports and used together with
+    /// [RsConvertContext::defined] list to ensure that generated identifiers are unique.
     reserved: IndexSet<RsIdentifier>,
     defined: Vec<RsIdentifier>,
     hoisting: bool,
