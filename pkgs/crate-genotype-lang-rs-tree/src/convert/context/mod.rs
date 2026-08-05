@@ -19,6 +19,10 @@ pub struct RsConvertContext {
     config: RsConfigLang,
     imports: Vec<RsUse>,
     definitions: Vec<RsDefinition>,
+    /// List of reserved identifiers that is used to generate unique synthetic identifiers, i.e.,
+    /// for inline stype aliases. It is populated from module exports and then updated when new
+    /// identifiers are generated.
+    reserved: IndexSet<RsIdentifier>,
     defined: Vec<RsIdentifier>,
     hoisting: bool,
     hoist_defined: Vec<RsIdentifier>,
@@ -70,6 +74,7 @@ impl RsConvertContext {
             config,
             imports: vec![],
             definitions: vec![],
+            reserved: Default::default(),
             defined: vec![],
             hoisting: false,
             hoist_defined: vec![],
@@ -172,6 +177,10 @@ impl RsConvertContext {
         } else {
             self.defined.push(identifier.clone());
         }
+    }
+
+    pub fn reserve(&mut self, identifier: RsIdentifier) {
+        self.reserved.insert(identifier);
     }
 
     pub fn push_definition(&mut self, definition: RsDefinition) {

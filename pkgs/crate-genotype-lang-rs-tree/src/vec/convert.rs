@@ -2,7 +2,9 @@ use crate::prelude::internal::*;
 
 impl RsConvert<RsVec> for GtArray {
     fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsVec> {
+        context.enter_parent(RsContextParent::VecElement);
         let descriptor = self.descriptor.convert(context)?;
+        context.exit_parent();
         Ok(RsVec { descriptor })
     }
 }

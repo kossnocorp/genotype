@@ -10,6 +10,8 @@ pub enum RsContextParent {
     /// Anonymous parent that prevents children from taking the alias name, when they for example
     /// are part of a tuple.
     Anonymous,
+    VecElement,
+    TupleElement(usize),
     Definition(RsIdentifier),
     Field(RsFieldName),
     EnumVariant(RsIdentifier),
@@ -23,6 +25,8 @@ impl RsContextParent {
             Self::Definition(identifier) => identifier.0.clone(),
             Self::Field(key) => key.0.clone(),
             Self::EnumVariant(identifier) => identifier.0.clone(),
+            Self::VecElement => "Element".into(),
+            Self::TupleElement(index) => format!("Element{index}").into(),
             Self::Anonymous => panic!("Cannot get name of anonymous parent"),
             Self::Hoist => panic!("Cannot get name of hoist parent"),
         }
@@ -46,7 +50,7 @@ impl RsConvertContext {
         self.parents.pop().expect("Expected parent to exist");
     }
 
-    pub fn name_child(&self, name: Option<RsConvertNameSegment>) -> RsIdentifier {
+    pub fn name_child(&mut self, name: Option<RsConvertNameSegment>) -> RsIdentifier {
         let mut segments = vec![];
         for parent in self.parents.iter().rev() {
             match parent {
@@ -67,12 +71,28 @@ impl RsConvertContext {
         }
 
         let solo = segments.len() == 1;
-        segments
+        let name = segments
             .iter()
             .map(|name| name.render(solo))
             .collect::<Vec<_>>()
             .join("")
-            .into()
+            .into();
+
+        self.claim_generated_name(name)
+    }
+
+    fn claim_generated_name(&mut self, name: RsIdentifier) -> RsIdentifier {
+        let mut candidate = name.clone();
+        let mut index = 2;
+        while self.reserved.contains(&candidate)
+            || self.defined.contains(&candidate)
+            || self.hoist_defined.contains(&candidate)
+        {
+            candidate = format!("{}{index}", name.0).into();
+            index += 1;
+        }
+        self.push_defined(&candidate);
+        candidate
     }
 
     /// Tries claiming the alias from the parent, i.e. when naming literals:
@@ -176,6 +196,17 @@ mod tests {
     }
 
     #[test]
+    fn test_reserved_name_wins_over_generated_name() {
+        let mut context = RsConvertContext::empty("module".into());
+        context.reserve("ValuesElement".into());
+        context.enter_parent(RsContextParent::Alias("Values".into()));
+        context.enter_parent(RsContextParent::VecElement);
+
+        assert_eq!(context.name_child(None), "ValuesElement2".into());
+        assert_eq!(context.defined, vec!["ValuesElement2".into()]);
+    }
+
+    #[test]
     fn test_name_hoisted_child() {
         let mut context = RsConvertContext::empty("module".into());
         context.enter_parent(RsContextParent::Definition("Person".into()));
@@ -206,7 +237,7 @@ mod tests {
 
     #[test]
     fn test_name_solo_literal_number_child() {
-        let context = RsConvertContext::empty("module".into());
+        let mut context = RsConvertContext::empty("module".into());
         assert_eq!(
             context.name_child(Some(
                 GtLiteral {
@@ -242,7 +273,7 @@ mod tests {
 
     #[test]
     fn test_name_solo_invalid_literal_child() {
-        let context = RsConvertContext::empty("module".into());
+        let mut context = RsConvertContext::empty("module".into());
         assert_eq!(
             context.name_child(Some(
                 GtLiteral {

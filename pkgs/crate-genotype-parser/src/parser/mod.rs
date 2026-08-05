@@ -96,6 +96,11 @@ mod tests {
     }
 
     #[test]
+    fn rejects_inline_branded_record_key() {
+        assert!(parse_gt_code("Record: { [@string]: string }").is_err());
+    }
+
+    #[test]
     fn test_number_sizes() {
         parse_file("../../examples/02-syntax/17-number_sizes.type");
     }
