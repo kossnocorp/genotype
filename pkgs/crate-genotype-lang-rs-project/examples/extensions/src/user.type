@@ -9,3 +9,38 @@ User: {
 Account: {
   email: string,
 }
+
+Message<Payload>: {
+  id: int,
+  payload: Payload,
+}
+
+MessageJson: {
+  ...Message<string>,
+}
+
+MessageArray: {
+  ...Message<List<string>>,
+}
+
+List<Payload>: [Payload]
+
+MessageResponse: {
+  ...Message<Response<string>>,
+}
+
+Response<Body>: ResponseSuccess<Body> | ResponseFailure
+
+ResponseBase<Status>: {
+  status: Status,
+}
+
+ResponseSuccess<Body>: {
+  ...ResponseBase<"success">,
+  body: Body,
+}
+
+ResponseFailure: {
+  ...ResponseBase<"failure">,
+  error: string,
+}
