@@ -14,7 +14,6 @@ impl RsConvert<RsDefinition> for GtAlias {
             .iter()
             .map(|generic| generic.identifier.convert(context))
             .collect::<RsConvertResult<Vec<_>>>()?;
-        context.push_defined(&name);
         context.enter_generics_scope(generics.clone());
         context.enter_parent(RsContextParent::Alias(name.clone()));
 

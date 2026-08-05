@@ -3,10 +3,11 @@ use crate::prelude::internal::*;
 impl RsModule {
     pub fn convert(
         module: &GtModule,
+        exports: &[GtIdentifier],
         resolve: &RsConvertResolve,
         config: &RsConfig,
     ) -> Result<Self, Box<dyn GtlError>> {
-        match Self::convert_inner(module, resolve, config) {
+        match Self::convert_inner(module, exports, resolve, config) {
             Ok(module) => Ok(module),
             Err(err) => Err(Box::new(err)),
         }
@@ -14,6 +15,7 @@ impl RsModule {
 
     fn convert_inner(
         module: &GtModule,
+        exports: &[GtIdentifier],
         resolve: &RsConvertResolve,
         config: &RsConfig,
     ) -> RsConvertResult<Self> {
@@ -24,6 +26,11 @@ impl RsModule {
             config.lang.clone(),
             config.common.dependencies.clone(),
         );
+
+        for export in exports {
+            let name = export.convert(&mut context)?;
+            context.reserve(name);
+        }
 
         let doc = if let Some(doc) = &module.doc {
             let mut doc = doc.convert(&mut context)?;
@@ -62,6 +69,249 @@ impl RsModule {
 mod tests {
     use super::*;
     use genotype_test::*;
+
+    #[test]
+    fn test_convert_array_union() {
+        assert_ron_snapshot!(
+            convert_aliases(vec![Gt::alias(
+                "Values",
+                Gt::array(Gt::union(vec_into![
+                    Gt::primitive_string(),
+                    Gt::primitive_i64(),
+                    Gt::primitive_boolean(),
+                ])),
+            )]),
+            @r#"
+        RsModule(
+          id: GtModuleId("module"),
+          doc: None,
+          imports: [
+            RsUse(
+              dependency: Serde,
+              reference: Named([
+                Name(RsIdentifier("Deserialize")),
+                Name(RsIdentifier("Serialize")),
+              ]),
+            ),
+          ],
+          definitions: [
+            Alias(RsAlias(
+              id: GtDefinitionId(GtModuleId("module"), "Values"),
+              doc: None,
+              name: RsIdentifier("Values"),
+              generics: [],
+              descriptor: Vec(RsVec(
+                descriptor: Reference(RsReference(
+                  id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
+                  identifier: RsIdentifier("ValuesElement"),
+                  arguments: [],
+                  definition_id: GtDefinitionId(GtModuleId("module"), "ValuesElement"),
+                )),
+              )),
+            )),
+            Enum(RsEnum(
+              id: GtDefinitionId(GtModuleId("module"), "ValuesElement"),
+              doc: None,
+              attributes: [
+                RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
+                RsAttribute("serde(untagged)"),
+              ],
+              name: RsIdentifier("ValuesElement"),
+              generics: [],
+              variants: [
+                RsEnumVariant(
+                  doc: None,
+                  attributes: [],
+                  name: RsIdentifier("String"),
+                  descriptor: Some(Descriptor(Primitive(String))),
+                ),
+                RsEnumVariant(
+                  doc: None,
+                  attributes: [],
+                  name: RsIdentifier("Int"),
+                  descriptor: Some(Descriptor(Primitive(Int64))),
+                ),
+                RsEnumVariant(
+                  doc: None,
+                  attributes: [],
+                  name: RsIdentifier("Boolean"),
+                  descriptor: Some(Descriptor(Primitive(Boolean))),
+                ),
+              ],
+            )),
+          ],
+        )
+        "#,
+        );
+    }
+
+    #[test]
+    fn test_explicit_export_wins_over_generated_name() {
+        let module = RsModule::convert(
+            &GtModule {
+                id: "module".into(),
+                doc: None,
+                imports: vec![],
+                aliases: vec![Gt::alias(
+                    "Values",
+                    Gt::array(Gt::union(vec_into![
+                        Gt::primitive_string(),
+                        Gt::primitive_i64(),
+                    ])),
+                )],
+            },
+            &[
+                GtIdentifier::new((0, 0).into(), "Values".into()),
+                GtIdentifier::new((0, 0).into(), "ValuesElement".into()),
+            ],
+            &Default::default(),
+            &Default::default(),
+        )
+        .unwrap();
+
+        assert_eq!(
+            module
+                .definitions
+                .iter()
+                .map(|definition| definition.name().0.as_ref())
+                .collect::<Vec<_>>(),
+            ["Values", "ValuesElement2"]
+        );
+    }
+
+    #[test]
+    fn test_convert_tuple_unions() {
+        assert_ron_snapshot!(
+            convert_aliases(vec![Gt::alias(
+                "Point",
+                Gt::tuple(vec_into![
+                    Gt::union(vec_into![Gt::primitive_f64(), Gt::primitive_i64()]),
+                    Gt::union(vec_into![Gt::primitive_f64(), Gt::primitive_i64()]),
+                ]),
+            )]),
+            @r#"
+        RsModule(
+          id: GtModuleId("module"),
+          doc: None,
+          imports: [
+            RsUse(
+              dependency: Serde,
+              reference: Named([
+                Name(RsIdentifier("Deserialize")),
+                Name(RsIdentifier("Serialize")),
+              ]),
+            ),
+          ],
+          definitions: [
+            Alias(RsAlias(
+              id: GtDefinitionId(GtModuleId("module"), "Point"),
+              doc: None,
+              name: RsIdentifier("Point"),
+              generics: [],
+              descriptor: Tuple(RsTuple(
+                descriptors: [
+                  Reference(RsReference(
+                    id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
+                    identifier: RsIdentifier("PointElement0"),
+                    arguments: [],
+                    definition_id: GtDefinitionId(GtModuleId("module"), "PointElement0"),
+                  )),
+                  Reference(RsReference(
+                    id: GtReferenceId(GtModuleId("module"), GtSpan(0, 0)),
+                    identifier: RsIdentifier("PointElement1"),
+                    arguments: [],
+                    definition_id: GtDefinitionId(GtModuleId("module"), "PointElement1"),
+                  )),
+                ],
+              )),
+            )),
+            Enum(RsEnum(
+              id: GtDefinitionId(GtModuleId("module"), "PointElement0"),
+              doc: None,
+              attributes: [
+                RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
+                RsAttribute("serde(untagged)"),
+              ],
+              name: RsIdentifier("PointElement0"),
+              generics: [],
+              variants: [
+                RsEnumVariant(
+                  doc: None,
+                  attributes: [],
+                  name: RsIdentifier("Float"),
+                  descriptor: Some(Descriptor(Primitive(Float64))),
+                ),
+                RsEnumVariant(
+                  doc: None,
+                  attributes: [],
+                  name: RsIdentifier("Int"),
+                  descriptor: Some(Descriptor(Primitive(Int64))),
+                ),
+              ],
+            )),
+            Enum(RsEnum(
+              id: GtDefinitionId(GtModuleId("module"), "PointElement1"),
+              doc: None,
+              attributes: [
+                RsAttribute("derive(Clone, Debug, Deserialize, PartialEq, Serialize)"),
+                RsAttribute("serde(untagged)"),
+              ],
+              name: RsIdentifier("PointElement1"),
+              generics: [],
+              variants: [
+                RsEnumVariant(
+                  doc: None,
+                  attributes: [],
+                  name: RsIdentifier("Float"),
+                  descriptor: Some(Descriptor(Primitive(Float64))),
+                ),
+                RsEnumVariant(
+                  doc: None,
+                  attributes: [],
+                  name: RsIdentifier("Int"),
+                  descriptor: Some(Descriptor(Primitive(Int64))),
+                ),
+              ],
+            )),
+          ],
+        )
+        "#,
+        );
+    }
+
+    #[test]
+    fn test_explicit_export_wins_over_generated_tuple_name() {
+        let module = RsModule::convert(
+            &GtModule {
+                id: "module".into(),
+                doc: None,
+                imports: vec![],
+                aliases: vec![Gt::alias(
+                    "Point",
+                    Gt::tuple(vec_into![
+                        Gt::union(vec_into![Gt::primitive_f64(), Gt::primitive_i64()]),
+                        Gt::union(vec_into![Gt::primitive_f64(), Gt::primitive_i64()]),
+                    ]),
+                )],
+            },
+            &[
+                GtIdentifier::new((0, 0).into(), "Point".into()),
+                GtIdentifier::new((0, 0).into(), "PointElement0".into()),
+            ],
+            &Default::default(),
+            &Default::default(),
+        )
+        .unwrap();
+
+        assert_eq!(
+            module
+                .definitions
+                .iter()
+                .map(|definition| definition.name().0.as_ref())
+                .collect::<Vec<_>>(),
+            ["Point", "PointElement02", "PointElement1"]
+        );
+    }
 
     #[test]
     fn test_convert() {
@@ -223,6 +473,7 @@ mod tests {
                         },
                     ],
                 },
+                &[],
                 &resolve,
                 &Default::default(),
             )
@@ -352,6 +603,7 @@ mod tests {
                     imports: vec![],
                     aliases: vec![],
                 },
+                &[],
                 &Default::default(),
                 &Default::default(),
             )
@@ -365,5 +617,24 @@ mod tests {
         )
         "#
         );
+    }
+
+    fn convert_aliases(aliases: Vec<GtAlias>) -> RsModule {
+        let exports = aliases
+            .iter()
+            .map(|alias| alias.name.clone())
+            .collect::<Vec<_>>();
+        RsModule::convert(
+            &GtModule {
+                id: "module".into(),
+                doc: None,
+                imports: vec![],
+                aliases,
+            },
+            &exports,
+            &Default::default(),
+            &Default::default(),
+        )
+        .unwrap()
     }
 }

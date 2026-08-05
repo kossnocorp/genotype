@@ -118,7 +118,12 @@ impl GtlProjectModule for RsProjectModule {
 
         let project_resolve = RsProjectModuleResolve::new(module_resolve);
 
-        let module = RsModule::convert(&parse.module, &convert_resolve, lang_config)?;
+        let module = RsModule::convert(
+            &parse.module,
+            &parse.resolve.exports,
+            &convert_resolve,
+            lang_config,
+        )?;
 
         Ok(RsProjectModule {
             module,

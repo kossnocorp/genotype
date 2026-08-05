@@ -1,0 +1,33 @@
+
+[1m[31mError[39m[0m: Failed to parse module `src/map.type`.
+
+[31m×[0m Syntax error: expected name or primitive_numeric
+   ╭─[[36;1;4msrc/map.type:1:22[0m]
+ [2m1[0m │ [38;2;79;91;102mInlineBrandedMap: { [[38;2;180;142;173m@string[38;2;79;91;102m]: [38;2;180;142;173mstring[38;2;79;91;102m }[0m
+   · [35;1m                     ▲[0m
+   ·                      [35;1m╰── [35;1mHere[0m[0m
+   ╰────
+
+[1m[31mError[39m[0m: Failed to convert `dist/ts/src/map.ts` from `src/map.type`.
+
+[1m[33mWarning[39m[0m: Some of the modules failed to render.
+
+- Failed to convert `dist/ts/src/map.ts` from `src/map.type`
+
+[1m[33mWarning[39m[0m: Barrel file `dist/ts/src/index.ts` rendered, but it excludes 1 module that failed to render.
+
+[1m[31mError[39m[0m: Failed to convert `dist/py/module/map.py` from `src/map.type`.
+
+[1m[33mWarning[39m[0m: Some of the modules failed to render.
+
+- Failed to convert `dist/py/module/map.py` from `src/map.type`
+
+[1m[33mWarning[39m[0m: Init file `dist/py/module/__init__.py` rendered, but it excludes 1 module that failed to render.
+
+[1m[31mError[39m[0m: Failed to convert `dist/rs/src/map.rs` from `src/map.type`.
+
+[1m[33mWarning[39m[0m: Some of the modules failed to render.
+
+- Failed to convert `dist/rs/src/map.rs` from `src/map.type`
+
+[1m[33mWarning[39m[0m: Project generated to `dist` with 4 errors.
