@@ -8,10 +8,8 @@ impl RsProjectModule {
         // Whenever extension is found, we have to copy the fields from the referenced struct as
         // Rust doesn't support inheritance in any acceptable way.
 
-        let mut definitions_to_resolve: IndexMap<
-            GtDefinitionId,
-            (GtSpan, IndexSet<GtDefinitionId>),
-        > = Default::default();
+        let mut definitions_to_resolve: IndexMap<GtDefinitionId, (GtSpan, Vec<RsReference>)> =
+            Default::default();
 
         // First, we collect all the definitions in all the modules that need to be resolved with
         // their extensions.
@@ -21,11 +19,8 @@ impl RsProjectModule {
                     if let RsDefinition::Struct(r#struct) = definition
                         && let RsStructFields::Unresolved(span, references, _) = &r#struct.fields
                     {
-                        let reference_ids = references
-                            .iter()
-                            .map(|reference| reference.definition_id.clone())
-                            .collect::<IndexSet<_>>();
-                        definitions_to_resolve.insert(r#struct.id.clone(), (*span, reference_ids));
+                        definitions_to_resolve
+                            .insert(r#struct.id.clone(), (*span, references.clone()));
                     }
                 }
             }
@@ -39,21 +34,19 @@ impl RsProjectModule {
 
             // Now we start resolving the definition extensions starting from the ones that don't
             // reference any other definitions in the map.
-            let definition = definitions_to_resolve
-                .iter()
-                .find(|(_, (_, referenced_ids))| {
-                    referenced_ids
-                        .iter()
-                        .all(|referenced_id| !definitions_to_resolve.contains_key(referenced_id))
-                });
+            let definition = definitions_to_resolve.iter().find(|(_, (_, references))| {
+                references
+                    .iter()
+                    .all(|reference| !definitions_to_resolve.contains_key(&reference.definition_id))
+            });
 
             let resolved_definition_id = match definition {
-                Some((current_definition_id, (span, referenced_ids))) => {
+                Some((current_definition_id, (span, references))) => {
                     let mut resolved_fields = vec![];
 
                     // Collect fields for each referenced definition.
-                    for referenced_id in referenced_ids {
-                        let referenced_fields = modules
+                    for reference in references {
+                        let mut referenced_fields = modules
                             .values()
                             .flat_map(|module_state| {
                                 module_state
@@ -61,7 +54,7 @@ impl RsProjectModule {
                                     .map(|project_module| project_module.module.definitions.iter())
                                     .unwrap_or_default()
                             })
-                            .find(|definition| definition.id() == referenced_id)
+                            .find(|definition| definition.id() == &reference.definition_id)
                             .ok_or_else(|| {
                                 RsProjectError::BuildModulePath(format!(
                                     "Failed to find reference with id {module_id}/{referenced_id}",
@@ -69,11 +62,26 @@ impl RsProjectModule {
                                     referenced_id = current_definition_id.1
                                 ))
                             })
-                            .and_then(|reference| match reference {
+                            .and_then(|referenced_definition| match referenced_definition {
                                 RsDefinition::Struct(reference_struct) => {
                                     match &reference_struct.fields {
                                         RsStructFields::Resolved(resolved_fields) => {
-                                            Ok(resolved_fields.clone())
+                                            let substitutions = reference_struct
+                                                .generics
+                                                .iter()
+                                                .zip(reference.arguments.iter())
+                                                .map(|(generic, argument)| {
+                                                    (
+                                                        GtDefinitionId(
+                                                            reference_struct.id.0.clone(),
+                                                            generic.0.clone(),
+                                                        ),
+                                                        argument.clone(),
+                                                    )
+                                                })
+                                                .collect::<IndexMap<_, _>>();
+
+                                            Ok((resolved_fields.clone(), substitutions))
                                         }
 
                                         RsStructFields::Newtype(_) => {
@@ -99,11 +107,15 @@ impl RsProjectModule {
                                 // differently.
                                 _ => Err(RsProjectError::NonStructExtension(
                                     *span,
-                                    reference.name().0.to_string(),
+                                    referenced_definition.name().0.to_string(),
                                 )),
                             })?;
 
-                        resolved_fields.extend(referenced_fields);
+                        for field in referenced_fields.0.iter_mut() {
+                            substitute_descriptor(&mut field.descriptor, &referenced_fields.1);
+                        }
+
+                        resolved_fields.extend(referenced_fields.0);
                     }
 
                     // Collect the referenced definition field references.
@@ -301,6 +313,60 @@ impl RsProjectModule {
             definitions_to_resolve.shift_remove(&resolved_definition_id);
         }
         Ok(())
+    }
+}
+
+fn substitute_descriptor(
+    descriptor: &mut RsDescriptor,
+    substitutions: &IndexMap<GtDefinitionId, RsDescriptor>,
+) {
+    match descriptor {
+        RsDescriptor::Reference(reference) => {
+            if let Some(substitution) = substitutions.get(&reference.definition_id) {
+                *descriptor = substitution.clone();
+            } else {
+                for argument in reference.arguments.iter_mut() {
+                    substitute_descriptor(argument, substitutions);
+                }
+            }
+        }
+
+        RsDescriptor::InlineUse(inline_use) => {
+            for argument in inline_use.arguments.iter_mut() {
+                substitute_descriptor(argument, substitutions);
+            }
+        }
+
+        RsDescriptor::Box(descriptor) => substitute_descriptor(descriptor, substitutions),
+
+        RsDescriptor::Enum(r#enum) => {
+            for variant in r#enum.variants.iter_mut() {
+                if let Some(RsEnumVariantDescriptor::Descriptor(descriptor)) =
+                    variant.descriptor.as_mut()
+                {
+                    substitute_descriptor(descriptor, substitutions);
+                }
+            }
+        }
+
+        RsDescriptor::Vec(vec) => substitute_descriptor(&mut vec.descriptor, substitutions),
+
+        RsDescriptor::Tuple(tuple) => {
+            for descriptor in tuple.descriptors.iter_mut() {
+                substitute_descriptor(descriptor, substitutions);
+            }
+        }
+
+        RsDescriptor::Map(map) => {
+            substitute_descriptor(&mut map.key, substitutions);
+            substitute_descriptor(&mut map.descriptor, substitutions);
+        }
+
+        RsDescriptor::Option(option) => {
+            substitute_descriptor(&mut option.descriptor, substitutions)
+        }
+
+        RsDescriptor::Primitive(_) | RsDescriptor::Any(_) => {}
     }
 }
 

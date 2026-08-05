@@ -1164,6 +1164,7 @@ mod tests {
 
         use super::named::Name;
         use serde::{Deserialize, Serialize};
+        use litty::serde_literal;
 
         #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
         pub struct User {
@@ -1177,6 +1178,64 @@ mod tests {
         pub struct Account {
             pub email: String,
         }
+
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+        pub struct Message<Payload> {
+            pub id: i64,
+            pub payload: Payload,
+        }
+
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+        pub struct MessageJson {
+            pub id: i64,
+            pub payload: String,
+        }
+
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+        pub struct MessageArray {
+            pub id: i64,
+            pub payload: List<String>,
+        }
+
+        pub type List<Payload> = Vec<Payload>;
+
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+        pub struct MessageResponse {
+            pub id: i64,
+            pub payload: Response<String>,
+        }
+
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+        #[serde(untagged)]
+        pub enum Response<Body> {
+            Success(ResponseSuccess<Body>),
+            Failure(ResponseFailure),
+        }
+
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+        pub struct ResponseBase<Status> {
+            pub status: Status,
+        }
+
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+        pub struct ResponseSuccess<Body> {
+            pub status: ResponseSuccessSuccess,
+            pub body: Body,
+        }
+
+        #[serde_literal("success")]
+        #[derive(Serialize, Deserialize)]
+        pub struct ResponseSuccessSuccess;
+
+        #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+        pub struct ResponseFailure {
+            pub status: ResponseFailureFailure,
+            pub error: String,
+        }
+
+        #[serde_literal("failure")]
+        #[derive(Serialize, Deserialize)]
+        pub struct ResponseFailureFailure;
         "#
         );
     }
