@@ -929,19 +929,14 @@ ResponseFailure: {
   error: string,
 }
 
-Result:
-  | #[default] #[variant = "Ok"] ResponseSuccess
-  | #[variant = "Failure"] ResponseFailure
+Status:
+  | #[default] #[variant = "Ok"] "success"
+  | #[variant = "Nope"] "failure"
 ```
 
 Here `discriminator` adds Python union schema metadata.
 
 ```py
-from typing import Annotated, Literal
-from pydantic import Field
-from genotype import Model
-
-
 class ResponseSuccess(Model):
     status: Literal["success"]
     body: str
@@ -957,43 +952,22 @@ type Response = Annotated[
     Field(json_schema_extra={"discriminator": "status"}),
 ]
 
-
-type Result = ResponseSuccess | ResponseFailure
+# ...
 ```
 
 While `default` and `variant` customize Rust enums:
 
 ```rust
-use serde::{Deserialize, Serialize};
-use litty::serde_literals;
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum Response {
-    Success(ResponseSuccess),
-    Failure(ResponseFailure),
-}
+// ...
 
 #[serde_literals]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[literals(status = "success")]
-pub struct ResponseSuccess {
-    pub body: String,
-}
-
-#[serde_literals]
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[literals(status = "failure")]
-pub struct ResponseFailure {
-    pub error: String,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum Result {
+#[derive(Debug, Default, Clone, Default, PartialEq, Serialize, Deserialize)]
+pub enum Status {
     #[default]
-    Ok(ResponseSuccess),
-    Failure(ResponseFailure),
+    #[literal("success")]
+    Ok,
+    #[literal("failure")]
+    Failure,
 }
 ```
 
