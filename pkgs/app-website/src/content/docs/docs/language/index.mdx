@@ -27,7 +27,7 @@ See corresponding target language guides for more details:
 
 ## Type Aliases
 
-Type aliases assigns a type to a name. It's the base building block of Genotype.
+Type aliases assign a type to a name. They are the basic building blocks of Genotype.
 
 ```type
 Yeah: true
@@ -167,6 +167,49 @@ User: {
 }
 ```
 
+### External Modules
+
+Genotype currently have no fully-fledged package manager nor external module system (it's [planned](https://github.com/kossnocorp/genotype/issues/161) [though](https://github.com/kossnocorp/genotype/issues/162)). But you can map certain paths to external modules per target language, e.g. to make `shared_types` available in all targets, configure using `[<target>.dependencies]` section in `genotype.toml`:
+
+```toml
+[ts]
+enabled = true
+
+[ts.dependencies]
+genotype_core = "@genotype-lang/types"
+
+[rs]
+enabled = true
+
+[rs.dependencies]
+genotype_core = "genotype_core"
+
+[py]
+enabled = true
+
+[py.dependencies]
+genotype_core = "genotype_core"
+```
+
+Then you can import types from `genotype_core` in your Genotype files:
+
+```type
+use genotype_core/Node
+
+Diagnostic: {
+  kind: "error" | "warning",
+  message: string,
+  node: Node,
+}
+```
+
+<Aside type="caution">
+  Genotype doesn't guarantee that the external module availability nor type-check the imported types.
+
+Use it with caution, until a proper package manager and external module system is implemented.
+
+</Aside>
+
 ## Unions
 
 One of the most basic yet powerful features of Genotype is the ability to define union types:
@@ -271,7 +314,90 @@ In languages that support union types, such as TypeScript, it will translate int
 
 ## Comments and Docs
 
-TODO
+Genotype supports line and block comments:
+
+```type
+// Line comment.
+
+/* A block comment. */
+
+Hello: /* Inline block comment */ "world" // EOL comment.
+```
+
+Line and block comments are omitted in generated code.
+
+### Doc Comments
+
+Unlike regular comments, doc comments are preserved in generated code and translated into the target language's documentation format.
+
+```type
+//! Module documentation.
+//!
+//! Can span multiple lines.
+
+/// Type documentation.
+User: {
+  /// Field documentation.
+  displayName: string,
+}
+```
+
+<Tabs>
+  <TabItem label="TypeScript">
+    ```ts
+    /** @file Module documentation.
+     *
+     * Can span multiple lines. */
+
+    /** Type documentation. */
+    export interface User {
+      /** Field documentation. */
+      displayName: string;
+    }
+    ```
+
+  </TabItem>
+
+  <TabItem label="Rust">
+    ```rust
+    //! Module documentation.
+    //!
+    //! Can span multiple lines.
+    use serde::{Deserialize, Serialize};
+
+    /// Type documentation.
+    #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+    pub struct User {
+        /// Field documentation.
+        #[serde(rename = "displayName")]
+        pub display_name: String,
+    }
+    ```
+
+  </TabItem>
+
+  <TabItem label="Python">
+    ```python
+    """Module documentation.
+
+    Can span multiple lines."""
+
+    from __future__ import annotations
+
+
+    from pydantic import Field
+    from genotype import Model
+
+
+    class User(Model):
+        """Type documentation."""
+
+        display_name: str = Field(alias="displayName")
+        """Field documentation."""
+    ```
+
+  </TabItem>
+</Tabs>
 
 ## Data Types
 
@@ -323,13 +449,15 @@ Even JSON has `null`, so we had no choice but to have it.
 
 #### Branded Primitives
 
-A primitive type can be branded, producing an opaque type that is not assignable to the underlying primitive type:
+You can brand a primitive to create a distinct type that isn't interchangeable with the original primitive:
 
 ```type
 UserId: @string
 
 RowId: @int
 ```
+
+You can brand any primitive, including booleans, sized integers, and floating-point types.
 
 A branded primitive type is translated to the corresponding idiomatic type in the target language:
 
@@ -522,7 +650,7 @@ Post: {
 }
 ```
 
-Elements don't have to be of the same type and can be a union:
+The element type can be a union, i.e., each element can have any type in the union:
 
 ```type
 Values: [string | int | boolean]
@@ -550,6 +678,12 @@ A tuple type represents a fixed-length list of elements of given types:
 Point: (float, float)
 ```
 
+Tuple elements can be union types, i.e., each element can have any type in the union:
+
+```type
+Values: (string | int, boolean)
+```
+
 #### Records
 
 A record type represents a collection of named fields, each with its own type, but unlike objects, records can have arbitrary field names:
@@ -558,7 +692,7 @@ A record type represents a collection of named fields, each with its own type, b
 Rows: { [int]: Row }
 ```
 
-A record key could be a `string` or a numeric type, as well as a reference to a branded type:
+A record key can be `string`, a numeric type, or a reference to one of these primitives. You can also use references to branded primitives:
 
 ```type
 RowId: @int
@@ -571,6 +705,12 @@ A record with `string` as a key can omit the key type:
 ```type
 AliasMap: { []: string }
 ```
+
+<Aside type="caution">
+  Boolean and composite type references aren't supported as record keys
+  ([not](https://github.com/kossnocorp/genotype/issues/159)
+  [yet](https://github.com/kossnocorp/genotype/issues/160)).
+</Aside>
 
 ### Special Data Types
 
@@ -693,8 +833,172 @@ ResponseFailure: {
 }
 ```
 
+## Recursive Types
+
+Types can refer to themselves or form cycles across definitions and modules:
+
+```type
+Node: {
+  value: string,
+  next?: Node,
+}
+
+Json: null | boolean | number | string | [Json] | { []: Json }
+```
+
+Targets add the indirection their type systems need. E.g., Rust boxes direct recursive fields, while TypeScript's Zod mode uses lazy schemas or object getters:
+
+<Tabs>
+  <TabItem label="TypeScript">
+    ```ts
+    export interface Node {
+      value: string;
+      next?: Node | undefined;
+    }
+
+    export type Json =
+      | null
+      | boolean
+      | number
+      | string
+      | Array<Json>
+      | Record<string, Json>;
+    ```
+
+  </TabItem>
+
+  <TabItem label="Rust">
+    ```rust
+    #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+    pub struct Node {
+        pub value: String,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub next: Option<Box<Node>>,
+    }
+
+    #[serde_literals]
+    #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+    pub enum Json {
+        #[literal(null)]
+        Null,
+        Boolean(bool),
+        Number(f64),
+        String(String),
+        Vec(Vec<Json>),
+        Map(BTreeMap<String, Json>),
+    }
+    ```
+
+  </TabItem>
+
+  <TabItem label="Python">
+    ```python
+    type Json = Literal[None] | bool | float | str | list[Json] | dict[str, Json]
+
+    class Node(Model):
+        value: str
+        next: Optional[Node] = None
+    ```
+
+  </TabItem>
+</Tabs>
+
 ## Annotations
 
-TODO
+Annotations add structured metadata to types, fields, and union members. Most annotations belong to a specific target.
+
+See the target annotation sections in corresponding target language guides for more details:
+
+- [TypeScript](/docs/targets/typescript#annotations)
+- [Rust](/docs/targets/rust#annotations)
+- [Python](/docs/targets/python#annotations)
+
+For example:
+
+```type
+#[discriminator = "status"]
+Response: ResponseSuccess | ResponseFailure
+
+ResponseSuccess: {
+  status: "success",
+  body: string,
+}
+
+ResponseFailure: {
+  status: "failure",
+  error: string,
+}
+
+Result:
+  | #[default] #[variant = "Ok"] ResponseSuccess
+  | #[variant = "Failure"] ResponseFailure
+```
+
+Here `discriminator` adds Python union schema metadata.
+
+```py
+from typing import Annotated, Literal
+from pydantic import Field
+from genotype import Model
+
+
+class ResponseSuccess(Model):
+    status: Literal["success"]
+    body: str
+
+
+class ResponseFailure(Model):
+    status: Literal["failure"]
+    error: str
+
+
+type Response = Annotated[
+    ResponseSuccess | ResponseFailure,
+    Field(json_schema_extra={"discriminator": "status"}),
+]
+
+
+type Result = ResponseSuccess | ResponseFailure
+```
+
+While `default` and `variant` customize Rust enums:
+
+```rust
+use serde::{Deserialize, Serialize};
+use litty::serde_literals;
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Response {
+    Success(ResponseSuccess),
+    Failure(ResponseFailure),
+}
+
+#[serde_literals]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[literals(status = "success")]
+pub struct ResponseSuccess {
+    pub body: String,
+}
+
+#[serde_literals]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[literals(status = "failure")]
+pub struct ResponseFailure {
+    pub error: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Result {
+    #[default]
+    Ok(ResponseSuccess),
+    Failure(ResponseFailure),
+}
+```
+
+Generators ignore annotations they don't recognize.
+
+See the [Annotations in the Language Reference](/docs/language/reference/#annotations) for exact placement and value rules.
 
 [numeric-types]: /docs/language/reference/#numeric-types
