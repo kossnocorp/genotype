@@ -3,6 +3,9 @@ use crate::prelude::internal::*;
 mod error;
 pub use error::*;
 
+mod record;
+pub use record::*;
+
 mod visitor;
 use visitor::*;
 
@@ -44,6 +47,7 @@ impl GtpModule {
 #[derive(Debug, PartialEq, Clone, Serialize)]
 pub struct GtpModuleTypeChecked {
     pub module_resolved: GtpModuleResolved,
+    pub record_key_resolves: IndexMap<GtReferenceId, GtpModuleTypeCheckRecordKeyResolve>,
 }
 
 impl GtpModuleTypeChecked {
@@ -75,9 +79,12 @@ impl GtpModuleTypeChecked {
         let mut visitor = GtpModuleTypeCheckVisitor::new(&module_resolved, resolved_modules);
         module.traverse(&mut visitor);
 
-        let errors = visitor.into_errors();
+        let (errors, record_key_resolves) = visitor.into_result();
         if errors.is_empty() {
-            Ok(Self { module_resolved })
+            Ok(Self {
+                module_resolved,
+                record_key_resolves,
+            })
         } else {
             Err(GtpModuleError::TypeCheck {
                 source_code: module_resolved
@@ -135,28 +142,29 @@ mod tests {
     }
 
     #[test]
-    fn reports_multiple_invalid_record_keys() {
+    fn accepts_boolean_record_key_alias() {
         let resolved = resolved(
-            "ObjectKey: { value: string }\nBooleanKey: boolean\nFirst: { [ObjectKey]: string }\nContainer: { nested: { [BooleanKey]: string } }",
+            "BooleanKey: boolean\nBooleanAlias: BooleanKey\nBrandedBooleanKey: @boolean\nFirst: { [BooleanKey]: string }\nSecond: { [BooleanAlias]: string }\nThird: { [BrandedBooleanKey]: string }",
         );
         let modules =
             IndexMap::from_iter([(resolved.project_module_parse.path.clone(), resolved.clone())]);
+        let checked = GtpModuleTypeChecked::type_check(resolved, &modules).unwrap();
 
-        let Err(GtpModuleError::TypeCheck { errors, .. }) =
-            GtpModuleTypeChecked::type_check(resolved, &modules)
-        else {
-            panic!("expected type check errors")
-        };
-
-        assert_eq!(errors.len(), 2);
-        assert!(matches!(
-            &errors[0],
-            GtpModuleTypeCheckError::InvalidRecordKey { identifier, .. } if identifier == "ObjectKey"
-        ));
-        assert!(matches!(
-            &errors[1],
-            GtpModuleTypeCheckError::InvalidRecordKey { identifier, .. } if identifier == "BooleanKey"
-        ));
+        assert_eq!(checked.record_key_resolves.len(), 3);
+        assert!(
+            checked
+                .record_key_resolves
+                .values()
+                .all(|resolve| resolve.primitive == GtPrimitiveKind::Boolean)
+        );
+        assert_eq!(
+            checked
+                .record_key_resolves
+                .values()
+                .filter(|resolve| resolve.branded)
+                .count(),
+            1
+        );
     }
 
     #[test]
@@ -193,6 +201,7 @@ mod tests {
         let modules = IndexMap::new();
         let type_checked = GtpModuleTypeChecked {
             module_resolved: resolved,
+            record_key_resolves: IndexMap::new(),
         };
 
         assert!(matches!(

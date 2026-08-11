@@ -5,3 +5,5 @@ Map: { [int]: string }
 AddressId: @string
 
 Addresses: { [AddressId]: Address }
+
+Replies: { [boolean]: string }

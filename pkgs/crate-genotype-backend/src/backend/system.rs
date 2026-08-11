@@ -135,6 +135,7 @@ mod tests {
                   deps: [],
                 ),
               ),
+              record_key_resolves: {},
             )),
             "examples/basic/src/book.type": TypeChecked(GtpModuleTypeChecked(
               module_resolved: GtpModuleResolved(
@@ -276,6 +277,7 @@ mod tests {
                   ],
                 ),
               ),
+              record_key_resolves: {},
             )),
             "examples/basic/src/order.type": TypeChecked(GtpModuleTypeChecked(
               module_resolved: GtpModuleResolved(
@@ -451,6 +453,7 @@ mod tests {
                   ],
                 ),
               ),
+              record_key_resolves: {},
             )),
             "examples/basic/src/user.type": TypeChecked(GtpModuleTypeChecked(
               module_resolved: GtpModuleResolved(
@@ -532,6 +535,7 @@ mod tests {
                   deps: [],
                 ),
               ),
+              record_key_resolves: {},
             )),
           },
           module_sources: {
@@ -818,6 +822,7 @@ mod tests {
                   deps: [],
                 ),
               ),
+              record_key_resolves: {},
             )),
           },
           module_sources: {
@@ -978,6 +983,7 @@ mod tests {
                   deps: [],
                 ),
               ),
+              record_key_resolves: {},
             )),
           },
           module_sources: {

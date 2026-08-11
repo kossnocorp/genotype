@@ -9,3 +9,17 @@ Addresses: { [AddressId]: Address }
 User: {
   addresses: Addresses,
 }
+
+BooleanKey: boolean
+
+BooleanAlias: BooleanKey
+
+BrandedBooleanKey: @boolean
+
+DirectBooleanMap: { [boolean]: string }
+
+BooleanMap: { [BooleanKey]: string }
+
+BooleanAliasMap: { [BooleanAlias]: string }
+
+BrandedBooleanMap: { [BrandedBooleanKey]: string }

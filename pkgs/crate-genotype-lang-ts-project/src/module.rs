@@ -23,6 +23,14 @@ impl GtlProjectModule for TsProjectModule {
         let parse = &resolved.project_module_parse.module_parse;
         let module_resolve = &resolved.resolve;
 
+        for (reference_id, resolve) in &type_checked.record_key_resolves {
+            if resolve.primitive == GtPrimitiveKind::Boolean {
+                convert_resolve
+                    .boolean_record_key_branded
+                    .insert(reference_id.clone(), resolve.branded);
+            }
+        }
+
         for import in parse.module.imports.iter() {
             if let GtImportReference::Glob(_) = import.reference {
                 let references = module_resolve

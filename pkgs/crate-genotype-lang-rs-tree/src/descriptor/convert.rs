@@ -44,6 +44,7 @@ impl RsConvert<RsDescriptor> for GtRecordKey {
     fn convert(&self, context: &mut RsConvertContext) -> RsConvertResult<RsDescriptor> {
         Ok(match self {
             GtRecordKey::Reference(reference) => reference.convert(context)?.into(),
+            GtRecordKey::Boolean(_) => RsPrimitive::Boolean.into(),
             GtRecordKey::String(_) => RsPrimitive::String.into(),
             GtRecordKey::Number(_) => {
                 if context.config().needs_ordered_floats() {
@@ -352,6 +353,10 @@ mod tests {
         assert_ron_snapshot!(
             convert_node(Gt::record_key_string()),
             @"Primitive(String)"
+        );
+        assert_ron_snapshot!(
+            convert_node(Gt::record_key_boolean()),
+            @"Primitive(Boolean)"
         );
         assert_ron_snapshot!(
             convert_node(Gt::record_key_i8()),

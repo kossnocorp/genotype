@@ -1,4 +1,12 @@
-import { AddressId, Addresses, User } from "genotype-test-map-key-alias-zod-types";
+import {
+  AddressId,
+  Addresses,
+  BooleanAliasMap,
+  BooleanMap,
+  BrandedBooleanMap,
+  DirectBooleanMap,
+  User,
+} from "genotype-test-map-key-alias-zod-types";
 import assert from "node:assert/strict";
 
 const addressId = AddressId.parse("home");
@@ -26,3 +34,16 @@ assert.deepEqual(
 );
 
 assert.equal(Addresses.safeParse({ home: { street: 42 } }).success, false);
+
+for (const schema of [
+  DirectBooleanMap,
+  BooleanMap,
+  BooleanAliasMap,
+  BrandedBooleanMap,
+]) {
+  assert.deepEqual(schema.parse({ true: "yes", false: "no" }), {
+    true: "yes",
+    false: "no",
+  });
+  assert.equal(schema.safeParse({ other: "no" }).success, false);
+}

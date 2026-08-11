@@ -1,9 +1,3 @@
 ObjectKey: { value: string }
 
-BooleanKey: boolean
-
 InvalidObjectMap: { [ObjectKey]: string }
-
-Container: {
-  invalidBooleanMap: { [BooleanKey]: string }
-}

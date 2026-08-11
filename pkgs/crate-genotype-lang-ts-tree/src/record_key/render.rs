@@ -11,17 +11,25 @@ impl<'context> GtlRender<'context, TsRenderTypes> for TsRecordKey {
                 TsRecordKey::Reference(reference) => {
                     reference.render(Default::default(), context)?
                 }
+                TsRecordKey::BooleanReference(_, _) => "z.enum([\"true\", \"false\"])".into(),
                 TsRecordKey::String => "z.string()".into(),
                 TsRecordKey::Number => "z.number()".into(),
-                TsRecordKey::Boolean => "z.boolean()".into(),
+                TsRecordKey::Boolean => "z.enum([\"true\", \"false\"])".into(),
             });
         }
 
         Ok(match self {
             TsRecordKey::Reference(reference) => reference.render(Default::default(), context)?,
+            TsRecordKey::BooleanReference(reference, branded) => {
+                if *branded {
+                    "`${boolean}`".into()
+                } else {
+                    format!("`${{{}}}`", reference.render(Default::default(), context)?)
+                }
+            }
             TsRecordKey::String => "string".into(),
             TsRecordKey::Number => "number".into(),
-            TsRecordKey::Boolean => "boolean".into(),
+            TsRecordKey::Boolean => "`${boolean}`".into(),
         })
     }
 }
@@ -51,7 +59,7 @@ mod tests {
 
         assert_snapshot!(
             render_node(Tst::record_key_boolean()),
-            @"boolean"
+            @"`${boolean}`"
         );
     }
 
@@ -76,7 +84,7 @@ mod tests {
 
         assert_snapshot!(
             render_node_with(Tst::record_key_boolean(), &mut context),
-            @"z.boolean()"
+            @"z.enum([\"true\", \"false\"])"
         );
     }
 }

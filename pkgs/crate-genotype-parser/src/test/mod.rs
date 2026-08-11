@@ -427,6 +427,10 @@ impl Gt {
         GtRecordKey::String((0, 0).into())
     }
 
+    pub fn record_key_boolean() -> GtRecordKey {
+        GtRecordKey::Boolean((0, 0).into())
+    }
+
     pub fn record_key_number() -> GtRecordKey {
         GtRecordKey::Number((0, 0).into())
     }

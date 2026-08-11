@@ -35,4 +35,8 @@ impl TsConvertContext {
             .1
             .to_string()
     }
+
+    pub fn resolve_boolean_record_key_branded(&self, id: &GtReferenceId) -> Option<bool> {
+        self.resolve.boolean_record_key_branded.get(id).copied()
+    }
 }
