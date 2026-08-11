@@ -3,22 +3,11 @@
 
 [31m×[0m Invalid record key `ObjectKey`: record key alias must
   [31m│[0m resolve to a supported primitive
-   ╭─[[36;1;4msrc/map.type:5:22[0m]
- [2m4[0m │ 
- [2m5[0m │ [38;2;79;91;102mInvalidObjectMap: { [ObjectKey]: [38;2;180;142;173mstring[38;2;79;91;102m }[0m
+   ╭─[[36;1;4msrc/map.type:3:22[0m]
+ [2m2[0m │ 
+ [2m3[0m │ [38;2;79;91;102mInvalidObjectMap: { [ObjectKey]: [38;2;180;142;173mstring[38;2;79;91;102m }[0m
    · [35;1m                     ────┬────[0m
    ·                          [35;1m╰── [35;1mHere[0m[0m
- [2m6[0m │ 
-   ╰────
-
-[31m×[0m Invalid record key `BooleanKey`: boolean aliases
-  [31m│[0m cannot be record keys
-   ╭─[[36;1;4msrc/map.type:8:25[0m]
- [2m7[0m │ [38;2;79;91;102mContainer: {[0m
- [2m8[0m │ [38;2;79;91;102m  [38;2;191;97;106minvalidBooleanMap[38;2;79;91;102m: { [BooleanKey]: [38;2;180;142;173mstring[38;2;79;91;102m }[0m
-   · [35;1m                        ─────┬────[0m
-   ·                              [35;1m╰── [35;1mHere[0m[0m
- [2m9[0m │ [38;2;79;91;102m}[0m
    ╰────
 
 [1m[31mError[39m[0m: Failed to convert `dist/ts/src/map.ts` from `src/map.type`.

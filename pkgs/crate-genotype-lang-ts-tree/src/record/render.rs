@@ -33,6 +33,13 @@ mod tests {
         );
         assert_snapshot!(
             render_node(Tst::record(
+                Tst::record_key_boolean(),
+                Tst::primitive_string(),
+            )),
+            @"Record<`${boolean}`, string>"
+        );
+        assert_snapshot!(
+            render_node(Tst::record(
                 TsRecordKey::Reference(Tst::reference("AddressId")),
                 TsReference::new("Address".into(), vec![], TsReferenceRel::Regular),
             )),
@@ -50,6 +57,13 @@ mod tests {
                 &mut context,
             ),
             @"z.record(z.number(), z.string())"
+        );
+        assert_snapshot!(
+            render_node_with(
+                Tst::record(Tst::record_key_boolean(), Tst::primitive_string()),
+                &mut context,
+            ),
+            @"z.record(z.enum([\"true\", \"false\"]), z.string())"
         );
     }
 }

@@ -692,7 +692,7 @@ A record type represents a collection of named fields, each with its own type, b
 Rows: { [int]: Row }
 ```
 
-A record key can be `string`, a numeric type, or a reference to one of these primitives. You can also use references to branded primitives:
+A record key can be `string`, `boolean`, a numeric type, or a reference to one of these primitives. You can also use references to branded primitives:
 
 ```type
 RowId: @int
@@ -707,9 +707,8 @@ AliasMap: { []: string }
 ```
 
 <Aside type="caution">
-  Boolean and composite type references aren't supported as record keys
-  ([not](https://github.com/kossnocorp/genotype/issues/159)
-  [yet](https://github.com/kossnocorp/genotype/issues/160)).
+  Composite type references aren't supported as record keys ([not
+  yet](https://github.com/kossnocorp/genotype/issues/159)).
 </Aside>
 
 ### Special Data Types

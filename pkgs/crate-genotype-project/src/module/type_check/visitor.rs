@@ -4,6 +4,7 @@ pub struct GtpModuleTypeCheckVisitor<'a> {
     module_resolved: &'a GtpModuleResolved,
     modules: &'a IndexMap<GtpModulePath, GtpModuleResolved>,
     errors: Vec<GtpModuleTypeCheckError>,
+    record_key_resolves: IndexMap<GtReferenceId, GtpModuleTypeCheckRecordKeyResolve>,
 }
 
 impl<'a> GtpModuleTypeCheckVisitor<'a> {
@@ -15,14 +16,23 @@ impl<'a> GtpModuleTypeCheckVisitor<'a> {
             module_resolved,
             modules,
             errors: vec![],
+            record_key_resolves: IndexMap::new(),
         }
     }
 
-    pub fn into_errors(self) -> Vec<GtpModuleTypeCheckError> {
-        self.errors
+    pub fn into_result(
+        self,
+    ) -> (
+        Vec<GtpModuleTypeCheckError>,
+        IndexMap<GtReferenceId, GtpModuleTypeCheckRecordKeyResolve>,
+    ) {
+        (self.errors, self.record_key_resolves)
     }
 
-    fn validate_record_key(&self, reference: &GtReference) -> Result<(), &'static str> {
+    fn resolve_record_key(
+        &self,
+        reference: &GtReference,
+    ) -> Result<GtpModuleTypeCheckRecordKeyResolve, &'static str> {
         let mut definition_id = self
             .module_resolved
             .resolve
@@ -61,11 +71,17 @@ impl<'a> GtpModuleTypeCheckVisitor<'a> {
 
             match &alias.descriptor {
                 GtDescriptor::Primitive(primitive) => {
-                    return Self::validate_primitive_record_key(&primitive.kind);
+                    return Ok(GtpModuleTypeCheckRecordKeyResolve {
+                        primitive: primitive.kind.clone(),
+                        branded: false,
+                    });
                 }
 
                 GtDescriptor::Branded(branded) => {
-                    return Self::validate_primitive_record_key(&branded.primitive.kind);
+                    return Ok(GtpModuleTypeCheckRecordKeyResolve {
+                        primitive: branded.primitive.kind.clone(),
+                        branded: true,
+                    });
                 }
 
                 GtDescriptor::Reference(next) if next.arguments.is_empty() => {
@@ -81,14 +97,6 @@ impl<'a> GtpModuleTypeCheckVisitor<'a> {
             }
         }
     }
-
-    fn validate_primitive_record_key(kind: &GtPrimitiveKind) -> Result<(), &'static str> {
-        match kind {
-            GtPrimitiveKind::Boolean => Err("boolean aliases cannot be record keys"),
-
-            _ => Ok(()),
-        }
-    }
 }
 
 impl GtVisitor for GtpModuleTypeCheckVisitor<'_> {
@@ -97,12 +105,18 @@ impl GtVisitor for GtpModuleTypeCheckVisitor<'_> {
             return;
         };
 
-        if let Err(reason) = self.validate_record_key(reference) {
-            self.errors.push(GtpModuleTypeCheckError::InvalidRecordKey {
-                span: reference.span,
-                identifier: reference.identifier.as_string(),
-                reason,
-            });
+        match self.resolve_record_key(reference) {
+            Ok(resolve) => {
+                self.record_key_resolves
+                    .insert(reference.id.clone(), resolve);
+            }
+            Err(reason) => {
+                self.errors.push(GtpModuleTypeCheckError::InvalidRecordKey {
+                    span: reference.span,
+                    identifier: reference.identifier.as_string(),
+                    reason,
+                });
+            }
         }
     }
 }

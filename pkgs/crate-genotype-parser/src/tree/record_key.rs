@@ -3,6 +3,7 @@ use crate::prelude::internal::*;
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Serialize, Visitor)]
 pub enum GtRecordKey {
     Reference(#[visit] GtReference),
+    Boolean(GtSpan),
     String(GtSpan),
     Number(GtSpan),
     Int8(GtSpan),
@@ -46,6 +47,7 @@ impl GtRecordKey {
 
         match pair.clone().into_inner().as_str() {
             "" | "string" => Ok(GtRecordKey::String(span)),
+            "boolean" => Ok(GtRecordKey::Boolean(span)),
             "number" => Ok(GtRecordKey::Number(span)),
             "int" => Ok(GtRecordKey::Int64(span)),
             "i8" => Ok(GtRecordKey::Int8(span)),
@@ -93,6 +95,14 @@ mod tests {
         assert_eq!(
             GtRecordKey::String((0, 8).into()),
             parse_node!(GtRecordKey, to_parse_args(Rule::record_key, "[string]"))
+        );
+    }
+
+    #[test]
+    fn test_parse_boolean() {
+        assert_eq!(
+            GtRecordKey::Boolean((0, 9).into()),
+            parse_node!(GtRecordKey, to_parse_args(Rule::record_key, "[boolean]"))
         );
     }
 

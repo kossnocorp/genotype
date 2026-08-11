@@ -25,7 +25,7 @@ def install_genotype_runtime_stub() -> None:
 
 def main() -> None:
     install_genotype_runtime_stub()
-    from module import Address, AddressId, User
+    from module import Address, AddressId, BooleanKey, DirectBooleanMap, User
 
     address_id = AddressId("home")
     user = User(addresses={address_id: Address(street="Main Street")})
@@ -33,6 +33,10 @@ def main() -> None:
 
     assert user.model_dump() == expected
     assert json.loads(user.model_dump_json()) == expected
+    direct_boolean_map: DirectBooleanMap = {True: "yes"}
+    assert direct_boolean_map == {True: "yes"}
+    boolean_key: BooleanKey = True
+    assert {boolean_key: "yes"} == {True: "yes"}
 
 
 if __name__ == "__main__":

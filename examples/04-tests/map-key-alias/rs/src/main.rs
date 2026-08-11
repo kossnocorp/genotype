@@ -4,7 +4,7 @@ fn main() {}
 mod tests {
     use std::collections::BTreeMap;
 
-    use genotype_test_map_key_alias_types::{Address, AddressId, User};
+    use genotype_test_map_key_alias_types::{Address, AddressId, DirectBooleanMap, User};
     use serde_json::{from_value, json, to_value};
 
     #[test]
@@ -26,5 +26,11 @@ mod tests {
 
         let decoded: User = from_value(value).expect("deserialize user");
         assert_eq!(decoded, user);
+    }
+
+    #[test]
+    fn boolean_map_key() {
+        let map: DirectBooleanMap = BTreeMap::from([(true, "yes".into())]);
+        assert_eq!(map.get(&true).map(String::as_str), Some("yes"));
     }
 }

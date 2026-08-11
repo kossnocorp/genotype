@@ -10,6 +10,7 @@ impl PyConvert<PyDictKey> for GtRecordKey {
                 }
                 PyDictKey::Reference(reference)
             }
+            GtRecordKey::Boolean(_) => PyDictKey::Boolean,
             GtRecordKey::String(_) => PyDictKey::String,
             GtRecordKey::Int8(_)
             | GtRecordKey::Int16(_)
@@ -50,6 +51,10 @@ mod tests {
         assert_ron_snapshot!(
             convert_node(Gt::record_key_string()),
             @"String"
+        );
+        assert_ron_snapshot!(
+            convert_node(Gt::record_key_boolean()),
+            @"Boolean"
         );
 
         assert_ron_snapshot!(

@@ -2497,6 +2497,26 @@ mod tests {
                   )),
                 )),
               ),
+              GtAlias(
+                id: GtDefinitionId(GtModuleId("module"), "Replies"),
+                span: GtSpan(103, 133),
+                doc: None,
+                attributes: [],
+                name: GtIdentifier(GtSpan(103, 110), "Replies"),
+                generics: [],
+                descriptor: Record(GtRecord(
+                  span: GtSpan(112, 133),
+                  doc: None,
+                  attributes: [],
+                  key: Boolean(GtSpan(114, 123)),
+                  descriptor: Primitive(GtPrimitive(
+                    span: GtSpan(125, 131),
+                    kind: String,
+                    doc: None,
+                    attributes: [],
+                  )),
+                )),
+              ),
             ],
           ),
           resolve: GtModuleResolve(
@@ -2506,6 +2526,7 @@ mod tests {
               GtIdentifier(GtSpan(22, 25), "Map"),
               GtIdentifier(GtSpan(46, 55), "AddressId"),
               GtIdentifier(GtSpan(66, 75), "Addresses"),
+              GtIdentifier(GtSpan(103, 110), "Replies"),
             ],
             references: [
               GtIdentifier(GtSpan(80, 89), "AddressId"),

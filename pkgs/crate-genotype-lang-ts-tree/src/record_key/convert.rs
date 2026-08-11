@@ -3,7 +3,14 @@ use crate::prelude::internal::*;
 impl TsConvert<TsRecordKey> for GtRecordKey {
     fn convert(&self, context: &mut TsConvertContext) -> TsRecordKey {
         match self {
-            GtRecordKey::Reference(reference) => TsRecordKey::Reference(reference.convert(context)),
+            GtRecordKey::Reference(reference) => {
+                let converted = reference.convert(context);
+                match context.resolve_boolean_record_key_branded(&reference.id) {
+                    Some(branded) => TsRecordKey::BooleanReference(converted, branded),
+                    None => TsRecordKey::Reference(converted),
+                }
+            }
+            GtRecordKey::Boolean(_) => TsRecordKey::Boolean,
             GtRecordKey::String(_) => TsRecordKey::String,
             GtRecordKey::Number(_)
             | GtRecordKey::Int8(_)
@@ -46,6 +53,10 @@ mod tests {
         assert_ron_snapshot!(
             convert_node(GtRecordKey::String((0, 0).into())),
             @"String"
+        );
+        assert_ron_snapshot!(
+            convert_node(GtRecordKey::Boolean((0, 0).into())),
+            @"Boolean"
         );
         assert_ron_snapshot!(
             convert_node(GtRecordKey::Number((0, 0).into())),
