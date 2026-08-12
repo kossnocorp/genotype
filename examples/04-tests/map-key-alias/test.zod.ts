@@ -45,5 +45,8 @@ for (const schema of [
     true: "yes",
     false: "no",
   });
-  assert.equal(schema.safeParse({ other: "no" }).success, false);
+  assert.equal(
+    schema.safeParse({ true: "yes", false: "no", other: "no" }).success,
+    false,
+  );
 }

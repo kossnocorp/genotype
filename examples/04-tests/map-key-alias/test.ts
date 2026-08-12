@@ -40,8 +40,35 @@ const booleanMaps: [
 ];
 assert.equal(booleanMaps[0].true, "yes");
 
-const invalidBooleanMap: DirectBooleanMap = {
-  // @ts-expect-error Boolean record keys only allow "true" and "false".
-  other: "no",
-};
-void invalidBooleanMap;
+const invalidBooleanMaps: [
+  DirectBooleanMap,
+  BooleanMap,
+  BooleanAliasMap,
+  BrandedBooleanMap,
+] = [
+  {
+    true: "yes",
+    false: "no",
+    // @ts-expect-error Boolean record keys only allow "true" and "false".
+    other: "no",
+  },
+  {
+    true: "yes",
+    false: "no",
+    // @ts-expect-error Boolean record keys only allow "true" and "false".
+    other: "no",
+  },
+  {
+    true: "yes",
+    false: "no",
+    // @ts-expect-error Boolean record keys only allow "true" and "false".
+    other: "no",
+  },
+  {
+    true: "yes",
+    false: "no",
+    // @ts-expect-error Boolean record keys only allow "true" and "false".
+    other: "no",
+  },
+];
+void invalidBooleanMaps;
