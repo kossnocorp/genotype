@@ -7,6 +7,7 @@ pub(crate) mod internal {
     pub use genotype_parser::*;
     #[cfg(test)]
     pub use genotype_test::*;
+    pub use heck::{ToKebabCase, ToLowerCamelCase, ToPascalCase, ToSnakeCase};
     pub use indexmap::IndexMap;
     pub use miette::{Result, WrapErr, miette};
     pub use relative_path::{PathExt, RelativePath, RelativePathBuf};

@@ -6,6 +6,7 @@ pub(crate) mod internal {
     pub use genotype_lang_ts_config::*;
     pub use genotype_parser::visitor::{Traverse, TraverseMut, Visitor, visitor};
     pub use genotype_parser::*;
+    pub use genotype_project_core::*;
     pub use indexmap::{IndexMap, IndexSet};
     pub use miette::{Diagnostic, Result};
     pub use serde::Serialize;

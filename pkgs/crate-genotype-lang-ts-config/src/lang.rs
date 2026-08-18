@@ -10,6 +10,26 @@ pub struct TsConfigLang {
     pub ext: TsImportExt,
     #[serde(default)]
     pub tsconfig: Option<TsConfigLangTsconfig>,
+    #[serde(default)]
+    pub naming: TsConfigNaming,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+pub struct TsConfigNaming {
+    #[serde(default)]
+    pub source_file: GtpLangConfigNamingCase,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_dir: Option<GtpLangConfigNamingCase>,
+}
+
+impl TsConfigNaming {
+    pub fn source_dir(&self) -> GtpLangConfigNamingCase {
+        self.source_dir.unwrap_or(self.source_file)
+    }
+
+    pub fn format_module_path(&self, path: &str) -> String {
+        GtpLangConfigNamingCase::format_file_path(path, self.source_dir(), self.source_file)
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
@@ -74,6 +94,69 @@ mod tests {
     #[test]
     fn test_default_tsconfig() {
         assert_eq!(TsConfigLang::default().tsconfig, None);
+    }
+
+    #[test]
+    fn test_naming_defaults() {
+        let naming = TsConfigNaming::default();
+        assert_eq!(naming.source_file, GtpLangConfigNamingCase::CamelCase);
+        assert_eq!(naming.source_dir(), GtpLangConfigNamingCase::CamelCase);
+        assert_eq!(naming.source_dir, None);
+    }
+
+    #[test]
+    fn test_naming_source_dir_defaults_to_source_file() {
+        let config: TsConfig = toml::from_str(
+            r#"
+                [naming]
+                source_file = "kebab-case"
+            "#,
+        )
+        .unwrap();
+
+        assert_eq!(
+            config.lang.naming.source_file,
+            GtpLangConfigNamingCase::KebabCase
+        );
+        assert_eq!(
+            config.lang.naming.source_dir(),
+            GtpLangConfigNamingCase::KebabCase
+        );
+        assert_eq!(config.lang.naming.source_dir, None);
+    }
+
+    #[test]
+    fn test_naming_source_dir_override() {
+        let config: TsConfig = toml::from_str(
+            r#"
+                [naming]
+                source_file = "PascalCase"
+                source_dir = "snake_case"
+            "#,
+        )
+        .unwrap();
+
+        assert_eq!(
+            config.lang.naming.source_file,
+            GtpLangConfigNamingCase::PascalCase
+        );
+        assert_eq!(
+            config.lang.naming.source_dir(),
+            GtpLangConfigNamingCase::SnakeCase
+        );
+    }
+
+    #[test]
+    fn test_naming_rejects_invalid_case() {
+        assert!(
+            toml::from_str::<TsConfig>(
+                r#"
+                    [naming]
+                    source_file = "camel_case"
+                "#,
+            )
+            .is_err()
+        );
     }
 
     #[test]

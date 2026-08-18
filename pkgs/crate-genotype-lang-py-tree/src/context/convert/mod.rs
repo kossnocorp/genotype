@@ -70,12 +70,14 @@ impl PyConvertContext {
                 path.source_str().to_owned()
             }
         } else {
-            self.resolve
+            let path = self
+                .resolve
                 .paths
                 .get(path)
                 .unwrap_or(path)
                 .source_str()
-                .to_owned()
+                .to_owned();
+            PyConfig::format_module_path(&path)
         }
     }
 

@@ -14,6 +14,7 @@ pub struct TsConvertContext {
     hoisted: Vec<TsDefinition>,
     doc: Option<TsDoc>,
     dependencies_config: IndexMap<String, String>,
+    naming: TsConfigNaming,
 }
 
 impl TsConvertContext {
@@ -25,6 +26,7 @@ impl TsConvertContext {
             hoisted: vec![],
             doc: None,
             dependencies_config: config.common.dependencies.clone(),
+            naming: config.lang.naming.clone(),
         }
     }
 
