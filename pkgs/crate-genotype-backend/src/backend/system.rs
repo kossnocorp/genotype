@@ -597,6 +597,9 @@ mod tests {
               "prefer": interface,
               "ext": js,
               "tsconfig": None,
+              "naming": TsConfigNaming(
+                source_file: camelCase,
+              ),
             },
             py: {
               "module": PyModuleName("module"),
@@ -853,6 +856,9 @@ mod tests {
               "prefer": interface,
               "ext": js,
               "tsconfig": None,
+              "naming": TsConfigNaming(
+                source_file: camelCase,
+              ),
             },
             py: {
               "module": PyModuleName("module"),
@@ -1023,6 +1029,9 @@ mod tests {
               "prefer": interface,
               "ext": js,
               "tsconfig": None,
+              "naming": TsConfigNaming(
+                source_file: camelCase,
+              ),
             },
             py: {
               "module": PyModuleName("module"),

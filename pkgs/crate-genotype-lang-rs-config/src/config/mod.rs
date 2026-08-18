@@ -10,6 +10,16 @@ pub struct RsConfig {
     pub common: GtpLangConfigCommon, //<RsPkgPath>,
 }
 
+impl RsConfig {
+    pub fn format_module_path(path: &str) -> String {
+        GtpLangConfigNamingCase::format_file_path(
+            path,
+            GtpLangConfigNamingCase::SnakeCase,
+            GtpLangConfigNamingCase::SnakeCase,
+        )
+    }
+}
+
 impl GtpLangConfig for RsConfig {
     // type PkgPath = RsPkgPath;
 
@@ -19,7 +29,8 @@ impl GtpLangConfig for RsConfig {
     }
 
     fn pkg_src_dir_relative_module_path(&self, module_id: &GtModuleId) -> GtpPkgSrcDirRelativePath {
-        GtpPkgSrcDirRelativePath::from_str(&format!("{module_id}.rs"))
+        let module_path = Self::format_module_path(&module_id.0);
+        GtpPkgSrcDirRelativePath::from_str(&format!("{module_path}.rs"))
     }
 
     fn default_pkg_dir_path(&self) -> GtpDistDirRelativePkgDirPath {
@@ -38,5 +49,20 @@ impl GtpLangConfig for RsConfig {
         }
 
         diagnostics
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_module_path_naming() {
+        assert_eq!(
+            RsConfig::default()
+                .pkg_src_dir_relative_module_path(&GtModuleId("ShopGoods/OrderItem".into())),
+            "shop_goods/order_item.rs".into()
+        );
     }
 }

@@ -43,3 +43,35 @@ impl GtpConfig {
         Ok(pruned_str)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_ts_naming_source_dir_inheritance_round_trip() {
+        let config = GtpConfig::from_toml_str(
+            r#"[ts.naming]
+source_file = "kebab-case"
+"#,
+        )
+        .unwrap();
+
+        assert_eq!(config.ts.lang.naming.source_dir, None);
+        assert_eq!(
+            config.ts.lang.naming.source_dir(),
+            GtpLangConfigNamingCase::KebabCase
+        );
+        assert_snapshot!(
+            config.to_toml_str_pruned().unwrap(),
+            @r#"
+
+        [ts]
+
+        [ts.naming]
+        source_file = "kebab-case"
+        "#
+        );
+    }
+}

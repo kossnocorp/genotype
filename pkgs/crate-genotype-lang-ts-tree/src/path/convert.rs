@@ -36,4 +36,26 @@ mod tests {
             @r#"TsPath("./path/to/module/index")"#
         );
     }
+
+    #[test]
+    fn test_convert_naming() {
+        let config = TsConfig {
+            lang: TsConfigLang {
+                naming: TsConfigNaming {
+                    source_file: GtpLangConfigNamingCase::CamelCase,
+                    source_dir: Some(GtpLangConfigNamingCase::KebabCase),
+                },
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+        let mut context = TsConvertContext::new(Default::default(), &config);
+
+        assert_ron_snapshot!(
+            GtPath::parse((0, 0).into(), &"module".into(), "./ShopGoods/OrderItem")
+                .unwrap()
+                .convert(&mut context),
+            @r#"TsPath("./shop-goods/orderItem")"#
+        );
+    }
 }

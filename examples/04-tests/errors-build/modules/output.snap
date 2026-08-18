@@ -40,7 +40,7 @@
 
 [1m[33mWarning[39m[0m: Init file `dist/py/module/__init__.py` rendered, but it excludes 2 modules that failed to render.
 
-[1m[31mError[39m[0m: Failed to convert `dist/rs/src/missingUse.rs` from `src/missingUse.type`.
+[1m[31mError[39m[0m: Failed to convert `dist/rs/src/missing_use.rs` from `src/missingUse.type`.
 
 [1m[31mError[39m[0m: Failed to convert `dist/rs/src/nope.rs` from `src/nope.type`.
 
@@ -48,7 +48,7 @@
 
 [1m[33mWarning[39m[0m: Some of the modules failed to render.
 
-- Failed to convert `dist/rs/src/missingUse.rs` from `src/missingUse.type`
+- Failed to convert `dist/rs/src/missing_use.rs` from `src/missingUse.type`
 - Failed to convert `dist/rs/src/nope.rs` from `src/nope.type`
 - Failed to convert `dist/rs/src/syntax.rs` from `src/syntax.type`
 

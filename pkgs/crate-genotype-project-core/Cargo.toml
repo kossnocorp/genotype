@@ -18,6 +18,7 @@ toml_edit = { version = "0.22.26", features = ["serde"] }
 indexmap = { version = "2.6.0", features = ["serde"] }
 litty = { version = "0.5.0", path = "../crate-litty" }
 xxhash-rust = { version = "0.8.18", features = ["xxh64"] }
+heck = "0.5.0"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

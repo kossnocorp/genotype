@@ -87,7 +87,7 @@ impl PyCompiler<'_> {
 
                     let source_path = rendered.source_path();
 
-                    match self.py_module_path(source_path) {
+                    match self.py_module_path(&rendered.converted().target_path) {
                         Ok(py_module_path) => {
                             let imports = definitions.join(", ");
                             import_lines.push(format!("from .{py_module_path} import {imports}"));
@@ -190,9 +190,12 @@ impl PyCompiler<'_> {
         (files, diagnostic)
     }
 
-    fn py_module_path(&self, module_path: &GtpModulePath) -> Result<String> {
-        let module_id = module_path.to_module_id(&self.config.project_paths().src)?;
-        Ok(PyPath::to_py_module_path(module_id.as_str_without_ext()))
+    fn py_module_path(&self, target_path: &GtpTargetFilePath) -> Result<String> {
+        let module_path = target_path
+            .relative_path_to(&self.config.pkg_src_path())?
+            .with_extension("")
+            .to_string();
+        Ok(PyPath::to_py_module_path(module_path))
     }
 }
 

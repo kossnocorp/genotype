@@ -10,6 +10,16 @@ pub struct PyConfig {
     pub common: GtpLangConfigCommon,
 }
 
+impl PyConfig {
+    pub fn format_module_path(path: &str) -> String {
+        GtpLangConfigNamingCase::format_file_path(
+            path,
+            GtpLangConfigNamingCase::SnakeCase,
+            GtpLangConfigNamingCase::SnakeCase,
+        )
+    }
+}
+
 impl GtpLangConfig for PyConfig {
     fn common(&self) -> &GtpLangConfigCommon {
         &self.common
@@ -20,7 +30,8 @@ impl GtpLangConfig for PyConfig {
     }
 
     fn pkg_src_dir_relative_module_path(&self, module_id: &GtModuleId) -> GtpPkgSrcDirRelativePath {
-        GtpPkgSrcDirRelativePath::from_str(&format!("{module_id}.py"))
+        let module_path = Self::format_module_path(&module_id.0);
+        GtpPkgSrcDirRelativePath::from_str(&format!("{module_path}.py"))
     }
 
     fn default_pkg_dir_path(&self) -> GtpDistDirRelativePkgDirPath {
@@ -29,5 +40,20 @@ impl GtpLangConfig for PyConfig {
 
     fn comment_prefix(&self) -> &'static str {
         "#"
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_module_path_naming() {
+        assert_eq!(
+            PyConfig::default()
+                .pkg_src_dir_relative_module_path(&GtModuleId("ShopGoods/OrderItem".into())),
+            "shop_goods/order_item.py".into()
+        );
     }
 }

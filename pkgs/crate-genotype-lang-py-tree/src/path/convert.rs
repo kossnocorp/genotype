@@ -64,4 +64,14 @@ mod tests {
             @r#"PyPath(".path.to.another.module")"#
         );
     }
+
+    #[test]
+    fn test_convert_naming() {
+        assert_ron_snapshot!(
+            GtPath::parse((0, 0).into(), &"module".into(), "./ShopGoods/OrderItem")
+                .unwrap()
+                .convert(&mut PyConvertContext::default()),
+            @r#"PyPath(".shop_goods.order_item")"#
+        );
+    }
 }

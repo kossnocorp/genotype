@@ -3,6 +3,9 @@ use crate::prelude::internal::*;
 mod common;
 pub use common::*;
 
+mod naming;
+pub use naming::*;
+
 pub trait GtpLangConfig {
     /// Returns the common language configuration. The target language configuration overrides
     /// the method to provide access to the config struct.
