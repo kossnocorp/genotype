@@ -36,6 +36,9 @@ MISE_EXPERIMENTAL = true # Enable monorepo root support
 
 # Tasks ########################################################################
 
+[tasks.setup]
+depends = ["install"]
+
 [tasks.install]
 depends = ["install/pnpm", "install/uv"]
 
