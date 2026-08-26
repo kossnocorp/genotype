@@ -1,0 +1,33 @@
+dist
+├── py
+│   ├── module
+│   │   ├── __init__.py
+│   │   ├── kebab_case.py
+│   │   ├── pascal_case.py
+│   │   ├── py.typed
+│   │   ├── shop_goods
+│   │   │   ├── __init__.py
+│   │   │   └── order_item.py
+│   │   └── snake_case.py
+│   └── pyproject.toml
+├── rs
+│   ├── Cargo.toml
+│   └── src
+│       ├── kebab_case.rs
+│       ├── lib.rs
+│       ├── pascal_case.rs
+│       ├── shop_goods
+│       │   ├── mod.rs
+│       │   └── order_item.rs
+│       └── snake_case.rs
+└── ts
+    ├── package.json
+    └── src
+        ├── index.ts
+        ├── kebabCase.ts
+        ├── pascalCase.ts
+        ├── shopGoods
+        │   └── orderItem.ts
+        └── snakeCase.ts
+
+10 directories, 21 files
