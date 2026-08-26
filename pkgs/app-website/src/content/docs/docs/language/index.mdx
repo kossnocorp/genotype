@@ -25,6 +25,28 @@ See corresponding target language guides for more details:
 
 </Aside>
 
+## Source Files
+
+Genotype source files have `.type` extension. Each file is a module that exports all its type definitions.
+
+```type
+Hello: "world"
+
+Name: {
+  first: string,
+  last?: string,
+}
+```
+
+<Aside type="tip">
+  The convention is to use `snake_case` for source file names.
+
+The generated code will automatically transform into idiomatic names in the target language.
+
+</Aside>
+
+{/* [See Source Files](/docs/language/reference#source-files) section in the [Language Reference](/docs/language/reference). */}
+
 ## Type Aliases
 
 Type aliases assign a type to a name. They are the basic building blocks of Genotype.

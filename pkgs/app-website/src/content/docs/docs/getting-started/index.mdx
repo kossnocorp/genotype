@@ -5,4 +5,71 @@ sidebar:
   order: 1
 ---
 
-Genotype is a programming language designed to help developers synchronize types between TypeScript, Rust and Python (more languages coming soon).
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+import { Code } from "@astrojs/starlight/components";
+
+Genotype is a programming language designed to help developers synchronize types between TypeScript, Rust, and Python (more languages coming soon).
+
+## Learn the Genotype Language
+
+To get familiar with the Genotype programming language, see [Quick Genotype Language Tour](/docs/language/). It will lead you through all the language features, show you how to use them, and link to more detailed documentation.
+
+To learn more about the specific Genotype targets, see:
+
+- [TypeScript Overview](/docs/targets/typescript/)
+- [Rust Overview](/docs/targets/rust/)
+- [Python Overview](/docs/targets/python/)
+
+## Quick Start
+
+Follow the steps below to get started with Genotype or, alternatively, to play with Genotype without installing it, try [Genotype Playground](/playground).
+
+### 1. Install the CLI
+
+Install the Genotype CLI to get started:
+
+<Tabs>
+  <TabItem label="Linux/macOS">
+    ```sh
+    curl -fsSL https://genotype-lang.org/install.sh | sh
+    ```
+
+  </TabItem>
+
+  <TabItem label="Windows">
+    ```powershell
+    irm https://genotype-lang.org/install.ps1 | iex
+    ```
+
+  </TabItem>
+</Tabs>
+
+You can also download the binary from [the latest GitHub release page](https://github.com/kossnocorp/genotype/releases/latest) or build it from source via `cargo install genotype_cli`.
+
+### 2. Bootstrap a New Project
+
+Run `gt init` to bootstrap a new Genotype project. It will ask you a few questions and generate `genotype.toml` and source files for your project:
+
+```sh
+gt init
+```
+
+See [the CLI reference](/docs/toolchain/cli/) for more information about the Genotype CLI.
+
+### 3. Edit Type Files
+
+Create a new file `.type` in the `src` directory and add your types, for example `src/user.type`:
+
+```type
+User: {
+  name: FullName,
+  email: string,
+}
+
+FullName: {
+  first: string,
+  last?: string,
+}
+```
+
+See [the Quick Tour](/docs/language/) for more information about the language.

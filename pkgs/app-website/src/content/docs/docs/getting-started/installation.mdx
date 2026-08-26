@@ -3,6 +3,38 @@ title: "Installation"
 description: "How to install Genotype CLI."
 sidebar:
   order: 3
+draft: true
 ---
 
-TODO
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+import { Code } from "@astrojs/starlight/components";
+
+Genotype is distributed as a single binary executable, which can be installed on Linux, macOS, and Windows.
+
+The quickest way to install Genotype is to use the installation script:
+
+<Tabs>
+  <TabItem label="Linux/macOS">
+    ```sh
+    curl -fsSL https://genotype-lang.org/install.sh | sh
+    ```
+
+  </TabItem>
+
+  <TabItem label="Windows">
+    ```powershell
+    irm https://genotype-lang.org/install.ps1 | iex
+    ```
+
+  </TabItem>
+</Tabs>
+
+You can also download the binary from [the latest GitHub release page](https://github.com/kossnocorp/genotype/releases/latest).
+
+## Installing From Source
+
+To compile Genotype from source code, [install Rust](https://rust-lang.org/learn/get-started/) and install the Genotype using Cargo:
+
+```sh
+cargo install genotype_cli
+```
