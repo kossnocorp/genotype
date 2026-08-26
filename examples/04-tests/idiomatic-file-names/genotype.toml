@@ -1,0 +1,14 @@
+name = "genotype-test-idiomatic-file-names"
+
+[ts]
+enabled = true
+
+[rs]
+enabled = true
+
+[rs.manifest.package]
+edition = "2024"
+
+[py]
+enabled = true
+manager = "uv"

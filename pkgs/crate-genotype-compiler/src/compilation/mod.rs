@@ -176,8 +176,7 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
             Ok(None) => {}
 
             Err(err) => {
-                self.handle_diagnostics(&[GtDiagnostic::error(format!("{err:?}"))])
-                    .await?;
+                self.handle_diagnostics(err.as_diagnostic()).await?;
             }
         }
 
@@ -220,7 +219,11 @@ impl<Backend: GtBackend + ?Sized> GtcCompilation<'_, '_, Backend> {
         Ok(0)
     }
 
-    async fn handle_diagnostics(&mut self, diagnostics: &[GtDiagnostic]) -> Result<()> {
+    async fn handle_diagnostics<Diagnostics: AsRef<[GtDiagnostic]>>(
+        &mut self,
+        diagnostics: Diagnostics,
+    ) -> Result<()> {
+        let diagnostics = diagnostics.as_ref();
         self.errors_count += diagnostics
             .iter()
             .filter(|diagnostic| matches!(diagnostic.kind, GtDiagnosticKind::Error))

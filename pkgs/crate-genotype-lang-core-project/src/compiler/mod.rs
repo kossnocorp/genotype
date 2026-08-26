@@ -65,6 +65,8 @@ where
 
         dist.sort_files();
 
+        dist.validate_target_paths()?;
+
         Ok(Some(dist))
     }
 

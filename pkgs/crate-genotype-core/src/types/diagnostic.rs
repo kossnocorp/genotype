@@ -9,6 +9,12 @@ pub struct GtDiagnostic {
     pub content: GtDiagnosticContent,
 }
 
+impl AsRef<[GtDiagnostic]> for GtDiagnostic {
+    fn as_ref(&self) -> &[GtDiagnostic] {
+        std::slice::from_ref(self)
+    }
+}
+
 #[serde_literals]
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum GtDiagnosticKind {
