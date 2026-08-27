@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+script_path="${BASH_SOURCE[0]}"
+script_dir="$(cd "$(dirname "$script_path")" && pwd)"
+cd "$script_dir"
+
 rm -rf ./py/module/types/
 rm -rf ./ts/src/types/
 rm -rf ./rs/src/types/

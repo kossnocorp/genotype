@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+script_path="${BASH_SOURCE[0]}"
+script_dir="$(cd "$(dirname "$script_path")" && pwd)"
+cd "$script_dir"
+
 build_for() {
 	name="$1"
 	config="$2"
