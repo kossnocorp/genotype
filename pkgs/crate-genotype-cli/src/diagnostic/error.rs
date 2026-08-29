@@ -10,10 +10,6 @@ pub enum GtCliError {
     #[diagnostic(code(GTCL101))]
     UnknownCommand(String),
 
-    #[error("failed to read line for {0}")]
-    #[diagnostic(code(GTCL102))]
-    FailedReadline(&'static str),
-
     #[error("failed to write file `{0}`")]
     #[diagnostic(code(GTCL103))]
     FailedWrite(String),

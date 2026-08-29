@@ -1,6 +1,10 @@
 use miette::highlighters::SyntectHighlighter;
 use prelude::internal::*;
+use std::process::ExitCode;
 use syntect::{highlighting::ThemeSet, parsing::SyntaxDefinition};
+
+mod ui;
+pub(crate) use ui::*;
 
 mod commands;
 pub use commands::*;
@@ -29,7 +33,7 @@ enum Commands {
     Version(GtVersionCommand),
 }
 
-fn main() -> miette::Result<()> {
+fn main() -> miette::Result<ExitCode> {
     let cli = Cli::parse();
 
     miette::set_hook(Box::new(|_| {
@@ -51,17 +55,23 @@ fn main() -> miette::Result<()> {
     }))?;
 
     match &cli.command {
-        Some(Commands::Build(args)) => GtBuildCommand::run(args),
+        Some(Commands::Build(args)) => {
+            GtBuildCommand::run(args)?;
+            Ok(ExitCode::SUCCESS)
+        }
 
         Some(Commands::Init(args)) => init_command(args),
 
-        Some(Commands::Version(args)) => version_command(args),
+        Some(Commands::Version(args)) => {
+            version_command(args)?;
+            Ok(ExitCode::SUCCESS)
+        }
 
         None => {
             let mut command = Cli::command();
             command.print_help().into_diagnostic()?;
             println!();
-            Ok(())
+            Ok(ExitCode::SUCCESS)
         }
     }
 }

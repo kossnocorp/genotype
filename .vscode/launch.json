@@ -24,7 +24,7 @@
       "preLaunchTask": "vscode:build",
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}/pkgs/npm-vscode-genotype",
-        "${workspaceFolder}/examples/05-demo"
+        "${workspaceFolder}/examples/03-demo"
       ],
       "outFiles": ["${workspaceFolder}/pkgs/npm-vscode-genotype/dist/**/*.js"],
       "autoAttachChildProcesses": true
