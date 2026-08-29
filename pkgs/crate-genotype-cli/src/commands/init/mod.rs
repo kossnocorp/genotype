@@ -9,7 +9,13 @@ use ratatui::{
     text::{Line, Text},
     widgets::Widget,
 };
-use std::{io::stdout, num::NonZeroU16, path::Path, process::ExitCode};
+use std::{
+    fs::OpenOptions,
+    io::{ErrorKind, Write, stdout},
+    num::NonZeroU16,
+    path::Path,
+    process::ExitCode,
+};
 
 mod starter;
 use starter::*;
@@ -45,7 +51,15 @@ pub fn init_command(args: &GtInitCommand) -> Result<ExitCode> {
         let starter = app.starter();
         for (file, contents) in starter.files() {
             let path = src.join_str(file);
-            write(path.as_str(), contents)
+            let mut file = OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(path.as_str())
+                .map_err(|error| match error.kind() {
+                    ErrorKind::AlreadyExists => GtCliError::FileAlreadyExists(path.as_str().into()),
+                    _ => GtCliError::FailedWrite(path.as_str().into()),
+                })?;
+            file.write_all(contents.as_bytes())
                 .map_err(|_| GtCliError::FailedWrite(path.as_str().into()))?;
         }
 
@@ -459,7 +473,7 @@ fn render_wizard_header(frame: &mut Frame, area: Rect) {
         &Hyperlink::new(Line::from(DOCS_URL).dim(), DOCS_URL),
         Rect::new(x, area.y, link_width, 1),
     );
-    let close_x = x + DOCS_URL.len() as u16;
+    let close_x = x + link_width;
     if close_x < area.right() {
         frame.render_widget(Line::from(")").dim(), Rect::new(close_x, area.y, 1, 1));
     }
@@ -519,6 +533,9 @@ fn detected_targets(path: &str) -> Vec<usize> {
                 Some("py") => found[1] = true,
                 Some("rs") => found[2] = true,
                 _ => {}
+            }
+            if found.iter().all(|found| *found) {
+                break;
             }
         }
     }
