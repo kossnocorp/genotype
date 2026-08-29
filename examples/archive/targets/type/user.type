@@ -1,7 +1,0 @@
-User: {
-  name: Name = {
-    first: string,
-    last: string,
-  },
-  age: number?,
-}
