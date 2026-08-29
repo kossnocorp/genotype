@@ -10,6 +10,10 @@ pub enum GtCliError {
     #[diagnostic(code(GTCL101))]
     UnknownCommand(String),
 
+    #[error("refusing to overwrite existing file `{0}`")]
+    #[diagnostic(code(GTCL102))]
+    FileAlreadyExists(String),
+
     #[error("failed to write file `{0}`")]
     #[diagnostic(code(GTCL103))]
     FailedWrite(String),

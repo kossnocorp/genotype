@@ -16,7 +16,7 @@ pub(crate) mod internal {
     pub use semver::Version;
     pub use std::fmt::{Display, Formatter};
 
-    pub use std::fs::{create_dir_all, write};
+    pub use std::fs::create_dir_all;
 
     pub use thiserror::Error;
 }

@@ -41,7 +41,6 @@ toml = { version = "0.8.19", features = ["preserve_order"] }
 semver = { version = "1.0.27", features = ["serde"] }
 termbg = "0.6.2"
 futures = "0.3.31"
-indoc = "2.0.7"
 glob = "0.3.1"
 
 [dev-dependencies]

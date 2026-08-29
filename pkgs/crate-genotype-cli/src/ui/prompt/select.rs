@@ -286,7 +286,7 @@ pub struct UiPromptMultiSelect<T> {
 }
 
 impl<Selectable: Display + Copy> UiPromptSelectable for UiPromptMultiSelect<Selectable> {
-    const HELP: &str = "↑↓ to move, space to select one, → to all, ← to none, type to filter";
+    const HELP: &str = "↑↓ to move, space to select one, → to all, ← to none, enter to submit, esc to go back, type to filter";
 
     type Selectable = Selectable;
 
@@ -343,10 +343,12 @@ impl<Selectable: Display + Copy> UiPromptSelectable for UiPromptMultiSelect<Sele
     fn handle_own_key(&mut self, key: KeyEvent) -> Option<UiPromptAction<Vec<Selectable>>> {
         match key.code {
             KeyCode::Char(' ') => {
-                if let Some(selected) = self.selected.get_mut(self.cursor) {
-                    *selected = !*selected;
+                if let Some(index) = self.current_filtered() {
+                    self.selected[index] = !self.selected[index];
+                    self.error = None;
+                } else {
+                    self.error = Some("No matching options");
                 }
-                self.error = None;
             }
 
             KeyCode::Right => {
@@ -359,13 +361,15 @@ impl<Selectable: Display + Copy> UiPromptSelectable for UiPromptMultiSelect<Sele
                 self.error = None;
             }
 
-            KeyCode::Enter
-                if self.allow_empty || self.selected.iter().any(|selected| *selected) =>
-            {
-                return Some(UiPromptAction::Submit(self.selected()));
+            KeyCode::Enter => {
+                if self.current_filtered().is_none() {
+                    self.error = Some("No matching options");
+                } else if self.allow_empty || self.selected.iter().any(|selected| *selected) {
+                    return Some(UiPromptAction::Submit(self.selected()));
+                } else {
+                    self.error = Some("Please select at least one option");
+                }
             }
-
-            KeyCode::Enter => self.error = Some("Please select at least one option"),
 
             _ => return None,
         }

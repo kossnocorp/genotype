@@ -1100,7 +1100,6 @@ dependencies = [
  "genotype_workspace",
  "glob",
  "heck",
- "indoc",
  "insta",
  "miette",
  "ordered-float",
