@@ -10,6 +10,20 @@ $GhApiHeaders = @{
   Accept                 = "application/vnd.github+json"
   "X-GitHub-Api-Version" = "2026-03-10"
 }
+$DocsUrl = "https://genotype-lang.org/docs/getting-started/installation/"
+$AnsiEscape = [char]27
+$AnsiBell = [char]7
+$AnsiReset = "${AnsiEscape}[0m"
+$AnsiBold = "${AnsiEscape}[1m"
+$AnsiDim = "${AnsiEscape}[2m"
+$AnsiGreen = "${AnsiEscape}[32m"
+$AnsiYellow = "${AnsiEscape}[33m"
+$AnsiCyan = "${AnsiEscape}[36m"
+$AnsiHyperlinkOpen = "${AnsiEscape}]8;;${DocsUrl}${AnsiBell}"
+$AnsiHyperlinkClose = "${AnsiEscape}]8;;${AnsiBell}"
+
+Write-Host "${AnsiBold}Installing Genotype${AnsiReset} ${AnsiDim}(learn more: ${AnsiHyperlinkOpen}${DocsUrl}${AnsiHyperlinkClose})${AnsiReset}"
+Write-Output ""
 
 if (-not [Environment]::Is64BitProcess) {
   Write-Error "Genotype requires a 64-bit Windows."
@@ -100,7 +114,13 @@ try {
   }
 
   Write-Output ""
-  Write-Output "Genotype $version installed to $installPath"
+  Write-Host "${AnsiGreen}✓${AnsiReset} Installed Genotype CLI ${AnsiCyan}gt${AnsiReset} at ${AnsiCyan}${installPath}${AnsiReset}"
+  Write-Output ""
+  Write-Host "${AnsiYellow}i${AnsiReset} To get started, run:"
+  Write-Output ""
+  Write-Host "${AnsiBold}${AnsiYellow}    mkdir genotype-demo${AnsiReset}"
+  Write-Host "${AnsiBold}${AnsiYellow}    cd genotype-demo${AnsiReset}"
+  Write-Host "${AnsiBold}${AnsiYellow}    gt init${AnsiReset}"
 }
 finally {
   if (Test-Path $tmp) { Remove-Item -Force $tmp -ErrorAction SilentlyContinue }

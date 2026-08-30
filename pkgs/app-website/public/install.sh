@@ -8,8 +8,23 @@ TAG_VERSION="${VERSION:-}"
 GH_REPO_NAME="kossnocorp/genotype"
 GH_API_HEADER_ACCEPT="Accept: application/vnd.github+json"
 GH_API_HEADER_VERSION="X-GitHub-Api-Version: 2026-03-10"
+DOCS_URL="https://genotype-lang.org/docs/getting-started/installation/"
+ANSI_ESCAPE="$(printf '\033')"
+ANSI_BELL="$(printf '\007')"
+ANSI_RESET="${ANSI_ESCAPE}[0m"
+ANSI_BOLD="${ANSI_ESCAPE}[1m"
+ANSI_DIM="${ANSI_ESCAPE}[2m"
+ANSI_GREEN="${ANSI_ESCAPE}[32m"
+ANSI_YELLOW="${ANSI_ESCAPE}[33m"
+ANSI_CYAN="${ANSI_ESCAPE}[36m"
+ANSI_HYPERLINK_OPEN="${ANSI_ESCAPE}]8;;${DOCS_URL}${ANSI_BELL}"
+ANSI_HYPERLINK_CLOSE="${ANSI_ESCAPE}]8;;${ANSI_BELL}"
 
 main() {
+	printf '%sInstalling Genotype%s %s(learn more: %s%s%s)%s\n\n' \
+		"$ANSI_BOLD" "$ANSI_RESET" "$ANSI_DIM" \
+		"$ANSI_HYPERLINK_OPEN" "$DOCS_URL" "$ANSI_HYPERLINK_CLOSE" "$ANSI_RESET"
+
 	case "$(uname -s)" in
 	Darwin) os="apple-darwin" ;;
 	Linux) os="unknown-linux-gnu" ;;
@@ -149,8 +164,13 @@ main() {
 		;;
 	esac
 
-	echo ""
-	echo "Genotype ${version} installed to ${install_dir}/gt"
+	printf '\n%s✓%s Installed Genotype CLI %sgt%s at %s%s%s\n\n' \
+		"$ANSI_GREEN" "$ANSI_RESET" "$ANSI_CYAN" "$ANSI_RESET" \
+		"$ANSI_CYAN" "${install_dir}/gt" "$ANSI_RESET"
+	printf '%si%s To get started, run:\n' "$ANSI_YELLOW" "$ANSI_RESET"
+	printf '\n'
+	printf '%s%s    mkdir genotype-demo && cd genotype-demo%s\n' "$ANSI_BOLD" "$ANSI_YELLOW" "$ANSI_RESET"
+	printf '%s%s    gt init%s\n' "$ANSI_BOLD" "$ANSI_YELLOW" "$ANSI_RESET"
 }
 
 main
