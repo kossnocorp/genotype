@@ -355,7 +355,8 @@ impl InitApp {
                     + u16::from(self.mode.selected() == AnswerPackageMode::Each)
                     + self.paths.len() as u16
                     + 6
-                    + u16::from(self.starter().tip_block().is_some()) * TIP_BLOCK_HEIGHT
+                    + u16::from(self.starter().tip_block(&self.success_path).is_some())
+                        * TIP_BLOCK_HEIGHT
             }
 
             InitStep::Cancelled => 1,
@@ -416,7 +417,7 @@ impl InitApp {
                 area,
                 &mut y,
                 &self.success_path,
-                self.starter().tip_block(),
+                self.starter().tip_block(&self.success_path),
             );
             return;
         }
@@ -468,7 +469,7 @@ fn render_success(
         y,
         StarterTipBlock {
             title: "To generate your types, run",
-            code: "gt build",
+            code: "gt build".into(),
         },
     );
 

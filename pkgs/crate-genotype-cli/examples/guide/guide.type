@@ -141,9 +141,10 @@ Venue: {
 // External Modules
 // ----------------
 //
-// Genotype currently have no fully-fledged package manager nor external module
-// system (it's planned though: https://github.com/kossnocorp/genotype/issues/161
-// & https://github.com/kossnocorp/genotype/issues/162). But you can map
+// Genotype currently have no fully-fledged package manager nor external
+// module system (it's planned though:
+// https://github.com/kossnocorp/genotype/issues/161 &
+// https://github.com/kossnocorp/genotype/issues/162). But you can map
 // certain paths to external modules per target language, e.g. to make
 // `shared_types` available in all targets, configure using
 // `[<target>.dependencies]` section in `genotype.toml`:
@@ -167,6 +168,8 @@ Venue: {
 //     genotype_core = "genotype_core"
 
 // Then you can import types from `genotype_core` in your Genotype files:
+//
+//     use genotype_core/Node
 //
 //     Diagnostic: {
 //       kind: "error" | "warning",
@@ -436,7 +439,8 @@ AliasMap: { []: string }
 
 // > Caution:
 // >
-// > Composite type references aren't supported as record keys (not yet: https://github.com/kossnocorp/genotype/issues/159).
+// > Composite type references aren't supported as record keys (not yet:
+// > https://github.com/kossnocorp/genotype/issues/159).
 
 // Special Data Types
 // ------------------
@@ -597,7 +601,7 @@ JobStatus:
 //         #[literal("success")]
 //         Ok,
 //         #[literal("failure")]
-//         Failure,
+//         Nope,
 //     }
 
 // Generators ignore annotations they don't recognize.
