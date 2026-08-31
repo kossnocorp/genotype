@@ -18,12 +18,32 @@ impl StarterResponse {
 
 const STARTER_TOUR_FILES: &[(&str, &str)] = &[
     (
+        "coordinates.type",
+        include_str!("../../../examples/guide/coordinates.type"),
+    ),
+    (
+        "destination.type",
+        include_str!("../../../examples/guide/destination.type"),
+    ),
+    (
         "guide.type",
         include_str!("../../../examples/guide/guide.type"),
     ),
     (
+        "location.type",
+        include_str!("../../../examples/guide/location.type"),
+    ),
+    (
         "module.type",
         include_str!("../../../examples/guide/module.type"),
+    ),
+    (
+        "place.type",
+        include_str!("../../../examples/guide/place.type"),
+    ),
+    (
+        "venue.type",
+        include_str!("../../../examples/guide/venue.type"),
     ),
 ];
 

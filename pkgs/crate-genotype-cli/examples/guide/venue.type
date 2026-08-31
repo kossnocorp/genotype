@@ -1,0 +1,4 @@
+VenueLocation: {
+  floor: int,
+  room: string,
+}

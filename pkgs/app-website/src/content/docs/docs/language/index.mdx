@@ -4,6 +4,8 @@ description: "Quick tour of the Genotype Programming Language syntax and feature
 sidebar:
   order: 1
   label: "Quick Tour"
+
+# NOTE: When changing this file, also update `pkgs/crate-genotype-cli/examples/guide/guide.type` file.
 ---
 
 import { Tabs, TabItem } from "@astrojs/starlight/components";
@@ -30,11 +32,11 @@ See corresponding target language guides for more details:
 Genotype source files have `.type` extension. Each file is a module that exports all its type definitions.
 
 ```type
-Hello: "world"
+Category: "fiction"
 
-Name: {
-  first: string,
-  last?: string,
+Book: {
+  title: string,
+  subtitle?: string,
 }
 ```
 
@@ -54,8 +56,8 @@ Type aliases assign a type to a name. They are the basic building blocks of Geno
 ```type
 Yeah: true
 
-User: {
-  name: string
+Greeting: {
+  message: string
 }
 ```
 
@@ -66,8 +68,8 @@ Type aliases are translated to the corresponding type definitions in the target 
     ```ts
     export type Yeah = true;
 
-    export interface User {
-      name: string;
+    export interface Greeting {
+      message: string;
     }
     ```
 
@@ -80,8 +82,8 @@ Type aliases are translated to the corresponding type definitions in the target 
     pub struct Yeah;
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct User {
-        pub name: String,
+    pub struct Greeting {
+        pub message: String,
     }
     ```
 
@@ -91,8 +93,8 @@ Type aliases are translated to the corresponding type definitions in the target 
     ```python
     type Yeah = Literal[True]
 
-    class User(Model):
-        name: str
+    class Greeting(Model):
+        message: str
     ```
 
   </TabItem>
@@ -130,10 +132,10 @@ Languages that don't support forward references, such as Python, will generate c
 A type alias can also be defined inline, as part of another type definition:
 
 ```type
-User: {
-  name: string,
-  address: Address: {
-    country: string,
+Customer: {
+  email: string,
+  billingAddress: BillingAddress: {
+    street: string,
     city: string,
   },
 }
@@ -146,21 +148,21 @@ Every Genotype file is a module that exports all type aliases defined in it.
 You can import types from other modules via `use` statement.
 
 <Tabs>
-  <TabItem label="user.type">
+  <TabItem label="shipment.type">
     ```type
-    use ./address/Address
+    use ./destination/Destination
 
-    User: {
-      name: string,
-      address: Address,
+    Shipment: {
+      trackingNumber: string,
+      destination: Destination,
     }
     ```
 
   </TabItem>
 
-  <TabItem label="address.type">
+  <TabItem label="destination.type">
     ```type
-    Address: {
+    Destination: {
       country: string,
       city: string,
     }
@@ -169,23 +171,27 @@ You can import types from other modules via `use` statement.
   </TabItem>
 </Tabs>
 
-In this example `./address` is a relative module path (with `.type` extension omitted). The path might point to nested directories, e.g., `./models/user`, as well as `..` for parent directories, e.g., `../../user`.
+In this example `./destination` is a relative module path (with `.type` extension omitted). The path might point to nested directories, e.g., `./models/shipment`, as well as `..` for parent directories, e.g., `../../shipment`.
 
 There are multiple ways to import types from other modules:
 
 ```type
 // Use multiple types from the same module:
-use ./address/{Address, ZipCode}
+use ./location/{Location, PostalCode}
 
-// Re-alias a type:
-use ./address/{Address as Addr}
+// Re-alias a type from a separate module:
+use ./place/{StreetAddress as Place}
 
-// Glob import:
-use ./address/*
+// Glob import from another separate module:
+use ./coordinates/*
 
-User: {
-  // Inline import:
-  address: ./address/Address,
+Venue: {
+  location: Location,
+  postalCode: PostalCode,
+  latitude: Latitude,
+  longitude: Longitude,
+  // Inline import from its own module:
+  venueLocation: ./venue/VenueLocation,
 }
 ```
 
@@ -358,7 +364,7 @@ Unlike regular comments, doc comments are preserved in generated code and transl
 //! Can span multiple lines.
 
 /// Type documentation.
-User: {
+Member: {
   /// Field documentation.
   displayName: string,
 }
@@ -372,7 +378,7 @@ User: {
      * Can span multiple lines. */
 
     /** Type documentation. */
-    export interface User {
+    export interface Member {
       /** Field documentation. */
       displayName: string;
     }
@@ -389,7 +395,7 @@ User: {
 
     /// Type documentation.
     #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-    pub struct User {
+    pub struct Member {
         /// Field documentation.
         #[serde(rename = "displayName")]
         pub display_name: String,
@@ -411,7 +417,7 @@ User: {
     from genotype import Model
 
 
-    class User(Model):
+    class Member(Model):
         """Type documentation."""
 
         display_name: str = Field(alias="displayName")
@@ -427,15 +433,15 @@ User: {
 
 Genotype has several scalar types available:
 
-- [Numeric][numeric-types]: `number`, `int`, `float` (as well as sized types, i.e., `i32`, `i64`, `f32` etc. [Read more.][numeric-types]).
+- Numeric: `number`, `int`, `float` (as well as sized types, i.e., `i32`, `i64`, `f32` etc{/* . [Read more](https://genotype-lang.org/docs/language/reference/#numeric-types). */})
 - Boolean: `boolean`.
 - String: `string`.
 
 ```type
-User: {
-  name: string,
-  age: int,
-  isActive: boolean,
+Player: {
+  username: string,
+  score: int,
+  isOnline: boolean,
 }
 ```
 
@@ -455,9 +461,9 @@ Result: {
 ...as well as `null`:
 
 ```type
-User: {
+Employee: {
   name: string,
-  age: int | null,
+  departmentId: int | null,
 }
 ```
 
@@ -523,9 +529,9 @@ A branded primitive type is translated to the corresponding idiomatic type in th
 An object type is a collection of named fields, each with its own type:
 
 ```type
-User: {
-  name: string,
-  age: int,
+Resident: {
+  fullName: string,
+  yearsAtAddress: int,
   address: Address,
 }
 ```
@@ -533,10 +539,10 @@ User: {
 Objects also can be nested:
 
 ```type
-User: {
-  name: string,
-  age: int,
-  address: {
+Event: {
+  title: string,
+  capacity: int,
+  venue: {
     country: string,
     city: string,
   },
@@ -555,9 +561,9 @@ The generated code will automatically transform into idiomatic names in the targ
 An object field can be optional, which means it may or may not be present in the object:
 
 ```type
-User: {
-  name: string,
-  age: int,
+Delivery: {
+  recipient: string,
+  weight: int,
   address?: Address,
 }
 ```
@@ -655,6 +661,9 @@ The languages that support extensions, such as TypeScript and Python, it would t
 You can extend with multiple object types:
 
 ```type
+AnimalMammal: { warmBlooded: boolean }
+AnimalPet: { name: string }
+
 AnimalCat: {
   ...AnimalMammal,
   ...AnimalPet,
@@ -703,7 +712,7 @@ Point: (float, float)
 Tuple elements can be union types, i.e., each element can have any type in the union:
 
 ```type
-Values: (string | int, boolean)
+Setting: (string | int, boolean)
 ```
 
 #### Records
@@ -711,15 +720,15 @@ Values: (string | int, boolean)
 A record type represents a collection of named fields, each with its own type, but unlike objects, records can have arbitrary field names:
 
 ```type
-Rows: { [int]: Row }
+Scores: { [int]: float }
 ```
 
 A record key can be `string`, `boolean`, a numeric type, or a reference to one of these primitives. You can also use references to branded primitives:
 
 ```type
-RowId: @int
+ProductId: @int
 
-Rows: { [RowId]: Row }
+ProductNames: { [ProductId]: string }
 ```
 
 A record with `string` as a key can omit the key type:
@@ -742,7 +751,7 @@ There are several special data types available in Genotype:
 When you need to represent a value of any type, similar to TypeScript's `any`, you can use the `any` type:
 
 ```type
-Response: {
+ApiResponse: {
   status: "ok" | "error",
   payload: any,
 }
@@ -753,7 +762,7 @@ Languages that has `any` type, it will translate into the corresponding syntax. 
 <Tabs>
   <TabItem label="TypeScript">
     ```ts
-    export interface Response {
+    export interface ApiResponse {
       status: "ok" | "error";
       payload: any;
     }
@@ -765,14 +774,14 @@ Languages that has `any` type, it will translate into the corresponding syntax. 
     use genotype_runtime::Any;
 
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub struct Response {
-        pub status: ResponseStatus,
+    pub struct ApiResponse {
+        pub status: ApiResponseStatus,
         pub payload: Any,
     }
 
     #[serde_literals]
     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-    pub enum ResponseStatus {
+    pub enum ApiResponseStatus {
         #[literal("ok")]
         Ok,
         #[literal("error")]
@@ -784,7 +793,7 @@ Languages that has `any` type, it will translate into the corresponding syntax. 
 
   <TabItem label="Python">
     ```python
-    class Response(Model):
+    class ApiResponse(Model):
         status: Literal["ok"] | Literal["error"]
         payload: Any
     ```
@@ -813,43 +822,43 @@ Message<Payload>: {
 Generics also can be used in object extensions, allowing to reuse the same base type with different payloads:
 
 ```type
-Message<Payload>: {
-  id: int,
-  timestamp: int,
+Notification<Payload>: {
+  notificationId: int,
+  sentAt: int,
   payload: Payload,
 }
 
-MessageJson: {
-  ...Message<string>
+NotificationText: {
+  ...Notification<string>
 }
 ```
 
 ...or even compose generic types with other generic types:
 
 ```type
-Message<Payload>: {
-  id: int,
-  timestamp: int,
+Request<Payload>: {
+  requestId: int,
+  timeout: int,
   payload: Payload,
 }
 
-MessageResponse: {
-  ...Message<Response<string>>
+RequestReply: {
+  ...Request<Reply<string>>
 }
 
-Response<Body>: ResponseSuccess<Body> | ResponseFailure
+Reply<Body>: ReplySuccess<Body> | ReplyFailure
 
-ResponseBase<Status>: {
+ReplyBase<Status>: {
   status: Status
 }
 
-ResponseSuccess<Body>: {
-  ...ResponseBase<"success">,
+ReplySuccess<Body>: {
+  ...ReplyBase<"success">,
   body: Body
 }
 
-ResponseFailure: {
-  ...ResponseBase<"failure">,
+ReplyFailure: {
+  ...ReplyBase<"failure">,
   error: string
 }
 ```
@@ -859,9 +868,9 @@ ResponseFailure: {
 Types can refer to themselves or form cycles across definitions and modules:
 
 ```type
-Node: {
+LinkedNode: {
   value: string,
-  next?: Node,
+  next?: LinkedNode,
 }
 
 Json: null | boolean | number | string | [Json] | { []: Json }
@@ -872,9 +881,9 @@ Targets add the indirection their type systems need. E.g., Rust boxes direct rec
 <Tabs>
   <TabItem label="TypeScript">
     ```ts
-    export interface Node {
+    export interface LinkedNode {
       value: string;
-      next?: Node | undefined;
+      next?: LinkedNode | undefined;
     }
 
     export type Json =
@@ -891,10 +900,10 @@ Targets add the indirection their type systems need. E.g., Rust boxes direct rec
   <TabItem label="Rust">
     ```rust
     #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-    pub struct Node {
+    pub struct LinkedNode {
         pub value: String,
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub next: Option<Box<Node>>,
+        pub next: Option<Box<LinkedNode>>,
     }
 
     #[serde_literals]
@@ -916,9 +925,9 @@ Targets add the indirection their type systems need. E.g., Rust boxes direct rec
     ```python
     type Json = Literal[None] | bool | float | str | list[Json] | dict[str, Json]
 
-    class Node(Model):
+    class LinkedNode(Model):
         value: str
-        next: Optional[Node] = None
+        next: Optional[LinkedNode] = None
     ```
 
   </TabItem>
@@ -938,38 +947,38 @@ For example:
 
 ```type
 #[discriminator = "status"]
-Response: ResponseSuccess | ResponseFailure
+JobResult: JobSuccess | JobFailure
 
-ResponseSuccess: {
+JobSuccess: {
   status: "success",
   body: string,
 }
 
-ResponseFailure: {
+JobFailure: {
   status: "failure",
   error: string,
 }
 
-Status:
+JobStatus:
   | #[default] #[variant = "Ok"] "success"
   | #[variant = "Nope"] "failure"
 ```
 
-Here `discriminator` adds Python union schema metadata.
+Here `discriminator` adds Python union schema metadata:
 
 ```py
-class ResponseSuccess(Model):
+class JobSuccess(Model):
     status: Literal["success"]
     body: str
 
 
-class ResponseFailure(Model):
+class JobFailure(Model):
     status: Literal["failure"]
     error: str
 
 
-type Response = Annotated[
-    ResponseSuccess | ResponseFailure,
+type JobResult = Annotated[
+    JobSuccess | JobFailure,
     Field(json_schema_extra={"discriminator": "status"}),
 ]
 
@@ -983,7 +992,7 @@ While `default` and `variant` customize Rust enums:
 
 #[serde_literals]
 #[derive(Debug, Default, Clone, Default, PartialEq, Serialize, Deserialize)]
-pub enum Status {
+pub enum JobStatus {
     #[default]
     #[literal("success")]
     Ok,
@@ -994,6 +1003,4 @@ pub enum Status {
 
 Generators ignore annotations they don't recognize.
 
-See the [Annotations in the Language Reference](/docs/language/reference/#annotations) for exact placement and value rules.
-
-[numeric-types]: /docs/language/reference/#numeric-types
+{/* See the [Annotations in the Language Reference](/docs/language/reference/#annotations) for exact placement and value rules. */}
