@@ -21,7 +21,8 @@ mod starter;
 use starter::*;
 
 const DOCS_URL: &str = "https://genotype-lang.org/docs/toolchain/cli/#gt-init";
-const CANVAS_HEIGHT: u16 = 16;
+const CANVAS_HEIGHT: u16 = 20;
+const TIP_BLOCK_HEIGHT: u16 = 4;
 
 #[derive(Args)]
 pub struct GtInitCommand {
@@ -354,6 +355,7 @@ impl InitApp {
                     + u16::from(self.mode.selected() == AnswerPackageMode::Each)
                     + self.paths.len() as u16
                     + 6
+                    + u16::from(self.starter().tip_block().is_some()) * TIP_BLOCK_HEIGHT
             }
 
             InitStep::Cancelled => 1,
@@ -409,7 +411,13 @@ impl InitApp {
 
         if self.step == InitStep::Complete {
             self.starter.render_as_answer(&mut y, frame, area);
-            render_success(frame, area, &mut y, &self.success_path);
+            render_success(
+                frame,
+                area,
+                &mut y,
+                &self.success_path,
+                self.starter().tip_block(),
+            );
             return;
         }
 
@@ -437,7 +445,13 @@ enum InitStep {
     Cancelled,
 }
 
-fn render_success(frame: &mut Frame, area: Rect, y: &mut u16, path: &str) {
+fn render_success(
+    frame: &mut Frame,
+    area: Rect,
+    y: &mut u16,
+    path: &str,
+    starter_tip: Option<StarterTipBlock>,
+) {
     *y += 1;
     frame.render_widget(
         Line::from(vec![
@@ -448,13 +462,30 @@ fn render_success(frame: &mut Frame, area: Rect, y: &mut u16, path: &str) {
         Rect::new(area.x, *y, area.width, 1),
     );
     *y += 2;
+    render_tip_block(
+        frame,
+        area,
+        y,
+        StarterTipBlock {
+            title: "To generate your types, run",
+            code: "gt build",
+        },
+    );
+
+    if let Some(starter_tip) = starter_tip {
+        *y += 1;
+        render_tip_block(frame, area, y, starter_tip);
+    }
+}
+
+fn render_tip_block(frame: &mut Frame, area: Rect, y: &mut u16, tip: StarterTipBlock) {
     frame.render_widget(
-        Line::from(vec!["i".yellow(), " To generate your types, run:".into()]),
+        Line::from(vec!["i".yellow(), format!(" {}:", tip.title).into()]),
         Rect::new(area.x, *y, area.width, 1),
     );
     *y += 2;
     frame.render_widget(
-        Line::from("    gt build").yellow().bold(),
+        Line::from(format!("    {}", tip.code)).yellow().bold(),
         Rect::new(area.x, *y, area.width, 1),
     );
     *y += 1;
