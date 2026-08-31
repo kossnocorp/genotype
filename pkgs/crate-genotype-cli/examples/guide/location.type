@@ -1,0 +1,6 @@
+Location: {
+  city: string,
+  country: string,
+}
+
+PostalCode: @string

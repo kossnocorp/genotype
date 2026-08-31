@@ -4,131 +4,600 @@
 //! and generate code implementing them in multiple programming languages, such
 //! as TypeScript, Rust, Python, and more.
 //!
-//! Comments at the beginning of a file prefixed with `//!` are treated as
-//! the module documentation and translated to the corresponding documentation
-//! comments in the target language.
+//! > Note:
+//! >
+//! > This guide doesn’t cover all the target language features, e.g., how
+//! > the Zod mode works when generating TypeScript code, or how legacy Python
+//! > type system support works.
+//! >
+//! > See corresponding target language guides for more details:
+//! >
+//! > - TypeScript: https://genotype-lang.org/docs/targets/typescript
+//! > - Rust: https://genotype-lang.org/docs/targets/rust
+//! > - Python: https://genotype-lang.org/docs/targets/python
+//!
+//! See online version of this guide: https://genotype-lang.org/docs/language
 
-/// Comments before types and fields prefixed with `///` are treated as
-/// documentation comments for a type or a field.
-User: {
-  /// Full user name field
-  name: /* Inline comments... */ string,
-  // ...just like `//` comments are allowed too, but won't be included in
-  // the generated source code.
+// Source Files
+// ============
+//
+// Genotype source files have `.type` extension. Each file is a module that
+// exports all its type definitions.
+
+Category: "fiction"
+
+Book: {
+  title: string,
+  subtitle?: string,
 }
 
-// Btw, that was a simple object type alias `User` with a single field `name`.
-// It will translate to a corresponding type in the target language. For
-// instance. In Python, that will define `class User`. In TypeScript, it will be
-// `interface User`. In Rust, `struct User`, etc.
+// > Tip:
+// >
+// > The convention is to use `snake_case` for source file names.
+// >
+// > The generated code will automatically transform into idiomatic names in
+// > the target language.
 
-// You can define type aliases for all kinds of types, for example, primitives
-// such as string, int, float, boolean, or null:
-Nothing: boolean
+// Type Aliases
+// ============
+//
+// Type aliases assign a type to a name. They are the basic building blocks of
+// Genotype.
 
-Account: {
-  /// You can define nested object types:
-  name: {
-    first: string,
-    /// Fields can be optional:
-    last?: string,
-  },
+Yeah: true
 
-  /// You can also assign the name inline, which will create a separate type:
-  address: Address: {
+Greeting: {
+  message: string
+}
+
+// > Tip:
+// > The convention is to use `PascalCase` for type names.
+// >
+// > The generated code will automatically transform into idiomatic names in
+// > the target language.
+
+// References
+// ----------
+//
+// You can reference type aliases in other type definitions:
+
+User: {
+  name: string,
+  address: Address,
+}
+
+Address: {
+  country: string,
+  city: string,
+}
+
+// The order of type definitions doesn't matter. You can reference types defined
+// later in the file.
+//
+// Languages that don't support forward references, such as Python, will
+// generate code that works around this limitation.
+
+// Inline Type Aliases
+// -------------------
+//
+// A type alias can also be defined inline, as part of another type definition:
+
+Customer: {
+  email: string,
+  billingAddress: BillingAddress: {
     street: string,
     city: string,
-    zip: string,
   },
 }
 
-Order: {
-  /// You can reference other types, including the ones defined inline:
+// Modules
+// =======
+//
+// Every Genotype file is a module that exports all type aliases defined in it.
+//
+// You can import types from other modules via `use` statement.
+//
+// `shipment.type`:
+
+use ./destination/Destination
+
+Shipment: {
+  trackingNumber: string,
+  destination: Destination,
+}
+
+// `destination.type`:
+//
+//     Destination: {
+//       country: string,
+//       city: string,
+//     }
+
+// In this example `./destination` is a relative module path (with `.type`
+// extension omitted). The path might point to nested directories, e.g.,
+// `./models/shipment`, as well as `..` for parent directories, e.g.,
+// `../../shipment`.
+//
+// There are multiple ways to import types from other modules:
+
+// Use multiple types from the same module:
+use ./location/{Location, PostalCode}
+
+// Re-alias a type from a separate module:
+use ./place/{StreetAddress as Place}
+
+// Glob import from another separate module:
+use ./coordinates/*
+
+Venue: {
+  location: Location,
+  postalCode: PostalCode,
+  latitude: Latitude,
+  longitude: Longitude,
+  // Inline import from its own module:
+  venueLocation: ./venue/VenueLocation,
+}
+
+// External Modules
+// ----------------
+//
+// Genotype currently have no fully-fledged package manager nor external module
+// system (it's planned though: https://github.com/kossnocorp/genotype/issues/161
+// & https://github.com/kossnocorp/genotype/issues/162). But you can map
+// certain paths to external modules per target language, e.g. to make
+// `shared_types` available in all targets, configure using
+// `[<target>.dependencies]` section in `genotype.toml`:
+//
+//     [ts]
+//     enabled = true
+//
+//     [ts.dependencies]
+//     genotype_core = "@genotype-lang/types"
+//
+//     [rs]
+//     enabled = true
+//
+//     [rs.dependencies]
+//     genotype_core = "genotype_core"
+//
+//     [py]
+//     enabled = true
+//
+//     [py.dependencies]
+//     genotype_core = "genotype_core"
+
+// Then you can import types from `genotype_core` in your Genotype files:
+//
+//     Diagnostic: {
+//       kind: "error" | "warning",
+//       message: string,
+//       node: Node,
+//     }
+
+// > Caution:
+// >
+// > Genotype doesn't guarantee that the external module availability nor
+// > type-check the imported types.
+// >
+// > Use it with caution, until a proper package manager and external module
+// > system is implemented.
+
+// Unions
+// ======
+//
+// One of the most basic yet powerful features of Genotype is the ability to
+// define union types:
+
+Response: ResponseSuccess | ResponseError
+
+ResponseSuccess: {
+  status: "success",
+  body: { user: User }
+}
+
+ResponseError: {
+  status: "failure" | "timeout",
+  error?: string,
+}
+
+// In languages that support union types, such as TypeScript, it will translate
+// into the corresponding syntax. Languages that don't, i.e., Rust, will
+// generate an enum type with variants for each union member:
+
+// Comments and Docs
+// =================
+//
+// Genotype supports line and block comments:
+
+// Line comment.
+
+/* A block comment. */
+
+Hello: /* Inline block comment */ "world" // EOL comment.
+
+// Line and block comments are omitted in generated code.
+
+// Doc Comments
+// ------------
+//
+// Unlike regular comments, doc comments are preserved in generated code and
+// translated into the target language's documentation format.
+//
+// Module documentation:
+//
+//     //! Module documentation.
+//     //!
+//     //! Can span multiple lines.
+
+/// Type documentation.
+Member: {
+  /// Field documentation.
+  displayName: string,
+}
+
+// Data Types
+// ==========
+
+// Primitives
+// ----------
+//
+// Genotype has several scalar types available:
+//
+// - Numeric: `number`, `int`, `float` (as well as sized types, i.e., `i32`,
+//   `i64`, `f32` etc.
+// - Boolean: `boolean`.
+// - String: `string`.
+
+Player: {
+  username: string,
+  score: int,
+  isOnline: boolean,
+}
+
+// Same as in TypeScript, Genotype also supports literal types:
+
+Answer: 42
+
+Yes: true
+No: false
+
+Result: {
+  status: "ok"
+}
+
+// ...as well as `null`:
+
+Employee: {
+  name: string,
+  departmentId: int | null,
+}
+
+// > Note:
+// >
+// > While `null` is usually a mistake when it comes to programming languages
+// > design, in Genotype `null` allows to express data structures already
+// > present in the target languages.
+// >
+// > Even JSON has `null`, so we had no choice but to have it.
+
+// Branded Primitives
+// ------------------
+//
+// You can brand a primitive to create a distinct type that isn't
+// interchangeable with the original primitive:
+
+UserId: @string
+
+RowId: @int
+
+// You can brand any primitive, including booleans, sized integers, and
+// floating-point types.
+//
+// A branded primitive type is translated to the corresponding idiomatic type
+// in the target language:
+
+// Composite Types
+// ---------------
+
+// Objects
+// -------
+//
+// An object type is a collection of named fields, each with its own type:
+
+Resident: {
+  fullName: string,
+  yearsAtAddress: int,
   address: Address,
-  /// ...or the ones defined later:
-  cart: Card,
 }
 
-Card: {
-  /// Btw, this is how you define arrays:
-  items: [Item],
+// Objects also can be nested:
 
-  /// ...tuples:
-  fees: (float, float, float),
-
-  /// ...and maps:
-  discounts: { [string]: float },
-  /// Unless the key is an int, float, or bool, you can skip the key type to make
-  /// it a string:
-  prices: { []: float },
-}
-
-/// You can reuse types...
-ItemBase: {
+Event: {
   title: string,
-  price: float,
+  capacity: int,
+  venue: {
+    country: string,
+    city: string,
+  },
 }
 
-ItemBook: {
-  // ...by extending other types:
-  ...ItemBase,
-  isbn: string,
+// > Tip:
+// >
+// > The convention is to use `camelCase` for field names.
+// >
+// > The generated code will automatically transform into idiomatic names in
+// > the target language.
+
+// Optional Object Fields
+// ----------------------
+//
+// An object field can be optional, which means it may or may not be present in
+// the object:
+
+Delivery: {
+  recipient: string,
+  weight: int,
+  address?: Address,
 }
 
-ItemGame: {
-  ...ItemBase,
-  platform: string,
+// Object Extensions
+// -----------------
+//
+// Object fields can be extended with other object types:
+
+MessageBase: {
+  id: int,
+  timestamp: int,
 }
 
-/// You can union types:
-Item: ItemBook | ItemGame
-
-Payload: {
-  /// You can use literal types to define constants:
-  version: 1,
-  /// And branded types to define unique identifiers:
-  id: PayloadId: @string,
+MessageSuccess: {
+  ...MessageBase,
+  status: "success",
 }
 
-/// There's also a special type any that will translate into any JSON value:
-JSON: any
-
-// Genotype features module system, so you can import types from other files:
-// use ./module/FullName
-
-Contact: {
-  /// And use them in your types:
-  // name: FullName,
-  /// You can also import types inline:
-  email: ./module/Email,
+MessageFailure: {
+  ...MessageBase,
+  status: "failure",
+  error: string,
 }
 
-// You can import multiple types, as well as rename them:
-use ./module/{FullName, Email as EmailAddress}
+// The languages that support extensions, such as TypeScript and Python, it
+// would translate into the corresponding syntax. Languages that don't, i.e.,
+// Rust, will copy the fields from the base type into the extended type.
 
-// Or import all types from a module implicitly:
-use ./module/*
+// You can extend with multiple object types:
 
-// ...in the target language it will be translated to corresponding imports,
-// e.g. `use super::module` and `module::Zip` in Rust:
-ZipAlias: Zip
+AnimalMammal: { warmBlooded: boolean }
+AnimalPet: { name: string }
 
-// Finally, it's worth mentioning that Genotype supports annotating types and
-// fields with attributes, which can be used to add metadata.
-
-#[discriminator = "type"]
-Animal: Dog | Cat
-
-Dog: {
-  type: "dog",
+AnimalCat: {
+  ...AnimalMammal,
+  ...AnimalPet,
 }
 
-Cat: {
-  type: "cat",
+// Arrays
+// ------
+//
+// An array type represents a list of elements of a given type:
+
+Post: {
+  title: string,
+  tags: [string],
 }
 
-// For now, only the `discriminator` attribute is supported, which will assign
-// discriminator to the field in Python.
+// The element type can be a union, i.e., each element can have any type in the
+// union:
 
-// That is is. Thank you for reading the guide! For more examples, see
-// the `examples` directory: https://github.com/kossnocorp/genotype
+Values: [string | int | boolean]
+
+// In languages that don't allow mixed types in array-like structures, such as
+// Rust, Genotype will generate a `Vec` of an enum type:
+//
+//     pub type Values = Vec<ValuesItem>;
+//
+//     #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+//     #[serde(untagged)]
+//     pub enum ValuesItem {
+//         String(String),
+//         Int(i64),
+//         Boolean(bool),
+//     }
+
+// Tuples
+// ------
+//
+// A tuple type represents a fixed-length list of elements of given types:
+
+Point: (float, float)
+
+// Tuple elements can be union types, i.e., each element can have any type in
+// the union:
+
+Setting: (string | int, boolean)
+
+// Records
+// -------
+//
+// A record type represents a collection of named fields, each with its own
+// type, but unlike objects, records can have arbitrary field names:
+
+Scores: { [int]: float }
+
+// A record key can be `string`, `boolean`, a numeric type, or a reference to
+// one of these primitives. You can also use references to branded primitives:
+
+ProductId: @int
+
+ProductNames: { [ProductId]: string }
+
+// A record with `string` as a key can omit the key type:
+
+AliasMap: { []: string }
+
+// > Caution:
+// >
+// > Composite type references aren't supported as record keys (not yet: https://github.com/kossnocorp/genotype/issues/159).
+
+// Special Data Types
+// ------------------
+//
+// There are several special data types available in Genotype:
+
+// Any Type
+// --------
+//
+// When you need to represent a value of any type, similar to TypeScript's
+// `any`, you can use the `any` type:
+
+ApiResponse: {
+  status: "ok" | "error",
+  payload: any,
+}
+
+// Languages that has `any` type, it will translate into the corresponding
+// syntax. Languages that don't, i.e., Rust, will use Genotype runtime to
+// represent it.
+
+// > Caution: Don't abuse it!
+// >
+// > The `any` type is not meant to be used to silence type errors, like it
+// > often utilized in TypeScript. It meant to represent values of any type,
+// > such as JSON payloads, or data from untyped sources.
+// >
+// > Use it sparingly!
+
+// Generic Types
+// =============
+//
+// Genotype supports basic generic types, enabling more of the type composition
+// and reuse.
+
+Message<Payload>: {
+  id: int,
+  timestamp: int,
+  payload: Payload,
+}
+
+// Generics also can be used in object extensions, allowing to reuse the same
+// base type with different payloads:
+
+Notification<Payload>: {
+  notificationId: int,
+  sentAt: int,
+  payload: Payload,
+}
+
+NotificationText: {
+  ...Notification<string>
+}
+
+// ...or even compose generic types with other generic types:
+
+Request<Payload>: {
+  requestId: int,
+  timeout: int,
+  payload: Payload,
+}
+
+RequestReply: {
+  ...Request<Reply<string>>
+}
+
+Reply<Body>: ReplySuccess<Body> | ReplyFailure
+
+ReplyBase<Status>: {
+  status: Status
+}
+
+ReplySuccess<Body>: {
+  ...ReplyBase<"success">,
+  body: Body
+}
+
+ReplyFailure: {
+  ...ReplyBase<"failure">,
+  error: string
+}
+
+// Recursive Types
+// ===============
+//
+// Types can refer to themselves or form cycles across definitions and modules:
+
+LinkedNode: {
+  value: string,
+  next?: LinkedNode,
+}
+
+Json: null | boolean | number | string | [Json] | { []: Json }
+
+// Targets add the indirection their type systems need. E.g., Rust boxes direct
+// recursive fields, while TypeScript's Zod mode uses lazy schemas or object
+// getters.
+
+// Annotations
+// ===========
+//
+// Annotations add structured metadata to types, fields, and union members. Most
+// annotations belong to a specific target.
+//
+// See the target annotation sections in corresponding target language guides
+// for more details:
+//
+// - TypeScript: https://genotype-lang.org/docs/targets/typescript#annotations
+// - Rust: https://genotype-lang.org/docs/targets/rust#annotations
+// - Python: https://genotype-lang.org/docs/targets/python#annotations
+//
+// For example:
+
+#[discriminator = "status"]
+JobResult: JobSuccess | JobFailure
+
+JobSuccess: {
+  status: "success",
+  body: string,
+}
+
+JobFailure: {
+  status: "failure",
+  error: string,
+}
+
+JobStatus:
+  | #[default] #[variant = "Ok"] "success"
+  | #[variant = "Nope"] "failure"
+
+// Here `discriminator` adds Python union schema metadata:
+//
+//     class JobSuccess(Model):
+//         status: Literal["success"]
+//         body: str
+//
+//
+//     class JobFailure(Model):
+//         status: Literal["failure"]
+//         error: str
+//
+//
+//     type JobResult = Annotated[
+//         JobSuccess | JobFailure,
+//         Field(json_schema_extra={"discriminator": "status"}),
+//     ]
+//
+//     # ...
+
+// While `default` and `variant` customize Rust enums:
+//
+//     // ...
+//
+//     #[serde_literals]
+//     #[derive(Debug, Default, Clone, Default, PartialEq, Serialize, Deserialize)]
+//     pub enum JobStatus {
+//         #[default]
+//         #[literal("success")]
+//         Ok,
+//         #[literal("failure")]
+//         Failure,
+//     }
+
+// Generators ignore annotations they don't recognize.

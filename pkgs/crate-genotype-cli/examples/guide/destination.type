@@ -1,0 +1,4 @@
+Destination: {
+  country: string,
+  city: string,
+}

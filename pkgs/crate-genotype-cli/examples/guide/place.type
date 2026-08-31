@@ -1,0 +1,4 @@
+StreetAddress: {
+  street: string,
+  city: string,
+}
