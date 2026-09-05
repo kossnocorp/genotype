@@ -42,6 +42,11 @@ export default defineConfig({
           },
         },
       ],
+      logo: {
+        light: "./src/assets/logotype-light.svg",
+        dark: "./src/assets/logotype-dark.svg",
+        replacesTitle: true
+      },
       pagefind: false,
       social: [
         {

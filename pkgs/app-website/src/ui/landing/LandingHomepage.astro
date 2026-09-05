@@ -2,16 +2,19 @@
 import PlaygroundDemo from "../playground/PlaygroundDemo.astro";
 import Code from "#/ui/core/Code.astro";
 import Tabs from "#/ui/core/Tabs.astro";
+import LogotypeLight from "#/assets/logotype-light.svg";
+import LogotypeDark from "#/assets/logotype-dark.svg";
 ---
 
 <div class="grow pd-x-layout flex flex-col">
   <div class="flex flex-col items-center py-15 gap-6">
     <header class="layout-container text-center flex flex-col gap-2">
-      <h1 class="text-4xl font-display leading-snug">
-        <span class="text-6xl">Genotype</span><br />
-        <span class="text-gray-600 dark:text-gray-300 font-medium"
-          >Programming Language</span
-        >
+      <h1 class="heading text-4xl font-display leading-snug">
+        <LogotypeLight class="logotype dark:hidden" />
+        <LogotypeDark class="logotype hidden dark:block" />
+        <span class="text-gray-600 dark:text-gray-300 font-medium">
+          Programming Language
+        </span>
       </h1>
 
       <p
@@ -67,6 +70,16 @@ import Tabs from "#/ui/core/Tabs.astro";
 
   <style>
     @reference "#/styles/global.css";
+
+    .heading {
+      @apply font-sans;
+        --font-display--font-variation-settings: "wdth" 32;
+    }
+
+    .logotype {
+      @apply mx-auto;
+      height: 4rem;
+    }
 
     .button.is-get-started {
       @apply text-base px-4;
