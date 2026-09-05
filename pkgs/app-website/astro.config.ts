@@ -4,12 +4,44 @@ import genotypeGrammar from "@genotype-lang/grammar-tm" with { type: "json" };
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 
-const localHost = process.env.LOCAL_HOST
+const localHost = process.env.LOCAL_HOST;
 
 export default defineConfig({
   integrations: [
     starlight({
       title: "Genotype",
+      head: [
+        {
+          tag: "link",
+          attrs: {
+            rel: "icon",
+            href: "/favicon.ico",
+            sizes: "32x32",
+          },
+        },
+        {
+          tag: "link",
+          attrs: {
+            rel: "icon",
+            href: "/favicon.svg",
+            type: "image/svg+xml",
+          },
+        },
+        {
+          tag: "link",
+          attrs: {
+            rel: "apple-touch-icon",
+            href: "/apple-touch-icon.png",
+          },
+        },
+        {
+          tag: "link",
+          attrs: {
+            rel: "manifest",
+            href: "/manifest.webmanifest",
+          },
+        },
+      ],
       pagefind: false,
       social: [
         {
@@ -77,8 +109,8 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss() as any],
     server: {
-      allowedHosts: localHost ? [localHost] : []
-    }
+      allowedHosts: localHost ? [localHost] : [],
+    },
   },
 
   adapter: cloudflare(),
