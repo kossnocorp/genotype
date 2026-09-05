@@ -4,6 +4,8 @@ import genotypeGrammar from "@genotype-lang/grammar-tm" with { type: "json" };
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 
+const localHost = process.env.LOCAL_HOST
+
 export default defineConfig({
   integrations: [
     starlight({
@@ -74,6 +76,9 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss() as any],
+    server: {
+      allowedHosts: localHost ? [localHost] : []
+    }
   },
 
   adapter: cloudflare(),

@@ -35,3 +35,4 @@ tmp/
 !.env.*.example
 .envrc
 .direnv
+mise.local.toml

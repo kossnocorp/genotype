@@ -4,7 +4,148 @@ description: "TypeScript target configuration for the Genotype programming langu
 sidebar:
   order: 3
   label: "Configuration"
-draft: true
 ---
 
-TODO
+To configure TypeScript target, use `[ts]` in `genotype.toml`.
+
+This configuration reference lists all available TypeScript configuration options.
+
+See the [Genotype Configuration](/docs/toolchain/configuration) for global settings and [Common Target Options](/docs/toolchain/configuration#common-target-options).
+
+## Basic
+
+### `ts.enabled` - Enable Target
+
+Set to `true` to generate TypeScript. Defaults to `false`; see [enable target](/docs/toolchain/configuration#targetenabled---enable-target).
+
+```toml
+[ts]
+enabled = true
+```
+
+## Generation
+
+### `ts.mode` - Generation Mode
+
+`mode` selects what Genotype generates:
+
+- `"types"` (default): TypeScript type definitions.
+- `"zod"`: [Zod](https://www.npmjs.com/package/zod) schemas and inferred types for runtime validation. Adds Zod to the generated package's dependencies.
+
+```toml
+[ts]
+enabled = true
+mode = "zod"
+```
+
+See the [TypeScript guide](/docs/targets/typescript) for generated code examples.
+
+### `ts.prefer` - Interfaces or Type Aliases
+
+`prefer` selects how object type definitions are rendered in `types` mode:
+
+- `"interface"` (default): Generate interfaces, e.g., `interface Book { ... }`.
+- `"alias"`: Generate type aliases, e.g., `type Book = { ... }`.
+
+```toml
+[ts]
+enabled = true
+prefer = "alias"
+```
+
+### `ts.ext` - Import Extensions
+
+`ext` selects the extension used in generated local imports and re-exports:
+
+- `"js"` (default): JavaScript extensions, e.g., `"./book.js"`.
+- `"ts"`: TypeScript extensions, e.g., `"./book.ts"`.
+- `"none"`: No extension, e.g., `"./book"`.
+
+```toml
+[ts]
+enabled = true
+ext = "none"
+```
+
+Generated source files always have the `.ts` extension.
+
+### `[ts.naming]` - Source File and Directory Names
+
+`naming.source_file` controls generated file names. It defaults to `"camelCase"`.
+
+`naming.source_dir` controls generated directory names. When omitted, it follows `naming.source_file`.
+
+Both accept:
+
+- `"camelCase"`
+- `"PascalCase"`
+- `"snake_case"`
+- `"kebab-case"`
+
+```toml
+[ts.naming]
+source_file = "camelCase"
+source_dir = "kebab-case"
+```
+
+This turns `shop_goods/order_item.type` into `shop-goods/orderItem.ts`. Generated local import paths use the same naming rules.
+
+## Package
+
+### `ts.package` - Package Generation
+
+Overrides package generation for TypeScript. Inherits the global setting when omitted; see [target package generation](/docs/toolchain/configuration#targetpackage---package-generation).
+
+### `ts.dist` - Output Directory
+
+Defaults to `"ts"`, relative to the global output directory. See [target output directory](/docs/toolchain/configuration#targetdist---output-directory).
+
+### `[ts.manifest]` - package.json
+
+[Manifest options](/docs/toolchain/configuration#targetmanifest---package-metadata) in `[ts.manifest]` become fields in `package.json`. Package name and version overrides go directly in that table:
+
+```toml
+[ts.manifest]
+name = "@bookstore/types"
+version = "0.2.0"
+private = true
+
+[ts.manifest.dependencies]
+"@bookstore/shared-types" = "^1.0.0"
+```
+
+The generated package uses ES modules, with source files under `src` and an `index.ts` entry point. Its default name uses `kebab-case`. See [package generation](/docs/toolchain/configuration#targetpackage---package-generation) for layout controls.
+
+### `[ts.tsconfig]` - tsconfig.json
+
+`tsconfig` is an optional table written as `tsconfig.json` in the TypeScript package directory. When omitted, no `tsconfig.json` is generated:
+
+```toml
+[ts.tsconfig]
+include = ["src/**/*.ts"]
+
+[ts.tsconfig.compilerOptions]
+strict = true
+noEmit = true
+module = "NodeNext"
+moduleResolution = "NodeNext"
+```
+
+The table is converted directly to JSON, without adding compiler option defaults. It has no effect when [package generation](/docs/toolchain/configuration#targetpackage---package-generation) is disabled.
+
+## Modules
+
+### `[ts.dependencies]` - External Modules
+
+Values in [external modules](/docs/toolchain/configuration#targetdependencies---external-modules) are JavaScript package import paths:
+
+```toml
+[ts.dependencies]
+shared_types = "@bookstore/shared-types"
+```
+
+## Formatting
+
+### `ts.formatters` - Formatters
+
+Adds formatters for TypeScript; defaults to `[]`. See [target formatters](/docs/toolchain/configuration#targetformatters---formatters) for execution order and [formatter configuration](/docs/toolchain/configuration#formatters---formatters) for commands and presets.

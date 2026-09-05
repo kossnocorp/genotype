@@ -4,7 +4,142 @@ description: "Python target configuration for the Genotype programming language.
 sidebar:
   order: 3
   label: "Configuration"
-draft: true
 ---
 
-TODO
+import { Tabs, TabItem, Aside } from "@astrojs/starlight/components";
+
+To configure Python target, use `[py]` in `genotype.toml`.
+
+This configuration reference lists all available Python configuration options.
+
+See the [Genotype Configuration](/docs/toolchain/configuration) for global settings and [Common Target Options](/docs/toolchain/configuration#common-target-options).
+
+## Basic
+
+### `py.enabled` - Enable Target
+
+Set to `true` to generate Python. Defaults to `false`; see [enable target](/docs/toolchain/configuration#targetenabled---enable-target).
+
+```toml
+[py]
+enabled = true
+```
+
+## Generation
+
+### `py.version` - Python Version
+
+`version` selects the Python syntax generation mode:
+
+- `"latest"` (default): Python 3.13 and later, using modern syntax such as `type` aliases.
+- `"legacy"`: Python 3.8 and later, using older typing constructs and [typing-extensions](https://pypi.org/project/typing-extensions/) where needed.
+
+```toml
+[py]
+enabled = true
+version = "latest"
+```
+
+<Aside>
+  `py.version` selects the language mode. To set the Python package's release version, use the
+  [global version](/docs/toolchain/configuration#version---package-version) or [Python
+  manifest](#pymanifest---pyprojecttoml).
+</Aside>
+
+## Package
+
+### `py.package` - Package Generation
+
+Overrides package generation for Python. Inherits the global setting when omitted; see [target package generation](/docs/toolchain/configuration#targetpackage---package-generation).
+
+### `py.dist` - Output Directory
+
+Defaults to `"py"`, relative to the global output directory. See [target output directory](/docs/toolchain/configuration#targetdist---output-directory).
+
+### `py.manager` - Package Manager
+
+`manager` selects the generated [Python manifest](#pymanifest---pyprojecttoml) format:
+
+- `"poetry"` (default): Poetry metadata under `[tool.poetry]`.
+- `"uv"`: Package metadata under `[project]`.
+
+```toml
+[py]
+enabled = true
+version = "latest"
+manager = "uv"
+```
+
+### `py.module` - Module Name
+
+`module` sets the generated Python package's importable module name. It defaults to `"module"`:
+
+```toml
+[py]
+enabled = true
+version = "latest"
+module = "bookstore_types"
+```
+
+With [package generation](/docs/toolchain/configuration#targetpackage---package-generation) enabled, source files go into this directory inside the [target output directory](/docs/toolchain/configuration#targetdist---output-directory), e.g., `dist/py/bookstore_types`.
+
+### `[py.manifest]` - pyproject.toml
+
+[Manifest options](/docs/toolchain/configuration#targetmanifest---package-metadata) in `[py.manifest]` follow the `pyproject.toml` structure. The default package name uses `kebab-case`. The location of package name and version overrides depends on [manager](#pymanager---package-manager):
+
+<Tabs>
+  <TabItem label="Poetry">
+    ```toml
+    [py]
+    enabled = true
+    version = "latest"
+    manager = "poetry"
+
+    [py.manifest.tool.poetry]
+    name = "bookstore-types"
+    version = "0.2.0"
+    description = "Shared bookstore types"
+
+    [py.manifest.tool.poetry.dependencies]
+    bookstore-shared = "^1.0.0"
+    ```
+
+  </TabItem>
+  <TabItem label="uv">
+    ```toml
+    [py]
+    enabled = true
+    version = "latest"
+    manager = "uv"
+
+    [py.manifest.project]
+    name = "bookstore-types"
+    version = "0.2.0"
+    description = "Shared bookstore types"
+    ```
+
+  </TabItem>
+</Tabs>
+
+With `uv`, Genotype replaces `project.dependencies` with its detected runtime dependencies. Additional dependencies configured in that array aren't preserved.
+
+## Modules
+
+### `[py.dependencies]` - External Modules
+
+Values in [dependencies](/docs/toolchain/configuration#targetdependencies---external-modules) are Python module import paths, which may differ from their distribution names:
+
+```toml
+[py]
+enabled = true
+version = "latest"
+
+[py.dependencies]
+shared_types = "bookstore_shared"
+```
+
+## Formatting
+
+### `py.formatters` - Formatters
+
+Adds formatters for Python; defaults to `[]`. See [target formatters](/docs/toolchain/configuration#targetformatters---formatters) for execution order and [formatter configuration](/docs/toolchain/configuration#formatters---formatters) for commands and presets.

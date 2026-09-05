@@ -340,6 +340,8 @@ In languages that support union types, such as TypeScript, it will translate int
   </TabItem>
 </Tabs>
 
+See more details on the union translation to [TypeScript](/docs/targets/typescript#unions), [Rust](/docs/targets/rust#unions), and [Python](/docs/targets/python#unions).
+
 ## Comments and Docs
 
 Genotype supports line and block comments:
@@ -475,6 +477,8 @@ Even JSON has `null`, so we had no choice but to have it.
 
 </Aside>
 
+See more details on the primitive type translation to [TypeScript](/docs/targets/typescript#primitives), [Rust](/docs/targets/rust#primitives), and [Python](/docs/targets/python#primitives).
+
 #### Branded Primitives
 
 You can brand a primitive to create a distinct type that isn't interchangeable with the original primitive:
@@ -522,6 +526,8 @@ A branded primitive type is translated to the corresponding idiomatic type in th
   </TabItem>
 </Tabs>
 
+See more details on the branded primitive translation to [TypeScript](/docs/targets/typescript#branded-primitives), [Rust](/docs/targets/rust#branded-primitives), and [Python](/docs/targets/python#branded-primitives).
+
 ### Composite Types
 
 #### Objects
@@ -556,6 +562,8 @@ The generated code will automatically transform into idiomatic names in the targ
 
 </Aside>
 
+See more details on the object translation to [TypeScript](/docs/targets/typescript#objects), [Rust](/docs/targets/rust#objects), and [Python](/docs/targets/python#objects).
+
 ##### Optional Object Fields
 
 An object field can be optional, which means it may or may not be present in the object:
@@ -567,6 +575,8 @@ Delivery: {
   address?: Address,
 }
 ```
+
+See more details on the optional object field translation to [TypeScript](/docs/targets/typescript#optional-object-fields), [Rust](/docs/targets/rust#optional-object-fields), and [Python](/docs/targets/python#optional-object-fields).
 
 ##### Object Extensions
 
@@ -670,6 +680,8 @@ AnimalCat: {
 }
 ```
 
+See more details on the object extension translation to [TypeScript](/docs/targets/typescript#object-extensions), [Rust](/docs/targets/rust#object-extensions), and [Python](/docs/targets/python#object-extensions).
+
 #### Arrays
 
 An array type represents a list of elements of a given type:
@@ -701,6 +713,8 @@ pub enum ValuesItem {
 }
 ```
 
+See more details on the array translation to [TypeScript](/docs/targets/typescript#arrays), [Rust](/docs/targets/rust#arrays), and [Python](/docs/targets/python#arrays).
+
 #### Tuples
 
 A tuple type represents a fixed-length list of elements of given types:
@@ -714,6 +728,8 @@ Tuple elements can be union types, i.e., each element can have any type in the u
 ```type
 Setting: (string | int, boolean)
 ```
+
+See more details on the tuple translation to [TypeScript](/docs/targets/typescript#tuples), [Rust](/docs/targets/rust#tuples), and [Python](/docs/targets/python#tuples).
 
 #### Records
 
@@ -741,6 +757,8 @@ AliasMap: { []: string }
   Composite type references aren't supported as record keys ([not
   yet](https://github.com/kossnocorp/genotype/issues/159)).
 </Aside>
+
+See more details on the record translation to [TypeScript](/docs/targets/typescript#records), [Rust](/docs/targets/rust#records), and [Python](/docs/targets/python#records).
 
 ### Special Data Types
 
@@ -807,6 +825,8 @@ Use it sparingly!
 
 </Aside>
 
+See more details on the any type translation to [TypeScript](/docs/targets/typescript#any-type), [Rust](/docs/targets/rust#any-type), and [Python](/docs/targets/python#any-type).
+
 ## Generic Types
 
 Genotype supports basic generic types, enabling more of the type composition and reuse.
@@ -862,6 +882,8 @@ ReplyFailure: {
   error: string
 }
 ```
+
+See more details on the generic type translation to [TypeScript](/docs/targets/typescript#generic-types), [Rust](/docs/targets/rust#generic-types), and [Python](/docs/targets/python#generic-types).
 
 ## Recursive Types
 
@@ -933,15 +955,11 @@ Targets add the indirection their type systems need. E.g., Rust boxes direct rec
   </TabItem>
 </Tabs>
 
+See more details on the recursive type translation to [TypeScript](/docs/targets/typescript#recursive-types), [Rust](/docs/targets/rust#recursive-types), and [Python](/docs/targets/python#recursive-types).
+
 ## Annotations
 
 Annotations add structured metadata to types, fields, and union members. Most annotations belong to a specific target.
-
-See the target annotation sections in corresponding target language guides for more details:
-
-- [TypeScript](/docs/targets/typescript#annotations)
-- [Rust](/docs/targets/rust#annotations)
-- [Python](/docs/targets/python#annotations)
 
 For example:
 
@@ -960,7 +978,7 @@ JobFailure: {
 }
 
 JobStatus:
-  | #[default] #[variant = "Ok"] "success"
+  | #[variant = "Ok"] "success"
   | #[variant = "Nope"] "failure"
 ```
 
@@ -985,15 +1003,14 @@ type JobResult = Annotated[
 # ...
 ```
 
-While `default` and `variant` customize Rust enums:
+While `variant` customizes Rust enum variant names:
 
 ```rust
 // ...
 
 #[serde_literals]
-#[derive(Debug, Default, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum JobStatus {
-    #[default]
     #[literal("success")]
     Ok,
     #[literal("failure")]
@@ -1004,3 +1021,5 @@ pub enum JobStatus {
 Generators ignore annotations they don't recognize.
 
 {/* See the [Annotations in the Language Reference](/docs/language/reference/#annotations) for exact placement and value rules. */}
+
+See more details on the annotation translation to [TypeScript](/docs/targets/typescript#annotations), [Rust](/docs/targets/rust#annotations), and [Python](/docs/targets/python#annotations).
