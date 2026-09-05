@@ -6,4 +6,351 @@ sidebar:
   label: "Overview"
 ---
 
-TODO
+import { Aside } from "@astrojs/starlight/components";
+
+Genotype generates idiomatic Rust code that can be used directly in the application or published as a package.
+
+This overview shows how Genotype types translate to Rust, target-specific features and configuration options.
+
+See the [Quick Genotype Language Tour](/docs/language) for the language overview and [Rust Configuration](/docs/targets/rust/configuration) for detailed configuration reference.
+
+## Translation
+
+The following examples give an overview of how Genotype translates into Rust.
+
+<Aside type="note">
+  Feature examples omit imports. Genotype includes the required
+  [Serde](https://crates.io/crates/serde), [Litty](https://crates.io/crates/litty), [Genotype
+  runtime](https://crates.io/crates/genotype_runtime), and standard library imports. The [complete
+  module](#complete-module) below shows them together.
+</Aside>
+
+### Complete Module
+
+This source combines an object, a literal field, an optional field, a record, and `any`:
+
+```type
+Book: {
+  kind: "book",
+  displayTitle: string,
+  subtitle?: string,
+  ratings: { []: int },
+  extra: any,
+}
+```
+
+The generated module includes its type definitions and imports:
+
+```rust
+use std::collections::BTreeMap;
+use genotype_runtime::Any;
+use litty::serde_literals;
+use serde::{Deserialize, Serialize};
+
+#[serde_literals]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[literals(kind = "book")]
+pub struct Book {
+    #[serde(rename = "displayTitle")]
+    pub display_title: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub subtitle: Option<String>,
+    pub ratings: BTreeMap<String, i64>,
+    pub extra: Any,
+}
+```
+
+### Unions
+
+Genotype unions translate into Rust enums. Non-literal unions use untagged serialization to preserve the original data shape.
+
+```type
+Value: string | int
+```
+
+```rust
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Value {
+    String(String),
+    Int(i64),
+}
+```
+
+### Primitives
+
+#### Numeric Types
+
+##### `number`
+
+Genotype `number` translates into the Rust `f64` type.
+
+```type
+Amount: number
+```
+
+```rust
+pub type Amount = f64;
+```
+
+##### `int`
+
+Genotype `int` translates into the Rust `i64` type.
+
+```type
+Count: int
+```
+
+```rust
+pub type Count = i64;
+```
+
+##### `float`
+
+Genotype `float` translates into the Rust `f64` type.
+
+```type
+Ratio: float
+```
+
+```rust
+pub type Ratio = f64;
+```
+
+##### Sized Numeric Types
+
+Sized Genotype numeric types translate directly to their Rust counterparts.
+
+```type
+SmallCount: i16
+PreciseRatio: f32
+LargeCount: i128
+```
+
+```rust
+pub type SmallCount = i16;
+
+pub type PreciseRatio = f32;
+
+pub type LargeCount = i128;
+```
+
+#### Booleans
+
+Genotype `boolean` translates into the Rust `bool` type.
+
+```type
+Ready: boolean
+```
+
+```rust
+pub type Ready = bool;
+```
+
+#### Strings
+
+Genotype `string` translates into the Rust owned `String` type.
+
+```type
+Title: string
+```
+
+```rust
+pub type Title = String;
+```
+
+#### Literal Types
+
+Genotype literal types translate into named Rust structs with attributes that preserve the exact serialized value.
+
+```type
+Category: "fiction"
+```
+
+```rust
+#[serde_literal("fiction")]
+#[derive(Serialize, Deserialize)]
+pub struct Category;
+```
+
+#### Null
+
+Genotype `null` translates into a Rust type that serializes as null.
+
+```type
+Empty: null
+```
+
+```rust
+#[serde_literal(null)]
+#[derive(Serialize, Deserialize)]
+pub struct Empty;
+```
+
+#### Branded Primitives
+
+Genotype branded primitives translate into Rust newtype structs, distinct from their underlying primitive.
+
+```type
+BookId: @string
+```
+
+```rust
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct BookId(pub String);
+```
+
+### Composite Types
+
+#### Objects
+
+Genotype objects translate into public Rust structs with [Serde](https://crates.io/crates/serde) support. Nested objects become separate named structs.
+
+```type
+Book: { title: string }
+```
+
+```rust
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Book {
+    pub title: String,
+}
+```
+
+##### Optional Object Fields
+
+Optional Genotype object fields translate into Rust `Option<T>` fields. Absent values are omitted during serialization.
+
+```type
+Draft: { subtitle?: string }
+```
+
+```rust
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Draft {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub subtitle: Option<String>,
+}
+```
+
+##### Object Extensions
+
+Genotype object extensions translate into Rust structs containing the base struct's fields.
+
+```type
+Named: { name: string }
+NamedBook: { ...Named, pages: int }
+```
+
+```rust
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Named {
+    pub name: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct NamedBook {
+    pub name: String,
+    pub pages: i64,
+}
+```
+
+#### Arrays
+
+Genotype arrays translate into Rust `Vec<T>` types.
+
+```type
+Titles: [string]
+```
+
+```rust
+pub type Titles = Vec<String>;
+```
+
+#### Tuples
+
+Genotype tuples translate directly to Rust tuple types.
+
+```type
+Point: (float, float)
+```
+
+```rust
+pub type Point = (f64, f64);
+```
+
+#### Records
+
+Genotype records translate into Rust `BTreeMap<K, V>` types. An omitted key type means string keys.
+
+```type
+Scores: { []: int }
+```
+
+```rust
+pub type Scores = BTreeMap<String, i64>;
+```
+
+### Special Data Types
+
+#### Any Type
+
+Genotype `any` translates into the [Genotype runtime](https://crates.io/crates/genotype_runtime)'s `Any` type.
+
+```type
+Payload: any
+```
+
+```rust
+pub type Payload = Any;
+```
+
+### Generic Types
+
+Genotype generic types translate into Rust generic types.
+
+```type
+Envelope<Body>: { body: Body }
+```
+
+```rust
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Envelope<Body> {
+    pub body: Body,
+}
+```
+
+### Recursive Types
+
+Genotype recursive types translate into Rust types with `Box` indirection where needed to give them a finite size.
+
+```type
+LinkedNode: { value: string, next?: LinkedNode }
+```
+
+```rust
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct LinkedNode {
+    pub value: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub next: Option<Box<LinkedNode>>,
+}
+```
+
+### Annotations
+
+Annotations let you customize enum variants directly in Genotype:
+
+```type
+Status:
+  | #[variant = "Available"] "in_stock"
+  | "sold_out"
+```
+
+Here `variant` names the Rust variant `Available`. Its serialized value remains `"in_stock"`.
+
+## Configuration
+
+Use `[rs]` in `genotype.toml` to configure Rust. See the [Rust Configuration Reference](/docs/targets/rust/configuration) for more details.
+
+See [Genotype Configuration](/docs/toolchain/configuration) for global settings and [Common Target Options](/docs/toolchain/configuration#common-target-options).

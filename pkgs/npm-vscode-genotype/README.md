@@ -1,19 +1,11 @@
-# VS Code Genotype Language Support
+# Genotype for VS Code
 
-🚧 Work in progress
+Language support for [Genotype](https://genotype-lang.org), a language for defining types and generating code in multiple programming languages.
 
-## Development
+The extension adds syntax highlighting for `.type` files, bracket matching and auto-closing, indentation, comment commands, and region folding.
 
-To run the LSP server in the debug mode, add this to your VS Code settings:
+> **Warning:** Language Server Protocol (LSP) support is not implemented yet. The extension doesn't currently provide type diagnostics, code completion, or go-to-definition.
 
-```json
-{
-  "genotype.server.executable": {
-    "command": "cargo watch --quiet -x \"run --quiet\"",
-    "options": {
-      "cwd": "/ABSOLUTE/PATH/TO/genotype/lsp",
-      "shell": true
-    }
-  }
-}
-```
+Install from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=nocorp.genotype) or [Open VSX](https://open-vsx.org/extension/nocorp/genotype).
+
+See the [Genotype documentation](https://genotype-lang.org/docs) to get started.

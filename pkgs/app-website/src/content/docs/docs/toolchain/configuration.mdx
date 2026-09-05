@@ -6,4 +6,348 @@ sidebar:
   label: "Configuration"
 ---
 
-TODO
+import { Aside } from "@astrojs/starlight/components";
+
+Genotype uses `genotype.toml` to configure source files, generated packages, and target languages.
+
+<Aside>
+  This reference covers global settings and common target options. See the target configuration guides for language-specific options:
+
+- [TypeScript](/docs/targets/typescript/configuration)
+- [Rust](/docs/targets/rust/configuration)
+- [Python](/docs/targets/python/configuration)
+
+</Aside>
+
+Put global options at the top of the file and target options in their corresponding sections:
+
+```toml
+name = "bookstore-types"
+version = "0.1.0"
+src = "src"
+dist = "dist"
+
+[ts]
+enabled = true
+
+[rs]
+enabled = true
+
+[rs.manifest.package]
+edition = "2024"
+
+[py]
+enabled = true
+version = "latest"
+module = "bookstore_types"
+```
+
+This configuration reads `.type` files from `src` and generates TypeScript, Rust, and Python packages in `dist/ts`, `dist/rs`, and `dist/py`.
+
+You can also use the full section names `[typescript]`, `[rust]`, and `[python]`. The examples below use their short forms.
+
+## Global Options
+
+### Package Defaults
+
+#### `package` - Package Generation
+
+`package` controls how generated types are packaged:
+
+- `true` (default): Generate package metadata and directory structure.
+- `false`: Write source files directly into each target's output directory to integrate into an existing package.
+
+```toml
+package = false
+```
+
+You can override this setting for individual targets using their [package option](#targetpackage---package-generation).
+
+#### `name` - Project Name
+
+`name` sets the project name used when generating package manifests:
+
+```toml
+name = "bookstore-types"
+```
+
+If omitted, Genotype derives the name from the project directory. Use the target's [manifest](#targetmanifest---package-metadata) to set a different package name.
+
+#### `version` - Package Version
+
+`version` sets the default package version for all targets. It accepts a semantic version string and has no default:
+
+```toml
+version = "0.1.0"
+```
+
+A version set in a target's [manifest](#targetmanifest---package-metadata) overrides this value. If neither is set, the generated manifest omits the version.
+
+### Paths
+
+#### `root` - Project Root
+
+`root` sets the project root directory relative to the directory containing `genotype.toml`. It defaults to `"."`:
+
+```toml
+root = "./types"
+```
+
+#### `src` - Source Directory
+
+`src` sets the source directory relative to [root](#root---project-root). It defaults to `"src"`:
+
+```toml
+src = "schemas"
+```
+
+#### `entry` - Source Files
+
+`entry` selects source files using a glob pattern relative to [src](#src---source-directory). It defaults to `"**/*.type"`, which includes `.type` files in the source directory and its subdirectories:
+
+```toml
+entry = "api/**/*.type"
+```
+
+You can also select a single entry file:
+
+```toml
+entry = "api.type"
+```
+
+Genotype resolves modules imported by the selected files as well.
+
+#### `dist` - Output Directory
+
+`dist` sets the output directory relative to [root](#root---project-root). It defaults to `"dist"`:
+
+```toml
+dist = "generated"
+```
+
+Each target has its own directory inside it. See [target output directory](#targetdist---output-directory) to customize these paths.
+
+### Generation
+
+#### `build.file` - Build Tracking
+
+`build.file` controls generated file tracking:
+
+- `true` (default): Read and update `genotype.build.toml` next to the configuration file for [cleanup](#buildcleanup---build-cleanup).
+- `false`: Disable build tracking and cleanup.
+
+```toml
+[build]
+file = true
+```
+
+#### `build.cleanup` - Build Cleanup
+
+`build.cleanup` controls what happens to previously generated files that are no longer produced:
+
+- `true` (default): Remove stale generated files, preserving files you have modified.
+- `false`: Keep stale generated files.
+
+```toml
+[build]
+cleanup = false
+```
+
+`build.cleanup` has no effect when `build.file = false`. To disable both:
+
+```toml
+[build]
+file = false
+cleanup = false
+```
+
+#### `warning_comment` - Generated File Comment
+
+`warning_comment` controls the generated file comment:
+
+- `true` (default): Identify generated source files with a comment warning against editing them.
+- `false`: Omit the comment.
+
+```toml
+warning_comment = false
+```
+
+### Formatting
+
+#### `formatters` - Formatters
+
+`formatters` is an array of formatter configurations. It defaults to `[]`.
+
+Global formatters run after each enabled target is compiled, in array order, followed by that target's [formatters](#targetformatters---formatters). Commands run from the target's output directory.
+
+```toml
+formatters = [
+  { kind = "shell", cmd = "format-generated", args = ["."] },
+]
+```
+
+Use target formatters for commands that apply to just one language.
+
+##### Commands
+
+Use `kind = "shell"` to run an executable directly. `cmd` is required; `args` is an optional array of strings, defaulting to `[]`:
+
+```toml
+[ts]
+enabled = true
+formatters = [
+  { kind = "shell", cmd = "prettier", args = ["--write", "."] },
+]
+```
+
+Despite its name, `shell` doesn't interpret shell expressions. To use pipes or other shell syntax, invoke a shell explicitly through `cmd` and `args`.
+
+You can also use an executor as `kind`, with the same `cmd` and `args` options:
+
+| `kind`     | Command prefix |
+| ---------- | -------------- |
+| `"cargo"`  | `cargo`        |
+| `"npm"`    | `npm exec`     |
+| `"npx"`    | `npx`          |
+| `"pnpm"`   | `pnpm exec`    |
+| `"pnx"`    | `pnx`          |
+| `"bun"`    | `bun exec`     |
+| `"bunx"`   | `bunx`         |
+| `"uv"`     | `uv run`       |
+| `"poetry"` | `poetry run`   |
+| `"pipx"`   | `pipx run`     |
+
+E.g., this runs `cargo fmt --all`:
+
+```toml
+[rs]
+enabled = true
+formatters = [{ kind = "cargo", cmd = "fmt", args = ["--all"] }]
+```
+
+##### Presets
+
+Presets provide the formatter command and its standard arguments:
+
+| `kind`           | Default command                         | Supported `via` values                                 |
+| ---------------- | --------------------------------------- | ------------------------------------------------------ |
+| `"oxfmt"`        | `oxfmt --no-error-on-unmatched-pattern` | `"npm"`, `"npx"`, `"pnpm"`, `"pnx"`, `"bun"`, `"bunx"` |
+| `"prettier"`     | `prettier --write .`                    | `"npm"`, `"npx"`, `"pnpm"`, `"pnx"`, `"bun"`, `"bunx"` |
+| `"ruff"`         | `ruff format .`                         | `"uv"`, `"poetry"`, `"pipx"`                           |
+| `"prettyplease"` | Provided by the formatter environment   | None                                                   |
+
+For `oxfmt`, `prettier`, and `ruff`, optional `via` selects an executor from the table above. When omitted, the executable runs directly. Optional `args` appends arguments to the preset's defaults:
+
+```toml
+[ts]
+enabled = true
+formatters = [
+  { kind = "prettier", via = "pnpm", args = ["--single-quote"] },
+]
+```
+
+`prettyplease` accepts only `kind` and is available in the playground. For CLI Rust formatting, use `cargo fmt` as shown above.
+
+## Common Target Options
+
+Common options configure target generation independently of the target language. Replace `<target>` with the target section name; examples use `[ts]`.
+
+### Basic
+
+#### `<target>.enabled` - Enable Target
+
+`enabled` controls whether the target is generated:
+
+- `false` (default): Skip the target.
+- `true`: Generate the target.
+
+```toml
+[ts]
+enabled = true
+```
+
+### Package
+
+#### `<target>.package` - Package Generation
+
+`package` overrides [global package generation](#package---package-generation) for this target. When omitted, it inherits the global value:
+
+```toml
+package = false
+
+[ts]
+enabled = true
+package = true
+```
+
+#### `<target>.dist` - Output Directory
+
+`dist` sets the target output directory relative to the [global output directory](#dist---output-directory):
+
+```toml
+dist = "generated"
+
+[ts]
+enabled = true
+dist = "typescript"
+```
+
+This writes the example package to `generated/typescript`. The default directory name depends on the target.
+
+#### `[<target>.manifest]` - Package Metadata
+
+`manifest` is a table of package metadata. It defaults to an empty table:
+
+```toml
+[ts.manifest]
+name = "@bookstore/types"
+version = "0.2.0"
+license = "MIT"
+```
+
+Configured metadata overrides generated defaults, except for required runtime dependency versions.
+
+The table follows the target language's package manifest format.
+
+This option has no effect when package generation is disabled.
+
+### Modules
+
+#### `[<target>.dependencies]` - External Modules
+
+`dependencies` maps [external modules](/docs/language#external-modules) to import paths in the target language. It defaults to an empty table:
+
+```toml
+[ts.dependencies]
+shared_types = "@bookstore/shared-types"
+```
+
+You can then import from the mapped module in your source files:
+
+```type
+use shared_types/UserId
+
+Order: {
+  userId: UserId,
+}
+```
+
+These mappings control generated imports. They don't install packages or add package versions to the manifest. Declare external package dependencies in the corresponding manifest or in the application consuming the generated code.
+
+<Aside type="caution">
+  Genotype doesn't check that external modules are available or type-check their imported types.
+</Aside>
+
+### Formatting
+
+#### `<target>.formatters` - Formatters
+
+`formatters` adds formatters for this target. It defaults to `[]` and runs after the global list, without replacing it:
+
+```toml
+[ts]
+enabled = true
+formatters = [{ kind = "oxfmt", via = "pnpm" }]
+```
+
+See [formatters](#formatters---formatters) for configuration fields, supported commands, presets, and execution order.

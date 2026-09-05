@@ -6,4 +6,541 @@ sidebar:
   label: "Overview"
 ---
 
-TODO
+import { Aside, Tabs, TabItem } from "@astrojs/starlight/components";
+
+Genotype generates idiomatic Python code that can be used directly in the application or published as a package.
+
+This overview shows how Genotype types translate to Python, target-specific features and configuration options.
+
+See the [Quick Genotype Language Tour](/docs/language) for the language overview and [Python Configuration](/docs/targets/python/configuration) for detailed configuration reference.
+
+## Translation
+
+The following examples give an overview of how Genotype translates into Python.
+
+<Aside type="note">
+  Latest and Legacy tabs show differences between [Python
+  versions](/docs/targets/python/configuration#pyversion---python-version). Examples without tabs
+  apply to both. Feature examples omit imports. Genotype includes the required standard library,
+  [Pydantic](https://pypi.org/project/pydantic/), and [Genotype
+  runtime](https://pypi.org/project/genotype-runtime/) imports. The [complete
+  module](#complete-module) below shows them together.
+</Aside>
+
+### Complete Module
+
+This source combines an object, a literal field, an optional field, a record, and `any`:
+
+```type
+Book: {
+  kind: "book",
+  displayTitle: string,
+  subtitle?: string,
+  ratings: { []: int },
+  extra: any,
+}
+```
+
+The generated module includes its type definitions and imports:
+
+<Tabs>
+  <TabItem label="Latest">
+
+```python
+from __future__ import annotations
+
+from typing import Literal, Optional, Any
+from pydantic import Field
+from genotype import Model
+
+class Book(Model):
+    kind: Literal["book"]
+    display_title: str = Field(alias="displayTitle")
+    subtitle: Optional[str] = None
+    ratings: dict[str, int]
+    extra: Any
+```
+
+  </TabItem>
+  <TabItem label="Legacy">
+
+```python
+from __future__ import annotations
+
+from typing import Literal, Optional, Dict, Any
+from pydantic import Field
+from genotype import Model
+
+class Book(Model):
+    kind: Literal["book"]
+    display_title: str = Field(alias="displayTitle")
+    subtitle: Optional[str] = None
+    ratings: Dict[str, int]
+    extra: Any
+```
+
+  </TabItem>
+</Tabs>
+
+### Unions
+
+Genotype unions translate into Python union types. Legacy output uses `Union[...]`.
+
+```type
+Value: string | int
+```
+
+<Tabs>
+  <TabItem label="Latest">
+
+```python
+type Value = str | int
+```
+
+  </TabItem>
+  <TabItem label="Legacy">
+
+```python
+Value = Union[str, int]
+```
+
+  </TabItem>
+</Tabs>
+
+### Primitives
+
+#### Numeric Types
+
+##### `number`
+
+Genotype `number` translates into the Python `float` type.
+
+```type
+Amount: number
+```
+
+<Tabs>
+  <TabItem label="Latest">
+
+```python
+type Amount = float
+```
+
+  </TabItem>
+  <TabItem label="Legacy">
+
+```python
+Amount = float
+```
+
+  </TabItem>
+</Tabs>
+
+##### `int`
+
+Genotype `int` translates directly to the Python `int` type.
+
+```type
+Count: int
+```
+
+<Tabs>
+  <TabItem label="Latest">
+
+```python
+type Count = int
+```
+
+  </TabItem>
+  <TabItem label="Legacy">
+
+```python
+Count = int
+```
+
+  </TabItem>
+</Tabs>
+
+##### `float`
+
+Genotype `float` translates directly to the Python `float` type.
+
+```type
+Ratio: float
+```
+
+<Tabs>
+  <TabItem label="Latest">
+
+```python
+type Ratio = float
+```
+
+  </TabItem>
+  <TabItem label="Legacy">
+
+```python
+Ratio = float
+```
+
+  </TabItem>
+</Tabs>
+
+##### Sized Numeric Types
+
+Sized Genotype integers translate into Python `int`, and sized floating-point types translate into `float`.
+
+```type
+SmallCount: i16
+PreciseRatio: f32
+LargeCount: i128
+```
+
+<Tabs>
+  <TabItem label="Latest">
+
+```python
+type SmallCount = int
+
+type PreciseRatio = float
+
+type LargeCount = int
+```
+
+  </TabItem>
+  <TabItem label="Legacy">
+
+```python
+SmallCount = int
+
+PreciseRatio = float
+
+LargeCount = int
+```
+
+  </TabItem>
+</Tabs>
+
+#### Booleans
+
+Genotype `boolean` translates into the Python `bool` type.
+
+```type
+Ready: boolean
+```
+
+<Tabs>
+  <TabItem label="Latest">
+
+```python
+type Ready = bool
+```
+
+  </TabItem>
+  <TabItem label="Legacy">
+
+```python
+Ready = bool
+```
+
+  </TabItem>
+</Tabs>
+
+#### Strings
+
+Genotype `string` translates into the Python `str` type.
+
+```type
+Title: string
+```
+
+<Tabs>
+  <TabItem label="Latest">
+
+```python
+type Title = str
+```
+
+  </TabItem>
+  <TabItem label="Legacy">
+
+```python
+Title = str
+```
+
+  </TabItem>
+</Tabs>
+
+#### Literal Types
+
+Genotype literal types translate into Python `Literal` types, preserving their exact values.
+
+```type
+Category: "fiction"
+```
+
+<Tabs>
+  <TabItem label="Latest">
+
+```python
+type Category = Literal["fiction"]
+```
+
+  </TabItem>
+  <TabItem label="Legacy">
+
+```python
+Category = Literal["fiction"]
+```
+
+  </TabItem>
+</Tabs>
+
+#### Null
+
+Genotype `null` translates into Python `Literal[None]`.
+
+```type
+Empty: null
+```
+
+<Tabs>
+  <TabItem label="Latest">
+
+```python
+type Empty = Literal[None]
+```
+
+  </TabItem>
+  <TabItem label="Legacy">
+
+```python
+Empty = Literal[None]
+```
+
+  </TabItem>
+</Tabs>
+
+#### Branded Primitives
+
+Genotype branded primitives translate into Python `NewType` definitions. Type checkers distinguish them; runtime values retain the underlying primitive.
+
+```type
+BookId: @string
+```
+
+```python
+BookId = NewType("BookId", str)
+```
+
+### Composite Types
+
+#### Objects
+
+Genotype objects translate into classes extending the [Genotype runtime](https://pypi.org/project/genotype-runtime/)'s [Pydantic](https://pypi.org/project/pydantic/)-based `Model`. Nested objects become separate model classes.
+
+```type
+Book: { title: string }
+```
+
+```python
+class Book(Model):
+    title: str
+```
+
+Use `Book.model_validate(data)` to validate incoming data and `book.model_dump()` to serialize it. Field names use `snake_case`, with aliases preserving their original names in serialized data.
+
+##### Optional Object Fields
+
+Optional Genotype object fields translate into Python `Optional[T]` fields, defaulting to `None`.
+
+```type
+Draft: { subtitle?: string }
+```
+
+```python
+class Draft(Model):
+    subtitle: Optional[str] = None
+```
+
+##### Object Extensions
+
+Genotype object extensions translate into Python model inheritance.
+
+```type
+Named: { name: string }
+NamedBook: { ...Named, pages: int }
+```
+
+```python
+class Named(Model):
+    name: str
+
+class NamedBook(Named, Model):
+    pages: int
+```
+
+#### Arrays
+
+Genotype arrays translate into Python `list[T]` types. Legacy output uses `List[T]`.
+
+```type
+Titles: [string]
+```
+
+<Tabs>
+  <TabItem label="Latest">
+
+```python
+type Titles = list[str]
+```
+
+  </TabItem>
+  <TabItem label="Legacy">
+
+```python
+Titles = List[str]
+```
+
+  </TabItem>
+</Tabs>
+
+#### Tuples
+
+Genotype tuples translate into Python `tuple` types. Legacy output uses `Tuple[...]`.
+
+```type
+Point: (float, float)
+```
+
+<Tabs>
+  <TabItem label="Latest">
+
+```python
+type Point = tuple[float, float]
+```
+
+  </TabItem>
+  <TabItem label="Legacy">
+
+```python
+Point = Tuple[float, float]
+```
+
+  </TabItem>
+</Tabs>
+
+#### Records
+
+Genotype records translate into Python `dict[K, V]` types. Legacy output uses `Dict[K, V]`. An omitted key type means string keys.
+
+```type
+Scores: { []: int }
+```
+
+<Tabs>
+  <TabItem label="Latest">
+
+```python
+type Scores = dict[str, int]
+```
+
+  </TabItem>
+  <TabItem label="Legacy">
+
+```python
+Scores = Dict[str, int]
+```
+
+  </TabItem>
+</Tabs>
+
+### Special Data Types
+
+#### Any Type
+
+Genotype `any` translates into Python `typing.Any`.
+
+```type
+Payload: any
+```
+
+<Tabs>
+  <TabItem label="Latest">
+
+```python
+type Payload = Any
+```
+
+  </TabItem>
+  <TabItem label="Legacy">
+
+```python
+Payload = Any
+```
+
+  </TabItem>
+</Tabs>
+
+### Generic Types
+
+Genotype generic types translate into Python generic models or aliases. You can specialize this model as `Envelope[Book]`.
+
+```type
+Envelope<Body>: { body: Body }
+```
+
+<Tabs>
+  <TabItem label="Latest">
+
+```python
+class Envelope[Body](Model):
+    body: Body
+```
+
+  </TabItem>
+  <TabItem label="Legacy">
+
+```python
+Body = TypeVar("Body")
+
+class Envelope(Model, Generic[Body]):
+    body: Body
+```
+
+  </TabItem>
+</Tabs>
+
+### Recursive Types
+
+Genotype recursive types translate into Python recursive types with forward references where needed.
+
+```type
+LinkedNode: { value: string, next?: LinkedNode }
+```
+
+```python
+class LinkedNode(Model):
+    value: str
+    next: Optional[LinkedNode] = None
+```
+
+### Annotations
+
+The `discriminator` annotation adds metadata to a union's JSON Schema:
+
+```type
+#[discriminator = "status"]
+Result: Success | Failure
+
+Success: { status: "ok", body: string }
+Failure: { status: "error", message: string }
+```
+
+The generated union includes Pydantic field metadata identifying `status` as the discriminator. This adds schema metadata; it doesn't configure Pydantic's discriminated-union validation.
+
+## Configuration
+
+Use `[py]` in `genotype.toml` to configure Python. See the [Python Configuration Reference](/docs/targets/python/configuration) for more details.
+
+See [Genotype Configuration](/docs/toolchain/configuration) for global settings and [Common Target Options](/docs/toolchain/configuration#common-target-options).

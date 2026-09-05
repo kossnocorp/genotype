@@ -44,7 +44,7 @@ Install the Genotype CLI to get started:
   </TabItem>
 </Tabs>
 
-You can also download the binary from [the latest GitHub release page](https://github.com/kossnocorp/genotype/releases/latest) or build it from source via `cargo install genotype_cli`.
+See [Genotype Installation](/docs/getting-started/installation/) for more options.
 
 ### 2. Bootstrap a New Project
 
@@ -73,3 +73,15 @@ FullName: {
 ```
 
 See [the Quick Tour](/docs/language/) for more information about the language.
+
+### 4. Build
+
+Run `gt build` to generate code for the targets configured in [`genotype.toml`](/docs/toolchain/configuration):
+
+```sh
+gt build
+```
+
+The generated files go into the output directories selected during initialization. Run the command again after editing your types.
+
+See [the CLI reference](/docs/toolchain/cli/#gt-build) for more build options.
