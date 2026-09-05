@@ -36,7 +36,8 @@ cd -
 
 cd ../pkgs/app-website/src/assets/
 assets_rel="../../../../assets/exports"
-ln -sf "$assets_rel/logotype.svg" logotype.svg
+ln -sf "$assets_rel/logotype-dark.svg" logotype-dark.svg
+ln -sf "$assets_rel/logotype-light.svg" logotype-light.svg
 ln -sf "$assets_rel/logomark.svg" logomark.svg
 ln -sf "$assets_rel/icon.svg" icon.svg
 ln -sf "$assets_rel/favicon-mono.svg" favicon-mono.svg
