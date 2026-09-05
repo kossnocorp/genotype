@@ -36,3 +36,6 @@ tmp/
 .envrc
 .direnv
 mise.local.toml
+
+# OS
+.DS_Store

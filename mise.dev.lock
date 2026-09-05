@@ -41,6 +41,7 @@ checksum = "sha256:8426d9a2b7fc3a82d73d1a5fb7831d749d195ac811efb598dfbd96222d52c
 url = "https://github.com/jdx/fnox/releases/download/v1.31.1/fnox-aarch64-apple-darwin.tar.gz"
 url_api = "https://api.github.com/repos/jdx/fnox/releases/assets/488427417"
 provenance = "github-attestations"
+provenance_verified = true
 
 [tools.fnox."platforms.macos-x64"]
 checksum = "sha256:e7cbce08f71c9b6d90c68f535fc757a26a673a4a247a31bce66356da971c915e"
