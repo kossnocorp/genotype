@@ -61,7 +61,10 @@ export class GtwmFs {
 
       if (currentPath === "") break;
 
-      currentPath = path.dirname(currentPath);
+      const parentPath = path.dirname(currentPath);
+      if (parentPath === currentPath) break;
+
+      currentPath = parentPath;
     }
 
     return null;
