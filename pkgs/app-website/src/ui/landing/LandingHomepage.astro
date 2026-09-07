@@ -10,7 +10,7 @@ import LogotypeDark from "#/assets/logotype-dark.svg";
   <div class="flex flex-col items-center py-15 gap-6">
     <header class="layout-container text-center flex flex-col gap-2">
       <h1 class="heading text-4xl font-display leading-snug">
-        <LogotypeLight class="logotype dark:hidden" />
+        <LogotypeLight class="logotype block dark:hidden" />
         <LogotypeDark class="logotype hidden dark:block" />
         <span class="text-gray-600 dark:text-gray-300 font-medium">
           Programming Language
@@ -73,7 +73,7 @@ import LogotypeDark from "#/assets/logotype-dark.svg";
 
     .heading {
       @apply font-sans;
-        --font-display--font-variation-settings: "wdth" 32;
+      --font-display--font-variation-settings: "wdth" 32;
     }
 
     .logotype {
