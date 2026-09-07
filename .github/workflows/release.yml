@@ -35,6 +35,8 @@ jobs:
 
       - name: Set Up Dev Env
         uses: ./.github/actions/setup
+        with:
+          enable-node: true
 
       - name: Download Build Artifacts
         uses: actions/download-artifact@v8
@@ -54,6 +56,16 @@ jobs:
               cp "$file" "release-assets/$artifact_name"
             done
           done
+
+      - name: Package Agent Skill
+        run: mise //pkgs/npm-genotype-skill:pack ../../release-assets
+
+      - name: Upload Agent Skill Artifact
+        uses: actions/upload-artifact@v6
+        with:
+          path: release-assets/genotype-skill.*
+          name: genotype-skill-${{ github.ref_name }}
+          if-no-files-found: error
 
       - name: Attest Release Files
         id: attest

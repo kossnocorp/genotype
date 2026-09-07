@@ -3,6 +3,7 @@
   "version": "0.6.0",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "7.0.2"
+    "typescript": "7.0.2",
+    "vitest": "^5.0.0"
   }
 }

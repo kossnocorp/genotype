@@ -6,3 +6,6 @@ pub use init::*;
 
 mod version;
 pub use version::*;
+
+mod skill;
+pub use skill::*;

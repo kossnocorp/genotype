@@ -6,6 +6,7 @@ packages:
   - "pkgs/npm-genotype-grammar-sublime"
   - "pkgs/npm-vscode-genotype"
   - "pkgs/npm-genotype-types"
+  - "pkgs/npm-genotype-skill"
   - "pkgs/npm-genotype-wasm"
   - "pkgs/npm-genotype-formatters-wasm"
   - "pkgs/npm-genotype-wasm-runtime"

@@ -23,6 +23,7 @@ fn running_without_arguments_prints_help() {
     Commands:
       build    Builds a Genotype project
       init     Initializes a Genotype project
+      skill    Install or update the Genotype agent skill
       version  Manage package versions in genotype.toml
       help     Print this message or the help of the given subcommand(s)
 

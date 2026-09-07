@@ -29,6 +29,9 @@ enum Commands {
     /// Initializes a Genotype project
     Init(GtInitCommand),
 
+    /// Install or update the Genotype agent skill
+    Skill(GtSkillCommand),
+
     /// Manage package versions in genotype.toml
     Version(GtVersionCommand),
 }
@@ -61,6 +64,8 @@ fn main() -> miette::Result<ExitCode> {
         }
 
         Some(Commands::Init(args)) => init_command(args),
+
+        Some(Commands::Skill(args)) => skill_command(args),
 
         Some(Commands::Version(args)) => {
             version_command(args)?;

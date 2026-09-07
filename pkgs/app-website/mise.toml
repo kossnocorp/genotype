@@ -1,5 +1,5 @@
 [tasks.dev]
-run = "pnpm exec astro dev --host 0.0.0.0"
+run = "fnox exec -- pnpm exec astro dev --host 0.0.0.0"
 depends = ["gen/types", "//pkgs/npm-genotype-wasm-runtime:build:dev"]
 
 [tasks.build]

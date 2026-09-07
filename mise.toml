@@ -117,13 +117,15 @@ run = ["test/unit", "test/system"]
 [tasks."test/unit"]
 depends = [
   "test/unit/rust",
-  # TODO: Add JS/Python unit tests
+  "test/unit/ts",
+  # TODO: Add Python unit tests
 ]
 
 [tasks."test/unit:watch"]
 depends = [
   "test/unit/rust:watch",
-  # TODO: Add JS/Python unit tests
+  "test/unit/ts:watch",
+  # TODO: Add Python unit tests
 ]
 
 [tasks."test/unit/rust"]
@@ -133,6 +135,12 @@ run = "cargo nextest run --no-fail-fast"
 run = "watchexec -e rs,Cargo.toml,Cargo.lock -rc reset -- cargo nextest run --no-fail-fast"
 # TODO: It's a nicer DX, but it gets stuck in "computing" state.
 # run = "bacon test"
+
+[tasks."test/unit/ts"]
+run = "pnpm exec vitest run"
+
+[tasks."test/unit/ts:watch"]
+run = "pnpm exec vitest"
 
 [tasks."test/system"]
 depends = [

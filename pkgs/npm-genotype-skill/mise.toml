@@ -1,0 +1,11 @@
+[tasks.gen]
+run = "./scripts/generate-skill.ts"
+
+[tasks."gen:check"]
+run = "./scripts/generate-skill.ts --check"
+
+[tasks.pack]
+usage = '''
+arg "<output_dir>"
+'''
+run = "./scripts/package-skill.ts {{usage.output_dir}}"

@@ -1,20 +1,12 @@
----
-title: "Genotype CLI"
-description: "Genotype's command-line interface."
-sidebar:
-  order: 1
-  label: "CLI"
----
+# Genotype CLI
 
-import { Aside } from "@astrojs/starlight/components";
-
-[The Genotype installation](/docs/getting-started/installation) includes the `gt` binary, which you can use to run Genotype commands.
+[The Genotype installation](https://genotype-lang.org/docs/getting-started/installation) includes the `gt` binary, which you can use to run Genotype commands.
 
 ## Project Paths
 
 Genotype resolves a project by searching for `genotype.toml` in a starting directory and then its parents. The first configuration file found defines the project. An explicit configuration path bypasses this search.
 
-Paths can be absolute or relative to the working directory. The resolved [configuration](/docs/toolchain/configuration#root---project-root) determines the project root, source files, and output directories.
+Paths can be absolute or relative to the working directory. The resolved [configuration](configuration.md#root---project-root) determines the project root, source files, and output directories.
 
 ## `gt init`
 
@@ -30,7 +22,7 @@ gt init [PATH]
 gt init ./bookstore-types
 ```
 
-The wizard helps you choose target languages, generate standalone packages or integrate into existing ones, optionally add example types, and install the Genotype agent skill as the final step. You can adjust these choices later in [genotype.toml](/docs/toolchain/configuration).
+The wizard helps you choose target languages, generate standalone packages or integrate into existing ones, optionally add example types, and install the Genotype agent skill as the final step. You can adjust these choices later in [genotype.toml](configuration.md).
 
 ## `gt skill`
 
@@ -45,7 +37,7 @@ gt skill update [PATH]
 
 `PATH` defaults to the current directory. Installation prompts for an agent unless `--agent` is specified. Update discovers installed skills in known agent directories under `PATH` and replaces their bundled files with the content from your installed CLI.
 
-See [Agent Skill](/docs/toolchain/skill/) for more info and installation instructions.
+See [Agent Skill](https://genotype-lang.org/docs/toolchain/skill/) for more info and installation instructions.
 
 ### `gt skill update`
 
@@ -63,7 +55,7 @@ gt build [PATH] [--config CONFIG]
 gt build
 ```
 
-Source selection and target options come from [genotype.toml](/docs/toolchain/configuration).
+Source selection and target options come from [genotype.toml](configuration.md).
 
 ### Configuration File
 
@@ -73,12 +65,12 @@ Source selection and target options come from [genotype.toml](/docs/toolchain/co
 gt build --config ./genotype.release.toml
 ```
 
-The path is relative to the working directory, even when you also pass a project path. Paths inside the configuration are resolved from its directory; see [project root](/docs/toolchain/configuration#root---project-root).
+The path is relative to the working directory, even when you also pass a project path. Paths inside the configuration are resolved from its directory; see [project root](configuration.md#root---project-root).
 
-<Aside>
-  `gt build` generates target code. Use the target language's tools to install dependencies, compile
-  the generated package, or run its tests.
-</Aside>
+**Note:**
+
+`gt build` generates target code. Use the target language's tools to install dependencies, compile
+the generated package, or run its tests.
 
 ### Exit Status
 
@@ -92,7 +84,7 @@ Changes are saved to the configuration. Run `gt build` afterward to update gener
 
 ### Version Fields
 
-Package versions come from the [global version](/docs/toolchain/configuration#version---package-version) and any overrides in [target manifests](/docs/toolchain/configuration#targetmanifest---package-metadata). Existing overrides are updated even when their targets are disabled.
+Package versions come from the [global version](configuration.md#version---package-version) and any overrides in [target manifests](configuration.md#targetmanifest---package-metadata). Existing overrides are updated even when their targets are disabled.
 
 ### `gt version set`
 

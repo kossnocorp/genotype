@@ -3,13 +3,33 @@ import starlight from "@astrojs/starlight";
 import genotypeGrammar from "@genotype-lang/grammar-tm" with { type: "json" };
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
+import starlightLlmsTxt from "starlight-llms-txt";
 
 const localHost = process.env.LOCAL_HOST;
 
 export default defineConfig({
+  site: "https://genotype-lang.org",
   integrations: [
     starlight({
       title: "Genotype",
+      plugins: [
+        starlightLlmsTxt({
+          description:
+            "Define shared types and generate TypeScript, Rust, and Python code with Genotype.",
+          optionalLinks: [
+            {
+              label: "Genotype agent skill",
+              url: "https://genotype-lang.org/docs/toolchain/skill/",
+              description: "Install language, configuration, and CLI guidance for coding agents.",
+            },
+            {
+              label: "Agent Skills discovery index",
+              url: "https://genotype-lang.org/.well-known/agent-skills/index.json",
+            },
+          ],
+        }),
+      ],
+
       head: [
         {
           tag: "link",
@@ -45,7 +65,7 @@ export default defineConfig({
       logo: {
         light: "./src/assets/logotype-light.svg",
         dark: "./src/assets/logotype-dark.svg",
-        replacesTitle: true
+        replacesTitle: true,
       },
       pagefind: false,
       social: [
@@ -118,5 +138,5 @@ export default defineConfig({
     },
   },
 
-  adapter: cloudflare(),
+  adapter: cloudflare({ prerenderEnvironment: "node" }),
 });
