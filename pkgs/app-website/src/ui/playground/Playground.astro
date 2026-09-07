@@ -6,12 +6,14 @@ import type { PlaygroundManager } from "./PlaygroundManager";
 import PlaygroundDiagnostics from "./diagnostics/PlaygroundDiagnostics.astro";
 
 interface Props {
-  initialState: PlaygroundManager.State;
+  initialState: PlaygroundManager.InitialState;
+  examples?: PlaygroundManager.Example[];
 }
 
-const { initialState } = Astro.props;
+const { initialState, examples = [] } = Astro.props;
 
 const { lang: initialLang } = initialState;
+const panelId = `playground-${crypto.randomUUID()}`;
 
 const langTabs = [
   { lang: "ts" as const, label: "TypeScript", iconId: "typescript" },
@@ -23,48 +25,86 @@ const langTabs = [
 <gt-playground
   class="not-content"
   data-initial-state={JSON.stringify(initialState)}
+  data-examples={JSON.stringify(examples)}
 >
-  <nav class="nav">
-    <div class="files" data-file-tabs>
-      <div>Loading...</div>
-    </div>
+  {
+    examples.length && (
+      <div
+        class="examples tabs"
+        role="tablist"
+        aria-label="Playground examples"
+      >
+        <span class="label">Examples:</span>
 
-    <template data-id="file-tab">
-      <button class="button" data-file-tab data-file-path="">
-        <Icon id="draft" style="200" />
-        <span data-file-tab-label></span>
-      </button>
-    </template>
-
-    <div class="langs">
-      <div class="tabs" data-tabs>
-        {
-          langTabs.map(({ lang, label, iconId }) => (
-            <button
-              class:list={["tab", lang === initialLang && "is-active"]}
-              data-lang-tab
-              data-lang={lang}
-            >
-              <Icon id={iconId} style="dev" />
-              <span>{label}</span>
-            </button>
-          ))
-        }
+        {examples.map(({ id, label }, index) => (
+          <button
+            type="button"
+            role="tab"
+            id={`${panelId}-${id}`}
+            aria-controls={panelId}
+            aria-selected={index === 0}
+            tabindex={index === 0 ? 0 : -1}
+            class:list={["tab", index === 0 && "is-active"]}
+            data-example-tab={id}
+          >
+            {label}
+          </button>
+        ))}
       </div>
-    </div>
-  </nav>
+    )
+  }
 
-  <section class="code">
-    <div class="source">
-      <PlaygroundEditor id="source" initialState={null} />
-    </div>
+  <div
+    class="example-content"
+    id={panelId}
+    role={examples.length ? "tabpanel" : undefined}
+    aria-labelledby={examples.length
+      ? `${panelId}-${examples[0]!.id}`
+      : undefined}
+    data-example-panel
+  >
+    <nav class="nav">
+      <div class="files" data-file-tabs>
+        <div>Loading...</div>
+      </div>
 
-    <div class="dist">
-      <PlaygroundEditor id="dist" initialState={null} />
-    </div>
-  </section>
+      <template data-id="file-tab">
+        <button class="button" data-file-tab data-file-path="">
+          <Icon id="draft" style="200" />
+          <span data-file-tab-label></span>
+        </button>
+      </template>
 
-  <PlaygroundDiagnostics />
+      <div class="langs">
+        <div class="tabs" data-tabs>
+          {
+            langTabs.map(({ lang, label, iconId }) => (
+              <button
+                class:list={["tab", lang === initialLang && "is-active"]}
+                data-lang-tab
+                data-lang={lang}
+              >
+                <Icon id={iconId} style="dev" />
+                <span>{label}</span>
+              </button>
+            ))
+          }
+        </div>
+      </div>
+    </nav>
+
+    <section class="code">
+      <div class="source">
+        <PlaygroundEditor id="source" initialState={null} />
+      </div>
+
+      <div class="dist">
+        <PlaygroundEditor id="dist" initialState={null} />
+      </div>
+    </section>
+
+    <PlaygroundDiagnostics />
+  </div>
 </gt-playground>
 
 <script>
@@ -78,9 +118,22 @@ const langTabs = [
 
   gt-playground {
     --color-divider: var(--color-gray-800);
+    --color-scroll: var(--color-gray-500);
     --tab-text-base: var(--color-gray-200);
 
     @apply grow flex flex-col w-full h-full min-h-0 overflow-hidden divide-x divide-(--color-divider) bg-gray-950;
+  }
+
+  .example-content {
+    @apply contents;
+  }
+
+  .examples {
+    @apply shrink-0 flex-wrap items-center pd-x-layout pd-y-panel-header border-b border-(--color-divider);
+
+    & .label {
+      @apply font-medium text-gray-400;
+    }
   }
 
   .nav,
@@ -95,6 +148,16 @@ const langTabs = [
   .files,
   .langs {
     @apply row-panel pd-x-layout pd-y-panel-header;
+  }
+
+  .files {
+    @apply min-w-0 flex-nowrap overflow-x-auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-scroll) transparent;
+
+    & :global([data-file-tab]) {
+      @apply shrink-0 whitespace-nowrap;
+    }
   }
 
   .code {

@@ -54,6 +54,7 @@ export class PlaygroundWebComponent extends Wc {
 
     this.#connectFileTabChangeListener();
     this.#connectLangChangeListener();
+    this.#connectExampleChangeListener();
   }
 
   #getInitialState(): PlaygroundManager.InitialState {
@@ -71,6 +72,39 @@ export class PlaygroundWebComponent extends Wc {
     }
 
     return PlaygroundManager.InitialState.parse(initialStateRaw);
+  }
+
+  //#endregion
+
+  //#region Examples
+
+  #connectExampleChangeListener(): void {
+    const examples = z
+      .array(PlaygroundManager.Example)
+      .parse(JSON.parse(this.dataset.examples ?? "[]"));
+    const tabs = this.locateAll("[data-example-tab]");
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => {
+        if (tab.getAttribute("aria-selected") === "true") return;
+        const example = examples.find(({ id }) => id === tab.dataset.exampleTab);
+        if (!example) return;
+
+        tabs.forEach((item) => {
+          const active = item === tab;
+          item.classList.toggle("is-active", active);
+          item.setAttribute("aria-selected", String(active));
+          item.tabIndex = active ? 0 : -1;
+        });
+
+        this.locateAll("[data-lang-tab]").forEach((item) =>
+          item.classList.toggle("is-active", item.dataset.lang === example.initialState.lang),
+        );
+
+        this.locate("[data-example-panel]").setAttribute("aria-labelledby", tab.id);
+        this.#manager?.loadExample(example.initialState);
+      });
+    });
   }
 
   //#endregion

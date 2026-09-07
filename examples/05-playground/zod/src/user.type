@@ -1,0 +1,11 @@
+// Generate Zod schemas and inferred TypeScript types.
+// Use User.safeParse(input) to validate untrusted data at runtime.
+
+Role: "admin" | "member"
+
+User: {
+  name: string,
+  role: Role,
+  tags: [string],
+  email?: string,
+}
