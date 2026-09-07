@@ -1,0 +1,959 @@
+# Quick Genotype Language Tour
+
+Welcome to the Genotype Programming Language guide!
+
+Genotype is a language that allows you to define types and data structures and generate code implementing them in multiple programming languages, such as TypeScript, Rust, Python, and more.
+
+**Note:**
+
+This guide doesn't cover all the target language features, e.g., how the Zod mode works when generating TypeScript code, or how legacy Python type system support works.
+
+See corresponding target language guides for more details:
+
+- [TypeScript](typescript.md)
+- [Rust](rust.md)
+- [Python](python.md)
+
+## Source Files
+
+Genotype source files have `.type` extension. Each file is a module that exports all its type definitions.
+
+```type
+Category: "fiction"
+
+Book: {
+  title: string,
+  subtitle?: string,
+}
+```
+
+**Tip:**
+
+The convention is to use `snake_case` for source file names.
+
+The generated code will automatically transform into idiomatic names in the target language.
+
+## Type Aliases
+
+Type aliases assign a type to a name. They are the basic building blocks of Genotype.
+
+```type
+Yeah: true
+
+Greeting: {
+  message: string
+}
+```
+
+Type aliases are translated to the corresponding type definitions in the target languages:
+
+**TypeScript**
+
+```ts
+export type Yeah = true;
+
+export interface Greeting {
+  message: string;
+}
+```
+
+**Rust**
+
+```rust
+#[serde_literal(true)]
+#[derive(Serialize, Deserialize)]
+pub struct Yeah;
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+pub struct Greeting {
+    pub message: String,
+}
+```
+
+**Python**
+
+```python
+type Yeah = Literal[True]
+
+class Greeting(Model):
+    message: str
+```
+
+**Tip:**
+
+The convention is to use `PascalCase` for type names.
+
+The generated code will automatically transform into idiomatic names in the target language.
+
+### References
+
+You can reference type aliases in other type definitions:
+
+```type
+User: {
+  name: string,
+  address: Address,
+}
+
+Address: {
+  country: string,
+  city: string,
+}
+```
+
+The order of type definitions doesn't matter. You can reference types defined later in the file.
+
+Languages that don't support forward references, such as Python, will generate code that works around this limitation.
+
+### Inline Type Aliases
+
+A type alias can also be defined inline, as part of another type definition:
+
+```type
+Customer: {
+  email: string,
+  billingAddress: BillingAddress: {
+    street: string,
+    city: string,
+  },
+}
+```
+
+## Modules
+
+Every Genotype file is a module that exports all type aliases defined in it.
+
+You can import types from other modules via `use` statement.
+
+**shipment.type**
+
+```type
+use ./destination/Destination
+
+Shipment: {
+  trackingNumber: string,
+  destination: Destination,
+}
+```
+
+**destination.type**
+
+```type
+Destination: {
+  country: string,
+  city: string,
+}
+```
+
+In this example `./destination` is a relative module path (with `.type` extension omitted). The path might point to nested directories, e.g., `./models/shipment`, as well as `..` for parent directories, e.g., `../../shipment`.
+
+There are multiple ways to import types from other modules:
+
+```type
+// Use multiple types from the same module:
+use ./location/{Location, PostalCode}
+
+// Re-alias a type from a separate module:
+use ./place/{StreetAddress as Place}
+
+// Glob import from another separate module:
+use ./coordinates/*
+
+Venue: {
+  location: Location,
+  postalCode: PostalCode,
+  latitude: Latitude,
+  longitude: Longitude,
+  // Inline import from its own module:
+  venueLocation: ./venue/VenueLocation,
+}
+```
+
+### External Modules
+
+Genotype currently have no fully-fledged package manager nor external module system (it's [planned](https://github.com/kossnocorp/genotype/issues/161) [though](https://github.com/kossnocorp/genotype/issues/162)). But you can map certain paths to external modules per target language, e.g. to make `shared_types` available in all targets, configure using `[<target>.dependencies]` section in `genotype.toml`:
+
+```toml
+[ts]
+enabled = true
+
+[ts.dependencies]
+genotype_core = "@genotype-lang/types"
+
+[rs]
+enabled = true
+
+[rs.dependencies]
+genotype_core = "genotype_core"
+
+[py]
+enabled = true
+
+[py.dependencies]
+genotype_core = "genotype_core"
+```
+
+Then you can import types from `genotype_core` in your Genotype files:
+
+```type
+use genotype_core/Node
+
+Diagnostic: {
+  kind: "error" | "warning",
+  message: string,
+  node: Node,
+}
+```
+
+**Caution:**
+
+Genotype doesn't guarantee that the external module availability nor type-check the imported types.
+
+Use it with caution, until a proper package manager and external module system is implemented.
+
+## Unions
+
+One of the most basic yet powerful features of Genotype is the ability to define union types:
+
+```type
+Response: ResponseSuccess | ResponseError
+
+ResponseSuccess: {
+  status: "success",
+  body: { user: User }
+}
+
+ResponseError: {
+  status: "failure" | "timeout",
+  error?: string,
+}
+```
+
+In languages that support union types, such as TypeScript, it will translate into the corresponding syntax. Languages that don't, i.e., Rust, will generate an enum type with variants for each union member:
+
+**TypeScript**
+
+```ts
+export type Response = ResponseSuccess | ResponseError;
+
+export interface ResponseSuccess {
+  status: "success";
+  body: {
+    user: User;
+  };
+}
+
+export interface ResponseError {
+  status: "failure" | "timeout";
+  error?: string | undefined;
+}
+```
+
+**Rust**
+
+```rust
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct User {}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum Response {
+    Success(ResponseSuccess),
+    Error(ResponseError),
+}
+
+#[serde_literals]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[literals(status = "success")]
+pub struct ResponseSuccess {
+    pub body: ResponseSuccessBody,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ResponseSuccessBody {
+    pub user: User,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ResponseError {
+    pub status: ResponseErrorStatus,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<String>,
+}
+
+#[serde_literals]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub enum ResponseErrorStatus {
+    #[literal("failure")]
+    Failure,
+    #[literal("timeout")]
+    Timeout,
+}
+```
+
+**Python**
+
+```python
+class ResponseSuccessBody(Model):
+    user: User
+
+class ResponseSuccess(Model):
+    status: Literal["success"]
+    body: ResponseSuccessBody
+
+class ResponseError(Model):
+    status: Literal["failure"] | Literal["timeout"]
+    error: Optional[str] = None
+
+type Response = ResponseSuccess | ResponseError
+```
+
+See more details on the union translation to [TypeScript](typescript.md#unions), [Rust](rust.md#unions), and [Python](python.md#unions).
+
+## Comments and Docs
+
+Genotype supports line and block comments:
+
+```type
+// Line comment.
+
+/* A block comment. */
+
+Hello: /* Inline block comment */ "world" // EOL comment.
+```
+
+Line and block comments are omitted in generated code.
+
+### Doc Comments
+
+Unlike regular comments, doc comments are preserved in generated code and translated into the target language's documentation format.
+
+```type
+//! Module documentation.
+//!
+//! Can span multiple lines.
+
+/// Type documentation.
+Member: {
+  /// Field documentation.
+  displayName: string,
+}
+```
+
+**TypeScript**
+
+```ts
+/** @file Module documentation.
+ *
+ * Can span multiple lines. */
+
+/** Type documentation. */
+export interface Member {
+  /** Field documentation. */
+  displayName: string;
+}
+```
+
+**Rust**
+
+```rust
+//! Module documentation.
+//!
+//! Can span multiple lines.
+use serde::{Deserialize, Serialize};
+
+/// Type documentation.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Member {
+    /// Field documentation.
+    #[serde(rename = "displayName")]
+    pub display_name: String,
+}
+```
+
+**Python**
+
+```python
+"""Module documentation.
+
+Can span multiple lines."""
+
+from __future__ import annotations
+
+
+from pydantic import Field
+from genotype import Model
+
+
+class Member(Model):
+    """Type documentation."""
+
+    display_name: str = Field(alias="displayName")
+    """Field documentation."""
+```
+
+## Data Types
+
+### Primitives
+
+Genotype has several scalar types available:
+
+- Numeric: `number`, `int`, `float` (as well as sized types, i.e., `i32`, `i64`, `f32` etc)
+- Boolean: `boolean`.
+- String: `string`.
+
+```type
+Player: {
+  username: string,
+  score: int,
+  isOnline: boolean,
+}
+```
+
+Same as in TypeScript, Genotype also supports literal types:
+
+```type
+Answer: 42
+
+Yes: true
+No: false
+
+Result: {
+  status: "ok"
+}
+```
+
+...as well as `null`:
+
+```type
+Employee: {
+  name: string,
+  departmentId: int | null,
+}
+```
+
+**Note:**
+
+While `null` is usually a mistake when it comes to programming languages design, in Genotype
+`null` allows to express data structures already present in the target languages.
+
+Even JSON has `null`, so we had no choice but to have it.
+
+See more details on the primitive type translation to [TypeScript](typescript.md#primitives), [Rust](rust.md#primitives), and [Python](python.md#primitives).
+
+#### Branded Primitives
+
+You can brand a primitive to create a distinct type that isn't interchangeable with the original primitive:
+
+```type
+UserId: @string
+
+RowId: @int
+```
+
+You can brand any primitive, including booleans, sized integers, and floating-point types.
+
+A branded primitive type is translated to the corresponding idiomatic type in the target language:
+
+**TypeScript**
+
+```ts
+export type UserId = string & { [userIdBrand]: true };
+declare const userIdBrand: unique symbol;
+
+export type RowId = number & { [rowIdBrand]: true };
+declare const rowIdBrand: unique symbol;
+```
+
+**Rust**
+
+```rust
+#[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+pub struct UserId(pub String);
+
+#[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+pub struct RowId(pub i64);
+```
+
+**Python**
+
+```python
+UserId = NewType("UserId", str)
+
+RowId = NewType("RowId", int)
+```
+
+See more details on the branded primitive translation to [TypeScript](typescript.md#branded-primitives), [Rust](rust.md#branded-primitives), and [Python](python.md#branded-primitives).
+
+### Composite Types
+
+#### Objects
+
+An object type is a collection of named fields, each with its own type:
+
+```type
+Resident: {
+  fullName: string,
+  yearsAtAddress: int,
+  address: Address,
+}
+```
+
+Objects also can be nested:
+
+```type
+Event: {
+  title: string,
+  capacity: int,
+  venue: {
+    country: string,
+    city: string,
+  },
+}
+```
+
+**Tip:**
+
+The convention is to use `camelCase` for field names.
+
+The generated code will automatically transform into idiomatic names in the target language.
+
+See more details on the object translation to [TypeScript](typescript.md#objects), [Rust](rust.md#objects), and [Python](python.md#objects).
+
+##### Optional Object Fields
+
+An object field can be optional, which means it may or may not be present in the object:
+
+```type
+Delivery: {
+  recipient: string,
+  weight: int,
+  address?: Address,
+}
+```
+
+See more details on the optional object field translation to [TypeScript](typescript.md#optional-object-fields), [Rust](rust.md#optional-object-fields), and [Python](python.md#optional-object-fields).
+
+##### Object Extensions
+
+Object fields can be extended with other object types:
+
+```type
+MessageBase: {
+  id: int,
+  timestamp: int,
+}
+
+MessageSuccess: {
+  ...MessageBase,
+  status: "success",
+}
+
+MessageFailure: {
+  ...MessageBase,
+  status: "failure",
+  error: string,
+}
+```
+
+The languages that support extensions, such as TypeScript and Python, it would translate into the corresponding syntax. Languages that don't, i.e., Rust, will copy the fields from the base type into the extended type:
+
+**TypeScript**
+
+```ts
+export interface MessageBase {
+  id: number;
+  timestamp: number;
+}
+
+export interface MessageSuccess extends MessageBase {
+  status: "success";
+}
+
+export interface MessageFailure extends MessageBase {
+  status: "failure";
+  error: string;
+}
+```
+
+**Rust**
+
+```rust
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+pub struct MessageBase {
+    pub id: i64,
+    pub timestamp: i64,
+}
+
+#[serde_literals]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[literals(status = "success")]
+pub struct MessageSuccess {
+    pub id: i64,
+    pub timestamp: i64,
+}
+
+#[serde_literals]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[literals(status = "failure")]
+pub struct MessageFailure {
+    pub id: i64,
+    pub timestamp: i64,
+    pub error: String,
+}
+```
+
+**Python**
+
+```python
+class MessageBase(Model):
+    id: int
+    timestamp: int
+
+class MessageSuccess(MessageBase, Model):
+    status: Literal["success"]
+
+
+class MessageFailure(MessageBase, Model):
+    status: Literal["failure"]
+    error: str
+```
+
+You can extend with multiple object types:
+
+```type
+AnimalMammal: { warmBlooded: boolean }
+AnimalPet: { name: string }
+
+AnimalCat: {
+  ...AnimalMammal,
+  ...AnimalPet,
+}
+```
+
+See more details on the object extension translation to [TypeScript](typescript.md#object-extensions), [Rust](rust.md#object-extensions), and [Python](python.md#object-extensions).
+
+#### Arrays
+
+An array type represents a list of elements of a given type:
+
+```type
+Post: {
+  title: string,
+  tags: [string],
+}
+```
+
+The element type can be a union, i.e., each element can have any type in the union:
+
+```type
+Values: [string | int | boolean]
+```
+
+In languages that don't allow mixed types in array-like structures, such as Rust, Genotype will generate a `Vec` of an enum type:
+
+```rust
+pub type Values = Vec<ValuesItem>;
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(untagged)]
+pub enum ValuesItem {
+    String(String),
+    Int(i64),
+    Boolean(bool),
+}
+```
+
+See more details on the array translation to [TypeScript](typescript.md#arrays), [Rust](rust.md#arrays), and [Python](python.md#arrays).
+
+#### Tuples
+
+A tuple type represents a fixed-length list of elements of given types:
+
+```type
+Point: (float, float)
+```
+
+Tuple elements can be union types, i.e., each element can have any type in the union:
+
+```type
+Setting: (string | int, boolean)
+```
+
+See more details on the tuple translation to [TypeScript](typescript.md#tuples), [Rust](rust.md#tuples), and [Python](python.md#tuples).
+
+#### Records
+
+A record type represents a collection of named fields, each with its own type, but unlike objects, records can have arbitrary field names:
+
+```type
+Scores: { [int]: float }
+```
+
+A record key can be `string`, `boolean`, a numeric type, or a reference to one of these primitives. You can also use references to branded primitives:
+
+```type
+ProductId: @int
+
+ProductNames: { [ProductId]: string }
+```
+
+A record with `string` as a key can omit the key type:
+
+```type
+AliasMap: { []: string }
+```
+
+**Caution:**
+
+Composite type references aren't supported as record keys ([not
+yet](https://github.com/kossnocorp/genotype/issues/159)).
+
+See more details on the record translation to [TypeScript](typescript.md#records), [Rust](rust.md#records), and [Python](python.md#records).
+
+### Special Data Types
+
+There are several special data types available in Genotype:
+
+#### Any Type
+
+When you need to represent a value of any type, similar to TypeScript's `any`, you can use the `any` type:
+
+```type
+ApiResponse: {
+  status: "ok" | "error",
+  payload: any,
+}
+```
+
+Languages that has `any` type, it will translate into the corresponding syntax. Languages that don't, i.e., Rust, will use Genotype runtime to represent it:
+
+**TypeScript**
+
+```ts
+export interface ApiResponse {
+  status: "ok" | "error";
+  payload: any;
+}
+```
+
+**Rust**
+
+```rust
+use genotype_runtime::Any;
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+pub struct ApiResponse {
+    pub status: ApiResponseStatus,
+    pub payload: Any,
+}
+
+#[serde_literals]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+pub enum ApiResponseStatus {
+    #[literal("ok")]
+    Ok,
+    #[literal("error")]
+    Error,
+}
+```
+
+**Python**
+
+```python
+class ApiResponse(Model):
+    status: Literal["ok"] | Literal["error"]
+    payload: Any
+```
+
+**Caution:**
+
+The `any` type is not meant to be used to silence type errors, like it often utilized in TypeScript. It meant to represent values of any type, such as JSON payloads, or data from untyped sources.
+
+Use it sparingly!
+
+See more details on the any type translation to [TypeScript](typescript.md#any-type), [Rust](rust.md#any-type), and [Python](python.md#any-type).
+
+## Generic Types
+
+Genotype supports basic generic types, enabling more of the type composition and reuse.
+
+```type
+Message<Payload>: {
+  id: int,
+  timestamp: int,
+  payload: Payload,
+}
+```
+
+Generics also can be used in object extensions, allowing to reuse the same base type with different payloads:
+
+```type
+Notification<Payload>: {
+  notificationId: int,
+  sentAt: int,
+  payload: Payload,
+}
+
+NotificationText: {
+  ...Notification<string>
+}
+```
+
+...or even compose generic types with other generic types:
+
+```type
+Request<Payload>: {
+  requestId: int,
+  timeout: int,
+  payload: Payload,
+}
+
+RequestReply: {
+  ...Request<Reply<string>>
+}
+
+Reply<Body>: ReplySuccess<Body> | ReplyFailure
+
+ReplyBase<Status>: {
+  status: Status
+}
+
+ReplySuccess<Body>: {
+  ...ReplyBase<"success">,
+  body: Body
+}
+
+ReplyFailure: {
+  ...ReplyBase<"failure">,
+  error: string
+}
+```
+
+See more details on the generic type translation to [TypeScript](typescript.md#generic-types), [Rust](rust.md#generic-types), and [Python](python.md#generic-types).
+
+## Recursive Types
+
+Types can refer to themselves or form cycles across definitions and modules:
+
+```type
+LinkedNode: {
+  value: string,
+  next?: LinkedNode,
+}
+
+Json: null | boolean | number | string | [Json] | { []: Json }
+```
+
+Targets add the indirection their type systems need. E.g., Rust boxes direct recursive fields, while TypeScript's Zod mode uses lazy schemas or object getters:
+
+**TypeScript**
+
+```ts
+export interface LinkedNode {
+  value: string;
+  next?: LinkedNode | undefined;
+}
+
+export type Json = null | boolean | number | string | Array<Json> | Record<string, Json>;
+```
+
+**Rust**
+
+```rust
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct LinkedNode {
+    pub value: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub next: Option<Box<LinkedNode>>,
+}
+
+#[serde_literals]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub enum Json {
+    #[literal(null)]
+    Null,
+    Boolean(bool),
+    Number(f64),
+    String(String),
+    Vec(Vec<Json>),
+    Map(BTreeMap<String, Json>),
+}
+```
+
+**Python**
+
+```python
+type Json = Literal[None] | bool | float | str | list[Json] | dict[str, Json]
+
+class LinkedNode(Model):
+    value: str
+    next: Optional[LinkedNode] = None
+```
+
+See more details on the recursive type translation to [TypeScript](typescript.md#recursive-types), [Rust](rust.md#recursive-types), and [Python](python.md#recursive-types).
+
+## Annotations
+
+Annotations add structured metadata to types, fields, and union members. Most annotations belong to a specific target.
+
+For example:
+
+```type
+#[discriminator = "status"]
+JobResult: JobSuccess | JobFailure
+
+JobSuccess: {
+  status: "success",
+  body: string,
+}
+
+JobFailure: {
+  status: "failure",
+  error: string,
+}
+
+JobStatus:
+  | #[variant = "Ok"] "success"
+  | #[variant = "Nope"] "failure"
+```
+
+Here `discriminator` adds Python union schema metadata:
+
+```py
+class JobSuccess(Model):
+    status: Literal["success"]
+    body: str
+
+
+class JobFailure(Model):
+    status: Literal["failure"]
+    error: str
+
+
+type JobResult = Annotated[
+    JobSuccess | JobFailure,
+    Field(json_schema_extra={"discriminator": "status"}),
+]
+
+# ...
+```
+
+While `variant` customizes Rust enum variant names:
+
+```rust
+// ...
+
+#[serde_literals]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+pub enum JobStatus {
+    #[literal("success")]
+    Ok,
+    #[literal("failure")]
+    Nope,
+}
+```
+
+Generators ignore annotations they don't recognize.
+
+See more details on the annotation translation to [TypeScript](typescript.md#annotations), [Rust](rust.md#annotations), and [Python](python.md#annotations).

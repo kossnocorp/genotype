@@ -1,0 +1,53 @@
+---
+title: "Genotype Agent Skill"
+description: "Install and update Genotype guidance for AI coding agents."
+sidebar:
+  order: 5
+  label: "Agent Skill"
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+The Genotype skill gives coding agents a brief introduction to `.type` schemas, `genotype.toml`, and the `gt` CLI, with linked references they can read as needed.
+
+## Installing
+
+### Installing via CLI
+
+From your project directory, run:
+
+```sh
+gt skill install
+```
+
+See [`gt skill` in the CLI Reference](/docs/toolchain/cli#gt-skill) for more info about the `skill` subcommand.
+
+<Aside type="tip">[`gt init`](/docs/toolchain/cli/#gt-init) also offers skill installation.</Aside>
+
+#### Updating via CLI
+
+Run `gt skill update` to update the skill to the bundled version:
+
+```sh
+gt skill update
+```
+
+### Install with Skills CLI
+
+You can also install from the GitHub repository:
+
+```sh
+npx skills@latest add kossnocorp/genotype
+```
+
+The repository exposes a `genotype` skill with the same references as the CLI bundle. The Skills CLI handles agent selection and installation scope.
+
+## Discovery
+
+Tools can discover the published skill through the [Agent Skills discovery index](/.well-known/agent-skills/index.json). The index follows the [Agent Skills Discovery RFC](https://github.com/cloudflare/agent-skills-discovery-rfc) and links to a ZIP archive containing `SKILL.md` and its references.
+
+The website serves the skill from the latest stable [GitHub release](https://github.com/kossnocorp/genotype/releases).
+
+## `llms.txt`
+
+For general LLMs documentation access, use [llms.txt](/llms.txt) or [llms-full.txt](/llms-full.txt).

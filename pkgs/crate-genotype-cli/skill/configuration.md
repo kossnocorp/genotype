@@ -1,23 +1,14 @@
----
-title: "Genotype Configuration"
-description: "Genotype's configuration reference."
-sidebar:
-  order: 2
-  label: "Configuration"
----
-
-import { Aside } from "@astrojs/starlight/components";
+# Genotype Configuration
 
 Genotype uses `genotype.toml` to configure source files, generated packages, and target languages.
 
-<Aside>
-  This reference covers global settings and common target options. See the target configuration guides for language-specific options:
+**Note:**
 
-- [TypeScript](/docs/targets/typescript/configuration)
-- [Rust](/docs/targets/rust/configuration)
-- [Python](/docs/targets/python/configuration)
+This reference covers global settings and common target options. See the target configuration guides for language-specific options:
 
-</Aside>
+- [TypeScript](typescript-configuration.md)
+- [Rust](rust-configuration.md)
+- [Python](python-configuration.md)
 
 Put global options at the top of the file and target options in their corresponding sections:
 
@@ -315,7 +306,7 @@ This option has no effect when package generation is disabled.
 
 #### `[<target>.dependencies]` - External Modules
 
-`dependencies` maps [external modules](/docs/language#external-modules) to import paths in the target language. It defaults to an empty table:
+`dependencies` maps [external modules](language.md#external-modules) to import paths in the target language. It defaults to an empty table:
 
 ```toml
 [ts.dependencies]
@@ -334,9 +325,9 @@ Order: {
 
 These mappings control generated imports. They don't install packages or add package versions to the manifest. Declare external package dependencies in the corresponding manifest or in the application consuming the generated code.
 
-<Aside type="caution">
-  Genotype doesn't check that external modules are available or type-check their imported types.
-</Aside>
+**Caution:**
+
+Genotype doesn't check that external modules are available or type-check their imported types.
 
 ### Formatting
 

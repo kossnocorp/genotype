@@ -64,6 +64,10 @@ pub fn init_command(args: &GtInitCommand) -> Result<ExitCode> {
                 .map_err(|_| GtCliError::FailedWrite(path.as_str().into()))?;
         }
 
+        if app.skill.selected() == AnswerSkill::Yes {
+            write_skill(&Path::new(path).join(app.skill_agent.selected().directory()))?;
+        }
+
         Ok(())
     })
 }
@@ -136,6 +140,8 @@ struct InitApp {
     packaged: UiPromptMultiSelect<AnswerTarget>,
     paths: Vec<(AnswerTarget, TextPrompt)>,
     starter: UiPromptSelect<StarterResponse>,
+    skill: UiPromptSelect<AnswerSkill>,
+    skill_agent: UiPromptSelect<SkillAgent>,
     success_path: String,
     last_area: Rect,
 }
@@ -167,6 +173,12 @@ impl InitApp {
                 StarterResponse::ALL.to_vec(),
                 1,
             ),
+            skill: UiPromptSelect::new(
+                "Install the Genotype AI skill",
+                AnswerSkill::ALL.to_vec(),
+                0,
+            ),
+            skill_agent: skill_agent_prompt(),
             success_path,
             last_area: Rect::default(),
         }
@@ -259,10 +271,7 @@ impl InitApp {
             },
 
             InitStep::Starter => match self.starter.handle_key(key) {
-                UiPromptAction::Submit(_) => {
-                    self.step = InitStep::Complete;
-                    return Some(WizardExit::Completed);
-                }
+                UiPromptAction::Submit(_) => self.step = InitStep::Skill,
 
                 UiPromptAction::Back if !self.paths.is_empty() => {
                     self.step = InitStep::Path(self.paths.len() - 1);
@@ -274,6 +283,25 @@ impl InitApp {
 
                 UiPromptAction::Back => self.step = InitStep::Mode,
 
+                UiPromptAction::Pending => {}
+            },
+
+            InitStep::Skill => match self.skill.handle_key(key) {
+                UiPromptAction::Submit(AnswerSkill::Yes) => self.step = InitStep::SkillAgent,
+                UiPromptAction::Submit(AnswerSkill::No) => {
+                    self.step = InitStep::Complete;
+                    return Some(WizardExit::Completed);
+                }
+                UiPromptAction::Back => self.step = InitStep::Starter,
+                UiPromptAction::Pending => {}
+            },
+
+            InitStep::SkillAgent => match self.skill_agent.handle_key(key) {
+                UiPromptAction::Submit(_) => {
+                    self.step = InitStep::Complete;
+                    return Some(WizardExit::Completed);
+                }
+                UiPromptAction::Back => self.step = InitStep::Skill,
                 UiPromptAction::Pending => {}
             },
 
@@ -354,7 +382,8 @@ impl InitApp {
                 2 + 3
                     + u16::from(self.mode.selected() == AnswerPackageMode::Each)
                     + self.paths.len() as u16
-                    + 6
+                    + 7
+                    + u16::from(self.skill.selected() == AnswerSkill::Yes)
                     + u16::from(self.starter().tip_block(&self.success_path).is_some())
                         * TIP_BLOCK_HEIGHT
             }
@@ -387,14 +416,23 @@ impl InitApp {
 
         if matches!(
             self.step,
-            InitStep::Packaged | InitStep::Path(_) | InitStep::Starter | InitStep::Complete
+            InitStep::Packaged
+                | InitStep::Path(_)
+                | InitStep::Starter
+                | InitStep::Skill
+                | InitStep::SkillAgent
+                | InitStep::Complete
         ) {
             self.mode.render_as_answer(&mut y, frame, area);
         }
 
         if matches!(
             self.step,
-            InitStep::Path(_) | InitStep::Starter | InitStep::Complete
+            InitStep::Path(_)
+                | InitStep::Starter
+                | InitStep::Skill
+                | InitStep::SkillAgent
+                | InitStep::Complete
         ) && self.mode.selected() == AnswerPackageMode::Each
         {
             self.packaged.render_as_answer(&mut y, frame, area);
@@ -404,14 +442,28 @@ impl InitApp {
             for (_, path) in self.paths.iter().take(active) {
                 path.render_as_answer(&mut y, frame, area);
             }
-        } else if matches!(self.step, InitStep::Starter | InitStep::Complete) {
+        } else if matches!(
+            self.step,
+            InitStep::Starter | InitStep::Skill | InitStep::SkillAgent | InitStep::Complete
+        ) {
             for (_, path) in &self.paths {
                 path.render_as_answer(&mut y, frame, area);
             }
         }
 
-        if self.step == InitStep::Complete {
+        if matches!(
+            self.step,
+            InitStep::Skill | InitStep::SkillAgent | InitStep::Complete
+        ) {
             self.starter.render_as_answer(&mut y, frame, area);
+        }
+        if matches!(self.step, InitStep::SkillAgent | InitStep::Complete) {
+            self.skill.render_as_answer(&mut y, frame, area);
+        }
+        if self.step == InitStep::Complete {
+            if self.skill.selected() == AnswerSkill::Yes {
+                self.skill_agent.render_as_answer(&mut y, frame, area);
+            }
             render_success(
                 frame,
                 area,
@@ -429,6 +481,8 @@ impl InitApp {
             InitStep::Packaged => self.packaged.render(frame, prompt_area),
             InitStep::Path(index) => self.paths[index].1.render(frame, prompt_area),
             InitStep::Starter => self.starter.render(frame, prompt_area),
+            InitStep::Skill => self.skill.render(frame, prompt_area),
+            InitStep::SkillAgent => self.skill_agent.render(frame, prompt_area),
             InitStep::Complete => unreachable!(),
             InitStep::Cancelled => unreachable!(),
         }
@@ -442,6 +496,8 @@ enum InitStep {
     Packaged,
     Path(usize),
     Starter,
+    Skill,
+    SkillAgent,
     Complete,
     Cancelled,
 }
@@ -647,3 +703,68 @@ ui_select_options!(AnswerPackageMode {
     Integrate => "Integrate into existing packages",
     Each => "Customize for each target",
 });
+
+ui_select_options!(AnswerSkill {
+    Yes => "Yes",
+    No => "No",
+});
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn key(code: KeyCode) -> KeyEvent {
+        KeyEvent::new(code, KeyModifiers::NONE)
+    }
+
+    #[test]
+    fn skill_questions_follow_starter_and_support_back_navigation() {
+        let mut app = InitApp::new(vec![0], ".".into());
+        for step in [
+            InitStep::Mode,
+            InitStep::Starter,
+            InitStep::Skill,
+            InitStep::SkillAgent,
+        ] {
+            assert_eq!(app.handle_key(key(KeyCode::Enter)), None);
+            assert_eq!(app.step, step);
+        }
+        assert_eq!(app.handle_key(key(KeyCode::Esc)), None);
+        assert_eq!(app.step, InitStep::Skill);
+        assert_eq!(app.handle_key(key(KeyCode::Esc)), None);
+        assert_eq!(app.step, InitStep::Starter);
+        app.handle_key(key(KeyCode::Enter));
+        app.handle_key(key(KeyCode::Enter));
+        assert_eq!(
+            app.handle_key(key(KeyCode::Enter)),
+            Some(WizardExit::Completed)
+        );
+    }
+
+    #[test]
+    fn declining_skill_completes_without_agent_prompt() {
+        let mut app = InitApp::new(vec![0], ".".into());
+        for _ in 0..3 {
+            app.handle_key(key(KeyCode::Enter));
+        }
+        app.handle_key(key(KeyCode::Down));
+        assert_eq!(
+            app.handle_key(key(KeyCode::Enter)),
+            Some(WizardExit::Completed)
+        );
+        assert_eq!(app.skill.selected(), AnswerSkill::No);
+    }
+
+    #[test]
+    fn cancelling_agent_question_does_not_finish() {
+        let mut app = InitApp::new(vec![0], ".".into());
+        for _ in 0..4 {
+            app.handle_key(key(KeyCode::Enter));
+        }
+        assert_eq!(app.step, InitStep::SkillAgent);
+        assert_eq!(
+            app.handle_key(KeyEvent::new(KeyCode::Char('c'), KeyModifiers::CONTROL)),
+            Some(WizardExit::Cancelled)
+        );
+    }
+}
