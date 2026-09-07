@@ -1,0 +1,12 @@
+name = "playground-python-legacy"
+
+[ts]
+enabled = false
+
+[rs]
+enabled = false
+
+[py]
+enabled = true
+version = "legacy"
+formatters = [{ kind = "ruff" }]

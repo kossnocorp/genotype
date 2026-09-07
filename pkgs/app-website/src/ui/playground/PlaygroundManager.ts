@@ -15,6 +15,8 @@ export namespace PlaygroundManager {
 
   export type InitialState = z.infer<typeof PlaygroundManager.InitialState>;
 
+  export type Example = z.infer<typeof PlaygroundManager.Example>;
+
   export interface Props {
     wc: PlaygroundWebComponent;
     initialState: InitialState;
@@ -38,6 +40,12 @@ export class PlaygroundManager {
     files: GtwmFs.Files,
   });
 
+  static Example = z.object({
+    id: z.string(),
+    label: z.string(),
+    initialState: this.InitialState,
+  });
+
   //#endregion
 
   #state: PlaygroundManager.State;
@@ -48,6 +56,7 @@ export class PlaygroundManager {
   #diagnosticsWc: PlaygroundDiagnosticsWebComponent;
 
   #fs: GtwmFs;
+  #revision = 0;
 
   #compiledMetaPromise = resettablePromise<Gt.GtcMetaCompiled>();
   #compileTimer: ReturnType<typeof setTimeout> | undefined;
@@ -67,28 +76,63 @@ export class PlaygroundManager {
     this.#sourceEditorWc = sourceEditorWc;
     this.#diagnosticsWc = diagnosticsWc;
 
-    this.#fs = new GtwmFs({ files, onFileChange: this.#onFsCodeChange.bind(this) });
+    this.#fs = this.#createFs(files);
 
     this.#connectSourceEditor();
     this.compile();
   }
 
+  //#region Examples
+
+  loadExample({ files, ...state }: PlaygroundManager.InitialState): void {
+    clearTimeout(this.#compileTimer);
+    this.#revision++;
+    this.#state = state;
+    this.#fs = this.#createFs(files);
+    this.#wc.updateFileTabs({ srcPath: "", modulePaths: [], sourceFilePath: null });
+    void this.#setEditorState(this.#sourceEditorWc, null);
+    void this.#setEditorState(this.#distEditorWc, null);
+    void this.compile();
+  }
+
+  #createFs(files: GtwmFs.Files): GtwmFs {
+    const revision = this.#revision;
+    return new GtwmFs({
+      files,
+      onFileChange: (filePath, code) => {
+        if (revision === this.#revision) return this.#onFsCodeChange(filePath, code);
+      },
+    });
+  }
+
+  //#endregion
+
   //#region Compilation
 
   async compile(): Promise<void> {
+    const revision = this.#revision;
+    const fs = this.#fs;
     this.#compiledMetaPromise.reset();
 
     try {
       const diagnosticsManager = await this.#diagnosticsWc.managerPromise;
+      if (revision !== this.#revision) return;
       diagnosticsManager.clear();
 
       // TODO: Add project reload support and reuse the same GtwmClient instance.
-      const gt = new GtwmClient({ fs: this.#fs, onDiagnostic: this.#onDiagnostic.bind(this) });
+      const gt = new GtwmClient({
+        fs,
+        onDiagnostic: (diagnostic) => {
+          if (revision === this.#revision) void this.#onDiagnostic(diagnostic);
+        },
+      });
 
       try {
         const _loadedProjectMeta = await gt.loadInProject();
 
+        if (revision !== this.#revision) return;
         const loadedModulesMeta = await gt.loadInModules();
+        if (revision !== this.#revision) return;
 
         if (!this.#state.filePath) {
           const modules = [...loadedModulesMeta.modules];
@@ -105,6 +149,7 @@ export class PlaygroundManager {
 
         const compiledMeta = await gt.compile();
 
+        if (revision !== this.#revision) return;
         this.#compiledMetaPromise.resolve(compiledMeta);
 
         const filePath = this.#state.filePath ?? compiledMeta.modules[0].src;
@@ -115,7 +160,7 @@ export class PlaygroundManager {
         gt.dispose();
       }
     } catch (error) {
-      this.#compiledMetaPromise.reject(error);
+      if (revision === this.#revision) this.#compiledMetaPromise.reject(error);
     }
   }
 
@@ -132,9 +177,11 @@ export class PlaygroundManager {
   //#region Files
 
   async openFile(filePath: string): Promise<void> {
+    const revision = this.#revision;
     this.#state.filePath = filePath;
 
     const module = await this.#currentModule();
+    if (revision !== this.#revision) return;
 
     await Promise.all([
       this.#setEditorStateWithFilePath(this.#sourceEditorWc, module.src),
@@ -147,9 +194,11 @@ export class PlaygroundManager {
   //#region Langs
 
   async setLang(lang: PlaygroundManager.Lang): Promise<void> {
+    const revision = this.#revision;
     this.#state.lang = lang;
 
     const module = await this.#currentModule();
+    if (revision !== this.#revision) return;
 
     return this.#setEditorStateWithFilePath(this.#distEditorWc, module[this.#state.lang]);
   }
@@ -195,12 +244,16 @@ export class PlaygroundManager {
   }
 
   async #setEditorState(wc: EditorWebComponent, state: EditorManager.State): Promise<void> {
+    const revision = this.#revision;
     const manager = await wc.managerPromise;
+    if (revision !== this.#revision) return;
     manager.setState(state);
   }
 
   async #trySetEditorState(wc: EditorWebComponent, state: EditorManager.State & {}): Promise<void> {
+    const revision = this.#revision;
     const manager = await wc.managerPromise;
+    if (revision !== this.#revision) return;
     manager.trySetState(state);
   }
 
@@ -209,7 +262,9 @@ export class PlaygroundManager {
   //#region Diagnostics
 
   async #onDiagnostic(diagnostic: Gt.GtDiagnostic): Promise<void> {
+    const revision = this.#revision;
     const manager = await this.#diagnosticsWc.managerPromise;
+    if (revision !== this.#revision) return;
     manager.reportDiagnostic(diagnostic);
   }
 

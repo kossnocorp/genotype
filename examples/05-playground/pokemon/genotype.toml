@@ -1,0 +1,16 @@
+name = "playground-pokemon"
+formatters = [{ kind = "oxfmt" }]
+
+[ts]
+enabled = true
+
+[rs]
+enabled = true
+formatters = [{ kind = "prettyplease" }]
+
+[rs.manifest.package]
+edition = "2024"
+
+[py]
+enabled = true
+formatters = [{ kind = "ruff" }]

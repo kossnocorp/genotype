@@ -1,0 +1,12 @@
+name = "playground-python-modern"
+
+[ts]
+enabled = false
+
+[rs]
+enabled = false
+
+[py]
+enabled = true
+version = "latest"
+formatters = [{ kind = "ruff" }]

@@ -1,0 +1,12 @@
+name = "playground-zod"
+
+[ts]
+enabled = true
+mode = "zod"
+formatters = [{ kind = "oxfmt" }]
+
+[rs]
+enabled = false
+
+[py]
+enabled = false
