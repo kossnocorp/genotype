@@ -341,6 +341,10 @@
   @apply leading-none capsize text-(--color-ink-title);
 }
 
+text-del {
+  @apply content-[""] inline-block bg-[currentColor]/70 size-[0.2em] rounded-full shrink-0;
+}
+
 /* Button *********************************************************************/
 
 :root {
@@ -498,8 +502,8 @@
 }
 
 @theme {
-  --icon-size-sm: 2rem;
-  --icon-size-md: 4rem;
+  --icon-size-sm: 1.125rem;
+  --icon-size-md: 1.5rem;
   --icon-size-lg: 4rem;
 }
 

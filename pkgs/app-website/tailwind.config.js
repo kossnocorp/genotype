@@ -2,6 +2,7 @@ import hubotSansMetrics from "@capsizecss/metrics/hubotSans/regular";
 import jetBrainsMonoMetrics from "@capsizecss/metrics/jetBrainsMono/regular";
 import monaSansMetrics from "@capsizecss/metrics/monaSans/regular";
 import pluginCapsize from "tailwindcss-capsize";
+import pluginTypography from "@tailwindcss/typography";
 
 export default {
   theme: {
@@ -15,5 +16,5 @@ export default {
     },
   },
 
-  plugins: [pluginCapsize],
+  plugins: [pluginCapsize, pluginTypography],
 };

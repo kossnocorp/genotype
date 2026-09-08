@@ -68,10 +68,14 @@ import Icon from "../core/Icon/Icon.astro";
         GitHub
       </a>
 
+      <text-del></text-del>
+
       <a href="https://github.com/kossnocorp/genotype/discussions">
         <Icon id="forum" style="300" />
         Discussions
       </a>
+
+      <text-del></text-del>
 
       <a href="https://discord.gg/vXCfjVbj9J">
         <Icon id="discord" style="brands" />
@@ -85,6 +89,98 @@ import Icon from "../core/Icon/Icon.astro";
       <PlaygroundDemo lineNumbers={false} />
     </div>
   </div>
+
+  <section class="prose dark:prose-invert mx-auto w-full pb-15">
+    <h2>Why Genotype?</h2>
+
+    <p>
+      Genotype is built for teams working with multiple programming languages
+      (e.g., TypeScript front-end with Rust back-end), building API clients,
+      file formats and standards, gradual language migration, etc.
+    </p>
+
+    <p>
+      Genotype is a small language that you can learn in 15 minutes, but it is
+      feature-rich and allows expressing the most complex data structures. It
+      has generics, supports recursive data types, and allows target-specific
+      fine-tuning via annotations.
+    </p>
+
+    <p>
+      It isn't opinionated and adapts to the ecosystem instead of creating one.
+      Want to generate Zod schemas instead of plan types? No problem! Need a
+      ready-to-ship package or want to generate code right into existing
+      modules? Can do! Need support for legacy Python versions? Absolutely.
+    </p>
+
+    <p>
+      Unlike most machine-generated code, the code Genotype produces is clean,
+      follows the idiomatic naming for types and files, and follows the common
+      conventions.
+    </p>
+
+    <p>
+      And of course, Genotype is AI agent-ready and provides <a
+        href="/docs/toolchain/skill/">skill</a
+      >, <a href="/llms.txt">llms.txt</a>, and leaves code comment breadcrumbs
+      to help steer LLMs into using it correctly.
+    </p>
+
+    <h3>Why Not Protobuf or Similar?</h3>
+
+    <p>
+      Genotype indeed overlaps with Protocol Buffers, but it doesn't impose the
+      transport or storage format. It focuses on producing clean idiomatic types
+      with minimal to no runtime instead of optimizing data transfer
+      performance. TypeScript has no runtime at all. Rust and Python use
+      standard Serde and Pydantic to close the gaps.
+    </p>
+
+    <p>
+      As a result, it better fits when developing API clients and web app
+      client-server interop. It's more flexible and allows more complex data
+      types and data shapes Protobuf cannot express directly.
+    </p>
+  </section>
+
+  <section
+    class="mx-auto w-full max-w-2xl px-1 md:px-4 pb-12 md:pb-21 flex justify-between items-center gap-4"
+  >
+    <div class="flex flex-col gap-1">
+      <h3>Interested?</h3>
+      <p class="text-gray-600 dark:text-gray-500">
+        No lock-in and trivial to migrate from.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <a href="/docs/getting-started" class="button button-main is-get-started">
+        Get Started
+      </a>
+
+      <a href="/playground" class="button is-playground"> Playground </a>
+    </div>
+  </section>
+
+  <footer
+    class="links layout-container flex flex-wrap items-center justify-between gap-4 border-t border-(--color-divider) py-6 text-sm text-(--color-link-secondary)"
+  >
+    <div class="flex items-center gap-2">
+      <span>Sasha Koss © 2026</span>
+      <text-del></text-del>
+      <a href="https://koss.nocorp.me/mit">MIT License</a>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <a href="https://github.com/kossnocorp/genotype" aria-label="GitHub">
+        <Icon id="github" style="brands" class="icon-md" />
+      </a>
+
+      <a href="https://discord.gg/vXCfjVbj9J" aria-label="Discord">
+        <Icon id="discord" style="brands" class="icon-md" />
+      </a>
+    </div>
+  </footer>
 
   <style>
     @reference "#/styles/global.css";
@@ -112,8 +208,12 @@ import Icon from "../core/Icon/Icon.astro";
       }
     }
 
-    .links a {
-      @apply decoration-0 inline-flex items-center gap-1 text-ms text-(--color-link-secondary) hover:text-(--color-link-secondary-hover);
+    .links {
+      @apply flex items-center gap-3 dark:text-gray-600;
+
+      & a {
+        @apply decoration-0 inline-flex items-center gap-1 text-ms text-(--color-link-secondary) hover:text-(--color-link-secondary-hover);
+      }
     }
   </style>
 </div>

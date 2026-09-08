@@ -24,6 +24,7 @@
     "@material-symbols/svg-300": "^0.45.8",
     "@shikijs/langs": "^4.2.0",
     "@shikijs/monaco": "^3.14.0",
+    "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.2",
     "alwaysly": "^0.4.0",
     "astro": "^7.3.1",
