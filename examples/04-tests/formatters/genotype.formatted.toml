@@ -1,13 +1,12 @@
 name = "genotype-test-formatters-formatted"
 dist = "./dist/formatted"
 
-formatters = [{ kind = "oxfmt" }]
-
 [build]
 file = false
 
 [ts]
 enabled = true
+formatters = [{ kind = "oxfmt", args = ["src/index.ts", "src/model.ts"] }]
 
 [rs]
 enabled = true
