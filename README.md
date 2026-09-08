@@ -1,24 +1,50 @@
-# Genotype Programming Language
+<p align="center">
+  <a href="https://genotype-lang.org">
+    <picture>
+      <source srcset="./assets/exports/logotype-dark.svg" media="(prefers-color-scheme: dark)">
+      <source srcset="./assets/exports/logotype-light.svg" media="(prefers-color-scheme: light)">
+      <img src="./assets/exports/logotype-light.svg" alt="Genotype logotype" width="190px">
+    </picture>
+  </a>
+</p>
 
-A programming language that transpiles to idiomatic TypeScript/Rust/Python types, allowing effortless type-safe interop between languages.
+<p align="center">
+  <big>Programming Language</big>
+</p>
 
-Its goal is to help developers working on projects that use multiple languages or require API clients in multiple languages.
+<p align="center">
+  A programming language that transpiles to idiomatic TypeScript/Rust/Python types, allowing effortless type-safe interop between languages.
+</p>
 
-🚧 Work in progress, **follow for updates on [Twitter](https://twitter.com/kossnocorp)**.
+<p align="center">
+  <a href="https://genotype-lang.org/">Website</a> •
+  <a href="https://genotype-lang.org/docs/getting-started/">Docs</a> •
+  <a href="https://genotype-lang.org/docs/language/">Language Tour</a> •
+  <a href="https://genotype-lang.org/playground/">Playground</a> •
+  <a href="https://discord.gg/vXCfjVbj9J">Discord</a>
+</p>
 
 ## Installation
 
-Install a prebuilt Genotype CLI binary with [cargo-binstall](https://github.com/cargo-bins/cargo-binstall):
+### macOS/Linux
 
-```sh
-cargo binstall genotype_cli
+Install the Genotype CLI on macOS or Linux by running the following command in your terminal:
+
+```bash
+curl -fsSL https://genotype-lang.org/install.sh | sh
 ```
 
-Alternatively, build and install the CLI from source:
+### Windows
 
-```sh
-cargo install genotype_cli
+Install the Genotype CLI on Windows by running the following command in PowerShell:
+
+```powershell
+irm https://genotype-lang.org/install.ps1 | iex
 ```
+
+---
+
+See [Installation Reference](https://genotype-lang.org/docs/getting-started/installation/) for more options, such as Cargo Binstall, building from source, etc.
 
 ## Quick Start
 
@@ -31,6 +57,10 @@ gt build
 ```
 
 This will create a build a new project with a language guide demonstrating the Genotype syntax and features.
+
+---
+
+See the [Getting Started](https://genotype-lang.org/docs/getting-started/) guide for more details.
 
 ## License
 
