@@ -62,8 +62,9 @@ export async function buildOutputs(): Promise<Map<string, string>> {
 
       #[rustfmt::skip]
       pub(super) const FILES: &[(&str, &str)] = &[
-  ${allPages.map((name) => `      ("${name}", include_str!("../../../skill/${name}")),`).join("\n")}
-    ];`,
+${allPages.map((name) => `          ("${name}", include_str!("../../../skill/${name}")),`).join("\n")}
+      ];
+    ` + "\n",
   );
 
   return result;
