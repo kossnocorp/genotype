@@ -1,5 +1,8 @@
 name = "genotype-test-idiomatic-file-names"
 
+[build]
+file = false
+
 [ts]
 enabled = true
 
