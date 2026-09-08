@@ -10,5 +10,9 @@ binding = "ASSETS"
 [secrets]
 required = ["GITHUB_TOKEN"]
 
+[[kv_namespaces]]
+binding = "SESSION"
+id = "1b80114346d84b6a8b40c5f9ba2945fd"
+
 [observability]
 enabled = true

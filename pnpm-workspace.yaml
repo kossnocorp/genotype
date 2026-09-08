@@ -42,3 +42,8 @@ minimumReleaseAgeExclude:
   - typescript@7.0.2
   - '@js-fns/rpc@0.1.1'
   - '@js-fns/promise@0.1.0'
+
+supportedArchitectures:
+  cpu:
+    - current
+    - wasm32
