@@ -121,6 +121,9 @@ export default defineConfig({
         TwoColumnContent: "./src/ui/layout/LayoutContent.astro",
         ContentPanel: "./src/ui/layout/LayoutContentPanel.astro",
         // General overrides
+        // TODO: Remove these overrides when light mode is ready.
+        ThemeProvider: "./src/ui/starlight/ThemeProvider.astro",
+        ThemeSelect: "./src/ui/starlight/ThemeSelect.astro",
         PageTitle: "./src/ui/starlight/PageTitle.astro",
         MarkdownContent: "./src/ui/starlight/MarkdownContent.astro",
         Footer: "./src/ui/starlight/Footer.astro",
