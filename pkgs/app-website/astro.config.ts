@@ -4,6 +4,7 @@ import genotypeGrammar from "@genotype-lang/grammar-tm" with { type: "json" };
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import starlightLlmsTxt from "starlight-llms-txt";
+import starlightMdTxt from "starlight-md-txt";
 
 const localHost = process.env.LOCAL_HOST;
 
@@ -13,6 +14,7 @@ export default defineConfig({
     starlight({
       title: "Genotype",
       plugins: [
+        starlightMdTxt({ format: ".md.txt" }),
         starlightLlmsTxt({
           description:
             "Define shared types and generate TypeScript, Rust, and Python code with Genotype.",

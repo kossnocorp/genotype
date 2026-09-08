@@ -98,6 +98,9 @@ importers:
       starlight-llms-txt:
         specifier: ^0.11.0
         version: 0.11.0(@astrojs/markdown-satteri@0.4.0)(@astrojs/starlight@0.42.0(astro@7.3.1(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(supports-color@10.2.2)(typescript@7.0.2))(astro@7.3.1(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(supports-color@10.2.2)
+      starlight-md-txt:
+        specifier: ^0.1.0
+        version: 0.1.0(@astrojs/starlight@0.42.0(astro@7.3.1(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(supports-color@10.2.2)(typescript@7.0.2))(astro@7.3.1(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(supports-color@10.2.2)
       tailwindcss:
         specifier: ^4.3.2
         version: 4.3.2
@@ -4066,6 +4069,12 @@ packages:
     peerDependencies:
       '@astrojs/starlight': '>=0.41.0'
       astro: ^7.0.0
+
+  starlight-md-txt@0.1.0:
+    resolution: {integrity: sha512-tnG4Q2bqwL5n95XI1KWDF0mUNJt/aXK7wlKbEofpgxCjxeIX3Wa7pxj2LLCvW5enKcWTJm8BgIFvjEnLehtaaw==}
+    peerDependencies:
+      '@astrojs/starlight': '>=0.30.0'
+      astro: '>=4.0.0 || >=5.0.0 || >=6.0.0'
 
   std-env@4.2.0:
     resolution: {integrity: sha512-oCUKSupKTHX53EyjDtuZQ64pjLJ6yYCtpmEw0goYxtjG9KpbRe8KAsl2tBUGU9DyMcJ0RwJ8GqJAFzMXcXW1Rw==}
@@ -8955,6 +8964,18 @@ snapshots:
       unist-util-remove: 4.0.0
     transitivePeerDependencies:
       - '@astrojs/markdown-satteri'
+      - supports-color
+
+  starlight-md-txt@0.1.0(@astrojs/starlight@0.42.0(astro@7.3.1(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(supports-color@10.2.2)(typescript@7.0.2))(astro@7.3.1(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(supports-color@10.2.2):
+    dependencies:
+      '@astrojs/starlight': 0.42.0(astro@7.3.1(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0))(supports-color@10.2.2)(typescript@7.0.2)
+      astro: 7.3.1(@azure/identity@4.13.1(supports-color@10.2.2))(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.13.3)(jiti@2.7.0)(yaml@2.9.0)
+      remark-mdx: 3.1.1(supports-color@10.2.2)
+      remark-parse: 11.0.0(supports-color@10.2.2)
+      remark-stringify: 11.0.0
+      unified: 11.0.5
+      unist-util-visit: 5.1.0
+    transitivePeerDependencies:
       - supports-color
 
   std-env@4.2.0: {}
