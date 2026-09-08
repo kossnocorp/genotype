@@ -4,15 +4,12 @@
  * The script generates the agent skill files from the website MDX content.
  */
 
-import cp from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
 import url from "node:url";
-import util from "node:util";
+import { format } from "oxfmt";
 import { lit } from "smollit";
 import { Mdx } from "../src/index.ts";
-
-const execFile = util.promisify(cp.execFile);
 
 const rootDir = url.fileURLToPath(new URL("../../../", import.meta.url));
 
@@ -46,8 +43,13 @@ export async function buildOutputs(): Promise<Map<string, string>> {
 
       const mdx = await fs.readFile(mdxPath, "utf8");
       const md = Mdx.render(mdx, pages);
+      const formatted = await format(pagePath, md);
+      if (formatted.errors.length)
+        throw new Error(
+          `Failed to format ${pagePath}:\n${formatted.errors.map((error) => error.message).join("\n")}`,
+        );
 
-      return [pagePath, md] as const;
+      return [pagePath, formatted.code] as const;
     }),
   );
   const result = new Map(resultEntries);
@@ -103,6 +105,4 @@ export async function generateSkill(check = false): Promise<void> {
 
 ${staleEntries.map(([file, reason]) => `      ${file}: ${reason}`).join("\n")}
     `);
-
-  await execFile("oxfmt", ["**/*.md"], { cwd: skillDir });
 }
