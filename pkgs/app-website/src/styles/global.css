@@ -116,6 +116,9 @@
 
   --color-ink-dark: var(--color-gray-200);
   --color-ink-light: var(--color-gray-900);
+
+  --color-link-secondary-dark: var(--color-gray-500);
+  --color-link-secondary-light: var(--color-gray-600);
 }
 
 :root {
@@ -139,6 +142,16 @@
   }
   /* Starlight fallback */
   --sl-color-hairline: var(--color-divider);
+
+  --color-link-secondary: var(--color-link-secondary-light);
+  @variant dark {
+    --color-link-secondary: var(--color-link-secondary-dark);
+  }
+
+  --color-link-secondary-hover: hsl(
+    from var(--color-link-secondary) h calc(s* var(--mod-text-s-hover))
+      calc(l* var(--mod-text-l-hover))
+  );
 }
 
 /* Starlight colors */

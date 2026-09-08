@@ -4,6 +4,7 @@ import Code from "#/ui/core/Code.astro";
 import Tabs from "#/ui/core/Tabs.astro";
 import LogotypeLight from "#/assets/logotype-light.svg";
 import LogotypeDark from "#/assets/logotype-dark.svg";
+import Icon from "../core/Icon/Icon.astro";
 ---
 
 <div class="grow pd-x-layout flex flex-col">
@@ -61,6 +62,23 @@ import LogotypeDark from "#/assets/logotype-dark.svg";
       <a href="/playground" class="button is-playground"> Playground </a>
     </div>
 
+    <div class="links flex gap-4 justify-center">
+      <a href="https://github.com/kossnocorp/genotype">
+        <Icon id="github" style="brands" />
+        GitHub
+      </a>
+
+      <a href="https://github.com/kossnocorp/genotype/discussions">
+        <Icon id="forum" style="300" />
+        Discussions
+      </a>
+
+      <a href="https://discord.gg/vXCfjVbj9J">
+        <Icon id="discord" style="brands" />
+        Discord
+      </a>
+    </div>
+
     <div
       class="layout-container flex flex-col min-h-200 border border-transparent dark:border-gray-800"
     >
@@ -92,6 +110,10 @@ import LogotypeDark from "#/assets/logotype-dark.svg";
       @variant dark {
         --button-text-base: var(--color-gray-200);
       }
+    }
+
+    .links a {
+      @apply decoration-0 inline-flex items-center gap-1 text-ms text-(--color-link-secondary) hover:text-(--color-link-secondary-hover);
     }
   </style>
 </div>
