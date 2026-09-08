@@ -2,6 +2,12 @@
 import Playground from "./Playground.astro";
 import type { PlaygroundManager } from "#/ui/playground/PlaygroundManager";
 
+interface Props {
+  lineNumbers?: boolean;
+}
+
+const { lineNumbers = true } = Astro.props;
+
 const exampleFiles = import.meta.glob<string>(
   "../../../examples/playground/*/{genotype.toml,src/**/*.type}",
   { eager: true, query: "?raw", import: "default" },
@@ -37,4 +43,8 @@ const examples = (
 const initialState = examples[0]?.initialState;
 ---
 
-<Playground initialState={initialState} examples={examples} />
+<Playground
+  initialState={initialState}
+  examples={examples}
+  lineNumbers={lineNumbers}
+/>

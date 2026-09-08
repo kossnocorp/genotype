@@ -4,12 +4,16 @@ import type { EditorManager } from "./EditorManager";
 interface Props {
   id: string;
   initialState: EditorManager.State;
+  lineNumbers?: boolean;
 }
 
-const { id, initialState } = Astro.props;
+const { id, initialState, lineNumbers = true } = Astro.props;
 ---
 
-<gt-editor data-id={id} data-initial-state={JSON.stringify(initialState)}
+<gt-editor
+  data-id={id}
+  data-initial-state={JSON.stringify(initialState)}
+  data-line-numbers={String(lineNumbers)}
 ></gt-editor>
 
 <script>

@@ -14,5 +14,19 @@ import PlaygroundDemo from "#/ui/playground/PlaygroundDemo.astro";
   }}
   hasSidebar={false}
 >
-  <PlaygroundDemo />
+  <div class="fullscreen-playground">
+    <PlaygroundDemo />
+  </div>
 </StarlightPage>
+
+<style>
+  .fullscreen-playground {
+    display: flex;
+    flex: none;
+    min-height: 0;
+    height: calc(
+      100dvh - var(--sl-nav-height) - var(--sl-mobile-toc-height, 0px)
+    );
+    overflow: hidden;
+  }
+</style>

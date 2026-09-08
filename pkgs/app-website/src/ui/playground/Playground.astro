@@ -8,9 +8,10 @@ import PlaygroundDiagnostics from "./diagnostics/PlaygroundDiagnostics.astro";
 interface Props {
   initialState: PlaygroundManager.InitialState;
   examples?: PlaygroundManager.Example[];
+  lineNumbers?: boolean;
 }
 
-const { initialState, examples = [] } = Astro.props;
+const { initialState, examples = [], lineNumbers = true } = Astro.props;
 
 const { lang: initialLang } = initialState;
 const panelId = `playground-${crypto.randomUUID()}`;
@@ -95,11 +96,11 @@ const langTabs = [
 
     <section class="code">
       <div class="source">
-        <PlaygroundEditor id="source" initialState={null} />
+        <PlaygroundEditor id="source" initialState={null} lineNumbers={lineNumbers} />
       </div>
 
       <div class="dist">
-        <PlaygroundEditor id="dist" initialState={null} />
+        <PlaygroundEditor id="dist" initialState={null} lineNumbers={lineNumbers} />
       </div>
     </section>
 
@@ -142,7 +143,7 @@ const langTabs = [
   }
 
   .nav {
-    @apply border-b border-(--color-divider);
+    @apply shrink-0 border-b border-(--color-divider);
   }
 
   .files,
@@ -161,7 +162,7 @@ const langTabs = [
   }
 
   .code {
-    @apply grow min-h-0 overflow-hidden;
+    @apply flex-1 min-h-0 overflow-hidden;
   }
 
   .source,

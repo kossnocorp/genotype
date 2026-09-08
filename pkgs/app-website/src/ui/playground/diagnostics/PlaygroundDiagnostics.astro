@@ -1,4 +1,102 @@
-<gt-playground-diagnostics>
+---
+import Icon from "#/ui/core/Icon/Icon.astro";
+
+const panelId = `playground-diagnostics-${crypto.randomUUID()}`;
+---
+
+<gt-playground-diagnostics data-status="info">
+  <button
+    type="button"
+    class="badge"
+    data-diagnostics-toggle
+    aria-expanded="false"
+    aria-controls={panelId}
+    aria-label="Show diagnostics: 0 messages"
+    title="Show diagnostics: 0 messages"
+  >
+    <span class="status-icon" data-status-icon="info" aria-hidden="true">
+      <Icon id="info" style="300" />
+    </span>
+
+    <span
+      class="status-icon"
+      data-status-icon="warning"
+      aria-hidden="true"
+      hidden
+    >
+      <Icon id="warning" style="300" />
+    </span>
+
+    <span
+      class="status-icon"
+      data-status-icon="error"
+      aria-hidden="true"
+      hidden
+    >
+      <Icon id="error" style="300" />
+    </span>
+
+    <span data-diagnostics-count aria-live="polite">0</span>
+  </button>
+
+  <section id={panelId} data-diagnostics-panel aria-label="Diagnostics" hidden>
+    <header class="panel-header">
+      {
+        [
+          { kind: "info", icon: "info" },
+          { kind: "warning", icon: "warning" },
+          { kind: "error", icon: "error" },
+        ].map(({ kind, icon }) => (
+          <span class="panel-status" data-status-group={kind} hidden>
+            <span class="status-icon" aria-hidden="true">
+              <Icon id={icon} style="300" />
+            </span>
+
+            <span data-status-count aria-live="polite">
+              0
+            </span>
+          </span>
+        ))
+      }
+
+      <div class="panel-buttons">
+        <button
+          type="button"
+          class="panel-button"
+          data-diagnostics-resize
+          aria-pressed="false"
+          aria-controls={panelId}
+          aria-label="Expand diagnostics to 60%"
+          title="Expand diagnostics to 60%"
+        >
+          <span data-resize-icon="expand" aria-hidden="true">
+            <Icon id="expand_all" style="300" />
+          </span>
+
+          <span data-resize-icon="collapse" aria-hidden="true" hidden>
+            <Icon id="collapse_all" style="300" />
+          </span>
+        </button>
+
+        <button
+          type="button"
+          class="panel-button with-border"
+          data-diagnostics-toggle
+          aria-expanded="true"
+          aria-controls={panelId}
+          aria-label="Collapse diagnostics"
+          title="Collapse diagnostics"
+        >
+          <span aria-hidden="true">
+            <Icon id="close" style="300" />
+          </span>
+        </button>
+      </div>
+    </header>
+
+    <div data-diagnostics-messages></div>
+  </section>
+
   <template data-id="diagnostic">
     <article data-diagnostic>
       <div class="title">
@@ -23,7 +121,80 @@
   @reference "#/styles/global.css";
 
   gt-playground-diagnostics {
-    @apply block h-48 shrink-0 overflow-y-auto border-t border-(--color-divider) bg-black pd-x-layout pd-y-panel font-mono text-sm text-gray-200;
+    @apply relative block shrink-0 font-mono text-sm text-gray-200;
+  }
+
+  [data-diagnostics-panel] {
+    @apply flex h-48 min-h-0 flex-col overflow-hidden border-t border-(--color-divider) bg-black;
+  }
+
+  gt-playground-diagnostics[data-enlarged="true"] {
+    height: 60%;
+  }
+
+  [data-enlarged="true"] [data-diagnostics-panel] {
+    height: 100%;
+  }
+
+  .panel-header {
+    @apply flex h-6 shrink-0 items-center justify-end gap-3 border-b border-(--color-divider) px-2;
+  }
+
+  .panel-status {
+    @apply flex items-center gap-1 text-xs text-gray-400;
+  }
+
+  .panel-buttons {
+    @apply flex gap-1.5;
+  }
+
+  .panel-button {
+    @apply flex size-4 shrink-0 rounded-sm items-center justify-center bg-transparent  text-gray-400 hover:text-gray-300 cursor-pointer border-gray-700 hover:border hover:border-gray-500;
+
+    &.with-border {
+      @apply border;
+    }
+  }
+
+  [data-diagnostics-messages] {
+    @apply flex-1 min-h-0 overflow-y-auto pd-x-layout pd-y-panel text-sm;
+  }
+
+  .badge {
+    @apply absolute bottom-full right-3 z-10 mb-2 flex h-7 min-w-10 items-center justify-center gap-1.5 rounded-full border border-gray-700 bg-gray-900 px-2.5 text-sm text-gray-400 shadow-md cursor-pointer;
+
+    &:hover {
+      @apply bg-gray-800;
+    }
+  }
+
+  .badge:focus-visible,
+  .panel-button:focus-visible {
+    @apply outline-2 outline-offset-2 outline-current;
+  }
+
+  [data-status="warning"] .badge {
+    @apply border-yellow-400/40 text-yellow-400;
+  }
+
+  [data-status-group="warning"] {
+    @apply text-yellow-400;
+  }
+
+  [data-status="error"] .badge {
+    @apply border-red-400/40 text-red-400;
+  }
+
+  [data-status-group="error"] {
+    @apply text-red-400;
+  }
+
+  .status-icon {
+    @apply text-sm;
+  }
+
+  [hidden] {
+    display: none;
   }
 
   article + article {

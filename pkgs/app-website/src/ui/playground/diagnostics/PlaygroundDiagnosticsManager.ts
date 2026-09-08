@@ -56,13 +56,19 @@ export class PlaygroundDiagnosticsManager {
     }
 
     contentEl.hidden = contentEl.childElementCount === 0;
-    this.#wc.appendChild(fragment);
+    this.#wc.messages.appendChild(fragment);
+    if (diagnostic.kind === "error") this.#wc.expand();
+    else this.#wc.updateStatus();
 
-    if (shouldScroll) this.#wc.scrollTop = this.#wc.scrollHeight;
+    // Keep the first error in view instead of following later diagnostics to the bottom.
+    if (shouldScroll && this.#wc.dataset.status !== "error") {
+      this.#wc.messages.scrollTop = this.#wc.messages.scrollHeight;
+    }
   }
 
   #isScrolledToBottom(): boolean {
-    return this.#wc.scrollHeight - this.#wc.scrollTop - this.#wc.clientHeight <= 1;
+    const panel = this.#wc.messages;
+    return panel.scrollHeight - panel.scrollTop - panel.clientHeight <= 1;
   }
 
   #label(kind: Gt.GtDiagnosticKind): string {

@@ -13,6 +13,7 @@ export namespace EditorManager {
   export interface Props {
     initialState: State;
     el: HTMLElement;
+    lineNumbers?: boolean;
   }
 }
 
@@ -45,7 +46,7 @@ export class EditorManager {
   #ignoreModelChanges = false;
 
   constructor(props: EditorManager.Props) {
-    const { el, initialState } = props;
+    const { el, initialState, lineNumbers = true } = props;
 
     this.setState(initialState);
 
@@ -53,6 +54,7 @@ export class EditorManager {
       model: this.#model,
       automaticLayout: true,
       minimap: { enabled: false },
+      lineNumbers: lineNumbers ? "on" : "off",
       lineNumbersMinChars: 3,
       roundedSelection: false,
       smoothScrolling: true,

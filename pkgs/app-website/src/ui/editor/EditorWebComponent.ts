@@ -25,9 +25,11 @@ export class EditorWebComponent extends HTMLElement {
 
   async #onConnect() {
     const initialState = this.#getInitialState();
-    EditorManager.create({ initialState, el: this }).then((manager) =>
-      this.#managerFlatPromise.resolve(manager),
-    );
+    EditorManager.create({
+      initialState,
+      el: this,
+      lineNumbers: this.dataset.lineNumbers !== "false",
+    }).then((manager) => this.#managerFlatPromise.resolve(manager));
   }
 
   //#endregion
