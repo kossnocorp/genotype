@@ -38,14 +38,14 @@ fn removes_stale_dist_files() {
     deps = []
 
     [dist.ts."dist/ts/index.ts"]
-    hash = "8cadd476d24cae2a"
+    hash = "e50a90503e90562e"
 
     [dist.ts."dist/ts/keep.ts"]
-    hash = "3f4324d7b2333299"
+    hash = "629dc1893da89cda"
     srcId = "keep"
 
     [dist.ts."dist/ts/stale.ts"]
-    hash = "71926b14eaa99dde"
+    hash = "6ce578469081d83a"
     srcId = "stale"
     "#);
 
@@ -68,10 +68,10 @@ fn removes_stale_dist_files() {
     deps = []
 
     [dist.ts."dist/ts/index.ts"]
-    hash = "693840cae3a4b09c"
+    hash = "bbf30fc509c972ce"
 
     [dist.ts."dist/ts/keep.ts"]
-    hash = "84c345da19059149"
+    hash = "906942ad0c50d31e"
     srcId = "keep"
     "#);
 
@@ -111,14 +111,14 @@ fn preserves_and_warns_about_changed_stale_dist_files() {
     deps = []
 
     [dist.ts."dist/ts/index.ts"]
-    hash = "8cadd476d24cae2a"
+    hash = "e50a90503e90562e"
 
     [dist.ts."dist/ts/keep.ts"]
-    hash = "3f4324d7b2333299"
+    hash = "629dc1893da89cda"
     srcId = "keep"
 
     [dist.ts."dist/ts/stale.ts"]
-    hash = "71926b14eaa99dde"
+    hash = "6ce578469081d83a"
     srcId = "stale"
     "#);
 
@@ -143,10 +143,10 @@ fn preserves_and_warns_about_changed_stale_dist_files() {
     deps = []
 
     [dist.ts."dist/ts/index.ts"]
-    hash = "693840cae3a4b09c"
+    hash = "bbf30fc509c972ce"
 
     [dist.ts."dist/ts/keep.ts"]
-    hash = "84c345da19059149"
+    hash = "906942ad0c50d31e"
     srcId = "keep"
     "#);
 
@@ -194,14 +194,14 @@ fn preserves_stale_files_when_clean_up_disabled() {
     deps = []
 
     [dist.ts."dist/ts/index.ts"]
-    hash = "8cadd476d24cae2a"
+    hash = "e50a90503e90562e"
 
     [dist.ts."dist/ts/keep.ts"]
-    hash = "3f4324d7b2333299"
+    hash = "629dc1893da89cda"
     srcId = "keep"
 
     [dist.ts."dist/ts/stale.ts"]
-    hash = "71926b14eaa99dde"
+    hash = "6ce578469081d83a"
     srcId = "stale"
     "#);
 
@@ -224,10 +224,10 @@ fn preserves_stale_files_when_clean_up_disabled() {
     deps = []
 
     [dist.ts."dist/ts/index.ts"]
-    hash = "693840cae3a4b09c"
+    hash = "bbf30fc509c972ce"
 
     [dist.ts."dist/ts/keep.ts"]
-    hash = "84c345da19059149"
+    hash = "906942ad0c50d31e"
     srcId = "keep"
     "#);
 

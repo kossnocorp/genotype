@@ -63,6 +63,9 @@ where
             dist.pack_extra_files(extra_files, extra_file_diagnostics);
         }
 
+        self.config()
+            .render_extra_file_warning_comments(&mut dist)?;
+
         dist.sort_files();
 
         dist.validate_target_paths()?;

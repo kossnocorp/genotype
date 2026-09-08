@@ -2,6 +2,8 @@ use crate::prelude::internal::*;
 
 mod paths;
 
+mod warning_comment;
+
 mod error;
 pub use error::*;
 

@@ -50,19 +50,11 @@ impl<'project, 'config, ProjectModule: GtlProjectModule>
         &self,
         converted: &GtlProjectModuleConverted<ProjectModule>,
     ) -> Result<String, GtlProjectError> {
-        let target_dir = converted
-            .target_path
-            .relative_path()
-            .parent()
-            .ok_or_else(|| GtlProjectError::GenerateTargetFile {
-                path: converted.target_path.clone(),
-                error: "Failed to resolve the target file parent directory".into(),
-            })?;
-
-        let source_path = target_dir.relative(converted.source_path.relative_path());
-        let content = format!("Do not edit manually! Code generated from {source_path}",);
-        self.config.project_version();
-        let comment = self.config.lang_config().comment_line(&content);
-        Ok(comment)
+        self.config.render_generated_warning_comment(
+            &converted.target_path,
+            converted.source_path.relative_path(),
+            "from",
+            None,
+        )
     }
 }
