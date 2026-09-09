@@ -14,9 +14,10 @@ The following examples give an overview of how Genotype translates into TypeScri
 
 Object examples show [Interfaces and
 Aliases](typescript-configuration.md#tsprefer---interfaces-or-type-aliases); other
-examples use Types. All include [Zod
+examples use Types. All include [Zod and Effect
 output](typescript-configuration.md#tsmode---generation-mode). Feature examples omit
-imports; Zod examples use `z` from [Zod](https://www.npmjs.com/package/zod). The [Complete
+imports; Zod examples use `z` from [Zod](https://www.npmjs.com/package/zod), and Effect examples
+use `Schema` from [Effect v4](https://effect.website/docs/v4/schema/introduction). The [Complete
 Module](#complete-module) includes imports.
 
 ### Complete Module
@@ -75,6 +76,22 @@ export const Book = z.object({
 export type Book = z.infer<typeof Book>;
 ```
 
+**Effect**
+
+```ts
+import { Schema } from "effect";
+
+export const Book = Schema.Struct({
+  kind: Schema.Literal("book"),
+  displayTitle: Schema.String,
+  subtitle: Schema.optionalKey(Schema.Union([Schema.String, Schema.Undefined])),
+  ratings: Schema.Record(Schema.String, Schema.Number),
+  extra: Schema.Any,
+});
+
+export type Book = Schema.Schema.Type<typeof Book>;
+```
+
 ### Unions
 
 Genotype unions translate directly to TypeScript union types.
@@ -95,6 +112,14 @@ export type Value = string | number;
 export const Value = z.union([z.string(), z.number()]);
 
 export type Value = z.infer<typeof Value>;
+```
+
+**Effect**
+
+```ts
+export const Value = Schema.Union([Schema.String, Schema.Number]);
+
+export type Value = Schema.Schema.Type<typeof Value>;
 ```
 
 ### Primitives
@@ -123,6 +148,14 @@ export const Amount = z.number();
 export type Amount = z.infer<typeof Amount>;
 ```
 
+**Effect**
+
+```ts
+export const Amount = Schema.Number;
+
+export type Amount = Schema.Schema.Type<typeof Amount>;
+```
+
 ##### `int`
 
 Genotype `int` translates into the TypeScript umbrella `number` type.
@@ -145,6 +178,14 @@ export const Count = z.number();
 export type Count = z.infer<typeof Count>;
 ```
 
+**Effect**
+
+```ts
+export const Count = Schema.Number;
+
+export type Count = Schema.Schema.Type<typeof Count>;
+```
+
 ##### `float`
 
 Genotype `float` translates into the TypeScript umbrella `number` type.
@@ -165,6 +206,14 @@ export type Ratio = number;
 export const Ratio = z.number();
 
 export type Ratio = z.infer<typeof Ratio>;
+```
+
+**Effect**
+
+```ts
+export const Ratio = Schema.Number;
+
+export type Ratio = Schema.Schema.Type<typeof Ratio>;
 ```
 
 ##### Sized Numeric Types
@@ -203,6 +252,22 @@ export const LargeCount = z.bigint();
 export type LargeCount = z.infer<typeof LargeCount>;
 ```
 
+**Effect**
+
+```ts
+export const SmallCount = Schema.Number;
+
+export type SmallCount = Schema.Schema.Type<typeof SmallCount>;
+
+export const PreciseRatio = Schema.Number;
+
+export type PreciseRatio = Schema.Schema.Type<typeof PreciseRatio>;
+
+export const LargeCount = Schema.BigInt;
+
+export type LargeCount = Schema.Schema.Type<typeof LargeCount>;
+```
+
 #### Booleans
 
 Genotype `boolean` translates directly to the TypeScript `boolean` type.
@@ -223,6 +288,14 @@ export type Ready = boolean;
 export const Ready = z.boolean();
 
 export type Ready = z.infer<typeof Ready>;
+```
+
+**Effect**
+
+```ts
+export const Ready = Schema.Boolean;
+
+export type Ready = Schema.Schema.Type<typeof Ready>;
 ```
 
 #### Strings
@@ -247,6 +320,14 @@ export const Title = z.string();
 export type Title = z.infer<typeof Title>;
 ```
 
+**Effect**
+
+```ts
+export const Title = Schema.String;
+
+export type Title = Schema.Schema.Type<typeof Title>;
+```
+
 #### Literal Types
 
 Genotype literal types translate directly to TypeScript literal types.
@@ -267,6 +348,14 @@ export type Category = "fiction";
 export const Category = z.literal("fiction");
 
 export type Category = z.infer<typeof Category>;
+```
+
+**Effect**
+
+```ts
+export const Category = Schema.Literal("fiction");
+
+export type Category = Schema.Schema.Type<typeof Category>;
 ```
 
 #### Null
@@ -291,6 +380,14 @@ export const Empty = z.literal(null);
 export type Empty = z.infer<typeof Empty>;
 ```
 
+**Effect**
+
+```ts
+export const Empty = Schema.Null;
+
+export type Empty = Schema.Schema.Type<typeof Empty>;
+```
+
 #### Branded Primitives
 
 Genotype branded primitives translate into branded TypeScript types. Their runtime values remain unchanged.
@@ -312,6 +409,14 @@ declare const bookIdBrand: unique symbol;
 export const BookId = z.string().brand<"BookId">();
 
 export type BookId = z.infer<typeof BookId>;
+```
+
+**Effect**
+
+```ts
+export const BookId = Schema.String.pipe(Schema.brand("BookId"));
+
+export type BookId = Schema.Schema.Type<typeof BookId>;
 ```
 
 ### Composite Types
@@ -350,6 +455,16 @@ export const Book = z.object({
 export type Book = z.infer<typeof Book>;
 ```
 
+**Effect**
+
+```ts
+export const Book = Schema.Struct({
+  title: Schema.String,
+});
+
+export type Book = Schema.Schema.Type<typeof Book>;
+```
+
 ##### Optional Object Fields
 
 Optional Genotype object fields translate into optional TypeScript properties.
@@ -382,6 +497,16 @@ export const Draft = z.object({
 });
 
 export type Draft = z.infer<typeof Draft>;
+```
+
+**Effect**
+
+```ts
+export const Draft = Schema.Struct({
+  subtitle: Schema.optionalKey(Schema.Union([Schema.String, Schema.Undefined])),
+});
+
+export type Draft = Schema.Schema.Type<typeof Draft>;
 ```
 
 ##### Object Extensions
@@ -433,6 +558,25 @@ export const NamedBook = Named.extend({
 export type NamedBook = z.infer<typeof NamedBook>;
 ```
 
+**Effect**
+
+```ts
+export const Named = Schema.Struct({
+  name: Schema.String,
+});
+
+export type Named = Schema.Schema.Type<typeof Named>;
+
+export const NamedBook = Schema.Struct({
+  ...Named.fields,
+  ...{
+    pages: Schema.Number,
+  },
+});
+
+export type NamedBook = Schema.Schema.Type<typeof NamedBook>;
+```
+
 #### Arrays
 
 Genotype arrays translate into TypeScript `Array<T>` types.
@@ -453,6 +597,14 @@ export type Titles = Array<string>;
 export const Titles = z.array(z.string());
 
 export type Titles = z.infer<typeof Titles>;
+```
+
+**Effect**
+
+```ts
+export const Titles = Schema.mutable(Schema.Array(Schema.String));
+
+export type Titles = Schema.Schema.Type<typeof Titles>;
 ```
 
 #### Tuples
@@ -477,6 +629,14 @@ export const Point = z.tuple([z.number(), z.number()]);
 export type Point = z.infer<typeof Point>;
 ```
 
+**Effect**
+
+```ts
+export const Point = Schema.mutable(Schema.Tuple([Schema.Number, Schema.Number]));
+
+export type Point = Schema.Schema.Type<typeof Point>;
+```
+
 #### Records
 
 Genotype records translate into TypeScript `Record<K, V>` types. An omitted key type means string keys.
@@ -497,6 +657,14 @@ export type Scores = Record<string, number>;
 export const Scores = z.record(z.string(), z.number());
 
 export type Scores = z.infer<typeof Scores>;
+```
+
+**Effect**
+
+```ts
+export const Scores = Schema.Record(Schema.String, Schema.Number);
+
+export type Scores = Schema.Schema.Type<typeof Scores>;
 ```
 
 ### Special Data Types
@@ -523,9 +691,17 @@ export const Payload = z.any();
 export type Payload = z.infer<typeof Payload>;
 ```
 
+**Effect**
+
+```ts
+export const Payload = Schema.Any;
+
+export type Payload = Schema.Schema.Type<typeof Payload>;
+```
+
 ### Generic Types
 
-Genotype generic types translate into TypeScript generic types. Zod output uses functions accepting schemas, e.g., `Envelope(Book)`.
+Genotype generic types translate into TypeScript generic types. Zod and Effect output use functions accepting schemas, e.g., `Envelope(Book)`.
 
 ```type
 Envelope<Body>: { body: Body }
@@ -558,9 +734,22 @@ export const Envelope = <Body extends z.ZodTypeAny>(Body: Body) =>
 export type Envelope<Body extends z.ZodTypeAny> = z.infer<ReturnType<typeof Envelope<Body>>>;
 ```
 
+**Effect**
+
+```ts
+export const Envelope = <Body extends Schema.Top>(Body: Body) =>
+  Schema.Struct({
+    body: Body,
+  });
+
+export type Envelope<Body extends Schema.Top> = Schema.Schema.Type<
+  ReturnType<typeof Envelope<Body>>
+>;
+```
+
 ### Recursive Types
 
-Genotype recursive types translate directly to TypeScript recursive types. Zod output uses getters or lazy schemas.
+Genotype recursive types translate directly to TypeScript recursive types. Zod output uses getters or lazy schemas. Effect output uses `Schema.suspend` with explicit recursive types.
 
 ```type
 LinkedNode: { value: string, next?: LinkedNode }
@@ -595,6 +784,24 @@ export const LinkedNode = z.object({
 });
 
 export type LinkedNode = z.infer<typeof LinkedNode>;
+```
+
+**Effect**
+
+```ts
+export interface LinkedNode {
+  value: string;
+  next?: LinkedNode | undefined;
+}
+
+export const LinkedNode = Schema.Struct({
+  value: Schema.String,
+  next: Schema.optionalKey(
+    Schema.suspend((): Schema.Codec<LinkedNode | undefined> =>
+      Schema.Union([LinkedNode, Schema.Undefined]),
+    ),
+  ),
+});
 ```
 
 ### Annotations

@@ -6,6 +6,8 @@
     "@types/node": "^25.5.2",
     "genotype-test-cyclic-refs-ts-zod": "file:./dist/ts-zod/ts/",
     "tsx": "^4.21.0",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.2",
+    "genotype-test-cyclic-refs-ts-effect": "file:./dist/ts-effect/ts/",
+    "effect": "^4.0.0-rc.112"
   }
 }

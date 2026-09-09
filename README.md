@@ -30,7 +30,7 @@ Genotype is built for teams working with multiple programming languages (e.g., T
 
 Genotype is a small language that you can learn in 15 minutes, but it is feature-rich and allows expressing the most complex data structures. It has generics, supports recursive data types, and allows target-specific fine-tuning via annotations.
 
-It isn't opinionated and adapts to the ecosystem instead of creating one. Want to generate Zod schemas instead of plan types? No problem! Need a ready-to-ship package or want to generate code right into existing modules? Can do! Need support for legacy Python versions? Absolutely.
+It isn't opinionated and adapts to the ecosystem instead of creating one. Want to generate Zod or Effect schemas instead of plain types? No problem! Need a ready-to-ship package or want to generate code right into existing modules? Can do! Need support for legacy Python versions? Absolutely.
 
 Unlike most machine-generated code, the code Genotype produces is clean, follows the idiomatic naming for types and files, and follows the common conventions.
 

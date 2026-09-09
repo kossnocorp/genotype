@@ -7,6 +7,8 @@
     "genotype-test-map-key-alias-types": "file:./dist/ts-types/ts/",
     "genotype-test-map-key-alias-zod-types": "file:./dist/ts-zod/ts/",
     "tsx": "^4.21.0",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.2",
+    "genotype-test-map-key-alias-effect-types": "file:./dist/ts-effect/ts/",
+    "effect": "^4.0.0-rc.112"
   }
 }

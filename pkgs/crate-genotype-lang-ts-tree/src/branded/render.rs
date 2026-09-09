@@ -7,48 +7,71 @@ impl<'context> GtlRender<'context, TsRenderTypes> for TsBranded {
         state: TsRenderState,
         context: &mut TsRenderContext,
     ) -> TsRenderResult<String> {
-        if context.is_zod_mode() {
-            let name = self.name.render(state, context)?;
-            let primitive = self.primitive.render(state, context)?;
-            let schema = TsDoc::with_doc(
-                &self.doc,
-                state,
-                context,
-                format!("export const {name} = {primitive}.brand<\"{name}\">();"),
-                false,
-            )?;
-            let r#type = TsDoc::with_doc(
-                &self.doc,
-                state,
-                context,
-                format!("export type {name} = z.infer<typeof {name}>;"),
-                false,
-            )?;
+        match context.mode() {
+            TsMode::Effect => {
+                let name = self.name.render(state, context)?;
+                let primitive = self.primitive.render(state, context)?;
+                let schema = TsDoc::with_doc(
+                    &self.doc,
+                    state,
+                    context,
+                    format!("export const {name} = {primitive}.pipe(Schema.brand(\"{name}\"));"),
+                    false,
+                )?;
+                let r#type = TsDoc::with_doc(
+                    &self.doc,
+                    state,
+                    context,
+                    format!("export type {name} = Schema.Schema.Type<typeof {name}>;"),
+                    false,
+                )?;
 
-            return Ok(format!("{schema}\n\n{type}"));
+                Ok(format!("{schema}\n\n{type}"))
+            }
+            TsMode::Zod => {
+                let name = self.name.render(state, context)?;
+                let primitive = self.primitive.render(state, context)?;
+                let schema = TsDoc::with_doc(
+                    &self.doc,
+                    state,
+                    context,
+                    format!("export const {name} = {primitive}.brand<\"{name}\">();"),
+                    false,
+                )?;
+                let r#type = TsDoc::with_doc(
+                    &self.doc,
+                    state,
+                    context,
+                    format!("export type {name} = z.infer<typeof {name}>;"),
+                    false,
+                )?;
+
+                Ok(format!("{schema}\n\n{type}"))
+            }
+            TsMode::Types => {
+                let brand_name = format!("{brand}Brand", brand = self.name.0).to_lower_camel_case();
+
+                let mut blocks = vec![];
+
+                if let Some(doc) = &self.doc {
+                    blocks.push(doc.render(state, context)?);
+                }
+
+                blocks.push(format!(
+                    "{indent}export type {name} = {primitive} & {{ [{brand_name}]: true }};",
+                    indent = state.indent_str(),
+                    name = self.name.render(state, context)?,
+                    primitive = self.primitive.render(state, context)?
+                ));
+
+                blocks.push(format!(
+                    "{indent}declare const {brand_name}: unique symbol;",
+                    indent = state.indent_str(),
+                ));
+
+                Ok(blocks.join("\n"))
+            }
         }
-
-        let brand_name = format!("{brand}Brand", brand = self.name.0).to_lower_camel_case();
-
-        let mut blocks = vec![];
-
-        if let Some(doc) = &self.doc {
-            blocks.push(doc.render(state, context)?);
-        }
-
-        blocks.push(format!(
-            "{indent}export type {name} = {primitive} & {{ [{brand_name}]: true }};",
-            indent = state.indent_str(),
-            name = self.name.render(state, context)?,
-            primitive = self.primitive.render(state, context)?
-        ));
-
-        blocks.push(format!(
-            "{indent}declare const {brand_name}: unique symbol;",
-            indent = state.indent_str(),
-        ));
-
-        Ok(blocks.join("\n"))
     }
 }
 
@@ -139,6 +162,17 @@ mod tests {
         /** Object version. */
         export type Version = z.infer<typeof Version>;
         "#
+        );
+    }
+
+    #[test]
+    fn test_render_effect() {
+        assert_eq!(
+            render_node_with(
+                Tst::branded("Id", Tst::primitive_string()),
+                &mut Tst::render_context_effect()
+            ),
+            "export const Id = Schema.String.pipe(Schema.brand(\"Id\"));\n\nexport type Id = Schema.Schema.Type<typeof Id>;"
         );
     }
 }

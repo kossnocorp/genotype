@@ -32,12 +32,13 @@ impl TsConfigNaming {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Copy, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum TsMode {
     #[default]
     Types,
     Zod,
+    Effect,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Default)]
@@ -85,6 +86,17 @@ impl TsConfigLang {
 mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_effect_mode() {
+        let config: TsConfigLang = toml::from_str("mode = \"effect\"").unwrap();
+        assert_eq!(config.mode, TsMode::Effect);
+        assert!(
+            toml::to_string(&config)
+                .unwrap()
+                .contains("mode = \"effect\"")
+        );
+    }
 
     #[test]
     fn test_default_prefer_interface() {

@@ -8,30 +8,48 @@ impl<'context> GtlRender<'context, TsRenderTypes> for TsProperty {
     ) -> TsRenderResult<String> {
         let name = self.name.render(state, context)?;
 
-        let str = if context.is_zod_mode() {
-            let mut descriptor = self.descriptor.render(state, context)?;
-            if !self.required {
-                descriptor.push_str(".optional()");
-            }
-
-            let refs_scan = self.descriptor.scan_references();
-            if refs_scan.has_forward || refs_scan.has_self_recursive {
-                format!(
-                    "{}get {name}() {{\n{}  return {descriptor}\n{}}}",
-                    state.indent_str(),
-                    state.indent_str(),
-                    state.indent_str(),
-                )
-            } else {
+        let str = match context.mode() {
+            TsMode::Effect => {
+                let mut descriptor = self.descriptor.render(state, context)?;
+                let refs = self.descriptor.scan_references();
+                if refs.has_forward || refs.has_self_recursive {
+                    let type_code = context.with_mode(TsMode::Types, |context| {
+                        self.descriptor.render(state, context)
+                    })?;
+                    descriptor =
+                        format!("Schema.suspend((): Schema.Codec<{type_code}> => {descriptor})");
+                }
+                if !self.required {
+                    descriptor = format!("Schema.optionalKey({descriptor})");
+                }
                 format!("{}{name}: {descriptor}", state.indent_str())
             }
-        } else {
-            let descriptor = self.descriptor.render(state, context)?;
-            format!(
-                "{}{name}{}: {descriptor}",
-                state.indent_str(),
-                if self.required { "" } else { "?" },
-            )
+            TsMode::Zod => {
+                let mut descriptor = self.descriptor.render(state, context)?;
+                if !self.required {
+                    descriptor.push_str(".optional()");
+                }
+
+                let refs_scan = self.descriptor.scan_references();
+                if refs_scan.has_forward || refs_scan.has_self_recursive {
+                    format!(
+                        "{}get {name}() {{\n{}  return {descriptor}\n{}}}",
+                        state.indent_str(),
+                        state.indent_str(),
+                        state.indent_str(),
+                    )
+                } else {
+                    format!("{}{name}: {descriptor}", state.indent_str())
+                }
+            }
+            TsMode::Types => {
+                let descriptor = self.descriptor.render(state, context)?;
+                format!(
+                    "{}{name}{}: {descriptor}",
+                    state.indent_str(),
+                    if self.required { "" } else { "?" },
+                )
+            }
         };
 
         TsDoc::with_doc(&self.doc, state, context, str, false)
@@ -242,6 +260,49 @@ mod tests {
           return z.tuple([z.string(), Node]).optional()
         }
         "
+        );
+    }
+
+    #[test]
+    fn test_render_effect_optional_forward_reference() {
+        assert_eq!(
+            render_node_with(
+                Tst::property_optional("next", Tst::reference_forward("Node")),
+                &mut Tst::render_context_effect()
+            ),
+            "next: Schema.optionalKey(Schema.suspend((): Schema.Codec<Node> => Node))"
+        );
+    }
+
+    #[test]
+    fn test_render_effect_required() {
+        assert_snapshot!(
+            render_node_with(Tst::property("name", Tst::primitive_string()), &mut Tst::render_context_effect()),
+            @r#"name: Schema.String"#
+        );
+    }
+
+    #[test]
+    fn test_render_effect_optional() {
+        assert_snapshot!(
+            render_node_with(Tst::property_optional("name", Tst::primitive_string()), &mut Tst::render_context_effect()),
+            @r#"name: Schema.optionalKey(Schema.String)"#
+        );
+    }
+
+    #[test]
+    fn test_render_effect_self_recursive() {
+        assert_snapshot!(
+            render_node_with(Tst::property("next", Tst::reference_self_recursive("Node")), &mut Tst::render_context_effect()),
+            @r#"next: Schema.suspend((): Schema.Codec<Node> => Node)"#
+        );
+    }
+
+    #[test]
+    fn test_render_effect_nested_forward() {
+        assert_snapshot!(
+            render_node_with(Tst::property("children", Tst::array(Tst::reference_forward("Node"))), &mut Tst::render_context_effect()),
+            @r#"children: Schema.suspend((): Schema.Codec<Array<Node>> => Schema.mutable(Schema.Array(Node)))"#
         );
     }
 }

@@ -1,0 +1,12 @@
+name = "genotype-test-ts-effect"
+
+[build]
+file = false
+
+[ts]
+enabled = true
+mode = "effect"
+
+[ts.manifest]
+name = "genotype-test-ts-effect-types"
+version = "0.1.0"

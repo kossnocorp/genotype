@@ -12,8 +12,10 @@ impl<'context> GtlRender<'context, TsRenderTypes> for TsModule {
             .map(|import| import.render(state, context))
             .collect::<Result<Vec<_>, _>>()?;
 
-        if context.is_zod_mode() {
-            imports.insert(0, r#"import { z } from "zod";"#.into());
+        match context.mode() {
+            TsMode::Effect => imports.insert(0, r#"import { Schema } from "effect";"#.into()),
+            TsMode::Zod => imports.insert(0, r#"import { z } from "zod";"#.into()),
+            TsMode::Types => {}
         }
 
         let imports = Self::join_imports(&imports);
@@ -143,6 +145,55 @@ mod tests {
 
         /** It's a literal string */
         export type Literal = z.infer<typeof Literal>;
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_effect() {
+        let mut context = Tst::render_context_effect();
+
+        assert_snapshot!(
+            render_node_with(
+                Tst::module(
+                    vec![],
+                    vec_into![
+                        Tst::alias("Primitive", Tst::primitive_string()),
+                        assign!(
+                            Tst::alias("Literal", Tst::literal_string(r#"Hello, "world"!"#)),
+                            doc = Tst::some_doc("It's a literal string")
+                        )
+                    ],
+                ),
+                &mut context,
+            ),
+            @r#"
+        import { Schema } from "effect";
+
+        export const Primitive = Schema.String;
+
+        export type Primitive = Schema.Schema.Type<typeof Primitive>;
+
+        /** It's a literal string */
+        export const Literal = Schema.Literal("Hello, \"world\"!");
+
+        /** It's a literal string */
+        export type Literal = Schema.Schema.Type<typeof Literal>;
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_effect_preserves_imports() {
+        assert_snapshot!(
+            render_node_with(Tst::module(vec![Tst::import_default("./base", "Base")], vec_into![Tst::alias("Name", Tst::reference("Base"))]), &mut Tst::render_context_effect()),
+            @r#"
+        import { Schema } from "effect";
+        import Base from "./base.js";
+
+        export const Name = Base;
+
+        export type Name = Schema.Schema.Type<typeof Name>;
         "#
         );
     }
