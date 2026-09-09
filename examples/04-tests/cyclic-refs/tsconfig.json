@@ -1,9 +1,14 @@
 {
-  "include": ["test.ts"],
+  "include": [
+    "test.ts",
+    "test.effect.ts"
+  ],
   "compilerOptions": {
     "strict": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   }
 }

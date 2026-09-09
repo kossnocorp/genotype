@@ -80,6 +80,7 @@ echo
 
 TS_VARIANTS=(
 	"zod"
+	"effect"
 	"interface"
 	"alias"
 )
@@ -155,6 +156,9 @@ echo
 
 build_for_ts "zod"
 run_ts_tests_for "zod"
+
+build_for_ts "effect"
+run_ts_tests_for "effect"
 
 #endregion
 

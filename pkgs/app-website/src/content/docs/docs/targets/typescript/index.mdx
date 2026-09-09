@@ -21,9 +21,10 @@ The following examples give an overview of how Genotype translates into TypeScri
 <Aside type="note">
   Object examples show [Interfaces and
   Aliases](/docs/targets/typescript/configuration#tsprefer---interfaces-or-type-aliases); other
-  examples use Types. All include [Zod
+  examples use Types. All include [Zod and Effect
   output](/docs/targets/typescript/configuration#tsmode---generation-mode). Feature examples omit
-  imports; Zod examples use `z` from [Zod](https://www.npmjs.com/package/zod). The [Complete
+  imports; Zod examples use `z` from [Zod](https://www.npmjs.com/package/zod), and Effect examples
+  use `Schema` from [Effect v4](https://effect.website/docs/v4/schema/introduction). The [Complete
   Module](#complete-module) includes imports.
 </Aside>
 
@@ -82,6 +83,22 @@ The generated module includes its definitions and any required imports:
     ```
 
   </TabItem>
+  <TabItem label="Effect">
+    ```ts
+    import { Schema } from "effect";
+
+    export const Book = Schema.Struct({
+      kind: Schema.Literal("book"),
+      displayTitle: Schema.String,
+      subtitle: Schema.optionalKey(Schema.Union([Schema.String, Schema.Undefined])),
+      ratings: Schema.Record(Schema.String, Schema.Number),
+      extra: Schema.Any
+    });
+
+    export type Book = Schema.Schema.Type<typeof Book>;
+    ```
+
+  </TabItem>
 </Tabs>
 
 ### Unions
@@ -103,6 +120,14 @@ Value: string | int
     export const Value = z.union([z.string(), z.number()]);
 
     export type Value = z.infer<typeof Value>;
+    ```
+
+  </TabItem>
+  <TabItem label="Effect">
+    ```ts
+    export const Value = Schema.Union([Schema.String, Schema.Number]);
+
+    export type Value = Schema.Schema.Type<typeof Value>;
     ```
 
   </TabItem>
@@ -134,6 +159,14 @@ Amount: number
     ```
 
   </TabItem>
+  <TabItem label="Effect">
+    ```ts
+    export const Amount = Schema.Number;
+
+    export type Amount = Schema.Schema.Type<typeof Amount>;
+    ```
+
+  </TabItem>
 </Tabs>
 
 ##### `int`
@@ -158,6 +191,14 @@ Count: int
     ```
 
   </TabItem>
+  <TabItem label="Effect">
+    ```ts
+    export const Count = Schema.Number;
+
+    export type Count = Schema.Schema.Type<typeof Count>;
+    ```
+
+  </TabItem>
 </Tabs>
 
 ##### `float`
@@ -179,6 +220,14 @@ Ratio: float
     export const Ratio = z.number();
 
     export type Ratio = z.infer<typeof Ratio>;
+    ```
+
+  </TabItem>
+  <TabItem label="Effect">
+    ```ts
+    export const Ratio = Schema.Number;
+
+    export type Ratio = Schema.Schema.Type<typeof Ratio>;
     ```
 
   </TabItem>
@@ -221,6 +270,22 @@ LargeCount: i128
     ```
 
   </TabItem>
+  <TabItem label="Effect">
+    ```ts
+    export const SmallCount = Schema.Number;
+
+    export type SmallCount = Schema.Schema.Type<typeof SmallCount>;
+
+    export const PreciseRatio = Schema.Number;
+
+    export type PreciseRatio = Schema.Schema.Type<typeof PreciseRatio>;
+
+    export const LargeCount = Schema.BigInt;
+
+    export type LargeCount = Schema.Schema.Type<typeof LargeCount>;
+    ```
+
+  </TabItem>
 </Tabs>
 
 #### Booleans
@@ -242,6 +307,14 @@ Ready: boolean
     export const Ready = z.boolean();
 
     export type Ready = z.infer<typeof Ready>;
+    ```
+
+  </TabItem>
+  <TabItem label="Effect">
+    ```ts
+    export const Ready = Schema.Boolean;
+
+    export type Ready = Schema.Schema.Type<typeof Ready>;
     ```
 
   </TabItem>
@@ -269,6 +342,14 @@ Title: string
     ```
 
   </TabItem>
+  <TabItem label="Effect">
+    ```ts
+    export const Title = Schema.String;
+
+    export type Title = Schema.Schema.Type<typeof Title>;
+    ```
+
+  </TabItem>
 </Tabs>
 
 #### Literal Types
@@ -290,6 +371,14 @@ Category: "fiction"
     export const Category = z.literal("fiction");
 
     export type Category = z.infer<typeof Category>;
+    ```
+
+  </TabItem>
+  <TabItem label="Effect">
+    ```ts
+    export const Category = Schema.Literal("fiction");
+
+    export type Category = Schema.Schema.Type<typeof Category>;
     ```
 
   </TabItem>
@@ -317,6 +406,14 @@ Empty: null
     ```
 
   </TabItem>
+  <TabItem label="Effect">
+    ```ts
+    export const Empty = Schema.Null;
+
+    export type Empty = Schema.Schema.Type<typeof Empty>;
+    ```
+
+  </TabItem>
 </Tabs>
 
 #### Branded Primitives
@@ -339,6 +436,14 @@ BookId: @string
     export const BookId = z.string().brand<"BookId">();
 
     export type BookId = z.infer<typeof BookId>;
+    ```
+
+  </TabItem>
+  <TabItem label="Effect">
+    ```ts
+    export const BookId = Schema.String.pipe(Schema.brand("BookId"));
+
+    export type BookId = Schema.Schema.Type<typeof BookId>;
     ```
 
   </TabItem>
@@ -379,6 +484,16 @@ Book: { title: string }
     ```
 
   </TabItem>
+  <TabItem label="Effect">
+    ```ts
+    export const Book = Schema.Struct({
+      title: Schema.String
+    });
+
+    export type Book = Schema.Schema.Type<typeof Book>;
+    ```
+
+  </TabItem>
 </Tabs>
 
 ##### Optional Object Fields
@@ -411,6 +526,16 @@ Draft: { subtitle?: string }
     });
 
     export type Draft = z.infer<typeof Draft>;
+    ```
+
+  </TabItem>
+  <TabItem label="Effect">
+    ```ts
+    export const Draft = Schema.Struct({
+      subtitle: Schema.optionalKey(Schema.Union([Schema.String, Schema.Undefined]))
+    });
+
+    export type Draft = Schema.Schema.Type<typeof Draft>;
     ```
 
   </TabItem>
@@ -466,6 +591,25 @@ NamedBook: { ...Named, pages: int }
     ```
 
   </TabItem>
+  <TabItem label="Effect">
+    ```ts
+    export const Named = Schema.Struct({
+      name: Schema.String
+    });
+
+    export type Named = Schema.Schema.Type<typeof Named>;
+
+    export const NamedBook = Schema.Struct({
+      ...Named.fields,
+      ...{
+        pages: Schema.Number
+      }
+    });
+
+    export type NamedBook = Schema.Schema.Type<typeof NamedBook>;
+    ```
+
+  </TabItem>
 </Tabs>
 
 #### Arrays
@@ -487,6 +631,14 @@ Titles: [string]
     export const Titles = z.array(z.string());
 
     export type Titles = z.infer<typeof Titles>;
+    ```
+
+  </TabItem>
+  <TabItem label="Effect">
+    ```ts
+    export const Titles = Schema.mutable(Schema.Array(Schema.String));
+
+    export type Titles = Schema.Schema.Type<typeof Titles>;
     ```
 
   </TabItem>
@@ -514,6 +666,14 @@ Point: (float, float)
     ```
 
   </TabItem>
+  <TabItem label="Effect">
+    ```ts
+    export const Point = Schema.mutable(Schema.Tuple([Schema.Number, Schema.Number]));
+
+    export type Point = Schema.Schema.Type<typeof Point>;
+    ```
+
+  </TabItem>
 </Tabs>
 
 #### Records
@@ -535,6 +695,14 @@ Scores: { []: int }
     export const Scores = z.record(z.string(), z.number());
 
     export type Scores = z.infer<typeof Scores>;
+    ```
+
+  </TabItem>
+  <TabItem label="Effect">
+    ```ts
+    export const Scores = Schema.Record(Schema.String, Schema.Number);
+
+    export type Scores = Schema.Schema.Type<typeof Scores>;
     ```
 
   </TabItem>
@@ -564,11 +732,19 @@ Payload: any
     ```
 
   </TabItem>
+  <TabItem label="Effect">
+    ```ts
+    export const Payload = Schema.Any;
+
+    export type Payload = Schema.Schema.Type<typeof Payload>;
+    ```
+
+  </TabItem>
 </Tabs>
 
 ### Generic Types
 
-Genotype generic types translate into TypeScript generic types. Zod output uses functions accepting schemas, e.g., `Envelope(Book)`.
+Genotype generic types translate into TypeScript generic types. Zod and Effect output use functions accepting schemas, e.g., `Envelope(Book)`.
 
 ```type
 Envelope<Body>: { body: Body }
@@ -599,11 +775,21 @@ Envelope<Body>: { body: Body }
     ```
 
   </TabItem>
+  <TabItem label="Effect">
+    ```ts
+    export const Envelope = <Body extends Schema.Top>(Body: Body) => Schema.Struct({
+      body: Body
+    });
+
+    export type Envelope<Body extends Schema.Top> = Schema.Schema.Type<ReturnType<typeof Envelope<Body>>>;
+    ```
+
+  </TabItem>
 </Tabs>
 
 ### Recursive Types
 
-Genotype recursive types translate directly to TypeScript recursive types. Zod output uses getters or lazy schemas.
+Genotype recursive types translate directly to TypeScript recursive types. Zod output uses getters or lazy schemas. Effect output uses `Schema.suspend` with explicit recursive types.
 
 ```type
 LinkedNode: { value: string, next?: LinkedNode }
@@ -636,6 +822,20 @@ LinkedNode: { value: string, next?: LinkedNode }
     });
 
     export type LinkedNode = z.infer<typeof LinkedNode>;
+    ```
+
+  </TabItem>
+  <TabItem label="Effect">
+    ```ts
+    export interface LinkedNode {
+      value: string;
+      next?: LinkedNode | undefined;
+    }
+
+    export const LinkedNode = Schema.Struct({
+      value: Schema.String,
+      next: Schema.optionalKey(Schema.suspend((): Schema.Codec<LinkedNode | undefined> => Schema.Union([LinkedNode, Schema.Undefined])))
+    });
     ```
 
   </TabItem>

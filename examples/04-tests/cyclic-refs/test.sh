@@ -80,6 +80,17 @@ else
 	exit 1
 fi
 
+echo "🌀 Building TypeScript Effect schemas"
+if output=$(cargo run -p genotype_cli --bin gt -- build . --config genotype.ts-effect.toml 2>&1); then
+	echo "🟢 Build: OK"
+else
+	echo "🔴 Build: FAILED"
+	echo "--- Output ------------------------------------------"
+	echo "$output"
+	echo "-----------------------------------------------------"
+	exit 1
+fi
+
 if output=$(CI=true pnpm install 2>&1); then
 	echo "🟢 pnpm install: OK"
 else
@@ -104,6 +115,16 @@ if output=$(pnpm tsx test.ts 2>&1); then
 	echo "🟢 Node test: OK"
 else
 	echo "🔴 Node test: FAILED"
+	echo "--- Output ------------------------------------------"
+	echo "$output"
+	echo "-----------------------------------------------------"
+	exit 1
+fi
+
+if output=$(pnpm tsx test.effect.ts 2>&1); then
+	echo "🟢 Node Effect test: OK"
+else
+	echo "🔴 Node Effect test: FAILED"
 	echo "--- Output ------------------------------------------"
 	echo "$output"
 	echo "-----------------------------------------------------"

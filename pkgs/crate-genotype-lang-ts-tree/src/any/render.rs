@@ -6,10 +6,10 @@ impl<'context> GtlRender<'context, TsRenderTypes> for TsAny {
         _state: TsRenderState,
         context: &mut TsRenderContext,
     ) -> TsRenderResult<String> {
-        Ok(if context.is_zod_mode() {
-            "z.any()".into()
-        } else {
-            "any".into()
+        Ok(match context.mode() {
+            TsMode::Effect => "Schema.Any".into(),
+            TsMode::Zod => "z.any()".into(),
+            TsMode::Types => "any".into(),
         })
     }
 }
@@ -35,6 +35,16 @@ mod tests {
         assert_snapshot!(
             render_node_with(Tst::any(), &mut context),
             @"z.any()"
+        );
+    }
+
+    #[test]
+    fn test_render_effect() {
+        let mut context = Tst::render_context_effect();
+
+        assert_snapshot!(
+            render_node_with(Tst::any(), &mut context),
+            @"Schema.Any"
         );
     }
 }

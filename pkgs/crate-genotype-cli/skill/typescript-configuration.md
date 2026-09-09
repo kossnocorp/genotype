@@ -25,12 +25,23 @@ enabled = true
 
 - `"types"` (default): TypeScript type definitions.
 - `"zod"`: [Zod](https://www.npmjs.com/package/zod) schemas and inferred types for runtime validation. Adds Zod to the generated package's dependencies.
+- `"effect"`: [Effect Schema v4](https://effect.website/docs/v4/schema/introduction) schemas and inferred types for runtime validation. Adds `effect` (`^4.0.0-rc.112`) to the generated package's dependencies. Uses the v4 API, currently a release candidate.
 
 ```toml
 [ts]
 enabled = true
 mode = "zod"
 ```
+
+To generate Effect schemas:
+
+```toml
+[ts]
+enabled = true
+mode = "effect"
+```
+
+Both schema modes export a schema value and its TypeScript type under the same name. Validate Effect values with `Schema.decodeUnknownSync(Name)(input)` or check them with `Schema.is(Name)(input)`. Effect object fields follow its default readonly inference; generated arrays and tuples use `Schema.mutable`.
 
 See the [TypeScript guide](typescript.md) for generated code examples.
 

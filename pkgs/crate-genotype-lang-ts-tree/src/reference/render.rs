@@ -19,10 +19,9 @@ impl<'context> GtlRender<'context, TsRenderTypes> for TsReference {
             .collect::<Result<Vec<_>, _>>()?
             .join(", ");
 
-        if context.is_zod_mode() {
-            Ok(format!("{reference}({arguments})"))
-        } else {
-            Ok(format!("{reference}<{arguments}>"))
+        match context.mode() {
+            TsMode::Zod | TsMode::Effect => Ok(format!("{reference}({arguments})")),
+            TsMode::Types => Ok(format!("{reference}<{arguments}>")),
         }
     }
 }
@@ -84,6 +83,33 @@ mod tests {
                 &mut Tst::render_context_zod(),
             ),
             @"Bar(z.string())"
+        );
+    }
+
+    #[test]
+    fn test_render_effect() {
+        assert_snapshot!(
+            render_node_with(Tst::reference("Bar"), &mut Tst::render_context_effect()),
+            @"Bar"
+        );
+    }
+
+    #[test]
+    fn test_render_effect_forward() {
+        assert_snapshot!(
+            render_node_with(Tst::reference_forward("Bar"), &mut Tst::render_context_effect()),
+            @"Bar"
+        );
+    }
+
+    #[test]
+    fn test_render_effect_with_arguments() {
+        assert_snapshot!(
+            render_node_with(
+                Tst::reference_with_arguments("Bar", vec![Tst::primitive_string().into()]),
+                &mut Tst::render_context_effect(),
+            ),
+            @"Bar(Schema.String)"
         );
     }
 }

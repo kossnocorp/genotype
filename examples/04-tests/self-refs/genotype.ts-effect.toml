@@ -1,0 +1,13 @@
+name = "genotype-test-self-refs"
+dist = "dist/ts-effect"
+
+[build]
+file = false
+
+[ts]
+enabled = true
+mode = "effect"
+
+[ts.manifest]
+name = "genotype-test-self-refs-ts-effect"
+version = "0.1.0"

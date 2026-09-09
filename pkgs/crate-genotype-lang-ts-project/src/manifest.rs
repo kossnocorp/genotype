@@ -54,6 +54,7 @@ type = "module"
 
     fn dependency_as_kv(ident: &TsDependencyIdent) -> Option<(String, Value)> {
         match ident {
+            TsDependencyIdent::Effect => Some(("effect".into(), "^4.0.0-rc.112".into())),
             TsDependencyIdent::Zod => Some(("zod".into(), "^4".into())),
             TsDependencyIdent::Local(_) => None,
         }
@@ -110,5 +111,11 @@ mod tests {
         let manifest = TsManifest::new(&config);
 
         assert_eq!(manifest.name(), "root-name");
+    }
+    #[test]
+    fn test_effect_dependency() {
+        let (name, version) = TsManifest::dependency_as_kv(&TsDependencyIdent::Effect).unwrap();
+        assert_eq!(name, "effect");
+        assert_eq!(version.as_str(), Some("^4.0.0-rc.112"));
     }
 }
