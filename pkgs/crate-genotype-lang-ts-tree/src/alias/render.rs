@@ -18,10 +18,10 @@ impl<'context> GtlRender<'context, TsRenderTypes> for TsAlias {
             format!("<{}>", generic_names.join(", "))
         };
 
-        match context.is_zod_mode() {
-            true => self.render_zod(&name, &generic_names, state, context),
-
-            false => {
+        match context.mode() {
+            TsMode::Effect => self.render_effect(&name, &generic_names, state, context),
+            TsMode::Zod => self.render_zod(&name, &generic_names, state, context),
+            TsMode::Types => {
                 let descriptor = self.descriptor.render(state, context)?;
 
                 TsDoc::with_doc(
@@ -158,6 +158,132 @@ fn render_zod_value_params(generic_names: &[String]) -> String {
         .join(", ")
 }
 
+impl TsAlias {
+    fn render_effect<'a>(
+        &self,
+        name: &String,
+        generic_names: &[String],
+        state: TsRenderState,
+        context: &mut TsRenderContext<'a>,
+    ) -> TsRenderResult<String> {
+        if !generic_names.is_empty() {
+            return self.render_effect_generic(name, generic_names, state, context);
+        }
+
+        let refs_scan = self.descriptor.scan_references();
+        match refs_scan.has_self_recursive || refs_scan.has_forward {
+            true => self.render_effect_recursive(name, state, context),
+
+            false => {
+                let descriptor = self.descriptor.render(state, context)?;
+                let schema = TsDoc::with_doc(
+                    &self.doc,
+                    state,
+                    context,
+                    format!("export const {name} = {descriptor};"),
+                    false,
+                )?;
+                let r#type = TsDoc::with_doc(
+                    &self.doc,
+                    state,
+                    context,
+                    format!("export type {name} = Schema.Schema.Type<typeof {name}>;"),
+                    false,
+                )?;
+
+                Ok(format!("{schema}\n\n{type}"))
+            }
+        }
+    }
+
+    fn render_effect_recursive<'a>(
+        &self,
+        name: &String,
+        state: TsRenderState,
+        context: &mut TsRenderContext<'a>,
+    ) -> TsRenderResult<String> {
+        let effect_descriptor = self.descriptor.render(state, context)?;
+
+        let schema = TsDoc::with_doc(
+            &self.doc,
+            state,
+            context,
+            format!(
+                "export const {name}: Schema.Codec<{name}> = Schema.suspend(() => {effect_descriptor});"
+            ),
+            false,
+        )?;
+
+        let type_code = context.with_mode(TsMode::Types, |context| {
+            let descriptor = self.descriptor.render(state, context)?;
+            let type_code = TsDoc::with_doc(
+                &self.doc,
+                state,
+                context,
+                format!("export type {name} = {descriptor};"),
+                false,
+            )?;
+            Ok(type_code)
+        })?;
+
+        Ok(format!("{type_code}\n\n{schema}"))
+    }
+
+    fn render_effect_generic<'a>(
+        &self,
+        name: &String,
+        generic_names: &[String],
+        state: TsRenderState,
+        context: &mut TsRenderContext<'a>,
+    ) -> TsRenderResult<String> {
+        let effect_generic_params = Self::render_effect_generic_params(generic_names);
+        let params = Self::render_effect_value_params(generic_names);
+        let effect_descriptor = self.descriptor.render(state, context)?;
+        let schema = TsDoc::with_doc(
+            &self.doc,
+            state,
+            context,
+            format!(
+                "export const {name} = {effect_generic_params}({params}) => {effect_descriptor};"
+            ),
+            false,
+        )?;
+
+        let generic_params = Self::render_effect_generic_params(generic_names);
+        let return_type_args = generic_names.join(", ");
+        let r#type = TsDoc::with_doc(
+            &self.doc,
+            state,
+            context,
+            format!(
+                "export type {name}{generic_params} = Schema.Schema.Type<ReturnType<typeof {name}<{return_type_args}>>>;"
+            ),
+            false,
+        )?;
+
+        Ok(format!("{schema}\n\n{type}"))
+    }
+
+    fn render_effect_generic_params(generic_names: &[String]) -> String {
+        format!(
+            "<{}>",
+            generic_names
+                .iter()
+                .map(|generic| format!("{generic} extends Schema.Top"))
+                .collect::<Vec<_>>()
+                .join(", ")
+        )
+    }
+
+    fn render_effect_value_params(generic_names: &[String]) -> String {
+        generic_names
+            .iter()
+            .map(|generic| format!("{generic}: {generic}"))
+            .collect::<Vec<_>>()
+            .join(", ")
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -281,6 +407,90 @@ mod tests {
 
         export const SelfRefTuple: z.ZodType<SelfRefTuple> = z.lazy(() => z.union([z.null(), z.tuple([z.string(), SelfRefTuple])]));
         "
+        );
+    }
+
+    #[test]
+    fn test_render_effect() {
+        assert_snapshot!(
+            render_node_with(Tst::alias("Name", Tst::primitive_string()), &mut Tst::render_context_effect()),
+            @"
+        export const Name = Schema.String;
+
+        export type Name = Schema.Schema.Type<typeof Name>;
+        "
+        );
+    }
+
+    #[test]
+    fn test_render_effect_with_generics() {
+        assert_snapshot!(
+            render_node_with(
+                Tst::alias_with_generics("Response", vec!["Payload"], Tst::reference("Payload")),
+                &mut Tst::render_context_effect(),
+            ),
+            @"
+        export const Response = <Payload extends Schema.Top>(Payload: Payload) => Payload;
+
+        export type Response<Payload extends Schema.Top> = Schema.Schema.Type<ReturnType<typeof Response<Payload>>>;
+        "
+        );
+    }
+
+    #[test]
+    fn test_render_effect_doc() {
+        let mut context = Tst::render_context_effect();
+
+        assert_snapshot!(
+            render_node_with(
+                TsAlias {
+                    doc: Tst::some_doc("Hello, world!"),
+                    ..Tst::alias("Name", Tst::primitive_string())
+                },
+                &mut context,
+            ),
+            @"
+        /** Hello, world! */
+        export const Name = Schema.String;
+
+        /** Hello, world! */
+        export type Name = Schema.Schema.Type<typeof Name>;
+        "
+        );
+    }
+
+    #[test]
+    fn test_render_effect_self_recursive_array() {
+        assert_eq!(
+            render_node_with(
+                Tst::alias("Tree", Tst::array(Tst::reference_self_recursive("Tree"))),
+                &mut Tst::render_context_effect()
+            ),
+            "export type Tree = Array<Tree>;\n\nexport const Tree: Schema.Codec<Tree> = Schema.suspend(() => Schema.mutable(Schema.Array(Tree)));"
+        );
+    }
+
+    #[test]
+    fn test_render_effect_forward() {
+        assert_snapshot!(
+            render_node_with(Tst::alias("Earlier", Tst::reference_forward("Later")), &mut Tst::render_context_effect()),
+            @r#"
+        export type Earlier = Later;
+
+        export const Earlier: Schema.Codec<Earlier> = Schema.suspend(() => Later);
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_effect_recursive_tuple() {
+        assert_snapshot!(
+            render_node_with(Tst::alias("Tree", Tst::union(vec_into![Tst::literal_null(), Tst::tuple(vec_into![Tst::primitive_string(), Tst::reference_self_recursive("Tree")])])), &mut Tst::render_context_effect()),
+            @r#"
+        export type Tree = null | [string, Tree];
+
+        export const Tree: Schema.Codec<Tree> = Schema.suspend(() => Schema.Union([Schema.Null, Schema.mutable(Schema.Tuple([Schema.String, Tree]))]));
+        "#
         );
     }
 }

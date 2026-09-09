@@ -41,6 +41,16 @@ static TEST_TS_ZOD_CONFIG: LazyLock<TsConfig> = LazyLock::new(|| TsConfig {
     ..Default::default()
 });
 
+static TEST_TS_EFFECT_CONFIG_LANG: LazyLock<TsConfigLang> = LazyLock::new(|| TsConfigLang {
+    mode: TsMode::Effect,
+    ..Default::default()
+});
+
+static TEST_TS_EFFECT_CONFIG: LazyLock<TsConfig> = LazyLock::new(|| TsConfig {
+    lang: TEST_TS_EFFECT_CONFIG_LANG.clone(),
+    ..Default::default()
+});
+
 static TEST_TS_ALIAS_CONFIG_LANG: LazyLock<TsConfigLang> = LazyLock::new(|| TsConfigLang {
     prefer: TsPrefer::Alias,
     ..Default::default()
@@ -69,6 +79,14 @@ impl Tst {
             config: &TEST_TS_ZOD_CONFIG_LANG,
             ..Default::default()
         }
+    }
+
+    pub fn convert_context_effect() -> TsConvertContext {
+        TsConvertContext::new(Default::default(), &TEST_TS_EFFECT_CONFIG)
+    }
+
+    pub fn render_context_effect() -> TsRenderContext<'static> {
+        TsRenderContext::new(&TEST_TS_EFFECT_CONFIG_LANG)
     }
 
     pub fn render_context_alias() -> TsRenderContext<'static> {

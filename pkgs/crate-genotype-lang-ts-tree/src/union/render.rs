@@ -12,10 +12,10 @@ impl<'context> GtlRender<'context, TsRenderTypes> for TsUnion {
             .map(|d| d.render(state, context))
             .collect::<Result<Vec<_>, _>>()?;
 
-        if context.is_zod_mode() {
-            Ok(format!("z.union([{}])", descriptors.join(", ")))
-        } else {
-            Ok(descriptors.join(" | "))
+        match context.mode() {
+            TsMode::Effect => Ok(format!("Schema.Union([{}])", descriptors.join(", "))),
+            TsMode::Zod => Ok(format!("z.union([{}])", descriptors.join(", "))),
+            TsMode::Types => Ok(descriptors.join(" | ")),
         }
     }
 }
@@ -52,6 +52,22 @@ mod tests {
                 &mut context,
             ),
             @"z.union([z.string(), z.number()])"
+        );
+    }
+
+    #[test]
+    fn test_render_union_effect_mode() {
+        let mut context = Tst::render_context_effect();
+
+        assert_snapshot!(
+            render_node_with(
+                Tst::union(vec_into![
+                    Tst::primitive_string(),
+                    Tst::primitive_number(),
+                ]),
+                &mut context,
+            ),
+            @"Schema.Union([Schema.String, Schema.Number])"
         );
     }
 }

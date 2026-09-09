@@ -1,0 +1,12 @@
+{
+  "name": "genotype-test-generics-effect",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@types/node": "^25.5.2",
+    "genotype-test-generics-effect-types": "file:./../../dist/ts-effect/ts/",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2",
+    "effect": "^4.0.0-rc.112"
+  }
+}

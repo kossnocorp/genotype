@@ -85,8 +85,24 @@ impl GtlProjectModule for TsProjectModule {
 
     fn global_dependencies(lang_config: &TsConfig) -> Option<IndexSet<TsDependencyIdent>> {
         match lang_config.lang.mode {
+            TsMode::Effect => Some(IndexSet::from_iter(vec![TsDependencyIdent::Effect])),
             TsMode::Zod => Some(IndexSet::from_iter(vec![TsDependencyIdent::Zod])),
             _ => None,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_effect_global_dependency() {
+        let mut config = TsConfig::default();
+        config.lang.mode = TsMode::Effect;
+        assert_eq!(
+            TsProjectModule::global_dependencies(&config),
+            Some(IndexSet::from_iter([TsDependencyIdent::Effect]))
+        );
     }
 }

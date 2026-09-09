@@ -6,10 +6,11 @@ impl<'context> GtlRender<'context, TsRenderTypes> for TsInterface {
         state: TsRenderState,
         context: &mut TsRenderContext,
     ) -> TsRenderResult<String> {
-        if context.is_zod_mode() {
-            return self.render_zod(state, context);
+        match context.mode() {
+            TsMode::Effect => self.render_effect(state, context),
+            TsMode::Zod => self.render_zod(state, context),
+            TsMode::Types => self.render_type(state, context),
         }
-        self.render_type(state, context)
     }
 }
 
@@ -55,6 +56,95 @@ impl TsInterface {
         };
 
         TsDoc::with_doc(&self.doc, state, context, code, false)
+    }
+
+    fn render_effect(
+        &self,
+        state: TsRenderState,
+        context: &mut TsRenderContext,
+    ) -> TsRenderResult<String> {
+        let name = self.name.render(state, context)?;
+        let generic_names = self.generic_names();
+
+        let shape_state = if self.extensions.is_empty() {
+            state
+        } else {
+            state.indent_inc()
+        };
+        let properties = self
+            .properties
+            .iter()
+            .map(|property| property.render(shape_state.indent_inc(), context))
+            .collect::<Result<Vec<_>, _>>()?
+            .join(",\n");
+
+        let object_shape = format!(
+            "{{\n{properties}{}{}",
+            if !properties.is_empty() { "\n" } else { "" },
+            shape_state.indent_format("}")
+        );
+
+        let mut fields = Vec::new();
+        for extension in &self.extensions {
+            let reference = extension.reference.render(state, context)?;
+            fields.push(shape_state.indent_format(&format!("...{reference}.fields")));
+        }
+        fields.push(shape_state.indent_format(&format!("...{object_shape}")));
+        let schema = if self.extensions.is_empty() {
+            format!("Schema.Struct({object_shape})")
+        } else {
+            format!(
+                "Schema.Struct({{\n{}\n{}",
+                fields.join(",\n"),
+                state.indent_format("})")
+            )
+        };
+
+        let recursive = self.properties.iter().any(|property| {
+            let refs = property.descriptor.scan_references();
+            refs.has_forward || refs.has_self_recursive
+        });
+        if recursive && generic_names.is_empty() {
+            let type_code =
+                context.with_mode(TsMode::Types, |context| self.render_type(state, context))?;
+            // Forward references can form cycles through inferred aliases. An outer
+            // annotation breaks those cycles; direct recursion keeps Struct fields.
+            let declaration = if self
+                .properties
+                .iter()
+                .any(|property| property.descriptor.scan_references().has_forward)
+            {
+                format!(
+                    "export const {name}: Schema.Codec<{name}> = Schema.suspend(() => {schema});"
+                )
+            } else {
+                format!("export const {name} = {schema};")
+            };
+            let schema = TsDoc::with_doc(&self.doc, state, context, declaration, false)?;
+            return Ok(format!("{type_code}\n\n{schema}"));
+        }
+
+        let schema = if generic_names.is_empty() {
+            format!("export const {name} = {schema};")
+        } else {
+            let generic_params = render_effect_generic_params(&generic_names);
+            let params = render_effect_value_params(&generic_names);
+            format!("export const {name} = {generic_params}({params}) => {schema};")
+        };
+        let schema = TsDoc::with_doc(&self.doc, state, context, schema, false)?;
+
+        let r#type = if generic_names.is_empty() {
+            format!("export type {name} = Schema.Schema.Type<typeof {name}>;")
+        } else {
+            let generic_params = render_effect_generic_params(&generic_names);
+            let return_type_args = generic_names.join(", ");
+            format!(
+                "export type {name}{generic_params} = Schema.Schema.Type<ReturnType<typeof {name}<{return_type_args}>>>;"
+            )
+        };
+        let r#type = TsDoc::with_doc(&self.doc, state, context, r#type, false)?;
+
+        Ok(format!("{schema}\n\n{type}"))
     }
 
     fn render_zod(
@@ -196,6 +286,25 @@ fn render_zod_generic_params(generic_names: &[String]) -> String {
 }
 
 fn render_zod_value_params(generic_names: &[String]) -> String {
+    generic_names
+        .iter()
+        .map(|generic| format!("{generic}: {generic}"))
+        .collect::<Vec<_>>()
+        .join(", ")
+}
+
+fn render_effect_generic_params(generic_names: &[String]) -> String {
+    format!(
+        "<{}>",
+        generic_names
+            .iter()
+            .map(|generic| format!("{generic} extends Schema.Top"))
+            .collect::<Vec<_>>()
+            .join(", ")
+    )
+}
+
+fn render_effect_value_params(generic_names: &[String]) -> String {
     generic_names
         .iter()
         .map(|generic| format!("{generic}: {generic}"))
@@ -471,6 +580,164 @@ mod tests {
         /** Hello, world! */
         export type Name = z.infer<typeof Name>;
         "
+        );
+    }
+
+    #[test]
+    fn test_render_effect_with_arguments() {
+        assert_snapshot!(
+            render_node_with(
+                Tst::interface_with_generics(
+                    "Response",
+                    vec!["Payload"],
+                    vec![Tst::property("value", Tst::reference("Payload"))],
+                ),
+                &mut Tst::render_context_effect(),
+            ),
+            @"
+        export const Response = <Payload extends Schema.Top>(Payload: Payload) => Schema.Struct({
+          value: Payload
+        });
+
+        export type Response<Payload extends Schema.Top> = Schema.Schema.Type<ReturnType<typeof Response<Payload>>>;
+        "
+        );
+    }
+
+    #[test]
+    fn test_render_effect_doc() {
+        let mut context = Tst::render_context_effect();
+
+        assert_snapshot!(
+            render_node_with(
+                assign!(
+                    Tst::interface("Name", vec![]),
+                    doc = Tst::some_doc("Hello, world!")
+                ),
+                &mut context,
+            ),
+            @"
+        /** Hello, world! */
+        export const Name = Schema.Struct({
+        });
+
+        /** Hello, world! */
+        export type Name = Schema.Schema.Type<typeof Name>;
+        "
+        );
+    }
+
+    #[test]
+    fn test_render_effect_optional() {
+        assert_snapshot!(
+            render_node_with(Tst::interface("Name", vec![Tst::property_optional("age", Tst::primitive_number())]), &mut Tst::render_context_effect()),
+            @r#"
+        export const Name = Schema.Struct({
+          age: Schema.optionalKey(Schema.Number)
+        });
+
+        export type Name = Schema.Schema.Type<typeof Name>;
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_effect_extensions() {
+        assert_snapshot!(
+            render_node_with(TsInterface { extensions: vec![Tst::extension("Hello"), Tst::extension("World")], ..Tst::interface("Name", vec![Tst::property("name", Tst::primitive_string())]) }, &mut Tst::render_context_effect()),
+            @r#"
+        export const Name = Schema.Struct({
+          ...Hello.fields,
+          ...World.fields,
+          ...{
+            name: Schema.String
+          }
+        });
+
+        export type Name = Schema.Schema.Type<typeof Name>;
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_effect_self_recursive_preserves_fields() {
+        assert_snapshot!(
+            render_node_with(Tst::interface("Node", vec![Tst::property_optional("next", Tst::reference_self_recursive("Node"))]), &mut Tst::render_context_effect()),
+            @r#"
+        export interface Node {
+          next?: Node;
+        }
+
+        export const Node = Schema.Struct({
+          next: Schema.optionalKey(Schema.suspend((): Schema.Codec<Node> => Node))
+        });
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_effect_forward_has_codec_boundary() {
+        assert_snapshot!(
+            render_node_with(Tst::interface("Node", vec![Tst::property("next", Tst::reference_forward("Later"))]), &mut Tst::render_context_effect()),
+            @r#"
+        export interface Node {
+          next: Later;
+        }
+
+        export const Node: Schema.Codec<Node> = Schema.suspend(() => Schema.Struct({
+          next: Schema.suspend((): Schema.Codec<Later> => Later)
+        }));
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_effect_extension_nested_fields() {
+        assert_snapshot!(
+            render_node_with(
+                TsInterface {
+                    extensions: vec![Tst::extension("Base")],
+                    ..Tst::interface("Name", vec![Tst::property(
+                        "details",
+                        Tst::object(vec![Tst::property("name", Tst::primitive_string())]),
+                    )])
+                },
+                &mut Tst::render_context_effect(),
+            ),
+            @r#"
+        export const Name = Schema.Struct({
+          ...Base.fields,
+          ...{
+            details: Schema.Struct({
+              name: Schema.String
+            })
+          }
+        });
+
+        export type Name = Schema.Schema.Type<typeof Name>;
+        "#
+        );
+    }
+
+    #[test]
+    fn test_render_effect_extension_empty_fields() {
+        assert_snapshot!(
+            render_node_with(
+                TsInterface {
+                    extensions: vec![Tst::extension("Base")],
+                    ..Tst::interface("Name", vec![])
+                },
+                &mut Tst::render_context_effect(),
+            ),
+            @r#"
+        export const Name = Schema.Struct({
+          ...Base.fields,
+          ...{
+          }
+        });
+
+        export type Name = Schema.Schema.Type<typeof Name>;
+        "#
         );
     }
 }
