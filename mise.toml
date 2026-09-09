@@ -165,7 +165,7 @@ run = [{ task = "publish/cargo" }]
 # TODO: Exclude genotype_wasm?
 [tasks."publish/cargo"]
 run = '''
-cargo release publish \
+fnox exec -- cargo release publish \
   --exclude litty \
   --exclude litty_macro \
   --exclude litty_macro_tests \
@@ -218,7 +218,7 @@ cargo release version {{usage.version}} \
 
 [tasks."publish/cargo/litty"]
 run = '''
-cargo release publish \
+fnox exec -- cargo release publish \
   --package litty \
   --package litty_macro \
   --all-features \
