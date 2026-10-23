@@ -1456,8 +1456,6 @@ dependencies = [
  "indoc",
  "insta",
  "miette",
- "pest",
- "pest_derive",
  "pretty_assertions",
  "serde",
  "thiserror 1.0.64",
@@ -2963,9 +2961,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e0848c601009d37dfa3430c4666e147e49cdcf1b92ecd3e63657d8a5f19da662"
 dependencies = [
  "memchr",
- "miette",
- "serde",
- "serde_json",
  "ucd-trie",
 ]
 
