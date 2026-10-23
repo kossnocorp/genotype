@@ -9,9 +9,6 @@ pub(crate) mod internal {
     pub use heck::ToPascalCase;
     pub use indexmap::IndexSet;
     pub use miette::{Diagnostic, LabeledSpan, NamedSource, Result, miette};
-    pub use pest::Parser;
-    pub use pest::error::InputLocation;
-    pub use pest::iterators::{Pair, Pairs};
     pub use serde::Serialize;
     pub use std::ffi::OsString;
     pub use std::path::{Component, Path, PathBuf};
