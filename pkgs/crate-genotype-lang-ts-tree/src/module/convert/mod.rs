@@ -62,10 +62,9 @@ mod tests {
     #[test]
     fn test_convert() {
         let mut resolve = TsConvertResolve::new();
-        resolve.globs.insert(
-            GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module").unwrap(),
-            "module".into(),
-        );
+        resolve
+            .globs
+            .insert(Gt::path_anon("./path/to/module"), "module".into());
 
         assert_ron_snapshot!(
             TsModule::convert(
@@ -75,12 +74,12 @@ mod tests {
                     imports: vec![
                         GtImport {
                             span: (0, 0).into(),
-                            path: GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module").unwrap(),
+                            path: Gt::path_anon("./path/to/module"),
                             reference: GtImportReference::Glob((0, 0).into())
                         },
                         GtImport {
                             span: (0, 0).into(),
-                            path: GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module").unwrap(),
+                            path: Gt::path_anon("./path/to/module"),
                             reference: GtImportReference::Names(
                                 (0, 0).into(),
                                 vec![

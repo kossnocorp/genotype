@@ -55,7 +55,7 @@ pub use option::*;
 mod path;
 pub use path::*;
 
-mod prelude;
+pub mod prelude;
 
 mod primitive;
 pub use primitive::*;

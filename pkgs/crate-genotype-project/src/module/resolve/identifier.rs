@@ -1,5 +1,4 @@
-use genotype_parser::*;
-use serde::Serialize;
+use crate::prelude::internal::*;
 
 /// Project module identifier resolve data.
 #[derive(Debug, PartialEq, Clone, Serialize)]

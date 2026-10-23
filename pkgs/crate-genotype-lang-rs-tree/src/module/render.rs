@@ -48,7 +48,6 @@ impl GtlRenderModule for RsModule {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use genotype_parser::GtDefinitionId;
     use insta::assert_snapshot;
 
     #[test]

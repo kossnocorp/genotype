@@ -316,10 +316,9 @@ mod tests {
     #[test]
     fn test_convert() {
         let mut resolve = RsConvertResolve::default();
-        resolve.globs.insert(
-            GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module").unwrap(),
-            "module".into(),
-        );
+        resolve
+            .globs
+            .insert(Gt::path_anon("./path/to/module"), "module".into());
         resolve.path_module_ids.insert(
             GtPathModuleId::new((0, 0).into(), "module".into()),
             "module/path".into(),

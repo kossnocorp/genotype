@@ -8,10 +8,9 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
+genotype_tree = { version = "0.17.1", path = "../crate-genotype-tree" }
 genotype_core = { version = "0.17.1", path = "../crate-genotype-core" }
-genotype_project_core = { version = "0.17.1", path = "../crate-genotype-project-core", features = [
-  "project",
-] }
+genotype_project_core = { version = "0.17.1", path = "../crate-genotype-project-core" }
 genotype_parser = { version = "0.17.1", path = "../crate-genotype-parser" }
 genotype_workspace_core = { version = "0.17.1", path = "../crate-genotype-workspace-core" }
 genotype_lang_py_config = { version = "0.17.1", path = "../crate-genotype-lang-py-config" }

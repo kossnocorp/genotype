@@ -15,7 +15,7 @@ mod tests {
     #[test]
     fn test_convert_base() {
         assert_ron_snapshot!(
-            convert_node(GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module").unwrap()),
+            convert_node(Gt::path_anon("./path/to/module")),
             @r#"TsPath("./path/to/module")"#
         );
     }
@@ -24,13 +24,13 @@ mod tests {
     fn test_convert_resolve() {
         let mut resolve = TsConvertResolve::new();
         resolve.paths.insert(
-            GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module").unwrap(),
-            GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module/index").unwrap(),
+            Gt::path_anon("./path/to/module"),
+            Gt::path_anon("./path/to/module/index"),
         );
         let mut context = TsConvertContext::new(resolve, &Default::default());
         assert_ron_snapshot!(
             convert_node_with(
-                GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module").unwrap(),
+                Gt::path_anon("./path/to/module"),
                 &mut context,
             ),
             @r#"TsPath("./path/to/module/index")"#
@@ -52,8 +52,7 @@ mod tests {
         let mut context = TsConvertContext::new(Default::default(), &config);
 
         assert_ron_snapshot!(
-            GtPath::parse((0, 0).into(), &"module".into(), "./ShopGoods/OrderItem")
-                .unwrap()
+            Gt::path_anon("./ShopGoods/OrderItem")
                 .convert(&mut context),
             @r#"TsPath("./shop-goods/orderItem")"#
         );

@@ -22,6 +22,7 @@ members = [
   "pkgs/crate-genotype-json-converter",
   "pkgs/crate-genotype-lsp",
   "pkgs/crate-genotype-parser",
+  "pkgs/crate-genotype-tree",
   "pkgs/crate-genotype-project",
   "pkgs/crate-genotype-visitor-macro",
   "pkgs/crate-genotype-cli",

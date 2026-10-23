@@ -35,7 +35,6 @@ impl GtpModulePath {
         Ok(GtModuleId(module_id_str.into()))
     }
 
-    #[cfg(feature = "parser")]
     /// Resolves node path to a module path.
     pub fn resolve_path_node(&self, path: &GtPath) -> GtpModulePath {
         let parent_path = if let Some(parent) = self.0.relative_path().parent() {
@@ -62,7 +61,6 @@ gtp_relative_path_wrapper_newtype!(
 );
 
 impl GtpSrcDirRelativeModulePath {
-    #[cfg(feature = "parser")]
     pub fn resolve_path_node(&self, path: &GtPath) -> GtpSrcDirRelativeModulePath {
         let parent_path = if let Some(parent) = self.0.relative_path().parent() {
             parent
@@ -83,14 +81,12 @@ impl GtpSrcDirRelativeModulePath {
     }
 }
 
-#[cfg(feature = "parser")]
 impl From<&GtpSrcDirRelativeModulePath> for GtModuleId {
     fn from(path: &GtpSrcDirRelativeModulePath) -> Self {
         path.relative_path().with_extension("").as_str().into()
     }
 }
 
-#[cfg(feature = "parser")]
 impl From<GtpSrcDirRelativeModulePath> for GtModuleId {
     fn from(path: GtpSrcDirRelativeModulePath) -> Self {
         (&path).into()
@@ -101,7 +97,7 @@ impl From<GtpSrcDirRelativeModulePath> for GtModuleId {
 
 #[cfg(test)]
 mod tests {
-    use genotype_parser::test::Gt;
+    use genotype_tree::test::Gt;
 
     use super::*;
 

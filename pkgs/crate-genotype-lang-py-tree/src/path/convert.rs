@@ -22,8 +22,7 @@ mod tests {
     #[test]
     fn test_convert_base() {
         assert_ron_snapshot!(
-            GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module")
-                .unwrap()
+            Gt::path_anon("./path/to/module")
                 .convert(&mut PyConvertContext::default()),
             @r#"PyPath(".path.to.module")"#
         );
@@ -32,8 +31,7 @@ mod tests {
     #[test]
     fn test_convert_absolute() {
         assert_ron_snapshot!(
-            GtPath::parse((0, 0).into(), &"module".into(), "module/path")
-                .unwrap()
+            Gt::path_anon("module/path")
                 .convert(&mut PyConvertContext::default()),
             @r#"PyPath("module.path")"#
         );
@@ -42,8 +40,7 @@ mod tests {
     #[test]
     fn test_convert_up() {
         assert_ron_snapshot!(
-            GtPath::parse((0, 0).into(), &"module".into(), "../path/to/module")
-                .unwrap()
+            Gt::path_anon("../path/to/module")
                 .convert(&mut PyConvertContext::default()),
             @r#"PyPath("..path.to.module")"#
         );
@@ -53,13 +50,12 @@ mod tests {
     fn test_convert_resolve() {
         let mut resolve = PyConvertResolve::default();
         resolve.paths.insert(
-            GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module").unwrap(),
-            GtPath::parse((0, 0).into(), &"module".into(), "./path/to/another/module").unwrap(),
+            Gt::path_anon("./path/to/module"),
+            Gt::path_anon("./path/to/another/module"),
         );
         let mut context = PyConvertContext::new(resolve, Default::default());
         assert_ron_snapshot!(
-            GtPath::parse((0, 0).into(), &"module".into(), "./path/to/module")
-                .unwrap()
+            Gt::path_anon("./path/to/module")
                 .convert(&mut context),
             @r#"PyPath(".path.to.another.module")"#
         );
@@ -68,8 +64,7 @@ mod tests {
     #[test]
     fn test_convert_naming() {
         assert_ron_snapshot!(
-            GtPath::parse((0, 0).into(), &"module".into(), "./ShopGoods/OrderItem")
-                .unwrap()
+            Gt::path_anon("./ShopGoods/OrderItem")
                 .convert(&mut PyConvertContext::default()),
             @r#"PyPath(".shop_goods.order_item")"#
         );

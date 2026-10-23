@@ -1,4 +1,4 @@
-use genotype_parser::{GtNamingContext, GtNamingContextName};
+use crate::prelude::internal::*;
 use heck::ToPascalCase;
 
 #[derive(Default)]

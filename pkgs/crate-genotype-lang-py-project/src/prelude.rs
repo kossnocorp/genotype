@@ -11,9 +11,9 @@ pub(crate) mod internal {
     pub use genotype_lang_core_tree::*;
     pub use genotype_lang_py_config::*;
     pub use genotype_lang_py_tree::*;
-    pub use genotype_parser::*;
     pub use genotype_project::*;
     pub use genotype_project_core::prelude::*;
+    pub use genotype_tree::prelude::*;
     pub use indexmap::{IndexMap, IndexSet};
     pub use indoc::indoc;
     pub use miette::Result;

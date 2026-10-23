@@ -1,5 +1,5 @@
 // Defines base test helpers and also re-exports common test macros and utils.
-pub use genotype_parser::test::*;
+pub use genotype_tree::test::*;
 
 pub use insta::{
     assert_debug_snapshot, assert_ron_snapshot, assert_snapshot, sorted_redaction, with_settings,

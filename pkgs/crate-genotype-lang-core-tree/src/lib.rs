@@ -25,8 +25,6 @@ pub use render::*;
 mod convert;
 pub use convert::*;
 
-mod codegen;
-
 mod module;
 pub use module::*;
 

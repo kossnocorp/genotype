@@ -1,5 +1,15 @@
 use crate::prelude::internal::*;
 
+pub trait GtTestContext {
+    fn context() -> GtContext;
+}
+
+impl GtTestContext for genotype_tree::test::Gt {
+    fn context() -> GtContext {
+        GtContext::new("module".into())
+    }
+}
+
 pub fn to_parse_args(rule: Rule, code: &str) -> (Pairs<'_, Rule>, GtContext) {
     let pairs = GenotypeParser::parse(rule, code).unwrap_or_else(|e| {
         panic!("Failed to parse code:\n{}\nError: {}", code, e);

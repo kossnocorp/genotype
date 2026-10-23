@@ -1,5 +1,7 @@
+pub use crate::*;
+
 pub(crate) mod internal {
-    pub use crate::*;
+    pub use super::*;
     #[cfg(test)]
     pub use futures::executor::block_on;
     #[cfg(test)]
@@ -9,11 +11,11 @@ pub(crate) mod internal {
     pub use genotype_lang_core_tree::*;
     pub use genotype_lang_rs_config::RsConfig;
     pub use genotype_lang_rs_tree::*;
-    pub use genotype_parser::*;
     pub use genotype_project::*;
     pub use genotype_project_core::prelude::*;
     #[cfg(test)]
     pub use genotype_test::*;
+    pub use genotype_tree::prelude::*;
     pub use indexmap::{IndexMap, IndexSet};
     pub use miette::miette;
     pub use miette::{Diagnostic, Result};

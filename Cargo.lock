@@ -1192,6 +1192,7 @@ version = "0.17.1"
 dependencies = [
  "genotype_json_types",
  "genotype_parser",
+ "genotype_tree",
  "heck",
  "insta",
  "litty 0.5.0",
@@ -1216,9 +1217,9 @@ version = "0.17.1"
 dependencies = [
  "genotype_core",
  "genotype_lang_core_tree",
- "genotype_parser",
  "genotype_project",
  "genotype_project_core",
+ "genotype_tree",
  "heck",
  "indexmap",
  "insta",
@@ -1240,7 +1241,7 @@ dependencies = [
 name = "genotype_lang_core_tree"
 version = "0.17.1"
 dependencies = [
- "genotype_parser",
+ "genotype_tree",
  "indexmap",
  "insta",
  "miette",
@@ -1272,10 +1273,10 @@ dependencies = [
  "genotype_lang_core_tree",
  "genotype_lang_py_config",
  "genotype_lang_py_tree",
- "genotype_parser",
  "genotype_project",
  "genotype_project_core",
  "genotype_test",
+ "genotype_tree",
  "indexmap",
  "indoc",
  "insta",
@@ -1295,8 +1296,8 @@ version = "0.17.1"
 dependencies = [
  "genotype_lang_core_tree",
  "genotype_lang_py_config",
- "genotype_parser",
  "genotype_test",
+ "genotype_tree",
  "heck",
  "indexmap",
  "insta",
@@ -1334,10 +1335,10 @@ dependencies = [
  "genotype_lang_core_tree",
  "genotype_lang_rs_config",
  "genotype_lang_rs_tree",
- "genotype_parser",
  "genotype_project",
  "genotype_project_core",
  "genotype_test",
+ "genotype_tree",
  "heck",
  "indexmap",
  "indoc",
@@ -1358,9 +1359,9 @@ dependencies = [
  "genotype_core",
  "genotype_lang_core_tree",
  "genotype_lang_rs_config",
- "genotype_parser",
  "genotype_project",
  "genotype_test",
+ "genotype_tree",
  "heck",
  "indexmap",
  "insta",
@@ -1395,10 +1396,10 @@ dependencies = [
  "genotype_lang_core_tree",
  "genotype_lang_ts_config",
  "genotype_lang_ts_tree",
- "genotype_parser",
  "genotype_project",
  "genotype_project_core",
  "genotype_test",
+ "genotype_tree",
  "indexmap",
  "insta",
  "miette",
@@ -1417,9 +1418,9 @@ version = "0.17.1"
 dependencies = [
  "genotype_lang_core_tree",
  "genotype_lang_ts_config",
- "genotype_parser",
  "genotype_project_core",
  "genotype_test",
+ "genotype_tree",
  "heck",
  "indexmap",
  "insta",
@@ -1449,7 +1450,7 @@ name = "genotype_parser"
 version = "0.17.1"
 dependencies = [
  "genotype_core",
- "genotype_visitor_macro",
+ "genotype_tree",
  "heck",
  "indexmap",
  "indoc",
@@ -1474,6 +1475,7 @@ dependencies = [
  "genotype_parser",
  "genotype_project_core",
  "genotype_test",
+ "genotype_tree",
  "genotype_workspace_core",
  "glob",
  "indexmap",
@@ -1494,8 +1496,8 @@ name = "genotype_project_core"
 version = "0.17.1"
 dependencies = [
  "genotype_core",
- "genotype_parser",
  "genotype_test",
+ "genotype_tree",
  "heck",
  "indexmap",
  "insta",
@@ -1523,11 +1525,25 @@ dependencies = [
 name = "genotype_test"
 version = "0.17.1"
 dependencies = [
- "genotype_parser",
+ "genotype_tree",
  "insta",
  "miette",
  "pretty_assertions",
  "relative-path",
+]
+
+[[package]]
+name = "genotype_tree"
+version = "0.17.1"
+dependencies = [
+ "genotype_core",
+ "genotype_visitor_macro",
+ "indoc",
+ "insta",
+ "miette",
+ "pretty_assertions",
+ "serde",
+ "thiserror 1.0.64",
 ]
 
 [[package]]

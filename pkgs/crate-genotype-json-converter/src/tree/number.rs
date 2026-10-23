@@ -1,7 +1,4 @@
-use genotype_json_types::*;
-use genotype_parser::*;
-
-use crate::{GtjTreeConvert, GtjTreeConvertContext};
+use crate::prelude::internal::*;
 
 impl GtjTreeConvert<GtPrimitive> for GtjNumber {
     fn to_tree_with_context(&self, _context: &mut GtjTreeConvertContext) -> GtPrimitive {

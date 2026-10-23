@@ -2,6 +2,10 @@ use crate::prelude::internal::*;
 
 #[derive(Error, Diagnostic, Debug, PartialEq, Clone, Serialize)]
 pub enum GtParseError {
+    #[error(transparent)]
+    #[diagnostic(transparent)]
+    Descriptor(#[from] GtDescriptorError),
+
     /// Pest syntax error.
     #[error("Syntax error")]
     #[diagnostic(code("GT001"))]
@@ -40,10 +44,6 @@ pub enum GtParseError {
     #[error("Failed to parse {1} node")]
     #[diagnostic(code("GT006"))]
     UnknownValue(#[label("unknown value")] GtSpan, GtNode),
-
-    #[error("Failed to extract expected type from descriptor")]
-    #[diagnostic(code("GT007"))]
-    UnmatchedDescriptor(#[label("incorrect type descriptor")] GtSpan, GtNode),
 }
 
 impl GtParseError {

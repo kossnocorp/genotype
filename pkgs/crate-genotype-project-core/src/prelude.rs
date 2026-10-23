@@ -3,10 +3,9 @@ pub use crate::*;
 pub(crate) mod internal {
     pub use super::*;
     pub use genotype_core::prelude::*;
-    #[cfg(feature = "parser")]
-    pub use genotype_parser::*;
     #[cfg(test)]
     pub use genotype_test::*;
+    pub use genotype_tree::prelude::*;
     pub use heck::{ToKebabCase, ToLowerCamelCase, ToPascalCase, ToSnakeCase};
     pub use indexmap::IndexMap;
     pub use miette::{Result, WrapErr, miette};

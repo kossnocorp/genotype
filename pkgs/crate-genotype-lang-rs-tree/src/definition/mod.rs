@@ -52,7 +52,7 @@ impl From<RsEnum> for RsDefinition {
 #[cfg(test)]
 mod tests {
     use crate::*;
-    use genotype_parser::GtDefinitionId;
+    use genotype_tree::prelude::GtDefinitionId;
     use pretty_assertions::assert_eq;
 
     #[test]

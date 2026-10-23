@@ -1,6 +1,4 @@
-use genotype_parser::GtNamingContextName;
-
-use super::GtjTreeConvertContext;
+use crate::prelude::internal::*;
 
 pub trait GtjTreeConvert<Node> {
     fn to_tree_with_context(&self, context: &mut GtjTreeConvertContext) -> Node;

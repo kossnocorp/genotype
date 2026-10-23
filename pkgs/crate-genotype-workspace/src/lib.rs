@@ -6,4 +6,4 @@ pub mod path;
 
 pub mod workspace;
 
-mod prelude;
+pub mod prelude;

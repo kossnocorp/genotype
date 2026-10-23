@@ -1,14 +1,17 @@
+pub use crate::*;
+
 pub(crate) mod internal {
-    pub use crate::*;
+    pub use super::*;
     pub use figment::{Figment, providers::Format};
     pub use genotype_core::prelude::*;
     pub use genotype_lang_py_config::*;
     pub use genotype_lang_rs_config::*;
     pub use genotype_lang_ts_config::*;
-    pub use genotype_parser::*;
+    pub use genotype_parser::prelude::*;
     pub use genotype_project_core::*;
     #[cfg(test)]
     pub use genotype_test::*;
+    pub use genotype_tree::prelude::*;
     pub use indexmap::{IndexMap, IndexSet};
     pub use miette::{
         Context, Diagnostic, IntoDiagnostic, LabeledSpan, NamedSource, Report, Result, miette,

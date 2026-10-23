@@ -1,79 +1,69 @@
 use crate::prelude::internal::*;
 
-/// Module parse result. It contains the module tree and resolve data.
-#[derive(Debug, PartialEq, Clone, Serialize)]
-pub struct GtModuleParse {
-    /// Module tree.
-    pub module: GtModule,
-    /// Module resolve. It contains module meta information used to build
-    /// the dependency graph.
-    pub resolve: GtModuleResolve,
-}
-
-impl GtModule {
+impl GtParseModule for GtModule {
     /// Parse module from source code. It returns [GtModuleParse], wrapping the tree with
     /// the resolve data.
-    pub fn parse(module_id: GtModuleId, source_code: &str) -> Result<GtModuleParse, GtParseError> {
+    fn parse(module_id: GtModuleId, source_code: &str) -> Result<GtModuleParse, GtParseError> {
         parse_gt_code(source_code)
             .map_err(|error| error.into())
             .and_then(|mut pairs| pairs.next().ok_or(GtParseError::InvalidGrammar))
-            .and_then(|pair| Self::parse_root_token_pair(module_id.clone(), pair))
+            .and_then(|pair| parse_root_token_pair(module_id.clone(), pair))
     }
+}
 
-    /// Parses root token pair into [GtModuleParse].
-    fn parse_root_token_pair(
-        module_id: GtModuleId,
-        module_pair: Pair<'_, Rule>,
-    ) -> Result<GtModuleParse, GtParseError> {
-        let mut doc: Option<GtDoc> = None;
-        let mut imports = vec![];
-        let mut aliases = vec![];
-        let mut context = GtContext::new(module_id);
+/// Parses root token pair into [GtModuleParse].
+fn parse_root_token_pair(
+    module_id: GtModuleId,
+    module_pair: Pair<'_, Rule>,
+) -> Result<GtModuleParse, GtParseError> {
+    let mut doc: Option<GtDoc> = None;
+    let mut imports = vec![];
+    let mut aliases = vec![];
+    let mut context = GtContext::new(module_id);
 
-        for pair in module_pair.into_inner() {
-            match pair.as_rule() {
-                Rule::module_doc => {
-                    let doc_pair = pair.into_inner().find(|p| p.as_rule() == Rule::doc);
-                    if let Some(pair) = doc_pair {
-                        doc = Some(if let Some(doc_pair) = doc {
-                            doc_pair.concat(pair)
-                        } else {
-                            pair.into()
-                        });
-                    }
-                }
-
-                Rule::import => {
-                    imports.push(GtImport::parse(pair, &mut context)?);
-                }
-
-                Rule::alias => {
-                    aliases.push(GtAlias::parse(pair, &mut context)?);
-                }
-
-                Rule::EOI => {}
-
-                rule => {
-                    return Err(GtParseError::UnexpectedRule(
-                        pair.as_span().into(),
-                        GtNode::Module,
-                        rule,
-                        "expected import, alias, or end of input",
-                    ));
+    for pair in module_pair.into_inner() {
+        match pair.as_rule() {
+            Rule::module_doc => {
+                let doc_pair = pair.into_inner().find(|p| p.as_rule() == Rule::doc);
+                if let Some(pair) = doc_pair {
+                    doc = Some(if let Some(doc_pair) = doc {
+                        concat_doc(&doc_pair, pair)
+                    } else {
+                        GtDoc::parse(pair)
+                    });
                 }
             }
-        }
 
-        Ok(GtModuleParse {
-            module: GtModule {
-                id: context.module_id.clone(),
-                doc,
-                imports,
-                aliases,
-            },
-            resolve: context.resolve,
-        })
+            Rule::import => {
+                imports.push(GtImport::parse(pair, &mut context)?);
+            }
+
+            Rule::alias => {
+                aliases.push(GtAlias::parse(pair, &mut context)?);
+            }
+
+            Rule::EOI => {}
+
+            rule => {
+                return Err(GtParseError::UnexpectedRule(
+                    (pair.as_span().start(), pair.as_span().end()).into(),
+                    GtNode::Module,
+                    rule,
+                    "expected import, alias, or end of input",
+                ));
+            }
+        }
     }
+
+    Ok(GtModuleParse {
+        module: GtModule {
+            id: context.module_id.clone(),
+            doc,
+            imports,
+            aliases,
+        },
+        resolve: context.resolve,
+    })
 }
 
 #[cfg(test)]
