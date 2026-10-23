@@ -112,7 +112,7 @@ run = "cargo fmt --all"
 run = "cargo fmt --all --check"
 
 [tasks.test]
-run = ["test/unit", "test/system"]
+depends = ["test/unit", "test/system"]
 
 [tasks."test/unit"]
 depends = [
