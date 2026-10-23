@@ -898,7 +898,7 @@ LinkedNode: {
 Json: null | boolean | number | string | [Json] | { []: Json }
 ```
 
-Targets add the indirection their type systems need. E.g., Rust boxes direct recursive fields, while TypeScript's Zod mode uses lazy schemas or object getters:
+Targets add the indirection their type systems need. E.g., Rust boxes direct recursive fields, while TypeScript's Zod mode uses lazy schemas or object getters, and Effect mode uses suspended schemas:
 
 <Tabs>
   <TabItem label="TypeScript">

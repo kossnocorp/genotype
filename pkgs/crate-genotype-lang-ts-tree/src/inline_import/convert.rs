@@ -10,11 +10,12 @@ impl TsConvert<TsInlineImport> for GtInlineImport {
             .map(|argument| argument.descriptor.convert(context))
             .collect();
 
-        if context.is_zod_mode() {
-            context.push_import(TsImport::new(
+        match context.mode() {
+            TsMode::Zod | TsMode::Effect => context.push_import(TsImport::new(
                 TsDependencyIdent::Local(path.clone()),
                 TsImportReference::Named(vec![TsImportName::Name(name.clone())]),
-            ));
+            )),
+            TsMode::Types => {}
         }
 
         TsInlineImport {
@@ -91,6 +92,36 @@ mod tests {
     #[test]
     fn test_convert_adds_import_dependency_in_zod_mode() {
         let mut context = Tst::convert_context_zod();
+
+        assert_ron_snapshot!(
+            convert_node_with(Gt::inline_import_anon("./path/to/module", "Name"), &mut context),
+            @r#"
+        TsInlineImport(
+          path: TsPath("./path/to/module"),
+          name: TsIdentifier("Name"),
+          arguments: [],
+        )
+        "#
+        );
+
+        assert_ron_snapshot!(
+            context.drain_imports(),
+            @r#"
+        [
+          TsImport(
+            dependency: Local(TsPath("./path/to/module")),
+            reference: Named([
+              Name(TsIdentifier("Name")),
+            ]),
+          ),
+        ]
+        "#
+        );
+    }
+
+    #[test]
+    fn test_convert_adds_import_dependency_in_effect_mode() {
+        let mut context = Tst::convert_context_effect();
 
         assert_ron_snapshot!(
             convert_node_with(Gt::inline_import_anon("./path/to/module", "Name"), &mut context),

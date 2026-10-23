@@ -6,8 +6,17 @@ impl<'context> GtlRender<'context, TsRenderTypes> for TsPrimitive {
         _state: TsRenderState,
         context: &mut TsRenderContext,
     ) -> TsRenderResult<String> {
-        if context.is_zod_mode() {
-            return Ok(match self {
+        match context.mode() {
+            TsMode::Effect => Ok(match self {
+                TsPrimitive::String => "Schema.String",
+                TsPrimitive::Number => "Schema.Number",
+                TsPrimitive::Boolean => "Schema.Boolean",
+                TsPrimitive::BigInt => "Schema.BigInt",
+                TsPrimitive::Null => "Schema.Null",
+                TsPrimitive::Undefined => "Schema.Undefined",
+            }
+            .into()),
+            TsMode::Zod => Ok(match self {
                 TsPrimitive::String => "z.string()",
                 TsPrimitive::Number => "z.number()",
                 TsPrimitive::Boolean => "z.boolean()",
@@ -15,18 +24,17 @@ impl<'context> GtlRender<'context, TsRenderTypes> for TsPrimitive {
                 TsPrimitive::Null => "z.null()",
                 TsPrimitive::Undefined => "z.undefined()",
             }
-            .to_string());
+            .to_string()),
+            TsMode::Types => Ok(match self {
+                TsPrimitive::String => "string",
+                TsPrimitive::Number => "number",
+                TsPrimitive::Boolean => "boolean",
+                TsPrimitive::BigInt => "bigint",
+                TsPrimitive::Null => "null",
+                TsPrimitive::Undefined => "undefined",
+            }
+            .to_string()),
         }
-
-        Ok(match self {
-            TsPrimitive::String => "string",
-            TsPrimitive::Number => "number",
-            TsPrimitive::Boolean => "boolean",
-            TsPrimitive::BigInt => "bigint",
-            TsPrimitive::Null => "null",
-            TsPrimitive::Undefined => "undefined",
-        }
-        .to_string())
     }
 }
 
@@ -91,6 +99,36 @@ mod tests {
         assert_snapshot!(
             render_node_with(Tst::primitive_undefined(), &mut context),
             @"z.undefined()"
+        );
+    }
+
+    #[test]
+    fn test_render_primitive_effect_mode() {
+        let mut context = Tst::render_context_effect();
+
+        assert_snapshot!(
+            render_node_with(Tst::primitive_string(), &mut context),
+            @"Schema.String"
+        );
+        assert_snapshot!(
+            render_node_with(Tst::primitive_number(), &mut context),
+            @"Schema.Number"
+        );
+        assert_snapshot!(
+            render_node_with(Tst::primitive_bigint(), &mut context),
+            @"Schema.BigInt"
+        );
+        assert_snapshot!(
+            render_node_with(Tst::primitive_boolean(), &mut context),
+            @"Schema.Boolean"
+        );
+        assert_snapshot!(
+            render_node_with(Tst::primitive_null(), &mut context),
+            @"Schema.Null"
+        );
+        assert_snapshot!(
+            render_node_with(Tst::primitive_undefined(), &mut context),
+            @"Schema.Undefined"
         );
     }
 }

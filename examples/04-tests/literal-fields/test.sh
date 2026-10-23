@@ -99,6 +99,17 @@ else
 	exit 1
 fi
 
+echo "🌀 Building TypeScript Effect schemas"
+if output=$(cargo run -p genotype_cli --bin gt -- build . --config genotype.ts-effect.toml 2>&1); then
+	echo "🟢 Build: OK"
+else
+	echo "🔴 Build: FAILED"
+	echo "--- Output ------------------------------------------"
+	echo "$output"
+	echo "-----------------------------------------------------"
+	exit 1
+fi
+
 #region TypeScript
 
 echo
@@ -138,6 +149,16 @@ if output=$(pnpm tsx test.zod.ts 2>&1); then
 	echo "🟢 Node Zod test: OK"
 else
 	echo "🔴 Node Zod test: FAILED"
+	echo "--- Output ------------------------------------------"
+	echo "$output"
+	echo "-----------------------------------------------------"
+	exit 1
+fi
+
+if output=$(pnpm tsx test.effect.ts 2>&1); then
+	echo "🟢 Node Effect test: OK"
+else
+	echo "🔴 Node Effect test: FAILED"
 	echo "--- Output ------------------------------------------"
 	echo "$output"
 	echo "-----------------------------------------------------"

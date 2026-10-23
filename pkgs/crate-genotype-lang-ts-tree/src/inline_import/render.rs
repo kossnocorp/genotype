@@ -16,19 +16,20 @@ impl<'context> GtlRender<'context, TsRenderTypes> for TsInlineImport {
 
         let call = if self.arguments.is_empty() {
             name.clone()
-        } else if context.is_zod_mode() {
-            format!("{name}({arguments})")
         } else {
-            format!("{name}<{arguments}>")
+            match context.mode() {
+                TsMode::Zod | TsMode::Effect => format!("{name}({arguments})"),
+                TsMode::Types => format!("{name}<{arguments}>"),
+            }
         };
 
-        if context.is_zod_mode() {
-            return Ok(call);
+        match context.mode() {
+            TsMode::Zod | TsMode::Effect => Ok(call),
+            TsMode::Types => {
+                let path = self.path.render(state, context)?;
+                Ok(format!(r#"import("{path}").{call}"#))
+            }
         }
-
-        let path = self.path.render(state, context)?;
-
-        Ok(format!(r#"import("{path}").{call}"#))
     }
 }
 
@@ -85,6 +86,29 @@ mod tests {
                 &mut Tst::render_context_zod(),
             ),
             @"Name(z.string())"
+        );
+    }
+
+    #[test]
+    fn test_render_effect() {
+        assert_snapshot!(
+            render_node_with(Tst::inline_import("./path/to/module", "Name"), &mut Tst::render_context_effect()),
+            @"Name"
+        );
+    }
+
+    #[test]
+    fn test_render_effect_with_arguments() {
+        assert_snapshot!(
+            render_node_with(
+                Tst::inline_import_with_arguments(
+                    "./path/to/module",
+                    "Name",
+                    vec![Tst::primitive_string().into()]
+                ),
+                &mut Tst::render_context_effect(),
+            ),
+            @"Name(Schema.String)"
         );
     }
 }

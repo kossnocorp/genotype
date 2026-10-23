@@ -13,19 +13,23 @@ impl<'context> GtlRender<'context, TsRenderTypes> for TsObject {
             .collect::<Result<Vec<_>, _>>()?
             .join(",\n");
 
-        if context.is_zod_mode() {
-            return Ok(format!(
+        match context.mode() {
+            TsMode::Effect => Ok(format!(
+                "Schema.Struct({{\n{properties}{}{}",
+                if !properties.is_empty() { "\n" } else { "" },
+                state.indent_format("})")
+            )),
+            TsMode::Zod => Ok(format!(
                 "z.object({{\n{properties}{}{}",
                 if !properties.is_empty() { "\n" } else { "" },
                 state.indent_format("})")
-            ));
+            )),
+            TsMode::Types => Ok(format!(
+                "{{\n{properties}{}{}",
+                if !properties.is_empty() { "\n" } else { "" },
+                state.indent_format("}")
+            )),
         }
-
-        Ok(format!(
-            "{{\n{properties}{}{}",
-            if !properties.is_empty() { "\n" } else { "" },
-            state.indent_format("}")
-        ))
     }
 }
 
@@ -136,6 +140,62 @@ mod tests {
             render_node_with(Tst::object(vec![]), &mut context),
             @"
         z.object({
+        })
+        "
+        );
+    }
+
+    #[test]
+    fn test_render_effect() {
+        let mut context = Tst::render_context_effect();
+
+        assert_snapshot!(
+            render_node_with(
+                Tst::object(vec![Tst::property("name", Tst::primitive_string())]),
+                &mut context,
+            ),
+            @"
+        Schema.Struct({
+          name: Schema.String
+        })
+        "
+        );
+    }
+
+    #[test]
+    fn test_render_effect_multiple_fields() {
+        let mut context = Tst::render_context_effect();
+
+        assert_snapshot!(
+            render_node_with(
+                Tst::object(vec![
+                    Tst::property("name", Tst::primitive_string()),
+                    Tst::property_optional(
+                        "address",
+                        Tst::object(vec![Tst::property("name", Tst::primitive_string())]),
+                    ),
+                ]),
+                &mut context,
+            ),
+            @"
+        Schema.Struct({
+          name: Schema.String,
+          address: Schema.optionalKey(Schema.Struct({
+            name: Schema.String
+          }))
+        })
+        "
+        );
+    }
+
+    #[test]
+    fn test_render_effect_no_fields() {
+        let mut context = Tst::render_context_effect();
+
+        assert_snapshot!(
+            render_node_with(Tst::object(vec![]), &mut context),
+            @"
+        Schema.Struct({
         })
         "
         );

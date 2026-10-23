@@ -12,7 +12,6 @@ impl TsModule {
         config: &TsConfig,
     ) -> Self {
         let mut context = TsConvertContext::new(convert_resolve, config);
-        let mode = config.lang.mode.clone();
 
         for import in &module.imports {
             let import = import.convert(&mut context);
@@ -28,10 +27,9 @@ impl TsModule {
             definitions.extend(context.drain_hoisted());
         }
 
-        let definitions = if mode == TsMode::Zod {
-            Self::sort_definitions(definitions)
-        } else {
-            definitions
+        let definitions = match config.lang.mode {
+            TsMode::Zod | TsMode::Effect => Self::sort_definitions(definitions),
+            _ => definitions,
         };
 
         let doc = module.doc.as_ref().map(|doc| {
@@ -459,6 +457,7 @@ mod tests {
         )
         "#);
     }
+
     #[test]
     fn test_convert_sorts_cyclic_definitions_and_marks_references() {
         let module = Gt::module(
@@ -603,6 +602,336 @@ mod tests {
 
         let mut config = TsConfig::default();
         config.lang.mode = TsMode::Zod;
+        let converted = TsModule::convert(&module, Default::default(), &config);
+
+        let positions = converted
+            .definitions
+            .iter()
+            .enumerate()
+            .map(|(idx, definition)| (idx, definition.name()))
+            .collect::<Vec<_>>();
+
+        assert_ron_snapshot!(
+            positions,
+            @r#"
+        [
+          (0, TsIdentifier("JsonProperty")),
+          (1, TsIdentifier("JsonObject")),
+          (2, TsIdentifier("JsonArray")),
+          (3, TsIdentifier("JsonAny")),
+        ]
+        "#
+        );
+    }
+
+    #[test]
+    fn test_convert_effect_bubble_ups_inline_imports() {
+        let mut config = TsConfig::default();
+        config.lang.mode = TsMode::Effect;
+        assert_ron_snapshot!(
+            TsModule::convert(
+                &Gt::module(
+                    vec![Gt::import(
+                        "./schemas",
+                         Gt::import_reference_name("Base"),
+                    )],
+                    vec_into![
+                        Gt::alias(
+                            "User",
+                            Gt::inline_import_anon("./schemas", "UserSchema")
+                        ),
+                        Gt::alias(
+                            "UserId",
+                            Gt::inline_import_anon("./ids", "Id")
+                        ),
+                    ]
+                ),
+                TsConvertResolve::new(),
+                &config
+            ),
+            @r#"
+        TsModule(
+          doc: None,
+          imports: [
+            TsImport(
+              dependency: Local(TsPath("./schemas")),
+              reference: Named([
+                Name(TsIdentifier("Base")),
+                Name(TsIdentifier("UserSchema")),
+              ]),
+            ),
+            TsImport(
+              dependency: Local(TsPath("./ids")),
+              reference: Named([
+                Name(TsIdentifier("Id")),
+              ]),
+            ),
+          ],
+          definitions: [
+            Alias(TsAlias(
+              doc: None,
+              name: TsIdentifier("User"),
+              generics: [],
+              descriptor: InlineImport(TsInlineImport(
+                path: TsPath("./schemas"),
+                name: TsIdentifier("UserSchema"),
+                arguments: [],
+              )),
+            )),
+            Alias(TsAlias(
+              doc: None,
+              name: TsIdentifier("UserId"),
+              generics: [],
+              descriptor: InlineImport(TsInlineImport(
+                path: TsPath("./ids"),
+                name: TsIdentifier("Id"),
+                arguments: [],
+              )),
+            )),
+          ],
+        )
+        "#
+        );
+    }
+
+    #[test]
+    fn test_convert_sorts_definitions_and_marks_references_effect() {
+        let module = Gt::module(
+            vec![],
+            vec![
+                // Qwe -> Asd
+                Gt::alias(
+                    "Qwe",
+                    Gt::object("Qwe", vec![Gt::property("asd", Gt::reference_anon("Asd"))]),
+                ),
+                // Asd -> Zxc
+                Gt::alias(
+                    "Asd",
+                    Gt::object("Asd", vec![Gt::property("zxc", Gt::reference_anon("Zxc"))]),
+                ),
+                // Zxc -> <nothing>
+                Gt::alias("Zxc", Gt::primitive_string()),
+            ],
+        );
+
+        let mut config = TsConfig::default();
+        config.lang.mode = TsMode::Effect;
+        let converted = TsModule::convert(&module, Default::default(), &config);
+
+        let positions = converted
+            .definitions
+            .iter()
+            .enumerate()
+            .map(|(idx, definition)| (idx, definition.name()))
+            .collect::<Vec<_>>();
+
+        assert_ron_snapshot!(
+            positions,
+            @r#"
+        [
+          (0, TsIdentifier("Zxc")),
+          (1, TsIdentifier("Asd")),
+          (2, TsIdentifier("Qwe")),
+        ]
+        "#
+        );
+
+        assert_ron_snapshot!(converted, @r#"
+        TsModule(
+          doc: None,
+          imports: [],
+          definitions: [
+            Alias(TsAlias(
+              doc: None,
+              name: TsIdentifier("Zxc"),
+              generics: [],
+              descriptor: Primitive(String),
+            )),
+            Interface(TsInterface(
+              doc: None,
+              name: TsIdentifier("Asd"),
+              generics: [],
+              extensions: [],
+              properties: [
+                TsProperty(
+                  doc: None,
+                  name: TsKey("zxc"),
+                  descriptor: Reference(TsReference(
+                    identifier: TsIdentifier("Zxc"),
+                    arguments: [],
+                    rel: Regular,
+                  )),
+                  required: true,
+                ),
+              ],
+            )),
+            Interface(TsInterface(
+              doc: None,
+              name: TsIdentifier("Qwe"),
+              generics: [],
+              extensions: [],
+              properties: [
+                TsProperty(
+                  doc: None,
+                  name: TsKey("asd"),
+                  descriptor: Reference(TsReference(
+                    identifier: TsIdentifier("Asd"),
+                    arguments: [],
+                    rel: Regular,
+                  )),
+                  required: true,
+                ),
+              ],
+            )),
+          ],
+        )
+        "#);
+    }
+
+    #[test]
+    fn test_convert_sorts_cyclic_definitions_and_marks_references_effect() {
+        let module = Gt::module(
+            vec![],
+            vec![
+                // Bar -> Foo
+                Gt::alias(
+                    "Bar",
+                    Gt::object("Bar", vec![Gt::property("foo", Gt::reference_anon("Foo"))]),
+                ),
+                // Baz -> Foo
+                Gt::alias("Baz", Gt::reference_anon("Foo")),
+                // Foo -> Bar
+                Gt::alias(
+                    "Foo",
+                    Gt::object("Foo", vec![Gt::property("bar", Gt::reference_anon("Bar"))]),
+                ),
+            ],
+        );
+
+        let mut config = TsConfig::default();
+        config.lang.mode = TsMode::Effect;
+        let converted = TsModule::convert(&module, Default::default(), &config);
+
+        let positions = converted
+            .definitions
+            .iter()
+            .enumerate()
+            .map(|(idx, definition)| (idx, definition.name()))
+            .collect::<Vec<_>>();
+
+        assert_ron_snapshot!(
+            positions,
+            @r#"
+        [
+          (0, TsIdentifier("Foo")),
+          (1, TsIdentifier("Bar")),
+          (2, TsIdentifier("Baz")),
+        ]
+        "#
+        );
+
+        assert_ron_snapshot!(converted, @r#"
+        TsModule(
+          doc: None,
+          imports: [],
+          definitions: [
+            Interface(TsInterface(
+              doc: None,
+              name: TsIdentifier("Foo"),
+              generics: [],
+              extensions: [],
+              properties: [
+                TsProperty(
+                  doc: None,
+                  name: TsKey("bar"),
+                  descriptor: Reference(TsReference(
+                    identifier: TsIdentifier("Bar"),
+                    arguments: [],
+                    rel: Forward,
+                  )),
+                  required: true,
+                ),
+              ],
+            )),
+            Interface(TsInterface(
+              doc: None,
+              name: TsIdentifier("Bar"),
+              generics: [],
+              extensions: [],
+              properties: [
+                TsProperty(
+                  doc: None,
+                  name: TsKey("foo"),
+                  descriptor: Reference(TsReference(
+                    identifier: TsIdentifier("Foo"),
+                    arguments: [],
+                    rel: Regular,
+                  )),
+                  required: true,
+                ),
+              ],
+            )),
+            Alias(TsAlias(
+              doc: None,
+              name: TsIdentifier("Baz"),
+              generics: [],
+              descriptor: Reference(TsReference(
+                identifier: TsIdentifier("Foo"),
+                arguments: [],
+                rel: Regular,
+              )),
+            )),
+          ],
+        )
+        "#);
+    }
+
+    #[test]
+    fn test_convert_sorts_cyclic_group_to_reduce_forward_references_effect() {
+        let module = Gt::module(
+            vec![],
+            vec![
+                // JsonAny -> JsonArray | JsonObject | JsonProperty
+                Gt::alias(
+                    "JsonAny",
+                    Gt::union(vec![
+                        Gt::reference_anon("JsonArray").into(),
+                        Gt::reference_anon("JsonObject").into(),
+                        Gt::reference_anon("JsonProperty").into(),
+                    ]),
+                ),
+                // JsonArray -> JsonAny
+                Gt::alias(
+                    "JsonArray",
+                    Gt::object(
+                        "JsonArray",
+                        vec![Gt::property("descriptor", Gt::reference_anon("JsonAny"))],
+                    ),
+                ),
+                // JsonObject -> JsonProperty
+                Gt::alias(
+                    "JsonObject",
+                    Gt::object(
+                        "JsonObject",
+                        vec![Gt::property(
+                            "properties",
+                            Gt::array(Gt::reference_anon("JsonProperty")),
+                        )],
+                    ),
+                ),
+                // JsonProperty -> JsonAny
+                Gt::alias(
+                    "JsonProperty",
+                    Gt::object(
+                        "JsonProperty",
+                        vec![Gt::property("descriptor", Gt::reference_anon("JsonAny"))],
+                    ),
+                ),
+            ],
+        );
+
+        let mut config = TsConfig::default();
+        config.lang.mode = TsMode::Effect;
         let converted = TsModule::convert(&module, Default::default(), &config);
 
         let positions = converted

@@ -7,10 +7,10 @@ impl<'context> GtlRender<'context, TsRenderTypes> for TsArray {
         context: &mut TsRenderContext,
     ) -> TsRenderResult<String> {
         let descriptor = self.descriptor.render(state, context)?;
-        Ok(if context.is_zod_mode() {
-            format!("z.array({descriptor})")
-        } else {
-            format!("Array<{descriptor}>")
+        Ok(match context.mode() {
+            TsMode::Effect => format!("Schema.mutable(Schema.Array({descriptor}))"),
+            TsMode::Zod => format!("z.array({descriptor})"),
+            TsMode::Types => format!("Array<{descriptor}>"),
         })
     }
 }
@@ -36,6 +36,14 @@ mod tests {
         assert_snapshot!(
             render_node_with(Tst::array(Tst::primitive_string()), &mut context),
             @"z.array(z.string())"
+        );
+    }
+
+    #[test]
+    fn test_render_effect_array() {
+        assert_snapshot!(
+            render_node_with(Tst::array(Tst::primitive_string()), &mut Tst::render_context_effect()),
+            @r#"Schema.mutable(Schema.Array(Schema.String))"#
         );
     }
 }

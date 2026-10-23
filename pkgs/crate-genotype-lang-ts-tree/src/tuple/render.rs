@@ -12,10 +12,10 @@ impl<'context> GtlRender<'context, TsRenderTypes> for TsTuple {
             .map(|d| d.render(state, context))
             .collect::<Result<Vec<_>, _>>()?
             .join(", ");
-        Ok(if context.is_zod_mode() {
-            format!("z.tuple([{}])", descriptors)
-        } else {
-            format!("[{}]", descriptors)
+        Ok(match context.mode() {
+            TsMode::Effect => format!("Schema.mutable(Schema.Tuple([{descriptors}]))"),
+            TsMode::Zod => format!("z.tuple([{descriptors}])"),
+            TsMode::Types => format!("[{descriptors}]"),
         })
     }
 }
@@ -52,6 +52,22 @@ mod tests {
                 &mut context,
             ),
             @"z.tuple([z.string(), z.number()])"
+        );
+    }
+
+    #[test]
+    fn test_render_effect_tuple() {
+        assert_snapshot!(
+            render_node_with(Tst::tuple(vec_into![Tst::primitive_string(), Tst::primitive_number()]), &mut Tst::render_context_effect()),
+            @r#"Schema.mutable(Schema.Tuple([Schema.String, Schema.Number]))"#
+        );
+    }
+
+    #[test]
+    fn test_render_effect_empty() {
+        assert_snapshot!(
+            render_node_with(Tst::tuple(vec![]), &mut Tst::render_context_effect()),
+            @r#"Schema.mutable(Schema.Tuple([]))"#
         );
     }
 }

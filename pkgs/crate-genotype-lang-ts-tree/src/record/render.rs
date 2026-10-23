@@ -8,11 +8,10 @@ impl<'context> GtlRender<'context, TsRenderTypes> for TsRecord {
     ) -> TsRenderResult<String> {
         let key = self.key.render(state, context)?;
         let descriptor = self.descriptor.render(state, context)?;
-
-        Ok(if context.is_zod_mode() {
-            format!("z.record({key}, {descriptor})")
-        } else {
-            format!("Record<{key}, {descriptor}>")
+        Ok(match context.mode() {
+            TsMode::Effect => format!("Schema.Record({key}, {descriptor})"),
+            TsMode::Zod => format!("z.record({key}, {descriptor})"),
+            TsMode::Types => format!("Record<{key}, {descriptor}>"),
         })
     }
 }
@@ -64,6 +63,34 @@ mod tests {
                 &mut context,
             ),
             @"z.record(z.enum([\"true\", \"false\"]), z.string())"
+        );
+    }
+
+    #[test]
+    fn test_render_effect() {
+        let mut context = Tst::render_context_effect();
+
+        assert_snapshot!(
+            render_node_with(
+                Tst::record(Tst::record_key_number(), Tst::primitive_string()),
+                &mut context,
+            ),
+            @"Schema.Record(Schema.Number, Schema.String)"
+        );
+        assert_snapshot!(
+            render_node_with(
+                Tst::record(Tst::record_key_boolean(), Tst::primitive_string()),
+                &mut context,
+            ),
+            @"Schema.Record(Schema.Literals([\"true\", \"false\"]), Schema.String)"
+        );
+    }
+
+    #[test]
+    fn test_render_effect_reference_key() {
+        assert_snapshot!(
+            render_node_with(Tst::record(TsRecordKey::Reference(Tst::reference("Id")), Tst::reference("Value")), &mut Tst::render_context_effect()),
+            @r#"Schema.Record(Id, Value)"#
         );
     }
 }
