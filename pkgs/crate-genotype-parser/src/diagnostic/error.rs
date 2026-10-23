@@ -6,7 +6,7 @@ pub enum GtParseError {
     #[diagnostic(transparent)]
     Descriptor(#[from] GtDescriptorError),
 
-    /// Pest syntax error.
+    /// Syntax error with a source span and miette diagnostic label.
     #[error("Syntax error")]
     #[diagnostic(code("GT001"))]
     Syntax {
@@ -15,7 +15,7 @@ pub enum GtParseError {
         message: String,
     },
 
-    /// Pest succeeded but the result didn't match the expected structure.
+    /// Parsing succeeded but the result didn't match the expected structure.
     #[error("Invalid grammar")]
     #[diagnostic(code("GT002"))]
     InvalidGrammar,
@@ -24,12 +24,12 @@ pub enum GtParseError {
     #[diagnostic(code("GT003"))]
     Internal(#[label("{2}")] GtSpan, GtNode, &'static str),
 
-    #[error("Encountered unexpected rule '{2:?}' while parsing '{1}' node: {3}")]
+    #[error("Encountered unexpected token '{2}' while converting '{1}' node: {3}")]
     #[diagnostic(code("GT004"))]
-    UnexpectedRule(
+    UnexpectedToken(
         #[label("{3}")] GtSpan,
         GtNode,
-        #[serde(serialize_with = "serialize_rule")] Rule,
+        #[serde(serialize_with = "serialize_token_kind")] GtTokenKind,
         &'static str,
     ),
 
@@ -72,20 +72,9 @@ impl GtParseError {
     }
 }
 
-impl From<pest::error::Error<Rule>> for GtParseError {
-    fn from(val: pest::error::Error<Rule>) -> Self {
-        let span = match val.location {
-            InputLocation::Pos(pos) => (pos, pos).into(),
-            InputLocation::Span((start, end)) => (start, end).into(),
-        };
-        let message = val.variant.message().to_string();
-        GtParseError::Syntax { span, message }
-    }
-}
-
-fn serialize_rule<S>(rule: &Rule, serializer: S) -> Result<S::Ok, S::Error>
+fn serialize_token_kind<S>(kind: &GtTokenKind, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: serde::Serializer,
 {
-    serializer.serialize_str(&format!("{rule:?}"))
+    serializer.serialize_str(kind.as_str())
 }

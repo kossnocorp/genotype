@@ -1,0 +1,207 @@
+use crate::prelude::internal::*;
+
+impl GtParse for GtReference {
+    fn parse(token: GtToken<'_>, context: &mut GtContext) -> Result<Self, GtParseError> {
+        let span: GtSpan = token.span;
+        let (identifier, arguments) = parse_name_with_arguments(token, context)?;
+        let (doc, attributes) = context.take_annotation_or_default();
+
+        context.resolve.references.insert(identifier.clone());
+        context.resolve_reference_identifier_as_generic_parameter(&identifier);
+
+        Ok(GtReference {
+            span,
+            doc,
+            attributes,
+            id: GtReferenceId(context.module_id.clone(), span),
+            identifier,
+            arguments,
+        })
+    }
+}
+
+pub(crate) fn parse_name_with_arguments(
+    token: GtToken<'_>,
+    context: &mut GtContext,
+) -> Result<(GtIdentifier, Vec<GtGenericArgument>), GtParseError> {
+    let span: GtSpan = token.span;
+    let mut inner = token.into_semantic_children();
+    let name = GtIdentifier::parse(inner.next().ok_or(GtParseError::UnexpectedEnd(
+        span,
+        GtNode::Reference,
+        "reference inner",
+    ))?);
+
+    let mut arguments = vec![];
+    for arguments_token in inner {
+        if arguments_token.kind == GtTokenKind::GenericArguments {
+            for argument_token in arguments_token.into_semantic_children() {
+                arguments.push(GtGenericArgument::parse(argument_token, context)?);
+            }
+        } else {
+            arguments.push(GtGenericArgument::parse(arguments_token, context)?);
+        }
+    }
+
+    Ok((name, arguments))
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::prelude::internal::*;
+    use crate::test::*;
+
+    #[test]
+    fn test_parse_references() {
+        let parse = GtModule::parse(
+            "module".into(),
+            r#"use user/User
+
+            Author: {
+              name: Name,
+              user: User
+            }
+
+            Name: string"#,
+        )
+        .unwrap();
+        assert_ron_snapshot!(
+            parse.resolve.references,
+            @r#"
+        [
+          GtIdentifier(GtSpan(57, 61), "Name"),
+          GtIdentifier(GtSpan(83, 87), "User"),
+        ]
+        "#
+        );
+    }
+
+    #[test]
+    fn test_annotation() {
+        let mut context = Gt::context();
+        context.provide_annotation((
+            Gt::some_doc("Hello, world!"),
+            vec![Gt::attribute(
+                "example",
+                Gt::attribute_assignment(Gt::literal_string("value")),
+            )],
+        ));
+        assert_ron_snapshot!(
+            parse_node!(GtReference, (to_parse_tokens(GtTokenKind::Reference, "Hello"), &mut context)),
+            @r#"
+        GtReference(
+          span: GtSpan(0, 5),
+          doc: Some(GtDoc(GtSpan(0, 0), "Hello, world!")),
+          attributes: [
+            GtAttribute(
+              span: GtSpan(0, 2),
+              name: GtAttributeName(
+                span: GtSpan(0, 0),
+                value: "example",
+              ),
+              descriptor: Some(Assignment(GtAttributeAssignment(
+                span: GtSpan(0, 0),
+                value: Literal(GtLiteral(
+                  span: GtSpan(0, 0),
+                  doc: None,
+                  attributes: [],
+                  value: String("value"),
+                )),
+              ))),
+            ),
+          ],
+          id: GtReferenceId(GtModuleId("module"), GtSpan(0, 5)),
+          identifier: GtIdentifier(GtSpan(0, 5), "Hello"),
+          arguments: [],
+        )
+        "#
+        );
+    }
+
+    #[test]
+    fn test_arguments() {
+        assert_ron_snapshot!(
+            parse_node!(GtReference, to_parse_args(GtTokenKind::Reference, "Message<string>")),
+            @r#"
+        GtReference(
+          span: GtSpan(0, 15),
+          doc: None,
+          attributes: [],
+          id: GtReferenceId(GtModuleId("module"), GtSpan(0, 15)),
+          identifier: GtIdentifier(GtSpan(0, 7), "Message"),
+          arguments: [
+            GtGenericArgument(
+              span: GtSpan(8, 14),
+              descriptor: Primitive(GtPrimitive(
+                span: GtSpan(8, 14),
+                kind: String,
+                doc: None,
+                attributes: [],
+              )),
+            ),
+          ],
+        )
+        "#
+        );
+    }
+
+    #[test]
+    fn test_multiple_arguments() {
+        let reference = parse_node!(
+            GtReference,
+            to_parse_args(GtTokenKind::Reference, "GtToken<string, number>")
+        );
+
+        assert_eq!(reference.arguments.len(), 2);
+        assert!(matches!(
+            &reference.arguments[0].descriptor,
+            GtDescriptor::Primitive(_)
+        ));
+        assert!(matches!(
+            &reference.arguments[1].descriptor,
+            GtDescriptor::Primitive(_)
+        ));
+    }
+
+    #[test]
+    fn test_union_argument() {
+        let reference = parse_node!(
+            GtReference,
+            to_parse_args(GtTokenKind::Reference, "GtToken<string | number>")
+        );
+
+        assert_eq!(reference.arguments.len(), 1);
+        assert!(matches!(
+            &reference.arguments[0].descriptor,
+            GtDescriptor::Union(_)
+        ));
+    }
+
+    #[test]
+    fn test_identified_generic_parameters() {
+        let mut context = Gt::context();
+        context.enter_generics_scope(&[Gt::generic_parameter("T")]);
+        assert_ron_snapshot!(
+            parse_node!(GtReference, (to_parse_tokens(GtTokenKind::Reference, "T"), &mut context)),
+            @r#"
+        GtReference(
+          span: GtSpan(0, 1),
+          doc: None,
+          attributes: [],
+          id: GtReferenceId(GtModuleId("module"), GtSpan(0, 1)),
+          identifier: GtIdentifier(GtSpan(0, 1), "T"),
+          arguments: [],
+        )
+        "#
+        );
+
+        assert_ron_snapshot!(
+            context.resolve.generic_parameters,
+            @r#"
+        [
+          GtIdentifier(GtSpan(0, 1), "T"),
+        ]
+        "#
+        );
+    }
+}
