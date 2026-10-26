@@ -1,6 +1,6 @@
 [package]
 name = "genotype_tree"
-version = "0.17.1"
+version = "0.18.0"
 edition = "2024"
 description = "Genotype language AST crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
@@ -8,11 +8,11 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_core = { version = "0.17.1", path = "../crate-genotype-core" }
+genotype_core = { version = "0.18.0", path = "../crate-genotype-core" }
 miette = { version = "7.6.0", features = ["serde"] }
 thiserror = "1.0.64"
 serde = { version = "1.0.228", features = ["derive", "rc"] }
-genotype_visitor_macro = { version = "0.17.1", path = "../crate-genotype-visitor-macro" }
+genotype_visitor_macro = { version = "0.18.0", path = "../crate-genotype-visitor-macro" }
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"

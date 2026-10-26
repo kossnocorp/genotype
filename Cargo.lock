@@ -1055,7 +1055,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_backend"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "delegate",
  "figment",
@@ -1082,7 +1082,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_cli"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "clap",
  "futures",
@@ -1122,7 +1122,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_compiler"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "futures",
  "genotype_backend",
@@ -1158,7 +1158,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_core"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "insta",
  "litty 0.5.0",
@@ -1169,7 +1169,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_fmt"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "genotype_parser",
  "indoc",
@@ -1181,7 +1181,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_formatters_wasm"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "console_error_panic_hook",
  "genotype_fmt",
@@ -1203,7 +1203,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_json_converter"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "genotype_json_types",
  "genotype_parser",
@@ -1228,7 +1228,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_core_project"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "genotype_core",
  "genotype_lang_core_tree",
@@ -1254,7 +1254,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_core_tree"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "genotype_tree",
  "indexmap",
@@ -1267,7 +1267,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_py_config"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "genotype_core",
  "genotype_project_core",
@@ -1279,7 +1279,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_py_project"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "futures",
  "genotype_backend",
@@ -1307,7 +1307,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_py_tree"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "genotype_lang_core_tree",
  "genotype_lang_py_config",
@@ -1325,7 +1325,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_rs_config"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "genotype_core",
  "genotype_project_core",
@@ -1341,7 +1341,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_rs_project"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "futures",
  "genotype_backend",
@@ -1369,7 +1369,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_rs_tree"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "genotype_core",
  "genotype_lang_core_tree",
@@ -1389,7 +1389,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_ts_config"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "genotype_core",
  "genotype_project_core",
@@ -1402,7 +1402,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_ts_project"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "futures",
  "genotype_backend",
@@ -1429,7 +1429,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lang_ts_tree"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "genotype_lang_core_tree",
  "genotype_lang_ts_config",
@@ -1447,7 +1447,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_lsp"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "async-lsp",
  "futures",
@@ -1462,7 +1462,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_parser"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "genotype_core",
  "genotype_tree",
@@ -1478,7 +1478,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_project"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "figment",
  "genotype_core",
@@ -1506,7 +1506,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_project_core"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "genotype_core",
  "genotype_test",
@@ -1536,7 +1536,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_test"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "genotype_tree",
  "insta",
@@ -1547,7 +1547,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_tree"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "genotype_core",
  "genotype_visitor_macro",
@@ -1561,7 +1561,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_visitor_macro"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "heck",
  "proc-macro2",
@@ -1572,7 +1572,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_wasm"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "console_error_panic_hook",
  "futures",
@@ -1589,7 +1589,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_watcher"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "insta",
  "pretty_assertions",
@@ -1597,7 +1597,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_workspace"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "genotype_parser",
  "genotype_project",
@@ -1613,7 +1613,7 @@ dependencies = [
 
 [[package]]
 name = "genotype_workspace_core"
-version = "0.17.1"
+version = "0.18.0"
 dependencies = [
  "insta",
  "pretty_assertions",

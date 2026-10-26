@@ -1,6 +1,6 @@
 [package]
 name = "genotype_parser"
-version = "0.17.1"
+version = "0.18.0"
 edition = "2024"
 description = "Genotype language parser crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
@@ -10,14 +10,14 @@ repository = "https://github.com/kossnocorp/genotype"
 [dependencies]
 heck = "0.5.0"
 indexmap = { version = "2.11.0", features = ["serde"] }
-genotype_tree = { version = "0.17.1", path = "../crate-genotype-tree" }
-genotype_core = { version = "0.17.1", path = "../crate-genotype-core" }
+genotype_tree = { version = "0.18.0", path = "../crate-genotype-tree" }
+genotype_core = { version = "0.18.0", path = "../crate-genotype-core" }
 miette = { version = "7.6.0", features = ["serde"] }
 thiserror = "1.0.64"
 serde = { version = "1.0.228", features = ["derive", "rc"] }
 
 [dev-dependencies]
-genotype_tree = { version = "0.17.1", path = "../crate-genotype-tree", features = ["test"] }
+genotype_tree = { version = "0.18.0", path = "../crate-genotype-tree", features = ["test"] }
 pretty_assertions = "1.4.1"
 insta = { version = "1.46.3", features = ["ron"] }
 indoc = "2.0.7"
