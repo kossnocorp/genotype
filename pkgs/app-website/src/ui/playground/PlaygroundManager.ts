@@ -207,6 +207,39 @@ export class PlaygroundManager {
 
   //#region Code
 
+  async format(): Promise<void> {
+    const revision = this.#revision;
+    const editor = await this.#sourceEditorWc.managerPromise;
+    const state = editor.state;
+    if (
+      revision !== this.#revision ||
+      !state?.filePath.endsWith(".type") ||
+      state.code == null ||
+      state.filePath !== this.#state.filePath
+    )
+      return;
+
+    try {
+      const formatted = await GtwmClient.formatGenotype(state.code);
+      if (revision !== this.#revision || state.filePath !== this.#state.filePath) return;
+      // Monaco emits the usual edit event, updating the filesystem and compiling.
+      // Applying an edit also keeps formatting undoable and rejects stale results.
+      editor.applyFormat(state.filePath, state.code, formatted);
+    } catch (error) {
+      if (
+        revision !== this.#revision ||
+        state.filePath !== this.#state.filePath ||
+        editor.state?.filePath !== state.filePath ||
+        editor.state.code !== state.code
+      )
+        return;
+      await this.#onDiagnostic({
+        kind: "error",
+        content: { title: `Failed to format '${state.filePath}'`, body: String(error) },
+      });
+    }
+  }
+
   async #onFsCodeChange(filePath: string, code: string | null): Promise<void> {
     const state: EditorManager.State = { filePath, code };
 

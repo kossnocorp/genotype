@@ -269,6 +269,9 @@ importers:
         specifier: ^9.0.1
         version: 9.0.1
     devDependencies:
+      '@genotype-lang/formatters-wasm':
+        specifier: workspace:*
+        version: link:../npm-genotype-formatters-wasm
       '@genotype-lang/grammar-tm':
         specifier: workspace:*
         version: link:../npm-genotype-grammar-tm

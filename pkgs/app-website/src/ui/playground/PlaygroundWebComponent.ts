@@ -32,6 +32,8 @@ export class PlaygroundWebComponent extends Wc {
   //#region Initialization
 
   #manager: PlaygroundManager | undefined;
+  #formatting = false;
+  #canFormat = false;
 
   async #onConnect() {
     const initialState = this.#getInitialState();
@@ -55,6 +57,7 @@ export class PlaygroundWebComponent extends Wc {
     this.#connectFileTabChangeListener();
     this.#connectLangChangeListener();
     this.#connectExampleChangeListener();
+    this.#connectFormatListener();
   }
 
   #getInitialState(): PlaygroundManager.InitialState {
@@ -112,7 +115,30 @@ export class PlaygroundWebComponent extends Wc {
   //#region Files
 
   updateFileTabs(props: PlaygroundWebComponent.UpdateFileTabsProps): void {
+    this.#canFormat = props.sourceFilePath?.endsWith(".type") ?? false;
+    this.#updateFormatButton();
     this.#renderFileTabs(props);
+  }
+
+  #updateFormatButton(): void {
+    const button = this.locate("[data-format]", HTMLButtonElement);
+    button.disabled = this.#formatting || !this.#canFormat;
+    button.textContent = this.#formatting ? "Formatting…" : "Format";
+    button.setAttribute("aria-busy", String(this.#formatting));
+  }
+
+  #connectFormatListener(): void {
+    this.locate("[data-format]", HTMLButtonElement).addEventListener("click", async () => {
+      if (this.#formatting) return;
+      this.#formatting = true;
+      this.#updateFormatButton();
+      try {
+        await this.#manager?.format();
+      } finally {
+        this.#formatting = false;
+        this.#updateFormatButton();
+      }
+    });
   }
 
   #renderFileTabs(props: PlaygroundWebComponent.UpdateFileTabsProps): void {

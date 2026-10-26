@@ -33,6 +33,20 @@ export namespace GtwmClient {
 }
 
 export class GtwmClient {
+  /** Format Genotype source without loading or compiling a project. */
+  static async formatGenotype(content: string): Promise<string> {
+    const worker = new Worker(new URL("./formatters/FormattersWorker.ts", import.meta.url), {
+      type: "module",
+    });
+    try {
+      const peer = GtwmFormattersRpc.rpc.peer("client", new RpcWorkerClientTransport(worker), {});
+      const response = await peer.call("format", { kind: "genotype", content });
+      return response.content;
+    } finally {
+      worker.terminate();
+    }
+  }
+
   #fs: GtwmFs;
   #onDiagnostic: GtwmClient.OnDiagnostic | undefined;
   #compilerWorker: Worker | undefined;

@@ -87,6 +87,24 @@ export class EditorManager {
 
   //#region State
 
+  get state(): EditorManager.State {
+    return this.#state ? { ...this.#state } : null;
+  }
+
+  applyFormat(filePath: string, original: string, formatted: string): boolean {
+    if (this.#state?.filePath !== filePath || this.#model.getValue() !== original) return false;
+    if (original === formatted) return true;
+    this.#editor.pushUndoStop();
+    this.#editor.executeEdits("genotype.format", [
+      {
+        range: this.#model.getFullModelRange(),
+        text: formatted,
+      },
+    ]);
+    this.#editor.pushUndoStop();
+    return true;
+  }
+
   trySetState(state: EditorManager.State & {}): void {
     if (state.filePath !== this.#state?.filePath) return;
     this.setState(state);

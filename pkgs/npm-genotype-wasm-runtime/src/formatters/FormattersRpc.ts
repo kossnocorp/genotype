@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export abstract class GtwmFormattersRpc {
   static FormatRequest = z.object({
-    kind: z.enum(["oxfmt", "prettyplease", "ruff"]),
+    kind: z.enum(["genotype", "oxfmt", "prettyplease", "ruff"]),
     content: z.string(),
   });
 
