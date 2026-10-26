@@ -15,8 +15,7 @@ pub(crate) mod internal {
     pub use miette::{Diagnostic, IntoDiagnostic, Result, WrapErr};
     pub use semver::Version;
     pub use std::fmt::{Display, Formatter};
-
     pub use std::fs::create_dir_all;
-
+    pub use std::path::Path;
     pub use thiserror::Error;
 }

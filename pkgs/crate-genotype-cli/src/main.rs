@@ -23,6 +23,9 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
+    /// Formats .type files in the current directory and its subdirectories
+    Fmt(GtFmtCommand),
+
     /// Builds a Genotype project
     Build(GtBuildCommand),
 
@@ -58,6 +61,11 @@ fn main() -> miette::Result<ExitCode> {
     }))?;
 
     match &cli.command {
+        Some(Commands::Fmt(args)) => {
+            GtFmtCommand::run(args)?;
+            Ok(ExitCode::SUCCESS)
+        }
+
         Some(Commands::Build(args)) => {
             GtBuildCommand::run(args)?;
             Ok(ExitCode::SUCCESS)

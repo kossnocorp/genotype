@@ -17,6 +17,8 @@ pkg-fmt = "bin"
 
 [dependencies]
 genotype_backend = { version = "0.17.1", path = "../crate-genotype-backend" }
+genotype_fmt = { version = "0.17.1", path = "../crate-genotype-fmt" }
+ignore = "0.4.25"
 genotype_project_core = { version = "0.17.1", path = "../crate-genotype-project-core" }
 genotype_project = { version = "0.17.1", path = "../crate-genotype-project" }
 genotype_workspace = { version = "0.17.1", path = "../crate-genotype-workspace" }
