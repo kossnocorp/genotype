@@ -11,8 +11,13 @@ impl<'context> GtlRender<'context, TsRenderTypes> for TsProperty {
         let str = match context.mode() {
             TsMode::Effect => {
                 let mut descriptor = self.descriptor.render(state, context)?;
-                let refs = self.descriptor.scan_references();
-                if refs.has_forward || refs.has_self_recursive {
+                if !state.is_deferred()
+                    && context
+                        .resolution
+                        .effect
+                        .suspended_descriptors
+                        .contains(&self.descriptor)
+                {
                     let type_code = context.with_mode(TsMode::Types, |context| {
                         self.descriptor.render(state, context)
                     })?;
@@ -291,6 +296,18 @@ mod tests {
     }
 
     #[test]
+    fn test_render_effect_converted_optional_includes_undefined() {
+        let property: TsProperty = convert_node_with(
+            Gt::property_optional("name", Gt::primitive_string()),
+            &mut Tst::convert_context_effect(),
+        );
+        assert_snapshot!(
+            render_node_with(property, &mut Tst::render_context_effect()),
+            @r#"name: Schema.optionalKey(Schema.Union([Schema.String, Schema.Undefined]))"#
+        );
+    }
+
+    #[test]
     fn test_render_effect_self_recursive() {
         assert_snapshot!(
             render_node_with(Tst::property("next", Tst::reference_self_recursive("Node")), &mut Tst::render_context_effect()),
@@ -303,6 +320,32 @@ mod tests {
         assert_snapshot!(
             render_node_with(Tst::property("children", Tst::array(Tst::reference_forward("Node"))), &mut Tst::render_context_effect()),
             @r#"children: Schema.suspend((): Schema.Codec<Array<Node>> => Schema.mutable(Schema.Array(Node)))"#
+        );
+    }
+    #[test]
+    fn test_render_effect_property_uses_separate_resolution() {
+        let forward = Tst::property("next", Tst::reference_forward("Node"));
+        let regular = Tst::property("next", Tst::reference("Node"));
+        let mut resolver = TsEffectResolver::new(IndexSet::new());
+        forward.traverse(&mut resolver);
+        regular.traverse(&mut resolver);
+        let mut context = Tst::render_context_effect();
+        context.resolution = Arc::new(TsModuleResolution {
+            effect: resolver.resolution,
+        });
+        assert_eq!(
+            forward.render(Default::default(), &mut context).unwrap(),
+            "next: Schema.suspend((): Schema.Codec<Node> => Node)"
+        );
+        assert_eq!(
+            regular.render(Default::default(), &mut context).unwrap(),
+            "next: Node"
+        );
+        assert_eq!(
+            forward
+                .render(TsRenderState::default().within_suspend(), &mut context)
+                .unwrap(),
+            "next: Node"
         );
     }
 }

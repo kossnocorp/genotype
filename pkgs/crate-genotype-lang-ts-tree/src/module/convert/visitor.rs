@@ -4,6 +4,7 @@ pub struct TsModuleConvertVisitor {
     definitions: IndexSet<TsIdentifier>,
     scope: IndexSet<TsIdentifier>,
     current_definition: Option<TsIdentifier>,
+    generics: IndexSet<TsIdentifier>,
 }
 
 impl TsModuleConvertVisitor {
@@ -18,6 +19,7 @@ impl TsModuleConvertVisitor {
             definitions,
             scope: Default::default(),
             current_definition: None,
+            generics: IndexSet::new(),
         }
     }
 }
@@ -26,13 +28,21 @@ impl TsVisitor for TsModuleConvertVisitor {}
 
 impl TsVisitorMut for TsModuleConvertVisitor {
     fn visit_definition_mut(&mut self, definition: &mut TsDefinition) {
+        self.generics = definition
+            .generics()
+            .into_iter()
+            .flatten()
+            .cloned()
+            .collect();
         let name = definition.name();
         self.scope.insert(name.clone());
         self.current_definition = Some(name);
     }
 
     fn visit_reference_mut(&mut self, reference: &mut TsReference) {
-        if !self.definitions.contains(&reference.identifier) {
+        if self.generics.contains(&reference.identifier)
+            || !self.definitions.contains(&reference.identifier)
+        {
             return;
         }
 
@@ -219,5 +229,27 @@ mod tests {
           ],
         )
         "#);
+    }
+
+    #[test]
+    fn test_generic_parameters_shadow_module_definitions() {
+        let mut module = Tst::module(
+            vec![],
+            vec_into![
+                Tst::alias_with_generics("T", vec!["T"], Tst::reference("T")),
+                Tst::alias_with_generics("Container", vec!["Later"], Tst::reference("Later")),
+                Tst::alias("Later", Tst::primitive_string()),
+            ],
+        );
+        let mut visitor = TsModuleConvertVisitor::new(&module);
+        module.traverse_mut(&mut visitor);
+        for definition in module.definitions.iter().take(2) {
+            let TsDefinition::Alias(alias) = definition else {
+                panic!("alias");
+            };
+            let refs = alias.descriptor.scan_references();
+            assert!(!refs.has_self_recursive);
+            assert!(!refs.has_forward);
+        }
     }
 }

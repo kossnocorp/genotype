@@ -14,16 +14,28 @@ pub fn convert_node_with<GtNode: TsConvert<Node>, Node>(
     gt_node.convert(context)
 }
 
-pub fn render_node_with<'a, TsNode>(node: TsNode, context: &mut TsRenderContext<'a>) -> String
+pub(crate) fn render_node_with<'a, TsNode>(
+    node: TsNode,
+    context: &mut TsRenderContext<'a>,
+) -> String
 where
-    TsNode: GtlRender<'a, TsRenderTypes>,
+    TsNode: GtlRender<'a, TsRenderTypes> + Traverse<TsEffectResolver>,
 {
-    node.render(Default::default(), context).unwrap()
+    let mut prepared_context = context.clone();
+    if context.mode() == TsMode::Effect {
+        let mut resolver = TsEffectResolver::new(IndexSet::new());
+        node.traverse(&mut resolver);
+        prepared_context.resolution = Arc::new(TsModuleResolution {
+            effect: resolver.resolution,
+        });
+    }
+    node.render(Default::default(), &mut prepared_context)
+        .unwrap()
 }
 
-pub fn render_node<TsNode>(node: TsNode) -> String
+pub(crate) fn render_node<TsNode>(node: TsNode) -> String
 where
-    TsNode: GtlRender<'static, TsRenderTypes>,
+    TsNode: GtlRender<'static, TsRenderTypes> + Traverse<TsEffectResolver>,
 {
     let mut context = Tst::render_context();
     render_node_with(node, &mut context)

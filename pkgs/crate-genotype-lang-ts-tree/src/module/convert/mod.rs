@@ -11,6 +11,14 @@ impl TsModule {
         convert_resolve: TsConvertResolve,
         config: &TsConfig,
     ) -> Self {
+        Self::convert_with_resolution(module, convert_resolve, config).0
+    }
+
+    pub fn convert_with_resolution(
+        module: &GtModule,
+        convert_resolve: TsConvertResolve,
+        config: &TsConfig,
+    ) -> (Self, TsModuleResolution) {
         let mut context = TsConvertContext::new(convert_resolve, config);
 
         for import in &module.imports {
@@ -27,9 +35,9 @@ impl TsModule {
             definitions.extend(context.drain_hoisted());
         }
 
-        let definitions = match config.lang.mode {
-            TsMode::Zod | TsMode::Effect => Self::sort_definitions(definitions),
-            _ => definitions,
+        let (definitions, recursive_names) = match config.lang.mode {
+            TsMode::Zod | TsMode::Effect => Self::resolve_definition_order(definitions),
+            _ => (definitions, IndexSet::new()),
         };
 
         let doc = module.doc.as_ref().map(|doc| {
@@ -49,7 +57,16 @@ impl TsModule {
         let mut visitor = TsModuleConvertVisitor::new(&module);
         module.traverse_mut(&mut visitor);
 
-        module
+        let mut resolution = TsModuleResolution::default();
+        if config.lang.mode == TsMode::Effect {
+            let mut resolver = TsEffectResolver::new(recursive_names);
+            for definition in &module.definitions {
+                definition.traverse(&mut resolver);
+            }
+            resolution.effect = resolver.resolution;
+        }
+
+        (module, resolution)
     }
 }
 
@@ -809,7 +826,19 @@ mod tests {
 
         let mut config = TsConfig::default();
         config.lang.mode = TsMode::Effect;
-        let converted = TsModule::convert(&module, Default::default(), &config);
+        let (converted, resolution) =
+            TsModule::convert_with_resolution(&module, Default::default(), &config);
+        assert_eq!(
+            resolution
+                .effect
+                .interfaces
+                .keys()
+                .cloned()
+                .collect::<IndexSet<_>>(),
+            IndexSet::from([Tst::identifier("Foo"), Tst::identifier("Bar")])
+        );
+        assert!(resolution.effect.aliases.is_empty());
+        assert_eq!(resolution.effect.suspended_descriptors.len(), 1);
 
         let positions = converted
             .definitions

@@ -9,6 +9,6 @@
     "tsx": "^4.21.0",
     "typescript": "^6.0.2",
     "genotype-test-map-key-alias-effect-types": "file:./dist/ts-effect/ts/",
-    "effect": "^4.0.0-rc.112"
+    "effect": "^4.0.6"
   }
 }

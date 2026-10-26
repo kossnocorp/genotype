@@ -14,6 +14,7 @@ pub use types::*;
 pub struct TsRenderContext<'a> {
     pub config: &'a TsConfigLang,
     pub mode_override: Option<TsMode>,
+    pub resolution: Arc<TsModuleResolution>,
 }
 
 impl GtlRenderContext for TsRenderContext<'_> {}
@@ -23,6 +24,7 @@ impl TsRenderContext<'_> {
         TsRenderContext {
             config,
             mode_override: None,
+            resolution: Arc::new(TsModuleResolution::default()),
         }
     }
 
@@ -55,6 +57,7 @@ impl Default for TsRenderContext<'_> {
         Self {
             config: &TS_DEFAULT_CONFIG,
             mode_override: None,
+            resolution: Arc::new(TsModuleResolution::default()),
         }
     }
 }
@@ -62,12 +65,27 @@ impl Default for TsRenderContext<'_> {
 #[derive(Clone, Copy, PartialEq, Debug, Default)]
 pub struct TsRenderState {
     indent: usize,
+    deferred: bool,
+}
+
+impl TsRenderState {
+    pub(crate) fn within_suspend(self) -> Self {
+        Self {
+            deferred: true,
+            ..self
+        }
+    }
+
+    pub(crate) fn is_deferred(self) -> bool {
+        self.deferred
+    }
 }
 
 impl GtlRenderState for TsRenderState {
     fn indent_inc(&self) -> Self {
         Self {
             indent: self.indent + 1,
+            ..*self
         }
     }
 
@@ -153,5 +171,26 @@ mod tests {
             })
             .unwrap();
         assert_eq!(context.mode(), TsMode::Effect);
+    }
+    #[test]
+    fn test_deferred_scope_survives_indentation_without_changing_parent() {
+        let state = TsRenderState::default();
+        let nested = state.within_suspend().indent_inc();
+        assert!(!state.is_deferred());
+        assert!(nested.is_deferred());
+        assert_eq!(nested.indent_level(), 1);
+    }
+
+    #[test]
+    fn test_mode_override_preserves_shared_resolution() {
+        let mut context = Tst::render_context_effect();
+        let resolution = Arc::clone(&context.resolution);
+        context
+            .with_mode(TsMode::Types, |context| {
+                assert!(Arc::ptr_eq(&context.resolution, &resolution));
+                Ok(())
+            })
+            .unwrap();
+        assert!(Arc::ptr_eq(&context.resolution, &resolution));
     }
 }

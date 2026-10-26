@@ -25,7 +25,7 @@ enabled = true
 
 - `"types"` (default): TypeScript type definitions.
 - `"zod"`: [Zod](https://www.npmjs.com/package/zod) schemas and inferred types for runtime validation. Adds Zod to the generated package's dependencies.
-- `"effect"`: [Effect Schema v4](https://effect.website/docs/v4/schema/introduction) schemas and inferred types for runtime validation. Adds `effect` (`^4.0.0-rc.112`) to the generated package's dependencies. Uses the v4 API, currently a release candidate.
+- `"effect"`: [Effect Schema](https://effect.website/docs/v4/schema/introduction) schemas and inferred types for runtime validation. Adds Effect v4 to the generated package's dependencies.
 
 ```toml
 [ts]

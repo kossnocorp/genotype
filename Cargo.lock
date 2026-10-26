@@ -1440,6 +1440,7 @@ dependencies = [
  "indexmap",
  "insta",
  "miette",
+ "petgraph",
  "pretty_assertions",
  "serde",
  "thiserror 1.0.64",

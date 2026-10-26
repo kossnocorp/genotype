@@ -170,8 +170,7 @@ impl TsAlias {
             return self.render_effect_generic(name, generic_names, state, context);
         }
 
-        let refs_scan = self.descriptor.scan_references();
-        match refs_scan.has_self_recursive || refs_scan.has_forward {
+        match context.resolution.effect.aliases.contains_key(&self.name) {
             true => self.render_effect_recursive(name, state, context),
 
             false => {
@@ -236,6 +235,30 @@ impl TsAlias {
         state: TsRenderState,
         context: &mut TsRenderContext<'a>,
     ) -> TsRenderResult<String> {
+        let resolution = Arc::clone(&context.resolution);
+        if let Some(generic) = resolution
+            .effect
+            .aliases
+            .get(&self.name)
+            .and_then(|effect| effect.generic.as_ref())
+        {
+            let types =
+                generic.render_types(name, generic_names, &[], &self.doc, state, context)?;
+            let codec = generic.codec.render(generic_names, state, context)?;
+            let descriptor = generic.deferred.render(state.within_suspend(), context)?;
+            let generic_params = Self::render_effect_generic_params(generic_names);
+            let params = Self::render_effect_value_params(generic_names);
+            let schema = TsDoc::with_doc(
+                &self.doc,
+                state,
+                context,
+                format!(
+                    "export const {name} = {generic_params}({params}): {codec} => Schema.suspend(() => {descriptor});"
+                ),
+                false,
+            )?;
+            return Ok(format!("{types}\n\n{schema}"));
+        }
         let effect_generic_params = Self::render_effect_generic_params(generic_names);
         let params = Self::render_effect_value_params(generic_names);
         let effect_descriptor = self.descriptor.render(state, context)?;
@@ -492,5 +515,47 @@ mod tests {
         export const Tree: Schema.Codec<Tree> = Schema.suspend(() => Schema.Union([Schema.Null, Schema.mutable(Schema.Tuple([Schema.String, Tree]))]));
         "#
         );
+    }
+
+    #[test]
+    fn test_render_effect_recursive_generic_tuple() {
+        let reference = TsReference::new(
+            "Tree".into(),
+            vec![Tst::reference("T").into()],
+            TsReferenceRel::SelfRecursive,
+        );
+        assert_snapshot!(render_node_with(
+            Tst::alias_with_generics("Tree", vec!["T"], Tst::union(vec_into![
+                Tst::literal_null(), Tst::tuple(vec_into![Tst::reference("T"), reference])
+            ])), &mut Tst::render_context_effect()), @r#"
+        export namespace Tree {
+          export type Type<T> = null | [T, Tree.Type<T>];
+        }
+
+        export type Tree<T extends Schema.Top> = Tree.Type<T["Type"]>;
+
+        export const Tree = <T extends Schema.Top>(T: T): Schema.Codec<null | [T["Type"], Tree.Type<T["Type"]>], null | [T["Encoded"], Tree.Type<T["Encoded"]>], T["DecodingServices"], T["EncodingServices"]> => Schema.suspend(() => Schema.Union([Schema.Null, Schema.mutable(Schema.Tuple([T, Tree(T)]))]));
+        "#);
+    }
+
+    #[test]
+    fn test_render_effect_recursive_generic_multiple_parameters() {
+        let reference = TsReference::new(
+            "Tree".into(),
+            vec_into![Tst::reference("K"), Tst::reference("V")],
+            TsReferenceRel::SelfRecursive,
+        );
+        assert_snapshot!(render_node_with(
+            Tst::alias_with_generics("Tree", vec!["K", "V"], Tst::union(vec_into![
+                Tst::literal_null(), Tst::tuple(vec_into![Tst::reference("K"), Tst::reference("V"), reference])
+            ])), &mut Tst::render_context_effect()), @r#"
+        export namespace Tree {
+          export type Type<K, V> = null | [K, V, Tree.Type<K, V>];
+        }
+
+        export type Tree<K extends Schema.Top, V extends Schema.Top> = Tree.Type<K["Type"], V["Type"]>;
+
+        export const Tree = <K extends Schema.Top, V extends Schema.Top>(K: K, V: V): Schema.Codec<null | [K["Type"], V["Type"], Tree.Type<K["Type"], V["Type"]>], null | [K["Encoded"], V["Encoded"], Tree.Type<K["Encoded"], V["Encoded"]>], K["DecodingServices"] | V["DecodingServices"], K["EncodingServices"] | V["EncodingServices"]> => Schema.suspend(() => Schema.Union([Schema.Null, Schema.mutable(Schema.Tuple([K, V, Tree(K, V)]))]));
+        "#);
     }
 }

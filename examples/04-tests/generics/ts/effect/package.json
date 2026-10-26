@@ -7,6 +7,6 @@
     "genotype-test-generics-effect-types": "file:./../../dist/ts-effect/ts/",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2",
-    "effect": "^4.0.0-rc.112"
+    "effect": "^4.0.6"
   }
 }

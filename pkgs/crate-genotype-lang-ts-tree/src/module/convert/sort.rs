@@ -1,7 +1,14 @@
 use crate::prelude::internal::*;
+use petgraph::{algo::tarjan_scc, graph::DiGraph};
 
 impl TsModule {
     pub fn sort_definitions(definitions: Vec<TsDefinition>) -> Vec<TsDefinition> {
+        Self::resolve_definition_order(definitions).0
+    }
+
+    pub(crate) fn resolve_definition_order(
+        definitions: Vec<TsDefinition>,
+    ) -> (Vec<TsDefinition>, IndexSet<TsIdentifier>) {
         let def_names: IndexSet<_> = definitions.iter().map(|def| def.name()).collect();
         let defs_order = definitions
             .iter()
@@ -18,11 +25,24 @@ impl TsModule {
             let name = def.name();
             let deps_scan = def.scan_dependencies();
             let mut local_deps = deps_scan.dependencies;
-            local_deps.retain(|dependency| def_names.contains(dependency));
+            local_deps.retain(|dependency| {
+                def_names.contains(dependency)
+                    && !def
+                        .generics()
+                        .is_some_and(|generics| generics.contains(dependency))
+            });
             def_deps_by_name.insert(name, local_deps);
         }
 
-        let comps = Self::strongly_connected_components(&def_deps_by_name, &defs_order);
+        let comps = Self::strongly_connected_components(&def_deps_by_name);
+        let recursive = comps
+            .iter()
+            .filter(|component| {
+                component.len() > 1 || def_deps_by_name[&component[0]].contains(&component[0])
+            })
+            .flatten()
+            .cloned()
+            .collect();
 
         let mut comp_idx = IndexMap::new();
         for (index, comp) in comps.iter().enumerate() {
@@ -107,7 +127,7 @@ impl TsModule {
             }
         }
 
-        sorted_defs
+        (sorted_defs, recursive)
     }
 
     fn sort_component_definitions(
@@ -148,101 +168,118 @@ impl TsModule {
             })
         });
 
-        sorted_idents
-            .into_iter()
-            .map(|ident| defs_by_name.get(&ident).unwrap().clone())
-            .collect()
+        // Properties can be suspended, but spreading an extension's fields is
+        // eager. Respect those edges even inside a recursive component.
+        let mut sorted = Vec::new();
+        while !sorted_idents.is_empty() {
+            let next = sorted_idents.iter().position(|name| {
+                let TsDefinition::Interface(interface) = &defs_by_name[name] else {
+                    return true;
+                };
+                interface
+                    .extensions
+                    .iter()
+                    .all(|extension| !sorted_idents.contains(&extension.reference.identifier))
+            });
+            // A cycle consisting entirely of extensions has no valid ordering.
+            // Preserve the existing deterministic order for that case.
+            let name = sorted_idents.remove(next.unwrap_or(0));
+            sorted.push(defs_by_name[&name].clone());
+        }
+        sorted
     }
 
     fn strongly_connected_components(
-        deps_by_name: &IndexMap<TsIdentifier, IndexSet<TsIdentifier>>,
-        order: &IndexMap<TsIdentifier, usize>,
+        dependencies: &IndexMap<TsIdentifier, IndexSet<TsIdentifier>>,
     ) -> Vec<Vec<TsIdentifier>> {
-        let mut idx = 0usize;
-        let mut stack: Vec<TsIdentifier> = vec![];
-        let mut on_stack: IndexSet<TsIdentifier> = IndexSet::new();
-        let mut idxs: IndexMap<TsIdentifier, usize> = IndexMap::new();
-        let mut low_links: IndexMap<TsIdentifier, usize> = IndexMap::new();
-        let mut comps: Vec<Vec<TsIdentifier>> = vec![];
-
-        // TODO: Get rid of this mess here!
-        #[allow(clippy::too_many_arguments)]
-        fn visit(
-            node: TsIdentifier,
-            idx: &mut usize,
-            stack: &mut Vec<TsIdentifier>,
-            on_stack: &mut IndexSet<TsIdentifier>,
-            idxs: &mut IndexMap<TsIdentifier, usize>,
-            low_links: &mut IndexMap<TsIdentifier, usize>,
-            deps_by_name: &IndexMap<TsIdentifier, IndexSet<TsIdentifier>>,
-            comps: &mut Vec<Vec<TsIdentifier>>,
-        ) {
-            idxs.insert(node.clone(), *idx);
-            low_links.insert(node.clone(), *idx);
-            *idx += 1;
-
-            stack.push(node.clone());
-            on_stack.insert(node.clone());
-
-            for dep in deps_by_name.get(&node).into_iter().flatten() {
-                if !idxs.contains_key(dep) {
-                    visit(
-                        dep.clone(),
-                        idx,
-                        stack,
-                        on_stack,
-                        idxs,
-                        low_links,
-                        deps_by_name,
-                        comps,
-                    );
-
-                    let node_low = *low_links.get(&node).unwrap();
-                    let dep_low = *low_links.get(dep).unwrap();
-                    low_links.insert(node.clone(), node_low.min(dep_low));
-                } else if on_stack.contains(dep) {
-                    let node_low = *low_links.get(&node).unwrap();
-                    let dep_idx = *idxs.get(dep).unwrap();
-                    low_links.insert(node.clone(), node_low.min(dep_idx));
-                }
-            }
-
-            if idxs.get(&node) == low_links.get(&node) {
-                let mut comp = vec![];
-
-                while let Some(component_node) = stack.pop() {
-                    on_stack.shift_remove(&component_node);
-                    comp.push(component_node.clone());
-
-                    if component_node == node {
-                        break;
-                    }
-                }
-
-                comps.push(comp);
+        let mut graph = DiGraph::<TsIdentifier, ()>::new();
+        let nodes = dependencies
+            .keys()
+            .map(|name| (name.clone(), graph.add_node(name.clone())))
+            .collect::<IndexMap<_, _>>();
+        for (name, references) in dependencies {
+            for reference in references {
+                graph.add_edge(nodes[name], nodes[reference], ());
             }
         }
+        tarjan_scc(&graph)
+            .into_iter()
+            .map(|component| {
+                component
+                    .into_iter()
+                    .map(|node| graph[node].clone())
+                    .collect()
+            })
+            .collect()
+    }
+}
 
-        let mut names = deps_by_name.keys().cloned().collect::<Vec<_>>();
-        names.sort_by_key(|name| *order.get(name).unwrap_or(&usize::MAX));
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-        for name in names {
-            if idxs.contains_key(&name) {
-                continue;
-            }
+    #[test]
+    fn test_resolve_order_and_cycle_membership() {
+        let (definitions, recursive) = TsModule::resolve_definition_order(vec_into![
+            Tst::alias("Dependent", Tst::reference("A")),
+            TsInterface {
+                extensions: vec![Tst::extension("B")],
+                ..Tst::interface("A", vec![])
+            },
+            Tst::interface("B", vec![Tst::property("a", Tst::reference("A"))]),
+            Tst::alias("Self", Tst::array(Tst::reference("Self"))),
+            Tst::alias("Independent", Tst::primitive_string()),
+        ]);
+        assert_eq!(
+            recursive,
+            IndexSet::from([
+                Tst::identifier("A"),
+                Tst::identifier("B"),
+                Tst::identifier("Self")
+            ])
+        );
+        assert_eq!(
+            definitions
+                .iter()
+                .map(|definition| definition.name())
+                .collect::<Vec<_>>(),
+            vec![
+                Tst::identifier("B"),
+                Tst::identifier("A"),
+                Tst::identifier("Dependent"),
+                Tst::identifier("Self"),
+                Tst::identifier("Independent")
+            ]
+        );
+    }
 
-            visit(
-                name,
-                &mut idx,
-                &mut stack,
-                &mut on_stack,
-                &mut idxs,
-                &mut low_links,
-                deps_by_name,
-                &mut comps,
-            );
-        }
+    #[test]
+    fn test_resolve_order_ignores_imports_and_shadowed_generics() {
+        let (definitions, recursive) = TsModule::resolve_definition_order(vec_into![
+            Tst::alias_with_generics("Generic", vec!["Generic"], Tst::reference("Generic")),
+            Tst::alias("Imported", Tst::reference("External")),
+            Tst::alias("User", Tst::reference("Base")),
+            Tst::alias("Base", Tst::primitive_string()),
+        ]);
+        assert!(recursive.is_empty());
+        assert_eq!(
+            definitions
+                .iter()
+                .map(|definition| definition.name())
+                .collect::<Vec<_>>(),
+            vec![
+                Tst::identifier("Generic"),
+                Tst::identifier("Imported"),
+                Tst::identifier("Base"),
+                Tst::identifier("User")
+            ]
+        );
+    }
 
-        comps
+    #[test]
+    fn test_resolve_empty_module() {
+        let (definitions, recursive) = TsModule::resolve_definition_order(vec![]);
+        assert!(definitions.is_empty());
+        assert!(recursive.is_empty());
     }
 }

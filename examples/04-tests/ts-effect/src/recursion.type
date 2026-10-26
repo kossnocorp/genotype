@@ -1,0 +1,33 @@
+RecursiveTuple<T>: null | (T, RecursiveTuple<T>)
+
+RecursiveObject<T>: {
+  value: T,
+  next?: RecursiveObject<T>
+}
+
+ExtendedRecursiveObject<T>: { ...RecursiveObject<T>, label: string }
+
+CycleA: { ...CycleB }
+CycleB: { a: CycleA }
+
+MutualA: { b?: MutualB }
+MutualB: { a?: MutualA }
+ExtendedA: { ...MutualA, label: string }
+ExtendedB: { ...MutualB, label: string }
+
+OptionalName: { name?: string }
+
+ReversedB: { a?: ReversedA }
+ReversedA: { ...ReversedB }
+
+RecursiveBase: { label: string }
+RecursiveExtended<T>: { ...RecursiveBase, value: T, next?: RecursiveExtended<T> }
+RecursiveGenericBase<T>: { inherited: T, label: number }
+RecursiveGenericExtended<T>: { ...RecursiveGenericBase<T>, label: string, next?: RecursiveGenericExtended<T> }
+RecursiveConcreteExtended<T>: { ...RecursiveGenericBase<[string]>, value: T, next?: RecursiveConcreteExtended<T> }
+
+InheritedBase: { id: string }
+InheritedA: { b?: InheritedB }
+InheritedB: { ...InheritedBase, a?: InheritedA }
+InheritedChild: { ...InheritedB, label: string }
+InheritedOverride: { ...InheritedB, id: number }

@@ -24,3 +24,9 @@ impl Default for TsConvertResolve {
         Self::new()
     }
 }
+
+/// Prepared target-specific declarations accompanying a converted module.
+#[derive(Debug, Default, PartialEq, Clone, Serialize)]
+pub struct TsModuleResolution {
+    pub effect: TsEffectResolution,
+}
