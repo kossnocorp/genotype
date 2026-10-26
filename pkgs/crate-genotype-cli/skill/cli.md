@@ -76,6 +76,18 @@ the generated package, or run its tests.
 
 For scripts and CI, a successful build exits with status `0`. Build errors exit with status `1`. Warnings alone don't cause a build failure.
 
+## `gt fmt`
+
+Format `.type` files in the current directory and its subdirectories:
+
+```sh
+gt fmt
+```
+
+The command writes changed files in place, respects `.gitignore` and `.ignore`, and skips hidden files and symlinks.
+
+It does not require `genotype.toml` or resolve imports. If any input has a syntax error, it reports the error before writing any files.
+
 ## `gt version`
 
 `gt version` updates package versions in `genotype.toml`. It has two subcommands: `set` and `bump`.
