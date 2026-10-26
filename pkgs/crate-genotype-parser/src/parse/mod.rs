@@ -416,7 +416,8 @@ impl<'a> Parser<'a> {
                 if self.eat("string").is_ok() || self.eat("boolean").is_ok() {
                     Ok(())
                 } else {
-                    self.child(PrimitiveNumeric, c)
+                    c.push(self.node(PrimitiveNumeric)?);
+                    Ok(())
                 }
             }
 
@@ -722,7 +723,13 @@ impl<'a> Parser<'a> {
                 if self.pos == start {
                     return Err(());
                 }
-                self.eat("/")
+                if self.eat("/").is_err() {
+                    // A speculative path scan must not move diagnostics past
+                    // the syntax that prevented the other alternatives.
+                    self.pos = start;
+                    return Err(());
+                }
+                Ok(())
             }
 
             ModuleDoc | LineDoc => {

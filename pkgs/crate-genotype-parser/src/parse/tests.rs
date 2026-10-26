@@ -59,6 +59,9 @@ fn malformed_input_is_rejected() {
         "A: Foo<string,>",
         "use ./a/{A,}",
         "A: @ string",
+        "A: @ int",
+        "A: @\tfloat",
+        "A: @\nf64",
         "A: { [@string]: string }",
         "A: \"bad\\x\"",
         "A: \"unterminated",
@@ -90,6 +93,22 @@ fn malformed_input_is_rejected() {
 }
 
 #[test]
+fn branded_primitives_require_adjacency() {
+    for primitive in ["string", "boolean", "number", "int", "u32", "float", "f64"] {
+        for trivia in [" ", "\t", "\n", "/* comment */", "// comment\n"] {
+            let source = format!("@{trivia}{primitive}");
+            assert!(
+                GtParser::parse(GtTokenKind::Branded, &source).is_err(),
+                "accepted malformed brand: {source:?}"
+            );
+        }
+        let source = format!("A: @{primitive}");
+        check_source(&source);
+        GtModule::parse("module".into(), &source).unwrap();
+    }
+}
+
+#[test]
 fn public_token_and_module_apis_agree() {
     let source = "//! Module\nA: { x: string, ...B }\nuse ./b/B\n";
     let root = parse_gt_code(source).unwrap().next().unwrap();
@@ -115,6 +134,21 @@ fn syntax_errors_are_miette_diagnostics() {
             assert!(message.starts_with("expected "));
         }
         other => panic!("unexpected diagnostic: {other:?}"),
+    }
+}
+
+#[test]
+fn invalid_record_key_diagnostic_points_to_the_key() {
+    for source in [
+        "A: { [@string]: string }",
+        "A: { [@string]: string }\nB: int",
+    ] {
+        let error = parse_tokens(source).unwrap_err();
+        let GtParseError::Syntax { span, .. } = error else {
+            panic!("unexpected diagnostic: {error:?}");
+        };
+        let offset = source.find('@').unwrap();
+        assert_eq!(span, (offset, offset).into());
     }
 }
 
