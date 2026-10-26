@@ -4,6 +4,12 @@ All notable changes to the "genotype" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## v0.4.0 - Unreleased
+
+### Added
+
+- Genotype code formatter.
+
 ## v0.3.0 - 2026-06-24
 
 ### Added
