@@ -21,7 +21,7 @@ impl TsConvertContext {
     pub fn new(resolve: TsConvertResolve, config: &TsConfig) -> Self {
         Self {
             resolve,
-            mode: config.lang.mode.clone(),
+            mode: config.lang.mode,
             imports: vec![],
             hoisted: vec![],
             doc: None,
@@ -30,8 +30,8 @@ impl TsConvertContext {
         }
     }
 
-    pub fn is_zod_mode(&self) -> bool {
-        self.mode == TsMode::Zod
+    pub fn mode(&self) -> TsMode {
+        self.mode
     }
 }
 
@@ -50,5 +50,20 @@ impl GtlConvertContext for TsConvertContext {
 impl Default for TsConvertContext {
     fn default() -> Self {
         Self::new(Default::default(), &Default::default())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_mode() {
+        for mode in [TsMode::Types, TsMode::Zod, TsMode::Effect] {
+            let mut config = TsConfig::default();
+            config.lang.mode = mode;
+            let context = TsConvertContext::new(Default::default(), &config);
+            assert_eq!(context.mode(), mode);
+        }
     }
 }

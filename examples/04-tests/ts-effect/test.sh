@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+script_path="${BASH_SOURCE[0]}"
+script_dir="$(cd "$(dirname "$script_path")" && pwd)"
+cd "$script_dir"
+
+echo "🌀 Building TypeScript Effect schemas"
+if output=$(cargo run -p genotype_cli --bin gt -- build . 2>&1); then
+	echo "🟢 Build: OK"
+else
+	echo "🔴 Build: FAILED"
+	echo "--- Output ------------------------------------------"
+	echo "$output"
+	echo "-----------------------------------------------------"
+	exit 1
+fi
+
+if output=$(CI=true pnpm install 2>&1); then
+	echo "🟢 pnpm install: OK"
+else
+	echo "🔴 pnpm install: FAILED"
+	echo "--- Output ------------------------------------------"
+	echo "$output"
+	echo "-----------------------------------------------------"
+	exit 1
+fi
+
+if output=$(pnpm tsc 2>&1); then
+	echo "🟢 Types: OK"
+else
+	echo "🔴 Types: FAILED"
+	echo "--- Output ------------------------------------------"
+	echo "$output"
+	echo "-----------------------------------------------------"
+	exit 1
+fi
+
+if output=$(pnpm tsx test.ts 2>&1); then
+	echo "🟢 Node test: OK"
+else
+	echo "🔴 Node test: FAILED"
+	echo "--- Output ------------------------------------------"
+	echo "$output"
+	echo "-----------------------------------------------------"
+	exit 1
+fi

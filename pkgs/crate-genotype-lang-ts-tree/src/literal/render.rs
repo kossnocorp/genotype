@@ -20,10 +20,14 @@ impl<'context> GtlRender<'context, TsRenderTypes> for TsLiteral {
             TsLiteral::String(value) => format!("\"{}\"", value.escape_default()),
         };
 
-        if context.is_zod_mode() {
-            Ok(format!("z.literal({literal})"))
-        } else {
-            Ok(literal)
+        match context.mode() {
+            TsMode::Effect => Ok(if matches!(self, TsLiteral::Null) {
+                "Schema.Null".into()
+            } else {
+                format!("Schema.Literal({literal})")
+            }),
+            TsMode::Zod => Ok(format!("z.literal({literal})")),
+            TsMode::Types => Ok(literal),
         }
     }
 }
@@ -137,6 +141,54 @@ mod tests {
         assert_snapshot!(
             render_node_with(Tst::literal_string("Hello, \"world\"!"), &mut context),
             @r#"z.literal("Hello, \"world\"!")"#
+        );
+    }
+
+    #[test]
+    fn test_render_effect_null() {
+        assert_snapshot!(
+            render_node_with(Tst::literal_null(), &mut Tst::render_context_effect()),
+            @r#"Schema.Null"#
+        );
+    }
+
+    #[test]
+    fn test_render_effect_boolean() {
+        assert_snapshot!(
+            render_node_with(Tst::literal_boolean(true), &mut Tst::render_context_effect()),
+            @r#"Schema.Literal(true)"#
+        );
+    }
+
+    #[test]
+    fn test_render_effect_integer() {
+        assert_snapshot!(
+            render_node_with(Tst::literal_integer(-42), &mut Tst::render_context_effect()),
+            @r#"Schema.Literal(-42)"#
+        );
+    }
+
+    #[test]
+    fn test_render_effect_float() {
+        assert_snapshot!(
+            render_node_with(Tst::literal_float(1.5), &mut Tst::render_context_effect()),
+            @r#"Schema.Literal(1.5)"#
+        );
+    }
+
+    #[test]
+    fn test_render_effect_whole_float() {
+        assert_snapshot!(
+            render_node_with(Tst::literal_float(2.0), &mut Tst::render_context_effect()),
+            @r#"Schema.Literal(2.0)"#
+        );
+    }
+
+    #[test]
+    fn test_render_effect_string() {
+        assert_snapshot!(
+            render_node_with(Tst::literal_string(r#"hello, "world""#), &mut Tst::render_context_effect()),
+            @r#"Schema.Literal("hello, \"world\"")"#
         );
     }
 }

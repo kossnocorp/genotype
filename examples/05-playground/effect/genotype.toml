@@ -1,0 +1,12 @@
+name = "playground-effect"
+
+[ts]
+enabled = true
+mode = "effect"
+formatters = [{ kind = "oxfmt" }]
+
+[rs]
+enabled = false
+
+[py]
+enabled = false

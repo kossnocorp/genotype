@@ -1,8 +1,10 @@
 use crate::prelude::internal::*;
+use std::sync::Arc;
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct TsProjectModule {
     module: TsModule,
+    resolution: Arc<TsModuleResolution>,
 }
 
 impl GtlProjectModule for TsProjectModule {
@@ -72,21 +74,78 @@ impl GtlProjectModule for TsProjectModule {
             }
         }
 
-        let module = TsModule::convert(&parse.module, convert_resolve, lang_config);
-        Ok(TsProjectModule { module })
+        let (module, resolution) =
+            TsModule::convert_with_resolution(&parse.module, convert_resolve, lang_config);
+        Ok(TsProjectModule {
+            module,
+            resolution: Arc::new(resolution),
+        })
     }
 
     fn new_render_context<'config>(
         &self,
         lang_config: &'config Self::LangConfig,
     ) -> TsRenderContext<'config> {
-        TsRenderContext::new(&lang_config.lang)
+        TsRenderContext {
+            resolution: Arc::clone(&self.resolution),
+            ..TsRenderContext::new(&lang_config.lang)
+        }
     }
 
     fn global_dependencies(lang_config: &TsConfig) -> Option<IndexSet<TsDependencyIdent>> {
         match lang_config.lang.mode {
+            TsMode::Effect => Some(IndexSet::from_iter(vec![TsDependencyIdent::Effect])),
             TsMode::Zod => Some(IndexSet::from_iter(vec![TsDependencyIdent::Zod])),
             _ => None,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_effect_global_dependency() {
+        let mut config = TsConfig::default();
+        config.lang.mode = TsMode::Effect;
+        assert_eq!(
+            TsProjectModule::global_dependencies(&config),
+            Some(IndexSet::from_iter([TsDependencyIdent::Effect]))
+        );
+    }
+    #[test]
+    fn test_render_context_shares_module_resolution_without_leaking_between_modules() {
+        let mut resolution = TsModuleResolution::default();
+        resolution
+            .effect
+            .aliases
+            .insert("Node".into(), TsEffectAlias { generic: None });
+        let recursive = TsProjectModule {
+            module: TsModule::default(),
+            resolution: Arc::new(resolution),
+        };
+        let ordinary = TsProjectModule {
+            module: TsModule::default(),
+            resolution: Arc::new(TsModuleResolution::default()),
+        };
+        let config = TsConfig::default();
+        let context = recursive.new_render_context(&config);
+        assert!(Arc::ptr_eq(&context.resolution, &recursive.resolution));
+        assert!(
+            context
+                .resolution
+                .effect
+                .aliases
+                .contains_key(&TsIdentifier::from("Node"))
+        );
+        assert!(
+            ordinary
+                .new_render_context(&config)
+                .resolution
+                .effect
+                .aliases
+                .is_empty()
+        );
     }
 }
