@@ -20,9 +20,7 @@ echo "🟢 Built"
 echo
 echo "🌀 Packaging vsix..."
 
-# TODO: Figure out how to call `pnpm exec` on a different directory or pass
-# dist path to vsce
-vsce_path="$(pwd)/$(pnpm --reporter=silent -c exec which vsce)"
+vsce_path="$(pnpm --reporter=silent -c exec which vsce)"
 cd $package_dist_dir
 if ! output=$($vsce_path pack \
 	--no-dependencies \
