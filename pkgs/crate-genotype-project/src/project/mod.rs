@@ -37,10 +37,15 @@ pub struct GtProject {
 
     /// Project paths.
     paths: GtpPaths,
+
+    /// Backend-provided working directory for resolving cwd-relative paths.
+    #[serde(skip_serializing)]
+    cwd_path: GtpCwdPath,
 }
 
 impl GtProject {
     pub fn try_new(
+        cwd_path: GtpCwdPath,
         fallback_name: String,
         config_file_path: GtpConfigFilePath,
         config: GtpConfig,
@@ -55,6 +60,7 @@ impl GtProject {
             name,
             config,
             paths,
+            cwd_path,
         })
     }
 
@@ -96,6 +102,10 @@ impl GtProject {
 
     pub fn paths(&self) -> &GtpPaths {
         &self.paths
+    }
+
+    pub fn cwd_path(&self) -> &GtpCwdPath {
+        &self.cwd_path
     }
 
     /// Tries to initialize a module in the project. If the module already initialized, it resolves
@@ -144,14 +154,20 @@ mod tests {
     #[test]
     fn test_uses_config_name() {
         let config = GtpConfig::parse(r#"name = "example-package""#.into()).unwrap();
-        let project =
-            GtProject::try_new("fallback-name".into(), "genotype.toml".into(), config).unwrap();
+        let project = GtProject::try_new(
+            "/".into(),
+            "fallback-name".into(),
+            "genotype.toml".into(),
+            config,
+        )
+        .unwrap();
         assert_equal!(project.name, "example-package");
     }
 
     #[test]
     fn test_uses_fallback_name() {
         let project = GtProject::try_new(
+            "/".into(),
             "fallback-name".into(),
             "genotype.toml".into(),
             GtpConfig::default(),

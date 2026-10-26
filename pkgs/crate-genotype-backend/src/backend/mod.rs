@@ -71,7 +71,12 @@ async fn create_project<Backend: GtBackend + ?Sized>(
     let config_file_path = find_config_path(backend, config_path).await?;
     let config = load_config(backend, &config_file_path).await?;
     let fallback_name = resolve_fallback_name(backend.cwd_path(), &config_file_path);
-    let project = GtProject::try_new(fallback_name, config_file_path, config)?;
+    let project = GtProject::try_new(
+        backend.cwd_path().clone(),
+        fallback_name,
+        config_file_path,
+        config,
+    )?;
     Ok(project)
 }
 

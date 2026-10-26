@@ -223,6 +223,7 @@ mod tests {
     #[test]
     fn test_name_key_poetry() {
         let project = GtProject::try_new(
+            "/".into(),
             "fallback-name".into(),
             "genotype.toml".into(),
             GtpConfig::default(),
@@ -245,6 +246,7 @@ name = "target-name"
         )
         .unwrap();
         let project = GtProject::try_new(
+            "/".into(),
             "fallback-name".into(),
             "genotype.toml".into(),
             project_config,
@@ -261,6 +263,7 @@ name = "target-name"
         let mut project_config = GtpConfig::default();
         project_config.name = Some("Root Name".into());
         let project = GtProject::try_new(
+            "/".into(),
             "fallback-name".into(),
             "genotype.toml".into(),
             project_config,
@@ -277,6 +280,7 @@ name = "target-name"
         let mut project_config = GtpConfig::default();
         project_config.py.lang.manager = PyPackageManager::Uv;
         let project = GtProject::try_new(
+            "/".into(),
             "fallback-name".into(),
             "genotype.toml".into(),
             project_config,
@@ -300,6 +304,7 @@ name = "target-name"
         )
         .unwrap();
         let project = GtProject::try_new(
+            "/".into(),
             "fallback-name".into(),
             "genotype.toml".into(),
             project_config,
@@ -317,6 +322,7 @@ name = "target-name"
         project_config.name = Some("Root Name".into());
         project_config.py.lang.manager = PyPackageManager::Uv;
         let project = GtProject::try_new(
+            "/".into(),
             "fallback-name".into(),
             "genotype.toml".into(),
             project_config,

@@ -101,6 +101,7 @@ mod tests {
     #[test]
     fn test_format_name() {
         let project = GtProject::try_new(
+            "/".into(),
             "fallback-name".into(),
             "genotype.toml".into(),
             GtpConfig::default(),
@@ -118,6 +119,7 @@ mod tests {
     #[test]
     fn test_name_key() {
         let project = GtProject::try_new(
+            "/".into(),
             "fallback-name".into(),
             "genotype.toml".into(),
             GtpConfig::default(),
@@ -140,6 +142,7 @@ name = "target_name"
         )
         .unwrap();
         let project = GtProject::try_new(
+            "/".into(),
             "fallback-name".into(),
             "genotype.toml".into(),
             project_config,
@@ -156,6 +159,7 @@ name = "target_name"
         let mut project_config = GtpConfig::default();
         project_config.name = Some("Root Name".into());
         let project = GtProject::try_new(
+            "/".into(),
             "fallback-name".into(),
             "genotype.toml".into(),
             project_config,

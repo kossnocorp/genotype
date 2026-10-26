@@ -68,6 +68,7 @@ mod tests {
     fn test_name_key() {
         let project_config = GtpConfig::default();
         let project = GtProject::try_new(
+            "/".into(),
             "fallback-name".into(),
             "genotype.toml".into(),
             project_config,
@@ -85,6 +86,7 @@ mod tests {
         project_config.name = Some("Root Name".into());
         project_config.ts.common.manifest = toml::from_str(r#"name = "target-name""#).unwrap();
         let project = GtProject::try_new(
+            "/".into(),
             "fallback-name".into(),
             "genotype.toml".into(),
             project_config,
@@ -101,6 +103,7 @@ mod tests {
         let mut project_config = GtpConfig::default();
         project_config.name = Some("Root Name".into());
         let project = GtProject::try_new(
+            "/".into(),
             "fallback-name".into(),
             "genotype.toml".into(),
             project_config,
