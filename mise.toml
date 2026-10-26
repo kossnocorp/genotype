@@ -22,6 +22,7 @@ cargo-binstall = "latest"
 gh = "latest"
 jaq = "latest"
 sccache = "latest" # Shared compilation cache
+fnox = "latest" # Secrets management
 
 [settings]
 lockfile = true
