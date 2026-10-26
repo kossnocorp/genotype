@@ -42,6 +42,10 @@ ln -sf "$assets_rel/logomark.svg" logomark.svg
 ln -sf "$assets_rel/icon.svg" icon.svg
 ln -sf "$assets_rel/favicon-mono.svg" favicon-mono.svg
 cd -
-'''
 
+cd ../pkgs/npm-vscode-genotype/assets/
+vscode_rel="../../../assets/exports"
+ln -sf "$vscode_rel/icon-512.png" icon.png
+cd -
+'''
 depends = ["process"]

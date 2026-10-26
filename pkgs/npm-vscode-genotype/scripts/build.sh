@@ -63,6 +63,18 @@ if ! output=$(cp "$SRC_SYNTAX_PATH" "$DIST_SYNTAX_PATH" 2>&1); then
 	exit 1
 fi
 
+ASSETS_DIR="$PKG_DIR/assets"
+DIST_ASSETS_DIR="$DIST_DIR/assets"
+
+mkdir -p "$DIST_ASSETS_DIR"
+
+if ! output=$(cp -aL "$ASSETS_DIR"/. "$DIST_ASSETS_DIR" 2>&1); then
+	echo '╭─ 🔴 `cp` failed ─────────────────────────────────╮'
+	echo "$output"
+	echo "╰───────────────────────────────────────────────────╯"
+	exit 1
+fi
+
 echo "🟢 Assets copied"
 
 echo -e "\n🌀 Patching package.json..."

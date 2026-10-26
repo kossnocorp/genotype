@@ -1,7 +1,7 @@
 {
   "name": "genotype",
   "displayName": "Genotype",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Genotype language support",
   "categories": [
     "Programming Languages"
@@ -74,6 +74,7 @@
       }
     ]
   },
+  "icon": "./assets/icon.png",
   "engines": {
     "vscode": "^1.115.0"
   }
