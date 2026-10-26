@@ -4,14 +4,6 @@ pub fn ui_theme_highlight() -> Color {
     Color::Cyan
 }
 
-pub fn ui_theme_highlight_if(active: bool) -> Color {
-    if active {
-        ui_theme_highlight()
-    } else {
-        Color::Reset
-    }
-}
-
 pub fn ui_theme_active_fg() -> Color {
     Color::Blue
 }

@@ -1,6 +1,9 @@
 mod build;
 pub use build::*;
 
+mod fmt;
+pub use fmt::*;
+
 mod init;
 pub use init::*;
 
