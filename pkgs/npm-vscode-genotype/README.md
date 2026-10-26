@@ -2,7 +2,20 @@
 
 Language support for [Genotype](https://genotype-lang.org), a language for defining types and generating code in multiple programming languages.
 
-The extension adds syntax highlighting for `.type` files, bracket matching and auto-closing, indentation, comment commands, and region folding.
+The extension adds syntax highlighting rules and a formatter for `.type` files.
+
+## Formatting
+
+To enable formatting on save, add this to your VS Code settings:
+
+```json
+{
+  "[genotype]": {
+    "editor.defaultFormatter": "nocorp.genotype",
+    "editor.formatOnSave": true
+  }
+}
+```
 
 > **Warning:** Language Server Protocol (LSP) support is not implemented yet. The extension doesn't currently provide type diagnostics, code completion, or go-to-definition.
 

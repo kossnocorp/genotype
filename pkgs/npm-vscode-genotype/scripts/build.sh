@@ -25,6 +25,17 @@ fi
 
 echo "🟢 Bundle built"
 
+echo -e "\n🌀 Building development bundle..."
+if ! output=$(pnpm exec vite build --mode development 2>&1); then
+
+	echo '╭─ 🔴 `vite build` failed ─────────────────────────╮'
+	echo "$output"
+	echo "╰───────────────────────────────────────────────────╯"
+	exit 1
+fi
+
+echo "🟢 Development bundle built"
+
 echo -e "\n🌀 Copying assets..."
 
 if ! output=$(rsync -av \
@@ -62,6 +73,7 @@ mkdir -p "$(dirname "$TMP_PACKAGE_PATH")"
 if ! output=$(
 	jaq '
   .main = "./extension.js"
+  | del(.devDependencies)
   | .contributes.grammars |= map(
       if .language == "genotype"
       then .path = "./syntaxes/genotype.tmLanguage.json"
