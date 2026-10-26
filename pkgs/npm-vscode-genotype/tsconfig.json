@@ -2,8 +2,9 @@
   "compilerOptions": {
     "module": "CommonJS",
     "target": "ES2024",
-    "lib": ["ES2024"],
-    "rootDir": "src",
+    "lib": ["ES2024", "DOM"],
+    "rootDir": ".",
+    "types": ["node"],
     "sourceMap": true,
     "skipLibCheck": true,
     // Output
@@ -17,6 +18,6 @@
     // Project references
     "composite": true
   },
-  "include": ["src"],
+  "include": ["src", "tests"],
   "exclude": ["node_modules"]
 }

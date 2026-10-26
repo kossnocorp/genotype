@@ -7,6 +7,10 @@ outputs = ["./tests/syntax/*.type"]
 run = "./scripts/build.sh"
 depends = ["//pkgs/crate-genotype-formatters-wasm:build"]
 
+[tasks."build:dev"]
+run = "./scripts/build.sh"
+depends = ["//pkgs/crate-genotype-formatters-wasm:build:dev"]
+
 [tasks.test]
 depends = ["test/unit", "test/system"]
 
@@ -18,11 +22,9 @@ run = "pnpm exec vitest --project unit"
 
 [tasks."test/system"]
 run = "pnpm exec vitest run --project system"
-depends = "build"
 
 [tasks."test/system:watch"]
 run = "pnpm exec vitest --project system"
-depends = "build"
 
 [tasks."build/package"]
 run = "./scripts/build-package.sh"
