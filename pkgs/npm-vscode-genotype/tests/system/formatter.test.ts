@@ -172,7 +172,7 @@ function activate(readWasm: (file: string) => Promise<Uint8Array> = readFile) {
       replace: (range: { start: Position; end: Position }, newText: string) => ({ range, newText }),
     },
   };
-  const dirname = path.resolve(import.meta.dirname, "../../dist/production");
+  const dirname = path.resolve(__dirname, "../../dist/production");
   const module: {
     exports: { activate?: (context: Pick<vscode.ExtensionContext, "subscriptions">) => void };
   } = { exports: {} };

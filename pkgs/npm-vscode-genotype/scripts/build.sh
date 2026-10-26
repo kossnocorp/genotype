@@ -12,7 +12,7 @@ DIST_DIR="$PKG_DIR/dist/production"
 echo -e "🚧 Building Visual Studio Code extension..."
 
 rm -rf "$DIST_DIR"
-mkdir "$DIST_DIR"
+mkdir -p "$DIST_DIR"
 
 echo -e "\n🌀 Building extension bundle..."
 if ! output=$(pnpm exec vite build 2>&1); then
