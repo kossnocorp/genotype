@@ -7,8 +7,21 @@ outputs = ["./tests/syntax/*.type"]
 run = "./scripts/build.sh"
 depends = ["//pkgs/crate-genotype-formatters-wasm:build"]
 
+[tasks.test]
+depends = ["test/unit", "test/system"]
+
+[tasks."test/unit"]
+run = "pnpm exec vitest run --project unit"
+
+[tasks."test/unit:watch"]
+run = "pnpm exec vitest --project unit"
+
 [tasks."test/system"]
-run = "pnpm exec vitest run tests/system/*.test.ts"
+run = "pnpm exec vitest run --project system"
+depends = "build"
+
+[tasks."test/system:watch"]
+run = "pnpm exec vitest --project system"
 depends = "build"
 
 [tasks."build/package"]
@@ -37,8 +50,8 @@ depends = "gen/syntax-test-links"
 
 [tasks."types"]
 description = "Checks types"
-run = "pnpm exec tsc --build tsconfig.json tests/tsconfig.json"
+run = "pnpm exec tsc --build"
 
 [tasks."types:watch"]
 description = "Checks types in watch mode"
-run = "pnpm exec tsc --build tsconfig.json tests/tsconfig.json --watch"
+run = "pnpm exec tsc --build --watch"

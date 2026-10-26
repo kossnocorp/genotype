@@ -181,10 +181,9 @@ function activate(readWasm: (file: string) => Promise<Uint8Array> = readFile) {
     exports: module.exports,
     __dirname: dirname,
     require(name: string) {
-      expect(
-        name,
-        "the bundled extension must not require an LSP or workspace package",
-      ).toBe("vscode");
+      expect(name, "the bundled extension must not require an LSP or workspace package").toBe(
+        "vscode",
+      );
       return vscode;
     },
     TextEncoder,
