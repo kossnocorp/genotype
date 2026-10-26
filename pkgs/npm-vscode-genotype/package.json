@@ -17,6 +17,7 @@
     "extension.js",
     "genotype_formatters_wasm_bg.wasm",
     "syntaxes",
+    "assets",
     "language-configuration.json",
     "package.json",
     "README.md",
