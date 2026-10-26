@@ -6,9 +6,22 @@ sidebar:
   label: "VS Code"
 ---
 
-The Genotype extension adds syntax highlighting for `.type` files, bracket matching and auto-closing, indentation, comment commands, and region folding.
+The Genotype extension adds syntax highlighting and document formatting for `.type` files, bracket matching and auto-closing, indentation, comment commands, and region folding.
 
 Install it from:
 
 - [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=nocorp.genotype)
 - [Open VSX](https://open-vsx.org/extension/nocorp/genotype)
+
+## Formatting
+
+To enable formatting on save, add this to your VS Code settings:
+
+```json
+{
+  "[genotype]": {
+    "editor.defaultFormatter": "nocorp.genotype",
+    "editor.formatOnSave": true
+  }
+}
+```

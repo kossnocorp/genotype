@@ -25,6 +25,12 @@ impl GtwmFormatters {
         format_ts(&code).map_err(|err| JsValue::from_str(&err))
     }
 
+    #[wasm_bindgen(js_name = formatGt)]
+    pub fn format_gt(&mut self, code: String) -> std::result::Result<String, JsValue> {
+        genotype_fmt::GtfmtFormatter::format(&code)
+            .map_err(|err| JsValue::from_str(&format!("{err:?}")))
+    }
+
     #[wasm_bindgen(js_name = formatRs)]
     pub fn format_rs(&mut self, code: String) -> std::result::Result<String, JsValue> {
         format_rs(&code).map_err(|err| JsValue::from_str(&err))

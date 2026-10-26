@@ -65,8 +65,19 @@ const langTabs = [
     data-example-panel
   >
     <nav class="nav">
-      <div class="files" data-file-tabs>
-        <div>Loading...</div>
+      <div class="source-tools">
+        <div class="files" data-file-tabs>
+          <div>Loading...</div>
+        </div>
+        <button
+          type="button"
+          class="button format"
+          data-format
+          disabled
+          title="Format the current Genotype file"
+        >
+          Format
+        </button>
       </div>
 
       <template data-id="file-tab">
@@ -159,6 +170,18 @@ const langTabs = [
     & :global([data-file-tab]) {
       @apply shrink-0 whitespace-nowrap;
     }
+  }
+
+  .source-tools {
+    @apply flex items-center min-w-0;
+  }
+
+  .source-tools .files {
+    @apply flex-1;
+  }
+
+  .format {
+    @apply shrink-0 mr-3 disabled:opacity-50 disabled:cursor-default;
   }
 
   .code {

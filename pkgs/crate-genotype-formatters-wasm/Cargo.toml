@@ -14,6 +14,7 @@ crate-type = ["cdylib", "rlib"]
 default = ["console_error_panic_hook"]
 
 [dependencies]
+genotype_fmt = { version = "0.17.1", path = "../crate-genotype-fmt" }
 js-sys = "0.3.95"
 oxc_allocator = { git = "https://github.com/oxc-project/oxc.git", rev = "4b81f4d963cd7fd8b539cb4935b9fd58002c8765" }
 oxc_formatter = { git = "https://github.com/oxc-project/oxc.git", rev = "4b81f4d963cd7fd8b539cb4935b9fd58002c8765" }

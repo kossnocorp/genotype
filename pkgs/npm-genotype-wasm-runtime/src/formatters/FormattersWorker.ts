@@ -25,6 +25,9 @@ class GtwmFormattersWorker {
     const { kind, content } = request;
 
     switch (kind) {
+      case "genotype":
+        return formatters.formatGt(content);
+
       case "oxfmt":
         return formatters.formatTs(content);
 
