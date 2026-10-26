@@ -1,0 +1,31 @@
+name: Release VS Code
+
+on:
+  push:
+    tags:
+      - "vscode@*.*.*"
+
+jobs:
+  qa:
+    name: Run QA
+    uses: ./.github/workflows/qa.yml
+
+  publish:
+    name: Publish VS Code Extension
+    needs: qa
+    runs-on: ubuntu-latest
+    environment: release-vscode
+
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set Up Dev Env
+        uses: ./.github/actions/setup
+        with:
+          enable-node: true
+
+      - name: Publish Extension
+        run: mise //pkgs/npm-vscode-genotype:publish
