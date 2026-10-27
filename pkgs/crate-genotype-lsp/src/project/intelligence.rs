@@ -40,7 +40,11 @@ impl Project {
         })
     }
 
-    pub fn completions(mut self, uri: &Url, pos: Position) -> Vec<CompletionItem> {
+    pub fn completions(&self, uri: &Url, pos: Position) -> Vec<CompletionItem> {
+        self.clone().completion_snapshot(uri, pos)
+    }
+
+    fn completion_snapshot(mut self, uri: &Url, pos: Position) -> Vec<CompletionItem> {
         let Some(original) = self.documents.get(uri) else {
             return vec![];
         };
@@ -360,13 +364,32 @@ fn import_path(from: &Url, target: &Url) -> Option<String> {
 
 fn import_edit(text: &str, import_end: usize, path: &str, name: &str) -> TextEdit {
     let newline = if text.contains("\r\n") { "\r\n" } else { "\n" };
-    let byte = if import_end == 0 {
-        0
-    } else {
-        text[import_end.min(text.len())..]
-            .find('\n')
-            .map_or(text.len(), |next| import_end + next + 1)
-    };
+    let mut byte = import_end.min(text.len());
+    if byte > 0 {
+        // Skip complete trailing comments, never a newline inside a block comment.
+        let mut depth = 0;
+        while byte < text.len() {
+            let rest = &text[byte..];
+            if rest.starts_with("/*") {
+                depth += 1;
+                byte += 2;
+            } else if depth > 0 && rest.starts_with("*/") {
+                depth -= 1;
+                byte += 2;
+            } else if depth == 0 && rest.starts_with("//") {
+                byte += rest.find('\n').unwrap_or(rest.len());
+            } else {
+                let ch = rest.chars().next().unwrap();
+                if depth == 0 && !ch.is_whitespace() {
+                    break;
+                }
+                byte += ch.len_utf8();
+                if depth == 0 && ch == '\n' {
+                    break;
+                }
+            }
+        }
+    }
     let prefix = if byte > 0 && !text[..byte].ends_with('\n') {
         newline
     } else {

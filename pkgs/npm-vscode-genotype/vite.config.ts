@@ -20,12 +20,8 @@ export default defineConfig(({ mode }) => ({
     },
   ],
   ssr: {
-    noExternal: [
-      "@genotype-lang/formatters-wasm",
-      /vscode-languageclient/,
-      /vscode-languageserver/,
-      /vscode-jsonrpc/,
-    ],
+    noExternal: true,
+    external: ["vscode"],
   },
   build: {
     outDir: mode === "development" ? "dist/dev" : "dist/production",

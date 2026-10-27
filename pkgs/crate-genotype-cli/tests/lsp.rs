@@ -220,6 +220,11 @@ fn stdio_language_server_lifecycle_and_editor_features() {
     );
     client.notify("textDocument/didChange", json!({ "textDocument": { "uri": main, "version": 4 }, "contentChanges": [{ "text": text }] }));
     std::fs::write(dir.path().join("model.type"), "Account: string\n").unwrap();
+    // Requests reuse the index until a file event updates that document.
+    assert_eq!(
+        client.request("textDocument/definition", position.clone())["uri"],
+        model
+    );
     client.notify(
         "workspace/didChangeWatchedFiles",
         json!({ "changes": [{ "uri": model, "type": 2 }] }),
