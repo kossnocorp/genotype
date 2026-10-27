@@ -52,9 +52,9 @@ pub struct Reference {
 pub struct Entity {
     pub signature: String,
     pub documentation: String,
+    pub has_derived_types: bool,
 }
 
-#[derive(Clone)]
 pub struct Document {
     pub text: String,
     pub valid: bool,
@@ -146,6 +146,7 @@ impl Document {
                 Entity {
                     signature: token.text[name.span.0 - token.span.0..].to_owned(),
                     documentation,
+                    has_derived_types: token.kind == K::Alias && has_derived_objects(token),
                 },
             );
         }
@@ -347,6 +348,39 @@ impl Document {
         }
         data
     }
+}
+
+// Only an alias's single direct object retains the alias name. Objects under
+// properties, arrays, unions, etc. receive compiler-derived names (UserAddress,
+// UserObj, ...), which need a separate coordinated rename strategy.
+fn has_derived_objects(alias: &GtToken<'_>) -> bool {
+    fn direct_object<'a>(token: &'a GtToken<'a>) -> Option<&'a GtToken<'a>> {
+        if token.kind == K::Object {
+            return Some(token);
+        }
+        if !matches!(token.kind, K::Alias | K::Descriptors | K::Descriptor) {
+            return None;
+        }
+        let mut children = token.children.iter().filter(|child| {
+            matches!(
+                child.kind,
+                K::Descriptors | K::Descriptor | K::Object | K::Array | K::Tuple | K::Record
+            )
+        });
+        let child = children.next()?;
+        if children.next().is_some() {
+            return None;
+        }
+        direct_object(child)
+    }
+    fn contains_other(token: &GtToken<'_>, direct: Option<usize>) -> bool {
+        (token.kind == K::Object && Some(token.span.0) != direct)
+            || token
+                .children
+                .iter()
+                .any(|child| contains_other(child, direct))
+    }
+    contains_other(alias, direct_object(alias).map(|token| token.span.0))
 }
 
 pub fn error_diagnostic(range: Range, code: &str, message: String) -> Diagnostic {

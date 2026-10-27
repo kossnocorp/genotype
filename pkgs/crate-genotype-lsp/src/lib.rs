@@ -123,6 +123,34 @@ impl Server {
         }
     }
 
+    fn rename_project(&mut self, uri: &lsp::Url, position: lsp::Position) -> project::Project {
+        let mut combined = self.project(uri).clone();
+        let Some(source) = combined.selected_uri(uri, position) else {
+            return combined;
+        };
+        // A declaration's own project cannot discover incoming imports. Include
+        // consuming workspace graphs, each seeded by its own configured entries.
+        for root in self.generated.project_roots(&self.roots) {
+            let roots = vec![root];
+            let project = self
+                .projects
+                .entry(roots.clone())
+                .or_insert_with(|| project::Project::load(&roots, &self.open));
+            if project.refresh_external(&self.roots, &self.open) {
+                project.prune(&roots, &self.open);
+            }
+            if project.documents.contains_key(&source) {
+                combined.documents.extend(
+                    project
+                        .documents
+                        .iter()
+                        .map(|(uri, doc)| (uri.clone(), doc.clone())),
+                );
+            }
+        }
+        combined
+    }
+
     fn router(client: ClientSocket) -> Router<Self> {
         let mut router = Router::new(Self {
             client,
@@ -303,7 +331,7 @@ impl Server {
         router.request::<lsp::request::Rename, _>(|server, params| {
             let position = params.text_document_position;
             let result = server
-                .project(&position.text_document.uri)
+                .rename_project(&position.text_document.uri, position.position)
                 .rename(
                     &position.text_document.uri,
                     position.position,

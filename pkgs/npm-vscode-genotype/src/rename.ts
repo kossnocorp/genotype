@@ -13,10 +13,12 @@ interface GeneratedSymbol {
   name: string;
   source: Location;
   targets: { uri: string; language: string }[];
+  renameUnsupported?: string;
 }
 
 const command = "genotype.renameAcrossLanguages";
 const selector = ["genotype", "typescript", "typescriptreact", "rust", "python"];
+type Outline = (vscode.DocumentSymbol | vscode.SymbolInformation)[];
 
 function position(value: Position) {
   return new vscode.Position(value.line, value.character);
@@ -57,6 +59,9 @@ export class CrossLanguageRename {
     provideRenameEdits: async (document, at, newName, token, next) => {
       return this.stable(async () => {
         const mappings = await this.mappings(document.uri, at);
+        for (const mapping of mappings) {
+          if (mapping.renameUnsupported) throw new Error(mapping.renameUnsupported);
+        }
         const source = await next(document, at, newName, token);
         if (!source || token.isCancellationRequested) return undefined;
         const edits = [source];
@@ -208,6 +213,7 @@ export class CrossLanguageRename {
             throw new Error(
               "This symbol is not a mapped Genotype type declaration. Use Rename Symbol for local symbols.",
             );
+          if (mapping.renameUnsupported) throw new Error(mapping.renameUnsupported);
           const newName = await vscode.window.showInputBox({
             title: "Genotype: Rename Across Languages",
             prompt: `Rename ${mapping.name} in Genotype and its configured language targets`,
@@ -278,6 +284,7 @@ export class CrossLanguageRename {
     const pending = [{ uri: document.uri, at }];
     const visited = new Set<string>();
     const found = new Map<string, GeneratedSymbol>();
+    const outlines = new Map<string, Promise<Outline>>();
     // Follow re-export/import aliases using semantic definitions, never a workspace
     // name search (unrelated modules frequently export identically named types).
     while (pending.length && visited.size < 32) {
@@ -287,9 +294,14 @@ export class CrossLanguageRename {
       visited.add(key);
       const doc = await vscode.workspace.openTextDocument(current.uri);
       const mappings = await this.mappings(current.uri);
+      const outlineKey = `${current.uri}:${doc.version}`;
+      if (mappings.length && !outlines.has(outlineKey)) {
+        outlines.set(outlineKey, this.outline(doc));
+      }
+      const symbols = (await outlines.get(outlineKey)) ?? [];
       let matched = false;
       for (const mapping of mappings) {
-        const declarations = await this.declarations(doc, mapping.name);
+        const declarations = await this.declarations(doc, mapping.name, symbols);
         if (declarations.some((range) => range.contains(current.at))) {
           found.set(JSON.stringify(mapping.source), mapping);
           matched = true;
@@ -315,10 +327,21 @@ export class CrossLanguageRename {
     return found.values().next().value;
   }
 
-  private async declarations(document: vscode.TextDocument, name: string): Promise<vscode.Range[]> {
-    const symbols = await vscode.commands.executeCommand<
-      (vscode.DocumentSymbol | vscode.SymbolInformation)[]
-    >("vscode.executeDocumentSymbolProvider", document.uri);
+  private async outline(document: vscode.TextDocument): Promise<Outline> {
+    return (
+      (await vscode.commands.executeCommand<Outline>(
+        "vscode.executeDocumentSymbolProvider",
+        document.uri,
+      )) ?? []
+    );
+  }
+
+  private async declarations(
+    document: vscode.TextDocument,
+    name: string,
+    outline?: Outline,
+  ): Promise<vscode.Range[]> {
+    const symbols = outline ?? (await this.outline(document));
     const ranges: vscode.Range[] = [];
     for (const symbol of symbols ?? []) {
       if (symbol.name !== name) continue;
@@ -422,11 +445,9 @@ export class CrossLanguageRename {
           `Generated ${target.language} source is missing: ${uri.fsPath}. Build the project before cross-language rename.`,
         );
       });
-      const ranges = await this.declarations(document, mapping.name);
+      const symbols = await this.outline(document);
+      const ranges = await this.declarations(document, mapping.name, symbols);
       if (!ranges.length) {
-        const symbols = await vscode.commands.executeCommand<
-          (vscode.DocumentSymbol | vscode.SymbolInformation)[]
-        >("vscode.executeDocumentSymbolProvider", uri);
         const matching = (symbols ?? []).filter((symbol) => symbol.name === mapping.name);
         const detail = matching.length
           ? `${matching.length} matching outline symbol(s), but their declaration ranges could not be resolved.`
