@@ -1456,6 +1456,7 @@ dependencies = [
  "genotype_parser",
  "genotype_project",
  "genotype_project_core",
+ "glob",
  "ignore",
  "serde",
  "tempfile",

@@ -21,6 +21,8 @@ struct Server {
     versions: HashMap<lsp::Url, i32>,
     published: HashSet<lsp::Url>,
     projects: HashMap<Vec<PathBuf>, project::Project>,
+    generated: project::generated::Cache,
+    external_configs: HashMap<PathBuf, Option<String>>,
 }
 
 impl Server {
@@ -65,12 +67,39 @@ impl Server {
                 roots = vec![root];
             }
         }
-        self.projects
+        for root in &roots {
+            let config = root.join("genotype.toml");
+            if !self
+                .roots
+                .iter()
+                .any(|workspace| config.starts_with(workspace))
+            {
+                let text = std::fs::read_to_string(&config).ok();
+                if self
+                    .external_configs
+                    .get(&config)
+                    .is_some_and(|old| old != &text)
+                {
+                    self.projects.clear();
+                    if let Ok(uri) = lsp::Url::from_file_path(&config) {
+                        self.generated.invalidate(&uri, &self.open);
+                    }
+                }
+                self.external_configs.insert(config, text);
+            }
+        }
+        let project = self
+            .projects
             .entry(roots.clone())
-            .or_insert_with(|| project::Project::load(&roots, &self.open))
+            .or_insert_with(|| project::Project::load(&roots, &self.open));
+        if project.refresh_external(&self.roots, &self.open) {
+            project.prune(&roots, &self.open);
+        }
+        project
     }
 
     fn update_projects(&mut self, uri: &lsp::Url) {
+        self.generated.invalidate(uri, &self.open);
         if uri
             .to_file_path()
             .is_ok_and(|path| path.file_name().is_some_and(|name| name == "genotype.toml"))
@@ -102,6 +131,8 @@ impl Server {
             versions: HashMap::new(),
             published: HashSet::new(),
             projects: HashMap::new(),
+            generated: Default::default(),
+            external_configs: HashMap::new(),
         });
         // Optional client notifications must not terminate the server.
         router.unhandled_notification(|_, _| ControlFlow::Continue(()));
@@ -284,7 +315,9 @@ impl Server {
             async move { result }
         });
         router.request::<project::generated::GeneratedSymbols, _>(|server, params| {
-            let result = project::generated::generated_symbols(&server.roots, &server.open, params)
+            let result = server
+                .generated
+                .query(&server.roots, &server.open, params)
                 .map_err(|message| {
                     ResponseError::new(async_lsp::ErrorCode::INVALID_PARAMS, message)
                 });

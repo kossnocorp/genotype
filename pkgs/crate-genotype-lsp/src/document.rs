@@ -313,11 +313,21 @@ impl Document {
         spans.sort_by_key(|(span, _, _)| span.start);
         let mut data = vec![];
         let mut previous = Position::default();
+        let mut cursor = 0;
+        let mut pos = Position::default();
         for (span, token_type, token_modifiers_bitset) in spans {
             let mut start = span.start;
             for line in self.text[span.clone()].split_inclusive('\n') {
                 let text = line.trim_end_matches(['\r', '\n']);
-                let pos = position(&self.text, start);
+                for ch in self.text[cursor..start].chars() {
+                    if ch == '\n' {
+                        pos.line += 1;
+                        pos.character = 0;
+                    } else {
+                        pos.character += ch.len_utf16() as u32;
+                    }
+                }
+                cursor = start;
                 if !text.is_empty() {
                     data.push(SemanticToken {
                         delta_line: pos.line - previous.line,

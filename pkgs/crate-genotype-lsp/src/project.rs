@@ -116,21 +116,11 @@ impl Project {
     pub fn load(roots: &[PathBuf], open: &HashMap<Url, String>) -> Self {
         let mut documents = HashMap::new();
         for root in roots {
-            let source = if root.join("genotype.toml").is_file() {
-                source_root(root)
-            } else {
-                root.clone()
-            };
-            for entry in ignore::WalkBuilder::new(source)
-                .follow_links(false)
-                .build()
-                .flatten()
-            {
-                let path = entry.path();
-                if path.extension().is_some_and(|ext| ext == "type")
-                    && entry.file_type().is_some_and(|kind| kind.is_file())
+            let entries = Entries::new(root);
+            for path in entries.files() {
+                if path.is_file()
                     && let (Ok(uri), Ok(text)) =
-                        (Url::from_file_path(path), std::fs::read_to_string(path))
+                        (Url::from_file_path(&path), std::fs::read_to_string(&path))
                 {
                     documents.insert(uri, Document::new(text));
                 }
@@ -170,23 +160,49 @@ impl Project {
         })
     }
 
-    pub fn prune(&mut self, roots: &[PathBuf], open: &HashMap<Url, String>) {
-        let sources: Vec<_> = roots
-            .iter()
-            .map(|root| {
-                if root.join("genotype.toml").is_file() {
-                    normalize(&source_root(root))
+    // Workspace string-glob watchers cannot report changes outside their roots.
+    // Revalidate only those dependencies, including missing import targets.
+    pub fn refresh_external(&mut self, workspace: &[PathBuf], open: &HashMap<Url, String>) -> bool {
+        let candidates: HashSet<_> =
+            self.documents
+                .keys()
+                .cloned()
+                .chain(self.documents.iter().flat_map(|(uri, doc)| {
+                    module_paths(doc).filter_map(|path| module_uri(uri, path))
+                }))
+                .collect();
+        let mut changed = false;
+        for uri in candidates {
+            let Ok(path) = uri.to_file_path() else {
+                continue;
+            };
+            if open.contains_key(&uri) || workspace.iter().any(|root| path.starts_with(root)) {
+                continue;
+            }
+            let text = std::fs::read_to_string(path).ok();
+            if self.documents.get(&uri).map(|doc| &doc.text) != text.as_ref() {
+                if let Some(text) = text {
+                    self.documents.insert(uri, Document::new(text));
                 } else {
-                    root.clone()
+                    self.documents.remove(&uri);
                 }
-            })
-            .collect();
+                changed = true;
+            }
+        }
+        if changed {
+            self.follow_imports(open);
+        }
+        changed
+    }
+
+    pub fn prune(&mut self, roots: &[PathBuf], open: &HashMap<Url, String>) {
+        let entries: Vec<_> = roots.iter().map(|root| Entries::new(root)).collect();
         let mut reachable: HashSet<_> = self
             .documents
             .keys()
             .filter(|uri| {
                 uri.to_file_path().is_ok_and(|path| {
-                    sources.iter().any(|root| path.starts_with(root))
+                    entries.iter().any(|entry| entry.contains(&path))
                         || (open.contains_key(*uri)
                             && roots.iter().any(|root| path.starts_with(root)))
                 })
@@ -502,10 +518,54 @@ fn source_root(parent: &Path) -> PathBuf {
 }
 
 pub fn in_source(root: &Path, path: &Path) -> bool {
-    path.extension().is_some_and(|ext| ext == "type")
-        && path.starts_with(if root.join("genotype.toml").is_file() {
-            normalize(&source_root(root))
+    Entries::new(root).contains(path)
+}
+
+struct Entries {
+    pattern: String,
+}
+
+impl Entries {
+    fn new(root: &Path) -> Self {
+        let config = std::fs::read_to_string(root.join("genotype.toml"))
+            .ok()
+            .and_then(|text| genotype_project::GtpConfig::parse(text).ok());
+        let (source, entry) = if let Some(config) = config {
+            (
+                normalize(
+                    &root
+                        .join(config.root.to_string())
+                        .join(config.src.to_string()),
+                ),
+                config.entry.to_string(),
+            )
         } else {
-            root.to_path_buf()
+            (root.to_path_buf(), "**/*.type".into())
+        };
+        Self {
+            pattern: format!(
+                "{}/{}",
+                glob::Pattern::escape(&source.to_string_lossy()),
+                entry
+            ),
+        }
+    }
+
+    fn files(&self) -> Vec<PathBuf> {
+        glob::glob(&self.pattern)
+            .map(|paths| paths.flatten().collect())
+            .unwrap_or_default()
+    }
+
+    fn contains(&self, path: &Path) -> bool {
+        glob::Pattern::new(&self.pattern).is_ok_and(|pattern| {
+            pattern.matches_path_with(
+                path,
+                glob::MatchOptions {
+                    require_literal_separator: true,
+                    ..Default::default()
+                },
+            )
         })
+    }
 }

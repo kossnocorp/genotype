@@ -86,6 +86,55 @@ impl Drop for Client {
 }
 
 #[test]
+fn external_dependencies_refresh_with_and_without_workspace_folders() {
+    for workspace in [true, false] {
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::create_dir(dir.path().join("workspace")).unwrap();
+        let root = dir.path().to_str().unwrap().replace('\\', "/");
+        let root = if root.starts_with('/') {
+            format!("file://{root}")
+        } else {
+            format!("file:///{root}")
+        };
+        let main = format!("{root}/workspace/main.type");
+        let external = format!("{root}/external.type");
+        let text = "Value: ../external/User";
+        std::fs::write(dir.path().join("workspace/main.type"), text).unwrap();
+        std::fs::write(dir.path().join("external.type"), "User: string").unwrap();
+        let mut client = Client::new();
+        client.request("initialize", json!({ "processId": null, "rootUri": if workspace { Some(format!("{root}/workspace")) } else { None }, "capabilities": {} }));
+        client.notify("initialized", json!({}));
+        client.notify("textDocument/didOpen", json!({ "textDocument": { "uri": main, "languageId": "genotype", "version": 1, "text": text } }));
+        let position =
+            json!({ "textDocument": { "uri": main }, "position": { "line": 0, "character": 20 } });
+        assert_eq!(
+            client.request("textDocument/definition", position.clone())["uri"],
+            external
+        );
+        std::fs::write(dir.path().join("external.type"), "Other: string").unwrap();
+        assert!(
+            client
+                .request("textDocument/definition", position.clone())
+                .is_null()
+        );
+        std::fs::write(dir.path().join("external.type"), "User: string").unwrap();
+        assert_eq!(
+            client.request("textDocument/definition", position.clone())["uri"],
+            external
+        );
+        std::fs::remove_file(dir.path().join("external.type")).unwrap();
+        assert!(
+            client
+                .request("textDocument/definition", position)
+                .is_null()
+        );
+        client.request("shutdown", Value::Null);
+        client.notify("exit", Value::Null);
+        assert!(client.process.wait().unwrap().success());
+    }
+}
+
+#[test]
 fn stdio_language_server_lifecycle_and_editor_features() {
     let dir = tempfile::tempdir().unwrap();
     let root = dir.path().to_str().unwrap().replace('\\', "/");

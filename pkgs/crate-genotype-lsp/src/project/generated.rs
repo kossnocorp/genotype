@@ -21,155 +21,250 @@ pub struct GeneratedSymbolsParams {
     pub position: Option<Position>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct GeneratedSymbol {
     pub name: String,
     pub source: Location,
     pub targets: Vec<GeneratedTarget>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct GeneratedTarget {
     pub uri: Url,
     pub language: String,
 }
 
+#[cfg(test)]
 pub fn generated_symbols(
     roots: &[PathBuf],
     open: &HashMap<Url, String>,
     params: GeneratedSymbolsParams,
 ) -> Result<Vec<GeneratedSymbol>, String> {
-    let selected = if let Some(position) = params.position {
+    Cache::default().query(roots, open, params)
+}
+
+#[derive(Default)]
+pub struct Cache {
+    configs: Option<HashSet<PathBuf>>,
+    mappings: HashMap<PathBuf, Result<Vec<GeneratedSymbol>, String>>,
+    projects: HashMap<PathBuf, Project>,
+    external_configs: HashMap<PathBuf, Option<String>>,
+}
+
+impl Cache {
+    pub fn invalidate(&mut self, uri: &Url, open: &HashMap<Url, String>) {
+        let Ok(path) = uri.to_file_path() else { return };
+        if path.file_name().is_some_and(|name| name == "genotype.toml") {
+            if let Some(configs) = &mut self.configs {
+                if path.is_file() || open.contains_key(uri) {
+                    configs.insert(path.clone());
+                } else {
+                    configs.remove(&path);
+                }
+            }
+            self.projects.clear();
+            self.mappings.clear();
+        } else if path.extension().is_some_and(|ext| ext == "type") {
+            for (root, project) in &mut self.projects {
+                if project.documents.contains_key(uri)
+                    || project.references_module(uri)
+                    || in_source(root, &path)
+                    || (open.contains_key(uri) && path.starts_with(root))
+                {
+                    project.update(uri, open);
+                    project.prune(std::slice::from_ref(root), open);
+                    self.mappings.remove(&root.join("genotype.toml"));
+                }
+            }
+        }
+    }
+
+    pub fn query(
+        &mut self,
+        roots: &[PathBuf],
+        open: &HashMap<Url, String>,
+        params: GeneratedSymbolsParams,
+    ) -> Result<Vec<GeneratedSymbol>, String> {
         let path = params
             .uri
             .to_file_path()
             .map_err(|_| "Expected a file URI")?;
-        let project = Project::load(&[project_root(&path)], open);
-        let Some((_, symbol)) = project.selected(&params.uri, position) else {
-            return Ok(vec![]);
-        };
-        Some(symbol)
-    } else {
-        None
-    };
-    let requested_uri = selected.as_ref().map_or(&params.uri, |symbol| &symbol.0);
-    let mut configs = HashSet::new();
-    for root in roots {
-        for entry in ignore::WalkBuilder::new(root).build().flatten() {
-            if entry.file_name() == "genotype.toml" {
-                configs.insert(entry.path().to_path_buf());
+        let selected = if let Some(position) = params.position {
+            let root = project_root(&path);
+            let project = self
+                .projects
+                .entry(root.clone())
+                .or_insert_with(|| Project::load(&[root], open));
+            if project.refresh_external(roots, open) {
+                project.prune(&[project_root(&path)], open);
+                self.mappings.clear();
             }
-        }
-    }
-    if let Ok(path) = requested_uri.to_file_path() {
+            let Some((_, symbol)) = project.selected(&params.uri, position) else {
+                return Ok(vec![]);
+            };
+            Some(Location::new(
+                symbol.0.clone(),
+                project.documents[&symbol.0].range(&(symbol.1..symbol.1)),
+            ))
+        } else {
+            None
+        };
+        let requested_uri = selected.as_ref().map_or(&params.uri, |symbol| &symbol.uri);
+        let configs = self.configs.get_or_insert_with(|| {
+            roots
+                .iter()
+                .flat_map(|root| {
+                    ignore::WalkBuilder::new(root)
+                        .build()
+                        .flatten()
+                        .filter(|entry| entry.file_name() == "genotype.toml")
+                        .map(|entry| entry.into_path())
+                })
+                .collect()
+        });
+        let path = requested_uri
+            .to_file_path()
+            .map_err(|_| "Expected a file URI")?;
         let config = project_root(&path).join("genotype.toml");
         if config.is_file() {
             configs.insert(config);
         }
+        let mut results = vec![];
+        for config_path in configs.iter() {
+            let root = config_path.parent().unwrap().to_path_buf();
+            if !roots
+                .iter()
+                .any(|workspace| config_path.starts_with(workspace))
+            {
+                let text = Url::from_file_path(config_path)
+                    .ok()
+                    .and_then(|uri| open.get(&uri).cloned())
+                    .or_else(|| std::fs::read_to_string(config_path).ok());
+                if self
+                    .external_configs
+                    .get(config_path)
+                    .is_some_and(|old| old != &text)
+                {
+                    self.mappings.remove(config_path);
+                    self.projects.remove(&root);
+                }
+                self.external_configs.insert(config_path.clone(), text);
+            }
+            if let Some(project) = self.projects.get_mut(&root)
+                && project.refresh_external(roots, open)
+            {
+                project.prune(std::slice::from_ref(&root), open);
+                self.mappings.remove(config_path);
+            }
+            let mappings = self.mappings.entry(config_path.clone()).or_insert_with(|| {
+                let project = self
+                    .projects
+                    .entry(root.clone())
+                    .or_insert_with(|| Project::load(&[root], open));
+                build_mappings(config_path, open, project)
+            });
+            match mappings {
+                Ok(mappings) => results.extend(
+                    mappings
+                        .iter()
+                        .filter(|mapping| {
+                            if let Some(symbol) = &selected {
+                                mapping.source.uri == symbol.uri
+                                    && mapping.source.range.start == symbol.range.start
+                            } else {
+                                mapping
+                                    .targets
+                                    .iter()
+                                    .any(|target| target.uri == params.uri)
+                            }
+                        })
+                        .cloned(),
+                ),
+                Err(error) if path.starts_with(config_path.parent().unwrap()) => {
+                    return Err(error.clone());
+                }
+                Err(_) => {}
+            }
+        }
+        merge_mappings(&mut results);
+        Ok(results)
     }
+}
+
+fn build_mappings(
+    config_path: &Path,
+    open: &HashMap<Url, String>,
+    project: &Project,
+) -> Result<Vec<GeneratedSymbol>, String> {
     let mut results = vec![];
-    for config_path in configs {
-        let text = Url::from_file_path(&config_path)
-            .ok()
-            .and_then(|uri| open.get(&uri).cloned())
-            .or_else(|| std::fs::read_to_string(&config_path).ok());
-        let Some(text) = text else {
+    let text = Url::from_file_path(config_path)
+        .ok()
+        .and_then(|uri| open.get(&uri).cloned())
+        .or_else(|| std::fs::read_to_string(config_path).ok());
+    let Some(text) = text else {
+        return Ok(results);
+    };
+    let config = match GtpConfig::parse(text) {
+        Ok(config) => config,
+        Err(error) => {
+            return Err(format!("Cannot read {}: {error}", config_path.display()));
+        }
+    };
+    let root = normalize(&config_path.parent().unwrap().join(config.root.to_string()));
+    let src = normalize(&root.join(config.src.to_string()));
+    let dist = normalize(&root.join(config.dist.to_string()));
+    // Use rename identity, not navigation identity: a local import alias or
+    // generic parameter must not rename the original exported declaration.
+    for (uri, doc) in &project.documents {
+        let Ok(path) = uri.to_file_path() else {
             continue;
         };
-        let config = match GtpConfig::parse(text) {
-            Ok(config) => config,
-            Err(error) => {
-                if requested_uri
-                    .to_file_path()
-                    .is_ok_and(|path| path.starts_with(config_path.parent().unwrap()))
-                {
-                    return Err(format!("Cannot read {}: {error}", config_path.display()));
+        let Ok(relative) = path.strip_prefix(&src) else {
+            continue;
+        };
+        let module = GtModuleId(
+            relative
+                .with_extension("")
+                .to_string_lossy()
+                .replace('\\', "/"),
+        );
+        for name in &doc.definitions {
+            let mut targets = vec![];
+            for (lang, language) in [
+                (GtpLang::Ts, "typescript"),
+                (GtpLang::Rs, "rust"),
+                (GtpLang::Py, "python"),
+            ] {
+                if !config.lang_enabled(lang) {
+                    continue;
                 }
-                continue;
+                let target = config.lang(lang);
+                let mut output = dist.join(target.dist_relative_pkg_path().to_string());
+                if config.lang_package_enabled(target) {
+                    output = output.join(target.pkg_dir_relative_src_dir_path().to_string());
+                }
+                output = normalize(
+                    &output.join(target.pkg_src_dir_relative_module_path(&module).to_string()),
+                );
+                let uri = Url::from_file_path(output).map_err(|_| "Invalid generated file path")?;
+                targets.push(GeneratedTarget {
+                    uri,
+                    language: language.into(),
+                });
             }
-        };
-        let root = normalize(&config_path.parent().unwrap().join(config.root.to_string()));
-        let src = normalize(&root.join(config.src.to_string()));
-        let dist = normalize(&root.join(config.dist.to_string()));
-        let requested_path = requested_uri
-            .to_file_path()
-            .map_err(|_| "Expected a file URI")?;
-        if params.position.is_some() && !requested_path.starts_with(&src) {
-            continue;
-        }
-        if params.position.is_none()
-            && ![GtpLang::Ts, GtpLang::Rs, GtpLang::Py]
-                .into_iter()
-                .any(|lang| {
-                    config.lang_enabled(lang)
-                        && requested_path.starts_with(normalize(
-                            &dist.join(config.lang(lang).dist_relative_pkg_path().to_string()),
-                        ))
-                })
-        {
-            continue;
-        }
-        let project = Project::load(std::slice::from_ref(&src), open);
-        // Use rename identity, not navigation identity: a local import alias or
-        // generic parameter must not rename the original exported declaration.
-        for (uri, doc) in &project.documents {
-            let Ok(path) = uri.to_file_path() else {
-                continue;
-            };
-            let Ok(relative) = path.strip_prefix(&src) else {
-                continue;
-            };
-            let module = GtModuleId(
-                relative
-                    .with_extension("")
-                    .to_string_lossy()
-                    .replace('\\', "/"),
-            );
-            for name in &doc.definitions {
-                if params.position.is_some()
-                    && selected.as_ref() != Some(&Symbol(uri.clone(), name.span.start))
-                {
-                    continue;
-                }
-                let mut targets = vec![];
-                for (lang, language) in [
-                    (GtpLang::Ts, "typescript"),
-                    (GtpLang::Rs, "rust"),
-                    (GtpLang::Py, "python"),
-                ] {
-                    if !config.lang_enabled(lang) {
-                        continue;
-                    }
-                    let target = config.lang(lang);
-                    let mut output = dist.join(target.dist_relative_pkg_path().to_string());
-                    if config.lang_package_enabled(target) {
-                        output = output.join(target.pkg_dir_relative_src_dir_path().to_string());
-                    }
-                    output = normalize(
-                        &output.join(target.pkg_src_dir_relative_module_path(&module).to_string()),
-                    );
-                    let uri =
-                        Url::from_file_path(output).map_err(|_| "Invalid generated file path")?;
-                    targets.push(GeneratedTarget {
-                        uri,
-                        language: language.into(),
-                    });
-                }
-                if params.position.is_none()
-                    && !targets.iter().any(|target| target.uri == params.uri)
-                {
-                    continue;
-                }
-                if !targets.is_empty() {
-                    results.push(GeneratedSymbol {
-                        name: name.text.clone(),
-                        source: Location::new(uri.clone(), doc.range(&name.span)),
-                        targets,
-                    });
-                }
+            if !targets.is_empty() {
+                results.push(GeneratedSymbol {
+                    name: name.text.clone(),
+                    source: Location::new(uri.clone(), doc.range(&name.span)),
+                    targets,
+                });
             }
         }
     }
+    Ok(results)
+}
+
+fn merge_mappings(results: &mut Vec<GeneratedSymbol>) {
     results.sort_by(|a, b| {
         a.source
             .uri
@@ -188,7 +283,7 @@ pub fn generated_symbols(
         }
         true
     });
-    for result in &mut results {
+    for result in results {
         result.targets.sort_by_key(|target| {
             (
                 match target.language.as_str() {
@@ -200,7 +295,6 @@ pub fn generated_symbols(
             )
         });
     }
-    Ok(results)
 }
 
 fn normalize(path: &Path) -> PathBuf {
