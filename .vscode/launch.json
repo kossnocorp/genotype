@@ -21,7 +21,7 @@
       "name": "vscode:dev",
       "type": "extensionHost",
       "request": "launch",
-      "preLaunchTask": "vscode:build",
+      "preLaunchTask": "vscode:build:dev",
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}/pkgs/npm-vscode-genotype",
         "${workspaceFolder}/examples/03-demo"

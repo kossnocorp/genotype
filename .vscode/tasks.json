@@ -51,6 +51,20 @@
       }
     },
 
+    {
+      "label": "vscode:build:dev",
+      "type": "shell",
+      "command": "mise",
+      "args": [":build:dev"],
+      "options": {
+        "cwd": "${workspaceFolder}/pkgs/npm-vscode-genotype"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+
     //#endregion
 
     // TODO: Revamp
