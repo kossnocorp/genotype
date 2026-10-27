@@ -736,3 +736,242 @@ fn cached_index_follows_new_external_imports_and_drops_detached_documents() {
     p.prune(&[root], &open);
     assert!(!p.documents.contains_key(&external));
 }
+
+#[test]
+fn semantic_token_cursor_preserves_utf16_crlf_and_multiline_positions() {
+    let mut text = String::new();
+    for index in 0..1000 {
+        text.push_str(&format!(
+            "/* 😀 é\r\n\r\nend */ Type{index}: {{ field: \"😀\", other: string }}\r\n"
+        ));
+    }
+    let doc = Document::new(text);
+    assert!(doc.valid);
+    let mut expected = vec![];
+    let mut spans = doc.highlights.clone();
+    spans.sort_by_key(|(span, _, _)| span.start);
+    for (span, kind, modifiers) in spans {
+        let mut byte = span.start;
+        for line in doc.text[span].split_inclusive('\n') {
+            let value = line.trim_end_matches(['\r', '\n']);
+            if !value.is_empty() {
+                expected.push((
+                    position(&doc.text, byte),
+                    value.encode_utf16().count() as u32,
+                    kind,
+                    modifiers,
+                ));
+            }
+            byte += line.len();
+        }
+    }
+    let mut pos = Position::default();
+    let actual: Vec<_> = doc
+        .tokens()
+        .iter()
+        .map(|token| {
+            pos = Position::new(
+                pos.line + token.delta_line,
+                if token.delta_line == 0 {
+                    pos.character + token.delta_start
+                } else {
+                    token.delta_start
+                },
+            );
+            (
+                pos,
+                token.length,
+                token.token_type,
+                token.token_modifiers_bitset,
+            )
+        })
+        .collect();
+    assert_eq!(actual, expected);
+}
+
+#[test]
+fn configured_entries_seed_both_initial_and_incremental_graphs() {
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path().join("project[1]");
+    std::fs::create_dir_all(root.join("src/fixtures")).unwrap();
+    std::fs::write(root.join("genotype.toml"), "entry = 'main.type'").unwrap();
+    let main = Url::from_file_path(root.join("src/main.type")).unwrap();
+    let dep = Url::from_file_path(root.join("src/dependency.type")).unwrap();
+    let broken = Url::from_file_path(root.join("src/fixtures/broken.type")).unwrap();
+    std::fs::write(main.to_file_path().unwrap(), "Value: ./dependency/User").unwrap();
+    std::fs::write(dep.to_file_path().unwrap(), "User: string").unwrap();
+    std::fs::write(broken.to_file_path().unwrap(), "Broken: {").unwrap();
+    let mut p = Project::load(std::slice::from_ref(&root), &HashMap::new());
+    assert_eq!(p.documents.len(), 2);
+    assert!(p.rename(&dep, Position::default(), "Account").is_ok());
+    assert!(crate::project::in_source(
+        &root,
+        &main.to_file_path().unwrap()
+    ));
+    assert!(!crate::project::in_source(
+        &root,
+        &broken.to_file_path().unwrap()
+    ));
+    let open = HashMap::from([(broken.clone(), "Extra: string".into())]);
+    p.update(&broken, &open);
+    p.prune(std::slice::from_ref(&root), &open);
+    assert!(p.documents.contains_key(&broken));
+    p.update(&broken, &HashMap::new());
+    p.prune(std::slice::from_ref(&root), &HashMap::new());
+    assert!(!p.documents.contains_key(&broken));
+    std::fs::write(main.to_file_path().unwrap(), "Value: string").unwrap();
+    p.update(&main, &HashMap::new());
+    p.prune(std::slice::from_ref(&root), &HashMap::new());
+    assert_eq!(p.documents.len(), 1);
+    std::fs::write(root.join("genotype.toml"), "entry = 'fixtures/*.type'").unwrap();
+    assert!(crate::project::in_source(
+        &root,
+        &broken.to_file_path().unwrap()
+    ));
+    assert!(!crate::project::in_source(
+        &root,
+        &main.to_file_path().unwrap()
+    ));
+    assert_eq!(Project::load(&[root], &HashMap::new()).documents.len(), 1);
+}
+
+#[test]
+fn generated_mapping_cache_tracks_notifications_and_open_buffers() {
+    use crate::project::generated::{Cache, GeneratedSymbolsParams};
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path();
+    let roots = [root.to_path_buf()];
+    let mut cache = Cache::default();
+    let target = Url::from_file_path(root.join("out/ts/src/main.ts")).unwrap();
+    let query = || GeneratedSymbolsParams {
+        uri: target.clone(),
+        position: None,
+    };
+    assert!(
+        cache
+            .query(&roots, &HashMap::new(), query())
+            .unwrap()
+            .is_empty()
+    );
+    std::fs::create_dir_all(root.join("nested/src")).unwrap();
+    let config = Url::from_file_path(root.join("nested/genotype.toml")).unwrap();
+    let source = Url::from_file_path(root.join("nested/src/main.type")).unwrap();
+    std::fs::write(
+        config.to_file_path().unwrap(),
+        "dist = '../out'\nentry = 'main.type'\n[ts]\nenabled = true",
+    )
+    .unwrap();
+    std::fs::write(source.to_file_path().unwrap(), "User: string").unwrap();
+    // Negative queries do not rediscover every configuration in the workspace.
+    assert!(
+        cache
+            .query(&roots, &HashMap::new(), query())
+            .unwrap()
+            .is_empty()
+    );
+    cache.invalidate(&config, &HashMap::new());
+    assert_eq!(
+        cache.query(&roots, &HashMap::new(), query()).unwrap()[0].name,
+        "User"
+    );
+    std::fs::write(source.to_file_path().unwrap(), "Account: string").unwrap();
+    assert_eq!(
+        cache.query(&roots, &HashMap::new(), query()).unwrap()[0].name,
+        "User"
+    );
+    cache.invalidate(&source, &HashMap::new());
+    assert_eq!(
+        cache.query(&roots, &HashMap::new(), query()).unwrap()[0].name,
+        "Account"
+    );
+    let open = HashMap::from([(source.clone(), "Unsaved: string".into())]);
+    cache.invalidate(&source, &open);
+    assert_eq!(
+        cache.query(&roots, &open, query()).unwrap()[0].name,
+        "Unsaved"
+    );
+    let forward = cache
+        .query(
+            &roots,
+            &open,
+            GeneratedSymbolsParams {
+                uri: source.clone(),
+                position: Some(Position::default()),
+            },
+        )
+        .unwrap();
+    assert_eq!(forward[0].targets[0].uri, target);
+    cache.invalidate(&source, &HashMap::new());
+    assert_eq!(
+        cache.query(&roots, &HashMap::new(), query()).unwrap()[0].name,
+        "Account"
+    );
+    std::fs::remove_file(config.to_file_path().unwrap()).unwrap();
+    cache.invalidate(&config, &HashMap::new());
+    assert!(
+        cache
+            .query(&roots, &HashMap::new(), query())
+            .unwrap()
+            .is_empty()
+    );
+}
+
+#[test]
+fn external_dependencies_are_revalidated_without_file_events() {
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path().join("workspace");
+    std::fs::create_dir(&root).unwrap();
+    let main = Url::from_file_path(root.join("main.type")).unwrap();
+    let external = Url::from_file_path(dir.path().join("external.type")).unwrap();
+    std::fs::write(main.to_file_path().unwrap(), "Value: ../external/User").unwrap();
+    let roots = [root];
+    let mut p = Project::load(&roots, &HashMap::new());
+    std::fs::write(external.to_file_path().unwrap(), "User: string").unwrap();
+    assert!(p.refresh_external(&roots, &HashMap::new()));
+    assert!(p.diagnostics(&main).is_empty());
+    std::fs::write(external.to_file_path().unwrap(), "Other: string").unwrap();
+    assert!(p.refresh_external(&roots, &HashMap::new()));
+    assert!(!p.diagnostics(&main).is_empty());
+    let open = HashMap::from([(external.clone(), "User: string".into())]);
+    p.update(&external, &open);
+    assert!(!p.refresh_external(&roots, &open));
+    assert!(p.diagnostics(&main).is_empty());
+    std::fs::remove_file(external.to_file_path().unwrap()).unwrap();
+    assert!(p.refresh_external(&roots, &HashMap::new()));
+    assert!(!p.documents.contains_key(&external));
+}
+
+#[test]
+fn standalone_generated_mappings_refresh_sources_and_configuration() {
+    use crate::project::generated::{Cache, GeneratedSymbolsParams};
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path();
+    std::fs::create_dir(root.join("src")).unwrap();
+    let source = Url::from_file_path(root.join("src/main.type")).unwrap();
+    let config = root.join("genotype.toml");
+    std::fs::write(&config, "[ts]\nenabled = true").unwrap();
+    std::fs::write(source.to_file_path().unwrap(), "User: string").unwrap();
+    let mut cache = Cache::default();
+    let query = || GeneratedSymbolsParams {
+        uri: source.clone(),
+        position: Some(Position::default()),
+    };
+    let first = cache.query(&[], &HashMap::new(), query()).unwrap();
+    assert_eq!(first[0].name, "User");
+    std::fs::write(source.to_file_path().unwrap(), "Account: string").unwrap();
+    let reverse = cache
+        .query(
+            &[],
+            &HashMap::new(),
+            GeneratedSymbolsParams {
+                uri: first[0].targets[0].uri.clone(),
+                position: None,
+            },
+        )
+        .unwrap();
+    assert_eq!(reverse[0].name, "Account");
+    std::fs::write(&config, "[ts]\nenabled = false\n[rs]\nenabled = true").unwrap();
+    let updated = cache.query(&[], &HashMap::new(), query()).unwrap();
+    assert_eq!(updated[0].targets.len(), 1);
+    assert_eq!(updated[0].targets[0].language, "rust");
+}
