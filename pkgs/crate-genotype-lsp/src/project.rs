@@ -9,6 +9,7 @@ mod intelligence;
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 struct Symbol(Url, usize);
 
+#[derive(Clone)]
 pub struct Project {
     pub documents: HashMap<Url, Document>,
 }
@@ -36,10 +37,8 @@ impl Project {
                     diagnostics.push(diagnostic);
                 }
             } else if let Some(name) = &import.name
-                && self
-                    .resolve(&target, &name.text, &mut HashSet::new())
-                    .is_none()
-                && !self.unavailable(&target, &name.text, &mut HashSet::new())
+                && self.exported(&target, &name.text).is_none()
+                && !self.export_unavailable(&target)
             {
                 diagnostics.push(error_diagnostic(
                     doc.range(&name.span),
@@ -63,10 +62,17 @@ impl Project {
                 },
                 None => uri.clone(),
             };
-            if self
-                .resolve(&target, &reference.name.text, &mut HashSet::new())
-                .is_none()
-                && !self.unavailable(&target, &reference.name.text, &mut HashSet::new())
+            let resolved = if reference.path.is_some() {
+                self.exported(&target, &reference.name.text)
+            } else {
+                self.resolve(&target, &reference.name.text, &mut HashSet::new())
+            };
+            if resolved.is_none()
+                && !(if reference.path.is_some() {
+                    self.export_unavailable(&target)
+                } else {
+                    self.unavailable(&target, &reference.name.text)
+                })
             {
                 diagnostics.push(error_diagnostic(
                     doc.range(&reference.name.span),
@@ -81,10 +87,11 @@ impl Project {
 
     // Do not invent missing-reference errors when a dependency cannot be
     // analyzed (syntax errors or external packages without source).
-    fn unavailable(&self, uri: &Url, name: &str, visited: &mut HashSet<Url>) -> bool {
-        if !visited.insert(uri.clone()) {
-            return false;
-        }
+    fn export_unavailable(&self, uri: &Url) -> bool {
+        self.documents.get(uri).is_some_and(|doc| !doc.valid)
+    }
+
+    fn unavailable(&self, uri: &Url, name: &str) -> bool {
         let Some(doc) = self.documents.get(uri) else {
             return false;
         };
@@ -102,18 +109,19 @@ impl Project {
             })
             .any(|import| match module_uri(uri, &import.path) {
                 None => true,
-                Some(target) => self.unavailable(
-                    &target,
-                    import.name.as_ref().map_or(name, |n| n.text.as_str()),
-                    visited,
-                ),
+                Some(target) => self.export_unavailable(&target),
             })
     }
 
     pub fn load(roots: &[PathBuf], open: &HashMap<Url, String>) -> Self {
         let mut documents = HashMap::new();
         for root in roots {
-            for entry in ignore::WalkBuilder::new(root)
+            let source = if root.join("genotype.toml").is_file() {
+                source_root(root)
+            } else {
+                root.clone()
+            };
+            for entry in ignore::WalkBuilder::new(source)
                 .follow_links(false)
                 .build()
                 .flatten()
@@ -136,16 +144,77 @@ impl Project {
                 documents.insert(uri.clone(), Document::new(text.clone()));
             }
         }
+        let mut project = Self { documents };
+        project.follow_imports(open);
+        project
+    }
+
+    pub fn update(&mut self, uri: &Url, open: &HashMap<Url, String>) {
+        let text = open
+            .get(uri)
+            .cloned()
+            .or_else(|| std::fs::read_to_string(uri.to_file_path().ok()?).ok());
+        if let Some(text) = text {
+            if self.documents.get(uri).is_none_or(|doc| doc.text != text) {
+                self.documents.insert(uri.clone(), Document::new(text));
+            }
+        } else {
+            self.documents.remove(uri);
+        }
+        self.follow_imports(open);
+    }
+
+    pub fn references_module(&self, target: &Url) -> bool {
+        self.documents.iter().any(|(uri, doc)| {
+            module_paths(doc).any(|path| module_uri(uri, path).as_ref() == Some(target))
+        })
+    }
+
+    pub fn prune(&mut self, roots: &[PathBuf], open: &HashMap<Url, String>) {
+        let sources: Vec<_> = roots
+            .iter()
+            .map(|root| {
+                if root.join("genotype.toml").is_file() {
+                    normalize(&source_root(root))
+                } else {
+                    root.clone()
+                }
+            })
+            .collect();
+        let mut reachable: HashSet<_> = self
+            .documents
+            .keys()
+            .filter(|uri| {
+                uri.to_file_path().is_ok_and(|path| {
+                    sources.iter().any(|root| path.starts_with(root))
+                        || (open.contains_key(*uri)
+                            && roots.iter().any(|root| path.starts_with(root)))
+                })
+            })
+            .cloned()
+            .collect();
+        let mut pending: Vec<_> = reachable.iter().cloned().collect();
+        while let Some(uri) = pending.pop() {
+            if let Some(doc) = self.documents.get(&uri) {
+                for path in module_paths(doc) {
+                    if let Some(target) = module_uri(&uri, path)
+                        && reachable.insert(target.clone())
+                    {
+                        pending.push(target);
+                    }
+                }
+            }
+        }
+        self.documents.retain(|uri, _| reachable.contains(uri));
+    }
+
+    fn follow_imports(&mut self, open: &HashMap<Url, String>) {
+        let documents = &mut self.documents;
         // Follow imports outside workspace roots as well (including unopened files).
         loop {
             let mut pending = HashSet::new();
-            for (uri, doc) in &documents {
-                for path in doc
-                    .imports
-                    .iter()
-                    .map(|i| i.path.as_str())
-                    .chain(doc.references.iter().filter_map(|r| r.path.as_deref()))
-                {
+            for (uri, doc) in documents.iter() {
+                for path in module_paths(doc) {
                     if let Some(target) = module_uri(uri, path)
                         && !documents.contains_key(&target)
                     {
@@ -168,7 +237,16 @@ impl Project {
                 break;
             }
         }
-        Self { documents }
+    }
+
+    fn exported(&self, uri: &Url, name: &str) -> Option<Symbol> {
+        let definition = self
+            .documents
+            .get(uri)?
+            .definitions
+            .iter()
+            .find(|def| def.text == name)?;
+        Some(Symbol(uri.clone(), definition.span.start))
     }
 
     fn resolve(
@@ -192,13 +270,13 @@ impl Project {
             } else if let Some(original) = &import.name
                 && original.text == name
             {
-                return self.resolve(&module_uri(uri, &import.path)?, name, visited);
+                return self.exported(&module_uri(uri, &import.path)?, name);
             }
         }
         let mut found = None;
         for import in doc.imports.iter().filter(|i| i.name.is_none()) {
             if let Some(target) = module_uri(uri, &import.path)
-                && let Some(symbol) = self.resolve(&target, name, &mut visited.clone())
+                && let Some(symbol) = self.exported(&target, name)
             {
                 if found.as_ref().is_some_and(|other| other != &symbol) {
                     return None;
@@ -222,7 +300,7 @@ impl Project {
         for import in &doc.imports {
             if let Some(name) = &import.name
                 && let Some(target) = module_uri(uri, &import.path)
-                && let Some(symbol) = self.resolve(&target, &name.text, &mut HashSet::new())
+                && let Some(symbol) = self.exported(&target, &name.text)
             {
                 result.push((name, symbol));
             }
@@ -241,11 +319,11 @@ impl Project {
                 if reference.path.is_some() && target.is_none() {
                     continue;
                 }
-                self.resolve(
-                    target.as_ref().unwrap_or(uri),
-                    &reference.name.text,
-                    &mut HashSet::new(),
-                )
+                if let Some(target) = target {
+                    self.exported(&target, &reference.name.text)
+                } else {
+                    self.resolve(uri, &reference.name.text, &mut HashSet::new())
+                }
             };
             if let Some(symbol) = symbol {
                 result.push((&reference.name, symbol));
@@ -276,10 +354,9 @@ impl Project {
                 .iter()
                 .find(|i| i.alias.as_ref().is_some_and(|a| a.span.start == symbol.1))
             {
-                symbol = self.resolve(
+                symbol = self.exported(
                     &module_uri(&symbol.0, &import.path)?,
                     &import.name.as_ref()?.text,
-                    &mut HashSet::new(),
                 )?;
             } else {
                 let name = doc
@@ -316,7 +393,11 @@ impl Project {
                 .filter(|(_, target)| target == &symbol)
                 .map(|(name, _)| TextEdit::new(doc.range(&name.span), new_name.into()))
                 .collect();
-            if edits.is_empty() {
+            let glob_dependent = doc.imports.iter().any(|import| {
+                import.name.is_none() && module_uri(uri, &import.path).as_ref() == Some(&symbol.0)
+            }) && self.exported(&symbol.0, &selected.text).as_ref()
+                == Some(&symbol);
+            if edits.is_empty() && !glob_dependent {
                 continue;
             }
             // Reject capture in any affected module, including generic scopes and
@@ -339,13 +420,22 @@ impl Project {
                     "Renaming to {new_name} would conflict with another symbol in {uri}"
                 ));
             }
-            changes.insert(uri.clone(), edits);
+            if !edits.is_empty() {
+                changes.insert(uri.clone(), edits);
+            }
         }
         Ok(Some(WorkspaceEdit {
             changes: Some(changes),
             ..Default::default()
         }))
     }
+}
+
+fn module_paths(doc: &Document) -> impl Iterator<Item = &str> {
+    doc.imports
+        .iter()
+        .map(|i| i.path.as_str())
+        .chain(doc.references.iter().filter_map(|r| r.path.as_deref()))
 }
 
 fn valid_name(name: &str) -> bool {
@@ -409,4 +499,13 @@ fn source_root(parent: &Path) -> PathBuf {
         }
     }
     parent.to_path_buf()
+}
+
+pub fn in_source(root: &Path, path: &Path) -> bool {
+    path.extension().is_some_and(|ext| ext == "type")
+        && path.starts_with(if root.join("genotype.toml").is_file() {
+            normalize(&source_root(root))
+        } else {
+            root.to_path_buf()
+        })
 }

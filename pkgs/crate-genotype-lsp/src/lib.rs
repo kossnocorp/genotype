@@ -20,16 +20,17 @@ struct Server {
     open: HashMap<lsp::Url, String>,
     versions: HashMap<lsp::Url, i32>,
     published: HashSet<lsp::Url>,
+    projects: HashMap<Vec<PathBuf>, project::Project>,
 }
 
 impl Server {
     fn publish_diagnostics(&mut self) -> ControlFlow<async_lsp::Result<()>> {
         let mut diagnostics = HashMap::new();
-        for uri in self.open.keys() {
-            if diagnostics.contains_key(uri) {
+        for uri in self.open.keys().cloned().collect::<Vec<_>>() {
+            if diagnostics.contains_key(&uri) {
                 continue;
             }
-            let project = self.project(uri);
+            let project = self.project(&uri);
             for uri in project.documents.keys() {
                 diagnostics.insert(uri.clone(), project.diagnostics(uri));
             }
@@ -54,7 +55,7 @@ impl Server {
         ControlFlow::Continue(())
     }
 
-    fn project(&self, uri: &lsp::Url) -> project::Project {
+    fn project(&mut self, uri: &lsp::Url) -> &project::Project {
         let mut roots = self.roots.clone();
         if let Ok(path) = uri.to_file_path() {
             let root = project::project_root(&path);
@@ -64,7 +65,33 @@ impl Server {
                 roots = vec![root];
             }
         }
-        project::Project::load(&roots, &self.open)
+        self.projects
+            .entry(roots.clone())
+            .or_insert_with(|| project::Project::load(&roots, &self.open))
+    }
+
+    fn update_projects(&mut self, uri: &lsp::Url) {
+        if uri
+            .to_file_path()
+            .is_ok_and(|path| path.file_name().is_some_and(|name| name == "genotype.toml"))
+        {
+            self.projects.clear();
+            return;
+        }
+        for (roots, project) in &mut self.projects {
+            if project.documents.contains_key(uri)
+                || project.references_module(uri)
+                || uri.to_file_path().is_ok_and(|path| {
+                    roots.iter().any(|root| {
+                        project::in_source(root, &path)
+                            || (self.open.contains_key(uri) && path.starts_with(root))
+                    })
+                })
+            {
+                project.update(uri, &self.open);
+                project.prune(roots, &self.open);
+            }
+        }
     }
 
     fn router(client: ClientSocket) -> Router<Self> {
@@ -74,6 +101,7 @@ impl Server {
             open: HashMap::new(),
             versions: HashMap::new(),
             published: HashSet::new(),
+            projects: HashMap::new(),
         });
         // Optional client notifications must not terminate the server.
         router.unhandled_notification(|_, _| ControlFlow::Continue(()));
@@ -146,7 +174,8 @@ impl Server {
             );
             server
                 .open
-                .insert(params.text_document.uri, params.text_document.text);
+                .insert(params.text_document.uri.clone(), params.text_document.text);
+            server.update_projects(&params.text_document.uri);
             server.publish_diagnostics()
         });
         router.notification::<lsp::notification::DidChangeTextDocument>(|server, params| {
@@ -176,15 +205,19 @@ impl Server {
                     }
                 }
             }
+            server.update_projects(&params.text_document.uri);
             server.publish_diagnostics()
         });
         router.notification::<lsp::notification::DidCloseTextDocument>(|server, params| {
             server.open.remove(&params.text_document.uri);
             server.versions.remove(&params.text_document.uri);
+            server.update_projects(&params.text_document.uri);
             server.publish_diagnostics()
         });
-        // Requests read current files from disk, with unsaved buffers overlaid.
-        router.notification::<lsp::notification::DidChangeWatchedFiles>(|server, _| {
+        router.notification::<lsp::notification::DidChangeWatchedFiles>(|server, params| {
+            for change in params.changes {
+                server.update_projects(&change.uri);
+            }
             server.publish_diagnostics()
         });
         router.request::<lsp::request::GotoDefinition, _>(|server, params| {
@@ -259,15 +292,10 @@ impl Server {
         });
         router.request::<lsp::request::SemanticTokensFullRequest, _>(|server, params| {
             let uri = params.text_document.uri;
-            let text = server
-                .open
-                .get(&uri)
-                .cloned()
-                .or_else(|| std::fs::read_to_string(uri.to_file_path().ok()?).ok());
-            let result = text.map(|text| {
+            let result = server.project(&uri).documents.get(&uri).map(|doc| {
                 lsp::SemanticTokensResult::Tokens(lsp::SemanticTokens {
                     result_id: None,
-                    data: document::Document::new(text).tokens(),
+                    data: doc.tokens(),
                 })
             });
             async move { Ok(result) }

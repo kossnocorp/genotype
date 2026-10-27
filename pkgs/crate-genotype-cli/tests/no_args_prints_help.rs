@@ -21,6 +21,7 @@ fn running_without_arguments_prints_help() {
     Usage: gt [COMMAND]
 
     Commands:
+      lsp      Starts the language server over stdio
       fmt      Formats .type files in the current directory and its subdirectories
       build    Builds a Genotype project
       init     Initializes a Genotype project

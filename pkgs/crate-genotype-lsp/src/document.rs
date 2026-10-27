@@ -33,7 +33,7 @@ impl From<&GtToken<'_>> for Name {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Import {
     pub path: String,
     pub path_span: ByteRange<usize>,
@@ -41,18 +41,20 @@ pub struct Import {
     pub alias: Option<Name>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Reference {
     pub name: Name,
     pub path: Option<String>,
     pub generic: Option<usize>,
 }
 
+#[derive(Clone)]
 pub struct Entity {
     pub signature: String,
     pub documentation: String,
 }
 
+#[derive(Clone)]
 pub struct Document {
     pub text: String,
     pub valid: bool,

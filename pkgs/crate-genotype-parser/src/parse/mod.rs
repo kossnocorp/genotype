@@ -715,6 +715,14 @@ impl<'a> Parser<'a> {
                 }
                 let start = self.pos;
                 while let Some(ch) = self.rest().chars().next() {
+                    // A trailing comment belongs to the import's trivia, not
+                    // to a speculative path segment before its final name.
+                    if (self.rest().starts_with("/*") || self.rest().starts_with("//"))
+                        && self.source[start..self.pos].ends_with(char::is_whitespace)
+                    {
+                        self.pos = start;
+                        return Err(());
+                    }
                     if matches!(ch, '/' | '\r' | '\n' | '<') {
                         break;
                     }

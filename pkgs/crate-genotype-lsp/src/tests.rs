@@ -580,3 +580,159 @@ fn loads_unopened_files_root_imports_and_unsaved_buffers() {
     let p = Project::load(&[dir.path().into()], &HashMap::new());
     assert!(p.definition(&main_uri, Position::new(0, 5)).is_none());
 }
+
+#[test]
+fn imports_are_private_bindings_not_exports() {
+    for import in ["use ./b/User", "use ./b/*", "use ./b/{User as User}"] {
+        let p = project(&[
+            ("a", import),
+            ("b", "User: string"),
+            ("inline", "Value: ./a/User"),
+            ("named", "use ./a/User\nValue: User"),
+            ("glob", "use ./a/*\nValue: User"),
+        ]);
+        assert!(
+            p.diagnostics(&uri("a")).is_empty(),
+            "{import}: {:?}",
+            p.diagnostics(&uri("a"))
+        );
+        for module in ["inline", "named", "glob"] {
+            assert!(
+                !p.diagnostics(&uri(module)).is_empty(),
+                "{import}: {module}"
+            );
+            let text = &p.documents[&uri(module)].text;
+            assert!(
+                p.definition(&uri(module), position(text, text.len() - 1))
+                    .is_none()
+            );
+        }
+    }
+}
+
+#[test]
+fn rename_rejects_glob_conflicts_in_modules_without_edits() {
+    let p = project(&[
+        ("a", "User: string"),
+        ("b", "use ./a/*\nuse ./c/*\nValue: Account"),
+        ("c", "Account: string"),
+    ]);
+    assert!(p.rename(&uri("a"), Position::new(0, 0), "Account").is_err());
+    assert!(p.rename(&uri("a"), Position::new(0, 0), "Customer").is_ok());
+}
+
+#[test]
+fn imports_are_inserted_after_complete_multiline_comments() {
+    for comment in [
+        "/* keep\nthis comment */",
+        "/* keep\n/* nested */ comment */",
+        "// keep",
+    ] {
+        let text = format!("use ./existing/Existing {comment}\nValue: Missing");
+        let p = project(&[
+            ("main", &text),
+            ("existing", "Existing: string"),
+            ("model", "Missing: string"),
+        ]);
+        let pos = at(&text, "Missing");
+        let actions = p.import_actions(&uri("main"), lsp::Range::new(pos, pos));
+        assert!(
+            !actions.is_empty(),
+            "{comment}: {:?}",
+            p.diagnostics(&uri("main"))
+        );
+        let lsp::CodeActionOrCommand::CodeAction(action) = &actions[0] else {
+            panic!()
+        };
+        let updated = apply_edits(
+            &text,
+            &action.edit.as_ref().unwrap().changes.as_ref().unwrap()[&uri("main")],
+        );
+        let expected =
+            format!("use ./existing/Existing {comment}\nuse ./model/Missing\nValue: Missing");
+        assert_eq!(updated, expected);
+        let items = p.completions(&uri("main"), position(&text, text.len()));
+        let item = items.iter().find(|item| item.label == "Missing").unwrap();
+        assert_eq!(apply_edits(&text, &completion_edits(item)), expected);
+        let updated = project(&[
+            ("main", &updated),
+            ("existing", "Existing: string"),
+            ("model", "Missing: string"),
+        ]);
+        assert!(updated.diagnostics(&uri("main")).is_empty());
+    }
+}
+
+#[test]
+fn configured_index_excludes_unrelated_files_but_follows_imports_and_buffers() {
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path();
+    std::fs::create_dir_all(root.join("project/types")).unwrap();
+    std::fs::create_dir(root.join("examples")).unwrap();
+    std::fs::write(
+        root.join("genotype.toml"),
+        "root = 'project'\nsrc = 'types'",
+    )
+    .unwrap();
+    std::fs::write(root.join("examples/broken.type"), "Broken: {").unwrap();
+    std::fs::write(root.join("external.type"), "External: string").unwrap();
+    let source = Url::from_file_path(root.join("project/types/main.type")).unwrap();
+    std::fs::write(
+        source.to_file_path().unwrap(),
+        "use ../../external/External\nUser: External",
+    )
+    .unwrap();
+    let p = Project::load(&[root.into()], &HashMap::new());
+    assert_eq!(p.documents.len(), 2);
+    assert!(p.diagnostics(&source).is_empty());
+    assert!(p.rename(&source, Position::new(1, 0), "Account").is_ok());
+    let extra = Url::from_file_path(root.join("examples/open.type")).unwrap();
+    let open = HashMap::from([(extra.clone(), "Extra: string".into())]);
+    assert!(
+        Project::load(&[root.into()], &open)
+            .documents
+            .contains_key(&extra)
+    );
+}
+
+#[test]
+fn incremental_updates_preserve_other_documents_and_follow_new_imports() {
+    let dir = tempfile::tempdir().unwrap();
+    let main = Url::from_file_path(dir.path().join("main.type")).unwrap();
+    let model = Url::from_file_path(dir.path().join("model.type")).unwrap();
+    std::fs::write(main.to_file_path().unwrap(), "Value: string").unwrap();
+    std::fs::write(model.to_file_path().unwrap(), "User: string").unwrap();
+    let mut p = Project::load(&[dir.path().into()], &HashMap::new());
+    std::fs::write(model.to_file_path().unwrap(), "Account: string").unwrap();
+    let open = HashMap::from([(main.clone(), "Value: ./model/User".into())]);
+    p.update(&main, &open);
+    assert!(p.diagnostics(&main).is_empty());
+    p.update(&model, &open);
+    assert!(!p.diagnostics(&main).is_empty());
+    std::fs::remove_file(model.to_file_path().unwrap()).unwrap();
+    p.update(&model, &open);
+    assert!(!p.documents.contains_key(&model));
+    p.update(&main, &HashMap::new());
+    assert_eq!(p.documents[&main].text, "Value: string");
+}
+
+#[test]
+fn cached_index_follows_new_external_imports_and_drops_detached_documents() {
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path().join("project");
+    std::fs::create_dir(&root).unwrap();
+    let main = Url::from_file_path(root.join("main.type")).unwrap();
+    let external = Url::from_file_path(dir.path().join("external.type")).unwrap();
+    std::fs::write(main.to_file_path().unwrap(), "Value: string").unwrap();
+    let mut p = Project::load(std::slice::from_ref(&root), &HashMap::new());
+    let mut open = HashMap::from([(main.clone(), "Value: ../external/User".into())]);
+    p.update(&main, &open);
+    assert!(p.references_module(&external));
+    std::fs::write(external.to_file_path().unwrap(), "User: string").unwrap();
+    p.update(&external, &open);
+    assert!(p.diagnostics(&main).is_empty());
+    open.insert(main.clone(), "Value: string".into());
+    p.update(&main, &open);
+    p.prune(&[root], &open);
+    assert!(!p.documents.contains_key(&external));
+}
