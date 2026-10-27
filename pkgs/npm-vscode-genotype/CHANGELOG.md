@@ -4,11 +4,11 @@ All notable changes to the "genotype" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## v0.5.0 - Unreleased
+## v0.5.0 - 2026-10-27
 
 ### Added
 
-- Language server support (available in Genotype v0.18) with rich IDE features.
+- Language server support (available in Genotype v0.19) with rich IDE features.
 
 - Semantic highlighting via the language server.
 
