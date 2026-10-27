@@ -2,6 +2,7 @@ use crate::document::{Document, Name, error_diagnostic, offset};
 use async_lsp::lsp_types::{Diagnostic, Location, Position, Range, TextEdit, Url, WorkspaceEdit};
 use std::collections::{HashMap, HashSet};
 use std::path::{self as path, Path, PathBuf};
+use std::sync::Arc;
 
 pub mod generated;
 mod intelligence;
@@ -11,7 +12,7 @@ struct Symbol(Url, usize);
 
 #[derive(Clone)]
 pub struct Project {
-    pub documents: HashMap<Url, Document>,
+    pub documents: HashMap<Url, Arc<Document>>,
 }
 
 impl Project {
@@ -122,7 +123,7 @@ impl Project {
                     && let (Ok(uri), Ok(text)) =
                         (Url::from_file_path(&path), std::fs::read_to_string(&path))
                 {
-                    documents.insert(uri, Document::new(text));
+                    documents.insert(uri, Arc::new(Document::new(text)));
                 }
             }
         }
@@ -131,7 +132,7 @@ impl Project {
                 .to_file_path()
                 .is_ok_and(|path| roots.iter().any(|root| path.starts_with(root)))
             {
-                documents.insert(uri.clone(), Document::new(text.clone()));
+                documents.insert(uri.clone(), Arc::new(Document::new(text.clone())));
             }
         }
         let mut project = Self { documents };
@@ -146,7 +147,8 @@ impl Project {
             .or_else(|| std::fs::read_to_string(uri.to_file_path().ok()?).ok());
         if let Some(text) = text {
             if self.documents.get(uri).is_none_or(|doc| doc.text != text) {
-                self.documents.insert(uri.clone(), Document::new(text));
+                self.documents
+                    .insert(uri.clone(), Arc::new(Document::new(text)));
             }
         } else {
             self.documents.remove(uri);
@@ -182,7 +184,7 @@ impl Project {
             let text = std::fs::read_to_string(path).ok();
             if self.documents.get(&uri).map(|doc| &doc.text) != text.as_ref() {
                 if let Some(text) = text {
-                    self.documents.insert(uri, Document::new(text));
+                    self.documents.insert(uri, Arc::new(Document::new(text)));
                 } else {
                     self.documents.remove(&uri);
                 }
@@ -196,6 +198,11 @@ impl Project {
     }
 
     pub fn prune(&mut self, roots: &[PathBuf], open: &HashMap<Url, String>) {
+        let reachable = self.reachable(roots, open);
+        self.documents.retain(|uri, _| reachable.contains(uri));
+    }
+
+    pub fn reachable(&self, roots: &[PathBuf], open: &HashMap<Url, String>) -> HashSet<Url> {
         let entries: Vec<_> = roots.iter().map(|root| Entries::new(root)).collect();
         let mut reachable: HashSet<_> = self
             .documents
@@ -221,7 +228,7 @@ impl Project {
                 }
             }
         }
-        self.documents.retain(|uri, _| reachable.contains(uri));
+        reachable
     }
 
     fn follow_imports(&mut self, open: &HashMap<Url, String>) {
@@ -245,7 +252,7 @@ impl Project {
                     .cloned()
                     .or_else(|| std::fs::read_to_string(uri.to_file_path().ok()?).ok())
                 {
-                    documents.insert(uri, Document::new(text));
+                    documents.insert(uri, Arc::new(Document::new(text)));
                     added = true;
                 }
             }
@@ -350,9 +357,16 @@ impl Project {
 
     fn selected(&self, uri: &Url, position: Position) -> Option<(&Name, Symbol)> {
         let byte = offset(&self.documents.get(uri)?.text, position)?;
-        self.occurrences(uri)
-            .into_iter()
+        let occurrences = self.occurrences(uri);
+        occurrences
+            .iter()
             .find(|(name, _)| name.span.contains(&byte))
+            .or_else(|| occurrences.iter().find(|(name, _)| name.span.end == byte))
+            .cloned()
+    }
+
+    pub fn selected_uri(&self, uri: &Url, position: Position) -> Option<Url> {
+        self.selected(uri, position).map(|(_, symbol)| symbol.0)
     }
 
     pub fn prepare(&self, uri: &Url, position: Position) -> Option<(Range, String)> {

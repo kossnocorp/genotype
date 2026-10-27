@@ -359,6 +359,57 @@ it("reports when mapped targets have no available implementations", async () => 
   ).toBe(false);
 });
 
+it("rejects derived-type renames before requesting any source or target edits", async () => {
+  state.send.mockResolvedValue([
+    { ...mapping, renameUnsupported: "Derived object types cannot be renamed safely yet." },
+  ]);
+  await expect(forward()).rejects.toThrow("Derived object types");
+  expect(state.execute).not.toHaveBeenCalled();
+  expect(state.apply).not.toHaveBeenCalled();
+  expect(await implementations()).toHaveLength(3);
+  rename.register({ subscriptions: [] } as unknown as vscode.ExtensionContext);
+  await state.commands.get("genotype.renameAcrossLanguages")!(
+    vscode.Uri.parse(targets[0].uri),
+    new vscode.Position(0, 12),
+  );
+  expect(state.input).not.toHaveBeenCalled();
+  expect(state.error).toHaveBeenCalledWith(expect.stringContaining("Derived object types"));
+  expect(
+    state.execute.mock.calls.some(
+      ([command]) => command === "vscode.executeDocumentRenameProvider",
+    ),
+  ).toBe(false);
+});
+
+it("fetches one outline per lookup even for modules with many mapped declarations", async () => {
+  state.send.mockResolvedValue([
+    ...Array.from({ length: 500 }, (_, index) => ({ ...mapping, name: `Other${index}` })),
+    mapping,
+  ]);
+  rename.register({ subscriptions: [] } as unknown as vscode.ExtensionContext);
+  const go = state.commands.get("genotype.goToSourceDefinition")!;
+  await go(vscode.Uri.parse(targets[0].uri), new vscode.Position(0, 12));
+  expect(state.showDocument).toHaveBeenCalledOnce();
+  expect(
+    state.execute.mock.calls.filter(
+      ([command]) => command === "vscode.executeDocumentSymbolProvider",
+    ),
+  ).toHaveLength(1);
+  const changed = document(
+    targets[0].uri,
+    "typescript",
+    "/* comment */ export type User = string;",
+  );
+  (changed as { version: number }).version = 2;
+  await go(changed.uri, new vscode.Position(0, changed.getText().indexOf("User")));
+  expect(state.showDocument).toHaveBeenCalledTimes(2);
+  expect(
+    state.execute.mock.calls.filter(
+      ([command]) => command === "vscode.executeDocumentSymbolProvider",
+    ),
+  ).toHaveLength(2);
+});
+
 it("collects Genotype, TypeScript, Rust and Python rename edits before applying anything", async () => {
   const edits = await forward();
   expect(edits?.size).toBe(4);

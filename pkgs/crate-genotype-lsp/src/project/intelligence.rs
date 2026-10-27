@@ -66,7 +66,10 @@ impl Project {
         if !repaired.valid {
             return vec![];
         }
-        let original = self.documents.insert(uri.clone(), repaired).unwrap();
+        let original = self
+            .documents
+            .insert(uri.clone(), Arc::new(repaired))
+            .unwrap();
         let doc = &self.documents[uri];
         let import_end = if original.valid {
             original.import_end

@@ -86,6 +86,53 @@ impl Drop for Client {
 }
 
 #[test]
+fn rename_includes_unopened_consuming_projects_but_respects_entry_boundaries() {
+    let dir = tempfile::tempdir().unwrap();
+    for project in ["app", "shared", "unrelated"] {
+        std::fs::create_dir(dir.path().join(project)).unwrap();
+        std::fs::write(
+            dir.path().join(project).join("genotype.toml"),
+            "src = '.'\nentry = 'main.type'",
+        )
+        .unwrap();
+    }
+    std::fs::write(dir.path().join("shared/main.type"), "User: string").unwrap();
+    std::fs::write(
+        dir.path().join("app/main.type"),
+        "use ../shared/main/User\nValue: User",
+    )
+    .unwrap();
+    std::fs::write(dir.path().join("app/fixture.type"), "Broken: {").unwrap();
+    std::fs::write(dir.path().join("unrelated/main.type"), "Broken: {").unwrap();
+    let path = dir.path().to_str().unwrap().replace('\\', "/");
+    let root = if path.starts_with('/') {
+        format!("file://{path}")
+    } else {
+        format!("file:///{path}")
+    };
+    let source = format!("{root}/shared/main.type");
+    let consumer = format!("{root}/app/main.type");
+    let mut client = Client::new();
+    client.request(
+        "initialize",
+        json!({ "processId": null, "rootUri": root, "capabilities": {} }),
+    );
+    client.notify("initialized", json!({}));
+    client.notify("textDocument/didOpen", json!({ "textDocument": { "uri": source, "languageId": "genotype", "version": 1, "text": "User: string" } }));
+    let params = json!({ "textDocument": { "uri": source }, "position": { "line": 0, "character": 4 }, "newName": "Account" });
+    let result = client.request("textDocument/rename", params.clone());
+    assert_eq!(result["changes"].as_object().unwrap().len(), 2);
+    assert_eq!(result["changes"][&consumer].as_array().unwrap().len(), 2);
+    client.notify("textDocument/didOpen", json!({ "textDocument": { "uri": consumer, "languageId": "genotype", "version": 1, "text": "use ../shared/main/User\nValue: [User]" } }));
+    let result = client.request("textDocument/rename", params);
+    assert!(result["changes"][&consumer].is_array(), "{result}");
+    assert_eq!(result["changes"][&consumer].as_array().unwrap().len(), 2);
+    client.request("shutdown", Value::Null);
+    client.notify("exit", Value::Null);
+    assert!(client.process.wait().unwrap().success());
+}
+
+#[test]
 fn external_dependencies_refresh_with_and_without_workspace_folders() {
     for workspace in [true, false] {
         let dir = tempfile::tempdir().unwrap();

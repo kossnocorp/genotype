@@ -50,6 +50,8 @@ When renaming from `.type` files, use `F2` or the **Rename Symbol** command to t
 
 When renaming a Genotype-generated symbol from a target language file, use the **Genotype: Rename Across Languages** command or **Rename Across Languages** context menu item to trigger the cross-language rename back to the corresponding `.type` file.
 
+Coordinated rename currently rejects types that generate additional named object types in Rust or Python (for example, `UserAddress` from a nested object in `User`). This prevents leaving derived declarations and their consumers unchanged. Navigation remains available for these types.
+
 ### Semantic Highlighting
 
 To enable semantic highlighting provided by the [Language Server](#language-server), use the global VS Code setting:

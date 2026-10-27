@@ -147,7 +147,12 @@ fn project(files: &[(&str, &str)]) -> Project {
     Project {
         documents: files
             .iter()
-            .map(|(name, text)| (uri(name), Document::new((*text).into())))
+            .map(|(name, text)| {
+                (
+                    uri(name),
+                    std::sync::Arc::new(Document::new((*text).into())),
+                )
+            })
             .collect(),
     }
 }
@@ -974,4 +979,128 @@ fn standalone_generated_mappings_refresh_sources_and_configuration() {
     let updated = cache.query(&[], &HashMap::new(), query()).unwrap();
     assert_eq!(updated[0].targets.len(), 1);
     assert_eq!(updated[0].targets[0].language, "rust");
+}
+
+#[test]
+fn symbol_selection_accepts_identifier_ends_without_selecting_whitespace() {
+    let text = "User: string\nValue: User  ";
+    let p = project(&[("main", text)]);
+    for pos in [Position::new(0, 4), Position::new(1, 11)] {
+        assert_eq!(p.prepare(&uri("main"), pos).unwrap().1, "User");
+        assert_eq!(
+            p.definition(&uri("main"), pos).unwrap().range.start,
+            Position::new(0, 0)
+        );
+        assert_eq!(
+            p.rename(&uri("main"), pos, "Account")
+                .unwrap()
+                .unwrap()
+                .changes
+                .unwrap()[&uri("main")]
+                .len(),
+            2
+        );
+    }
+    assert!(p.prepare(&uri("main"), Position::new(1, 12)).is_none());
+}
+
+#[test]
+fn completion_snapshots_share_unchanged_documents_and_leave_buffers_intact() {
+    let p = project(&[("main", "Value: str"), ("other", "Other: string")]);
+    let snapshot = p.clone();
+    assert!(std::sync::Arc::ptr_eq(
+        &p.documents[&uri("other")],
+        &snapshot.documents[&uri("other")]
+    ));
+    assert!(
+        p.completions(&uri("main"), Position::new(0, 10))
+            .iter()
+            .any(|item| item.label == "string")
+    );
+    assert_eq!(p.documents[&uri("main")].text, "Value: str");
+    assert!(std::sync::Arc::ptr_eq(
+        &p.documents[&uri("main")],
+        &snapshot.documents[&uri("main")]
+    ));
+}
+
+#[test]
+fn generated_mappings_exclude_open_nonentries_but_include_reachable_overlays() {
+    use crate::project::generated::{Cache, GeneratedSymbolsParams};
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path();
+    std::fs::create_dir(root.join("src")).unwrap();
+    std::fs::write(
+        root.join("genotype.toml"),
+        "entry = 'main.type'\n[ts]\nenabled = true",
+    )
+    .unwrap();
+    let main = Url::from_file_path(root.join("src/main.type")).unwrap();
+    let fixture = Url::from_file_path(root.join("src/fixture.type")).unwrap();
+    std::fs::write(main.to_file_path().unwrap(), "Main: string").unwrap();
+    std::fs::write(fixture.to_file_path().unwrap(), "Old: string").unwrap();
+    let mut open = HashMap::from([(fixture.clone(), "User: string".into())]);
+    let mut cache = Cache::default();
+    let query = || GeneratedSymbolsParams {
+        uri: fixture.clone(),
+        position: Some(Position::new(0, 4)),
+    };
+    assert!(
+        cache
+            .query(&[root.into()], &open, query())
+            .unwrap()
+            .is_empty()
+    );
+    open.insert(main.clone(), "Main: ./fixture/User".into());
+    cache.invalidate(&main, &open);
+    let mappings = cache.query(&[root.into()], &open, query()).unwrap();
+    assert_eq!(mappings[0].name, "User");
+    assert_eq!(mappings[0].source.uri, fixture);
+    open.insert(main.clone(), "Main: string".into());
+    cache.invalidate(&main, &open);
+    assert!(
+        cache
+            .query(&[root.into()], &open, query())
+            .unwrap()
+            .is_empty()
+    );
+}
+
+#[test]
+fn derived_object_types_mark_cross_language_rename_as_unsupported() {
+    use crate::project::generated::{GeneratedSymbolsParams, generated_symbols};
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path();
+    std::fs::create_dir(root.join("src")).unwrap();
+    let source = Url::from_file_path(root.join("src/main.type")).unwrap();
+    for (descriptor, derived) in [
+        ("string", false),
+        ("{ name: string }", false),
+        ("{ address: { street: string } }", true),
+        ("[{ value: string }]", true),
+        ("{ value: string } | null", true),
+    ] {
+        let open = HashMap::from([(source.clone(), format!("User: {descriptor}"))]);
+        for lang in ["ts", "rs", "py"] {
+            std::fs::write(
+                root.join("genotype.toml"),
+                format!("[{lang}]\nenabled = true"),
+            )
+            .unwrap();
+            let mappings = generated_symbols(
+                &[root.into()],
+                &open,
+                GeneratedSymbolsParams {
+                    uri: source.clone(),
+                    position: Some(Position::new(0, 4)),
+                },
+            )
+            .unwrap();
+            assert_eq!(
+                mappings[0].rename_unsupported.is_some(),
+                derived && lang != "ts",
+                "{lang}: {descriptor}"
+            );
+        }
+    }
 }

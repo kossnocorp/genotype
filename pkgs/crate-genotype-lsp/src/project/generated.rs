@@ -26,6 +26,8 @@ pub struct GeneratedSymbol {
     pub name: String,
     pub source: Location,
     pub targets: Vec<GeneratedTarget>,
+    #[serde(rename = "renameUnsupported", skip_serializing_if = "Option::is_none")]
+    pub rename_unsupported: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -52,6 +54,31 @@ pub struct Cache {
 }
 
 impl Cache {
+    pub fn project_roots(&mut self, roots: &[PathBuf]) -> Vec<PathBuf> {
+        let configs = self.configs.get_or_insert_with(|| {
+            roots
+                .iter()
+                .flat_map(|root| {
+                    ignore::WalkBuilder::new(root)
+                        .build()
+                        .flatten()
+                        .filter(|entry| entry.file_name() == "genotype.toml")
+                        .map(|entry| entry.into_path())
+                })
+                .collect()
+        });
+        let mut projects: Vec<_> = configs
+            .iter()
+            .filter_map(|path| path.parent().map(Path::to_path_buf))
+            .collect();
+        for root in roots {
+            if !projects.iter().any(|project| project.starts_with(root)) {
+                projects.push(root.clone());
+            }
+        }
+        projects
+    }
+
     pub fn invalidate(&mut self, uri: &Url, open: &HashMap<Url, String>) {
         let Ok(path) = uri.to_file_path() else { return };
         if path.file_name().is_some_and(|name| name == "genotype.toml") {
@@ -110,18 +137,8 @@ impl Cache {
             None
         };
         let requested_uri = selected.as_ref().map_or(&params.uri, |symbol| &symbol.uri);
-        let configs = self.configs.get_or_insert_with(|| {
-            roots
-                .iter()
-                .flat_map(|root| {
-                    ignore::WalkBuilder::new(root)
-                        .build()
-                        .flatten()
-                        .filter(|entry| entry.file_name() == "genotype.toml")
-                        .map(|entry| entry.into_path())
-                })
-                .collect()
-        });
+        self.project_roots(roots);
+        let configs = self.configs.as_mut().unwrap();
         let path = requested_uri
             .to_file_path()
             .map_err(|_| "Expected a file URI")?;
@@ -213,9 +230,16 @@ fn build_mappings(
     let root = normalize(&config_path.parent().unwrap().join(config.root.to_string()));
     let src = normalize(&root.join(config.src.to_string()));
     let dist = normalize(&root.join(config.dist.to_string()));
+    let reachable = project.reachable(
+        &[config_path.parent().unwrap().to_path_buf()],
+        &HashMap::new(),
+    );
     // Use rename identity, not navigation identity: a local import alias or
     // generic parameter must not rename the original exported declaration.
     for (uri, doc) in &project.documents {
+        if !reachable.contains(uri) {
+            continue;
+        }
         let Ok(path) = uri.to_file_path() else {
             continue;
         };
@@ -256,6 +280,9 @@ fn build_mappings(
                 results.push(GeneratedSymbol {
                     name: name.text.clone(),
                     source: Location::new(uri.clone(), doc.range(&name.span)),
+                    rename_unsupported: (doc.entities.get(&name.span.start).is_some_and(|entity| entity.has_derived_types)
+                        && targets.iter().any(|target| matches!(target.language.as_str(), "rust" | "python")))
+                        .then(|| "This type generates additional named object types in Rust or Python. Coordinated rename of those derived types is not supported yet.".into()),
                     targets,
                 });
             }
@@ -275,6 +302,9 @@ fn merge_mappings(results: &mut Vec<GeneratedSymbol>) {
     results.dedup_by(|a, b| {
         if a.source != b.source || a.name != b.name {
             return false;
+        }
+        if b.rename_unsupported.is_none() {
+            b.rename_unsupported = a.rename_unsupported.take();
         }
         for target in a.targets.drain(..) {
             if !b.targets.iter().any(|other| other.uri == target.uri) {
