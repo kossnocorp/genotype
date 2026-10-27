@@ -23,6 +23,9 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
+    /// Starts the language server over stdio
+    Lsp,
+
     /// Formats .type files in the current directory and its subdirectories
     Fmt(GtFmtCommand),
 
@@ -61,6 +64,11 @@ fn main() -> miette::Result<ExitCode> {
     }))?;
 
     match &cli.command {
+        Some(Commands::Lsp) => {
+            genotype_lsp::run().map_err(|error| miette::miette!("{error}"))?;
+            Ok(ExitCode::SUCCESS)
+        }
+
         Some(Commands::Fmt(args)) => {
             GtFmtCommand::run(args)?;
             Ok(ExitCode::SUCCESS)

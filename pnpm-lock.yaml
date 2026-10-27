@@ -136,39 +136,6 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0(@types/node@24.13.3)(vite@8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))
 
-  pkgs/crate-genotype-lsp:
-    optionalDependencies:
-      '@genotype-lsp/darwin-arm64':
-        specifier: workspace:*
-        version: link:npm/darwin-arm64
-      '@genotype-lsp/darwin-x64':
-        specifier: workspace:*
-        version: link:npm/darwin-x64
-      '@genotype-lsp/linux-arm64':
-        specifier: workspace:*
-        version: link:npm/linux-arm64
-      '@genotype-lsp/linux-x64':
-        specifier: workspace:*
-        version: link:npm/linux-x64
-      '@genotype-lsp/win32-arm64':
-        specifier: workspace:*
-        version: link:npm/win32-arm64
-      '@genotype-lsp/win32-x64':
-        specifier: workspace:*
-        version: link:npm/win32-x64
-
-  pkgs/crate-genotype-lsp/npm/darwin-arm64: {}
-
-  pkgs/crate-genotype-lsp/npm/darwin-x64: {}
-
-  pkgs/crate-genotype-lsp/npm/linux-arm64: {}
-
-  pkgs/crate-genotype-lsp/npm/linux-x64: {}
-
-  pkgs/crate-genotype-lsp/npm/win32-arm64: {}
-
-  pkgs/crate-genotype-lsp/npm/win32-x64: {}
-
   pkgs/npm-genotype-formatters-wasm: {}
 
   pkgs/npm-genotype-grammar-sublime: {}
@@ -284,9 +251,6 @@ importers:
       '@vscode/vsce':
         specifier: ^3.7.1
         version: 3.7.1(supports-color@10.2.2)
-      genotype-lsp:
-        specifier: workspace:*
-        version: link:../crate-genotype-lsp
       ovsx:
         specifier: ^0.10.10
         version: 0.10.10(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)

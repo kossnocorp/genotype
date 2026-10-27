@@ -1,7 +1,5 @@
 packages:
   - "pkgs/app-website"
-  - "pkgs/crate-genotype-lsp"
-  - "pkgs/crate-genotype-lsp/npm/*"
   - "pkgs/npm-genotype-grammar-tm"
   - "pkgs/npm-genotype-grammar-sublime"
   - "pkgs/npm-vscode-genotype"

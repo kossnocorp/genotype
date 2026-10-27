@@ -49,8 +49,18 @@ run = "pnpm install"
 [tasks."install/uv"]
 run = "uv sync"
 
+
+# Build ========================================================================
+
+
+# build ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 [tasks.build]
 run = "cargo build"
+
+# build:release ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[tasks."build:release"]
+run = "cargo build --release"
+
 
 [tasks.check]
 run = "cargo check --all"
@@ -276,6 +286,16 @@ cargo build --package genotype_cli --bin gt
 mkdir -p ./bin
 cp ./target/debug/gt ./bin/gt
 '''
+
+
+# Symlink ======================================================================
+
+
+# symlink ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[tasks.symlink]
+run = "ln -sf $(pwd)/target/release/gt $HOME/.local/bin/gt"
+depends = ["build:release"]
+
 
 # Task templates ###############################################################
 

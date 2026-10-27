@@ -7,19 +7,14 @@ authors = ["Sasha Koss <koss@nocorp.me>"]
 license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
-[[bin]]
-name = "gts"
-path = "src/main.rs"
-
 [dependencies]
+genotype_parser = { version = "0.18.0", path = "../crate-genotype-parser" }
+ignore = "0.4.25"
+toml = "0.8.19"
 async-lsp = { version = "0.2.3", features = ["tokio"] }
-futures = "0.3.31"
 tokio = { version = "1.42.0", features = ["full"] }
 tokio-util = { version = "0.7.13", features = ["compat"] }
 tower = "0.5.2"
-tracing = "0.1.41"
-tracing-subscriber = "0.3.19"
 
 [dev-dependencies]
-pretty_assertions = "1.4.1"
-insta = { version = "1.46.3", features = ["ron"] }
+tempfile = "3.27.0"

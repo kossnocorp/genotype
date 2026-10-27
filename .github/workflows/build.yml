@@ -61,9 +61,6 @@ jobs:
       - name: Build CLI
         run: mise //pkgs/crate-genotype-cli:build ${{ matrix.target }}
 
-      - name: Build LSP
-        run: mise //pkgs/crate-genotype-lsp:build ${{ matrix.target }}
-
       - name: Derive Bin Ext
         id: bin_ext
         shell: bash
@@ -79,13 +76,6 @@ jobs:
         with:
           path: target/${{ matrix.target }}/release/gt${{ steps.bin_ext.outputs.value }}
           name: gt-${{ inputs.artifact_suffix || github.sha }}-${{ matrix.target }}${{ steps.bin_ext.outputs.value }}
-          if-no-files-found: error
-
-      - name: Upload LSP Binaries
-        uses: actions/upload-artifact@v6
-        with:
-          path: target/${{ matrix.target }}/release/gts${{ steps.bin_ext.outputs.value }}
-          name: gts-${{ inputs.artifact_suffix || github.sha }}-${{ matrix.target }}${{ steps.bin_ext.outputs.value }}
           if-no-files-found: error
 
       - name: Display Stats
