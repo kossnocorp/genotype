@@ -7,6 +7,9 @@ const state = vi.hoisted(() => ({
   input: vi.fn(),
   apply: vi.fn(),
   error: vi.fn(),
+  information: vi.fn(),
+  showDocument: vi.fn(),
+  implementations: vi.fn((_selector: unknown, _provider: any) => ({ dispose() {} })),
   commands: new Map<string, (...args: any[]) => any>(),
   documents: new Map<string, any>(),
   listeners: new Set<(event: any) => void>(),
@@ -82,9 +85,17 @@ vi.mock("vscode", () => {
         return { dispose: () => state.listeners.delete(fn) };
       },
     },
-    languages: { registerCodeActionsProvider: () => ({ dispose() {} }) },
+    languages: {
+      registerCodeActionsProvider: () => ({ dispose() {} }),
+      registerImplementationProvider: state.implementations,
+    },
     CodeActionKind: { RefactorRewrite: "refactor.rewrite" },
-    window: { showInputBox: state.input, showErrorMessage: state.error },
+    window: {
+      showInputBox: state.input,
+      showErrorMessage: state.error,
+      showInformationMessage: state.information,
+      showTextDocument: state.showDocument,
+    },
   };
 });
 
@@ -152,6 +163,11 @@ beforeEach(() => {
       return [{ name: "User", selectionRange: range(start), children: [] }];
     }
     if (command === "vscode.executeDefinitionProvider") return [];
+    if (command === "vscode.executeImplementationProvider") {
+      const provider = state.implementations.mock.calls.at(-1)![1] as vscode.ImplementationProvider;
+      return provider.provideImplementation(doc, at, token);
+    }
+    if (command === "editor.action.peekLocations") return;
     if (command === "vscode.executeDocumentRenameProvider") {
       if (uri.toString() === source) return forward();
       return edit(uri.toString(), at.character, newName);
@@ -163,6 +179,184 @@ beforeEach(() => {
   rename = new CrossLanguageRename(
     () => ({ start: async () => {}, sendRequest: state.send }) as unknown as LanguageClient,
   );
+});
+
+async function implementations(cancellation = token) {
+  rename.register({ subscriptions: [] } as unknown as vscode.ExtensionContext);
+  const provider = state.implementations.mock.calls.at(-1)![1] as vscode.ImplementationProvider;
+  return provider.provideImplementation(
+    state.documents.get(source),
+    new vscode.Position(0, 0),
+    cancellation,
+  ) as Promise<vscode.LocationLink[]>;
+}
+
+it("finds generated implementations in all configured languages without renaming", async () => {
+  const locations = await implementations();
+  expect(locations.map((location) => location.targetUri.toString())).toEqual(
+    targets.map((target) => target.uri),
+  );
+  for (const location of locations) {
+    expect(
+      state.documents.get(location.targetUri.toString()).getText(location.targetSelectionRange),
+    ).toBe("User");
+  }
+  expect(state.send).toHaveBeenCalledWith("genotype/generatedSymbols", {
+    uri: source,
+    position: new vscode.Position(0, 0),
+  });
+  expect(state.apply).not.toHaveBeenCalled();
+  expect(
+    state.execute.mock.calls.every(
+      ([command]) => command === "vscode.executeDocumentSymbolProvider",
+    ),
+  ).toBe(true);
+});
+
+it("keeps available implementations when another output or provider is missing", async () => {
+  state.documents.delete(targets[0].uri);
+  const execute = state.execute.getMockImplementation()!;
+  state.execute.mockImplementation(async (command, uri, ...args) => {
+    if (uri.toString() === targets[1].uri) throw new Error("Provider unavailable");
+    return execute(command, uri, ...args);
+  });
+  expect((await implementations()).map((location) => location.targetUri.toString())).toEqual([
+    targets[2].uri,
+  ]);
+});
+
+it("returns no implementations for unmapped symbols or cancelled requests", async () => {
+  expect(
+    await implementations({ isCancellationRequested: true } as vscode.CancellationToken),
+  ).toEqual([]);
+  expect(state.send).not.toHaveBeenCalled();
+  state.send.mockResolvedValue([]);
+  expect(await implementations()).toEqual([]);
+  expect(state.execute).toHaveBeenCalledWith(
+    "vscode.executeDefinitionProvider",
+    expect.objectContaining({ fsPath: "/project/src/user.type" }),
+    new vscode.Position(0, 0),
+  );
+});
+
+it("follows local import aliases to the generated implementations of their definition", async () => {
+  const original = "file:///project/src/original.type";
+  state.send.mockImplementation(async (_method, params) =>
+    params.uri === original ? [mapping] : [],
+  );
+  const execute = state.execute.getMockImplementation()!;
+  state.execute.mockImplementation(async (command, ...args) => {
+    if (command === "vscode.executeDefinitionProvider")
+      return [{ uri: vscode.Uri.parse(original), range: range(0) }];
+    return execute(command, ...args);
+  });
+  expect((await implementations()).length).toBe(3);
+});
+
+it("deduplicates implementation locations while retaining distinct same-named declarations", async () => {
+  document(targets[0].uri, "typescript", "type User = string; const User = schema;");
+  state.send.mockResolvedValue([{ ...mapping, targets: [targets[0], targets[0]] }]);
+  state.execute.mockResolvedValue([
+    { name: "User", selectionRange: range(5) },
+    { name: "User", selectionRange: range(26) },
+  ]);
+  const locations = await implementations();
+  expect(locations.map((location) => location.targetSelectionRange!.start.character)).toEqual([
+    5, 26,
+  ]);
+});
+
+it("discards implementations cancelled during provider lookup", async () => {
+  const cancellation = { isCancellationRequested: false } as vscode.CancellationToken;
+  const execute = state.execute.getMockImplementation()!;
+  state.execute.mockImplementation(async (...args) => {
+    (cancellation as { isCancellationRequested: boolean }).isCancellationRequested = true;
+    return execute(...args);
+  });
+  expect(await implementations(cancellation)).toEqual([]);
+});
+
+it.each(targets)("opens Genotype source from $language declarations", async (target) => {
+  rename.register({ subscriptions: [] } as unknown as vscode.ExtensionContext);
+  const doc = state.documents.get(target.uri);
+  await state.commands.get("genotype.goToSourceDefinition")!(
+    doc.uri,
+    new vscode.Position(0, doc.getText().indexOf("User")),
+  );
+  expect(state.showDocument).toHaveBeenCalledWith(
+    expect.objectContaining({ fsPath: "/project/src/user.type" }),
+    { selection: range(0) },
+  );
+  expect(state.apply).not.toHaveBeenCalled();
+});
+
+it.each(targets)(
+  "shows every implementation including $language when invoked there",
+  async (target) => {
+    rename.register({ subscriptions: [] } as unknown as vscode.ExtensionContext);
+    const doc = state.documents.get(target.uri);
+    const at = new vscode.Position(0, doc.getText().indexOf("User"));
+    await state.commands.get("genotype.findImplementationsAcrossLanguages")!(doc.uri, at);
+    const peek = state.execute.mock.calls.find(
+      ([command]) => command === "editor.action.peekLocations",
+    )!;
+    expect(peek[1]).toBe(doc.uri);
+    expect(peek[2]).toBe(at);
+    expect(peek[3].map((location: vscode.Location) => location.uri.toString())).toEqual(
+      targets.map((target) => target.uri),
+    );
+    expect(state.apply).not.toHaveBeenCalled();
+  },
+);
+
+it("follows a target-language reference back to its Genotype source", async () => {
+  const consumer = document("file:///project/app.ts", "typescript", "let user: User;");
+  const execute = state.execute.getMockImplementation()!;
+  state.execute.mockImplementation(async (command, uri, ...args) => {
+    if (
+      command === "vscode.executeDefinitionProvider" &&
+      uri.toString() === consumer.uri.toString()
+    ) {
+      return [{ uri: vscode.Uri.parse(targets[0].uri), range: range(12) }];
+    }
+    return execute(command, uri, ...args);
+  });
+  rename.register({ subscriptions: [] } as unknown as vscode.ExtensionContext);
+  await state.commands.get("genotype.goToSourceDefinition")!(
+    consumer.uri,
+    new vscode.Position(0, 10),
+  );
+  expect(state.showDocument).toHaveBeenCalledOnce();
+  expect(state.error).not.toHaveBeenCalled();
+});
+
+it("reports unmapped target symbols without opening unrelated source", async () => {
+  state.send.mockResolvedValue([]);
+  rename.register({ subscriptions: [] } as unknown as vscode.ExtensionContext);
+  await state.commands.get("genotype.goToSourceDefinition")!(
+    vscode.Uri.parse(targets[0].uri),
+    new vscode.Position(0, 12),
+  );
+  expect(state.information).toHaveBeenCalledWith(expect.stringContaining("No Genotype source"));
+  expect(state.showDocument).not.toHaveBeenCalled();
+});
+
+it("reports when mapped targets have no available implementations", async () => {
+  const execute = state.execute.getMockImplementation()!;
+  state.execute.mockImplementation(async (command, ...args) =>
+    command === "vscode.executeImplementationProvider" ? [] : execute(command, ...args),
+  );
+  rename.register({ subscriptions: [] } as unknown as vscode.ExtensionContext);
+  await state.commands.get("genotype.findImplementationsAcrossLanguages")!(
+    vscode.Uri.parse(targets[0].uri),
+    new vscode.Position(0, 12),
+  );
+  expect(state.information).toHaveBeenCalledWith(
+    expect.stringContaining("No generated implementations"),
+  );
+  expect(
+    state.execute.mock.calls.some(([command]) => command === "editor.action.peekLocations"),
+  ).toBe(false);
 });
 
 it("collects Genotype, TypeScript, Rust and Python rename edits before applying anything", async () => {

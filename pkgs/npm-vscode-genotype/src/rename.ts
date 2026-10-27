@@ -70,6 +70,131 @@ export class CrossLanguageRename {
   };
 
   register(context: vscode.ExtensionContext) {
+    for (const name of ["goToSourceDefinition", "findImplementationsAcrossLanguages"]) {
+      context.subscriptions.push(
+        vscode.commands.registerCommand(
+          `genotype.${name}`,
+          async (uri?: vscode.Uri, at?: vscode.Position) => {
+            try {
+              const editor = vscode.window.activeTextEditor;
+              uri ??= editor?.document.uri;
+              at ??= editor?.selection.active;
+              if (!uri || !at) return;
+              const document = await vscode.workspace.openTextDocument(uri);
+              const version = document.version;
+              const mapping = await this.findSource(document, at);
+              if (!mapping) {
+                void vscode.window.showInformationMessage(
+                  "No Genotype source definition found for this symbol.",
+                );
+                return;
+              }
+              if (document.version !== version) return;
+              const sourceUri = vscode.Uri.parse(mapping.source.uri);
+              const sourcePosition = position(mapping.source.range.start);
+              if (name === "goToSourceDefinition") {
+                await vscode.window.showTextDocument(sourceUri, {
+                  selection: new vscode.Range(sourcePosition, position(mapping.source.range.end)),
+                });
+              } else {
+                await vscode.workspace.openTextDocument(sourceUri);
+                const locations = await vscode.commands.executeCommand<
+                  (vscode.Location | vscode.LocationLink)[]
+                >("vscode.executeImplementationProvider", sourceUri, sourcePosition);
+                if (document.version !== version) return;
+                if (!locations?.length) {
+                  void vscode.window.showInformationMessage(
+                    "No generated implementations found. Check that generated files and their language providers are available.",
+                  );
+                  return;
+                }
+                await vscode.commands.executeCommand(
+                  "editor.action.peekLocations",
+                  uri,
+                  at,
+                  locations.map((location) =>
+                    "targetUri" in location
+                      ? {
+                          uri: location.targetUri,
+                          range: location.targetSelectionRange ?? location.targetRange,
+                        }
+                      : location,
+                  ),
+                );
+              }
+            } catch (error) {
+              void vscode.window.showErrorMessage(
+                `Genotype navigation: ${error instanceof Error ? error.message : error}`,
+              );
+            }
+          },
+        ),
+      );
+    }
+    context.subscriptions.push(
+      vscode.languages.registerImplementationProvider(
+        { scheme: "file", language: "genotype" },
+        {
+          provideImplementation: async (document, at, token) => {
+            if (token.isCancellationRequested) return [];
+            const version = document.version;
+            let mappings = await this.mappings(document.uri, at);
+            // Rename mappings intentionally exclude local import aliases.
+            // Implementation navigation follows those aliases to their source type.
+            if (!mappings.length && !token.isCancellationRequested) {
+              const definitions = await vscode.commands.executeCommand<
+                (vscode.Location | vscode.LocationLink)[]
+              >("vscode.executeDefinitionProvider", document.uri, at);
+              mappings = (
+                await Promise.all(
+                  (definitions ?? []).map((definition) =>
+                    "targetUri" in definition
+                      ? this.mappings(
+                          definition.targetUri,
+                          (definition.targetSelectionRange ?? definition.targetRange).start,
+                        )
+                      : this.mappings(definition.uri, definition.range.start),
+                  ),
+                )
+              ).flat();
+            }
+            if (token.isCancellationRequested) return [];
+            const results = await Promise.all(
+              mappings.flatMap((mapping) =>
+                mapping.targets.map(async (target): Promise<vscode.LocationLink[]> => {
+                  if (token.isCancellationRequested) return [];
+                  try {
+                    const uri = vscode.Uri.parse(target.uri);
+                    const targetDocument = await vscode.workspace.openTextDocument(uri);
+                    const targetVersion = targetDocument.version;
+                    const ranges = await this.declarations(targetDocument, mapping.name);
+                    if (targetDocument.version !== targetVersion) return [];
+                    return ranges.map((range) => ({
+                      targetUri: uri,
+                      targetRange: range,
+                      targetSelectionRange: range,
+                    }));
+                  } catch {
+                    // Navigation can still show other targets when an output
+                    // has not been generated or its language provider is unavailable.
+                    return [];
+                  }
+                }),
+              ),
+            );
+            if (token.isCancellationRequested || document.version !== version) return [];
+            const unique = new Map<string, vscode.LocationLink>();
+            for (const location of results.flat()) {
+              unique.set(
+                JSON.stringify([location.targetUri.toString(), location.targetSelectionRange]),
+                location,
+              );
+            }
+            return [...unique.values()];
+          },
+        },
+      ),
+    );
     context.subscriptions.push(
       vscode.commands.registerCommand(command, async (uri?: vscode.Uri, at?: vscode.Position) => {
         try {
