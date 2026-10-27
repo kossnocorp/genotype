@@ -1,6 +1,6 @@
 [package]
 name = "genotype_lang_ts_tree"
-version = "0.18.0"
+version = "0.19.0"
 edition = "2024"
 description = "Genotype language TypeScript target AST crate"
 authors = ["Sasha Koss <koss@nocorp.me>"]
@@ -8,10 +8,10 @@ license = "MIT"
 repository = "https://github.com/kossnocorp/genotype"
 
 [dependencies]
-genotype_tree = { version = "0.18.0", path = "../crate-genotype-tree" }
-genotype_lang_core_tree = { version = "0.18.0", path = "../crate-genotype-lang-core-tree" }
-genotype_lang_ts_config = { version = "0.18.0", path = "../crate-genotype-lang-ts-config" }
-genotype_project_core = { version = "0.18.0", path = "../crate-genotype-project-core" }
+genotype_tree = { version = "0.19.0", path = "../crate-genotype-tree" }
+genotype_lang_core_tree = { version = "0.19.0", path = "../crate-genotype-lang-core-tree" }
+genotype_lang_ts_config = { version = "0.19.0", path = "../crate-genotype-lang-ts-config" }
+genotype_project_core = { version = "0.19.0", path = "../crate-genotype-project-core" }
 heck = "0.5.0"
 miette = { version = "7.6.0", features = ["serde"] }
 thiserror = "1.0.64"
