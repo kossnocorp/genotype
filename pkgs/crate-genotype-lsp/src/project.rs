@@ -3,6 +3,7 @@ use async_lsp::lsp_types::{Diagnostic, Location, Position, Range, TextEdit, Url,
 use std::collections::{HashMap, HashSet};
 use std::path::{self as path, Path, PathBuf};
 
+pub mod generated;
 mod intelligence;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]

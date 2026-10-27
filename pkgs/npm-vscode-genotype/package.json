@@ -42,6 +42,22 @@
     "vscode-tmgrammar-test": "^0.1.3"
   },
   "contributes": {
+    "commands": [
+      {
+        "command": "genotype.renameAcrossLanguages",
+        "title": "Rename Across Languages",
+        "category": "Genotype"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "genotype.renameAcrossLanguages",
+          "when": "editorLangId =~ /^(genotype|typescript|typescriptreact|rust|python)$/",
+          "group": "1_modification@1.2"
+        }
+      ]
+    },
     "configuration": {
       "type": "object",
       "title": "Genotype",

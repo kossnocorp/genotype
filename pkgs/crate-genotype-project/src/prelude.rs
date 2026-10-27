@@ -2,7 +2,7 @@ pub use crate::*;
 
 pub(crate) mod internal {
     pub use super::*;
-    pub use figment::{Figment, providers::Format};
+    pub use figment::Figment;
     pub use genotype_core::prelude::*;
     pub use genotype_lang_py_config::*;
     pub use genotype_lang_rs_config::*;
