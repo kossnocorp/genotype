@@ -99,6 +99,11 @@ fn stdio_language_server_lifecycle_and_editor_features() {
     let text = "use ./model/User\nRef: User\n";
     std::fs::write(dir.path().join("main.type"), text).unwrap();
     std::fs::write(
+        dir.path().join("genotype.toml"),
+        "src = \".\"\n[ts]\nenabled = true\n",
+    )
+    .unwrap();
+    std::fs::write(
         dir.path().join("model.type"),
         "/// A **user**.\nUser: string\n",
     )
@@ -132,6 +137,23 @@ fn stdio_language_server_lifecycle_and_editor_features() {
     client.notify("textDocument/didOpen", json!({ "textDocument": { "uri": main, "languageId": "genotype", "version": 1, "text": text } }));
     let position =
         json!({ "textDocument": { "uri": main }, "position": { "line": 1, "character": 5 } });
+    let generated = client.request(
+        "genotype/generatedSymbols",
+        json!({ "uri": main, "position": { "line": 1, "character": 5 } }),
+    );
+    assert_eq!(generated[0]["name"], "User");
+    assert_eq!(generated[0]["source"]["uri"], model);
+    assert_eq!(
+        generated[0]["targets"][0]["uri"],
+        format!("{root}/dist/ts/src/model.ts")
+    );
+    assert_eq!(
+        client.request(
+            "genotype/generatedSymbols",
+            json!({ "uri": format!("{root}/dist/ts/src/model.ts") })
+        ),
+        generated
+    );
     assert_eq!(
         client.request("textDocument/definition", position.clone())["uri"],
         model

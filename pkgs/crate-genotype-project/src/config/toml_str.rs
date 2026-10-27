@@ -6,10 +6,21 @@ impl GtpConfig {
     }
 
     pub fn from_source_code(source_code: GtpSourceCode) -> Result<Self> {
+        // Normalize aliases before merging defaults, which already contain the
+        // short keys. Serde otherwise sees both `py` and `python`, for example.
+        let mut values: toml::Table = toml::from_str(&source_code.content).into_diagnostic()?;
+        for (long, short) in [("typescript", "ts"), ("rust", "rs"), ("python", "py")] {
+            if let Some(value) = values.remove(long) {
+                if values.contains_key(short) {
+                    return Err(miette!("Specify only one of [{short}] and [{long}]"));
+                }
+                values.insert(short.into(), value);
+            }
+        }
         let mut config: GtpConfig = Figment::from(figment::providers::Serialized::defaults(
             GtpConfig::default(),
         ))
-        .merge(figment::providers::Toml::string(&source_code.content))
+        .merge(figment::providers::Serialized::defaults(values))
         .extract()
         .into_diagnostic()?;
         config.source_code = source_code;
@@ -48,6 +59,22 @@ impl GtpConfig {
 mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
+
+    #[test]
+    fn target_aliases_merge_with_defaults() {
+        let config = GtpConfig::parse(
+            "[python]\nenabled = true\n[typescript]\nenabled = true\n[rust]\nenabled = true\n"
+                .into(),
+        )
+        .unwrap();
+        assert!(config.python_enabled());
+        assert!(config.ts_enabled());
+        assert!(config.rust_enabled());
+        assert_eq!(config.py.lang.version, GtpConfig::default().py.lang.version);
+        assert!(
+            GtpConfig::parse("[py]\nenabled = true\n[python]\nenabled = false\n".into()).is_err()
+        );
+    }
 
     #[test]
     fn test_ts_naming_source_dir_inheritance_round_trip() {

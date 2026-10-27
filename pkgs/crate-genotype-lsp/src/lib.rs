@@ -250,6 +250,13 @@ impl Server {
                 });
             async move { result }
         });
+        router.request::<project::generated::GeneratedSymbols, _>(|server, params| {
+            let result = project::generated::generated_symbols(&server.roots, &server.open, params)
+                .map_err(|message| {
+                    ResponseError::new(async_lsp::ErrorCode::INVALID_PARAMS, message)
+                });
+            async move { result }
+        });
         router.request::<lsp::request::SemanticTokensFullRequest, _>(|server, params| {
             let uri = params.text_document.uri;
             let text = server

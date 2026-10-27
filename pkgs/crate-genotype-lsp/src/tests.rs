@@ -7,6 +7,142 @@ fn uri(name: &str) -> Url {
     Url::parse(&format!("file:///project/{name}.type")).unwrap()
 }
 
+#[test]
+fn generated_symbols_use_compiler_target_paths_and_unsaved_sources() {
+    use crate::project::generated::{GeneratedSymbolsParams, generated_symbols};
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path();
+    std::fs::create_dir_all(root.join("types/schemas/shop_goods")).unwrap();
+    std::fs::write(
+        root.join("genotype.toml"),
+        r#"
+root = "types"
+src = "schemas"
+dist = "../generated"
+package = false
+[typescript]
+enabled = true
+dist = "client"
+package = true
+[typescript.naming]
+source_file = "PascalCase"
+source_dir = "kebab-case"
+[rust]
+enabled = true
+[python]
+enabled = true
+package = true
+module = "models"
+"#,
+    )
+    .unwrap();
+    let source =
+        Url::from_file_path(root.join("types/schemas/shop_goods/order_item.type")).unwrap();
+    std::fs::write(source.to_file_path().unwrap(), "Old: string").unwrap();
+    let open = HashMap::from([(source.clone(), "/// 😀\nOrder: string".to_string())]);
+    let results = generated_symbols(
+        &[root.to_path_buf()],
+        &open,
+        GeneratedSymbolsParams {
+            uri: source.clone(),
+            position: Some(Position::new(1, 1)),
+        },
+    )
+    .unwrap();
+    assert_eq!(results.len(), 1);
+    assert_eq!(results[0].name, "Order");
+    assert_eq!(results[0].source.range.start, Position::new(1, 0));
+    let paths: Vec<_> = results[0]
+        .targets
+        .iter()
+        .map(|target| {
+            target
+                .uri
+                .to_file_path()
+                .unwrap()
+                .strip_prefix(root)
+                .unwrap()
+                .to_path_buf()
+        })
+        .collect();
+    assert_eq!(
+        paths,
+        [
+            "generated/client/src/shop-goods/OrderItem.ts",
+            "generated/rs/shop_goods/order_item.rs",
+            "generated/py/models/shop_goods/order_item.py"
+        ]
+        .map(std::path::PathBuf::from)
+    );
+    for target in &results[0].targets {
+        let reverse = generated_symbols(
+            &[root.to_path_buf()],
+            &open,
+            GeneratedSymbolsParams {
+                uri: target.uri.clone(),
+                position: None,
+            },
+        )
+        .unwrap();
+        assert_eq!(reverse.len(), 1);
+        assert_eq!(reverse[0].source.uri, source);
+        assert_eq!(reverse[0].targets.len(), 3);
+    }
+}
+
+#[test]
+fn generated_symbols_exclude_disabled_targets_aliases_and_generics() {
+    use crate::project::generated::{GeneratedSymbolsParams, generated_symbols};
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path();
+    std::fs::create_dir(root.join("src")).unwrap();
+    std::fs::write(
+        root.join("genotype.toml"),
+        "[ts]\nenabled = true\n[rs]\nenabled = false",
+    )
+    .unwrap();
+    std::fs::write(root.join("src/model.type"), "User: string").unwrap();
+    let text = "use ./model/{User as Person}\nBox<T>: { user: Person, value: T }\nOriginal: User\n";
+    let uri = Url::from_file_path(root.join("src/main.type")).unwrap();
+    let open = HashMap::from([(uri.clone(), text.to_string())]);
+    for needle in ["Person,", "T }"] {
+        let results = generated_symbols(
+            &[root.to_path_buf()],
+            &open,
+            GeneratedSymbolsParams {
+                uri: uri.clone(),
+                position: Some(at(text, needle)),
+            },
+        )
+        .unwrap();
+        assert!(results.is_empty());
+    }
+    let results = generated_symbols(
+        &[root.to_path_buf()],
+        &open,
+        GeneratedSymbolsParams {
+            uri: uri.clone(),
+            position: Some(at(text, "Box<")),
+        },
+    )
+    .unwrap();
+    assert_eq!(results[0].targets.len(), 1);
+    assert_eq!(results[0].targets[0].language, "typescript");
+    let unrelated = Url::from_file_path(root.join("app.ts")).unwrap();
+    assert!(
+        generated_symbols(
+            &[root.to_path_buf()],
+            &open,
+            GeneratedSymbolsParams {
+                uri: unrelated,
+                position: None
+            }
+        )
+        .unwrap()
+        .is_empty()
+    );
+}
+
 fn project(files: &[(&str, &str)]) -> Project {
     Project {
         documents: files

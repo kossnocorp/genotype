@@ -8,3 +8,9 @@ Markdown hover documentation, completion with auto-imports, and import quick fix
 separate LSP executable or platform-specific npm distribution.
 
 See the [Genotype website](https://genotype-lang.org) for more information about the project.
+
+The VS Code extension uses the `genotype/generatedSymbols` request to map source
+type declarations to configured TypeScript, Rust, and Python output modules.
+Parameters are `{ uri, position? }`: a source position selects a rename identity;
+a generated module URI without a position returns its source declarations. The
+extension locates native declarations and coordinates the installed rename providers.

@@ -8,6 +8,8 @@ const mocks = vi.hoisted(() => ({
   watch: vi.fn(() => ({ dispose: vi.fn() })),
   register: vi.fn(() => ({ dispose: vi.fn() })),
   error: vi.fn(),
+  command: vi.fn(() => ({ dispose: vi.fn() })),
+  actions: vi.fn(() => ({ dispose: vi.fn() })),
 }));
 
 vi.mock("vscode", () => ({
@@ -15,7 +17,12 @@ vi.mock("vscode", () => ({
     getConfiguration: () => ({ get: mocks.get }),
     createFileSystemWatcher: mocks.watch,
   },
-  languages: { registerDocumentFormattingEditProvider: mocks.register },
+  languages: {
+    registerDocumentFormattingEditProvider: mocks.register,
+    registerCodeActionsProvider: mocks.actions,
+  },
+  commands: { registerCommand: mocks.command },
+  CodeActionKind: { RefactorRewrite: "refactor.rewrite" },
   window: { showErrorMessage: mocks.error },
 }));
 vi.mock("./formatter", () => ({ GenotypeFormattingProvider: class {} }));
@@ -48,11 +55,16 @@ it("starts gt lsp and connects file synchronization alongside formatting", async
     {
       documentSelector: [{ scheme: "file", language: "genotype" }],
       synchronize: { fileEvents: mocks.watch.mock.results[0].value },
+      middleware: { provideRenameEdits: expect.any(Function) },
     },
   );
   expect(mocks.start).toHaveBeenCalledOnce();
   expect(mocks.register).toHaveBeenCalledOnce();
-  expect(context.subscriptions).toHaveLength(3);
+  expect(context.subscriptions).toHaveLength(5);
+  expect(mocks.command).toHaveBeenCalledWith(
+    "genotype.renameAcrossLanguages",
+    expect.any(Function),
+  );
   await deactivate();
   expect(mocks.stop).toHaveBeenCalledOnce();
 });

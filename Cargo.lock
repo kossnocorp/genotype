@@ -1452,8 +1452,12 @@ name = "genotype_lsp"
 version = "0.18.0"
 dependencies = [
  "async-lsp",
+ "genotype_core",
  "genotype_parser",
+ "genotype_project",
+ "genotype_project_core",
  "ignore",
+ "serde",
  "tempfile",
  "tokio",
  "tokio-util",
