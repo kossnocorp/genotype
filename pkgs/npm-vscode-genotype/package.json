@@ -34,7 +34,6 @@
     "@types/node": "^24.12.2",
     "@types/vscode": "^1.115.0",
     "@vscode/vsce": "^3.7.1",
-    "genotype-lsp": "workspace:*",
     "ovsx": "^0.10.10",
     "tslib": "^2.8.1",
     "typescript": "7.0.2",
@@ -45,12 +44,17 @@
   "contributes": {
     "configuration": {
       "type": "object",
-      "title": "Multi LSP configuration",
+      "title": "Genotype",
       "properties": {
         "genotype.server.executable": {
           "type": "object",
-          "default": {},
-          "description": "Genotype LSP server executable options"
+          "default": {
+            "command": "gt",
+            "args": [
+              "lsp"
+            ]
+          },
+          "description": "Genotype language server executable options. Defaults to gt lsp on PATH."
         }
       }
     },

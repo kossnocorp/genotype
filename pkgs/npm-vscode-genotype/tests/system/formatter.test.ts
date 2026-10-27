@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { assert, describe, expect, it, vi } from "vitest";
 import vm from "node:vm";
+import { createRequire, isBuiltin } from "node:module";
 import type * as vscode from "vscode";
 
 describe("formatter", () => {
@@ -135,7 +136,7 @@ interface FormattingProvider {
   ): Promise<vscode.TextEdit[]>;
 }
 
-// Exercise the shipped CommonJS bundle and real Wasm, mocking only the VS Code API.
+// Exercise formatting in the shipped bundle independently of the language server.
 function activate(readWasm: (file: string) => Promise<Uint8Array> = readFile) {
   let provider: FormattingProvider | undefined;
   let selector: vscode.DocumentFilter | undefined;
@@ -143,6 +144,20 @@ function activate(readWasm: (file: string) => Promise<Uint8Array> = readFile) {
   const read = vi.fn((uri: Uri) => readWasm(uri.fsPath));
   const showErrorMessage = vi.fn((_message: string) => {});
   const vscode = {
+    ...Object.fromEntries(
+      [
+        "CompletionItem",
+        "CodeLens",
+        "DocumentLink",
+        "CodeAction",
+        "Diagnostic",
+        "CallHierarchyItem",
+        "TypeHierarchyItem",
+        "SymbolInformation",
+        "InlayHint",
+        "CancellationError",
+      ].map((name) => [name, class {}]),
+    ),
     languages: {
       registerDocumentFormattingEditProvider(
         language: vscode.DocumentFilter,
@@ -174,13 +189,16 @@ function activate(readWasm: (file: string) => Promise<Uint8Array> = readFile) {
   };
   const dirname = path.resolve(__dirname, "../../dist/production");
   const module: {
-    exports: { activate?: (context: Pick<vscode.ExtensionContext, "subscriptions">) => void };
+    exports: {
+      activateFormatting?: (context: Pick<vscode.ExtensionContext, "subscriptions">) => void;
+    };
   } = { exports: {} };
   vm.runInNewContext(readFileSync(path.join(dirname, "extension.js"), "utf8"), {
     module,
     exports: module.exports,
     __dirname: dirname,
     require(name: string) {
+      if (isBuiltin(name)) return createRequire(__filename)(name);
       expect(name, "the bundled extension must not require an LSP or workspace package").toBe(
         "vscode",
       );
@@ -190,9 +208,15 @@ function activate(readWasm: (file: string) => Promise<Uint8Array> = readFile) {
     TextDecoder,
     WebAssembly,
     console,
+    process,
+    Buffer,
+    setTimeout,
+    clearTimeout,
+    setImmediate,
+    clearImmediate,
   });
-  assert.ok(module.exports.activate);
-  module.exports.activate({ subscriptions });
+  assert.ok(module.exports.activateFormatting);
+  module.exports.activateFormatting({ subscriptions });
   assert.ok(provider);
   assert.ok(selector);
   return { provider, selector, subscriptions, read, showErrorMessage };
