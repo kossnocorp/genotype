@@ -16,6 +16,7 @@ pkg-url = "{ repo }/releases/download/v{ version }/gt-v{ version }-{ target }{ b
 pkg-fmt = "bin"
 
 [dependencies]
+genotype_lsp = { version = "0.18.0", path = "../crate-genotype-lsp" }
 genotype_backend = { version = "0.18.0", path = "../crate-genotype-backend" }
 genotype_fmt = { version = "0.18.0", path = "../crate-genotype-fmt" }
 ignore = "0.4.25"
@@ -46,6 +47,7 @@ futures = "0.3.31"
 glob = "0.3.1"
 
 [dev-dependencies]
+serde_json = "1.0.151"
 pretty_assertions = "1.4.1"
 insta = { version = "1.46.3", features = ["ron"] }
 trybuild = "1.0.111"

@@ -1,1 +1,0 @@
-export function getBinPath(contextPath?: string): string;
