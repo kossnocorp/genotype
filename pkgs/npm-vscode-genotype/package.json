@@ -44,6 +44,16 @@
   "contributes": {
     "commands": [
       {
+        "command": "genotype.goToSourceDefinition",
+        "title": "Go To Source Definition",
+        "category": "Genotype"
+      },
+      {
+        "command": "genotype.findImplementationsAcrossLanguages",
+        "title": "Find All Implementations Across Languages",
+        "category": "Genotype"
+      },
+      {
         "command": "genotype.renameAcrossLanguages",
         "title": "Rename Across Languages",
         "category": "Genotype"
@@ -51,6 +61,16 @@
     ],
     "menus": {
       "editor/context": [
+        {
+          "command": "genotype.goToSourceDefinition",
+          "when": "editorLangId =~ /^(typescript|typescriptreact|rust|python)$/",
+          "group": "navigation@1.5"
+        },
+        {
+          "command": "genotype.findImplementationsAcrossLanguages",
+          "when": "editorLangId =~ /^(typescript|typescriptreact|rust|python)$/",
+          "group": "navigation@1.6"
+        },
         {
           "command": "genotype.renameAcrossLanguages",
           "when": "editorLangId =~ /^(genotype|typescript|typescriptreact|rust|python)$/",

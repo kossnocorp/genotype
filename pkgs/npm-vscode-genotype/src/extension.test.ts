@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => ({
   error: vi.fn(),
   command: vi.fn(() => ({ dispose: vi.fn() })),
   actions: vi.fn(() => ({ dispose: vi.fn() })),
+  implementations: vi.fn(() => ({ dispose: vi.fn() })),
 }));
 
 vi.mock("vscode", () => ({
@@ -20,6 +21,7 @@ vi.mock("vscode", () => ({
   languages: {
     registerDocumentFormattingEditProvider: mocks.register,
     registerCodeActionsProvider: mocks.actions,
+    registerImplementationProvider: mocks.implementations,
   },
   commands: { registerCommand: mocks.command },
   CodeActionKind: { RefactorRewrite: "refactor.rewrite" },
@@ -60,7 +62,16 @@ it("starts gt lsp and connects file synchronization alongside formatting", async
   );
   expect(mocks.start).toHaveBeenCalledOnce();
   expect(mocks.register).toHaveBeenCalledOnce();
-  expect(context.subscriptions).toHaveLength(5);
+  expect(context.subscriptions).toHaveLength(8);
+  expect(mocks.command).toHaveBeenCalledWith("genotype.goToSourceDefinition", expect.any(Function));
+  expect(mocks.command).toHaveBeenCalledWith(
+    "genotype.findImplementationsAcrossLanguages",
+    expect.any(Function),
+  );
+  expect(mocks.implementations).toHaveBeenCalledWith(
+    { scheme: "file", language: "genotype" },
+    { provideImplementation: expect.any(Function) },
+  );
   expect(mocks.command).toHaveBeenCalledWith(
     "genotype.renameAcrossLanguages",
     expect.any(Function),
